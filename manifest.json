@@ -1,0 +1,13 @@
+{
+  "name": "Le Lagon Magique",
+  "short_name": "Lagon",
+  "start_url": "./lagon-magique.html",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#2EC4C6",
+  "theme_color": "#2EC4C6",
+  "lang": "fr",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}

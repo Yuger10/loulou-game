@@ -4,6 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="theme-color" content="#2EC4C6">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Lagon">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon.svg">
 <title>Le Lagon Magique</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
@@ -111,6 +117,66 @@
     margin:6px 0 14px;
   }
   .lagon-intro p{margin:4px 0 0; font-weight:600; opacity:.95;}
+
+  /* scène décorée */
+  .scene{
+    background:linear-gradient(180deg,#8FE3E6 0%, #FFF3DE 100%);
+    border-radius:24px;
+    min-height:84px;
+    margin-bottom:14px;
+    box-shadow:var(--shadow);
+    display:flex;
+    align-items:flex-end;
+    justify-content:center;
+    flex-wrap:wrap;
+    gap:6px;
+    padding:10px 12px 8px;
+    position:relative;
+  }
+  .scene .deco{font-size:2rem; animation:sway 4s ease-in-out infinite;}
+  .scene .deco:nth-child(even){animation-delay:1.5s;}
+  .scene .empty{font-size:.8rem; font-weight:700; opacity:.6; padding:14px 0;}
+  .btn-deco{
+    position:absolute;
+    top:-8px; right:-4px;
+    border:none;
+    background:var(--sun);
+    border-radius:999px;
+    padding:6px 12px;
+    font-weight:700;
+    font-size:.8rem;
+    box-shadow:0 4px 0 #D9A62A;
+    cursor:pointer;
+  }
+  .btn-deco:active{transform:translateY(3px); box-shadow:none;}
+  .deco-row .emoji{font-size:2rem;}
+  .deco-row.owned{opacity:.75; background:#E8FBE9;}
+
+  /* jeu suite logique */
+  .seq-row{
+    display:flex; justify-content:center; align-items:center; gap:6px;
+    background:var(--foam); border-radius:18px; padding:18px 8px; margin-bottom:16px; flex-wrap:wrap;
+  }
+  .seq-row span{font-size:2rem;}
+  .seq-row .q{
+    width:44px; height:44px; border-radius:12px; border:3px dashed var(--lagoon-dark);
+    display:flex; align-items:center; justify-content:center; font-weight:800; color:var(--lagoon-dark); font-size:1.4rem;
+  }
+  .seq-options{display:flex; gap:10px; justify-content:center;}
+  .seq-btn{
+    flex:1; max-width:90px; border:none; border-radius:16px; padding:12px 0; font-size:2rem;
+    background:var(--foam); box-shadow:var(--shadow); cursor:pointer;
+  }
+  .seq-btn:active{transform:translateY(4px); box-shadow:none;}
+
+  .btn-speak{
+    border:none; background:var(--sun); border-radius:999px;
+    width:34px; height:34px; font-size:1rem; cursor:pointer; flex-shrink:0;
+    box-shadow:0 3px 0 #D9A62A;
+  }
+  .btn-speak:active{transform:translateY(2px); box-shadow:none;}
+  .speech.with-voice{display:flex; align-items:center; gap:10px;}
+  .speech.with-voice .txt{flex:1;}
   .level-pill{
     display:inline-flex;
     align-items:center;
@@ -521,6 +587,7 @@
         <div class="level-pill" id="level-pill"></div>
         <p>Touche un personnage pour l'aider ✨</p>
       </div>
+      <div class="scene" id="scene"></div>
       <div class="islands" id="islands"></div>
     </section>
 
@@ -605,7 +672,20 @@ const CHARACTERS = {
       "Un, deux, trois… on joue ensemble ?",
     ]},
 };
-const GAME_TYPES = ['memory','count','diff','puzzle'];
+const GAME_TYPES = ['memory','count','diff','puzzle','sequence'];
+
+const DECOS = {
+  palmier:{emoji:'🌴', name:'Palmier', price:8},
+  poisson:{emoji:'🐠', name:'Poisson clown', price:10},
+  dauphin:{emoji:'🐬', name:'Dauphin', price:15},
+  tortue:{emoji:'🐢', name:'Tortue', price:12},
+  arcenciel:{emoji:'🌈', name:'Arc-en-ciel', price:20},
+  chateau:{emoji:'🏰', name:'Château de sable', price:25},
+  bateau:{emoji:'⛵', name:'Petit voilier', price:18},
+  fee:{emoji:'🧚‍♀️', name:'Fée du lagon', price:35},
+  sirene2:{emoji:'🐚', name:'Coquillage géant', price:30},
+  lune:{emoji:'🌙', name:'Lune magique', price:40},
+};
 const MISSIONS_PER_LEVEL = 5;
 const SAVE_KEY = 'lagon-magique-save';
 
@@ -615,7 +695,9 @@ let state = {
   inventory: {},
   missions: 0,
   sound: true,
+  voice: true,
   newItems: 0,
+  decos: [],
 };
 
 function save(){
@@ -628,7 +710,7 @@ function load(){
   }catch(e){}
 }
 function resetState(){
-  state = { coins:5, inventory:{}, missions:0, sound:state.sound, newItems:0 };
+  state = { coins:5, inventory:{}, missions:0, sound:state.sound, voice:state.voice, newItems:0, decos:[] };
   save();
 }
 
@@ -696,11 +778,47 @@ function playSound(kind){
   }catch(e){}
 }
 document.getElementById('sound-btn').addEventListener('click', ()=>{
-  state.sound = !state.sound; save(); renderSoundBtn();
+  // cycle : son+voix → son seul → muet
+  if(state.sound && state.voice){ state.voice=false; }
+  else if(state.sound){ state.sound=false; }
+  else { state.sound=true; state.voice=true; }
+  save(); renderSoundBtn();
+  if(!state.voice && window.speechSynthesis) speechSynthesis.cancel();
   if(state.sound) playSound('tap');
+  showToast(state.sound ? (state.voice ? '🗣️ Sons + voix' : '🔊 Sons seulement') : '🔇 Silence');
 });
 function renderSoundBtn(){
-  document.getElementById('sound-btn').textContent = state.sound ? '🔊' : '🔇';
+  document.getElementById('sound-btn').textContent = state.sound ? (state.voice ? '🗣️' : '🔊') : '🔇';
+}
+
+/* ---------- Voix (Web Speech) ---------- */
+function stripEmoji(s){
+  return s.replace(/[\p{Extended_Pictographic}\u{FE0F}\u{200D}]/gu,'').replace(/\s+/g,' ').trim();
+}
+function speak(text){
+  if(!state.voice || !('speechSynthesis' in window)) return;
+  try{
+    window.speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(stripEmoji(text));
+    u.lang = 'fr-FR';
+    u.rate = .9;
+    u.pitch = 1.15;
+    const v = window.speechSynthesis.getVoices().find(v=>v.lang.startsWith('fr'));
+    if(v) u.voice = v;
+    window.speechSynthesis.speak(u);
+  }catch(e){}
+}
+if('speechSynthesis' in window){ window.speechSynthesis.onvoiceschanged = ()=>{}; }
+function bindSpeakButtons(){
+  document.querySelectorAll('[data-say]').forEach(b=>{
+    b.onclick = (e)=>{ e.stopPropagation(); speak(b.dataset.say); };
+  });
+}
+function speechBubble(text, extraStyle=''){
+  return `<div class="speech with-voice" style="${extraStyle}">
+    <span class="txt">${text}</span>
+    <button class="btn-speak" data-say="${text.replace(/"/g,'&quot;').replace(/<[^>]+>/g,'')}" aria-label="Écouter">🔈</button>
+  </div>`;
 }
 
 /* ---------- Confettis ---------- */
@@ -752,6 +870,50 @@ function renderLagon(){
   el.querySelectorAll('.island').forEach(btn=>{
     btn.addEventListener('click', ()=> { playSound('tap'); openDialogue(btn.dataset.char); });
   });
+  renderScene();
+}
+
+/* ---------- Décorations ---------- */
+function renderScene(){
+  const sc = document.getElementById('scene');
+  const owned = state.decos.filter(k=>DECOS[k]);
+  sc.innerHTML = (owned.length
+    ? owned.map(k=>`<span class="deco">${DECOS[k].emoji}</span>`).join('')
+    : `<span class="empty">Ton lagon est encore vide… gagne des pièces pour le décorer !</span>`)
+    + `<button class="btn-deco" id="btn-deco">🎨 Décorer</button>`;
+  document.getElementById('btn-deco').onclick = ()=>{ playSound('tap'); openDecoShop(); };
+}
+
+function openDecoShop(){
+  openModal(`
+    ${gameHeader('🎨 Décorer mon lagon', `Tu as 🪙 ${state.coins} pièces`)}
+    <div id="deco-list">
+      ${Object.entries(DECOS).map(([k,d])=>{
+        const owned = state.decos.includes(k);
+        const can = state.coins >= d.price;
+        return `<div class="market-row deco-row ${owned?'owned':''}">
+          <span class="emoji">${d.emoji}</span>
+          <div class="info"><div class="name">${d.name}</div><div class="sub">${owned?'Déjà dans ton lagon ✅':`🪙 ${d.price} pièces`}</div></div>
+          ${owned?'':`<button class="btn-small" data-deco="${k}" ${can?'':'disabled'}>Acheter</button>`}
+        </div>`;
+      }).join('')}
+    </div>
+  `);
+  bindQuit();
+  document.querySelectorAll('[data-deco]').forEach(btn=>{
+    btn.onclick = ()=>{
+      const k = btn.dataset.deco;
+      const d = DECOS[k];
+      if(state.coins < d.price || state.decos.includes(k)) return;
+      addCoins(-d.price);
+      state.decos.push(k); save();
+      playSound('win'); confetti();
+      speak(`Super ! ${d.name} est dans ton lagon !`);
+      showToast(`${d.emoji} ${d.name} ajouté !`);
+      renderScene();
+      openDecoShop();
+    };
+  });
 }
 
 /* ---------- Personnages / dialogue ---------- */
@@ -763,22 +925,26 @@ function openModal(html){
 }
 function closeModal(){
   document.getElementById('overlay').classList.remove('show');
+  bindQuit._last = null;
 }
 
 function openDialogue(charId){
   const c = CHARACTERS[charId];
   currentChar = charId;
+  const text = pickRandom(c.texts);
   openModal(`
     <div class="char-header">
       <span class="emoji">${c.emoji}</span>
       <h2>${c.name} ${c.title}</h2>
     </div>
-    <div class="speech">${pickRandom(c.texts)}</div>
+    ${speechBubble(text)}
     <button class="btn-primary" id="btn-play">Jouer 🎮</button>
     <button class="btn-ghost" id="btn-close">Pas maintenant</button>
   `);
+  bindSpeakButtons();
+  speak(`${c.name} ${c.title} : ${text}`);
   document.getElementById('btn-play').onclick = ()=> { playSound('tap'); startMinigame(); };
-  document.getElementById('btn-close').onclick = closeModal;
+  document.getElementById('btn-close').onclick = ()=>{ window.speechSynthesis && speechSynthesis.cancel(); closeModal(); };
 }
 
 /* ---------- Mini-jeux ---------- */
@@ -790,6 +956,7 @@ function startMinigame(){
   if(type==='memory') renderMemory();
   else if(type==='count') renderCount();
   else if(type==='diff') renderDiff();
+  else if(type==='sequence') renderSequence();
   else renderPuzzle();
 }
 
@@ -800,18 +967,26 @@ function gameHeader(title, hint){
       <h2>${title}</h2>
       <button class="sound-btn" id="btn-quit" aria-label="Retour" style="width:40px;height:40px;font-size:1rem;">✖️</button>
     </div>
-    <p class="puzzle-hint" style="margin-top:8px;">${hint}</p>
+    <p class="puzzle-hint" style="margin-top:8px; display:flex; align-items:center; justify-content:center; gap:8px;">
+      <span>${hint}</span>
+      <button class="btn-speak" data-say="${hint.replace(/"/g,'&quot;')}" aria-label="Écouter" style="width:28px;height:28px;font-size:.8rem;">🔈</button>
+    </p>
   `;
 }
 function bindQuit(){
   const b = document.getElementById('btn-quit');
-  if(b) b.onclick = ()=> { playSound('tap'); closeModal(); };
+  if(b) b.onclick = ()=> { playSound('tap'); window.speechSynthesis && speechSynthesis.cancel(); closeModal(); };
+  bindSpeakButtons();
+  // lit la consigne une seule fois par mini-jeu (le mémo se re-rend à chaque clic)
+  const hint = document.querySelector('.puzzle-hint [data-say]');
+  if(hint && hint.dataset.say !== bindQuit._last){ bindQuit._last = hint.dataset.say; speak(hint.dataset.say); }
 }
 function progressDots(done, total){
   return `<div class="game-progress">${Array.from({length:total},(_,i)=>`<i class="${i<done?'on':''}"></i>`).join('')}</div>`;
 }
 
 function onMissionWin(){
+  bindQuit._last = null;
   const c = CHARACTERS[currentChar] || CHARACTERS.sirene;
   const prevLevel = level();
   state.missions += 1;
@@ -829,11 +1004,13 @@ function onMissionWin(){
   playSound('win');
   vibrate([60,40,120]);
   confetti();
+  const praise = pickRandom(['Bravo, bien joué !','Super, tu es trop forte !','Génial, c\'est réussi !','Waouh, quelle championne !']);
+  setTimeout(()=> speak(`${levelUp ? `Niveau ${level()} ! ` : ''}${praise} ${c.name} t'offre ${it.name}${bonus ? `, et une surprise : ${ITEMS[bonus].name}` : ''}.`), 300);
 
   openModal(`
     <div class="reward-box">
       <span class="big-emoji">${levelUp ? '🌟' : '🎉'}</span>
-      <h2>${levelUp ? `Niveau ${level()} !` : 'Bravo, bien joué !'}</h2>
+      <h2>${levelUp ? `Niveau ${level()} !` : praise}</h2>
       <div class="speech" style="display:flex; align-items:center; justify-content:center; gap:10px;">
         <span style="font-size:2rem;">${it.emoji}</span>
         <span>${c.name} t'offre : <strong>${it.name}</strong></span>
@@ -949,6 +1126,43 @@ function renderDiff(){
   });
 }
 
+/* Jeu 5 : suite logique */
+function renderSequence(){
+  const symbols = shuffle(['🐚','⭐','🌸','🎀','💎','🦋','🐠']).slice(0,3);
+  const [A,B,C] = symbols;
+  const patterns = level()===1
+    ? [[A,B]]
+    : level()===2 ? [[A,B],[A,A,B],[A,B,C]]
+    : [[A,B,B],[A,A,B],[A,B,C],[A,B,A,C]];
+  const pattern = pickRandom(patterns);
+  const shown = pattern.length===2 ? 5 : (pattern.length===3 ? 6 : 7);
+  const seq = Array.from({length:shown},(_,i)=>pattern[i%pattern.length]);
+  const answer = pattern[shown%pattern.length];
+  const options = shuffle([...new Set([answer, ...symbols])]).slice(0,3);
+  if(!options.includes(answer)) options[0] = answer;
+
+  openModal(`
+    ${gameHeader('🔮 La suite magique', 'Regarde bien… quelle image vient après ?')}
+    <div class="seq-row">
+      ${seq.map(e=>`<span>${e}</span>`).join('')}
+      <span class="q">?</span>
+    </div>
+    <div class="seq-options">
+      ${shuffle(options).map(o=>`<button class="seq-btn" data-v="${o}">${o}</button>`).join('')}
+    </div>
+  `);
+  bindQuit();
+  document.querySelectorAll('.seq-btn').forEach(btn=>{
+    btn.onclick = ()=>{
+      if(btn.dataset.v===answer){
+        document.querySelector('.seq-row .q').textContent = answer;
+        document.querySelector('.seq-row .q').style.border='none';
+        setTimeout(onMissionWin, 350);
+      } else wrongFeedback(btn);
+    };
+  });
+}
+
 /* Jeu 4 : puzzle (remettre les nombres dans l'ordre) */
 function renderPuzzle(){
   const count = Math.min(8, 3 + level()); // niv.1 : 4, niv.2 : 5 …
@@ -997,7 +1211,7 @@ function renderSac(){
 document.getElementById('reset-btn').addEventListener('click', ()=>{
   if(confirm('Tout recommencer à zéro ? (pièces, objets et niveau seront perdus)')){
     resetState();
-    renderCoins(); renderBadge(); renderSac();
+    renderCoins(); renderBadge(); renderSac(); renderScene();
     showToast('Nouvelle aventure ! 🌊');
   }
 });
@@ -1136,6 +1350,9 @@ renderCoins();
 renderSoundBtn();
 renderBadge();
 renderLagon();
+if('serviceWorker' in navigator && location.protocol!=='file:'){
+  navigator.serviceWorker.register('sw.js').catch(()=>{});
+}
 </script>
 </body>
 </html>
