@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Le Lagon Magique</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ocean-deep:#123B4F;
+    --lagoon:#2EC4C6;
+    --lagoon-dark:#1FA3A5;
+    --sand:#FFF3DE;
+    --coral:#FF8969;
+    --bubblegum:#FFAAD4;
+    --sun:#FFCB4C;
+    --foam:#FFFFFF;
+    --shadow: 0 6px 0 rgba(18,59,79,0.15);
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{height:100%;}
+  body{
+    margin:0;
+    font-family:'Quicksand',sans-serif;
+    color:var(--ocean-deep);
+    background:linear-gradient(180deg,#BDEBEA 0%, var(--lagoon) 45%, var(--lagoon-dark) 100%);
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    overflow-x:hidden;
+  }
+  h1,h2,h3,.title-font,button{font-family:'Baloo 2',sans-serif;}
+  #app{
+    width:100%;
+    max-width:480px;
+    min-height:100vh;
+    background:transparent;
+    display:flex;
+    flex-direction:column;
+    position:relative;
+  }
+
+  /* bulles décoratives flottantes */
+  .bubble{
+    position:absolute;
+    border-radius:50%;
+    background:rgba(255,255,255,0.35);
+    animation:float 9s ease-in-out infinite;
+    pointer-events:none;
+  }
+  @keyframes float{
+    0%,100%{transform:translateY(0);}
+    50%{transform:translateY(-22px);}
+  }
+
+  /* topbar */
+  .topbar{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:16px 18px 6px;
+    z-index:2;
+  }
+  .topbar h1{
+    font-size:1.3rem;
+    color:var(--foam);
+    text-shadow:0 2px 0 rgba(18,59,79,0.25);
+    margin:0;
+  }
+  .coin-pill{
+    background:var(--foam);
+    border-radius:999px;
+    padding:6px 14px 6px 8px;
+    display:flex;
+    align-items:center;
+    gap:6px;
+    font-weight:700;
+    box-shadow:var(--shadow);
+    font-size:1.05rem;
+  }
+  .coin-pill span.icon{font-size:1.2rem;}
+
+  main{flex:1; position:relative; z-index:1; padding:6px 16px 12px;}
+  .view{display:none;}
+  .view.active{display:block; animation:appear .25s ease;}
+  @keyframes appear{from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);}}
+
+  /* Lagon view */
+  .lagon-intro{
+    text-align:center;
+    color:var(--foam);
+    margin:6px 0 18px;
+  }
+  .lagon-intro p{margin:4px 0 0; font-weight:600; opacity:.95;}
+  .islands{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:16px;
+  }
+  .island{
+    background:var(--foam);
+    border:none;
+    border-radius:28px;
+    padding:18px 10px 14px;
+    box-shadow:var(--shadow);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:6px;
+    cursor:pointer;
+    transition:transform .1s;
+  }
+  .island:active{transform:translateY(4px); box-shadow:0 2px 0 rgba(18,59,79,0.15);}
+  .island .emoji{font-size:2.6rem;}
+  .island .name{font-weight:700; font-size:.95rem; text-align:center;}
+  .island:nth-child(3){grid-column:1 / span 2; max-width:220px; margin:0 auto;}
+
+  /* Sac view */
+  .sac-grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:12px;
+    margin-top:8px;
+  }
+  .item-card{
+    background:var(--foam);
+    border-radius:20px;
+    padding:12px 6px;
+    text-align:center;
+    box-shadow:var(--shadow);
+  }
+  .item-card .emoji{font-size:2rem; display:block;}
+  .item-card .name{font-size:.8rem; font-weight:700; margin-top:4px;}
+  .item-card .qty{font-size:.75rem; color:var(--lagoon-dark); font-weight:700;}
+  .empty-state{
+    background:rgba(255,255,255,.85);
+    border-radius:20px;
+    padding:22px;
+    text-align:center;
+    font-weight:600;
+    margin-top:10px;
+  }
+
+  /* Marché view */
+  .tabs{display:flex; gap:8px; margin-bottom:14px;}
+  .tab-btn{
+    flex:1;
+    border:none;
+    border-radius:16px;
+    padding:10px 4px;
+    background:rgba(255,255,255,.55);
+    color:var(--ocean-deep);
+    font-weight:700;
+    font-size:.82rem;
+    cursor:pointer;
+  }
+  .tab-btn.active{background:var(--foam); box-shadow:var(--shadow);}
+  .market-row{
+    background:var(--foam);
+    border-radius:18px;
+    padding:10px 14px;
+    display:flex;
+    align-items:center;
+    gap:12px;
+    margin-bottom:10px;
+    box-shadow:var(--shadow);
+  }
+  .market-row .emoji{font-size:1.8rem;}
+  .market-row .info{flex:1;}
+  .market-row .info .name{font-weight:700; font-size:.9rem;}
+  .market-row .info .sub{font-size:.75rem; color:var(--lagoon-dark); font-weight:600;}
+  .btn-small{
+    border:none;
+    border-radius:14px;
+    padding:8px 14px;
+    background:var(--coral);
+    color:white;
+    font-weight:700;
+    font-size:.82rem;
+    cursor:pointer;
+  }
+  .btn-small:active{transform:translateY(2px);}
+  .recipe-card{
+    background:var(--foam);
+    border-radius:20px;
+    padding:14px;
+    margin-bottom:12px;
+    box-shadow:var(--shadow);
+  }
+  .recipe-card .result{display:flex; align-items:center; gap:8px; font-weight:700; margin-bottom:8px;}
+  .recipe-card .result .emoji{font-size:1.7rem;}
+  .recipe-ingredients{display:flex; gap:10px; margin-bottom:10px; flex-wrap:wrap;}
+  .ingredient-pill{
+    background:var(--sand);
+    border-radius:14px;
+    padding:5px 10px;
+    font-size:.8rem;
+    font-weight:700;
+    display:flex;
+    align-items:center;
+    gap:4px;
+  }
+  .ingredient-pill.ok{background:#DFF6DE; color:#1E7A34;}
+  .ingredient-pill.ko{background:#FFE2DC; color:#B4472F;}
+  .btn-craft{
+    width:100%;
+    border:none;
+    border-radius:14px;
+    padding:10px;
+    font-weight:700;
+    background:var(--lagoon-dark);
+    color:white;
+    cursor:pointer;
+  }
+  .btn-craft:disabled{background:#C9C9C9; cursor:not-allowed;}
+
+  /* bottom nav */
+  nav.bottomnav{
+    display:flex;
+    background:var(--foam);
+    border-radius:26px 26px 0 0;
+    padding:10px 14px calc(10px + env(safe-area-inset-bottom));
+    box-shadow:0 -4px 14px rgba(18,59,79,0.15);
+    z-index:2;
+  }
+  nav.bottomnav button{
+    flex:1;
+    border:none;
+    background:none;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:2px;
+    padding:6px 0;
+    font-size:.72rem;
+    font-weight:700;
+    color:#9AAAB2;
+    cursor:pointer;
+  }
+  nav.bottomnav button .icon{font-size:1.5rem;}
+  nav.bottomnav button.active{color:var(--lagoon-dark);}
+
+  /* modal overlay */
+  #overlay{
+    position:fixed; inset:0;
+    background:rgba(18,59,79,0.55);
+    display:none;
+    align-items:flex-end;
+    justify-content:center;
+    z-index:10;
+  }
+  #overlay.show{display:flex;}
+  #modal{
+    background:var(--sand);
+    width:100%;
+    max-width:480px;
+    border-radius:28px 28px 0 0;
+    padding:22px 20px calc(24px + env(safe-area-inset-bottom));
+    animation:slideup .22s ease;
+    max-height:85vh;
+    overflow-y:auto;
+  }
+  @keyframes slideup{from{transform:translateY(30px); opacity:0;} to{transform:translateY(0); opacity:1;}}
+  #modal h2{margin:0 0 8px; font-size:1.25rem;}
+  .char-header{display:flex; align-items:center; gap:12px; margin-bottom:10px;}
+  .char-header .emoji{font-size:2.4rem;}
+  .speech{
+    background:var(--foam);
+    border-radius:18px;
+    padding:14px 16px;
+    font-weight:600;
+    margin-bottom:16px;
+  }
+  .btn-primary{
+    width:100%;
+    border:none;
+    border-radius:16px;
+    padding:14px;
+    font-size:1.05rem;
+    font-weight:700;
+    background:var(--coral);
+    color:white;
+    cursor:pointer;
+    box-shadow:0 5px 0 #D96A50;
+  }
+  .btn-primary:active{transform:translateY(4px); box-shadow:none;}
+  .btn-ghost{
+    width:100%;
+    border:none;
+    background:none;
+    color:var(--ocean-deep);
+    font-weight:700;
+    padding:10px;
+    margin-top:6px;
+    cursor:pointer;
+    opacity:.7;
+  }
+
+  /* minigames */
+  .memory-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:16px;}
+  .mcard{
+    aspect-ratio:1/1;
+    background:var(--lagoon-dark);
+    border-radius:16px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:1.8rem;
+    cursor:pointer;
+    color:transparent;
+    transition:background .15s;
+  }
+  .mcard.flipped, .mcard.matched{background:var(--foam); color:var(--ocean-deep);}
+  .mcard.matched{opacity:.55;}
+
+  .count-row{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+    background:var(--foam);
+    border-radius:18px;
+    padding:16px;
+    margin-bottom:16px;
+    justify-content:center;
+  }
+  .count-row span{font-size:1.8rem;}
+  .num-options{display:flex; gap:10px; justify-content:center;}
+  .num-btn{
+    flex:1;
+    max-width:80px;
+    border:none;
+    border-radius:16px;
+    padding:16px 0;
+    font-size:1.4rem;
+    font-weight:800;
+    background:var(--foam);
+    box-shadow:var(--shadow);
+    cursor:pointer;
+  }
+  .num-btn:active{transform:translateY(4px); box-shadow:none;}
+
+  .diff-row{
+    display:flex;
+    justify-content:center;
+    gap:10px;
+    background:var(--foam);
+    border-radius:18px;
+    padding:18px 8px;
+    margin-bottom:16px;
+    flex-wrap:wrap;
+  }
+  .diff-item{
+    font-size:2rem;
+    padding:8px;
+    border-radius:14px;
+    cursor:pointer;
+  }
+  .diff-item:active{background:rgba(0,0,0,0.06);}
+
+  .puzzle-row{display:flex; gap:10px; justify-content:center; margin-bottom:16px;}
+  .puzzle-btn{
+    width:64px; height:64px;
+    border:none;
+    border-radius:16px;
+    background:var(--foam);
+    box-shadow:var(--shadow);
+    font-size:1.5rem;
+    font-weight:800;
+    cursor:pointer;
+  }
+  .puzzle-btn.done{background:var(--sun); box-shadow:none;}
+  .puzzle-hint{text-align:center; font-weight:700; margin-bottom:10px; color:var(--ocean-deep); opacity:.75; font-size:.85rem;}
+
+  .reward-box{text-align:center; padding:8px 0 4px;}
+  .reward-box .big-emoji{font-size:3.4rem; display:block; margin-bottom:6px;}
+
+  #toast{
+    position:fixed;
+    bottom:96px;
+    left:50%;
+    transform:translateX(-50%) translateY(20px);
+    background:var(--ocean-deep);
+    color:white;
+    font-weight:700;
+    padding:10px 18px;
+    border-radius:999px;
+    opacity:0;
+    transition:opacity .2s, transform .2s;
+    z-index:20;
+    font-size:.9rem;
+    white-space:nowrap;
+  }
+  #toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
+</style>
+</head>
+<body>
+
+<div id="app">
+  <div class="bubble" style="width:26px;height:26px; top:70px; left:20px; animation-delay:0s;"></div>
+  <div class="bubble" style="width:16px;height:16px; top:140px; right:36px; animation-delay:1.4s;"></div>
+  <div class="bubble" style="width:20px;height:20px; top:230px; left:60px; animation-delay:2.6s;"></div>
+
+  <header class="topbar">
+    <h1>🌊 Le Lagon Magique</h1>
+    <div class="coin-pill"><span class="icon">🪙</span><span id="coin-count">0</span></div>
+  </header>
+
+  <main>
+    <section id="view-lagon" class="view active">
+      <div class="lagon-intro">
+        <p>Touche un personnage pour l'aider ✨</p>
+      </div>
+      <div class="islands">
+        <button class="island" data-char="sirene">
+          <span class="emoji">🧜‍♀️</span>
+          <span class="name">Marina<br>la sirène</span>
+        </button>
+        <button class="island" data-char="licorne">
+          <span class="emoji">🦄</span>
+          <span class="name">Étincelle<br>la licorne</span>
+        </button>
+        <button class="island" data-char="danseuse">
+          <span class="emoji">💃</span>
+          <span class="name">Luna<br>la danseuse</span>
+        </button>
+      </div>
+    </section>
+
+    <section id="view-sac" class="view">
+      <h2 style="color:var(--foam); text-shadow:0 2px 0 rgba(18,59,79,.25);">🎒 Mon sac</h2>
+      <div id="sac-content"></div>
+    </section>
+
+    <section id="view-marche" class="view">
+      <h2 style="color:var(--foam); text-shadow:0 2px 0 rgba(18,59,79,.25); margin-bottom:10px;">🏪 Le marché</h2>
+      <div class="tabs">
+        <button class="tab-btn active" data-tab="vendre">Vendre</button>
+        <button class="tab-btn" data-tab="echanger">Échanger</button>
+        <button class="tab-btn" data-tab="fusionner">Fusionner</button>
+      </div>
+      <div id="marche-content"></div>
+    </section>
+  </main>
+
+  <nav class="bottomnav">
+    <button class="navbtn active" data-view="lagon"><span class="icon">🏝️</span>Lagon</button>
+    <button class="navbtn" data-view="sac"><span class="icon">🎒</span>Mon sac</button>
+    <button class="navbtn" data-view="marche"><span class="icon">🏪</span>Marché</button>
+  </nav>
+</div>
+
+<div id="overlay">
+  <div id="modal"></div>
+</div>
+<div id="toast"></div>
+
+<script>
+/* ---------- Données ---------- */
+const ITEMS = {
+  coquillage:{emoji:'🐚', name:'Coquillage', price:2},
+  perle:{emoji:'🦪', name:'Perle', price:3},
+  ruban:{emoji:'🎀', name:'Ruban', price:2},
+  fleur:{emoji:'🌸', name:'Fleur', price:2},
+  etoile:{emoji:'⭐', name:'Étoile', price:4},
+  gemme:{emoji:'💎', name:'Gemme', price:5},
+};
+const CRAFTED = {
+  collier:{emoji:'📿', name:'Collier magique', price:10,
+    recipe:{coquillage:2, ruban:1}},
+  bouquet:{emoji:'💐', name:'Bouquet enchanté', price:8,
+    recipe:{perle:2, fleur:1}},
+};
+const ALL_ITEMS = Object.assign({}, ITEMS, CRAFTED);
+
+const CHARACTERS = {
+  sirene:{emoji:'🧜‍♀️', name:'Marina la sirène', text:"Aide-moi à retrouver un trésor du lagon, tu veux bien ?"},
+  licorne:{emoji:'🦄', name:'Étincelle la licorne', text:"J'ai besoin de toi pour un petit défi magique !"},
+  danseuse:{emoji:'💃', name:'Luna la danseuse', text:"Viens jouer avec moi avant la grande ronde !"},
+};
+const GAME_TYPES = ['memory','count','diff','puzzle'];
+
+/* ---------- État ---------- */
+let state = {
+  coins: 5,
+  inventory: {}
+};
+
+/* ---------- Utilitaires ---------- */
+function addItem(key, qty=1){ state.inventory[key] = (state.inventory[key]||0) + qty; }
+function removeItem(key, qty=1){ state.inventory[key] = Math.max(0, (state.inventory[key]||0) - qty); }
+function countItem(key){ return state.inventory[key] || 0; }
+function addCoins(n){ state.coins += n; renderCoins(); }
+function renderCoins(){ document.getElementById('coin-count').textContent = state.coins; }
+function pickRandom(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+function shuffle(arr){ return arr.map(v=>[Math.random(),v]).sort((a,b)=>a[0]-b[0]).map(v=>v[1]); }
+
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(showToast._t);
+  showToast._t = setTimeout(()=> t.classList.remove('show'), 1600);
+}
+
+/* ---------- Navigation ---------- */
+document.querySelectorAll('.navbtn').forEach(btn=>{
+  btn.addEventListener('click', ()=> switchView(btn.dataset.view));
+});
+function switchView(name){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.getElementById('view-'+name).classList.add('active');
+  document.querySelectorAll('.navbtn').forEach(b=>b.classList.toggle('active', b.dataset.view===name));
+  if(name==='sac') renderSac();
+  if(name==='marche') renderMarche();
+}
+
+/* ---------- Personnages / dialogue ---------- */
+document.querySelectorAll('.island').forEach(btn=>{
+  btn.addEventListener('click', ()=> openDialogue(btn.dataset.char));
+});
+
+function openModal(html){
+  document.getElementById('modal').innerHTML = html;
+  document.getElementById('overlay').classList.add('show');
+}
+function closeModal(){
+  document.getElementById('overlay').classList.remove('show');
+}
+
+function openDialogue(charId){
+  const c = CHARACTERS[charId];
+  openModal(`
+    <div class="char-header">
+      <span class="emoji">${c.emoji}</span>
+      <h2>${c.name}</h2>
+    </div>
+    <div class="speech">${c.text}</div>
+    <button class="btn-primary" id="btn-play">Jouer 🎮</button>
+    <button class="btn-ghost" id="btn-close">Pas maintenant</button>
+  `);
+  document.getElementById('btn-play').onclick = ()=> startMinigame();
+  document.getElementById('btn-close').onclick = closeModal;
+}
+
+/* ---------- Mini-jeux ---------- */
+function startMinigame(){
+  const type = pickRandom(GAME_TYPES);
+  if(type==='memory') renderMemory();
+  else if(type==='count') renderCount();
+  else if(type==='diff') renderDiff();
+  else renderPuzzle();
+}
+
+function onMissionWin(){
+  const key = pickRandom(Object.keys(ITEMS));
+  addItem(key,1);
+  const it = ITEMS[key];
+  openModal(`
+    <div class="reward-box">
+      <span class="big-emoji">🎉</span>
+      <h2>Bravo, bien joué !</h2>
+      <div class="speech" style="display:flex; align-items:center; justify-content:center; gap:10px;">
+        <span style="font-size:2rem;">${it.emoji}</span>
+        <span>Tu as gagné : <strong>${it.name}</strong></span>
+      </div>
+    </div>
+    <button class="btn-primary" id="btn-yay">Super !</button>
+  `);
+  document.getElementById('btn-yay').onclick = closeModal;
+}
+
+/* Jeu 1 : mémoire */
+function renderMemory(){
+  const pool = shuffle(Object.values(ITEMS).map(i=>i.emoji)).slice(0,3);
+  const cards = shuffle([...pool, ...pool]).map((e,i)=>({id:i, emoji:e, flipped:false, matched:false}));
+  let first=null, lock=false;
+
+  function html(){
+    return `
+      <h2 style="text-align:center;">🧠 Jeu de mémoire</h2>
+      <p class="puzzle-hint">Retrouve les paires identiques</p>
+      <div class="memory-grid">
+        ${cards.map(c=>`<div class="mcard ${c.matched?'matched':(c.flipped?'flipped':'')}" data-id="${c.id}">${(c.flipped||c.matched)?c.emoji:''}</div>`).join('')}
+      </div>
+    `;
+  }
+  function render(){
+    openModal(html());
+    document.querySelectorAll('.mcard').forEach(el=>{
+      el.onclick = ()=>{
+        const id = Number(el.dataset.id);
+        const card = cards.find(c=>c.id===id);
+        if(lock || card.flipped || card.matched) return;
+        card.flipped = true;
+        render();
+        if(!first){ first = card; return; }
+        lock = true;
+        const second = card;
+        setTimeout(()=>{
+          if(first.emoji===second.emoji){
+            first.matched = true; second.matched = true;
+          } else {
+            first.flipped = false; second.flipped = false;
+          }
+          first = null; lock = false;
+          render();
+          if(cards.every(c=>c.matched)) setTimeout(onMissionWin, 300);
+        }, 600);
+      };
+    });
+  }
+  render();
+}
+
+/* Jeu 2 : compter */
+function renderCount(){
+  const emoji = pickRandom(['⭐','🐚','🌸','🦪']);
+  const n = 3 + Math.floor(Math.random()*5); // 3 à 7
+  let options = new Set([n]);
+  while(options.size<3){ options.add(Math.max(1, n + (Math.floor(Math.random()*5)-2))); }
+  options = shuffle([...options]);
+
+  openModal(`
+    <h2 style="text-align:center;">🔢 Compte avec moi</h2>
+    <p class="puzzle-hint">Combien y a-t-il de ${emoji} ?</p>
+    <div class="count-row">${Array(n).fill(emoji).map(e=>`<span>${e}</span>`).join('')}</div>
+    <div class="num-options">
+      ${options.map(o=>`<button class="num-btn" data-v="${o}">${o}</button>`).join('')}
+    </div>
+  `);
+  document.querySelectorAll('.num-btn').forEach(btn=>{
+    btn.onclick = ()=>{
+      if(Number(btn.dataset.v)===n) onMissionWin();
+      else { btn.style.opacity=.4; setTimeout(()=>btn.style.opacity=1,400); }
+    };
+  });
+}
+
+/* Jeu 3 : trouver l'intruse */
+function renderDiff(){
+  const base = pickRandom(['🐚','🦋','🌸','⭐','🎀']);
+  let odd = pickRandom(['🦄','🧜‍♀️','💎','🍓','🌙'].filter(e=>e!==base));
+  const items = Array(5).fill(base);
+  const oddPos = Math.floor(Math.random()*6);
+  items.splice(oddPos,0,odd);
+
+  openModal(`
+    <h2 style="text-align:center;">🔍 Trouve l'intruse</h2>
+    <p class="puzzle-hint">Touche celle qui n'est pas comme les autres</p>
+    <div class="diff-row">
+      ${items.map((e,i)=>`<span class="diff-item" data-odd="${e===odd}">${e}</span>`).join('')}
+    </div>
+  `);
+  document.querySelectorAll('.diff-item').forEach(el=>{
+    el.onclick = ()=>{
+      if(el.dataset.odd==='true') onMissionWin();
+      else { el.style.opacity=.3; setTimeout(()=>el.style.opacity=1,400); }
+    };
+  });
+}
+
+/* Jeu 4 : puzzle (remettre les nombres dans l'ordre) */
+function renderPuzzle(){
+  const nums = shuffle([1,2,3,4]);
+  let next = 1;
+  openModal(`
+    <h2 style="text-align:center;">🧩 Petit puzzle</h2>
+    <p class="puzzle-hint">Touche les nombres dans l'ordre : 1 → 2 → 3 → 4</p>
+    <div class="puzzle-row">
+      ${nums.map(n=>`<button class="puzzle-btn" data-n="${n}">${n}</button>`).join('')}
+    </div>
+  `);
+  document.querySelectorAll('.puzzle-btn').forEach(btn=>{
+    btn.onclick = ()=>{
+      const n = Number(btn.dataset.n);
+      if(n===next && !btn.classList.contains('done')){
+        btn.classList.add('done');
+        next++;
+        if(next===5) setTimeout(onMissionWin, 300);
+      }
+    };
+  });
+}
+
+/* ---------- Sac ---------- */
+function renderSac(){
+  const owned = Object.keys(ALL_ITEMS).filter(k=>countItem(k)>0);
+  const el = document.getElementById('sac-content');
+  if(owned.length===0){
+    el.innerHTML = `<div class="empty-state">Ton sac est vide !<br>Va aider Marina, Étincelle ou Luna pour gagner des objets ✨</div>`;
+    return;
+  }
+  el.innerHTML = `<div class="sac-grid">
+    ${owned.map(k=>{
+      const it = ALL_ITEMS[k];
+      return `<div class="item-card"><span class="emoji">${it.emoji}</span><div class="name">${it.name}</div><div class="qty">x${countItem(k)}</div></div>`;
+    }).join('')}
+  </div>`;
+}
+
+/* ---------- Marché ---------- */
+let currentTab = 'vendre';
+document.querySelectorAll('.tab-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    currentTab = btn.dataset.tab;
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.toggle('active', b===btn));
+    renderMarche();
+  });
+});
+
+function renderMarche(){
+  const el = document.getElementById('marche-content');
+  if(currentTab==='vendre') return renderVendre(el);
+  if(currentTab==='echanger') return renderEchanger(el);
+  return renderFusionner(el);
+}
+
+function renderVendre(el){
+  const owned = Object.keys(ALL_ITEMS).filter(k=>countItem(k)>0);
+  if(owned.length===0){
+    el.innerHTML = `<div class="empty-state">Tu n'as rien à vendre pour l'instant.<br>Va gagner des objets dans le lagon !</div>`;
+    return;
+  }
+  el.innerHTML = owned.map(k=>{
+    const it = ALL_ITEMS[k];
+    return `<div class="market-row">
+      <span class="emoji">${it.emoji}</span>
+      <div class="info"><div class="name">${it.name} x${countItem(k)}</div><div class="sub">🪙 ${it.price} pièce${it.price>1?'s':''}</div></div>
+      <button class="btn-small" data-sell="${k}">Vendre</button>
+    </div>`;
+  }).join('');
+  el.querySelectorAll('[data-sell]').forEach(btn=>{
+    btn.onclick = ()=>{
+      const k = btn.dataset.sell;
+      removeItem(k,1);
+      addCoins(ALL_ITEMS[k].price);
+      showToast(`Vendu ! +${ALL_ITEMS[k].price} 🪙`);
+      renderVendre(el);
+    };
+  });
+}
+
+function renderEchanger(el){
+  const owned = Object.keys(ITEMS).filter(k=>countItem(k)>0);
+  if(owned.length===0){
+    el.innerHTML = `<div class="empty-state">Tu n'as pas encore d'objet à échanger.</div>`;
+    return;
+  }
+  el.innerHTML = owned.map(k=>{
+    const it = ITEMS[k];
+    return `<div class="market-row">
+      <span class="emoji">${it.emoji}</span>
+      <div class="info"><div class="name">${it.name} x${countItem(k)}</div><div class="sub">Contre un autre objet surprise</div></div>
+      <button class="btn-small" data-trade="${k}">Échanger</button>
+    </div>`;
+  }).join('');
+  el.querySelectorAll('[data-trade]').forEach(btn=>{
+    btn.onclick = ()=>{
+      const k = btn.dataset.trade;
+      const others = Object.keys(ITEMS).filter(x=>x!==k);
+      const gained = pickRandom(others);
+      removeItem(k,1);
+      addItem(gained,1);
+      showToast(`Échangé contre ${ITEMS[gained].emoji} ${ITEMS[gained].name} !`);
+      renderEchanger(el);
+    };
+  });
+}
+
+function renderFusionner(el){
+  el.innerHTML = Object.entries(CRAFTED).map(([key,c])=>{
+    const need = Object.entries(c.recipe);
+    const canCraft = need.every(([ik,qty])=>countItem(ik)>=qty);
+    return `<div class="recipe-card">
+      <div class="result"><span class="emoji">${c.emoji}</span><span>${c.name}</span></div>
+      <div class="recipe-ingredients">
+        ${need.map(([ik,qty])=>{
+          const has = countItem(ik);
+          const ok = has>=qty;
+          return `<span class="ingredient-pill ${ok?'ok':'ko'}">${ITEMS[ik].emoji} ${has}/${qty}</span>`;
+        }).join('')}
+      </div>
+      <button class="btn-craft" data-craft="${key}" ${canCraft?'':'disabled'}>${canCraft?'Créer ✨':'Il manque des objets'}</button>
+    </div>`;
+  }).join('');
+  el.querySelectorAll('[data-craft]').forEach(btn=>{
+    btn.onclick = ()=>{
+      const key = btn.dataset.craft;
+      const c = CRAFTED[key];
+      Object.entries(c.recipe).forEach(([ik,qty])=> removeItem(ik,qty));
+      addItem(key,1);
+      showToast(`${c.emoji} ${c.name} créé !`);
+      renderFusionner(el);
+    };
+  });
+}
+
+/* ---------- Init ---------- */
+renderCoins();
+</script>
+</body>
+</html>
