@@ -75,6 +75,14 @@ Légende priorité : 🔴 haute · 🟠 moyenne · 🟢 basse
 - [x] Intruse : variante « même image retournée en miroir »
 - [x] Puzzle : départs variables, suites décroissantes, comptage de 2 en 2
 
+### v9 — Carte dessinée, joueurs multiples, mode tour par tour
+- [x] Carte marine dessinée : vagues, nuages, poissons, îles en relief, route dorée, bateau qui navigue
+- [x] Profils multiples avec sauvegarde indépendante par joueur
+- [x] Panneau « Les joueurs » : ajouter, renommer, changer d'avatar, réinitialiser, supprimer
+- [x] Mode « chacun son tour » : barre de tour, score 🏅, passage de main à l'erreur
+- [x] Choix du mini-jeu (grille des 6 jeux) ou tirage surprise
+- [x] Correction d'un bug : l'inventaire par défaut était partagé entre les parties
+
 ---
 
 ## 🔜 À faire

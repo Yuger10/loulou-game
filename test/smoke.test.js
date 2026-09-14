@@ -40,6 +40,9 @@ check('3 missions du jour', ev('state.quests.list.length')===3);
 
 // Carte des îles
 check('carte : 4 îles affichées', d.querySelectorAll('.map-island').length===4);
+check('carte : route dessinée', !!d.querySelector('.route-line') && !!d.querySelector('.route-done'));
+check('carte : bateau présent', !!d.getElementById('map-boat'));
+check('carte : îles dessinées (terre + label)', d.querySelectorAll('.map-island .isle-land').length===4);
 check('carte : lagon est l\'île courante', !!d.querySelector('.map-island.here[data-world="lagon"]'));
 check('carte : 3 îles verrouillées au niveau 1', d.querySelectorAll('.map-island.locked').length===3);
 check('carte : prochaine île annoncée', d.getElementById('map-next').innerHTML.includes('La Forêt'));
@@ -51,6 +54,8 @@ ev('state.missions = 10; renderLagon()');  // niveau 3
 check('niveau 3 atteint', ev('level()')===3);
 check('carte : forêt déverrouillée', !d.querySelector('.map-island.locked[data-world="foret"]'));
 d.querySelector('.map-island[data-world="foret"]').click();
+check('carte : le bateau navigue', ev('sailing')===true);
+ev('sailing=false; setWorld("foret")');   // fin de la traversée
 check('carte : navigation vers la forêt', ev('currentWorld')==='foret');
 check('3 personnages de la forêt', d.querySelectorAll('.island').length===3);
 check('personnages forestiers', [...d.querySelectorAll('.island')].map(b=>b.dataset.char).join()==='fee,biche,hibou');
@@ -64,12 +69,14 @@ ev('state.missions = 30; renderLagon()');   // niveau 7
 check('montagne déverrouillée au niveau 6', ev('worldUnlocked("montagne")')===true);
 check('château encore verrouillé', ev('worldUnlocked("chateau")')===false);
 d.querySelector('.map-island[data-world="montagne"]').click();
+ev('sailing=false; setWorld("montagne")');
 check('navigation vers la montagne', ev('currentWorld')==='montagne');
 check('3 personnages de la montagne', [...d.querySelectorAll('.island')].map(b=>b.dataset.char).join()==='dragonciel,aigle,magicienne');
 check('difficulté de la montagne = 3', ev('gameDiff()')===3);
 ev('state.missions = 50; renderLagon()');   // niveau 11
 check('château déverrouillé au niveau 10', ev('worldUnlocked("chateau")')===true);
 d.querySelector('.map-island[data-world="chateau"]').click();
+ev('sailing=false; setWorld("chateau")');
 check('navigation vers le château', ev('currentWorld')==='chateau');
 check('difficulté du château = 4', ev('gameDiff()')===4);
 check('château : personnages royaux', [...d.querySelectorAll('.island')].map(b=>b.dataset.char).join()==='princesse,sorciere,pegase');
@@ -150,14 +157,18 @@ opts.forEach(b=>b.click()); // clique tout : le bon déclenche la victoire (time
 ev('renderMemory()');
 check('mémoire : 6 cartes niveau 1', d.querySelectorAll('.mcard').length===6);
 
+const wait = ms => new Promise(r=>setTimeout(r, ms));
+
 setTimeout(()=>{
   check('suite : victoire (missions=3)', ev('state.missions')===3);
-  // Puzzle
-  ev('renderPuzzle()');
-  const cnt = d.querySelectorAll('.puzzle-btn').length;
-  for(let i=1;i<=cnt;i++) d.querySelector(`.puzzle-btn[data-n="${i}"]`).click();
+  // Puzzle : la suite n'est plus forcément 1→N, on suit l'ordre affiché
+  ev('currentWorld="lagon"; renderPuzzle()');
+  const shownNums = [...d.querySelectorAll('.puzzle-btn')].map(b=>Number(b.dataset.n)).sort((a,b)=>a-b);
+  const descending = d.querySelector('.puzzle-hint span').textContent.includes('envers');
+  (descending ? shownNums.slice().reverse() : shownNums)
+    .forEach(n=> d.querySelector(`.puzzle-btn[data-n="${n}"]`).click());
 
-  setTimeout(()=>{
+  setTimeout(async ()=>{
     check('puzzle : victoire (missions=4)', ev('state.missions')===4);
 
     // Marché
@@ -199,8 +210,9 @@ setTimeout(()=>{
     check('bouton coffre retiré après ouverture', !d.getElementById('btn-chest'));
 
         // Sauvegarde : version + migration d'une vieille sauvegarde
-    check('sauvegarde localStorage', !!w.localStorage.getItem('lagon-magique-save'));
-    check('sauvegarde versionnée', JSON.parse(w.localStorage.getItem('lagon-magique-save')).v === ev('SAVE_VERSION'));
+    // la sauvegarde est désormais propre à chaque joueur
+    check('sauvegarde localStorage', !!w.localStorage.getItem(ev('currentSaveKey()')));
+    check('sauvegarde versionnée', JSON.parse(w.localStorage.getItem(ev('currentSaveKey()'))).v === ev('SAVE_VERSION'));
     const migrated = ev("JSON.stringify(migrate({coins:9, inventory:{perle:2}, missions:7, sound:false}))");
     const m = JSON.parse(migrated);
     check('migration v0 : champs manquants ajoutés', m.v===1 && m.avatar==='👧' && Array.isArray(m.decos) && typeof m.seen==='object');
@@ -219,6 +231,69 @@ setTimeout(()=>{
     check('album complet : récompense unique', ev('state.albumReward')===true);
     ev('checkAlbumComplete()');
     check('album complet : pas de double récompense', ev('state.coins')===coinsBeforeAlbum+100);
+
+    // ---- Joueurs (profils) ----
+    ev('closeModal()');
+    check('un profil créé au démarrage', ev('profiles.list.length')===1);
+    const p1 = ev('profiles.current');
+    ev("state.coins = 42; save()");
+    const p2 = ev("addProfile('Léa','🦄')");
+    check('2 profils après ajout', ev('profiles.list.length')===2);
+    check('nouveau joueur actif', ev('profiles.current')===p2);
+    check('nouveau joueur : partie neuve', ev('state.coins')===5 && ev('state.missions')===0);
+    check('nouveau joueur : avatar et prénom', ev('state.avatar')==='🦄' && ev('state.name')==='Léa');
+    check('sauvegardes séparées', ev('currentSaveKey()') !== ev(`profileSaveKey(${JSON.stringify(p1)})`));
+    ev(`switchProfile(${JSON.stringify(p1)}, true)`);
+    check('retour au 1er joueur : ses pièces sont là', ev('state.coins')===42);
+    ev("addItem('gemme',1)");
+    ev(`switchProfile(${JSON.stringify(p2)}, true)`);
+    check('inventaires indépendants', ev("countItem('gemme')")===0);
+
+    // panneau des joueurs
+    ev('openPlayers()');
+    check('panneau joueurs : 2 lignes', d.querySelectorAll('#players-list .player-row').length===2);
+    check('panneau joueurs : bouton ajouter', !!d.getElementById('btn-add-player'));
+    check('panneau joueurs : 2 modes proposés', !!d.getElementById('btn-solo') && !!d.getElementById('btn-turns'));
+
+    // réglages / reset d'un joueur
+    ev(`openPlayerSettings(${JSON.stringify(p2)})`);
+    check('réglages : bouton recommencer', !!d.getElementById('pe-reset'));
+    check('réglages : bouton supprimer', !!d.getElementById('pe-del'));
+    ev("state.coins = 77; save()");
+    d.getElementById('pe-reset').click();
+    check('reset du joueur : pièces remises à 5', ev('state.coins')===5);
+
+    // ---- Mode chacun son tour ----
+    ev(`startParty([${JSON.stringify(p1)}, ${JSON.stringify(p2)}])`);
+    check('partie lancée', ev('party.active')===true);
+    check('le 1er joueur commence', ev('profiles.current')===p1);
+    check('barre de tour affichée', !d.getElementById('turn-bar').hidden && d.querySelectorAll('.turn-chip').length===2);
+    check('joueur actif surligné', d.querySelectorAll('.turn-chip.on').length===1);
+
+    // une erreur passe la main
+    ev('currentWorld="lagon"; renderCount()');
+    const good = Number(d.querySelectorAll('.count-row span').length);
+    const wrongBtn = [...d.querySelectorAll('.num-btn')].find(b=>Number(b.dataset.v)!==good);
+    wrongBtn.click();
+    await wait(600);
+    check('erreur : la main passe au joueur suivant', ev('profiles.current')===p2);
+    check('overlay de changement de joueur', d.getElementById('turn-overlay').classList.contains('show'));
+
+    // le joueur qui réussit marque un point
+    ev('currentWorld="lagon"; renderCount()');
+    const n2 = d.querySelectorAll('.count-row span').length;
+    d.querySelector(`.num-btn[data-v="${n2}"]`).click();
+    check('victoire : point pour le joueur courant', ev(`party.scores[${JSON.stringify(p2)}]`)===1);
+    check('récompense dans le sac du bon joueur', ev('state.newItems')>0);
+
+    ev('stopParty()');
+    check('mode solo rétabli', ev('party.active')===false && d.getElementById('turn-bar').hidden);
+
+    // choix du mini-jeu
+    ev('closeModal(); openGamePicker("sirene")');
+    check('choix du jeu : 6 jeux + surprise', d.querySelectorAll('.game-choice').length===7);
+    d.querySelector('.game-choice[data-game="simon"]').click();
+    check('choix du jeu : lance bien le jeu choisi', d.querySelectorAll('.simon-pad').length===4);
     check('aucune erreur JS', errs.length===0);
     if(errs.length) console.log(errs);
     console.log(failed ? `\n${failed} test(s) en échec` : '\nTous les tests passent');

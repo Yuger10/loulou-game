@@ -40,6 +40,7 @@ function progressDots(done, total){
 
 function onMissionWin(){
   bindQuit._last = null;
+  if(typeof partyScore==='function') partyScore();
   const c = CHARACTERS[currentChar] || CHARACTERS.sirene;
   const prevLevel = level();
   state.missions += 1;

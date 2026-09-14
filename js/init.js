@@ -1,4 +1,5 @@
 /* ---------- Init ---------- */
+loadProfiles();
 load();
 // marque comme déjà vus les objets déjà possédés (anciennes sauvegardes)
 Object.keys(state.inventory||{}).forEach(k=>{ if(state.inventory[k]>0) markSeen(k); });
@@ -12,6 +13,7 @@ if(!state.visited || !state.visited.length){
   state.visited = WORLD_ORDER.filter(worldUnlocked);
   save();
 }
+renderTurnBar();
 renderLagon();
 
 /* Écran titre : sert aussi à débloquer le son et la voix (geste utilisateur requis sur iOS) */
@@ -35,7 +37,8 @@ function hideSplash(){
 }
 document.getElementById('btn-splash-play').addEventListener('click', hideSplash);
 showSplash();
-document.getElementById('avatar-pill').addEventListener('click', ()=>{ playSound('tap'); openWelcome(); });
+// la pastille en haut ouvre le panneau des joueurs (profils, solo / chacun son tour)
+document.getElementById('avatar-pill').addEventListener('click', ()=>{ playSound('tap'); openPlayers(); });
 document.getElementById('btn-start').addEventListener('click', closeWelcome);
 document.getElementById('name-input').addEventListener('keydown', e=>{ if(e.key==='Enter') closeWelcome(); });
 if('serviceWorker' in navigator && location.protocol!=='file:'){

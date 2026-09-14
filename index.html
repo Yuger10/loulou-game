@@ -34,6 +34,7 @@
         <div class="level-pill" id="level-pill"></div>
         <p id="lagon-intro-text">Touche un personnage pour l'aider ✨</p>
       </div>
+      <div class="turn-bar" id="turn-bar" hidden></div>
       <div class="island-map" id="island-map"></div>
       <div class="map-next" id="map-next" hidden></div>
       <h3 class="world-title" id="world-title"></h3>
@@ -45,7 +46,7 @@
     <section id="view-sac" class="view">
       <h2 style="color:var(--foam); text-shadow:0 2px 0 rgba(18,59,79,.25);">🎒 Mon sac</h2>
       <div id="sac-content"></div>
-      <button class="reset-btn" id="reset-btn">🔄 Recommencer à zéro</button>
+      <button class="reset-btn" id="reset-btn">⚙️ Mon profil / Recommencer</button>
     </section>
 
     <section id="view-marche" class="view">
@@ -98,15 +99,19 @@
     <button class="btn-primary" id="btn-start">C'est parti ! 🎮</button>
   </div>
 </div>
+<div id="turn-overlay"></div>
 <div id="confetti"></div>
 <div id="toast"></div>
 
 
 <script src="js/data.js"></script>
+<script src="js/players.js"></script>
 <script src="js/state.js"></script>
 <script src="js/ui.js"></script>
+<script src="js/map.js"></script>
 <script src="js/minigames.js"></script>
 <script src="js/market.js"></script>
+<script src="js/profiles-ui.js"></script>
 <script src="js/init.js"></script>
 </body>
 </html>

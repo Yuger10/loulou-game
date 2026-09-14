@@ -16,6 +16,10 @@ const DEFAULT_STATE = {
   albumReward: false,
   visited: [],
 };
+// copie profonde : sinon inventory/seen/decos seraient partagés avec DEFAULT_STATE
+function freshState(extra){
+  return Object.assign(JSON.parse(JSON.stringify(DEFAULT_STATE)), extra||{});
+}
 let state = {
   v: SAVE_VERSION,
   coins: 5,
@@ -34,7 +38,10 @@ let state = {
 };
 
 function save(){
-  try{ localStorage.setItem(SAVE_KEY, JSON.stringify(state)); }catch(e){}
+  try{
+    localStorage.setItem(typeof currentSaveKey==='function' ? currentSaveKey() : SAVE_KEY, JSON.stringify(state));
+    if(typeof syncProfileFromState==='function') syncProfileFromState();
+  }catch(e){}
 }
 // Migre une sauvegarde d'une ancienne version vers la structure courante
 function migrate(saved){
@@ -54,22 +61,23 @@ function migrate(saved){
 }
 function load(){
   try{
-    const raw = localStorage.getItem(SAVE_KEY);
-    if(!raw) return;
+    const key = typeof currentSaveKey==='function' ? currentSaveKey() : SAVE_KEY;
+    const raw = localStorage.getItem(key);
+    if(!raw){ state = freshState(); return; }
     const saved = migrate(JSON.parse(raw));
     // ne garde que les clés connues : une sauvegarde ancienne ou corrompue ne casse pas le jeu
     const clean = {};
     Object.keys(DEFAULT_STATE).forEach(k=>{
       clean[k] = (saved[k] !== undefined && saved[k] !== null) || k==='quests' ? saved[k] : DEFAULT_STATE[k];
     });
-    state = Object.assign({}, DEFAULT_STATE, clean);
+    state = freshState(clean);
     save();
   }catch(e){
     console.warn('Sauvegarde illisible, on repart à zéro', e);
   }
 }
 function resetState(){
-  state = Object.assign({}, DEFAULT_STATE, {
+  state = freshState({
     sound: state.sound, voice: state.voice,
     name: state.name, avatar: state.avatar,
   });

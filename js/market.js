@@ -14,6 +14,9 @@ function renderSac(){
   </div>`;
 }
 document.getElementById('reset-btn').addEventListener('click', ()=>{
+  playSound('tap');
+  // ouvre les réglages du joueur courant : renommer, recommencer, supprimer
+  if(typeof openPlayerSettings==='function'){ openPlayerSettings(profiles.current); return; }
   if(confirm('Tout recommencer à zéro ? (pièces, objets et niveau seront perdus)')){
     resetState();
     renderCoins(); renderBadge(); renderSac(); renderScene(); renderQuests();

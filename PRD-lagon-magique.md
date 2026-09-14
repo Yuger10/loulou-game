@@ -161,3 +161,28 @@ La difficulté des mini-jeux ne dépend plus du niveau mais de **l'île** (1 à 
 - **Simon** : chaque pastille a sa propre note (avec harmonique), jouée aussi bien pendant la démonstration qu'à chaque appui — même en cas d'erreur, pour pouvoir reconnaître les couleurs à l'oreille.
 - **Trouve l'intruse** : nouvelle variante « miroir » où l'intruse est la **même image retournée**, à partir de l'île 2 (1 fois sur 3, puis 1 fois sur 2).
 - **Petit puzzle** : les suites ne commencent plus toujours à 1 — départ variable (ex. 6 → 9), suite **décroissante** (7 → 4) et comptage **de 2 en 2** selon l'île.
+
+---
+
+# v9 — Carte dessinée, joueurs multiples, mode chacun son tour
+
+## Carte des îles retravaillée
+- Vraie carte marine : mer en dégradé avec **vagues animées**, nuages qui dérivent, poissons qui passent, reflets qui scintillent.
+- Les îles sont **dessinées** (plage de sable + terre colorée + écume animée autour), pas de simples cartes : chacune a sa couleur, son relief et son icône (🌴 🌲 🏔️ 🏰), avec une étiquette « 1. Lagon ⭐ » et les visages de ses habitants.
+- Une **route en pointillés** relie les îles ; la partie déjà parcourue est tracée en doré.
+- Un **bateau ⛵ avec l'avatar** de la joueuse marque sa position. Quand elle choisit une autre île, le bateau **navigue d'île en île** avec un petit son à chaque escale avant de débarquer.
+
+## Plusieurs joueurs
+- **Profils multiples** : chaque joueur a son prénom, son avatar et **sa propre sauvegarde** (pièces, objets, îles, album, quêtes) — les parties sont totalement indépendantes.
+- Panneau « 👥 Les joueurs » accessible par la pastille en haut : liste avec niveau/pièces/missions de chacun, ajout d'un joueur, réglages.
+- **Réglages par joueur** : renommer, changer d'avatar, **recommencer à zéro**, supprimer le joueur (avec confirmation). Le bouton du sac ouvre directement ces réglages.
+- Migration automatique : la partie existante devient le premier joueur.
+
+## Mode chacun son tour
+- Dans le panneau des joueurs : cocher 2 joueurs ou plus, puis **🎲 Chacun son tour** (ou 👤 Mode solo).
+- Une **barre de tour** affiche les joueurs, met en avant celui qui joue et compte les 🏅 remportés.
+- Le joueur dont c'est le tour **choisit le mini-jeu** ; en cas d'erreur, un écran « Oups ! On change » annonce (à la voix) le joueur suivant, qui reprend la partie en cours.
+- Celui qui termine le défi gagne le point **et l'objet**, dans son propre sac.
+
+## Choix du jeu
+- Le dialogue d'un personnage propose « 🎮 Choisir un jeu » (grille des 6 mini-jeux) ou « 🎲 Surprise » (tirage au sort comme avant), en solo comme en mode tour par tour.

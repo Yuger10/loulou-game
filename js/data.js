@@ -166,18 +166,23 @@ const CHARACTERS = {
 const WORLDS = {
   lagon:{ name:'Le Lagon', emoji:'🌊', level:1, diff:1, short:'Lagon',
     subtitle:'Les coraux tranquilles',
+    // position sur la carte (%) et allure de l'île
+    map:{x:20, y:72}, shape:'lagon', icon:'🌴', sand:'#FFE2A8', land:'#7FD7C4',
     intro:"Touche un personnage pour l'aider ✨",
     sceneEmpty:"Ton lagon est encore vide… gagne des pièces pour le décorer !" },
   foret:{ name:'La Forêt', emoji:'🌲', level:3, diff:2, short:'Forêt',
     subtitle:'Les bois enchantés',
+    map:{x:48, y:36}, shape:'foret', icon:'🌲', sand:'#E8D9A0', land:'#6FBF73',
     intro:"La forêt enchantée t'attend 🌿",
     sceneEmpty:"Ta forêt est encore vide… gagne des pièces pour la décorer !" },
   montagne:{ name:'La Montagne', emoji:'⛰️', level:6, diff:3, short:'Montagne',
     subtitle:'Au-dessus des nuages',
+    map:{x:76, y:66}, shape:'montagne', icon:'🏔️', sand:'#DCE6EF', land:'#9FC6E8',
     intro:"Tout là-haut, les défis sont plus durs ☁️",
     sceneEmpty:"Ta montagne est toute nue… gagne des pièces pour la décorer !" },
   chateau:{ name:'Le Château', emoji:'🏰', level:10, diff:4, short:'Château',
     subtitle:'Le royaume des étoiles',
+    map:{x:88, y:20}, shape:'chateau', icon:'🏰', sand:'#E9D8F5', land:'#B79BE0',
     intro:"Le château des étoiles, le plus grand défi 👑",
     sceneEmpty:"Ton château attend ses décorations !" },
 };
