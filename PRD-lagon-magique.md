@@ -60,3 +60,34 @@ Un jeu mobile-friendly en HTML/CSS/JS où une fille de 6 ans explore un lagon pe
 - Tester avec elle, observer quel mini-jeu elle préfère réellement en usage
 - Décider si on ajoute une sauvegarde de la progression
 - Envisager un 2e décor ou de nouveaux objets/recettes selon son engagement
+
+---
+
+# v2 — Améliorations implémentées
+
+## Progression
+- **Sauvegarde automatique** (localStorage) : pièces, sac, niveau, réglage du son. Bouton « Recommencer à zéro » dans le sac.
+- **Niveaux** : 1 niveau tous les 5 missions réussies, barre de progression sur l'écran Lagon, écran spécial « Niveau X ! ».
+- **Difficulté progressive** selon le niveau :
+  - Mémoire : 3 paires → 4 → 6
+  - Compter : jusqu'à 7 → 9 → 10
+  - Intruse : 6 → 8 → 9 éléments, intruse plus ressemblante (🐚/🐌, ⭐/🌟…) à partir du niveau 2
+  - Puzzle : 4 → 5 → 6… nombres (max 8)
+
+## Personnages
+- Chaque personnage a **son propre butin** (Marina 🐚🦪, Étincelle ⭐💎, Luna 🎀🌸), affiché sur sa carte → elle apprend qui aider pour obtenir un ingrédient.
+- 3 phrases de dialogue par personnage, tirées au hasard.
+- 20 % de chance d'un **objet surprise** en bonus après une mission.
+- Bouton « Encore une mission » sur l'écran de récompense ; jamais deux fois le même mini-jeu d'affilée.
+
+## Marché
+- 3 nouvelles recettes : 👑 Couronne étoilée, 🪄 Baguette magique, et 🏆 **Trésor du lagon** (recette de niveau 2 : combine des objets déjà fusionnés).
+- Nouvel onglet **Acheter** : racheter un objet de base contre des pièces (prix ×2) pour compléter une recette.
+- Prix de vente affiché sur les recettes.
+
+## Ressenti / feedback
+- **Sons** générés en Web Audio (aucun fichier) : tap, bonne réponse, erreur, victoire, pièces. Bouton 🔊/🔇 en haut.
+- **Confettis** à chaque victoire et fusion, vibration sur mobile, animation de la pile de pièces.
+- Mauvaise réponse : secousse + son doux, jamais bloquant.
+- Bouton ✖️ pour quitter un mini-jeu ; badge sur « Mon sac » quand de nouveaux objets arrivent.
+- Personnages légèrement animés sur l'écran Lagon.
