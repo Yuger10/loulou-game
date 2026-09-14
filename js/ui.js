@@ -193,12 +193,45 @@ function renderBadge(){
   b.textContent = state.newItems;
 }
 
-/* ---------- Lagon ---------- */
+/* ---------- Mondes / Lagon ---------- */
+let currentWorld = 'lagon';
+function worldUnlocked(id){ return level() >= WORLDS[id].level; }
+function setWorld(id){
+  if(!worldUnlocked(id)){
+    playSound('wrong');
+    speak(`La forêt s'ouvrira au niveau ${WORLDS[id].level}. Encore un peu de missions !`);
+    showToast(`🔒 Débloqué au niveau ${WORLDS[id].level}`);
+    return;
+  }
+  currentWorld = id;
+  document.body.dataset.world = id;
+  renderLagon();
+}
+function renderWorldTabs(){
+  const el = document.getElementById('world-tabs');
+  if(!el) return;
+  el.innerHTML = Object.entries(WORLDS).map(([id,w])=>{
+    const locked = !worldUnlocked(id);
+    return `<button class="world-tab ${currentWorld===id?'active':''} ${locked?'locked':''}" data-world="${id}">
+      ${locked?'🔒':w.emoji} ${w.name}${locked?` <small>niv. ${w.level}</small>`:''}
+    </button>`;
+  }).join('');
+  el.querySelectorAll('.world-tab').forEach(b=>{
+    b.onclick = ()=>{ playSound('tap'); setWorld(b.dataset.world); };
+  });
+}
 function renderLagon(){
+  // si le monde courant n'est plus accessible, on revient au lagon
+  if(!worldUnlocked(currentWorld)) currentWorld = 'lagon';
+  document.body.dataset.world = currentWorld;
+  const w = WORLDS[currentWorld];
   const lp = document.getElementById('level-pill');
   lp.innerHTML = `⭐ Niveau ${level()} <span class="level-bar"><i style="width:${levelProgress()*100}%"></i></span>`;
+  const intro = document.getElementById('lagon-intro-text');
+  if(intro) intro.textContent = w.intro;
+  renderWorldTabs();
   const el = document.getElementById('islands');
-  el.innerHTML = Object.entries(CHARACTERS).map(([id,c])=>`
+  el.innerHTML = charsOf(currentWorld).map(([id,c])=>`
     <button class="island" data-char="${id}">
       <span class="emoji">${c.emoji}</span>
       <span class="name">${c.name}<br>${c.title}</span>
@@ -214,19 +247,20 @@ function renderLagon(){
 /* ---------- Décorations ---------- */
 function renderScene(){
   const sc = document.getElementById('scene');
-  const owned = state.decos.filter(k=>DECOS[k]);
+  const owned = decosOf(currentWorld).map(([k])=>k).filter(k=>state.decos.includes(k));
   sc.innerHTML = (owned.length
     ? owned.map(k=>`<span class="deco">${DECOS[k].emoji}</span>`).join('')
-    : `<span class="empty">Ton lagon est encore vide… gagne des pièces pour le décorer !</span>`)
+    : `<span class="empty">${WORLDS[currentWorld].sceneEmpty}</span>`)
     + `<button class="btn-deco" id="btn-deco">🎨 Décorer</button>`;
   document.getElementById('btn-deco').onclick = ()=>{ playSound('tap'); openDecoShop(); };
 }
 
 function openDecoShop(){
+  const w = WORLDS[currentWorld];
   openModal(`
-    ${gameHeader('🎨 Décorer mon lagon', `Tu as 🪙 ${state.coins} pièces`)}
+    ${gameHeader(`🎨 Décorer ${w.name}`, `Tu as 🪙 ${state.coins} pièces`)}
     <div id="deco-list">
-      ${Object.entries(DECOS).map(([k,d])=>{
+      ${decosOf(currentWorld).map(([k,d])=>{
         const owned = state.decos.includes(k);
         const can = state.coins >= d.price;
         return `<div class="market-row deco-row ${owned?'owned':''}">
@@ -245,8 +279,9 @@ function openDecoShop(){
       if(state.coins < d.price || state.decos.includes(k)) return;
       addCoins(-d.price);
       state.decos.push(k); save();
+      setTimeout(checkAlbumComplete, 900);
       playSound('win'); confetti();
-      speak(`Super ! ${d.name} est dans ton lagon !`);
+      speak(`Super ! ${d.name} est dans ${WORLDS[currentWorld].name} !`);
       showToast(`${d.emoji} ${d.name} ajouté !`);
       renderScene();
       openDecoShop();
@@ -287,9 +322,10 @@ function contextualLine(charId){
       break;
     }
   }
-  if(state.decos.length===0 && state.coins>=8) lines.push(`Avec tes ${state.coins} pièces, tu pourrais décorer le lagon 🌴 !`);
-  if(state.decos.length>=3) lines.push(`Ton lagon est magnifique${who?', '+who:''} ! ${state.decos.length} décorations déjà ✨`);
-  if(level()>=3) lines.push(`Niveau ${level()} déjà ! Tu es une vraie exploratrice du lagon.`);
+  if(state.decos.length===0 && state.coins>=8) lines.push(`Avec tes ${state.coins} pièces, tu pourrais décorer ${WORLDS[currentWorld].name} 🌴 !`);
+  if(state.decos.length>=3) lines.push(`C'est magnifique ici${who?', '+who:''} ! ${state.decos.length} décorations déjà ✨`);
+  if(level()>=3) lines.push(`Niveau ${level()} déjà ! Tu es une vraie exploratrice.`);
+  if(level()===2 && levelProgress()>=0.6) lines.push(`Encore quelques missions et la forêt enchantée s'ouvrira 🌲 !`);
   if(countItem(c.loot[0])===0 && countItem(c.loot[1])===0) lines.push(`Je peux t'offrir ${ITEMS[c.loot[0]].emoji} ou ${ITEMS[c.loot[1]].emoji}, tu n'en as pas encore !`);
   // 60 % de chance d'utiliser une phrase contextuelle si dispo
   return (lines.length && Math.random()<0.6) ? pickRandom(lines) : null;

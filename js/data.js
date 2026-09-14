@@ -6,6 +6,12 @@ const ITEMS = {
   fleur:{emoji:'🌸', name:'Fleur', price:2},
   etoile:{emoji:'⭐', name:'Étoile', price:4},
   gemme:{emoji:'💎', name:'Gemme', price:5},
+  // Forêt enchantée
+  champignon:{emoji:'🍄', name:'Champignon', price:3, world:'foret'},
+  gland:{emoji:'🌰', name:'Gland', price:2, world:'foret'},
+  plume:{emoji:'🪶', name:'Plume', price:4, world:'foret'},
+  miel:{emoji:'🍯', name:'Pot de miel', price:5, world:'foret'},
+  trefle:{emoji:'🍀', name:'Trèfle porte-bonheur', price:6, world:'foret'},
 };
 const CRAFTED = {
   collier:{emoji:'📿', name:'Collier magique', price:10,
@@ -18,6 +24,15 @@ const CRAFTED = {
     recipe:{gemme:1, ruban:1, etoile:1}},
   tresor:{emoji:'🏆', name:'Trésor du lagon', price:40, tier:2,
     recipe:{collier:1, couronne:1, bouquet:1}},
+  // Forêt enchantée
+  chapeau:{emoji:'🎩', name:'Chapeau de sorcière', price:11, world:'foret',
+    recipe:{champignon:2, plume:1}},
+  potion:{emoji:'🧪', name:'Potion magique', price:13, world:'foret',
+    recipe:{champignon:1, miel:1, trefle:1}},
+  nid:{emoji:'🪺', name:'Nid douillet', price:9, world:'foret',
+    recipe:{gland:3, plume:1}},
+  grimoire:{emoji:'📖', name:'Grimoire des bois', price:45, tier:2, world:'foret',
+    recipe:{potion:1, chapeau:1, nid:1}},
 };
 const ALL_ITEMS = Object.assign({}, ITEMS, CRAFTED);
 
@@ -46,7 +61,47 @@ const CHARACTERS = {
       "J'ai perdu mes rubans en dansant… un petit jeu pour m'aider ?",
       "Un, deux, trois… on joue ensemble ?",
     ]},
+  // --- Forêt enchantée ---
+  fee:{
+    emoji:'🧚‍♀️', name:'Sylvie', title:'la fée', world:'foret',
+    loot:['champignon','trefle'],
+    texts:[
+      "Bienvenue dans la forêt ! Tu m'aides à cueillir des champignons ?",
+      "Ma poudre magique s'est envolée… un petit défi pour la retrouver ?",
+      "Chut… la forêt a un secret pour toi !",
+    ]},
+  biche:{
+    emoji:'🦌', name:'Maïa', title:'la biche', world:'foret',
+    loot:['gland','miel'],
+    texts:[
+      "J'ai faim ! Tu m'aides à trouver des glands ?",
+      "Les abeilles m'ont donné du miel, mais il faut le mériter !",
+      "On joue avant que la nuit tombe sur la forêt ?",
+    ]},
+  hibou:{
+    emoji:'🦉', name:'Hector', title:'le hibou', world:'foret',
+    loot:['plume','trefle'],
+    texts:[
+      "Hou hou ! Un petit test pour voir si tu es maligne ?",
+      "J'ai perdu mes plus belles plumes cette nuit…",
+      "Les hiboux adorent les devinettes. À toi de jouer !",
+    ]},
 };
+
+const WORLDS = {
+  lagon:{ name:'Le Lagon', emoji:'🌊', level:1,
+    intro:"Touche un personnage pour l'aider ✨",
+    sceneEmpty:"Ton lagon est encore vide… gagne des pièces pour le décorer !" },
+  foret:{ name:'La Forêt', emoji:'🌲', level:3,
+    intro:"La forêt enchantée t'attend 🌿",
+    sceneEmpty:"Ta forêt est encore vide… gagne des pièces pour la décorer !" },
+};
+function charsOf(world){
+  return Object.entries(CHARACTERS).filter(([,c])=>(c.world||'lagon')===world);
+}
+function decosOf(world){
+  return Object.entries(DECOS).filter(([,d])=>(d.world||'lagon')===world);
+}
 const GAME_TYPES = ['memory','count','diff','puzzle','sequence','simon'];
 
 const DECOS = {
@@ -60,8 +115,18 @@ const DECOS = {
   fee:{emoji:'🧚‍♀️', name:'Fée du lagon', price:35},
   sirene2:{emoji:'🐚', name:'Coquillage géant', price:30},
   lune:{emoji:'🌙', name:'Lune magique', price:40},
+  // Forêt enchantée
+  sapin:{emoji:'🌲', name:'Grand sapin', price:8, world:'foret'},
+  ecureuil:{emoji:'🐿️', name:'Écureuil', price:12, world:'foret'},
+  renard:{emoji:'🦊', name:'Petit renard', price:16, world:'foret'},
+  herisson:{emoji:'🦔', name:'Hérisson', price:14, world:'foret'},
+  cabane:{emoji:'🏡', name:'Cabane dans les bois', price:26, world:'foret'},
+  luciole:{emoji:'✨', name:'Lucioles', price:22, world:'foret'},
+  papillonD:{emoji:'🦋', name:'Papillons', price:18, world:'foret'},
+  dragon:{emoji:'🐲', name:'Bébé dragon', price:45, world:'foret'},
 };
 const MISSIONS_PER_LEVEL = 5;
+const ALBUM_REWARD = 100;
 const SAVE_KEY = 'lagon-magique-save';
 
 const AVATARS = ['👧','👩‍🦰','👧‍🦱','👧‍🦲','🧚‍♀️','👸','🧜‍♀️','🦸‍♀️','🐱','🦄'];

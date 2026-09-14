@@ -16,6 +16,7 @@
     font-family:'Quicksand',sans-serif;
     color:var(--ocean-deep);
     background:linear-gradient(180deg,#BDEBEA 0%, var(--lagoon) 45%, var(--lagoon-dark) 100%);
+    transition:background .5s ease;
     min-height:100vh;
     display:flex;
     justify-content:center;
@@ -103,6 +104,25 @@
   .lagon-intro p{margin:4px 0 0; font-weight:600; opacity:.95;}
 
   /* scène décorée */
+  /* --- Monde : Forêt enchantée --- */
+  body[data-world="foret"]{
+    background:linear-gradient(180deg,#CDEFC4 0%, #66BB6A 45%, #2E7D52 100%);
+  }
+  body[data-world="foret"] .bubble{background:rgba(255,255,255,.5); border-radius:50% 50% 50% 0;}
+  body[data-world="foret"] .scene{background:linear-gradient(180deg,#DFF3D2 0%, #F6EFD9 100%);}
+  body[data-world="foret"] .level-pill i{background:#F4B942;}
+
+  /* onglets de monde */
+  .world-tabs{display:flex; gap:8px; margin-bottom:12px;}
+  .world-tab{
+    flex:1; border:none; border-radius:18px; padding:10px 4px;
+    background:rgba(255,255,255,.5); color:var(--ocean-deep);
+    font-weight:700; font-size:.85rem; cursor:pointer;
+  }
+  .world-tab.active{background:var(--foam); box-shadow:var(--shadow);}
+  .world-tab.locked{opacity:.6;}
+  .world-tab small{font-size:.7rem; font-weight:700; opacity:.8;}
+
   .scene{
     background:linear-gradient(180deg,#8FE3E6 0%, #FFF3DE 100%);
     border-radius:24px;

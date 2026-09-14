@@ -58,6 +58,14 @@ Légende priorité : 🔴 haute · 🟠 moyenne · 🟢 basse
 - [x] Tests étendus : migration, reset, écran titre, Simon (41 assertions)
 - [x] `lagon-magique.html` conservé en redirection
 
+### v7 — La forêt enchantée
+- [x] 2ᵉ monde « La Forêt » débloqué au niveau 3, avec onglets de mondes et ambiance verte
+- [x] 3 personnages : Sylvie la fée 🧚‍♀️, Maïa la biche 🦌, Hector le hibou 🦉
+- [x] 5 nouveaux objets (🍄 🌰 🪶 🍯 🍀) et 4 recettes (🎩 🧪 🪺 + 📖 Grimoire des bois)
+- [x] 8 décorations forestières (🌲 🐿️ 🦊 🦔 🏡 ✨ 🦋 🐲)
+- [x] Album organisé par monde + récompense de 100 pièces quand tout est découvert
+- [x] Quêtes et butins adaptés aux mondes débloqués
+
 ---
 
 ## 🔜 À faire
@@ -71,11 +79,9 @@ Légende priorité : 🔴 haute · 🟠 moyenne · 🟢 basse
 - [ ] Ajuster la difficulté selon ce qu'on observe (nombre de paires, tailles de suites…)
 
 ### Priorité 🟠 — personnalisation & objectifs
-- [ ] **Album complet** : récompense spéciale quand tout est découvert
 
 ### Priorité 🟢 — contenu
-- [ ] **2ᵉ décor « La forêt enchantée »** débloqué au niveau 3 : fée 🧚‍♀️, biche 🦌, nouveaux objets (champignon, gland, plume) et recettes
-- [ ] Nouveaux personnages (dauphin 🐬 parlant, petit crabe 🦀)
+- [ ] 3ᵉ monde (montagne des nuages ? village des lutins ?)
 - [ ] Plus de décorations et possibilité de les placer / réorganiser
 - [ ] Événements spéciaux (anniversaire, Noël : décos de saison)
 - [ ] Musique d'ambiance douce (Web Audio, boucle, activable)

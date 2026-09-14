@@ -38,6 +38,22 @@ check('3 personnages affichés', d.querySelectorAll('.island').length===3);
 check('scène déco présente', !!d.getElementById('scene'));
 check('3 missions du jour', ev('state.quests.list.length')===3);
 
+// Mondes
+check('forêt verrouillée au niveau 1', !!d.querySelector('.world-tab.locked[data-world="foret"]'));
+d.querySelector('.world-tab[data-world="foret"]').click();
+check('clic sur monde verrouillé sans effet', ev('currentWorld')==='lagon');
+ev('state.missions = 10; renderLagon()');  // niveau 3
+check('niveau 3 atteint', ev('level()')===3);
+check('forêt déverrouillée', !d.querySelector('.world-tab.locked[data-world="foret"]'));
+d.querySelector('.world-tab[data-world="foret"]').click();
+check('passage dans la forêt', ev('currentWorld')==='foret');
+check('3 personnages de la forêt', d.querySelectorAll('.island').length===3);
+check('personnages forestiers', [...d.querySelectorAll('.island')].map(b=>b.dataset.char).join()==='fee,biche,hibou');
+check('fond de la forêt appliqué', d.body.dataset.world==='foret');
+check('objets de la forêt disponibles', ev('availableItems()').includes('champignon'));
+ev('state.missions = 0; currentWorld="lagon"; renderLagon()');
+check('retour au lagon après reset du niveau', ev('currentWorld')==='lagon' && d.querySelectorAll('.island').length===3);
+
 // Simon
 ev('renderSimon()');
 check('simon : 4 pads', d.querySelectorAll('.simon-pad').length===4);
@@ -129,6 +145,15 @@ setTimeout(()=>{
     ev("state.name='Loulou'; resetState()");
     check('reset : pièces et objets remis à zéro', ev('state.coins')===5 && Object.keys(ev('state.inventory')).length===0 && ev('state.missions')===0);
     check('reset : prénom et réglages conservés', ev('state.name')==='Loulou');
+
+    // Album complet → récompense
+    ev("Object.keys(ALL_ITEMS).forEach(k=>state.seen[k]=true); state.decos=Object.keys(DECOS); state.albumReward=false; save()");
+    const coinsBeforeAlbum = ev('state.coins');
+    ev('checkAlbumComplete()');
+    check('album complet : +100 pièces', ev('state.coins')===coinsBeforeAlbum+100);
+    check('album complet : récompense unique', ev('state.albumReward')===true);
+    ev('checkAlbumComplete()');
+    check('album complet : pas de double récompense', ev('state.coins')===coinsBeforeAlbum+100);
     check('aucune erreur JS', errs.length===0);
     if(errs.length) console.log(errs);
     console.log(failed ? `\n${failed} test(s) en échec` : '\nTous les tests passent');

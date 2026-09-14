@@ -45,7 +45,7 @@ function onMissionWin(){
   state.missions += 1;
   const key = pickRandom(c.loot);
   // bonus : de temps en temps un objet rare en plus
-  const bonus = Math.random() < 0.2 ? pickRandom(Object.keys(ITEMS)) : null;
+  const bonus = Math.random() < 0.2 ? pickRandom(availableItems()) : null;
   addItem(key,1); markSeen(key);
   if(bonus){ addItem(bonus,1); markSeen(bonus); }
   state.newItems += bonus ? 2 : 1;

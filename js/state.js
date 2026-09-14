@@ -13,6 +13,7 @@ const DEFAULT_STATE = {
   avatar: '👧',
   seen: {},
   quests: null,
+  albumReward: false,
 };
 let state = {
   v: SAVE_VERSION,
@@ -27,6 +28,7 @@ let state = {
   avatar: '👧',
   seen: {},           // objets déjà découverts (album)
   quests: null,       // quêtes du jour { date, list:[{type,target,goal,done,n}], claimed }
+  albumReward: false, // récompense d'album complet déjà donnée
 };
 
 function save(){
@@ -41,6 +43,7 @@ function migrate(saved){
     saved.avatar = saved.avatar || '👧';
     saved.seen = saved.seen || {};
     saved.quests = saved.quests || null;
+    saved.albumReward = saved.albumReward || false;
     saved.decos = saved.decos || [];
   }
   saved.v = SAVE_VERSION;
@@ -106,13 +109,33 @@ function closeWelcome(){
 }
 
 /* ---------- Quêtes du jour ---------- */
+// objets et personnages accessibles selon les mondes débloqués
+function availableItems(){
+  return Object.keys(ITEMS).filter(k=>{
+    const w = ITEMS[k].world || 'lagon';
+    return level() >= WORLDS[w].level;
+  });
+}
+function availableChars(){
+  return Object.keys(CHARACTERS).filter(k=>{
+    const w = CHARACTERS[k].world || 'lagon';
+    return level() >= WORLDS[w].level;
+  });
+}
+function availableCrafted(){
+  return Object.keys(CRAFTED).filter(k=>{
+    const w = CRAFTED[k].world || 'lagon';
+    return level() >= WORLDS[w].level;
+  });
+}
+
 const QUEST_TEMPLATES = [
-  ()=>{ const k = pickRandom(Object.keys(ITEMS)); const goal = 2 + Math.floor(Math.random()*2);
+  ()=>{ const k = pickRandom(availableItems()); const goal = 2 + Math.floor(Math.random()*2);
         return {type:'collect', target:k, goal, n:0, label:`Gagne ${goal} ${ITEMS[k].name.toLowerCase()}${goal>1?'s':''} ${ITEMS[k].emoji}`}; },
-  ()=>{ const c = pickRandom(Object.keys(CHARACTERS)); const goal = 2;
+  ()=>{ const c = pickRandom(availableChars()); const goal = 2;
         return {type:'char', target:c, goal, n:0, label:`Joue ${goal} fois avec ${CHARACTERS[c].name} ${CHARACTERS[c].emoji}`}; },
   ()=>{ const goal = 3; return {type:'win', target:null, goal, n:0, label:`Réussis ${goal} missions 🎮`}; },
-  ()=>{ const k = pickRandom(['collier','bouquet','couronne','baguette']);
+  ()=>{ const k = pickRandom(availableCrafted().filter(k=>CRAFTED[k].tier!==2));
         return {type:'craft', target:k, goal:1, n:0, label:`Fabrique un ${CRAFTED[k].name.toLowerCase()} ${CRAFTED[k].emoji}`}; },
   ()=>{ const goal = 2; return {type:'sell', target:null, goal, n:0, label:`Vends ${goal} objets au marché 🏪`}; },
 ];
@@ -166,7 +189,7 @@ function openChest(){
   if(q.claimed || !questsDone()) return;
   q.claimed = true;
   const bonusCoins = 15;
-  const gift = pickRandom(Object.keys(ITEMS));
+  const gift = pickRandom(availableItems());
   addCoins(bonusCoins);
   addItem(gift,1); markSeen(gift);
   state.newItems += 1; save(); renderBadge();
@@ -193,8 +216,41 @@ function openChest(){
 /* ---------- Album ---------- */
 function markSeen(key){
   if(!state.seen) state.seen = {};
-  if(!state.seen[key]){ state.seen[key] = true; save(); return true; }
+  if(!state.seen[key]){
+    state.seen[key] = true; save();
+    setTimeout(checkAlbumComplete, 800);
+    return true;
+  }
   return false;
+}
+function albumStats(){
+  const seen = state.seen || {};
+  const objKeys = Object.keys(ALL_ITEMS);
+  const decoKeys = Object.keys(DECOS);
+  const found = objKeys.filter(k=>seen[k]||countItem(k)>0).length
+              + decoKeys.filter(k=>state.decos.includes(k)).length;
+  return { found, total: objKeys.length + decoKeys.length };
+}
+function checkAlbumComplete(){
+  const { found, total } = albumStats();
+  if(found < total || state.albumReward) return;
+  state.albumReward = true; save();
+  addCoins(ALBUM_REWARD);
+  playSound('win'); confetti(); vibrate([80,50,80,50,200]);
+  const who = hello();
+  speak(`Incroyable${who?' '+who:''} ! Tu as trouvé tous les objets du jeu. Ton album est complet !`);
+  openModal(`
+    <div class="reward-box">
+      <span class="big-emoji">🏆</span>
+      <h2>Album complet !</h2>
+      <div class="speech">Tu as découvert les <strong>${total}</strong> objets et décorations du jeu${who?', '+who:''} ! 🌟</div>
+      <div class="speech" style="display:flex; align-items:center; justify-content:center; gap:10px; background:#FFF9E8;">
+        <span style="font-size:2rem;">🪙</span><span><strong>+${ALBUM_REWARD} pièces</strong></span>
+      </div>
+    </div>
+    <button class="btn-primary" id="btn-yay">Waouh ! 🎉</button>
+  `);
+  document.getElementById('btn-yay').onclick = ()=>{ playSound('tap'); closeModal(); };
 }
 function renderAlbum(){
   const el = document.getElementById('album-content');
@@ -206,20 +262,23 @@ function renderAlbum(){
     </div>`;
   const objKeys = Object.keys(ALL_ITEMS);
   const decoKeys = Object.keys(DECOS);
-  const objFound = objKeys.filter(k=>seen[k]||countItem(k)>0).length;
-  const decoFound = decoKeys.filter(k=>state.decos.includes(k)).length;
-  const total = objKeys.length + decoKeys.length;
-  const found = objFound + decoFound;
+  const { found, total } = albumStats();
+  const group = (keys, src, isUnlocked) => keys.map(k=>cell(k, src[k], isUnlocked(k))).join('');
+  const isObj = k => !!(seen[k]||countItem(k)>0);
+  const isDeco = k => state.decos.includes(k);
+  const worldOf = o => o.world || 'lagon';
   el.innerHTML = `
     <div class="album-progress">
       ${found===total ? '🏆 Album complet, bravo !' : `✨ ${found} / ${total} découverts`}
       <div class="quest-bar"><i style="width:${(found/total)*100}%"></i></div>
     </div>
     <div class="album-section">
-      <h3>🎒 Objets</h3>
-      <div class="album-grid">${objKeys.map(k=>cell(k, ALL_ITEMS[k], !!(seen[k]||countItem(k)>0))).join('')}</div>
-      <h3>🎨 Décorations</h3>
-      <div class="album-grid">${decoKeys.map(k=>cell(k, DECOS[k], state.decos.includes(k))).join('')}</div>
+      ${Object.entries(WORLDS).map(([wid,w])=>`
+        <h3>${w.emoji} ${w.name}</h3>
+        <div class="album-grid">${group(objKeys.filter(k=>worldOf(ALL_ITEMS[k])===wid), ALL_ITEMS, isObj)}</div>
+        <h3 style="font-size:.85rem; opacity:.85;">🎨 Décorations</h3>
+        <div class="album-grid">${group(decoKeys.filter(k=>worldOf(DECOS[k])===wid), DECOS, isDeco)}</div>
+      `).join('')}
     </div>`;
 }
 
