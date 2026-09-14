@@ -1,0 +1,92 @@
+# TODO — Le Lagon Magique
+
+Feuille de route du jeu. Cocher au fur et à mesure ; les idées nouvelles vont dans « Boîte à idées ».
+
+Légende priorité : 🔴 haute · 🟠 moyenne · 🟢 basse
+
+---
+
+## ✅ Fait
+
+### v1 — MVP
+- [x] Écran Lagon avec 3 personnages (Marina 🧜‍♀️, Étincelle 🦄, Luna 💃)
+- [x] Dialogues + bouton « Jouer »
+- [x] 4 mini-jeux : mémoire, compter, intruse, puzzle
+- [x] Sac (inventaire)
+- [x] Marché : vendre, échanger, fusionner (2 recettes)
+
+### v2 — Progression & ressenti
+- [x] Sauvegarde automatique (localStorage) + bouton « Recommencer à zéro »
+- [x] Niveaux (1 tous les 5 missions) + barre de progression
+- [x] Difficulté progressive sur les 4 mini-jeux
+- [x] Butin propre à chaque personnage, affiché sur sa carte
+- [x] 3 dialogues aléatoires par personnage
+- [x] Objet surprise bonus (20 %)
+- [x] « Encore une mission » + jamais 2× le même jeu de suite
+- [x] 3 nouvelles recettes (👑 🪄 🏆 dont une fusion de fusions)
+- [x] Onglet « Acheter » au marché
+- [x] Sons Web Audio + bouton mute
+- [x] Confettis, vibration, animation des pièces, secousse sur erreur
+- [x] Bouton ✖️ pour quitter un mini-jeu, badge « nouveaux objets » sur le sac
+
+### v3 — Voix, décorations, PWA
+- [x] Voix (Web Speech fr-FR) : dialogues, consignes, félicitations + bouton 🔈
+- [x] Bouton son à 3 états : 🗣️ sons+voix / 🔊 sons / 🔇
+- [x] Scène « Mon lagon » + boutique de 10 décorations
+- [x] 5ᵉ mini-jeu « La suite magique » (suite logique)
+- [x] PWA : manifest, icône, service worker (hors-ligne, plein écran)
+- [x] Test de fumée jsdom (`npm test`)
+
+---
+
+## 🔜 À faire
+
+### Priorité 🔴 — tester avec elle d'abord
+- [ ] **Session de test avec Loulou** : noter quel mini-jeu elle préfère / lequel la bloque
+- [ ] Vérifier la voix sur iPad/iPhone (Safari exige une interaction avant de parler)
+- [ ] Vérifier la taille des boutons et la lisibilité au doigt sur son appareil
+- [ ] Installer la PWA sur son appareil (« Ajouter à l'écran d'accueil »)
+- [ ] Ajuster la difficulté selon ce qu'on observe (nombre de paires, tailles de suites…)
+
+### Priorité 🟠 — personnalisation & objectifs
+- [ ] **Prénom + avatar** : écran de bienvenue au 1er lancement, choix d'un emoji avatar ; « Bravo Loulou ! » dans les félicitations et la voix
+- [ ] **Missions du jour** : 3 objectifs simples (« gagne 2 coquillages », « crée un collier », « joue avec Luna ») + coffre bonus 🎁 quand les 3 sont faits
+- [ ] **Album / collection** : tous les objets et décos, découverts vs « ? » ; petite récompense quand l'album est complet
+- [ ] **Écran d'accueil animé** : titre, vagues, bouton « Jouer » ; rend le lancement plus « jeu »
+- [ ] **Mini-jeu « Mémoire de séquence » (Simon)** : les personnages font clignoter 3-4 couleurs à répéter
+- [ ] Nouveaux dialogues selon le contexte (« Tu as déjà 3 coquillages ! », « Ton lagon est magnifique ! »)
+
+### Priorité 🟢 — contenu
+- [ ] **2ᵉ décor « La forêt enchantée »** débloqué au niveau 3 : fée 🧚‍♀️, biche 🦌, nouveaux objets (champignon, gland, plume) et recettes
+- [ ] Nouveaux personnages (dauphin 🐬 parlant, petit crabe 🦀)
+- [ ] Plus de décorations et possibilité de les placer / réorganiser
+- [ ] Événements spéciaux (anniversaire, Noël : décos de saison)
+- [ ] Musique d'ambiance douce (Web Audio, boucle, activable)
+- [ ] Mini-jeu « Assembler l'image » (vrai puzzle 2×2 puis 3×3 en déplaçant des pièces)
+
+### 🔧 Technique
+- [ ] Découper `lagon-magique.html` en `index.html` + `style.css` + `game.js` (+ `data.js` pour ITEMS/CRAFTED/DECOS/CHARACTERS)
+- [ ] Étendre le test de fumée (mémoire complète, niveaux, reset, toggle son)
+- [ ] Versionner le format de sauvegarde (migration si on change la structure de `state`)
+- [ ] Hébergement gratuit (GitHub Pages / Netlify) pour y accéder sans le Mac allumé
+- [ ] Vraie icône PNG 192/512 pour la PWA (le SVG emoji ne s'affiche pas partout)
+- [ ] Mode « parent » discret (long-press sur le titre) : reset, stats de jeu, réglages voix
+
+---
+
+## 💡 Boîte à idées (non triées)
+- Coffre au trésor quotidien à ouvrir au lancement
+- Pouvoir offrir un objet à un personnage → il dit merci + petite animation
+- Météo dans le lagon (soleil / pluie / nuit) qui change selon l'heure
+- Compagnon (poisson 🐠) qui suit la progression et grandit
+- Mode 2 joueurs à tour de rôle (avec une copine / un frère)
+- Export / import de la sauvegarde (QR code) pour changer d'appareil
+
+---
+
+## 📝 Notes de session
+_(à remplir après chaque test avec elle)_
+
+| Date | Ce qu'elle a aimé | Ce qui a bloqué | Idée / demande |
+|------|-------------------|-----------------|----------------|
+|      |                   |                 |                |

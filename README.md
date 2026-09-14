@@ -21,3 +21,4 @@ npm test             # test de fumée jsdom sur tout le cycle de jeu
 - `manifest.json`, `icon.svg`, `sw.js` — PWA
 - `test/smoke.test.js` — test de fumée
 - `PRD-lagon-magique.md` — cadrage v1 et évolutions v2/v3
+- `TODO.md` — feuille de route et notes de session
