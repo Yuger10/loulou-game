@@ -186,3 +186,27 @@ La difficulté des mini-jeux ne dépend plus du niveau mais de **l'île** (1 à 
 
 ## Choix du jeu
 - Le dialogue d'un personnage propose « 🎮 Choisir un jeu » (grille des 6 mini-jeux) ou « 🎲 Surprise » (tirage au sort comme avant), en solo comme en mode tour par tour.
+
+---
+
+# v10 — Mode course de navigation (compétition équitable)
+
+## Le principe
+Un 3ᵉ mode, en plus de **👤 Solo** et **🎲 Chacun son tour** : **🏁 la Course**. Les joueurs s'affrontent sur une piste de 6 cases ; à chaque tour, celui qui joue choisit un mini-jeu, et **chaque réussite avance son bateau d'une case**. Une erreur passe la main au joueur suivant. Le premier à l'arrivée gagne **50 pièces** et le podium s'affiche (🥇🥈🥉).
+
+## L'équité par l'âge
+- Chaque joueur a désormais un **âge** (sélecteur 4 à 12 ans à la création ou dans ses réglages).
+- En multijoueur, **la difficulté des mini-jeux suit l'âge du joueur qui joue**, pas l'île :
+  | Âge | Difficulté |
+  |---|---|
+  | 4-5 ans | ⭐ |
+  | 6-7 ans | ⭐⭐ |
+  | 8-9 ans | ⭐⭐⭐ |
+  | 10 ans et + | ⭐⭐⭐⭐ |
+- Concrètement, une joueuse de 6 ans cherche 4 paires pendant qu'une de 10 ans en cherche 6, compte jusqu'à 7 au lieu de 12, répète 4 couleurs au lieu de 6 : **une petite peut gagner contre un grand**.
+- La course refuse de démarrer tant qu'un des joueurs sélectionnés n'a pas d'âge renseigné, et propose de le compléter.
+
+## Piste de course
+- Une piste s'affiche sur l'écran principal : une ligne par joueur avec son avatar, son prénom, **son âge et sa difficulté en étoiles**, les cases franchies et son ⛵ qui glisse à chaque réussite.
+- La ligne du joueur actif est surlignée, avec un rappel « 👉 Au tour de … ».
+- À l'arrivée : écran de victoire, classement complet, et bouton « 🔁 Refaire une course ».

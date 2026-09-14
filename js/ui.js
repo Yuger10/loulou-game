@@ -200,7 +200,16 @@ function renderBadge(){
 /* ---------- Carte des îles ---------- */
 let currentWorld = 'lagon';
 function worldUnlocked(id){ return level() >= WORLDS[id].level; }
-function gameDiff(){ return WORLDS[currentWorld] ? WORLDS[currentWorld].diff : 1; }
+function gameDiffIsland(){ return WORLDS[currentWorld] ? WORLDS[currentWorld].diff : 1; }
+// En multijoueur, la difficulté suit l'âge du joueur qui joue : chacun a un défi à sa mesure.
+function gameDiff(){
+  if(typeof party!=='undefined' && party.active && typeof ageToDiff==='function'){
+    const p = (typeof partyCurrent==='function' && partyCurrent()) || (typeof currentProfile==='function' && currentProfile());
+    const d = p && ageToDiff(p.age);
+    if(d) return d;
+  }
+  return gameDiffIsland();
+}
 // prochaine île à débloquer, et progression vers celle-ci
 function nextLockedWorld(){
   return WORLD_ORDER.find(id=>!worldUnlocked(id));
@@ -278,6 +287,7 @@ function renderLagon(){
   });
   renderQuests();
   renderScene();
+  if(typeof renderRaceTrack==='function') renderRaceTrack();
 }
 
 /* ---------- Décorations ---------- */

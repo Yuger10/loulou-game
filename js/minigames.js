@@ -41,6 +41,8 @@ function progressDots(done, total){
 function onMissionWin(){
   bindQuit._last = null;
   if(typeof partyScore==='function') partyScore();
+  // course : on avance d'une case ; si la ligne d'arrivée est franchie, l'écran de victoire s'affiche
+  if(typeof partyAfterWin==='function' && partyAfterWin()) return;
   const c = CHARACTERS[currentChar] || CHARACTERS.sirene;
   const prevLevel = level();
   state.missions += 1;
@@ -84,14 +86,17 @@ function onMissionWin(){
         <span>Surprise ! <strong>${ITEMS[bonus].name}</strong> en plus ✨</span>
       </div>` : ''}
     </div>
-    <button class="btn-primary" id="btn-yay">Super !</button>
-    <button class="btn-ghost" id="btn-again">Encore une mission 🎮</button>
+    <button class="btn-primary" id="btn-yay">${(typeof party!=='undefined' && party.active) ? 'Au joueur suivant 👉' : 'Super !'}</button>
+    ${(typeof party!=='undefined' && party.active) ? '' : '<button class="btn-ghost" id="btn-again">Encore une mission 🎮</button>'}
   `);
   document.getElementById('btn-yay').onclick = ()=> {
     playSound('tap'); closeModal(); renderLagon();
+    // multijoueur : la main passe au joueur suivant après une réussite
+    if(typeof party!=='undefined' && party.active){ passTurn('next'); return; }
     setTimeout(checkNewIsland, 250);   // nouvelle île débloquée ?
   };
-  document.getElementById('btn-again').onclick = ()=> { playSound('tap'); renderLagon(); startMinigame(); };
+  const againBtn = document.getElementById('btn-again');
+  if(againBtn) againBtn.onclick = ()=> { playSound('tap'); renderLagon(); startMinigame(); };
 }
 
 /* Jeu 1 : mémoire */

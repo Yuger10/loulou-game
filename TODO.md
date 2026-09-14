@@ -83,6 +83,11 @@ Légende priorité : 🔴 haute · 🟠 moyenne · 🟢 basse
 - [x] Choix du mini-jeu (grille des 6 jeux) ou tirage surprise
 - [x] Correction d'un bug : l'inventaire par défaut était partagé entre les parties
 
+### v10 — Mode course
+- [x] 3ᵉ mode « 🏁 Course » : piste de 6 cases, avance à chaque réussite, main passée à l'erreur
+- [x] Âge par joueur (4-12 ans) et difficulté des mini-jeux adaptée à l'âge en multijoueur
+- [x] Piste de course avec bateaux, difficulté affichée en étoiles et podium final (+50 pièces)
+
 ---
 
 ## 🔜 À faire

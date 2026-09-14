@@ -62,9 +62,9 @@ function switchProfile(id, silent){
   }
 }
 
-function addProfile(name, avatar){
+function addProfile(name, avatar, age){
   const id = newId();
-  profiles.list.push({ id, name: name||'', avatar: avatar||'👧' });
+  profiles.list.push({ id, name: name||'', avatar: avatar||'👧', age: age||null });
   profiles.current = id; saveProfiles();
   state = freshState({ name: name||'', avatar: avatar||'👧', visited:['lagon'] });
   save();
@@ -94,14 +94,14 @@ function refreshAll(){
 }
 
 /* ---------- Mode chacun son tour ---------- */
-let party = { active:false, players:[], turn:0, scores:{}, lastWinner:null };
+let party = { active:false, mode:null, players:[], turn:0, scores:{}, lastWinner:null };
 
 function partyPlayers(){ return party.players.map(id=>profiles.list.find(p=>p.id===id)).filter(Boolean); }
 function partyCurrent(){ return profiles.list.find(p=>p.id===party.players[party.turn]); }
 
 function startParty(ids){
   if(ids.length < 2) return false;
-  party = { active:true, players:ids.slice(), turn:0, scores:{}, lastWinner:null };
+  party = { active:true, mode:'turns', players:ids.slice(), turn:0, scores:{}, lastWinner:null };
   ids.forEach(id=> party.scores[id] = 0);
   switchProfile(ids[0], true);
   renderTurnBar();
@@ -112,7 +112,8 @@ function startParty(ids){
   return true;
 }
 function stopParty(){
-  party.active = false;
+  if(typeof race!=='undefined' && race.active){ stopRace(); return; }
+  party.active = false; party.mode = null;
   renderTurnBar();
   showToast('👤 Mode solo');
   speak('Retour au mode solo.');
@@ -122,6 +123,7 @@ function stopParty(){
 function passTurn(reason){
   if(!party.active) return;
   party.turn = (party.turn + 1) % party.players.length;
+  if(typeof race!=='undefined' && race.active){ race.turn = party.turn; race.rounds++; }
   const p = partyCurrent();
   switchProfile(p.id, true);
   renderTurnBar();
@@ -151,9 +153,11 @@ function renderTurnBar(){
   if(!bar) return;
   if(!party.active){ bar.hidden = true; bar.innerHTML = ''; return; }
   bar.hidden = false;
+  const isRace = party.mode==='race';
   bar.innerHTML = partyPlayers().map((p,i)=>`
     <span class="turn-chip ${i===party.turn?'on':''}">
-      <b>${p.avatar}</b> ${p.name || 'Joueur '+(i+1)} <i>${party.scores[p.id]||0} 🏅</i>
+      <b>${p.avatar}</b> ${p.name || 'Joueur '+(i+1)}
+      <i>${isRace ? ((race.pos[p.id]||0)+'/'+race.goal+' ⛵') : ((party.scores[p.id]||0)+' 🏅')}</i>
     </span>`).join('')
     + `<button class="turn-stop" id="turn-stop">✖️</button>`;
   const st = document.getElementById('turn-stop');
@@ -168,4 +172,14 @@ function partyScore(){
   party.scores[p.id] = (party.scores[p.id]||0) + 1;
   party.lastWinner = p.id;
   renderTurnBar();
+}
+
+// en course : le joueur avance d'une case, puis la main passe au suivant
+function partyAfterWin(){
+  if(!party.active) return false;
+  if(party.mode==='race' && typeof raceAdvance==='function'){
+    const finished = raceAdvance();
+    if(finished) return true;      // course gagnée : pas de passage de main
+  }
+  return false;
 }

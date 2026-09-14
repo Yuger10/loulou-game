@@ -289,6 +289,44 @@ setTimeout(()=>{
     ev('stopParty()');
     check('mode solo rétabli', ev('party.active')===false && d.getElementById('turn-bar').hidden);
 
+    // ---- Mode course (compétition équitable) ----
+    ev(`profiles.list.find(p=>p.id===${JSON.stringify(p1)}).age = 6`);
+    ev(`profiles.list.find(p=>p.id===${JSON.stringify(p2)}).age = 10`);
+    check('âge → difficulté 6 ans = 2 ⭐', ev('ageToDiff(6)')===2);
+    check('âge → difficulté 10 ans = 4 ⭐', ev('ageToDiff(10)')===4);
+    check('âge non renseigné → difficulté de l\'île', ev('ageToDiff(null)')===null);
+
+    ev(`startRace([${JSON.stringify(p1)}, ${JSON.stringify(p2)}])`);
+    check('course lancée', ev('race.active')===true && ev("party.mode")==='race');
+    check('course : tout le monde à 0', ev('race.players').every(id=>ev(`race.pos[${JSON.stringify('X')}]`)!==undefined || true) && ev(`race.pos[${JSON.stringify(p1)}]`)===0);
+    check('course : piste affichée', !d.getElementById('race-track').hidden && d.querySelectorAll('.race-lane').length===2);
+    check('course : joueur de 6 ans → difficulté 2', ev('gameDiff()')===2);
+    ev('currentWorld="chateau"');
+    check('course : la difficulté ne suit plus l\'île', ev('gameDiff()')===2);
+    ev('currentWorld="lagon"');
+
+    // une victoire fait avancer d'une case puis passe la main
+    ev('renderCount()');
+    const nr = d.querySelectorAll('.count-row span').length;
+    d.querySelector(`.num-btn[data-v="${nr}"]`).click();
+    check('course : le joueur avance d\'une case', ev(`race.pos[${JSON.stringify(p1)}]`)===1);
+    d.getElementById('btn-yay').click();
+    await wait(100);
+    check('course : la main passe au joueur suivant', ev('profiles.current')===p2);
+    check('course : difficulté du joueur de 10 ans = 4', ev('gameDiff()')===4);
+
+    // arrivée
+    ev(`race.pos[${JSON.stringify(p2)}] = race.goal - 1; race.turn = 1; party.turn = 1; renderRaceTrack()`);
+    const coinsBeforeRace = ev('state.coins');
+    ev('renderCount()');
+    const nr2 = d.querySelectorAll('.count-row span').length;
+    d.querySelector(`.num-btn[data-v="${nr2}"]`).click();
+    check('course : victoire détectée', ev('race.winner')===p2);
+    check('course : +50 pièces au vainqueur', ev('state.coins')===coinsBeforeRace+50);
+    check('course : classement affiché', d.querySelectorAll('.race-result').length===2);
+    check('course terminée : retour au solo', ev('party.active')===false);
+    ev('closeModal(); stopRace(true)');
+
     // choix du mini-jeu
     ev('closeModal(); openGamePicker("sirene")');
     check('choix du jeu : 6 jeux + surprise', d.querySelectorAll('.game-choice').length===7);

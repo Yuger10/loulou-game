@@ -21,7 +21,7 @@ function openPlayers(){
             <span class="emoji">${p.avatar}</span>
             <div class="info">
               <div class="name">${p.name || 'Sans nom'} ${p.id===profiles.current?'<small>(en cours)</small>':''}</div>
-              <div class="sub">${playerSummary(p.id)}</div>
+              <div class="sub">${p.age?`🎂 ${p.age} ans · `:''}${playerSummary(p.id)}</div>
             </div>
             <button class="pick-btn ${sel.has(p.id)?'on':''}" data-pick="${p.id}">${sel.has(p.id)?'✅':'⬜️'}</button>
             <button class="btn-small ghost" data-edit="${p.id}">⚙️</button>
@@ -29,9 +29,11 @@ function openPlayers(){
       </div>
       <button class="btn-craft" id="btn-add-player">➕ Ajouter un joueur</button>
       <div class="mode-row">
-        <button class="btn-primary" id="btn-solo">👤 Mode solo</button>
-        <button class="btn-primary alt" id="btn-turns">🎲 Chacun son tour</button>
+        <button class="btn-primary" id="btn-solo">👤 Solo</button>
+        <button class="btn-primary alt" id="btn-turns">🎲 Chacun<br>son tour</button>
+        <button class="btn-primary race" id="btn-race">🏁 Course</button>
       </div>
+      <p class="mode-hint">🏁 En course, chacun joue à sa difficulté selon son âge : c'est équitable même entre grands et petits.</p>
       ${party.active ? `<button class="btn-ghost" id="btn-stop-party">Arrêter le mode chacun son tour</button>` : ''}
     `);
     bindQuit();
@@ -69,6 +71,25 @@ function openPlayers(){
       startParty(ids);
       closeModal();
     };
+    document.getElementById('btn-race').onclick = ()=>{
+      playSound('tap');
+      const ids = profiles.list.filter(p=>sel.has(p.id)).map(p=>p.id);
+      if(ids.length < 2){
+        showToast('Choisis au moins 2 joueurs ✌️');
+        speak('Choisis au moins deux joueurs pour faire la course.');
+        return;
+      }
+      const sansAge = profiles.list.filter(p=>sel.has(p.id) && !p.age);
+      if(sansAge.length){
+        showToast(`Ajoute l'âge de ${sansAge[0].name || 'ce joueur'} 🎂`);
+        speak(`Indique l'âge de ${sansAge[0].name || 'ce joueur'} pour une course équitable.`);
+        openPlayerSettings(sansAge[0].id);
+        return;
+      }
+      startRace(ids);
+      closeModal();
+      renderLagon();
+    };
     const stop = document.getElementById('btn-stop-party');
     if(stop) stop.onclick = ()=>{ playSound('tap'); stopParty(); closeModal(); };
   };
@@ -85,31 +106,42 @@ function playerSummary(id){
   }catch(e){ return ''; }
 }
 
+function ageSelector(sel){
+  const ages = [4,5,6,7,8,9,10,11,12];
+  return `<label class="mini-label">🎂 Quel âge ?</label>
+    <div class="age-grid">
+      ${ages.map(a=>`<button class="age-opt ${Number(sel)===a?'sel':''}" data-age="${a}">${a}</button>`).join('')}
+    </div>
+    <p class="mode-hint" id="age-hint">${sel?`Défi adapté : ${'⭐'.repeat(ageToDiff(sel))}`:'Sert à adapter la difficulté en course 🏁'}</p>`;
+}
+
 /* --- Nouveau joueur --- */
 function openNewPlayer(){
   let av = pickRandom(AVATARS);
+  let age = null;
   const render = ()=>{
     openModal(`
-      ${gameHeader('➕ Nouveau joueur', 'Choisis un prénom et un avatar')}
+      ${gameHeader('➕ Nouveau joueur', 'Choisis un prénom, un avatar et ton âge')}
       <input id="np-name" class="name-input-modal" type="text" maxlength="12" placeholder="Prénom" autocomplete="off">
       <div class="avatar-grid">
         ${AVATARS.map(a=>`<button class="avatar-opt ${a===av?'sel':''}" data-av="${a}">${a}</button>`).join('')}
       </div>
+      ${ageSelector(age)}
       <button class="btn-primary" id="np-ok">C'est parti ! 🎮</button>
       <button class="btn-ghost" id="np-cancel">Annuler</button>
     `);
     bindQuit();
     const input = document.getElementById('np-name');
+    const redraw = ()=>{ const v = input.value; render(); document.getElementById('np-name').value = v; };
     document.querySelectorAll('.avatar-opt').forEach(b=>{
-      b.onclick = ()=>{ av = b.dataset.av; playSound('tap');
-        const v = input.value;
-        render();
-        document.getElementById('np-name').value = v;
-      };
+      b.onclick = ()=>{ av = b.dataset.av; playSound('tap'); redraw(); };
+    });
+    document.querySelectorAll('.age-opt').forEach(b=>{
+      b.onclick = ()=>{ age = Number(b.dataset.age); playSound('tap'); redraw(); };
     });
     document.getElementById('np-ok').onclick = ()=>{
       const name = (document.getElementById('np-name').value || '').trim().slice(0,12);
-      addProfile(name, av);
+      addProfile(name, av, age);
       playSound('win'); confetti();
       speak(`Bienvenue ${name || ''} !`);
       showToast(`${av} ${name || 'Nouveau joueur'} ajouté !`);
@@ -125,6 +157,7 @@ function openPlayerSettings(id){
   const p = profiles.list.find(x=>x.id===id);
   if(!p) return;
   let av = p.avatar;
+  let age = p.age || null;
   const render = ()=>{
     openModal(`
       ${gameHeader(`⚙️ ${p.name || 'Joueur'}`, 'Modifier, réinitialiser ou supprimer')}
@@ -132,6 +165,7 @@ function openPlayerSettings(id){
       <div class="avatar-grid">
         ${AVATARS.map(a=>`<button class="avatar-opt ${a===av?'sel':''}" data-av="${a}">${a}</button>`).join('')}
       </div>
+      ${ageSelector(age)}
       <div class="speech" style="font-size:.82rem;">${playerSummary(id)}</div>
       <button class="btn-primary" id="pe-save">Enregistrer ✅</button>
       <button class="btn-craft danger" id="pe-reset">🔄 Recommencer à zéro</button>
@@ -140,14 +174,17 @@ function openPlayerSettings(id){
     `);
     bindQuit();
     const input = document.getElementById('pe-name');
+    const redraw = ()=>{ const v = input.value; render(); document.getElementById('pe-name').value = v; };
     document.querySelectorAll('.avatar-opt').forEach(b=>{
-      b.onclick = ()=>{ av = b.dataset.av; playSound('tap');
-        const v = input.value; render(); document.getElementById('pe-name').value = v;
-      };
+      b.onclick = ()=>{ av = b.dataset.av; playSound('tap'); redraw(); };
+    });
+    document.querySelectorAll('.age-opt').forEach(b=>{
+      b.onclick = ()=>{ age = Number(b.dataset.age); playSound('tap'); redraw(); };
     });
     document.getElementById('pe-save').onclick = ()=>{
       p.name = (document.getElementById('pe-name').value||'').trim().slice(0,12);
       p.avatar = av;
+      p.age = age;
       saveProfiles();
       if(id === profiles.current){
         state.name = p.name; state.avatar = p.avatar; save();

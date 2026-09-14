@@ -14,6 +14,7 @@ if(!state.visited || !state.visited.length){
   save();
 }
 renderTurnBar();
+renderRaceTrack();
 renderLagon();
 
 /* Écran titre : sert aussi à débloquer le son et la voix (geste utilisateur requis sur iOS) */
