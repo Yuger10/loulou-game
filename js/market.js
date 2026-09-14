@@ -1,0 +1,155 @@
+/* ---------- Sac ---------- */
+function renderSac(){
+  const owned = Object.keys(ALL_ITEMS).filter(k=>countItem(k)>0);
+  const el = document.getElementById('sac-content');
+  if(owned.length===0){
+    el.innerHTML = `<div class="empty-state">Ton sac est vide !<br>Va aider Marina, Étincelle ou Luna pour gagner des objets ✨</div>`;
+    return;
+  }
+  el.innerHTML = `<div class="sac-grid">
+    ${owned.map(k=>{
+      const it = ALL_ITEMS[k];
+      return `<div class="item-card ${CRAFTED[k]?'crafted':''}"><span class="emoji">${it.emoji}</span><div class="name">${it.name}</div><div class="qty">x${countItem(k)}</div></div>`;
+    }).join('')}
+  </div>`;
+}
+document.getElementById('reset-btn').addEventListener('click', ()=>{
+  if(confirm('Tout recommencer à zéro ? (pièces, objets et niveau seront perdus)')){
+    resetState();
+    renderCoins(); renderBadge(); renderSac(); renderScene(); renderQuests();
+    showToast('Nouvelle aventure ! 🌊');
+  }
+});
+
+/* ---------- Marché ---------- */
+let currentTab = 'vendre';
+document.querySelectorAll('.tab-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    playSound('tap');
+    currentTab = btn.dataset.tab;
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.toggle('active', b===btn));
+    renderMarche();
+  });
+});
+
+function renderMarche(){
+  const el = document.getElementById('marche-content');
+  if(currentTab==='vendre') return renderVendre(el);
+  if(currentTab==='echanger') return renderEchanger(el);
+  if(currentTab==='acheter') return renderAcheter(el);
+  return renderFusionner(el);
+}
+
+function renderVendre(el){
+  const owned = Object.keys(ALL_ITEMS).filter(k=>countItem(k)>0);
+  if(owned.length===0){
+    el.innerHTML = `<div class="empty-state">Tu n'as rien à vendre pour l'instant.<br>Va gagner des objets dans le lagon !</div>`;
+    return;
+  }
+  el.innerHTML = owned.map(k=>{
+    const it = ALL_ITEMS[k];
+    return `<div class="market-row">
+      <span class="emoji">${it.emoji}</span>
+      <div class="info"><div class="name">${it.name} x${countItem(k)}</div><div class="sub">🪙 ${it.price} pièce${it.price>1?'s':''}</div></div>
+      <button class="btn-small" data-sell="${k}">Vendre</button>
+    </div>`;
+  }).join('');
+  el.querySelectorAll('[data-sell]').forEach(btn=>{
+    btn.onclick = ()=>{
+      const k = btn.dataset.sell;
+      removeItem(k,1);
+      addCoins(ALL_ITEMS[k].price);
+      questProgress('sell', null, 1);
+      playSound('coin');
+      showToast(`Vendu ! +${ALL_ITEMS[k].price} 🪙`);
+      renderVendre(el);
+    };
+  });
+}
+
+function renderEchanger(el){
+  const owned = Object.keys(ITEMS).filter(k=>countItem(k)>0);
+  if(owned.length===0){
+    el.innerHTML = `<div class="empty-state">Tu n'as pas encore d'objet à échanger.</div>`;
+    return;
+  }
+  el.innerHTML = owned.map(k=>{
+    const it = ITEMS[k];
+    return `<div class="market-row">
+      <span class="emoji">${it.emoji}</span>
+      <div class="info"><div class="name">${it.name} x${countItem(k)}</div><div class="sub">Contre un autre objet surprise 🎁</div></div>
+      <button class="btn-small" data-trade="${k}">Échanger</button>
+    </div>`;
+  }).join('');
+  el.querySelectorAll('[data-trade]').forEach(btn=>{
+    btn.onclick = ()=>{
+      const k = btn.dataset.trade;
+      const others = Object.keys(ITEMS).filter(x=>x!==k);
+      const gained = pickRandom(others);
+      removeItem(k,1);
+      addItem(gained,1); markSeen(gained);
+      questProgress('collect', gained, 1);
+      playSound('good');
+      showToast(`Échangé contre ${ITEMS[gained].emoji} ${ITEMS[gained].name} !`);
+      renderEchanger(el);
+    };
+  });
+}
+
+function renderAcheter(el){
+  el.innerHTML = `<div class="puzzle-hint" style="color:var(--foam); opacity:1; text-shadow:0 1px 0 rgba(18,59,79,.25);">Tu as 🪙 ${state.coins} pièces</div>` +
+  Object.entries(ITEMS).map(([k,it])=>{
+    const cost = it.price * 2;
+    const can = state.coins >= cost;
+    return `<div class="market-row">
+      <span class="emoji">${it.emoji}</span>
+      <div class="info"><div class="name">${it.name}</div><div class="sub">🪙 ${cost} pièces</div></div>
+      <button class="btn-small" data-buy="${k}" ${can?'':'disabled'}>Acheter</button>
+    </div>`;
+  }).join('');
+  el.querySelectorAll('[data-buy]').forEach(btn=>{
+    btn.onclick = ()=>{
+      const k = btn.dataset.buy;
+      const cost = ITEMS[k].price * 2;
+      if(state.coins < cost) return;
+      addCoins(-cost);
+      addItem(k,1); markSeen(k);
+      questProgress('collect', k, 1);
+      playSound('coin');
+      showToast(`${ITEMS[k].emoji} ${ITEMS[k].name} acheté !`);
+      renderAcheter(el);
+    };
+  });
+}
+
+function renderFusionner(el){
+  el.innerHTML = Object.entries(CRAFTED).map(([key,c])=>{
+    const need = Object.entries(c.recipe);
+    const canCraft = need.every(([ik,qty])=>countItem(ik)>=qty);
+    return `<div class="recipe-card ${c.tier===2?'tier2':''}">
+      <div class="result"><span class="emoji">${c.emoji}</span><span>${c.name}</span><span class="price">🪙 ${c.price}</span></div>
+      <div class="recipe-ingredients">
+        ${need.map(([ik,qty])=>{
+          const has = countItem(ik);
+          const ok = has>=qty;
+          return `<span class="ingredient-pill ${ok?'ok':'ko'}">${ALL_ITEMS[ik].emoji} ${has}/${qty}</span>`;
+        }).join('')}
+      </div>
+      <button class="btn-craft" data-craft="${key}" ${canCraft?'':'disabled'}>${canCraft?'Créer ✨':'Il manque des objets'}</button>
+    </div>`;
+  }).join('');
+  el.querySelectorAll('[data-craft]').forEach(btn=>{
+    btn.onclick = ()=>{
+      const key = btn.dataset.craft;
+      const c = CRAFTED[key];
+      Object.entries(c.recipe).forEach(([ik,qty])=> removeItem(ik,qty));
+      addItem(key,1); markSeen(key);
+      questProgress('craft', key, 1);
+      playSound('win');
+      confetti();
+      showToast(`${c.emoji} ${c.name} créé !`);
+      renderFusionner(el);
+    };
+  });
+}
+

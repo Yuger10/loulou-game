@@ -1,5 +1,9 @@
-const CACHE = 'lagon-v5';
-const FILES = ['./lagon-magique.html','./manifest.json','./icon.svg'];
+const CACHE = 'lagon-v6';
+const FILES = [
+  './','./index.html','./styles.css','./manifest.json',
+  './icon.svg','./icon-192.png','./icon-512.png','./icon-180.png',
+  './js/data.js','./js/state.js','./js/ui.js','./js/minigames.js','./js/market.js','./js/init.js'
+];
 self.addEventListener('install', e=>{
   e.waitUntil(caches.open(CACHE).then(c=>c.addAll(FILES)).then(()=>self.skipWaiting()));
 });

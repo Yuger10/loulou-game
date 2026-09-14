@@ -3,7 +3,14 @@ const { JSDOM } = require('jsdom');
 const fs = require('fs');
 const path = require('path');
 
-const html = fs.readFileSync(path.join(__dirname, '..', 'lagon-magique.html'), 'utf8');
+const root = path.join(__dirname, '..');
+// Le jeu est découpé en plusieurs fichiers : on inline CSS et JS pour jsdom
+let html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
+html = html.replace(/<link rel="stylesheet" href="styles\.css">/,
+  '<style>' + fs.readFileSync(path.join(root, 'styles.css'), 'utf8') + '</style>');
+html = html.replace(/<script src="(js\/[^"]+)"><\/script>/g,
+  (_, src)=> '<script>' + fs.readFileSync(path.join(root, src), 'utf8') + '</script>');
+
 const dom = new JSDOM(html, { runScripts:'dangerously', pretendToBeVisual:true, url:'http://localhost/' });
 const w = dom.window, d = w.document;
 w.confirm = ()=>true;
@@ -110,7 +117,18 @@ setTimeout(()=>{
     ev('renderQuests()');
     check('bouton coffre retiré après ouverture', !d.getElementById('btn-chest'));
 
+        // Sauvegarde : version + migration d'une vieille sauvegarde
     check('sauvegarde localStorage', !!w.localStorage.getItem('lagon-magique-save'));
+    check('sauvegarde versionnée', JSON.parse(w.localStorage.getItem('lagon-magique-save')).v === ev('SAVE_VERSION'));
+    const migrated = ev("JSON.stringify(migrate({coins:9, inventory:{perle:2}, missions:7, sound:false}))");
+    const m = JSON.parse(migrated);
+    check('migration v0 : champs manquants ajoutés', m.v===1 && m.avatar==='👧' && Array.isArray(m.decos) && typeof m.seen==='object');
+    check('migration v0 : données conservées', m.coins===9 && m.inventory.perle===2 && m.missions===7);
+
+    // Reset
+    ev("state.name='Loulou'; resetState()");
+    check('reset : pièces et objets remis à zéro', ev('state.coins')===5 && Object.keys(ev('state.inventory')).length===0 && ev('state.missions')===0);
+    check('reset : prénom et réglages conservés', ev('state.name')==='Loulou');
     check('aucune erreur JS', errs.length===0);
     if(errs.length) console.log(errs);
     console.log(failed ? `\n${failed} test(s) en échec` : '\nTous les tests passent');

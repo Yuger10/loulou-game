@@ -51,6 +51,13 @@ Légende priorité : 🔴 haute · 🟠 moyenne · 🟢 basse
 - [x] Dialogues contextuels : les personnages parlent de ses missions du jour, de son stock, des recettes presque finies, de son lagon décoré
 - [x] Salutation personnalisée dans les dialogues (« Coucou Loulou ! »)
 
+### v6 — Chantier technique
+- [x] Découpage en `index.html` + `styles.css` + `js/{data,state,ui,minigames,market,init}.js`
+- [x] Icônes PNG 192/512/180 pour la PWA (rendu de l'emoji 🧜‍♀️ sur fond dégradé)
+- [x] Sauvegarde versionnée (`v: 1`) avec migration automatique des anciennes parties
+- [x] Tests étendus : migration, reset, écran titre, Simon (41 assertions)
+- [x] `lagon-magique.html` conservé en redirection
+
 ---
 
 ## 🔜 À faire
@@ -75,11 +82,8 @@ Légende priorité : 🔴 haute · 🟠 moyenne · 🟢 basse
 - [ ] Mini-jeu « Assembler l'image » (vrai puzzle 2×2 puis 3×3 en déplaçant des pièces)
 
 ### 🔧 Technique
-- [ ] Découper `lagon-magique.html` en `index.html` + `style.css` + `game.js` (+ `data.js` pour ITEMS/CRAFTED/DECOS/CHARACTERS)
-- [ ] Étendre le test de fumée (mémoire complète, niveaux, reset, toggle son)
-- [ ] Versionner le format de sauvegarde (migration si on change la structure de `state`)
+- [ ] Étendre encore le test de fumée (mémoire complète, niveaux, toggle son)
 - [ ] Hébergement gratuit (GitHub Pages / Netlify) pour y accéder sans le Mac allumé
-- [ ] Vraie icône PNG 192/512 pour la PWA (le SVG emoji ne s'affiche pas partout)
 - [ ] Mode « parent » discret (long-press sur le titre) : reset, stats de jeu, réglages voix
 
 ---
