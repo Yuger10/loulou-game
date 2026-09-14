@@ -86,13 +86,17 @@ function onMissionWin(){
     <button class="btn-primary" id="btn-yay">Super !</button>
     <button class="btn-ghost" id="btn-again">Encore une mission 🎮</button>
   `);
-  document.getElementById('btn-yay').onclick = ()=> { playSound('tap'); closeModal(); renderLagon(); };
+  document.getElementById('btn-yay').onclick = ()=> {
+    playSound('tap'); closeModal(); renderLagon();
+    setTimeout(checkNewIsland, 250);   // nouvelle île débloquée ?
+  };
   document.getElementById('btn-again').onclick = ()=> { playSound('tap'); renderLagon(); startMinigame(); };
 }
 
 /* Jeu 1 : mémoire */
 function renderMemory(){
-  const pairs = level()===1 ? 3 : (level()===2 ? 4 : 6);
+  const dd = gameDiff();
+  const pairs = dd===1 ? 3 : (dd===2 ? 4 : (dd===3 ? 5 : 6));
   const pool = shuffle(Object.values(ALL_ITEMS).map(i=>i.emoji)).slice(0,pairs);
   const cards = shuffle([...pool, ...pool]).map((e,i)=>({id:i, emoji:e, flipped:false, matched:false}));
   let first=null, lock=false;
@@ -140,7 +144,8 @@ function renderMemory(){
 /* Jeu 2 : compter */
 function renderCount(){
   const emoji = pickRandom(['⭐','🐚','🌸','🦪','🐠','🦋']);
-  const min = 3, max = Math.min(10, 5 + level()*2); // niv.1 : 3–7, niv.2 : 3–9, niv.3+ : 3–10
+  const dd = gameDiff();
+  const min = dd>=3 ? 4 : 3, max = Math.min(12, 5 + dd*2); // île 1 : 3–7 … île 4 : 4–12
   const n = min + Math.floor(Math.random()*(max-min+1));
   let options = new Set([n]);
   while(options.size<3){ options.add(Math.max(1, n + (Math.floor(Math.random()*5)-2))); }
@@ -164,20 +169,38 @@ function renderCount(){
 
 /* Jeu 3 : trouver l'intruse */
 function renderDiff(){
-  const total = level()>=3 ? 9 : (level()===2 ? 8 : 6);
+  const dd = gameDiff();
+  const total = dd>=4 ? 12 : (dd===3 ? 9 : (dd===2 ? 8 : 6));
+  // emojis qui se voient bien à l'envers (pas symétriques)
+  const MIRRORABLE = ['🐠','🦋','🐌','🦄','🐬','🦊','🐿️','🦉','🦌','🦔','🐟','🎩'];
   // niveaux élevés : l'intruse ressemble un peu plus aux autres
-  const sets = level()>=2
-    ? [['🐚','🐌'],['🌸','🌺'],['⭐','🌟'],['🦋','🐝'],['🎀','🎁'],['🐠','🐟']]
-    : [['🐚','🦄'],['🦋','💎'],['🌸','🍓'],['⭐','🌙'],['🎀','🧜‍♀️']];
-  const [base, odd] = pickRandom(sets);
-  const items = Array(total-1).fill(base);
+  const sets = dd>=2
+    ? [['🐚','🐌'],['🌸','🌺'],['⭐','🌟'],['🦋','🐝'],['🎀','🎁'],['🐠','🐟'],['🍄','🌰'],['🍀','🌿']]
+    : [['🐚','🦄'],['🦋','💎'],['🌸','🍓'],['⭐','🌙'],['🎀','🧜‍♀️'],['🍄','🦊']];
+
+  // 1 fois sur 3 (dès le niveau 2) : même image, mais retournée
+  const mirrorMode = dd>=2 && Math.random() < (dd>=3 ? 0.5 : 0.35);
+  let base, odd, items, hint;
+  if(mirrorMode){
+    base = pickRandom(MIRRORABLE);
+    odd = base;
+    hint = "Une image est retournée comme dans un miroir. Laquelle ?";
+    items = Array(total).fill(base);
+  } else {
+    [base, odd] = pickRandom(sets);
+    hint = "Touche celle qui n'est pas comme les autres";
+    items = Array(total-1).fill(base);
+  }
   const oddPos = Math.floor(Math.random()*total);
-  items.splice(oddPos,0,odd);
+  if(!mirrorMode) items.splice(oddPos,0,odd);
 
   openModal(`
-    ${gameHeader("🔍 Trouve l'intruse", "Touche celle qui n'est pas comme les autres")}
+    ${gameHeader("🔍 Trouve l'intruse", hint)}
     <div class="diff-row">
-      ${items.map((e)=>`<span class="diff-item" data-odd="${e===odd}">${e}</span>`).join('')}
+      ${items.map((e,i)=>{
+        const isOdd = mirrorMode ? (i===oddPos) : (e===odd);
+        return `<span class="diff-item ${mirrorMode && isOdd ? 'mirror':''}" data-odd="${isOdd}">${e}</span>`;
+      }).join('')}
     </div>
   `);
   bindQuit();
@@ -197,7 +220,7 @@ function renderSimon(){
     {k:'c', emoji:'🟢', freq:659, name:'vert'},
     {k:'d', emoji:'🔴', freq:784, name:'rouge'},
   ];
-  const len = Math.min(6, 2 + level()); // niv.1 : 3, niv.2 : 4 …
+  const len = Math.min(7, 2 + gameDiff()); // île 1 : 3 … île 4 : 6
   const seq = Array.from({length:len},()=>pickRandom(PADS));
   let pos = 0, playing = true;
 
@@ -212,16 +235,22 @@ function renderSimon(){
   bindQuit();
 
   const padEl = k => document.querySelector(`.simon-pad[data-k="${k}"]`);
+  // chaque pastille a sa propre note : elle peut reconnaître la couleur à l'oreille
+  function padTone(p, dur=.3, vol=.16){
+    if(!state.sound) return;
+    try{
+      if(!audioCtx) audioCtx = new (window.AudioContext||window.webkitAudioContext)();
+      if(audioCtx.state==='suspended') audioCtx.resume();
+      tone(p.freq, 0, dur, 'sine', vol);
+      tone(p.freq*2, 0, dur*.5, 'triangle', vol*.35); // harmonique : timbre plus doux
+    }catch(e){}
+  }
   function flash(p, i){
     setTimeout(()=>{
       const el = padEl(p.k);
       if(!el) return;
       el.classList.add('lit');
-      if(state.sound){ try{
-        if(!audioCtx) audioCtx = new (window.AudioContext||window.webkitAudioContext)();
-        if(audioCtx.state==='suspended') audioCtx.resume();
-        tone(p.freq, 0, .3, 'sine', .16);
-      }catch(e){} }
+      padTone(p);
       setTimeout(()=>el.classList.remove('lit'), 380);
     }, 600 + i*650);
   }
@@ -238,13 +267,14 @@ function renderSimon(){
       const k = btn.dataset.k;
       const p = PADS.find(x=>x.k===k);
       btn.classList.add('lit'); setTimeout(()=>btn.classList.remove('lit'), 200);
+      padTone(p, .22, .15); // le son de la pastille joue toujours, même si c'est la mauvaise
       if(seq[pos].k === k){
-        if(state.sound){ try{ tone(p.freq, 0, .2, 'sine', .14); }catch(e){} }
         pos++;
         document.querySelectorAll('.game-progress i').forEach((dd,i)=>dd.classList.toggle('on', i<pos));
         if(pos===seq.length) setTimeout(onMissionWin, 350);
       } else {
-        wrongFeedback(btn);
+        vibrate(80); shakeEl(btn);
+        setTimeout(()=>{ if(state.sound){ try{ tone(180, 0, .18, 'square', .07); }catch(e){} } }, 230);
         pos = 0;
         document.querySelectorAll('.game-progress i').forEach(dd=>dd.classList.remove('on'));
         const s = document.getElementById('simon-state');
@@ -265,10 +295,12 @@ function renderSimon(){
 function renderSequence(){
   const symbols = shuffle(['🐚','⭐','🌸','🎀','💎','🦋','🐠']).slice(0,3);
   const [A,B,C] = symbols;
-  const patterns = level()===1
+  const dd = gameDiff();
+  const patterns = dd===1
     ? [[A,B]]
-    : level()===2 ? [[A,B],[A,A,B],[A,B,C]]
-    : [[A,B,B],[A,A,B],[A,B,C],[A,B,A,C]];
+    : dd===2 ? [[A,B],[A,A,B],[A,B,C]]
+    : dd===3 ? [[A,B,B],[A,A,B],[A,B,C]]
+    : [[A,B,C],[A,B,A,C],[A,A,B,C],[A,B,B,C]];
   const pattern = pickRandom(patterns);
   const shown = pattern.length===2 ? 5 : (pattern.length===3 ? 6 : 7);
   const seq = Array.from({length:shown},(_,i)=>pattern[i%pattern.length]);
@@ -300,12 +332,41 @@ function renderSequence(){
 
 /* Jeu 4 : puzzle (remettre les nombres dans l'ordre) */
 function renderPuzzle(){
-  const count = Math.min(8, 3 + level()); // niv.1 : 4, niv.2 : 5 …
-  const nums = shuffle(Array.from({length:count},(_,i)=>i+1));
-  let next = 1;
+  const dd = gameDiff();
+  const count = Math.min(9, 3 + dd); // île 1 : 4 … île 4 : 7
+  const lvl = dd;
+
+  // variantes : à partir de 1, à partir d'un autre nombre, de 2 en 2, ou à l'envers
+  const variants = ['from1'];
+  if(lvl>=1) variants.push('start');            // ex. 6 → 9
+  if(lvl>=2) variants.push('start','desc');     // à l'envers : 7 → 4
+  if(lvl>=3) variants.push('step2');            // de 2 en 2 : 2, 4, 6, 8
+  const variant = pickRandom(variants);
+
+  let seq, hint;
+  if(variant==='from1'){
+    seq = Array.from({length:count},(_,i)=>i+1);
+    hint = `Touche les nombres dans l'ordre : 1 → ${count}`;
+  } else if(variant==='start'){
+    const maxStart = lvl>=3 ? 12 : 8;
+    const start = 2 + Math.floor(Math.random()*(maxStart-1));
+    seq = Array.from({length:count},(_,i)=>start+i);
+    hint = `Touche les nombres dans l'ordre : ${seq[0]} → ${seq[seq.length-1]}`;
+  } else if(variant==='desc'){
+    const start = count + 1 + Math.floor(Math.random()*6);
+    seq = Array.from({length:count},(_,i)=>start-i);
+    hint = `À l'envers ! Du plus grand au plus petit : ${seq[0]} → ${seq[seq.length-1]}`;
+  } else { // step2
+    const start = pickRandom([2,3,4,5,10]);
+    seq = Array.from({length:count},(_,i)=>start+i*2);
+    hint = `De 2 en 2 : ${seq[0]}, ${seq[1]}, ${seq[2]}…`;
+  }
+
+  const nums = shuffle(seq.slice());
+  let idx = 0;
   openModal(`
-    ${gameHeader('🧩 Petit puzzle', `Touche les nombres dans l'ordre : 1 → ${count}`)}
-    ${progressDots(0, count)}
+    ${gameHeader('🧩 Petit puzzle', hint)}
+    ${progressDots(0, seq.length)}
     <div class="puzzle-row">
       ${nums.map(n=>`<button class="puzzle-btn" data-n="${n}">${n}</button>`).join('')}
     </div>
@@ -315,12 +376,12 @@ function renderPuzzle(){
     btn.onclick = ()=>{
       const n = Number(btn.dataset.n);
       if(btn.classList.contains('done')) return;
-      if(n===next){
+      if(n===seq[idx]){
         btn.classList.add('done');
         playSound('good');
-        next++;
-        document.querySelectorAll('.game-progress i').forEach((d,i)=>d.classList.toggle('on', i<next-1));
-        if(next===count+1) setTimeout(onMissionWin, 300);
+        idx++;
+        document.querySelectorAll('.game-progress i').forEach((d,i)=>d.classList.toggle('on', i<idx));
+        if(idx===seq.length) setTimeout(onMissionWin, 300);
       } else {
         wrongFeedback(btn);
       }

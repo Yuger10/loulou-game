@@ -14,6 +14,7 @@ const DEFAULT_STATE = {
   seen: {},
   quests: null,
   albumReward: false,
+  visited: [],
 };
 let state = {
   v: SAVE_VERSION,
@@ -29,6 +30,7 @@ let state = {
   seen: {},           // objets déjà découverts (album)
   quests: null,       // quêtes du jour { date, list:[{type,target,goal,done,n}], claimed }
   albumReward: false, // récompense d'album complet déjà donnée
+  visited: [],        // îles déjà découvertes (pour annoncer les nouvelles)
 };
 
 function save(){
@@ -44,6 +46,7 @@ function migrate(saved){
     saved.seen = saved.seen || {};
     saved.quests = saved.quests || null;
     saved.albumReward = saved.albumReward || false;
+    saved.visited = saved.visited || [];
     saved.decos = saved.decos || [];
   }
   saved.v = SAVE_VERSION;

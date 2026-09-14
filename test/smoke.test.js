@@ -38,26 +38,91 @@ check('3 personnages affichés', d.querySelectorAll('.island').length===3);
 check('scène déco présente', !!d.getElementById('scene'));
 check('3 missions du jour', ev('state.quests.list.length')===3);
 
-// Mondes
-check('forêt verrouillée au niveau 1', !!d.querySelector('.world-tab.locked[data-world="foret"]'));
-d.querySelector('.world-tab[data-world="foret"]').click();
-check('clic sur monde verrouillé sans effet', ev('currentWorld')==='lagon');
+// Carte des îles
+check('carte : 4 îles affichées', d.querySelectorAll('.map-island').length===4);
+check('carte : lagon est l\'île courante', !!d.querySelector('.map-island.here[data-world="lagon"]'));
+check('carte : 3 îles verrouillées au niveau 1', d.querySelectorAll('.map-island.locked').length===3);
+check('carte : prochaine île annoncée', d.getElementById('map-next').innerHTML.includes('La Forêt'));
+d.querySelector('.map-island[data-world="foret"]').click();
+check('carte : île verrouillée non accessible', ev('currentWorld')==='lagon');
+check('difficulté du lagon = 1', ev('gameDiff()')===1);
+
 ev('state.missions = 10; renderLagon()');  // niveau 3
 check('niveau 3 atteint', ev('level()')===3);
-check('forêt déverrouillée', !d.querySelector('.world-tab.locked[data-world="foret"]'));
-d.querySelector('.world-tab[data-world="foret"]').click();
-check('passage dans la forêt', ev('currentWorld')==='foret');
+check('carte : forêt déverrouillée', !d.querySelector('.map-island.locked[data-world="foret"]'));
+d.querySelector('.map-island[data-world="foret"]').click();
+check('carte : navigation vers la forêt', ev('currentWorld')==='foret');
 check('3 personnages de la forêt', d.querySelectorAll('.island').length===3);
 check('personnages forestiers', [...d.querySelectorAll('.island')].map(b=>b.dataset.char).join()==='fee,biche,hibou');
 check('fond de la forêt appliqué', d.body.dataset.world==='foret');
+check('difficulté de la forêt = 2', ev('gameDiff()')===2);
 check('objets de la forêt disponibles', ev('availableItems()').includes('champignon'));
-ev('state.missions = 0; currentWorld="lagon"; renderLagon()');
-check('retour au lagon après reset du niveau', ev('currentWorld')==='lagon' && d.querySelectorAll('.island').length===3);
+check('mémoire plus dure dans la forêt', (ev('renderMemory()'), d.querySelectorAll('.mcard').length===8));
+
+// Îles suivantes
+ev('state.missions = 30; renderLagon()');   // niveau 7
+check('montagne déverrouillée au niveau 6', ev('worldUnlocked("montagne")')===true);
+check('château encore verrouillé', ev('worldUnlocked("chateau")')===false);
+d.querySelector('.map-island[data-world="montagne"]').click();
+check('navigation vers la montagne', ev('currentWorld')==='montagne');
+check('3 personnages de la montagne', [...d.querySelectorAll('.island')].map(b=>b.dataset.char).join()==='dragonciel,aigle,magicienne');
+check('difficulté de la montagne = 3', ev('gameDiff()')===3);
+ev('state.missions = 50; renderLagon()');   // niveau 11
+check('château déverrouillé au niveau 10', ev('worldUnlocked("chateau")')===true);
+d.querySelector('.map-island[data-world="chateau"]').click();
+check('navigation vers le château', ev('currentWorld')==='chateau');
+check('difficulté du château = 4', ev('gameDiff()')===4);
+check('château : personnages royaux', [...d.querySelectorAll('.island')].map(b=>b.dataset.char).join()==='princesse,sorciere,pegase');
+check('carte : toutes les îles débloquées', d.getElementById('map-next').innerHTML.includes('toutes les îles'));
+
+// Annonce de nouvelle île
+ev('state.visited = ["lagon"]; state.missions = 10');
+check('nouvelle île annoncée', ev('checkNewIsland()')===true);
+check('annonce non répétée', ev('checkNewIsland()')===false);
+ev('closeModal(); state.missions = 0; currentWorld="lagon"; renderLagon()');
+check('retour au lagon si le niveau retombe', ev('currentWorld')==='lagon' && d.querySelectorAll('.island').length===3);
 
 // Simon
-ev('renderSimon()');
+ev('currentWorld="lagon"; renderSimon()');
 check('simon : 4 pads', d.querySelectorAll('.simon-pad').length===4);
 check('simon : 3 étapes au niveau 1', d.querySelectorAll('.game-progress i').length===3);
+
+// Puzzle : variantes de séquences
+const variants = new Set();
+let puzzleOk = true;
+for(let i=0;i<60;i++){
+  ev('currentWorld="chateau"; renderPuzzle()');   // île 4 : toutes les variantes
+  const shown = [...d.querySelectorAll('.puzzle-btn')].map(b=>Number(b.dataset.n));
+  const hint = d.querySelector('.puzzle-hint span').textContent;
+  const sorted = [...shown].sort((a,b)=>a-b);
+  const step = sorted[1]-sorted[0];
+  if(!sorted.every((n,j)=>j===0 || n-sorted[j-1]===step)) puzzleOk = false;  // suite régulière
+  if(hint.includes('envers')) variants.add('desc');
+  else if(step===2) variants.add('step2');
+  else if(sorted[0]===1) variants.add('from1');
+  else variants.add('start');
+}
+check('puzzle : suites toujours régulières', puzzleOk);
+check('puzzle : démarre parfois ailleurs qu\'à 1', variants.has('start'));
+check('puzzle : variante à l\'envers', variants.has('desc'));
+check('puzzle : variante de 2 en 2', variants.has('step2'));
+
+// Intruse : variante miroir
+let mirrorSeen = false, diffOk = true;
+for(let i=0;i<60;i++){
+  ev('currentWorld="foret"; renderDiff()');   // île 2+ : variante miroir possible
+  const odds = d.querySelectorAll('.diff-item[data-odd="true"]');
+  if(odds.length !== 1) diffOk = false;     // toujours exactement une intruse
+  if(d.querySelector('.diff-item.mirror')){
+    mirrorSeen = true;
+    const all = [...d.querySelectorAll('.diff-item')].map(e=>e.textContent);
+    if(new Set(all).size !== 1) diffOk = false;  // en mode miroir, même emoji partout
+    if(!d.querySelector('.diff-item.mirror').dataset.odd) diffOk = false;
+  }
+}
+check('intruse : toujours une seule bonne réponse', diffOk);
+check('intruse : variante miroir présente', mirrorSeen);
+ev('state.missions = 0; currentWorld="lagon"');
 
 d.querySelector('.island[data-char="licorne"]').click();
 check('dialogue ouvert', d.getElementById('overlay').classList.contains('show'));

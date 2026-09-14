@@ -12,6 +12,16 @@ const ITEMS = {
   plume:{emoji:'🪶', name:'Plume', price:4, world:'foret'},
   miel:{emoji:'🍯', name:'Pot de miel', price:5, world:'foret'},
   trefle:{emoji:'🍀', name:'Trèfle porte-bonheur', price:6, world:'foret'},
+  // Montagne des Nuages
+  nuage:{emoji:'☁️', name:'Nuage de coton', price:4, world:'montagne'},
+  cristal:{emoji:'🔮', name:'Cristal', price:7, world:'montagne'},
+  eclair:{emoji:'⚡', name:'Éclair', price:6, world:'montagne'},
+  flocon:{emoji:'❄️', name:'Flocon', price:5, world:'montagne'},
+  // Château des Étoiles
+  poussiere:{emoji:'💫', name:"Poussière d'étoile", price:8, world:'chateau'},
+  cle:{emoji:'🗝️', name:'Clé dorée', price:9, world:'chateau'},
+  bougie:{emoji:'🕯️', name:'Bougie magique', price:7, world:'chateau'},
+  parchemin:{emoji:'📜', name:'Parchemin', price:8, world:'chateau'},
 };
 const CRAFTED = {
   collier:{emoji:'📿', name:'Collier magique', price:10,
@@ -33,6 +43,20 @@ const CRAFTED = {
     recipe:{gland:3, plume:1}},
   grimoire:{emoji:'📖', name:'Grimoire des bois', price:45, tier:2, world:'foret',
     recipe:{potion:1, chapeau:1, nid:1}},
+  // Montagne des Nuages
+  carillon:{emoji:'🎐', name:'Carillon du ciel', price:16, world:'montagne',
+    recipe:{nuage:2, cristal:1}},
+  tempete:{emoji:'🌩️', name:'Petite tempête', price:18, world:'montagne',
+    recipe:{eclair:2, flocon:1}},
+  filante:{emoji:'🌠', name:'Étoile filante', price:55, tier:2, world:'montagne',
+    recipe:{carillon:1, tempete:1, cristal:2}},
+  // Château des Étoiles
+  lanterne:{emoji:'🏮', name:'Lanterne enchantée', price:20, world:'chateau',
+    recipe:{bougie:2, poussiere:1}},
+  sceptre:{emoji:'🔱', name:'Sceptre royal', price:24, world:'chateau',
+    recipe:{cle:1, parchemin:1, poussiere:1}},
+  royaume:{emoji:'🏰', name:'Royaume des étoiles', price:70, tier:2, world:'chateau',
+    recipe:{lanterne:1, sceptre:1, parchemin:2}},
 };
 const ALL_ITEMS = Object.assign({}, ITEMS, CRAFTED);
 
@@ -86,16 +110,78 @@ const CHARACTERS = {
       "J'ai perdu mes plus belles plumes cette nuit…",
       "Les hiboux adorent les devinettes. À toi de jouer !",
     ]},
+  // --- Montagne des Nuages ---
+  dragonciel:{
+    emoji:'🐉', name:'Zéphyr', title:'le dragon', world:'montagne',
+    loot:['nuage','cristal'],
+    texts:[
+      "Monte sur mon dos ! Mais d'abord, un défi tout là-haut ☁️",
+      "J'ai souffl\u00e9 trop fort et mes nuages se sont envolés…",
+      "Ici, les défis sont plus durs. Tu es prête ?",
+    ]},
+  aigle:{
+    emoji:'🦅', name:'Ariane', title:"l'aigle", world:'montagne',
+    loot:['eclair','flocon'],
+    texts:[
+      "Je vole plus vite que l'éclair ⚡ Et toi, tu réfléchis vite ?",
+      "Du haut du ciel, je vois tout. Voyons si tu vois bien aussi !",
+      "Un défi entre les nuages, ça te dit ?",
+    ]},
+  magicienne:{
+    emoji:'🧙‍♀️', name:'Céleste', title:'la magicienne', world:'montagne',
+    loot:['cristal','flocon'],
+    texts:[
+      "Mon cristal montre ton avenir… tu vas réussir ce défi !",
+      "Un sortilège a mélangé mes flocons. Tu m'aides ?",
+      "Concentre-toi bien, celui-là est un peu plus difficile.",
+    ]},
+  // --- Château des Étoiles ---
+  princesse:{
+    emoji:'👸', name:'Aurore', title:'la princesse', world:'chateau',
+    loot:['poussiere','cle'],
+    texts:[
+      "Bienvenue au château ! Le dernier défi du royaume t'attend 👑",
+      "J'ai perdu la clé de la tour aux étoiles… tu m'aides ?",
+      "Seules les plus malignes arrivent jusqu'ici. Bravo !",
+    ]},
+  sorciere:{
+    emoji:'🧙‍♀️', name:'Morgane', title:'la sorcière', world:'chateau',
+    loot:['bougie','parchemin'],
+    texts:[
+      "Mes parchemins sont tout mélangés. Un vrai casse-tête !",
+      "Allume ta cervelle comme une bougie 🕯️ et résous ça !",
+      "Attention, mes défis sont les plus corsés du royaume.",
+    ]},
+  pegase:{
+    emoji:'🦄', name:'Comète', title:'le pégase', world:'chateau',
+    loot:['poussiere','parchemin'],
+    texts:[
+      "Accroche-toi, on file vers les étoiles ✨",
+      "Ma poussière d'étoile s'envole quand tu réussis un défi !",
+      "Prête pour le plus grand galop du royaume ?",
+    ]},
 };
 
+// Les îles, dans l'ordre du voyage. `diff` = difficulté des mini-jeux (1 à 4).
 const WORLDS = {
-  lagon:{ name:'Le Lagon', emoji:'🌊', level:1,
+  lagon:{ name:'Le Lagon', emoji:'🌊', level:1, diff:1, short:'Lagon',
+    subtitle:'Les coraux tranquilles',
     intro:"Touche un personnage pour l'aider ✨",
     sceneEmpty:"Ton lagon est encore vide… gagne des pièces pour le décorer !" },
-  foret:{ name:'La Forêt', emoji:'🌲', level:3,
+  foret:{ name:'La Forêt', emoji:'🌲', level:3, diff:2, short:'Forêt',
+    subtitle:'Les bois enchantés',
     intro:"La forêt enchantée t'attend 🌿",
     sceneEmpty:"Ta forêt est encore vide… gagne des pièces pour la décorer !" },
+  montagne:{ name:'La Montagne', emoji:'⛰️', level:6, diff:3, short:'Montagne',
+    subtitle:'Au-dessus des nuages',
+    intro:"Tout là-haut, les défis sont plus durs ☁️",
+    sceneEmpty:"Ta montagne est toute nue… gagne des pièces pour la décorer !" },
+  chateau:{ name:'Le Château', emoji:'🏰', level:10, diff:4, short:'Château',
+    subtitle:'Le royaume des étoiles',
+    intro:"Le château des étoiles, le plus grand défi 👑",
+    sceneEmpty:"Ton château attend ses décorations !" },
 };
+const WORLD_ORDER = Object.keys(WORLDS);
 function charsOf(world){
   return Object.entries(CHARACTERS).filter(([,c])=>(c.world||'lagon')===world);
 }
@@ -124,6 +210,20 @@ const DECOS = {
   luciole:{emoji:'✨', name:'Lucioles', price:22, world:'foret'},
   papillonD:{emoji:'🦋', name:'Papillons', price:18, world:'foret'},
   dragon:{emoji:'🐲', name:'Bébé dragon', price:45, world:'foret'},
+  // Montagne des Nuages
+  nuageD:{emoji:'☁️', name:'Gros nuage', price:10, world:'montagne'},
+  montgolfiere:{emoji:'🎈', name:'Montgolfière', price:18, world:'montagne'},
+  cerfvolant:{emoji:'🪁', name:'Cerf-volant', price:16, world:'montagne'},
+  colombe:{emoji:'🕊️', name:'Colombe', price:14, world:'montagne'},
+  sommet:{emoji:'🏔️', name:'Sommet enneigé', price:24, world:'montagne'},
+  fusee:{emoji:'🚀', name:'Petite fusée', price:38, world:'montagne'},
+  // Château des Étoiles
+  chateauD:{emoji:'🏰', name:'Grand château', price:30, world:'chateau'},
+  feudartifice:{emoji:'🎆', name:"Feu d'artifice", price:26, world:'chateau'},
+  paon:{emoji:'🦚', name:'Paon royal', price:22, world:'chateau'},
+  carrousel:{emoji:'🎠', name:'Carrousel', price:28, world:'chateau'},
+  galaxie:{emoji:'🌌', name:'Ciel étoilé', price:40, world:'chateau'},
+  couronneD:{emoji:'👑', name:'Couronne du royaume', price:60, world:'chateau'},
 };
 const MISSIONS_PER_LEVEL = 5;
 const ALBUM_REWARD = 100;

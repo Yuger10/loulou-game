@@ -112,16 +112,79 @@
   body[data-world="foret"] .scene{background:linear-gradient(180deg,#DFF3D2 0%, #F6EFD9 100%);}
   body[data-world="foret"] .level-pill i{background:#F4B942;}
 
-  /* onglets de monde */
-  .world-tabs{display:flex; gap:8px; margin-bottom:12px;}
-  .world-tab{
-    flex:1; border:none; border-radius:18px; padding:10px 4px;
-    background:rgba(255,255,255,.5); color:var(--ocean-deep);
-    font-weight:700; font-size:.85rem; cursor:pointer;
+  /* --- Monde : Montagne des Nuages --- */
+  body[data-world="montagne"]{
+    background:linear-gradient(180deg,#E8F4FF 0%, #9FC6E8 45%, #5B8FC7 100%);
   }
-  .world-tab.active{background:var(--foam); box-shadow:var(--shadow);}
-  .world-tab.locked{opacity:.6;}
-  .world-tab small{font-size:.7rem; font-weight:700; opacity:.8;}
+  body[data-world="montagne"] .scene{background:linear-gradient(180deg,#F2F8FF 0%, #DCE9F7 100%);}
+  /* --- Monde : Château des Étoiles --- */
+  body[data-world="chateau"]{
+    background:linear-gradient(180deg,#3B2E63 0%, #6A4C93 45%, #2A1F47 100%);
+  }
+  body[data-world="chateau"] .scene{background:linear-gradient(180deg,#4B3A7A 0%, #F6EFD9 100%);}
+  body[data-world="chateau"] .bubble{background:rgba(255,255,255,.55);}
+
+  /* --- Carte des îles --- */
+  .island-map{
+    position:relative;
+    display:flex; gap:10px;
+    overflow-x:auto;
+    padding:10px 4px 6px;
+    margin-bottom:6px;
+    scroll-snap-type:x proximity;
+    -webkit-overflow-scrolling:touch;
+  }
+  .island-map::-webkit-scrollbar{height:0;}
+  .map-path{
+    position:absolute; left:8px; right:8px; top:52%;
+    height:0; border-top:4px dotted rgba(255,255,255,.75);
+    z-index:0; pointer-events:none;
+  }
+  .map-island{
+    position:relative; z-index:1;
+    flex:0 0 88px;
+    scroll-snap-align:center;
+    border:none; border-radius:22px;
+    background:var(--foam);
+    box-shadow:var(--shadow);
+    padding:10px 4px 8px;
+    display:flex; flex-direction:column; align-items:center; gap:2px;
+    cursor:pointer;
+    transition:transform .15s;
+  }
+  .map-island:active{transform:translateY(3px);}
+  .map-island .ile{font-size:2rem; line-height:1.1;}
+  .map-island .nm{font-size:.72rem; font-weight:800;}
+  .map-island .stars{font-size:.62rem; font-weight:700; color:var(--lagoon-dark);}
+  .map-island .nbchar{font-size:.75rem; opacity:.85;}
+  .map-island .badge-num{
+    position:absolute; top:-6px; left:-4px;
+    background:var(--ocean-deep); color:#fff;
+    width:20px; height:20px; line-height:20px; border-radius:50%;
+    font-size:.7rem; font-weight:800;
+  }
+  .map-island .boat{
+    position:absolute; bottom:-12px; left:50%; transform:translateX(-50%);
+    font-size:1.4rem; animation:bob 1.8s ease-in-out infinite;
+  }
+  @keyframes bob{0%,100%{transform:translateX(-50%) translateY(0);} 50%{transform:translateX(-50%) translateY(-5px);}}
+  .map-island.here{
+    background:linear-gradient(160deg,#FFF9E8,#FFE7F3);
+    box-shadow:0 0 0 3px var(--sun), var(--shadow);
+    transform:scale(1.06);
+  }
+  .map-island.locked{background:rgba(255,255,255,.5); opacity:.75;}
+  .map-island.locked .ile{filter:grayscale(.4);}
+  .map-next{
+    background:rgba(255,255,255,.92); border-radius:16px;
+    padding:8px 12px; font-size:.78rem; font-weight:700;
+    margin:8px 0 10px; box-shadow:var(--shadow);
+  }
+  .world-title{
+    color:var(--foam); text-shadow:0 2px 0 rgba(18,59,79,.25);
+    margin:0 0 10px; font-size:1.05rem;
+  }
+  .world-title small{font-size:.7rem; font-weight:700; opacity:.9;}
 
   .scene{
     background:linear-gradient(180deg,#8FE3E6 0%, #FFF3DE 100%);
@@ -644,6 +707,14 @@
     cursor:pointer;
   }
   .diff-item:active{background:rgba(0,0,0,0.06);}
+  .diff-item.mirror{display:inline-block; transform:scaleX(-1);}
+  /* la secousse doit conserver le miroir */
+  .diff-item.mirror.shake{animation:shake-mirror .35s ease;}
+  @keyframes shake-mirror{
+    0%,100%{transform:scaleX(-1) translateX(0);}
+    25%{transform:scaleX(-1) translateX(6px);}
+    75%{transform:scaleX(-1) translateX(-6px);}
+  }
 
   .puzzle-row{display:flex; gap:10px; justify-content:center; margin-bottom:16px; flex-wrap:wrap;}
   .puzzle-btn{

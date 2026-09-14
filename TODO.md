@@ -66,6 +66,15 @@ Légende priorité : 🔴 haute · 🟠 moyenne · 🟢 basse
 - [x] Album organisé par monde + récompense de 100 pièces quand tout est découvert
 - [x] Quêtes et butins adaptés aux mondes débloqués
 
+### v8 — Carte des îles & mini-jeux enrichis
+- [x] Carte d'îles navigable sur l'écran d'accueil (chemin, avatar, îles verrouillées, progression)
+- [x] Écran « Nouvelle île ! » à chaque déblocage
+- [x] 2 nouvelles îles : ⛰️ La Montagne (niv. 6) et 🏰 Le Château (niv. 10) avec personnages, objets, recettes et décos
+- [x] Difficulté des mini-jeux liée à l'île (⭐ à ⭐⭐⭐⭐) et non plus au niveau
+- [x] Simon : une note distincte par pastille, jouée à chaque appui
+- [x] Intruse : variante « même image retournée en miroir »
+- [x] Puzzle : départs variables, suites décroissantes, comptage de 2 en 2
+
 ---
 
 ## 🔜 À faire
@@ -81,7 +90,7 @@ Légende priorité : 🔴 haute · 🟠 moyenne · 🟢 basse
 ### Priorité 🟠 — personnalisation & objectifs
 
 ### Priorité 🟢 — contenu
-- [ ] 3ᵉ monde (montagne des nuages ? village des lutins ?)
+- [ ] 5ᵉ île (village des lutins ? banquise ?)
 - [ ] Plus de décorations et possibilité de les placer / réorganiser
 - [ ] Événements spéciaux (anniversaire, Noël : décos de saison)
 - [ ] Musique d'ambiance douce (Web Audio, boucle, activable)

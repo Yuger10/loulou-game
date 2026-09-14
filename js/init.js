@@ -7,6 +7,11 @@ renderSoundBtn();
 renderBadge();
 renderProfile();
 ensureQuests();
+// à la première ouverture, les îles déjà accessibles sont considérées comme connues
+if(!state.visited || !state.visited.length){
+  state.visited = WORLD_ORDER.filter(worldUnlocked);
+  save();
+}
 renderLagon();
 
 /* Écran titre : sert aussi à débloquer le son et la voix (geste utilisateur requis sur iOS) */

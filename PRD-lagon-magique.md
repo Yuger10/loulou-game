@@ -139,3 +139,25 @@ Un jeu mobile-friendly en HTML/CSS/JS où une fille de 6 ans explore un lagon pe
 - **8 décorations forestières** : 🌲 🐿️ 🦊 🦔 🏡 ✨ 🦋 🐲 (le bébé dragon à 45 pièces). Chaque monde a ses propres décorations et sa propre scène.
 - **Album par monde** + **récompense d'album complet** : +100 pièces et un écran spécial quand les 40 objets/décorations ont été découverts.
 - Les quêtes du jour, les butins bonus et le coffre ne proposent que des objets des mondes déjà débloqués.
+
+---
+
+# v8 — Carte des îles & mini-jeux enrichis
+
+## Voyage entre les îles
+- L'écran d'accueil affiche une **carte d'îles** défilante reliée par un chemin pointillé. Chaque île montre son numéro, son emoji, son nom, sa difficulté (⭐ à ⭐⭐⭐⭐) et les personnages qui l'habitent ; l'avatar de la joueuse marque l'île courante.
+- Les îles verrouillées affichent 🔒 et le niveau requis ; un bandeau indique la progression vers la prochaine île.
+- Quand une île se débloque, un écran « Nouvelle île ! » l'annonce (à la voix aussi) et propose d'y aller tout de suite.
+- **4 îles** : 🌊 Le Lagon (niv. 1) → 🌲 La Forêt (niv. 3) → ⛰️ La Montagne (niv. 6) → 🏰 Le Château (niv. 10), chacune avec son ambiance visuelle.
+
+## Nouvelles îles
+- **⛰️ La Montagne des Nuages** : Zéphyr le dragon 🐉, Ariane l'aigle 🦅, Céleste la magicienne 🧙‍♀️ ; objets ☁️ 🔮 ⚡ ❄️ ; recettes 🎐 🌩️ et 🌠 Étoile filante ; 6 décorations.
+- **🏰 Le Château des Étoiles** : Aurore la princesse 👸, Morgane la sorcière 🧙‍♀️, Comète le pégase 🦄 ; objets 💫 🗝️ 🕯️ 📜 ; recettes 🏮 🔱 et 🏰 Royaume des étoiles (70 pièces) ; 6 décorations.
+
+## Difficulté par île
+La difficulté des mini-jeux ne dépend plus du niveau mais de **l'île** (1 à 4) : mémoire 3→6 paires, compter jusqu'à 12, intruse 6→12 éléments, Simon 3→6 étapes, suites logiques jusqu'à ABBC, puzzles jusqu'à 7 nombres.
+
+## Mini-jeux enrichis (demandes de la joueuse)
+- **Simon** : chaque pastille a sa propre note (avec harmonique), jouée aussi bien pendant la démonstration qu'à chaque appui — même en cas d'erreur, pour pouvoir reconnaître les couleurs à l'oreille.
+- **Trouve l'intruse** : nouvelle variante « miroir » où l'intruse est la **même image retournée**, à partir de l'île 2 (1 fois sur 3, puis 1 fois sur 2).
+- **Petit puzzle** : les suites ne commencent plus toujours à 1 — départ variable (ex. 6 → 9), suite **décroissante** (7 → 4) et comptage **de 2 en 2** selon l'île.

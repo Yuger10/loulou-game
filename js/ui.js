@@ -193,32 +193,99 @@ function renderBadge(){
   b.textContent = state.newItems;
 }
 
-/* ---------- Mondes / Lagon ---------- */
+/* ---------- Carte des îles ---------- */
 let currentWorld = 'lagon';
 function worldUnlocked(id){ return level() >= WORLDS[id].level; }
-function setWorld(id){
+function gameDiff(){ return WORLDS[currentWorld] ? WORLDS[currentWorld].diff : 1; }
+// prochaine île à débloquer, et progression vers celle-ci
+function nextLockedWorld(){
+  return WORLD_ORDER.find(id=>!worldUnlocked(id));
+}
+function setWorld(id, silent){
+  const w = WORLDS[id];
   if(!worldUnlocked(id)){
     playSound('wrong');
-    speak(`La forêt s'ouvrira au niveau ${WORLDS[id].level}. Encore un peu de missions !`);
-    showToast(`🔒 Débloqué au niveau ${WORLDS[id].level}`);
-    return;
+    const miss = (w.level - level()) * MISSIONS_PER_LEVEL - (state.missions % MISSIONS_PER_LEVEL);
+    speak(`${w.name} s'ouvrira au niveau ${w.level}. Encore ${miss} missions !`);
+    showToast(`🔒 ${w.name} : niveau ${w.level}`);
+    return false;
   }
+  const changed = currentWorld !== id;
   currentWorld = id;
   document.body.dataset.world = id;
   renderLagon();
+  if(changed && !silent){
+    playSound('good');
+    speak(`${w.name} ! ${w.subtitle}.`);
+  }
+  return true;
 }
-function renderWorldTabs(){
-  const el = document.getElementById('world-tabs');
+// signale et ouvre une île fraîchement débloquée
+function checkNewIsland(){
+  const newly = WORLD_ORDER.filter(id=>worldUnlocked(id) && !(state.visited||[]).includes(id));
+  if(!newly.length) return false;
+  const id = newly[newly.length-1];
+  state.visited = (state.visited||[]).concat(newly);
+  save();
+  if(id==='lagon') return false;
+  const w = WORLDS[id];
+  playSound('win'); confetti(); vibrate([70,50,70,50,180]);
+  const who = hello();
+  speak(`Nouvelle île débloquée${who?', '+who:''} ! ${w.name} : ${w.subtitle}. Attention, les défis y sont plus difficiles !`);
+  openModal(`
+    <div class="reward-box">
+      <span class="big-emoji">${w.emoji}</span>
+      <h2>Nouvelle île !</h2>
+      <div class="speech"><strong>${w.name}</strong> — ${w.subtitle}<br>
+        Tu peux y aller depuis la carte 🗺️</div>
+      <div class="speech" style="background:#FFF9E8;">
+        ⚔️ Les défis sont plus difficiles ici : ${'⭐'.repeat(w.diff)}<br>
+        🎁 ${charsOf(id).length} nouveaux amis et de nouveaux objets à découvrir
+      </div>
+    </div>
+    <button class="btn-primary" id="btn-go">Y aller ! ${w.emoji}</button>
+    <button class="btn-ghost" id="btn-stay">Plus tard</button>
+  `);
+  document.getElementById('btn-go').onclick = ()=>{ playSound('tap'); closeModal(); setWorld(id); };
+  document.getElementById('btn-stay').onclick = ()=>{ playSound('tap'); closeModal(); renderLagon(); };
+  return true;
+}
+function renderMap(){
+  const el = document.getElementById('island-map');
   if(!el) return;
-  el.innerHTML = Object.entries(WORLDS).map(([id,w])=>{
+  el.innerHTML = `<div class="map-path"></div>` + WORLD_ORDER.map((id,i)=>{
+    const w = WORLDS[id];
     const locked = !worldUnlocked(id);
-    return `<button class="world-tab ${currentWorld===id?'active':''} ${locked?'locked':''}" data-world="${id}">
-      ${locked?'🔒':w.emoji} ${w.name}${locked?` <small>niv. ${w.level}</small>`:''}
+    const here = currentWorld===id;
+    const nb = charsOf(id).length;
+    return `<button class="map-island ${here?'here':''} ${locked?'locked':''}" data-world="${id}" style="--i:${i}">
+      <span class="badge-num">${i+1}</span>
+      <span class="ile">${locked?'🔒':w.emoji}</span>
+      <span class="nm">${w.short}</span>
+      <span class="stars">${locked?`niv. ${w.level}`:'⭐'.repeat(w.diff)}</span>
+      ${here?`<span class="boat">${state.avatar||'⛵'}</span>`:''}
+      ${!locked && !here ? `<span class="nbchar">${charsOf(id).map(([,c])=>c.emoji).join('')}</span>`:''}
     </button>`;
   }).join('');
-  el.querySelectorAll('.world-tab').forEach(b=>{
+  el.querySelectorAll('.map-island').forEach(b=>{
     b.onclick = ()=>{ playSound('tap'); setWorld(b.dataset.world); };
   });
+  // progression vers la prochaine île
+  const nxt = nextLockedWorld();
+  const info = document.getElementById('map-next');
+  if(info){
+    if(nxt){
+      const w = WORLDS[nxt];
+      const need = (w.level-1) * MISSIONS_PER_LEVEL;
+      const pct = Math.min(100, Math.round(state.missions/need*100));
+      info.innerHTML = `🗺️ Prochaine île : <strong>${w.name}</strong> au niveau ${w.level}
+        <div class="quest-bar"><i style="width:${pct}%"></i></div>`;
+      info.hidden = false;
+    } else {
+      info.innerHTML = `🏆 Tu as débloqué toutes les îles !`;
+      info.hidden = false;
+    }
+  }
 }
 function renderLagon(){
   // si le monde courant n'est plus accessible, on revient au lagon
@@ -229,7 +296,9 @@ function renderLagon(){
   lp.innerHTML = `⭐ Niveau ${level()} <span class="level-bar"><i style="width:${levelProgress()*100}%"></i></span>`;
   const intro = document.getElementById('lagon-intro-text');
   if(intro) intro.textContent = w.intro;
-  renderWorldTabs();
+  const ttl = document.getElementById('world-title');
+  if(ttl) ttl.innerHTML = `${w.emoji} ${w.name} <small>— ${w.subtitle} ${'⭐'.repeat(w.diff)}</small>`;
+  renderMap();
   const el = document.getElementById('islands');
   el.innerHTML = charsOf(currentWorld).map(([id,c])=>`
     <button class="island" data-char="${id}">
