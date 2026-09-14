@@ -13,6 +13,10 @@ const ev = (code)=> w.eval(code);
 let failed = 0;
 function check(name, cond){ console.log((cond?'✅':'❌')+' '+name); if(!cond) failed++; }
 
+// Écran titre
+check('écran titre affiché au lancement', d.getElementById('splash').classList.contains('show'));
+d.getElementById('btn-splash-play').click();
+
 // Accueil : prénom + avatar
 check('écran de bienvenue au 1er lancement', d.getElementById('welcome').classList.contains('show'));
 d.getElementById('name-input').value = 'Loulou';
@@ -26,6 +30,11 @@ check('profil affiché dans la barre', d.getElementById('player-name').textConte
 check('3 personnages affichés', d.querySelectorAll('.island').length===3);
 check('scène déco présente', !!d.getElementById('scene'));
 check('3 missions du jour', ev('state.quests.list.length')===3);
+
+// Simon
+ev('renderSimon()');
+check('simon : 4 pads', d.querySelectorAll('.simon-pad').length===4);
+check('simon : 3 étapes au niveau 1', d.querySelectorAll('.game-progress i').length===3);
 
 d.querySelector('.island[data-char="licorne"]').click();
 check('dialogue ouvert', d.getElementById('overlay').classList.contains('show'));

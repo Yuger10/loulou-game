@@ -152,6 +152,20 @@
   .deco-row .emoji{font-size:2rem;}
   .deco-row.owned{opacity:.75; background:#E8FBE9;}
 
+  /* jeu Simon */
+  .simon-grid{
+    display:grid; grid-template-columns:1fr 1fr; gap:12px;
+    max-width:260px; margin:0 auto 12px;
+  }
+  .simon-pad{
+    aspect-ratio:1/1; border:none; border-radius:24px;
+    background:var(--foam); box-shadow:var(--shadow);
+    font-size:2.6rem; cursor:pointer; opacity:.55;
+    transition:opacity .12s, transform .12s;
+  }
+  .simon-pad.lit{opacity:1; transform:scale(1.08); box-shadow:0 0 0 6px rgba(255,203,76,.55), var(--shadow);}
+  .simon-pad:active{transform:scale(.96);}
+
   /* jeu suite logique */
   .seq-row{
     display:flex; justify-content:center; align-items:center; gap:6px;
@@ -168,6 +182,40 @@
     background:var(--foam); box-shadow:var(--shadow); cursor:pointer;
   }
   .seq-btn:active{transform:translateY(4px); box-shadow:none;}
+
+  /* écran titre animé */
+  #splash{
+    position:fixed; inset:0; z-index:39;
+    background:linear-gradient(180deg,#BDEBEA 0%, var(--lagoon) 55%, var(--lagoon-dark) 100%);
+    display:none; flex-direction:column; align-items:center; justify-content:center;
+    text-align:center; padding:24px; overflow:hidden;
+  }
+  #splash.show{display:flex;}
+  #splash.hiding{animation:splashout .45s ease forwards;}
+  @keyframes splashout{to{opacity:0; transform:scale(1.06); visibility:hidden;}}
+  #splash .title{
+    font-family:'Baloo 2',sans-serif; font-size:2.1rem; font-weight:800; color:var(--foam);
+    text-shadow:0 4px 0 rgba(18,59,79,.28); margin:0 0 2px; line-height:1.15;
+  }
+  #splash .stars{font-size:1.4rem; letter-spacing:6px; margin-bottom:14px; animation:twinkle 2s ease-in-out infinite;}
+  @keyframes twinkle{0%,100%{opacity:.6;} 50%{opacity:1;}}
+  #splash .cast{display:flex; gap:6px; margin-bottom:20px;}
+  #splash .cast span{font-size:3rem; animation:sway 3s ease-in-out infinite;}
+  #splash .cast span:nth-child(2){animation-delay:.6s;}
+  #splash .cast span:nth-child(3){animation-delay:1.2s;}
+  #splash .hello{
+    background:rgba(255,255,255,.9); border-radius:999px; padding:8px 18px;
+    font-weight:700; margin-bottom:18px; box-shadow:var(--shadow);
+  }
+  #splash .btn-primary{max-width:280px; font-size:1.2rem; animation:beat 1.6s ease-in-out infinite;}
+  @keyframes beat{0%,100%{transform:scale(1);} 50%{transform:scale(1.05);}}
+  #splash .waves{
+    position:absolute; bottom:0; left:0; right:0; height:90px;
+    background:radial-gradient(ellipse at 50% 120%, rgba(255,255,255,.5), transparent 70%);
+    pointer-events:none;
+  }
+  #splash .fish{position:absolute; font-size:1.6rem; opacity:.7; animation:swim 9s linear infinite;}
+  @keyframes swim{from{transform:translateX(-60px);} to{transform:translateX(110vw);}}
 
   /* accueil / prénom / avatar */
   #welcome{
@@ -709,6 +757,17 @@
 <div id="overlay">
   <div id="modal"></div>
 </div>
+<div id="splash">
+  <div class="fish" style="top:22%; animation-delay:0s;">🐠</div>
+  <div class="fish" style="top:70%; animation-delay:3.5s;">🐟</div>
+  <div class="fish" style="top:45%; animation-delay:6s;">🐢</div>
+  <h1 class="title">🌊<br>Le Lagon Magique</h1>
+  <div class="stars">⭐ ✨ ⭐</div>
+  <div class="cast"><span>🧜‍♀️</span><span>🦄</span><span>💃</span></div>
+  <div class="hello" id="splash-hello">Prête pour l'aventure ?</div>
+  <button class="btn-primary" id="btn-splash-play">Jouer 🎮</button>
+  <div class="waves"></div>
+</div>
 <div id="welcome">
   <h1>🌊 Le Lagon Magique</h1>
   <p class="sub">Bienvenue dans le lagon ✨</p>
@@ -773,7 +832,7 @@ const CHARACTERS = {
       "Un, deux, trois… on joue ensemble ?",
     ]},
 };
-const GAME_TYPES = ['memory','count','diff','puzzle','sequence'];
+const GAME_TYPES = ['memory','count','diff','puzzle','sequence','simon'];
 
 const DECOS = {
   palmier:{emoji:'🌴', name:'Palmier', price:8},
@@ -1243,10 +1302,41 @@ function closeModal(){
   bindQuit._last = null;
 }
 
+/* Phrases qui dépendent de la partie en cours */
+function contextualLine(charId){
+  const c = CHARACTERS[charId];
+  const who = hello();
+  const lines = [];
+  const q = ensureQuests();
+  const quest = q.list.find(i=>i.n<i.goal && i.type==='char' && i.target===charId);
+  if(quest) lines.push(`Ta mission du jour, c'est de jouer avec moi ! Encore ${quest.goal-quest.n} fois.`);
+  // un objet dont elle a beaucoup
+  const rich = Object.keys(ITEMS).filter(k=>countItem(k)>=3);
+  if(rich.length) { const k = pickRandom(rich); lines.push(`Oh, tu as déjà ${countItem(k)} ${ITEMS[k].name.toLowerCase()}s ${ITEMS[k].emoji} ! Tu pourrais en vendre au marché.`); }
+  // recette presque complète
+  for(const [key,cr] of Object.entries(CRAFTED)){
+    if(countItem(key)>0) continue;
+    const need = Object.entries(cr.recipe);
+    const missing = need.filter(([ik,qty])=>countItem(ik)<qty);
+    if(missing.length===1 && countItem(missing[0][0])===missing[0][1]-1){
+      lines.push(`Il ne te manque qu'un ${ALL_ITEMS[missing[0][0]].name.toLowerCase()} ${ALL_ITEMS[missing[0][0]].emoji} pour fabriquer ${cr.name} ${cr.emoji} !`);
+      break;
+    }
+  }
+  if(state.decos.length===0 && state.coins>=8) lines.push(`Avec tes ${state.coins} pièces, tu pourrais décorer le lagon 🌴 !`);
+  if(state.decos.length>=3) lines.push(`Ton lagon est magnifique${who?', '+who:''} ! ${state.decos.length} décorations déjà ✨`);
+  if(level()>=3) lines.push(`Niveau ${level()} déjà ! Tu es une vraie exploratrice du lagon.`);
+  if(countItem(c.loot[0])===0 && countItem(c.loot[1])===0) lines.push(`Je peux t'offrir ${ITEMS[c.loot[0]].emoji} ou ${ITEMS[c.loot[1]].emoji}, tu n'en as pas encore !`);
+  // 60 % de chance d'utiliser une phrase contextuelle si dispo
+  return (lines.length && Math.random()<0.6) ? pickRandom(lines) : null;
+}
+
 function openDialogue(charId){
   const c = CHARACTERS[charId];
   currentChar = charId;
-  const text = pickRandom(c.texts);
+  const who = hello();
+  const greet = who && Math.random()<0.5 ? `Coucou ${who} ! ` : '';
+  const text = greet + (contextualLine(charId) || pickRandom(c.texts));
   openModal(`
     <div class="char-header">
       <span class="emoji">${c.emoji}</span>
@@ -1272,6 +1362,7 @@ function startMinigame(){
   else if(type==='count') renderCount();
   else if(type==='diff') renderDiff();
   else if(type==='sequence') renderSequence();
+  else if(type==='simon') renderSimon();
   else renderPuzzle();
 }
 
@@ -1448,6 +1539,78 @@ function renderDiff(){
     el.onclick = ()=>{
       if(el.dataset.odd==='true') onMissionWin();
       else wrongFeedback(el);
+    };
+  });
+}
+
+/* Jeu 6 : mémoire de séquence (Simon) */
+function renderSimon(){
+  const PADS = [
+    {k:'a', emoji:'🟡', freq:392, name:'jaune'},
+    {k:'b', emoji:'🔵', freq:523, name:'bleu'},
+    {k:'c', emoji:'🟢', freq:659, name:'vert'},
+    {k:'d', emoji:'🔴', freq:784, name:'rouge'},
+  ];
+  const len = Math.min(6, 2 + level()); // niv.1 : 3, niv.2 : 4 …
+  const seq = Array.from({length:len},()=>pickRandom(PADS));
+  let pos = 0, playing = true;
+
+  openModal(`
+    ${gameHeader('🎵 Répète après moi', 'Regarde bien les couleurs, puis touche-les dans le même ordre')}
+    ${progressDots(0, len)}
+    <div class="simon-grid" id="simon-grid">
+      ${PADS.map(p=>`<button class="simon-pad" data-k="${p.k}">${p.emoji}</button>`).join('')}
+    </div>
+    <p class="puzzle-hint" id="simon-state">👀 Regarde…</p>
+  `);
+  bindQuit();
+
+  const padEl = k => document.querySelector(`.simon-pad[data-k="${k}"]`);
+  function flash(p, i){
+    setTimeout(()=>{
+      const el = padEl(p.k);
+      if(!el) return;
+      el.classList.add('lit');
+      if(state.sound){ try{
+        if(!audioCtx) audioCtx = new (window.AudioContext||window.webkitAudioContext)();
+        if(audioCtx.state==='suspended') audioCtx.resume();
+        tone(p.freq, 0, .3, 'sine', .16);
+      }catch(e){} }
+      setTimeout(()=>el.classList.remove('lit'), 380);
+    }, 600 + i*650);
+  }
+  seq.forEach(flash);
+  setTimeout(()=>{
+    playing = false;
+    const s = document.getElementById('simon-state');
+    if(s) s.textContent = '👆 À toi !';
+  }, 600 + seq.length*650);
+
+  document.querySelectorAll('.simon-pad').forEach(btn=>{
+    btn.onclick = ()=>{
+      if(playing) return;
+      const k = btn.dataset.k;
+      const p = PADS.find(x=>x.k===k);
+      btn.classList.add('lit'); setTimeout(()=>btn.classList.remove('lit'), 200);
+      if(seq[pos].k === k){
+        if(state.sound){ try{ tone(p.freq, 0, .2, 'sine', .14); }catch(e){} }
+        pos++;
+        document.querySelectorAll('.game-progress i').forEach((dd,i)=>dd.classList.toggle('on', i<pos));
+        if(pos===seq.length) setTimeout(onMissionWin, 350);
+      } else {
+        wrongFeedback(btn);
+        pos = 0;
+        document.querySelectorAll('.game-progress i').forEach(dd=>dd.classList.remove('on'));
+        const s = document.getElementById('simon-state');
+        if(s) s.textContent = '🔁 On recommence…';
+        playing = true;
+        seq.forEach(flash);
+        setTimeout(()=>{
+          playing = false;
+          const s2 = document.getElementById('simon-state');
+          if(s2) s2.textContent = '👆 À toi !';
+        }, 600 + seq.length*650);
+      }
     };
   });
 }
@@ -1684,10 +1847,31 @@ renderBadge();
 renderProfile();
 ensureQuests();
 renderLagon();
+
+/* Écran titre : sert aussi à débloquer le son et la voix (geste utilisateur requis sur iOS) */
+function showSplash(){
+  const sp = document.getElementById('splash');
+  document.getElementById('splash-hello').textContent =
+    state.name ? `Coucou ${state.name} ${state.avatar} !` : "Prête pour l'aventure ?";
+  sp.classList.remove('hiding');
+  sp.classList.add('show');
+}
+function hideSplash(){
+  const sp = document.getElementById('splash');
+  playSound('win');
+  sp.classList.add('hiding');
+  setTimeout(()=>{ sp.classList.remove('show','hiding'); }, 450);
+  if(!state.name) openWelcome();
+  else {
+    speak(`Coucou ${state.name} ! Le lagon t'attend.`);
+    renderLagon();
+  }
+}
+document.getElementById('btn-splash-play').addEventListener('click', hideSplash);
+showSplash();
 document.getElementById('avatar-pill').addEventListener('click', ()=>{ playSound('tap'); openWelcome(); });
 document.getElementById('btn-start').addEventListener('click', closeWelcome);
 document.getElementById('name-input').addEventListener('keydown', e=>{ if(e.key==='Enter') closeWelcome(); });
-if(!state.name) openWelcome();
 if('serviceWorker' in navigator && location.protocol!=='file:'){
   navigator.serviceWorker.register('sw.js').catch(()=>{});
 }

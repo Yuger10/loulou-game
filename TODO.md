@@ -45,6 +45,12 @@ Légende priorité : 🔴 haute · 🟠 moyenne · 🟢 basse
 - [x] Album de collection : objets et décorations découverts vs « ? », barre de progression
 - [x] Tests étendus (33 assertions)
 
+### v5 — Simon, écran titre, dialogues vivants
+- [x] 6ᵉ mini-jeu « Répète après moi » (Simon) : séquence lumineuse et sonore à reproduire, 3 à 6 étapes selon le niveau
+- [x] Écran titre animé (poissons, personnages, « Jouer ») — débloque aussi le son/la voix sur iOS
+- [x] Dialogues contextuels : les personnages parlent de ses missions du jour, de son stock, des recettes presque finies, de son lagon décoré
+- [x] Salutation personnalisée dans les dialogues (« Coucou Loulou ! »)
+
 ---
 
 ## 🔜 À faire
@@ -59,9 +65,6 @@ Légende priorité : 🔴 haute · 🟠 moyenne · 🟢 basse
 
 ### Priorité 🟠 — personnalisation & objectifs
 - [ ] **Album complet** : récompense spéciale quand tout est découvert
-- [ ] **Écran d'accueil animé** : titre, vagues, bouton « Jouer » ; rend le lancement plus « jeu »
-- [ ] **Mini-jeu « Mémoire de séquence » (Simon)** : les personnages font clignoter 3-4 couleurs à répéter
-- [ ] Nouveaux dialogues selon le contexte (« Tu as déjà 3 coquillages ! », « Ton lagon est magnifique ! »)
 
 ### Priorité 🟢 — contenu
 - [ ] **2ᵉ décor « La forêt enchantée »** débloqué au niveau 3 : fée 🧚‍♀️, biche 🦌, nouveaux objets (champignon, gland, plume) et recettes

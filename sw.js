@@ -1,4 +1,4 @@
-const CACHE = 'lagon-v3';
+const CACHE = 'lagon-v5';
 const FILES = ['./lagon-magique.html','./manifest.json','./icon.svg'];
 self.addEventListener('install', e=>{
   e.waitUntil(caches.open(CACHE).then(c=>c.addAll(FILES)).then(()=>self.skipWaiting()));
