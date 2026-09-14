@@ -37,6 +37,14 @@ Légende priorité : 🔴 haute · 🟠 moyenne · 🟢 basse
 - [x] PWA : manifest, icône, service worker (hors-ligne, plein écran)
 - [x] Test de fumée jsdom (`npm test`)
 
+### v4 — Prénom, missions du jour, album
+- [x] Voix : emojis prononcés (« Combien y a-t-il d'étoiles ? ») + choix d'une voix féminine française naturelle
+- [x] Écran de bienvenue : prénom + choix d'avatar (10 emojis), modifiable via la pastille en haut
+- [x] Félicitations personnalisées (« Bravo Loulou ! ») à l'écran et à la voix
+- [x] Missions du jour : 3 objectifs tirés chaque jour + coffre bonus (15 pièces + un objet)
+- [x] Album de collection : objets et décorations découverts vs « ? », barre de progression
+- [x] Tests étendus (33 assertions)
+
 ---
 
 ## 🔜 À faire
@@ -44,14 +52,13 @@ Légende priorité : 🔴 haute · 🟠 moyenne · 🟢 basse
 ### Priorité 🔴 — tester avec elle d'abord
 - [ ] **Session de test avec Loulou** : noter quel mini-jeu elle préfère / lequel la bloque
 - [ ] Vérifier la voix sur iPad/iPhone (Safari exige une interaction avant de parler)
+- [ ] Installer une voix française premium (Audrey / Aurélie) sur l'appareil : Réglages → Accessibilité → Contenu énoncé → Voix
 - [ ] Vérifier la taille des boutons et la lisibilité au doigt sur son appareil
 - [ ] Installer la PWA sur son appareil (« Ajouter à l'écran d'accueil »)
 - [ ] Ajuster la difficulté selon ce qu'on observe (nombre de paires, tailles de suites…)
 
 ### Priorité 🟠 — personnalisation & objectifs
-- [ ] **Prénom + avatar** : écran de bienvenue au 1er lancement, choix d'un emoji avatar ; « Bravo Loulou ! » dans les félicitations et la voix
-- [ ] **Missions du jour** : 3 objectifs simples (« gagne 2 coquillages », « crée un collier », « joue avec Luna ») + coffre bonus 🎁 quand les 3 sont faits
-- [ ] **Album / collection** : tous les objets et décos, découverts vs « ? » ; petite récompense quand l'album est complet
+- [ ] **Album complet** : récompense spéciale quand tout est découvert
 - [ ] **Écran d'accueil animé** : titre, vagues, bouton « Jouer » ; rend le lancement plus « jeu »
 - [ ] **Mini-jeu « Mémoire de séquence » (Simon)** : les personnages font clignoter 3-4 couleurs à répéter
 - [ ] Nouveaux dialogues selon le contexte (« Tu as déjà 3 coquillages ! », « Ton lagon est magnifique ! »)

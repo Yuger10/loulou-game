@@ -169,6 +169,89 @@
   }
   .seq-btn:active{transform:translateY(4px); box-shadow:none;}
 
+  /* accueil / prénom / avatar */
+  #welcome{
+    position:fixed; inset:0; z-index:40;
+    background:linear-gradient(180deg,#BDEBEA 0%, var(--lagoon) 50%, var(--lagoon-dark) 100%);
+    display:none;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    padding:24px 20px calc(24px + env(safe-area-inset-bottom));
+    text-align:center;
+  }
+  #welcome.show{display:flex;}
+  #welcome h1{
+    font-size:2rem; color:var(--foam); margin:0 0 4px;
+    text-shadow:0 3px 0 rgba(18,59,79,.25);
+  }
+  #welcome .sub{color:var(--foam); font-weight:600; margin-bottom:18px;}
+  .welcome-card{
+    background:var(--sand); border-radius:28px; padding:20px; width:100%; max-width:400px;
+    box-shadow:var(--shadow);
+  }
+  .welcome-card label{display:block; font-weight:700; margin-bottom:8px; font-size:.95rem;}
+  #name-input{
+    width:100%; border:3px solid var(--lagoon); border-radius:16px;
+    padding:12px 14px; font-size:1.1rem; font-family:'Baloo 2',sans-serif; font-weight:700;
+    text-align:center; color:var(--ocean-deep); background:var(--foam); margin-bottom:16px;
+  }
+  .avatar-grid{display:grid; grid-template-columns:repeat(5,1fr); gap:8px; margin-bottom:18px;}
+  .avatar-opt{
+    border:3px solid transparent; background:var(--foam); border-radius:18px;
+    font-size:1.7rem; padding:8px 0; cursor:pointer;
+  }
+  .avatar-opt.sel{border-color:var(--coral); background:#FFE7E0; transform:scale(1.06);}
+  .avatar-pill{
+    background:var(--foam); border-radius:999px; padding:4px 12px 4px 6px;
+    display:flex; align-items:center; gap:6px; font-weight:700; font-size:.9rem;
+    box-shadow:var(--shadow); border:none; cursor:pointer;
+    margin-right:auto; max-width:50%; overflow:hidden;
+  }
+  .avatar-pill .av{font-size:1.2rem;}
+  .avatar-pill span:last-child{white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+
+  /* quêtes du jour */
+  .quests{
+    background:rgba(255,255,255,.92);
+    border-radius:22px; padding:12px 14px; margin-bottom:14px;
+    box-shadow:var(--shadow);
+  }
+  .quests h3{margin:0 0 8px; font-size:.95rem; display:flex; align-items:center; gap:6px;}
+  .quests h3 .chest{margin-left:auto; font-size:1.3rem;}
+  .quest{
+    display:flex; align-items:center; gap:8px; padding:5px 0; font-size:.85rem; font-weight:600;
+  }
+  .quest .tick{font-size:1.1rem;}
+  .quest .txt{flex:1;}
+  .quest .cnt{font-weight:800; color:var(--lagoon-dark); font-size:.8rem;}
+  .quest.done .txt{text-decoration:line-through; opacity:.6;}
+  .quest-bar{height:7px; background:#E4EEF1; border-radius:999px; overflow:hidden; margin-top:6px;}
+  .quest-bar i{display:block; height:100%; background:var(--coral); border-radius:999px; transition:width .4s;}
+  .btn-chest{
+    width:100%; border:none; border-radius:14px; padding:10px; margin-top:10px;
+    font-weight:700; background:var(--sun); color:var(--ocean-deep); cursor:pointer;
+    box-shadow:0 4px 0 #D9A62A;
+  }
+  .btn-chest:active{transform:translateY(3px); box-shadow:none;}
+
+  /* album */
+  .album-section h3{color:var(--foam); text-shadow:0 2px 0 rgba(18,59,79,.25); font-size:1rem; margin:16px 0 8px;}
+  .album-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:10px;}
+  .album-cell{
+    background:var(--foam); border-radius:18px; padding:10px 4px; text-align:center;
+    box-shadow:var(--shadow); min-height:72px;
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px;
+  }
+  .album-cell.locked{background:rgba(255,255,255,.45);}
+  .album-cell .emoji{font-size:1.7rem;}
+  .album-cell.locked .emoji{filter:grayscale(1); opacity:.35;}
+  .album-cell .nm{font-size:.62rem; font-weight:700; line-height:1.1;}
+  .album-progress{
+    background:rgba(255,255,255,.92); border-radius:18px; padding:12px 14px;
+    font-weight:700; font-size:.9rem; box-shadow:var(--shadow);
+  }
+
   .btn-speak{
     border:none; background:var(--sun); border-radius:999px;
     width:34px; height:34px; font-size:1rem; cursor:pointer; flex-shrink:0;
@@ -576,7 +659,7 @@
   <div class="bubble" style="width:20px;height:20px; top:230px; left:60px; animation-delay:2.6s;"></div>
 
   <header class="topbar">
-    <h1>🌊 Le Lagon Magique</h1>
+    <button class="avatar-pill" id="avatar-pill"><span class="av">👧</span><span id="player-name">Toi</span></button>
     <button class="sound-btn" id="sound-btn" aria-label="Son">🔊</button>
     <div class="coin-pill" id="coin-pill"><span class="icon">🪙</span><span id="coin-count">0</span></div>
   </header>
@@ -587,6 +670,7 @@
         <div class="level-pill" id="level-pill"></div>
         <p>Touche un personnage pour l'aider ✨</p>
       </div>
+      <div class="quests" id="quests"></div>
       <div class="scene" id="scene"></div>
       <div class="islands" id="islands"></div>
     </section>
@@ -607,17 +691,34 @@
       </div>
       <div id="marche-content"></div>
     </section>
+
+    <section id="view-album" class="view">
+      <h2 style="color:var(--foam); text-shadow:0 2px 0 rgba(18,59,79,.25);">📖 Mon album</h2>
+      <div id="album-content"></div>
+    </section>
   </main>
 
   <nav class="bottomnav">
     <button class="navbtn active" data-view="lagon"><span class="icon">🏝️</span>Lagon</button>
     <button class="navbtn" data-view="sac"><span class="icon">🎒</span>Mon sac<span class="badge" id="sac-badge" hidden></span></button>
     <button class="navbtn" data-view="marche"><span class="icon">🏪</span>Marché</button>
+    <button class="navbtn" data-view="album"><span class="icon">📖</span>Album</button>
   </nav>
 </div>
 
 <div id="overlay">
   <div id="modal"></div>
+</div>
+<div id="welcome">
+  <h1>🌊 Le Lagon Magique</h1>
+  <p class="sub">Bienvenue dans le lagon ✨</p>
+  <div class="welcome-card">
+    <label for="name-input">Comment tu t'appelles ?</label>
+    <input id="name-input" type="text" maxlength="12" placeholder="Ton prénom" autocomplete="off">
+    <label>Choisis ton avatar</label>
+    <div class="avatar-grid" id="avatar-grid"></div>
+    <button class="btn-primary" id="btn-start">C'est parti ! 🎮</button>
+  </div>
 </div>
 <div id="confetti"></div>
 <div id="toast"></div>
@@ -689,6 +790,8 @@ const DECOS = {
 const MISSIONS_PER_LEVEL = 5;
 const SAVE_KEY = 'lagon-magique-save';
 
+const AVATARS = ['👧','👩‍🦰','👧‍🦱','👧‍🦲','🧚‍♀️','👸','🧜‍♀️','🦸‍♀️','🐱','🦄'];
+
 /* ---------- État ---------- */
 let state = {
   coins: 5,
@@ -698,6 +801,10 @@ let state = {
   voice: true,
   newItems: 0,
   decos: [],
+  name: '',
+  avatar: '👧',
+  seen: {},           // objets déjà découverts (album)
+  quests: null,       // quêtes du jour { date, list:[{type,target,goal,done,n}], claimed }
 };
 
 function save(){
@@ -710,8 +817,162 @@ function load(){
   }catch(e){}
 }
 function resetState(){
-  state = { coins:5, inventory:{}, missions:0, sound:state.sound, voice:state.voice, newItems:0, decos:[] };
+  state = { coins:5, inventory:{}, missions:0, sound:state.sound, voice:state.voice,
+            newItems:0, decos:[], name:state.name, avatar:state.avatar, seen:{}, quests:null };
   save();
+}
+
+/* ---------- Profil (prénom + avatar) ---------- */
+function hello(){ return state.name ? state.name : ''; }
+function renderProfile(){
+  document.querySelector('#avatar-pill .av').textContent = state.avatar || '👧';
+  document.getElementById('player-name').textContent = state.name || 'Toi';
+}
+let pendingAvatar = '👧';
+function openWelcome(){
+  const grid = document.getElementById('avatar-grid');
+  pendingAvatar = state.avatar || '👧';
+  grid.innerHTML = AVATARS.map(a=>`<button class="avatar-opt ${a===pendingAvatar?'sel':''}" data-av="${a}">${a}</button>`).join('');
+  grid.querySelectorAll('.avatar-opt').forEach(b=>{
+    b.onclick = ()=>{
+      pendingAvatar = b.dataset.av;
+      grid.querySelectorAll('.avatar-opt').forEach(x=>x.classList.toggle('sel', x===b));
+      playSound('tap');
+    };
+  });
+  document.getElementById('name-input').value = state.name || '';
+  document.getElementById('welcome').classList.add('show');
+}
+function closeWelcome(){
+  const name = document.getElementById('name-input').value.trim().slice(0,12);
+  state.name = name;
+  state.avatar = pendingAvatar;
+  save();
+  renderProfile();
+  document.getElementById('welcome').classList.remove('show');
+  playSound('win');
+  const who = name ? name : 'toi';
+  speak(`Bonjour ${who} ! Bienvenue dans le lagon magique.`);
+  showToast(name ? `Bonjour ${name} ! ✨` : 'Bonne aventure ! ✨');
+  renderLagon();
+}
+
+/* ---------- Quêtes du jour ---------- */
+const QUEST_TEMPLATES = [
+  ()=>{ const k = pickRandom(Object.keys(ITEMS)); const goal = 2 + Math.floor(Math.random()*2);
+        return {type:'collect', target:k, goal, n:0, label:`Gagne ${goal} ${ITEMS[k].name.toLowerCase()}${goal>1?'s':''} ${ITEMS[k].emoji}`}; },
+  ()=>{ const c = pickRandom(Object.keys(CHARACTERS)); const goal = 2;
+        return {type:'char', target:c, goal, n:0, label:`Joue ${goal} fois avec ${CHARACTERS[c].name} ${CHARACTERS[c].emoji}`}; },
+  ()=>{ const goal = 3; return {type:'win', target:null, goal, n:0, label:`Réussis ${goal} missions 🎮`}; },
+  ()=>{ const k = pickRandom(['collier','bouquet','couronne','baguette']);
+        return {type:'craft', target:k, goal:1, n:0, label:`Fabrique un ${CRAFTED[k].name.toLowerCase()} ${CRAFTED[k].emoji}`}; },
+  ()=>{ const goal = 2; return {type:'sell', target:null, goal, n:0, label:`Vends ${goal} objets au marché 🏪`}; },
+];
+function today(){ const d = new Date(); return d.toISOString().slice(0,10); }
+function ensureQuests(){
+  if(!state.quests || state.quests.date !== today()){
+    const picks = shuffle(QUEST_TEMPLATES).slice(0,3).map(f=>f());
+    state.quests = { date: today(), list: picks, claimed:false };
+    save();
+  }
+  return state.quests;
+}
+function questProgress(type, target, n=1){
+  const q = ensureQuests();
+  let changed = false;
+  q.list.forEach(item=>{
+    if(item.n >= item.goal) return;
+    if(item.type !== type) return;
+    if(item.target && item.target !== target) return;
+    item.n = Math.min(item.goal, item.n + n);
+    changed = true;
+    if(item.n >= item.goal){
+      playSound('good');
+      showToast(`✅ ${item.label}`);
+    }
+  });
+  if(changed){ save(); renderQuests(); }
+}
+function questsDone(){ const q = ensureQuests(); return q.list.every(i=>i.n>=i.goal); }
+function renderQuests(){
+  const q = ensureQuests();
+  const el = document.getElementById('quests');
+  if(!el) return;
+  const done = q.list.filter(i=>i.n>=i.goal).length;
+  el.innerHTML = `
+    <h3>📜 Mes missions du jour <span class="chest">${questsDone() && !q.claimed ? '🎁' : (q.claimed?'✅':'📦')}</span></h3>
+    ${q.list.map(i=>`
+      <div class="quest ${i.n>=i.goal?'done':''}">
+        <span class="tick">${i.n>=i.goal?'✅':'⭕'}</span>
+        <span class="txt">${i.label}</span>
+        <span class="cnt">${i.n}/${i.goal}</span>
+      </div>`).join('')}
+    <div class="quest-bar"><i style="width:${(done/q.list.length)*100}%"></i></div>
+    ${questsDone() && !q.claimed ? `<button class="btn-chest" id="btn-chest">🎁 Ouvrir le coffre !</button>` : ''}
+  `;
+  const b = document.getElementById('btn-chest');
+  if(b) b.onclick = openChest;
+}
+function openChest(){
+  const q = ensureQuests();
+  if(q.claimed || !questsDone()) return;
+  q.claimed = true;
+  const bonusCoins = 15;
+  const gift = pickRandom(Object.keys(ITEMS));
+  addCoins(bonusCoins);
+  addItem(gift,1); markSeen(gift);
+  state.newItems += 1; save(); renderBadge();
+  playSound('win'); confetti(); vibrate([60,40,120,40,160]);
+  const who = hello();
+  speak(`${who ? who+', b' : 'B'}ravo ! Tu as fini toutes tes missions du jour. Tu gagnes ${bonusCoins} pièces et ${ITEMS[gift].name}.`);
+  openModal(`
+    <div class="reward-box">
+      <span class="big-emoji">🎁</span>
+      <h2>Coffre du jour ouvert !</h2>
+      <div class="speech" style="display:flex; align-items:center; justify-content:center; gap:10px;">
+        <span style="font-size:2rem;">🪙</span><span><strong>+${bonusCoins} pièces</strong></span>
+      </div>
+      <div class="speech" style="display:flex; align-items:center; justify-content:center; gap:10px; background:#FFF9E8;">
+        <span style="font-size:2rem;">${ITEMS[gift].emoji}</span><span><strong>${ITEMS[gift].name}</strong></span>
+      </div>
+    </div>
+    <button class="btn-primary" id="btn-yay">Merci ! 🎉</button>
+  `);
+  document.getElementById('btn-yay').onclick = ()=>{ playSound('tap'); closeModal(); renderLagon(); };
+  renderQuests();
+}
+
+/* ---------- Album ---------- */
+function markSeen(key){
+  if(!state.seen) state.seen = {};
+  if(!state.seen[key]){ state.seen[key] = true; save(); return true; }
+  return false;
+}
+function renderAlbum(){
+  const el = document.getElementById('album-content');
+  const seen = state.seen || {};
+  const cell = (k, it, unlocked)=>`
+    <div class="album-cell ${unlocked?'':'locked'}">
+      <span class="emoji">${unlocked?it.emoji:'❓'}</span>
+      <span class="nm">${unlocked?it.name:'?'}</span>
+    </div>`;
+  const objKeys = Object.keys(ALL_ITEMS);
+  const decoKeys = Object.keys(DECOS);
+  const objFound = objKeys.filter(k=>seen[k]||countItem(k)>0).length;
+  const decoFound = decoKeys.filter(k=>state.decos.includes(k)).length;
+  const total = objKeys.length + decoKeys.length;
+  const found = objFound + decoFound;
+  el.innerHTML = `
+    <div class="album-progress">
+      ${found===total ? '🏆 Album complet, bravo !' : `✨ ${found} / ${total} découverts`}
+      <div class="quest-bar"><i style="width:${(found/total)*100}%"></i></div>
+    </div>
+    <div class="album-section">
+      <h3>🎒 Objets</h3>
+      <div class="album-grid">${objKeys.map(k=>cell(k, ALL_ITEMS[k], !!(seen[k]||countItem(k)>0))).join('')}</div>
+      <h3>🎨 Décorations</h3>
+      <div class="album-grid">${decoKeys.map(k=>cell(k, DECOS[k], state.decos.includes(k))).join('')}</div>
+    </div>`;
 }
 
 /* ---------- Utilitaires ---------- */
@@ -842,7 +1103,6 @@ function pickVoice(){
     return s;
   };
   chosenVoice = voices.sort((a,b)=>score(b)-score(a))[0];
-  console.log("Voix choisie :", chosenVoice && chosenVoice.name);
   return chosenVoice;
 }
 if('speechSynthesis' in window){
@@ -902,6 +1162,7 @@ function switchView(name){
   if(name==='lagon') renderLagon();
   if(name==='sac'){ state.newItems = 0; save(); renderBadge(); renderSac(); }
   if(name==='marche') renderMarche();
+  if(name==='album') renderAlbum();
 }
 function renderBadge(){
   const b = document.getElementById('sac-badge');
@@ -923,6 +1184,7 @@ function renderLagon(){
   el.querySelectorAll('.island').forEach(btn=>{
     btn.addEventListener('click', ()=> { playSound('tap'); openDialogue(btn.dataset.char); });
   });
+  renderQuests();
   renderScene();
 }
 
@@ -1047,18 +1309,28 @@ function onMissionWin(){
   const key = pickRandom(c.loot);
   // bonus : de temps en temps un objet rare en plus
   const bonus = Math.random() < 0.2 ? pickRandom(Object.keys(ITEMS)) : null;
-  addItem(key,1);
-  if(bonus) addItem(bonus,1);
+  addItem(key,1); markSeen(key);
+  if(bonus){ addItem(bonus,1); markSeen(bonus); }
   state.newItems += bonus ? 2 : 1;
   save();
   renderBadge();
+  questProgress('win', null, 1);
+  questProgress('char', currentChar, 1);
+  questProgress('collect', key, 1);
+  if(bonus) questProgress('collect', bonus, 1);
   const it = ITEMS[key];
   const levelUp = level() > prevLevel;
 
   playSound('win');
   vibrate([60,40,120]);
   confetti();
-  const praise = pickRandom(['Bravo, bien joué !','Super, tu es trop forte !','Génial, c\'est réussi !','Waouh, quelle championne !']);
+  const who = hello();
+  const praise = pickRandom([
+    `Bravo${who?' '+who:''}, bien joué !`,
+    `Super${who?' '+who:''}, tu es trop forte !`,
+    `Génial, c'est réussi !`,
+    `Waouh${who?' '+who:''}, quelle championne !`,
+  ]);
   setTimeout(()=> speak(`${levelUp ? `Niveau ${level()} ! ` : ''}${praise} ${c.name} t'offre ${it.name}${bonus ? `, et une surprise : ${ITEMS[bonus].name}` : ''}.`), 300);
 
   openModal(`
@@ -1265,7 +1537,7 @@ function renderSac(){
 document.getElementById('reset-btn').addEventListener('click', ()=>{
   if(confirm('Tout recommencer à zéro ? (pièces, objets et niveau seront perdus)')){
     resetState();
-    renderCoins(); renderBadge(); renderSac(); renderScene();
+    renderCoins(); renderBadge(); renderSac(); renderScene(); renderQuests();
     showToast('Nouvelle aventure ! 🌊');
   }
 });
@@ -1308,6 +1580,7 @@ function renderVendre(el){
       const k = btn.dataset.sell;
       removeItem(k,1);
       addCoins(ALL_ITEMS[k].price);
+      questProgress('sell', null, 1);
       playSound('coin');
       showToast(`Vendu ! +${ALL_ITEMS[k].price} 🪙`);
       renderVendre(el);
@@ -1335,7 +1608,8 @@ function renderEchanger(el){
       const others = Object.keys(ITEMS).filter(x=>x!==k);
       const gained = pickRandom(others);
       removeItem(k,1);
-      addItem(gained,1);
+      addItem(gained,1); markSeen(gained);
+      questProgress('collect', gained, 1);
       playSound('good');
       showToast(`Échangé contre ${ITEMS[gained].emoji} ${ITEMS[gained].name} !`);
       renderEchanger(el);
@@ -1360,7 +1634,8 @@ function renderAcheter(el){
       const cost = ITEMS[k].price * 2;
       if(state.coins < cost) return;
       addCoins(-cost);
-      addItem(k,1);
+      addItem(k,1); markSeen(k);
+      questProgress('collect', k, 1);
       playSound('coin');
       showToast(`${ITEMS[k].emoji} ${ITEMS[k].name} acheté !`);
       renderAcheter(el);
@@ -1389,7 +1664,8 @@ function renderFusionner(el){
       const key = btn.dataset.craft;
       const c = CRAFTED[key];
       Object.entries(c.recipe).forEach(([ik,qty])=> removeItem(ik,qty));
-      addItem(key,1);
+      addItem(key,1); markSeen(key);
+      questProgress('craft', key, 1);
       playSound('win');
       confetti();
       showToast(`${c.emoji} ${c.name} créé !`);
@@ -1400,10 +1676,18 @@ function renderFusionner(el){
 
 /* ---------- Init ---------- */
 load();
+// marque comme déjà vus les objets déjà possédés (anciennes sauvegardes)
+Object.keys(state.inventory||{}).forEach(k=>{ if(state.inventory[k]>0) markSeen(k); });
 renderCoins();
 renderSoundBtn();
 renderBadge();
+renderProfile();
+ensureQuests();
 renderLagon();
+document.getElementById('avatar-pill').addEventListener('click', ()=>{ playSound('tap'); openWelcome(); });
+document.getElementById('btn-start').addEventListener('click', closeWelcome);
+document.getElementById('name-input').addEventListener('keydown', e=>{ if(e.key==='Enter') closeWelcome(); });
+if(!state.name) openWelcome();
 if('serviceWorker' in navigator && location.protocol!=='file:'){
   navigator.serviceWorker.register('sw.js').catch(()=>{});
 }

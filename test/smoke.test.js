@@ -13,8 +13,19 @@ const ev = (code)=> w.eval(code);
 let failed = 0;
 function check(name, cond){ console.log((cond?'✅':'❌')+' '+name); if(!cond) failed++; }
 
+// Accueil : prénom + avatar
+check('écran de bienvenue au 1er lancement', d.getElementById('welcome').classList.contains('show'));
+d.getElementById('name-input').value = 'Loulou';
+d.querySelector('.avatar-opt[data-av="🦄"]').click();
+d.getElementById('btn-start').click();
+check('bienvenue fermé après validation', !d.getElementById('welcome').classList.contains('show'));
+check('prénom enregistré', ev('state.name')==='Loulou');
+check('avatar enregistré', ev('state.avatar')==='🦄');
+check('profil affiché dans la barre', d.getElementById('player-name').textContent==='Loulou');
+
 check('3 personnages affichés', d.querySelectorAll('.island').length===3);
 check('scène déco présente', !!d.getElementById('scene'));
+check('3 missions du jour', ev('state.quests.list.length')===3);
 
 d.querySelector('.island[data-char="licorne"]').click();
 check('dialogue ouvert', d.getElementById('overlay').classList.contains('show'));
@@ -73,6 +84,22 @@ setTimeout(()=>{
     check('déco achetée', ev('state.decos').includes('palmier'));
     check('déco visible dans la scène', d.querySelectorAll('#scene .deco').length===1);
     check('déco non rachetable', !d.querySelector('[data-deco="palmier"]'));
+
+    // Album
+    ev("switchView('album')");
+    check('album rendu', d.querySelectorAll('#album-content .album-cell').length === ev('Object.keys(ALL_ITEMS).length + Object.keys(DECOS).length'));
+    check('objets gagnés découverts dans l\'album', d.querySelectorAll('#album-content .album-cell:not(.locked)').length >= 3);
+    check('objets jamais vus verrouillés', d.querySelectorAll('#album-content .album-cell.locked').length > 0);
+
+    // Quêtes : coffre
+    ev("switchView('lagon'); state.quests.list.forEach(i=>i.n=i.goal); renderQuests()");
+    check('coffre proposé quand tout est fait', !!d.getElementById('btn-chest'));
+    const coinsBefore = ev('state.coins');
+    d.getElementById('btn-chest').click();
+    check('coffre : +15 pièces', ev('state.coins')===coinsBefore+15);
+    check('coffre réclamé une seule fois', ev('state.quests.claimed')===true);
+    ev('renderQuests()');
+    check('bouton coffre retiré après ouverture', !d.getElementById('btn-chest'));
 
     check('sauvegarde localStorage', !!w.localStorage.getItem('lagon-magique-save'));
     check('aucune erreur JS', errs.length===0);
