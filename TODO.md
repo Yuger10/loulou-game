@@ -88,6 +88,13 @@ Légende priorité : 🔴 haute · 🟠 moyenne · 🟢 basse
 - [x] Âge par joueur (4-12 ans) et difficulté des mini-jeux adaptée à l'âge en multijoueur
 - [x] Piste de course avec bateaux, difficulté affichée en étoiles et podium final (+50 pièces)
 
+### v11 — Mixité
+- [x] 4ᵉ personnage masculin sur chaque île (pirate, loup, robot, chevalier)
+- [x] 25 avatars mixtes
+- [x] Objets, recettes et décors d'aventure (carte au trésor, arc, robot, épée, dino, requin, bateau pirate…)
+- [x] Choix fille / garçon / neutre, félicitations accordées en conséquence
+- [x] Formulations neutralisées (« Trouve l'intrus », « En route pour l'aventure ? »)
+
 ---
 
 ## 🔜 À faire

@@ -67,9 +67,11 @@ function onMissionWin(){
   const who = hello();
   const praise = pickRandom([
     `Bravo${who?' '+who:''}, bien joué !`,
-    `Super${who?' '+who:''}, tu es trop forte !`,
+    `Super${who?' '+who:''}, tu es trop ${ac('fort')} !`,
     `Génial, c'est réussi !`,
-    `Waouh${who?' '+who:''}, quelle championne !`,
+    `Waouh${who?' '+who:''}, quel${ac('','le')} ${ac('champion','championne')} !`,
+    `Incroyable, tu as tout trouvé !`,
+    `Trop ${ac('malin','maligne')} ! 💪`,
   ]);
   setTimeout(()=> speak(`${levelUp ? `Niveau ${level()} ! ` : ''}${praise} ${c.name} t'offre ${it.name}${bonus ? `, et une surprise : ${ITEMS[bonus].name}` : ''}.`), 300);
 
@@ -173,13 +175,13 @@ function renderCount(){
   });
 }
 
-/* Jeu 3 : trouver l'intruse */
+/* Jeu 3 : trouver l'intrus */
 function renderDiff(){
   const dd = gameDiff();
   const total = dd>=4 ? 12 : (dd===3 ? 9 : (dd===2 ? 8 : 6));
   // emojis qui se voient bien à l'envers (pas symétriques)
   const MIRRORABLE = ['🐠','🦋','🐌','🦄','🐬','🦊','🐿️','🦉','🦌','🦔','🐟','🎩'];
-  // niveaux élevés : l'intruse ressemble un peu plus aux autres
+  // niveaux élevés : l'intrus ressemble un peu plus aux autres
   const sets = dd>=2
     ? [['🐚','🐌'],['🌸','🌺'],['⭐','🌟'],['🦋','🐝'],['🎀','🎁'],['🐠','🐟'],['🍄','🌰'],['🍀','🌿']]
     : [['🐚','🦄'],['🦋','💎'],['🌸','🍓'],['⭐','🌙'],['🎀','🧜‍♀️'],['🍄','🦊']];
@@ -194,14 +196,14 @@ function renderDiff(){
     items = Array(total).fill(base);
   } else {
     [base, odd] = pickRandom(sets);
-    hint = "Touche celle qui n'est pas comme les autres";
+    hint = "Touche celui qui n'est pas comme les autres";
     items = Array(total-1).fill(base);
   }
   const oddPos = Math.floor(Math.random()*total);
   if(!mirrorMode) items.splice(oddPos,0,odd);
 
   openModal(`
-    ${gameHeader("🔍 Trouve l'intruse", hint)}
+    ${gameHeader("🔍 Trouve l'intrus", hint)}
     <div class="diff-row">
       ${items.map((e,i)=>{
         const isOdd = mirrorMode ? (i===oddPos) : (e===odd);

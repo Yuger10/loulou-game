@@ -3,7 +3,7 @@
 const GAME_LIST = [
   { key:'memory',   emoji:'🧠', name:'Mémoire',      fn:()=>renderMemory() },
   { key:'count',    emoji:'🔢', name:'Compter',      fn:()=>renderCount() },
-  { key:'diff',     emoji:'🔍', name:"L'intruse",    fn:()=>renderDiff() },
+  { key:'diff',     emoji:'🔍', name:"L'intrus",     fn:()=>renderDiff() },
   { key:'puzzle',   emoji:'🧩', name:'Les nombres',  fn:()=>renderPuzzle() },
   { key:'sequence', emoji:'🔮', name:'La suite',     fn:()=>renderSequence() },
   { key:'simon',    emoji:'🎵', name:'Les couleurs', fn:()=>renderSimon() },
@@ -106,6 +106,19 @@ function playerSummary(id){
   }catch(e){ return ''; }
 }
 
+function genderSelector(sel){
+  const opts = [
+    { v:'f', emoji:'👧', label:'Fille' },
+    { v:'m', emoji:'👦', label:'Garçon' },
+    { v:'',  emoji:'🧒', label:'Peu importe' },
+  ];
+  return `<label class="mini-label">Comment on te parle ?</label>
+    <div class="gender-row">
+      ${opts.map(o=>`<button class="gender-opt ${String(sel||'')===o.v?'sel':''}" data-gender="${o.v}">
+        <span class="ge">${o.emoji}</span><span class="gl">${o.label}</span></button>`).join('')}
+    </div>`;
+}
+
 function ageSelector(sel){
   const ages = [4,5,6,7,8,9,10,11,12];
   return `<label class="mini-label">🎂 Quel âge ?</label>
@@ -118,7 +131,7 @@ function ageSelector(sel){
 /* --- Nouveau joueur --- */
 function openNewPlayer(){
   let av = pickRandom(AVATARS);
-  let age = null;
+  let age = null, gen = '';
   const render = ()=>{
     openModal(`
       ${gameHeader('➕ Nouveau joueur', 'Choisis un prénom, un avatar et ton âge')}
@@ -126,6 +139,7 @@ function openNewPlayer(){
       <div class="avatar-grid">
         ${AVATARS.map(a=>`<button class="avatar-opt ${a===av?'sel':''}" data-av="${a}">${a}</button>`).join('')}
       </div>
+      ${genderSelector(gen)}
       ${ageSelector(age)}
       <button class="btn-primary" id="np-ok">C'est parti ! 🎮</button>
       <button class="btn-ghost" id="np-cancel">Annuler</button>
@@ -139,9 +153,12 @@ function openNewPlayer(){
     document.querySelectorAll('.age-opt').forEach(b=>{
       b.onclick = ()=>{ age = Number(b.dataset.age); playSound('tap'); redraw(); };
     });
+    document.querySelectorAll('.gender-opt').forEach(b=>{
+      b.onclick = ()=>{ gen = b.dataset.gender; playSound('tap'); redraw(); };
+    });
     document.getElementById('np-ok').onclick = ()=>{
       const name = (document.getElementById('np-name').value || '').trim().slice(0,12);
-      addProfile(name, av, age);
+      addProfile(name, av, age, gen);
       playSound('win'); confetti();
       speak(`Bienvenue ${name || ''} !`);
       showToast(`${av} ${name || 'Nouveau joueur'} ajouté !`);
@@ -158,6 +175,7 @@ function openPlayerSettings(id){
   if(!p) return;
   let av = p.avatar;
   let age = p.age || null;
+  let gen = p.gender || '';
   const render = ()=>{
     openModal(`
       ${gameHeader(`⚙️ ${p.name || 'Joueur'}`, 'Modifier, réinitialiser ou supprimer')}
@@ -165,6 +183,7 @@ function openPlayerSettings(id){
       <div class="avatar-grid">
         ${AVATARS.map(a=>`<button class="avatar-opt ${a===av?'sel':''}" data-av="${a}">${a}</button>`).join('')}
       </div>
+      ${genderSelector(gen)}
       ${ageSelector(age)}
       <div class="speech" style="font-size:.82rem;">${playerSummary(id)}</div>
       <button class="btn-primary" id="pe-save">Enregistrer ✅</button>
@@ -181,10 +200,14 @@ function openPlayerSettings(id){
     document.querySelectorAll('.age-opt').forEach(b=>{
       b.onclick = ()=>{ age = Number(b.dataset.age); playSound('tap'); redraw(); };
     });
+    document.querySelectorAll('.gender-opt').forEach(b=>{
+      b.onclick = ()=>{ gen = b.dataset.gender; playSound('tap'); redraw(); };
+    });
     document.getElementById('pe-save').onclick = ()=>{
       p.name = (document.getElementById('pe-name').value||'').trim().slice(0,12);
       p.avatar = av;
       p.age = age;
+      p.gender = gen;
       saveProfiles();
       if(id === profiles.current){
         state.name = p.name; state.avatar = p.avatar; save();

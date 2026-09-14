@@ -62,9 +62,9 @@ function switchProfile(id, silent){
   }
 }
 
-function addProfile(name, avatar, age){
+function addProfile(name, avatar, age, gender){
   const id = newId();
-  profiles.list.push({ id, name: name||'', avatar: avatar||'👧', age: age||null });
+  profiles.list.push({ id, name: name||'', avatar: avatar||'👧', age: age||null, gender: gender||'' });
   profiles.current = id; saveProfiles();
   state = freshState({ name: name||'', avatar: avatar||'👧', visited:['lagon'] });
   save();
@@ -91,6 +91,19 @@ function deleteProfile(id){
 function refreshAll(){
   renderCoins(); renderSoundBtn(); renderBadge(); renderProfile();
   ensureQuests(); renderLagon();
+}
+
+/* ---------- Accords féminin / masculin / neutre ---------- */
+// 'f' = féminin, 'm' = masculin, '' = neutre (formulations sans accord)
+function playerGender(){
+  const p = (typeof currentProfile==='function' && currentProfile()) || null;
+  return (p && p.gender) || '';
+}
+// ac('fort') -> 'fort' / 'forte' ; ac('champion','championne')
+function ac(masc, fem){
+  const g = playerGender();
+  if(g==='f') return fem || (masc + 'e');
+  return masc;
 }
 
 /* ---------- Mode chacun son tour ---------- */

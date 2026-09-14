@@ -34,7 +34,8 @@ check('prénom enregistré', ev('state.name')==='Loulou');
 check('avatar enregistré', ev('state.avatar')==='🦄');
 check('profil affiché dans la barre', d.getElementById('player-name').textContent==='Loulou');
 
-check('3 personnages affichés', d.querySelectorAll('.island').length===3);
+check('4 personnages sur le lagon', d.querySelectorAll('.island').length===4);
+check('personnages mixtes sur le lagon', [...d.querySelectorAll('.island')].map(b=>b.dataset.char).join()==='sirene,licorne,danseuse,pirate');
 check('scène déco présente', !!d.getElementById('scene'));
 check('3 missions du jour', ev('state.quests.list.length')===3);
 
@@ -57,8 +58,8 @@ d.querySelector('.map-island[data-world="foret"]').click();
 check('carte : le bateau navigue', ev('sailing')===true);
 ev('sailing=false; setWorld("foret")');   // fin de la traversée
 check('carte : navigation vers la forêt', ev('currentWorld')==='foret');
-check('3 personnages de la forêt', d.querySelectorAll('.island').length===3);
-check('personnages forestiers', [...d.querySelectorAll('.island')].map(b=>b.dataset.char).join()==='fee,biche,hibou');
+check('4 personnages dans la forêt', d.querySelectorAll('.island').length===4);
+check('personnages forestiers mixtes', [...d.querySelectorAll('.island')].map(b=>b.dataset.char).join()==='fee,biche,hibou,loup');
 check('fond de la forêt appliqué', d.body.dataset.world==='foret');
 check('difficulté de la forêt = 2', ev('gameDiff()')===2);
 check('objets de la forêt disponibles', ev('availableItems()').includes('champignon'));
@@ -71,7 +72,7 @@ check('château encore verrouillé', ev('worldUnlocked("chateau")')===false);
 d.querySelector('.map-island[data-world="montagne"]').click();
 ev('sailing=false; setWorld("montagne")');
 check('navigation vers la montagne', ev('currentWorld')==='montagne');
-check('3 personnages de la montagne', [...d.querySelectorAll('.island')].map(b=>b.dataset.char).join()==='dragonciel,aigle,magicienne');
+check('personnages de la montagne', [...d.querySelectorAll('.island')].map(b=>b.dataset.char).join()==='dragonciel,aigle,magicienne,robotmontagne');
 check('difficulté de la montagne = 3', ev('gameDiff()')===3);
 ev('state.missions = 50; renderLagon()');   // niveau 11
 check('château déverrouillé au niveau 10', ev('worldUnlocked("chateau")')===true);
@@ -79,7 +80,7 @@ d.querySelector('.map-island[data-world="chateau"]').click();
 ev('sailing=false; setWorld("chateau")');
 check('navigation vers le château', ev('currentWorld')==='chateau');
 check('difficulté du château = 4', ev('gameDiff()')===4);
-check('château : personnages royaux', [...d.querySelectorAll('.island')].map(b=>b.dataset.char).join()==='princesse,sorciere,pegase');
+check('château : personnages royaux', [...d.querySelectorAll('.island')].map(b=>b.dataset.char).join()==='princesse,sorciere,chevalier,pegase');
 check('carte : toutes les îles débloquées', d.getElementById('map-next').innerHTML.includes('toutes les îles'));
 
 // Annonce de nouvelle île
@@ -87,7 +88,7 @@ ev('state.visited = ["lagon"]; state.missions = 10');
 check('nouvelle île annoncée', ev('checkNewIsland()')===true);
 check('annonce non répétée', ev('checkNewIsland()')===false);
 ev('closeModal(); state.missions = 0; currentWorld="lagon"; renderLagon()');
-check('retour au lagon si le niveau retombe', ev('currentWorld')==='lagon' && d.querySelectorAll('.island').length===3);
+check('retour au lagon si le niveau retombe', ev('currentWorld')==='lagon' && d.querySelectorAll('.island').length===4);
 
 // Simon
 ev('currentWorld="lagon"; renderSimon()');
@@ -288,6 +289,21 @@ setTimeout(()=>{
 
     ev('stopParty()');
     check('mode solo rétabli', ev('party.active')===false && d.getElementById('turn-bar').hidden);
+
+    // ---- Mixité ----
+    check('avatars mixtes proposés', ev('AVATARS').includes('👦') && ev('AVATARS').includes('🦸‍♂️') && ev('AVATARS').includes('🏴‍☠️'));
+    check('un personnage masculin par île',
+      ev('WORLD_ORDER').every(w=> ev(`charsOf(${JSON.stringify('X')})`) || true) &&
+      ['pirate','loup','robotmontagne','chevalier'].every(k=> ev(`!!CHARACTERS[${JSON.stringify(k)}]`)));
+    ev(`profiles.list.find(p=>p.id===${JSON.stringify(p2)}).gender='m'; switchProfile(${JSON.stringify(p2)}, true)`);
+    check('accord au masculin', ev("ac('fort')")==='fort' && ev("ac('champion','championne')")==='champion');
+    ev(`profiles.list.find(p=>p.id===${JSON.stringify(p2)}).gender='f'`);
+    check('accord au féminin', ev("ac('fort')")==='forte' && ev("ac('champion','championne')")==='championne');
+    ev(`profiles.list.find(p=>p.id===${JSON.stringify(p2)}).gender=''`);
+    check('accord neutre par défaut', ev("ac('fort')")==='fort');
+    ev('openNewPlayer()');
+    check('création : choix fille / garçon / neutre', d.querySelectorAll('.gender-opt').length===3);
+    ev('closeModal()');
 
     // ---- Mode course (compétition équitable) ----
     ev(`profiles.list.find(p=>p.id===${JSON.stringify(p1)}).age = 6`);

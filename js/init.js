@@ -21,7 +21,7 @@ renderLagon();
 function showSplash(){
   const sp = document.getElementById('splash');
   document.getElementById('splash-hello').textContent =
-    state.name ? `Coucou ${state.name} ${state.avatar} !` : "Prête pour l'aventure ?";
+    state.name ? `Coucou ${state.name} ${state.avatar} !` : "En route pour l'aventure ?";
   sp.classList.remove('hiding');
   sp.classList.add('show');
 }

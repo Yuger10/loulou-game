@@ -993,3 +993,17 @@
     padding:8px 0; cursor:pointer;
   }
   .age-opt.sel{border-color:var(--coral); background:#FFE7E0;}
+
+  /* choix fille / garçon / neutre */
+  .gender-row{display:flex; gap:8px; margin-bottom:10px;}
+  .gender-opt{
+    flex:1; border:3px solid transparent; background:var(--foam);
+    border-radius:16px; padding:8px 2px; cursor:pointer;
+    display:flex; flex-direction:column; align-items:center; gap:2px;
+  }
+  .gender-opt.sel{border-color:var(--coral); background:#FFE7E0;}
+  .gender-opt .ge{font-size:1.5rem;}
+  .gender-opt .gl{font-size:.68rem; font-weight:800;}
+
+  /* la grille d'avatars est plus fournie : on la rend défilante */
+  .avatar-grid{max-height:150px; overflow-y:auto;}

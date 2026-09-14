@@ -210,3 +210,32 @@ Un 3ᵉ mode, en plus de **👤 Solo** et **🎲 Chacun son tour** : **🏁 la C
 - Une piste s'affiche sur l'écran principal : une ligne par joueur avec son avatar, son prénom, **son âge et sa difficulté en étoiles**, les cases franchies et son ⛵ qui glisse à chaque réussite.
 - La ligne du joueur actif est surlignée, avec un rappel « 👉 Au tour de … ».
 - À l'arrivée : écran de victoire, classement complet, et bouton « 🔁 Refaire une course ».
+
+---
+
+# v11 — Un jeu mixte, aussi pour les garçons
+
+Le jeu était très connoté « fille » (sirène, licorne, danseuse, avatars et félicitations au féminin). Rééquilibrage sans rien retirer de l'existant :
+
+## Personnages
+Chaque île compte désormais **4 personnages, mixtes** :
+| Île | Personnages |
+|---|---|
+| 🌊 Lagon | 🧜‍♀️ Marina · 🦄 Étincelle · 💃 Luna · **🏴‍☠️ Tiago le pirate** |
+| 🌲 Forêt | 🧚‍♀️ Sylvie · 🦌 Maïa · 🦉 Hector · **🐺 Balto le loup** |
+| ⛰️ Montagne | 🐉 Zéphyr · 🦅 Ariane · 🧙‍♀️ Céleste · **🤖 Bolt le robot** |
+| 🏰 Château | 👸 Aurore · 🧙‍♀️ Morgane · 🦄 Comète · **🤴 Prince Tao le chevalier** |
+
+## Avatars
+25 avatars au lieu de 10 : 👦 🧒 👨‍🦰 🦸‍♂️ 🧙‍♂️ 🤴 🧜‍♂️ 🏴‍☠️ 🥷 🤖 🚀 🐉 🦖 🦁 ⚽ s'ajoutent aux avatars existants.
+
+## Objets et décors d'aventure
+- Nouveaux objets : 🧭 Boussole, 🪝 Grappin, 🦴 Vieil os, 🪨 Silex, 🔩 Boulon, 🛡️ Petit bouclier.
+- Nouvelles recettes : 🗺️ Carte au trésor, 🏹 Arc des bois, 🤖 Robot des cimes, ⚔️ Épée du courage.
+- Nouvelles décorations : 🦈 requin, 🏴‍☠️ bateau pirate, 🐙 poulpe, 🦖 dino, 🐺 loup, ⛺ campement, 🛸 soucoupe, 🚡 téléphérique, 🐉 dragon gardien, 🛡️ garde, 🏹 tour d'archers.
+- Total : 25 objets de base, 19 recettes, 41 décorations.
+
+## Langage
+- **Choix « Comment on te parle ? »** à la création d'un joueur : 👧 Fille · 👦 Garçon · 🧒 Peu importe. Les félicitations s'accordent (« tu es trop fort/forte », « quel champion / quelle championne », « un vrai explorateur / une vraie exploratrice »), à l'écran comme à la voix.
+- Formulations neutralisées ailleurs : le mini-jeu devient « Trouve l'**intrus** », l'écran titre « En route pour l'aventure ? ».
+- L'écran titre montre maintenant 🧜‍♀️ 🏴‍☠️ 🦄 🤖 🐉.
