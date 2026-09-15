@@ -16,6 +16,10 @@ if(!state.visited || !state.visited.length){
 renderTurnBar();
 renderRaceTrack();
 renderLagon();
+renderMap();
+renderIslandCard();
+renderLevelPill();
+switchView('carte');
 
 /* Écran titre : sert aussi à débloquer le son et la voix (geste utilisateur requis sur iOS) */
 function showSplash(){
@@ -32,10 +36,27 @@ function hideSplash(){
   setTimeout(()=>{ sp.classList.remove('show','hiding'); }, 450);
   if(!state.name) openWelcome();
   else {
-    speak(`Coucou ${state.name} ! Le lagon t'attend.`);
-    renderLagon();
+    speak(`Coucou ${state.name} ! L'aventure t'attend.`);
+    switchView('carte');
   }
 }
+// navigation secondaire
+document.getElementById('btn-back-map').addEventListener('click', ()=>{ playSound('tap'); switchView('carte'); });
+document.querySelectorAll('[data-sactab]').forEach(b=>{
+  b.addEventListener('click', ()=>{ playSound('tap'); setSacTab(b.dataset.sactab); });
+});
+document.getElementById('quests-btn').addEventListener('click', ()=>{ playSound('tap'); openQuestsModal(); });
+
+// fermeture facile des fenêtres : croix, poignée, clic à côté, touche Échap
+document.getElementById('modal-close').addEventListener('click', ()=>{ playSound('tap'); closeModal(); });
+document.getElementById('modal-handle').addEventListener('click', ()=>{ playSound('tap'); closeModal(); });
+document.getElementById('overlay').addEventListener('click', (e)=>{
+  if(e.target.id==='overlay') closeModal();
+});
+document.addEventListener('keydown', (e)=>{
+  if(e.key==='Escape') closeModal();
+});
+
 document.getElementById('btn-splash-play').addEventListener('click', hideSplash);
 showSplash();
 // la pastille en haut ouvre le panneau des joueurs (profils, solo / chacun son tour)

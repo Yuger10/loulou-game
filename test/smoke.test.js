@@ -34,6 +34,17 @@ check('prénom enregistré', ev('state.name')==='Loulou');
 check('avatar enregistré', ev('state.avatar')==='🦄');
 check('profil affiché dans la barre', d.getElementById('player-name').textContent==='Loulou');
 
+// ---- Navigation par vues ----
+check('démarrage sur la vue Carte', d.getElementById('view-carte').classList.contains('active'));
+check('4 entrées de navigation', d.querySelectorAll('.navbtn').length===4);
+check('carte : fiche de l\'île courante', d.getElementById('island-card').innerHTML.includes('Le Lagon'));
+d.getElementById('ic-go').click();
+check('débarquer ouvre la vue Île', d.getElementById('view-ile').classList.contains('active'));
+check('vue Île : pas de carte dedans', !d.querySelector('#view-ile #island-map'));
+d.getElementById('btn-back-map').click();
+check('retour à la carte', d.getElementById('view-carte').classList.contains('active'));
+ev("switchView('ile')");
+
 check('4 personnages sur le lagon', d.querySelectorAll('.island').length===4);
 check('personnages mixtes sur le lagon', [...d.querySelectorAll('.island')].map(b=>b.dataset.char).join()==='sirene,licorne,danseuse,pirate');
 check('scène déco présente', !!d.getElementById('scene'));
@@ -51,7 +62,7 @@ d.querySelector('.map-island[data-world="foret"]').click();
 check('carte : île verrouillée non accessible', ev('currentWorld')==='lagon');
 check('difficulté du lagon = 1', ev('gameDiff()')===1);
 
-ev('state.missions = 10; renderLagon()');  // niveau 3
+ev("state.missions = 10; switchView('carte')");  // niveau 3
 check('niveau 3 atteint', ev('level()')===3);
 check('carte : forêt déverrouillée', !d.querySelector('.map-island.locked[data-world="foret"]'));
 d.querySelector('.map-island[data-world="foret"]').click();
@@ -66,7 +77,7 @@ check('objets de la forêt disponibles', ev('availableItems()').includes('champi
 check('mémoire plus dure dans la forêt', (ev('renderMemory()'), d.querySelectorAll('.mcard').length===8));
 
 // Îles suivantes
-ev('state.missions = 30; renderLagon()');   // niveau 7
+ev("state.missions = 30; switchView('carte')");   // niveau 7
 check('montagne déverrouillée au niveau 6', ev('worldUnlocked("montagne")')===true);
 check('château encore verrouillé', ev('worldUnlocked("chateau")')===false);
 d.querySelector('.map-island[data-world="montagne"]').click();
@@ -74,13 +85,14 @@ ev('sailing=false; setWorld("montagne")');
 check('navigation vers la montagne', ev('currentWorld')==='montagne');
 check('personnages de la montagne', [...d.querySelectorAll('.island')].map(b=>b.dataset.char).join()==='dragonciel,aigle,magicienne,robotmontagne');
 check('difficulté de la montagne = 3', ev('gameDiff()')===3);
-ev('state.missions = 50; renderLagon()');   // niveau 11
+ev("state.missions = 50; switchView('carte')");   // niveau 11
 check('château déverrouillé au niveau 10', ev('worldUnlocked("chateau")')===true);
 d.querySelector('.map-island[data-world="chateau"]').click();
 ev('sailing=false; setWorld("chateau")');
 check('navigation vers le château', ev('currentWorld')==='chateau');
 check('difficulté du château = 4', ev('gameDiff()')===4);
 check('château : personnages royaux', [...d.querySelectorAll('.island')].map(b=>b.dataset.char).join()==='princesse,sorciere,chevalier,pegase');
+ev("switchView('carte')");
 check('carte : toutes les îles débloquées', d.getElementById('map-next').innerHTML.includes('toutes les îles'));
 
 // Annonce de nouvelle île
@@ -136,7 +148,7 @@ d.querySelector('.island[data-char="licorne"]').click();
 check('dialogue ouvert', d.getElementById('overlay').classList.contains('show'));
 check('bouton voix dans le dialogue', !!d.querySelector('#modal [data-say]'));
 d.getElementById('btn-play').click();
-check('mini-jeu lancé avec bouton quitter', !!d.getElementById('btn-quit'));
+check('mini-jeu lancé, fermeture par la croix de la fenêtre', !!d.querySelector('#modal-body .game-head h2') && !!d.getElementById('modal-close'));
 
 ev("currentChar='licorne'");
 // Compter
@@ -289,6 +301,37 @@ setTimeout(()=>{
 
     ev('stopParty()');
     check('mode solo rétabli', ev('party.active')===false && d.getElementById('turn-bar').hidden);
+
+    // ---- Sac & Album regroupés ----
+    ev("switchView('sac')");
+    check('vue Sac active', d.getElementById('view-sac').classList.contains('active'));
+    d.querySelector('[data-sactab="sac"]').click();
+    check('onglet Objets affiché', !d.getElementById('sac-content').hidden && d.getElementById('album-content').hidden);
+    d.querySelector('[data-sactab="album"]').click();
+    check('onglet Album affiché', d.getElementById('album-content').hidden===false && d.getElementById('sac-content').hidden===true);
+    ev("switchView('album')");
+    check('alias switchView(album) ouvre le sac sur l\'album', d.getElementById('view-sac').classList.contains('active') && !d.getElementById('album-content').hidden);
+    d.querySelector('[data-sactab="sac"]').click();
+
+    // ---- Fenêtres plus accessibles ----
+    ev("openModal('<h2>Test</h2>')");
+    check('fenêtre : bouton fermer présent', !!d.getElementById('modal-close'));
+    check('fenêtre : contenu isolé dans modal-body', d.getElementById('modal-body').innerHTML.includes('Test'));
+    d.getElementById('modal-close').click();
+    check('fenêtre : la croix ferme', !d.getElementById('overlay').classList.contains('show'));
+    ev("openModal('<h2>Test</h2>')");
+    d.getElementById('overlay').dispatchEvent(new w.MouseEvent('click', {bubbles:true}));
+    check('fenêtre : clic à côté ferme', !d.getElementById('overlay').classList.contains('show'));
+    ev("openModal('<h2>Test</h2>')");
+    d.dispatchEvent(new w.KeyboardEvent('keydown', {key:'Escape', bubbles:true}));
+    check('fenêtre : Échap ferme', !d.getElementById('overlay').classList.contains('show'));
+
+    // ---- Missions accessibles depuis la barre du haut ----
+    ev('renderQuestBadge()');
+    check('badge de missions affiché', !d.getElementById('quest-badge').hidden);
+    d.getElementById('quests-btn').click();
+    check('fenêtre des missions', d.querySelectorAll('#quests-modal .quest').length===3);
+    ev('closeModal()');
 
     // ---- Mixité ----
     check('avatars mixtes proposés', ev('AVATARS').includes('👦') && ev('AVATARS').includes('🦸‍♂️') && ev('AVATARS').includes('🏴‍☠️'));

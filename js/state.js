@@ -176,9 +176,32 @@ function questProgress(type, target, n=1){
   if(changed){ save(); renderQuests(); }
 }
 function questsDone(){ const q = ensureQuests(); return q.list.every(i=>i.n>=i.goal); }
-function renderQuests(){
+// pastille du haut : nombre de missions restantes
+function renderQuestBadge(){
   const q = ensureQuests();
-  const el = document.getElementById('quests');
+  const el = document.getElementById('quest-badge');
+  if(!el) return;
+  const left = q.list.filter(i=>i.n<i.goal).length;
+  const ready = questsDone() && !q.claimed;
+  el.hidden = false;
+  el.textContent = ready ? '🎁' : (left || '✓');
+  el.classList.toggle('ready', ready);
+}
+
+function openQuestsModal(){
+  const q = ensureQuests();
+  openModal(`
+    ${gameHeader('📜 Mes missions du jour', questsDone() ? 'Tout est fait, ouvre le coffre !' : 'Termine-les pour ouvrir le coffre')}
+    <div class="quests in-modal" id="quests-modal"></div>
+  `);
+  bindQuit();
+  renderQuests(document.getElementById('quests-modal'));
+}
+
+function renderQuests(target){
+  const q = ensureQuests();
+  const el = target || document.getElementById('quests');
+  renderQuestBadge();
   if(!el) return;
   const done = q.list.filter(i=>i.n>=i.goal).length;
   el.innerHTML = `
@@ -192,7 +215,7 @@ function renderQuests(){
     <div class="quest-bar"><i style="width:${(done/q.list.length)*100}%"></i></div>
     ${questsDone() && !q.claimed ? `<button class="btn-chest" id="btn-chest">🎁 Ouvrir le coffre !</button>` : ''}
   `;
-  const b = document.getElementById('btn-chest');
+  const b = el.querySelector('#btn-chest');
   if(b) b.onclick = openChest;
 }
 function openChest(){

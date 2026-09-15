@@ -79,16 +79,25 @@
   .coin-pill span.icon{font-size:1.2rem;}
   .coin-pill.bump{animation:bump .35s ease;}
   @keyframes bump{0%{transform:scale(1);} 40%{transform:scale(1.25);} 100%{transform:scale(1);}}
-  .sound-btn{
+  .sound-btn, .icon-btn{
+    position:relative;
     border:none;
     background:var(--foam);
     border-radius:999px;
-    width:40px; height:40px;
+    width:42px; height:42px;
     font-size:1.2rem;
     box-shadow:var(--shadow);
     cursor:pointer;
+    flex-shrink:0;
   }
-  .sound-btn:active{transform:translateY(3px); box-shadow:none;}
+  .sound-btn:active, .icon-btn:active{transform:translateY(3px); box-shadow:none;}
+  .icon-btn .badge{
+    position:absolute; top:-4px; right:-4px;
+    background:var(--coral); color:#fff;
+    min-width:19px; height:19px; line-height:19px; border-radius:999px;
+    font-size:.66rem; font-weight:800; padding:0 4px;
+  }
+  .icon-btn .badge.ready{background:var(--sun); color:var(--ocean-deep); animation:chipPulse 1.2s ease-in-out infinite;}
 
   main{flex:1; position:relative; z-index:1; padding:6px 16px 12px;}
   .view{display:none;}
@@ -1007,3 +1016,130 @@
 
   /* la grille d'avatars est plus fournie : on la rend défilante */
   .avatar-grid{max-height:150px; overflow-y:auto;}
+
+  /* ================= Interface épurée (v12) ================= */
+
+  /* en-tête de vue */
+  .view-head{
+    display:flex; align-items:center; gap:10px;
+    margin:2px 0 12px;
+  }
+  .view-head h2{
+    flex:1; margin:0; font-size:1.25rem; color:var(--foam);
+    text-shadow:0 2px 0 rgba(18,59,79,.3);
+  }
+  .view-hint{
+    text-align:center; color:var(--foam); font-weight:600;
+    margin:0 0 14px; opacity:.95; font-size:.9rem;
+  }
+  .chip-btn{
+    border:none; background:rgba(255,255,255,.9); color:var(--ocean-deep);
+    border-radius:999px; padding:8px 14px; font-weight:800; font-size:.8rem;
+    box-shadow:var(--shadow); cursor:pointer; white-space:nowrap;
+  }
+  .chip-btn:active{transform:translateY(3px); box-shadow:none;}
+
+  /* bandeau multijoueur, uniquement quand il sert */
+  .multi-strip{padding:0 16px;}
+  .multi-strip:empty{display:none;}
+
+  /* fiche de l'île sur la carte */
+  .island-card{
+    background:var(--foam); border-radius:24px; padding:14px 16px 16px;
+    box-shadow:var(--shadow);
+  }
+  .island-card .ic-head{display:flex; align-items:center; gap:12px; margin-bottom:10px;}
+  .island-card .ic-emoji{font-size:2.4rem;}
+  .island-card .ic-name{font-family:'Baloo 2',sans-serif; font-weight:800; font-size:1.1rem;}
+  .island-card .ic-sub{font-size:.78rem; font-weight:700; color:var(--lagoon-dark);}
+  .island-card .ic-chars{
+    display:flex; gap:8px; justify-content:center; font-size:1.7rem; margin-bottom:12px;
+  }
+
+  /* îles = personnages, cartes plus grandes et plus lisibles */
+  .islands{grid-template-columns:1fr 1fr; gap:14px;}
+  .island{padding:16px 10px 12px; border-radius:26px;}
+  .island:nth-child(3){grid-column:auto; max-width:none; margin:0;}
+  .island .emoji{font-size:2.8rem;}
+  .island .name{font-size:.9rem; line-height:1.15;}
+
+  /* la scène et les quêtes deviennent secondaires sur la vue Île */
+  #view-ile .scene{margin:16px 0 10px;}
+  #view-ile .quests{margin-bottom:4px;}
+  .quests.in-modal{background:var(--foam); box-shadow:none; padding:4px 2px;}
+
+  /* navigation du bas : cibles plus grandes */
+  nav.bottomnav{
+    position:sticky; bottom:0;
+    padding:8px 10px calc(8px + env(safe-area-inset-bottom));
+  }
+  nav.bottomnav button{
+    padding:8px 0 6px; font-size:.7rem; gap:1px;
+    border-radius:18px; min-height:56px;
+  }
+  nav.bottomnav button .icon{font-size:1.6rem;}
+  nav.bottomnav button.active{
+    background:#EFF9FA;
+  }
+  nav.bottomnav button.active .icon{transform:scale(1.12);}
+
+  /* ---------- Fenêtres (modales) plus accueillantes ---------- */
+  #overlay{background:rgba(18,59,79,.68); backdrop-filter:blur(2px);}
+  body.modal-open{overflow:hidden;}
+  #modal{
+    position:relative;
+    padding:8px 20px calc(26px + env(safe-area-inset-bottom));
+    max-height:90vh;
+    box-shadow:0 -10px 30px rgba(18,59,79,.35);
+  }
+  .modal-handle{
+    position:sticky; top:0; z-index:2;
+    display:flex; justify-content:center; padding:8px 0 10px;
+    background:linear-gradient(180deg, var(--sand) 70%, transparent);
+    cursor:pointer;
+  }
+  .modal-handle span{
+    width:46px; height:5px; border-radius:999px; background:rgba(18,59,79,.22); display:block;
+  }
+  .modal-close{
+    position:absolute; top:10px; right:12px; z-index:3;
+    width:38px; height:38px; border-radius:50%;
+    border:none; background:rgba(18,59,79,.09); color:var(--ocean-deep);
+    font-size:1rem; font-weight:800; cursor:pointer;
+  }
+  .modal-close:active{transform:scale(.92);}
+  #modal h2{font-size:1.3rem;}
+  #modal .btn-primary{padding:16px; font-size:1.1rem; margin-top:4px;}
+  #modal .btn-ghost{padding:12px;}
+
+  /* en-tête de jeu : titre centré, croix intégrée à la fenêtre */
+  .game-head{margin-bottom:2px;}
+
+  .game-head h2{font-size:1.25rem;}
+  .puzzle-hint{
+    font-size:.95rem; opacity:.9;
+    display:flex; align-items:center; justify-content:center; gap:8px;
+    margin:6px 0 14px;
+  }
+  .puzzle-hint .btn-speak{width:30px; height:30px; font-size:.85rem;}
+
+  /* plus de place et de contraste pour les jeux */
+  .memory-grid{gap:12px;}
+  .mcard{font-size:2.1rem; border-radius:18px;}
+  .num-btn{padding:20px 0; font-size:1.6rem; max-width:none;}
+  .diff-item{font-size:2.2rem; padding:10px;}
+  .puzzle-btn{width:68px; height:68px; font-size:1.6rem;}
+  .seq-btn{padding:14px 0;}
+  .simon-pad{border-radius:26px;}
+  .game-choice{padding:14px 4px 12px;}
+  .game-choice .emoji{font-size:2.1rem;}
+
+  /* listes du marché : boutons plus larges */
+  .market-row{padding:12px 14px; border-radius:20px;}
+  .btn-small{padding:10px 16px; font-size:.85rem; border-radius:16px;}
+  .tab-btn{padding:12px 2px; font-size:.8rem;}
+
+  @media (min-width:420px){
+    .view-head h2{font-size:1.4rem;}
+    .island .emoji{font-size:3rem;}
+  }

@@ -239,3 +239,28 @@ Chaque île compte désormais **4 personnages, mixtes** :
 - **Choix « Comment on te parle ? »** à la création d'un joueur : 👧 Fille · 👦 Garçon · 🧒 Peu importe. Les félicitations s'accordent (« tu es trop fort/forte », « quel champion / quelle championne », « un vrai explorateur / une vraie exploratrice »), à l'écran comme à la voix.
 - Formulations neutralisées ailleurs : le mini-jeu devient « Trouve l'**intrus** », l'écran titre « En route pour l'aventure ? ».
 - L'écran titre montre maintenant 🧜‍♀️ 🏴‍☠️ 🦄 🤖 🐉.
+
+---
+
+# v12 — Interface épurée et navigation plus simple
+
+L'écran d'accueil empilait tout (niveau, barre de tour, piste de course, carte, progression, titre d'île, quêtes, décor, personnages). Le jeu est réorganisé en **4 vues courtes**, une tâche par écran :
+
+| Vue | Contenu |
+|---|---|
+| 🗺️ **Carte** | la carte des îles, la progression vers la prochaine île, et une fiche de l'île courante avec « 🏝️ Débarquer sur l'île » |
+| 🏝️ **Île** | uniquement les 4 personnages, le décor et les missions du jour ; bouton « 🗺️ Carte » pour repartir |
+| 🎒 **Sac** | onglets « Objets » et « Album » réunis (l'Album n'occupe plus une entrée de navigation) |
+| 🏪 **Marché** | inchangé, avec des boutons plus larges |
+
+## Navigation
+- Barre du bas ramenée à **4 entrées**, boutons plus hauts (56 px), icônes plus grandes, onglet actif surligné.
+- Toucher une île sur la carte fait naviguer le bateau **puis débarque automatiquement** sur la vue Île.
+- Les **missions du jour** passent dans une pastille 📜 de la barre du haut, avec un badge (nombre de missions restantes ou 🎁 quand le coffre est prêt) ; elles restent consultables sur la vue Île.
+- Les bandeaux multijoueur (tour par tour / course) ne s'affichent que lorsqu'une partie est en cours, dans une bande dédiée sous l'en-tête.
+
+## Fenêtres plus accueillantes
+- Poignée de glissement, **grande croix de fermeture**, fond assombri et flouté pour concentrer l'attention.
+- Fermeture par la croix, la poignée, un clic à côté ou la touche Échap ; la voix s'arrête à la fermeture.
+- Le contenu repart toujours du haut, le corps est isolé dans `#modal-body`.
+- Dans les mini-jeux : titre centré, consigne plus grande avec bouton 🔈, **cases et boutons agrandis** (mémoire, nombres, intrus, puzzle, Simon), plus de respiration entre les éléments.

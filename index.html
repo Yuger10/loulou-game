@@ -23,35 +23,56 @@
   <div class="bubble" style="width:20px;height:20px; top:230px; left:60px; animation-delay:2.6s;"></div>
 
   <header class="topbar">
-    <button class="avatar-pill" id="avatar-pill"><span class="av">👧</span><span id="player-name">Toi</span></button>
-    <button class="sound-btn" id="sound-btn" aria-label="Son">🔊</button>
+    <button class="avatar-pill" id="avatar-pill" aria-label="Les joueurs"><span class="av">👧</span><span id="player-name">Toi</span></button>
+    <button class="icon-btn" id="quests-btn" aria-label="Mes missions du jour">📜<span class="badge" id="quest-badge" hidden></span></button>
+    <button class="icon-btn" id="sound-btn" aria-label="Son">🔊</button>
     <div class="coin-pill" id="coin-pill"><span class="icon">🪙</span><span id="coin-count">0</span></div>
   </header>
 
+  <div class="multi-strip" id="multi-strip">
+    <div class="turn-bar" id="turn-bar" hidden></div>
+    <div class="race-track" id="race-track" hidden></div>
+  </div>
+
   <main>
-    <section id="view-lagon" class="view active">
-      <div class="lagon-intro">
+    <!-- 1. Carte : naviguer entre les îles -->
+    <section id="view-carte" class="view active">
+      <div class="view-head">
+        <h2>🗺️ La carte</h2>
         <div class="level-pill" id="level-pill"></div>
-        <p id="lagon-intro-text">Touche un personnage pour l'aider ✨</p>
       </div>
-      <div class="turn-bar" id="turn-bar" hidden></div>
-      <div class="race-track" id="race-track" hidden></div>
       <div class="island-map" id="island-map"></div>
       <div class="map-next" id="map-next" hidden></div>
-      <h3 class="world-title" id="world-title"></h3>
-      <div class="quests" id="quests"></div>
-      <div class="scene" id="scene"></div>
-      <div class="islands" id="islands"></div>
+      <div class="island-card" id="island-card"></div>
     </section>
 
+    <!-- 2. Île : les personnages et le décor de l'île courante -->
+    <section id="view-ile" class="view">
+      <div class="view-head">
+        <h2 id="world-title">🌊 Le Lagon</h2>
+        <button class="chip-btn" id="btn-back-map">🗺️ Carte</button>
+      </div>
+      <p class="view-hint" id="lagon-intro-text">Touche un personnage pour l'aider ✨</p>
+      <div class="islands" id="islands"></div>
+      <div class="scene" id="scene"></div>
+      <div class="quests" id="quests"></div>
+    </section>
+
+    <!-- 3. Sac & Album -->
     <section id="view-sac" class="view">
-      <h2 style="color:var(--foam); text-shadow:0 2px 0 rgba(18,59,79,.25);">🎒 Mon sac</h2>
+      <div class="view-head"><h2>🎒 Mon sac</h2></div>
+      <div class="tabs">
+        <button class="tab-btn active" data-sactab="sac">🎒 Objets</button>
+        <button class="tab-btn" data-sactab="album">📖 Album</button>
+      </div>
       <div id="sac-content"></div>
+      <div id="album-content" hidden></div>
       <button class="reset-btn" id="reset-btn">⚙️ Mon profil / Recommencer</button>
     </section>
 
+    <!-- 4. Marché -->
     <section id="view-marche" class="view">
-      <h2 style="color:var(--foam); text-shadow:0 2px 0 rgba(18,59,79,.25); margin-bottom:10px;">🏪 Le marché</h2>
+      <div class="view-head"><h2>🏪 Le marché</h2></div>
       <div class="tabs">
         <button class="tab-btn active" data-tab="vendre">Vendre</button>
         <button class="tab-btn" data-tab="echanger">Échanger</button>
@@ -60,23 +81,22 @@
       </div>
       <div id="marche-content"></div>
     </section>
-
-    <section id="view-album" class="view">
-      <h2 style="color:var(--foam); text-shadow:0 2px 0 rgba(18,59,79,.25);">📖 Mon album</h2>
-      <div id="album-content"></div>
-    </section>
   </main>
 
   <nav class="bottomnav">
-    <button class="navbtn active" data-view="lagon"><span class="icon">🏝️</span>Lagon</button>
-    <button class="navbtn" data-view="sac"><span class="icon">🎒</span>Mon sac<span class="badge" id="sac-badge" hidden></span></button>
+    <button class="navbtn active" data-view="carte"><span class="icon">🗺️</span>Carte</button>
+    <button class="navbtn" data-view="ile"><span class="icon">🏝️</span>Île</button>
+    <button class="navbtn" data-view="sac"><span class="icon">🎒</span>Sac<span class="badge" id="sac-badge" hidden></span></button>
     <button class="navbtn" data-view="marche"><span class="icon">🏪</span>Marché</button>
-    <button class="navbtn" data-view="album"><span class="icon">📖</span>Album</button>
   </nav>
 </div>
 
 <div id="overlay">
-  <div id="modal"></div>
+  <div id="modal" role="dialog" aria-modal="true">
+    <div class="modal-handle" id="modal-handle"><span></span></div>
+    <button class="modal-close" id="modal-close" aria-label="Fermer">✕</button>
+    <div id="modal-body"></div>
+  </div>
 </div>
 <div id="splash">
   <div class="fish" style="top:22%; animation-delay:0s;">🐠</div>

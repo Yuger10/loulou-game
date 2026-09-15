@@ -55,7 +55,8 @@ function renderMap(){
     b.onclick = ()=>{
       playSound('tap');
       const id = b.dataset.world;
-      if(!worldUnlocked(id) || id===currentWorld){ setWorld(id); return; }
+      if(!worldUnlocked(id)){ setWorld(id); return; }
+      if(id===currentWorld){ switchView('ile'); return; }
       sailTo(id);
     };
   });
@@ -107,6 +108,8 @@ function sailTo(id){
       sailing = false;
       if(el) el.classList.remove('sailing');
       setWorld(id);
+      renderMap(); renderIslandCard();
+      setTimeout(()=> switchView('ile'), 350);   // on débarque
       return;
     }
     placeBoat(stops[n], true);

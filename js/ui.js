@@ -182,14 +182,45 @@ function confetti(){
 document.querySelectorAll('.navbtn').forEach(btn=>{
   btn.addEventListener('click', ()=> { playSound('tap'); switchView(btn.dataset.view); });
 });
+let currentView = 'carte';
 function switchView(name){
+  // alias pratiques
+  if(name==='lagon') name = 'ile';
+  let sacTab = null;
+  if(name==='album'){ name = 'sac'; sacTab = 'album'; }
+
+  const sec = document.getElementById('view-'+name);
+  if(!sec) return;
+  currentView = name;
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
-  document.getElementById('view-'+name).classList.add('active');
+  sec.classList.add('active');
   document.querySelectorAll('.navbtn').forEach(b=>b.classList.toggle('active', b.dataset.view===name));
-  if(name==='lagon') renderLagon();
-  if(name==='sac'){ state.newItems = 0; save(); renderBadge(); renderSac(); }
+  // remonte en haut de la vue (sans dépendre de window.scrollTo, absent de certains environnements)
+  try{
+    if(document.scrollingElement) document.scrollingElement.scrollTop = 0;
+    else document.documentElement.scrollTop = 0;
+  }catch(e){}
+
+  if(name==='carte'){ renderMap(); renderIslandCard(); renderLevelPill(); }
+  if(name==='ile') renderLagon();
+  if(name==='sac'){
+    state.newItems = 0; save(); renderBadge();
+    setSacTab(sacTab || currentSacTab);
+  }
   if(name==='marche') renderMarche();
-  if(name==='album') renderAlbum();
+}
+
+// onglets du sac : objets / album
+let currentSacTab = 'sac';
+function setSacTab(tab){
+  currentSacTab = tab;
+  document.querySelectorAll('[data-sactab]').forEach(b=>b.classList.toggle('active', b.dataset.sactab===tab));
+  const sac = document.getElementById('sac-content');
+  const alb = document.getElementById('album-content');
+  if(!sac || !alb) return;
+  sac.hidden = tab!=='sac';
+  alb.hidden = tab!=='album';
+  if(tab==='sac') renderSac(); else renderAlbum();
 }
 function renderBadge(){
   const b = document.getElementById('sac-badge');
@@ -263,18 +294,36 @@ function checkNewIsland(){
   document.getElementById('btn-stay').onclick = ()=>{ playSound('tap'); closeModal(); renderLagon(); };
   return true;
 }
+function renderLevelPill(){
+  const lp = document.getElementById('level-pill');
+  if(lp) lp.innerHTML = `⭐ Niv. ${level()} <span class="level-bar"><i style="width:${levelProgress()*100}%"></i></span>`;
+}
+
+// carte : fiche de l'île courante avec le bouton pour y aller
+function renderIslandCard(){
+  const el = document.getElementById('island-card');
+  if(!el) return;
+  const w = WORLDS[currentWorld];
+  el.innerHTML = `
+    <div class="ic-head"><span class="ic-emoji">${w.emoji}</span>
+      <div><div class="ic-name">${w.name}</div><div class="ic-sub">${w.subtitle} · ${'⭐'.repeat(w.diff)}</div></div>
+    </div>
+    <div class="ic-chars">${charsOf(currentWorld).map(([,c])=>`<span>${c.emoji}</span>`).join('')}</div>
+    <button class="btn-primary" id="ic-go">🏝️ Débarquer sur l'île</button>`;
+  const b = document.getElementById('ic-go');
+  if(b) b.onclick = ()=>{ playSound('tap'); switchView('ile'); };
+}
+
 function renderLagon(){
   // si le monde courant n'est plus accessible, on revient au lagon
   if(!worldUnlocked(currentWorld)) currentWorld = 'lagon';
   document.body.dataset.world = currentWorld;
   const w = WORLDS[currentWorld];
-  const lp = document.getElementById('level-pill');
-  lp.innerHTML = `⭐ Niveau ${level()} <span class="level-bar"><i style="width:${levelProgress()*100}%"></i></span>`;
   const intro = document.getElementById('lagon-intro-text');
   if(intro) intro.textContent = w.intro;
   const ttl = document.getElementById('world-title');
-  if(ttl) ttl.innerHTML = `${w.emoji} ${w.name} <small>— ${w.subtitle} ${'⭐'.repeat(w.diff)}</small>`;
-  renderMap();
+  if(ttl) ttl.innerHTML = `${w.emoji} ${w.name}`;
+  renderLevelPill();
   const el = document.getElementById('islands');
   el.innerHTML = charsOf(currentWorld).map(([id,c])=>`
     <button class="island" data-char="${id}">
@@ -339,11 +388,19 @@ function openDecoShop(){
 let currentChar = null;
 
 function openModal(html){
-  document.getElementById('modal').innerHTML = html;
-  document.getElementById('overlay').classList.add('show');
+  const body = document.getElementById('modal-body') || document.getElementById('modal');
+  body.innerHTML = html;
+  const ov = document.getElementById('overlay');
+  ov.classList.add('show');
+  document.body.classList.add('modal-open');
+  // la fenêtre repart toujours du haut
+  const m = document.getElementById('modal');
+  if(m) m.scrollTop = 0;
 }
 function closeModal(){
   document.getElementById('overlay').classList.remove('show');
+  document.body.classList.remove('modal-open');
+  if(window.speechSynthesis) speechSynthesis.cancel();
   bindQuit._last = null;
 }
 

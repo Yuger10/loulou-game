@@ -95,6 +95,13 @@ Légende priorité : 🔴 haute · 🟠 moyenne · 🟢 basse
 - [x] Choix fille / garçon / neutre, félicitations accordées en conséquence
 - [x] Formulations neutralisées (« Trouve l'intrus », « En route pour l'aventure ? »)
 
+### v12 — Interface épurée
+- [x] 4 vues distinctes : Carte, Île, Sac (+ Album en onglet), Marché
+- [x] Navigation du bas simplifiée, cibles tactiles agrandies
+- [x] Débarquement automatique après la traversée en bateau
+- [x] Missions du jour dans une pastille du haut avec badge
+- [x] Fenêtres : poignée, croix, clic extérieur, Échap, contenu agrandi
+
 ---
 
 ## 🔜 À faire

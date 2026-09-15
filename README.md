@@ -22,7 +22,11 @@ index.html           page du jeu (markup uniquement)
 styles.css           tout le style
 js/data.js           objets, recettes, décorations, personnages
 js/state.js          état, sauvegarde/migration, profil, quêtes du jour, album
-js/ui.js             utilitaires, sons, voix, confettis, navigation, lagon, dialogues
+js/ui.js             utilitaires, sons, voix, confettis, navigation par vues, île, dialogues
+js/map.js            carte des îles, bateau, navigation entre mondes
+js/players.js        profils multijoueurs, mode chacun son tour
+js/race.js           mode course et difficulté adaptée à l'âge
+js/profiles-ui.js    écrans joueurs, modes de jeu, choix du mini-jeu
 js/minigames.js      les 6 mini-jeux
 js/market.js         sac + marché (vendre / échanger / acheter / fusionner)
 js/init.js           démarrage, écran titre, service worker

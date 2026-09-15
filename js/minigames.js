@@ -12,23 +12,20 @@ function startMinigame(){
   else renderPuzzle();
 }
 
+// En-tête d'une fenêtre de jeu : titre, consigne et bouton pour l'écouter.
+// La fermeture est assurée par la croix de la fenêtre (#modal-close).
 function gameHeader(title, hint, spoken){
   const say = (spoken || hint).replace(/"/g,'&quot;');
   return `
-    <div class="game-head">
-      <span style="width:40px"></span>
-      <h2>${title}</h2>
-      <button class="sound-btn" id="btn-quit" aria-label="Retour" style="width:40px;height:40px;font-size:1rem;">✖️</button>
-    </div>
-    <p class="puzzle-hint" style="margin-top:8px; display:flex; align-items:center; justify-content:center; gap:8px;">
+    <div class="game-head"><h2>${title}</h2></div>
+    <p class="puzzle-hint">
       <span>${hint}</span>
-      <button class="btn-speak" data-say="${say}" aria-label="Écouter" style="width:28px;height:28px;font-size:.8rem;">🔈</button>
+      <button class="btn-speak" data-say="${say}" aria-label="Écouter la consigne">🔈</button>
     </p>
   `;
 }
+// branche les boutons « écouter » et lit la consigne à voix haute
 function bindQuit(){
-  const b = document.getElementById('btn-quit');
-  if(b) b.onclick = ()=> { playSound('tap'); window.speechSynthesis && speechSynthesis.cancel(); closeModal(); };
   bindSpeakButtons();
   // lit la consigne une seule fois par mini-jeu (le mémo se re-rend à chaque clic)
   const hint = document.querySelector('.puzzle-hint [data-say]');
