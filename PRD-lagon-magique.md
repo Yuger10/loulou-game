@@ -264,3 +264,32 @@ L'écran d'accueil empilait tout (niveau, barre de tour, piste de course, carte,
 - Fermeture par la croix, la poignée, un clic à côté ou la touche Échap ; la voix s'arrête à la fermeture.
 - Le contenu repart toujours du haut, le corps est isolé dans `#modal-body`.
 - Dans les mini-jeux : titre centré, consigne plus grande avec bouton 🔈, **cases et boutons agrandis** (mémoire, nombres, intrus, puzzle, Simon), plus de respiration entre les éléments.
+
+---
+
+# v13 — Boutons plus grands, clics fiables, deck de jeu centré
+
+## Pourquoi
+Le pointeur « accrochait » mal : les îles de la carte flottaient (le bouton lui-même se déplaçait sous le curseur), plusieurs éléments cliquables n'étaient pas de vrais boutons, et beaucoup de cibles étaient trop petites.
+
+## Clics fiables
+- **La carte** : l'animation de flottement est passée du bouton à son contenu — la zone cliquable ne bouge plus. Chaque île a en plus une marge de sécurité autour d'elle.
+- **Vrais boutons** : les cartes du jeu de mémoire et les images du jeu de l'intrus étaient des `div`/`span` ; ce sont désormais des `<button>` (clic fiable, navigation au clavier, libellés pour les lecteurs d'écran).
+- Tous les éléments décoratifs (bulles, mer, route, bateau, confettis, toast) sont explicitement `pointer-events:none` et n'interceptent plus le clic.
+- `touch-action:manipulation` partout : plus de délai de 300 ms au doigt.
+
+## Comportement « cliquable » homogène
+- **Curseur main** sur tout ce qui se clique, `not-allowed` sur ce qui est désactivé.
+- **Survol souris** (uniquement sur écrans avec vrai pointeur) : léger éclaircissement et soulèvement de 2 px ; les îles s'illuminent, leur étiquette passe en doré.
+- **Appui** : assombrissement immédiat, en plus des effets existants.
+- **Focus clavier** visible (contour doré) mais invisible à la souris (`:focus-visible`).
+- Respect de la préférence système « réduire les animations ».
+
+## Cibles agrandies (minimum 48 px)
+Boutons du marché, onglets, navigation (62 px), icônes de la barre du haut (48 px), croix de fermeture (46 px), boutons « écouter » (40 px), cases à cocher des joueurs, avatars, âges…
+
+## Deck de jeu centré
+- Les fenêtres de jeu ne montent plus du bas : elles apparaissent **au centre de l'écran**, en grande carte arrondie (jusqu'à 620 px de large), avec une animation d'apparition en zoom.
+- **Le décor autour est flouté** (`backdrop-filter: blur(10px)`) et assombri en dégradé radial : toute l'attention va sur le jeu.
+- Plateaux agrandis : cartes mémoire 84-96 px, images de l'intrus 72 px, nombres 84 px, pastilles Simon 120-136 px, textes et consignes plus grands.
+- Adaptations automatiques pour les petits écrans en hauteur et les grands écrans.

@@ -187,14 +187,18 @@
   .map-island{
     position:absolute;
     transform:translate(-50%,-50%);
-    border:none; background:none; padding:0;
+    border:none; background:none;
+    /* zone cliquable généreuse et FIXE : seul le contenu flotte */
+    padding:10px 12px;
     display:flex; flex-direction:column; align-items:center; gap:2px;
     cursor:pointer;
-    animation:isleBob 4s ease-in-out infinite;
-    animation-delay:var(--d,0s);
     transition:filter .2s;
   }
-  @keyframes isleBob{0%,100%{transform:translate(-50%,-50%);} 50%{transform:translate(-50%,calc(-50% - 5px));}}
+  .map-island > *{
+    animation:isleBob 4s ease-in-out infinite;
+    animation-delay:var(--d,0s);
+  }
+  @keyframes isleBob{0%,100%{transform:translateY(0);} 50%{transform:translateY(-5px);}}
   .map-island:active{filter:brightness(1.08);}
   .isle{position:relative; width:74px; height:56px; display:block;}
   .isle-land{
@@ -1142,4 +1146,202 @@
   @media (min-width:420px){
     .view-head h2{font-size:1.4rem;}
     .island .emoji{font-size:3rem;}
+  }
+
+  /* ================= Zones cliquables & pointeur (v13) ================= */
+
+  /* Tout ce qui se clique se comporte pareil : curseur, pression, focus clavier */
+  button,
+  [role="button"],
+  .island, .map-island, .mcard, .diff-item, .num-btn, .puzzle-btn,
+  .seq-btn, .simon-pad, .avatar-opt, .age-opt, .gender-opt,
+  .game-choice, .tab-btn, .navbtn, .item-card.clickable{
+    cursor:pointer;
+    touch-action:manipulation;      /* supprime le délai de 300 ms au doigt */
+    user-select:none;
+    -webkit-user-select:none;
+    transition:transform .12s ease, box-shadow .12s ease, filter .12s ease, background .12s ease;
+  }
+  button:disabled,
+  .mcard:disabled,
+  .btn-craft:disabled,
+  .btn-small:disabled{cursor:not-allowed; transition:none;}
+
+  /* Retour visuel à l'appui, partout */
+  button:not(:disabled):active,
+  .island:active, .map-island:active, .mcard:not(:disabled):active,
+  .diff-item:active, .game-choice:active{
+    filter:brightness(.96);
+  }
+
+  /* Survol à la souris (jamais au doigt) */
+  @media (hover:hover) and (pointer:fine){
+    button:not(:disabled):hover,
+    .island:hover, .game-choice:hover, .avatar-opt:hover,
+    .age-opt:hover, .gender-opt:hover, .tab-btn:hover{
+      filter:brightness(1.05);
+      transform:translateY(-2px);
+    }
+    .map-island:not(.locked):hover{filter:brightness(1.08) drop-shadow(0 0 6px rgba(255,255,255,.7));}
+    .map-island:not(.locked):hover .isle-label{background:var(--sun);}
+    .mcard:not(:disabled):not(.flipped):hover{background:#2AB7B9;}
+    .diff-item:hover{background:rgba(46,196,198,.15);}
+    .navbtn:hover{background:#F2FAFB;}
+    .market-row:hover{box-shadow:0 8px 0 rgba(18,59,79,.15);}
+    .item-card:hover{transform:translateY(-2px);}
+    .modal-close:hover{background:rgba(18,59,79,.18);}
+  }
+
+  /* Visible au clavier, invisible à la souris */
+  button:focus{outline:none;}
+  button:focus-visible,
+  [tabindex]:focus-visible{
+    outline:4px solid var(--sun);
+    outline-offset:3px;
+    border-radius:14px;
+  }
+
+  /* --- Cibles agrandies (minimum 48 px) --- */
+  .btn-small{min-height:48px; padding:12px 18px; font-size:.9rem;}
+  .btn-craft{min-height:52px; font-size:1rem;}
+  .btn-primary{min-height:56px;}
+  .btn-ghost{min-height:48px; font-size:.95rem;}
+  .tab-btn{min-height:50px;}
+  .navbtn{min-height:62px;}
+  .icon-btn, .sound-btn{width:48px; height:48px; font-size:1.3rem;}
+  .avatar-pill{min-height:44px; padding:6px 16px 6px 8px;}
+  .coin-pill{min-height:44px;}
+  .modal-close{width:46px; height:46px; font-size:1.15rem;}
+  .modal-handle{padding:10px 0 12px;}
+  .modal-handle span{width:56px; height:6px;}
+  .btn-speak{width:40px; height:40px; font-size:1.05rem;}
+  .pick-btn{min-width:48px; min-height:48px; font-size:1.5rem;}
+  .chip-btn{min-height:44px;}
+  .btn-deco{min-height:44px; padding:10px 16px; font-size:.85rem;}
+  .turn-stop, #race-stop{min-width:44px; min-height:44px; font-size:1rem;}
+  .reset-btn{min-height:46px; padding:12px 20px; font-size:.85rem;}
+
+  /* --- Mini-jeux : grandes cases, faciles à viser --- */
+  .mcard{
+    border:none; color:transparent;
+    min-height:70px; font-size:2.3rem;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .mcard.flipped, .mcard.matched{color:var(--ocean-deep);}
+  .mcard:disabled{opacity:.5;}
+  .diff-item{
+    border:none; background:var(--foam);
+    min-width:62px; min-height:62px;
+    font-size:2.3rem; line-height:1;
+    display:inline-flex; align-items:center; justify-content:center;
+  }
+  .diff-item.mirror{display:inline-flex;}
+  .diff-row{gap:8px; padding:14px 10px;}
+  .num-btn{min-height:64px;}
+  .puzzle-btn{width:72px; height:72px;}
+  .seq-btn{min-height:64px;}
+  .simon-pad{min-height:96px;}
+  .island{min-height:118px;}
+  .game-choice{min-height:88px;}
+  .avatar-opt{min-height:54px; font-size:1.8rem;}
+  .age-opt{min-height:50px;}
+  .gender-opt{min-height:64px;}
+
+  /* la carte : plus de place pour viser les îles */
+  .island-map{height:270px; padding:6px;}
+
+  /* rien de décoratif n'intercepte le pointeur */
+  .bubble, .sea, .sea *, .route, .route *, .boat, .boat *,
+  #confetti, #confetti *, #toast, .waves, .map-path{pointer-events:none;}
+
+  /* accessibilité : respecter la préférence « moins d'animations » */
+  @media (prefers-reduced-motion:reduce){
+    *, *::before, *::after{
+      animation-duration:.01ms !important;
+      animation-iteration-count:1 !important;
+      transition-duration:.01ms !important;
+    }
+  }
+
+  /* ================= Deck de jeu centré (v13) ================= */
+
+  /* Le décor autour est flouté : tout le focus va sur le jeu */
+  #overlay{
+    align-items:center;
+    justify-content:center;
+    padding:16px;
+    background:radial-gradient(ellipse at center,
+      rgba(18,59,79,.45) 0%,
+      rgba(18,59,79,.72) 55%,
+      rgba(10,38,52,.88) 100%);
+    backdrop-filter:blur(10px) saturate(.9);
+    -webkit-backdrop-filter:blur(10px) saturate(.9);
+  }
+
+  /* Le deck : une grande carte posée au centre */
+  #modal{
+    width:min(96vw, 560px);
+    max-width:none;
+    max-height:min(88vh, 860px);
+    border-radius:34px;
+    padding:6px 26px 26px;
+    animation:deckIn .32s cubic-bezier(.2,1.2,.4,1);
+    box-shadow:
+      0 24px 60px rgba(8,30,42,.55),
+      0 0 0 6px rgba(255,255,255,.14);
+    overflow-y:auto;
+    overscroll-behavior:contain;
+  }
+  @keyframes deckIn{
+    from{transform:translateY(24px) scale(.94); opacity:0;}
+    to{transform:translateY(0) scale(1); opacity:1;}
+  }
+
+  /* la poignée redevient une simple barre décorative de fermeture */
+  .modal-handle{background:linear-gradient(180deg, var(--sand) 72%, transparent);}
+
+  /* Contenu plus grand, lisible à bout de bras */
+  #modal h2{font-size:1.5rem; text-align:center;}
+  #modal .puzzle-hint{font-size:1.05rem;}
+  #modal .speech{font-size:1.02rem; padding:16px 18px;}
+  #modal .char-header .emoji{font-size:3rem;}
+  #modal .reward-box .big-emoji{font-size:4.2rem;}
+
+  /* Les plateaux de jeu occupent toute la largeur du deck */
+  .memory-grid{gap:14px; max-width:460px; margin-inline:auto;}
+  .mcard{min-height:84px; font-size:2.8rem; border-radius:22px;}
+  .count-row{padding:22px; gap:10px; max-width:480px; margin-inline:auto;}
+  .count-row span{font-size:2.3rem;}
+  .num-options{gap:14px; max-width:420px; margin-inline:auto;}
+  .num-btn{min-height:76px; font-size:2rem; border-radius:20px;}
+  .diff-row{gap:10px; padding:18px 12px; max-width:480px; margin-inline:auto;}
+  .diff-item{min-width:72px; min-height:72px; font-size:2.8rem; border-radius:18px;}
+  .puzzle-row{gap:14px; max-width:480px; margin-inline:auto;}
+  .puzzle-btn{width:84px; height:84px; font-size:2rem; border-radius:22px;}
+  .seq-row{padding:22px 12px; max-width:480px; margin-inline:auto;}
+  .seq-row span{font-size:2.4rem;}
+  .seq-row .q{width:54px; height:54px; font-size:1.7rem;}
+  .seq-options{gap:14px; max-width:400px; margin-inline:auto;}
+  .seq-btn{min-height:78px; font-size:2.4rem; border-radius:20px;}
+  .simon-grid{max-width:330px; gap:16px;}
+  .simon-pad{min-height:120px; font-size:3.4rem;}
+  .game-picker{max-width:480px; margin-inline:auto; gap:12px;}
+  .game-choice{min-height:100px;}
+  .game-choice .emoji{font-size:2.4rem;}
+  .game-progress i{width:12px; height:12px;}
+  #modal .btn-primary{max-width:480px; margin-inline:auto; display:block;}
+  #modal .btn-ghost{max-width:480px; margin-inline:auto; display:block;}
+
+  /* Écrans larges : le deck respire encore plus */
+  @media (min-width:600px){
+    #modal{width:min(92vw, 620px); padding:8px 34px 32px;}
+    .mcard{min-height:96px;}
+    .simon-pad{min-height:136px;}
+  }
+  /* Petits écrans : on garde tout visible */
+  @media (max-height:640px){
+    #modal{max-height:94vh; padding:4px 18px 18px;}
+    .mcard{min-height:62px; font-size:2rem;}
+    .simon-pad{min-height:84px; font-size:2.6rem;}
+    .puzzle-btn{width:64px; height:64px;}
   }

@@ -102,6 +102,13 @@ Légende priorité : 🔴 haute · 🟠 moyenne · 🟢 basse
 - [x] Missions du jour dans une pastille du haut avec badge
 - [x] Fenêtres : poignée, croix, clic extérieur, Échap, contenu agrandi
 
+### v13 — Ergonomie du clic
+- [x] Zone cliquable des îles rendue fixe (l'animation ne déplace plus le bouton)
+- [x] Cartes mémoire et images de l'intrus converties en vrais `<button>`
+- [x] Curseur, survol, appui et focus clavier homogènes sur tout le jeu
+- [x] Toutes les cibles portées à 48 px minimum
+- [x] Deck de jeu centré et agrandi, décor flouté autour
+
 ---
 
 ## 🔜 À faire

@@ -112,7 +112,7 @@ function renderMemory(){
       ${gameHeader('🧠 Jeu de mémoire','Retrouve les paires identiques')}
       ${progressDots(cards.filter(c=>c.matched).length/2, pairs)}
       <div class="memory-grid ${cols3?'cols3':''}">
-        ${cards.map(c=>`<div class="mcard ${c.matched?'matched':(c.flipped?'flipped':'')}" data-id="${c.id}">${(c.flipped||c.matched)?c.emoji:''}</div>`).join('')}
+        ${cards.map(c=>`<button type="button" class="mcard ${c.matched?'matched':(c.flipped?'flipped':'')}" data-id="${c.id}" ${c.matched?'disabled':''} aria-label="Carte ${c.id+1}">${(c.flipped||c.matched)?c.emoji:''}</button>`).join('')}
       </div>
     `);
     bindQuit();
@@ -204,7 +204,7 @@ function renderDiff(){
     <div class="diff-row">
       ${items.map((e,i)=>{
         const isOdd = mirrorMode ? (i===oddPos) : (e===odd);
-        return `<span class="diff-item ${mirrorMode && isOdd ? 'mirror':''}" data-odd="${isOdd}">${e}</span>`;
+        return `<button type="button" class="diff-item ${mirrorMode && isOdd ? 'mirror':''}" data-odd="${isOdd}" aria-label="Image ${i+1}">${e}</button>`;
       }).join('')}
     </div>
   `);

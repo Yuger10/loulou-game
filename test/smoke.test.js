@@ -326,6 +326,17 @@ setTimeout(()=>{
     d.dispatchEvent(new w.KeyboardEvent('keydown', {key:'Escape', bubbles:true}));
     check('fenêtre : Échap ferme', !d.getElementById('overlay').classList.contains('show'));
 
+    // ---- Zones cliquables ----
+    ev('currentWorld="lagon"; renderMemory()');
+    check('mémoire : vraies cases cliquables (boutons)',
+      [...d.querySelectorAll('.mcard')].every(e=>e.tagName==='BUTTON'));
+    ev('renderDiff()');
+    check('intrus : vrais boutons', [...d.querySelectorAll('.diff-item')].every(e=>e.tagName==='BUTTON'));
+    ev('closeModal(); switchView("carte")');
+    check('carte : îles cliquables sans animation du bouton',
+      [...d.querySelectorAll('.map-island')].every(e=>e.tagName==='BUTTON'));
+    ev('closeModal()');
+
     // ---- Missions accessibles depuis la barre du haut ----
     ev('renderQuestBadge()');
     check('badge de missions affiché', !d.getElementById('quest-badge').hidden);
