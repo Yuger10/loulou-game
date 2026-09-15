@@ -1,4 +1,94 @@
 /* ---------- Mini-jeux ---------- */
+
+/* Essais autorisés : à partir de l'île 2, les erreurs comptent.
+   On évite ainsi de cliquer au hasard jusqu'à tomber juste. */
+let lives = Infinity, maxLives = Infinity, currentGameKind = null;
+
+function triesFor(kind){
+  const d = gameDiff();
+  if(d <= 1) return Infinity;                       // île 1 : on apprend sans pression
+  if(kind === 'memory') return ({2:5, 3:4, 4:3})[d] || 3;   // le mémo demande des essais
+  if(kind === 'simon')  return ({2:3, 3:2, 4:2})[d] || 2;
+  return ({2:3, 3:2, 4:1})[d] || 2;
+}
+
+function setupLives(kind){
+  currentGameKind = kind;
+  maxLives = triesFor(kind);
+  lives = maxLives;
+}
+
+function livesBar(){
+  if(maxLives === Infinity) return '';
+  return `<div class="lives" id="lives-bar" aria-label="Essais restants">
+    ${Array.from({length:maxLives},(_,i)=>`<span class="life ${i<lives?'on':'off'}">${i<lives?'❤️':'🤍'}</span>`).join('')}
+  </div>`;
+}
+function renderLives(){
+  const bar = document.getElementById('lives-bar');
+  if(!bar || maxLives === Infinity) return;
+  [...bar.querySelectorAll('.life')].forEach((el,i)=>{
+    const alive = i < lives;
+    if(!alive && el.classList.contains('on')){
+      el.classList.remove('on'); el.classList.add('off','breaking');
+      el.textContent = '💔';
+      setTimeout(()=>{ el.textContent = '🤍'; el.classList.remove('breaking'); }, 600);
+    }
+  });
+}
+
+// Une erreur : la proposition fautive est neutralisée et un essai est perdu.
+function loseLife(el, opts){
+  opts = opts || {};
+  // multijoueur : la règle reste « une erreur = on passe la main »
+  if(typeof party!=='undefined' && party.active){ wrongFeedback(el); return false; }
+
+  playSound('wrong');
+  vibrate(90);
+  if(el){
+    shakeEl(el);
+    el.classList.add('ko-flash');
+    if(opts.disable !== false && 'disabled' in el){ el.disabled = true; el.classList.add('ko'); }
+    setTimeout(()=> el.classList.remove('ko-flash'), 450);
+  }
+  if(lives === Infinity){
+    if(el && 'disabled' in el && opts.disable !== false){
+      // île 1 : la mauvaise réponse se referme mais on peut continuer
+      setTimeout(()=>{ el.disabled = false; el.classList.remove('ko'); }, 700);
+    }
+    return false;
+  }
+  lives--;
+  renderLives();
+  flashModal('ko');
+  if(lives <= 0){ setTimeout(onMissionFail, 520); return true; }
+  showToast(lives === 1 ? '⚠️ Dernier essai !' : `${lives} essais restants`);
+  return false;
+}
+
+// petit flash coloré sur tout le deck
+function flashModal(kind){
+  const m = document.getElementById('modal');
+  if(!m) return;
+  m.classList.remove('flash-ok','flash-ko');
+  void m.offsetWidth;
+  m.classList.add(kind==='ok' ? 'flash-ok' : 'flash-ko');
+  setTimeout(()=> m.classList.remove('flash-ok','flash-ko'), 500);
+}
+
+// bonne étape : pastille verte + petite étoile qui monte
+function stepOk(el){
+  playSound('good');
+  if(!el) return;
+  el.classList.add('ok-flash');
+  setTimeout(()=> el.classList.remove('ok-flash'), 600);
+  const spark = document.createElement('span');
+  spark.className = 'step-spark';
+  spark.textContent = pickRandom(['✨','⭐','💫','👍']);
+  el.appendChild ? el.appendChild(spark) : null;
+  setTimeout(()=> spark.remove(), 800);
+}
+
 let lastGame = null;
 function startMinigame(){
   // évite de tomber deux fois de suite sur le même jeu
@@ -33,6 +123,39 @@ function bindQuit(){
 }
 function progressDots(done, total){
   return `<div class="game-progress">${Array.from({length:total},(_,i)=>`<i class="${i<done?'on':''}"></i>`).join('')}</div>`;
+}
+
+/* Mission ratée : on encourage, on ne punit pas — mais pas de récompense. */
+function onMissionFail(){
+  bindQuit._last = null;
+  lives = 0;
+  const c = CHARACTERS[currentChar] || CHARACTERS.sirene;
+  const who = hello();
+  playSound('wrong');
+  vibrate([120, 60, 120]);
+  const msg = pickRandom([
+    `Ce n'est pas grave${who?' '+who:''} ! On réessaie ?`,
+    `Presque ! Tu vas y arriver la prochaine fois.`,
+    `Oups ! Regarde bien et réessaie 👀`,
+  ]);
+  speak(`${msg}`);
+
+  openModal(`
+    <div class="reward-box fail-box">
+      <span class="big-emoji fail-emoji">😅</span>
+      <h2>Raté !</h2>
+      <div class="speech">${msg}</div>
+      <div class="speech" style="background:#FFF1EC;">
+        ${c.emoji} <strong>${c.name}</strong> t'attend pour un nouvel essai !
+      </div>
+    </div>
+    <button class="btn-primary" id="btn-retry">🔁 Réessayer</button>
+    <button class="btn-ghost" id="btn-later">Plus tard</button>
+  `);
+  const m = document.getElementById('modal');
+  if(m){ m.classList.add('shake-hard'); setTimeout(()=>m.classList.remove('shake-hard'), 500); }
+  document.getElementById('btn-retry').onclick = ()=>{ playSound('tap'); startMinigame(); };
+  document.getElementById('btn-later').onclick = ()=>{ playSound('tap'); closeModal(); renderLagon(); };
 }
 
 function onMissionWin(){
@@ -73,11 +196,13 @@ function onMissionWin(){
   setTimeout(()=> speak(`${levelUp ? `Niveau ${level()} ! ` : ''}${praise} ${c.name} t'offre ${it.name}${bonus ? `, et une surprise : ${ITEMS[bonus].name}` : ''}.`), 300);
 
   openModal(`
-    <div class="reward-box">
-      <span class="big-emoji">${levelUp ? '🌟' : '🎉'}</span>
+    <div class="reward-box win-box">
+      <span class="win-rays" aria-hidden="true"></span>
+      <span class="big-emoji win-emoji">${levelUp ? '🌟' : '🎉'}</span>
+      <span class="win-stamp">✅</span>
       <h2>${levelUp ? `Niveau ${level()} !` : praise}</h2>
-      <div class="speech" style="display:flex; align-items:center; justify-content:center; gap:10px;">
-        <span style="font-size:2rem;">${it.emoji}</span>
+      <div class="speech reward-item" style="display:flex; align-items:center; justify-content:center; gap:10px;">
+        <span class="reward-emoji" style="font-size:2rem;">${it.emoji}</span>
         <span>${c.name} t'offre : <strong>${it.name}</strong></span>
       </div>
       ${bonus ? `<div class="speech" style="display:flex; align-items:center; justify-content:center; gap:10px; background:#FFF9E8;">
@@ -100,6 +225,7 @@ function onMissionWin(){
 
 /* Jeu 1 : mémoire */
 function renderMemory(){
+  setupLives('memory');
   const dd = gameDiff();
   const pairs = dd===1 ? 3 : (dd===2 ? 4 : (dd===3 ? 5 : 6));
   const pool = shuffle(Object.values(ALL_ITEMS).map(i=>i.emoji)).slice(0,pairs);
@@ -110,6 +236,7 @@ function renderMemory(){
   function render(){
     openModal(`
       ${gameHeader('🧠 Jeu de mémoire','Retrouve les paires identiques')}
+      ${livesBar()}
       ${progressDots(cards.filter(c=>c.matched).length/2, pairs)}
       <div class="memory-grid ${cols3?'cols3':''}">
         ${cards.map(c=>`<button type="button" class="mcard ${c.matched?'matched':(c.flipped?'flipped':'')}" data-id="${c.id}" ${c.matched?'disabled':''} aria-label="Carte ${c.id+1}">${(c.flipped||c.matched)?c.emoji:''}</button>`).join('')}
@@ -129,16 +256,24 @@ function renderMemory(){
         const second = card;
         const isMatch = first.emoji===second.emoji;
         setTimeout(()=>{
+          const wasMatch = isMatch;
           if(isMatch){
             first.matched = true; second.matched = true;
-            playSound('good');
           } else {
             first.flipped = false; second.flipped = false;
-            playSound('wrong');
           }
           first = null; lock = false;
           render();
-          if(cards.every(c=>c.matched)) setTimeout(onMissionWin, 300);
+          if(wasMatch){
+            playSound('good');
+            document.querySelectorAll('.mcard.matched').forEach(el=>{
+              el.classList.add('ok-flash');
+              setTimeout(()=>el.classList.remove('ok-flash'), 600);
+            });
+          } else {
+            if(loseLife(null)) return;    // plus d'essais : mission ratée
+          }
+          if(cards.every(c=>c.matched)){ flashModal('ok'); setTimeout(onMissionWin, 350); }
         }, isMatch ? 350 : 700);
       };
     });
@@ -148,6 +283,7 @@ function renderMemory(){
 
 /* Jeu 2 : compter */
 function renderCount(){
+  setupLives('count');
   const emoji = pickRandom(['⭐','🐚','🌸','🦪','🐠','🦋']);
   const dd = gameDiff();
   const min = dd>=3 ? 4 : 3, max = Math.min(12, 5 + dd*2); // île 1 : 3–7 … île 4 : 4–12
@@ -158,6 +294,7 @@ function renderCount(){
 
   openModal(`
     ${gameHeader('🔢 Compte avec moi', `Combien y a-t-il de ${emoji} ?`, `Combien y a-t-il de ${emojiWord(emoji,true)} ?`)}
+    ${livesBar()}
     <div class="count-row">${Array(n).fill(emoji).map(e=>`<span>${e}</span>`).join('')}</div>
     <div class="num-options">
       ${options.map(o=>`<button class="num-btn" data-v="${o}">${o}</button>`).join('')}
@@ -166,14 +303,15 @@ function renderCount(){
   bindQuit();
   document.querySelectorAll('.num-btn').forEach(btn=>{
     btn.onclick = ()=>{
-      if(Number(btn.dataset.v)===n) onMissionWin();
-      else wrongFeedback(btn);
+      if(Number(btn.dataset.v)===n){ stepOk(btn); flashModal('ok'); setTimeout(onMissionWin, 350); }
+      else loseLife(btn);
     };
   });
 }
 
 /* Jeu 3 : trouver l'intrus */
 function renderDiff(){
+  setupLives('diff');
   const dd = gameDiff();
   const total = dd>=4 ? 12 : (dd===3 ? 9 : (dd===2 ? 8 : 6));
   // emojis qui se voient bien à l'envers (pas symétriques)
@@ -201,6 +339,7 @@ function renderDiff(){
 
   openModal(`
     ${gameHeader("🔍 Trouve l'intrus", hint)}
+    ${livesBar()}
     <div class="diff-row">
       ${items.map((e,i)=>{
         const isOdd = mirrorMode ? (i===oddPos) : (e===odd);
@@ -211,14 +350,15 @@ function renderDiff(){
   bindQuit();
   document.querySelectorAll('.diff-item').forEach(el=>{
     el.onclick = ()=>{
-      if(el.dataset.odd==='true') onMissionWin();
-      else wrongFeedback(el);
+      if(el.dataset.odd==='true'){ stepOk(el); flashModal('ok'); setTimeout(onMissionWin, 350); }
+      else loseLife(el);
     };
   });
 }
 
 /* Jeu 6 : mémoire de séquence (Simon) */
 function renderSimon(){
+  setupLives('simon');
   const PADS = [
     {k:'a', emoji:'🟡', freq:392, name:'jaune'},
     {k:'b', emoji:'🔵', freq:523, name:'bleu'},
@@ -231,6 +371,7 @@ function renderSimon(){
 
   openModal(`
     ${gameHeader('🎵 Répète après moi', 'Regarde bien les couleurs, puis touche-les dans le même ordre')}
+    ${livesBar()}
     ${progressDots(0, len)}
     <div class="simon-grid" id="simon-grid">
       ${PADS.map(p=>`<button class="simon-pad" data-k="${p.k}">${p.emoji}</button>`).join('')}
@@ -276,10 +417,9 @@ function renderSimon(){
       if(seq[pos].k === k){
         pos++;
         document.querySelectorAll('.game-progress i').forEach((dd,i)=>dd.classList.toggle('on', i<pos));
-        if(pos===seq.length) setTimeout(onMissionWin, 350);
+        if(pos===seq.length){ flashModal('ok'); setTimeout(onMissionWin, 350); }
       } else {
-        vibrate(80); shakeEl(btn);
-        setTimeout(()=>{ if(state.sound){ try{ tone(180, 0, .18, 'square', .07); }catch(e){} } }, 230);
+        if(loseLife(btn, {disable:false})) return;
         pos = 0;
         document.querySelectorAll('.game-progress i').forEach(dd=>dd.classList.remove('on'));
         const s = document.getElementById('simon-state');
@@ -298,6 +438,7 @@ function renderSimon(){
 
 /* Jeu 5 : suite logique */
 function renderSequence(){
+  setupLives('sequence');
   const symbols = shuffle(['🐚','⭐','🌸','🎀','💎','🦋','🐠']).slice(0,3);
   const [A,B,C] = symbols;
   const dd = gameDiff();
@@ -315,6 +456,7 @@ function renderSequence(){
 
   openModal(`
     ${gameHeader('🔮 La suite magique', 'Regarde bien… quelle image vient après ?')}
+    ${livesBar()}
     <div class="seq-row">
       ${seq.map(e=>`<span>${e}</span>`).join('')}
       <span class="q">?</span>
@@ -327,16 +469,18 @@ function renderSequence(){
   document.querySelectorAll('.seq-btn').forEach(btn=>{
     btn.onclick = ()=>{
       if(btn.dataset.v===answer){
-        document.querySelector('.seq-row .q').textContent = answer;
-        document.querySelector('.seq-row .q').style.border='none';
-        setTimeout(onMissionWin, 350);
-      } else wrongFeedback(btn);
+        const q = document.querySelector('.seq-row .q');
+        q.textContent = answer; q.style.border='none'; q.classList.add('filled');
+        stepOk(btn); flashModal('ok');
+        setTimeout(onMissionWin, 420);
+      } else loseLife(btn);
     };
   });
 }
 
 /* Jeu 4 : puzzle (remettre les nombres dans l'ordre) */
 function renderPuzzle(){
+  setupLives('puzzle');
   const dd = gameDiff();
   const count = Math.min(9, 3 + dd); // île 1 : 4 … île 4 : 7
   const lvl = dd;
@@ -371,6 +515,7 @@ function renderPuzzle(){
   let idx = 0;
   openModal(`
     ${gameHeader('🧩 Petit puzzle', hint)}
+    ${livesBar()}
     ${progressDots(0, seq.length)}
     <div class="puzzle-row">
       ${nums.map(n=>`<button class="puzzle-btn" data-n="${n}">${n}</button>`).join('')}
@@ -383,12 +528,12 @@ function renderPuzzle(){
       if(btn.classList.contains('done')) return;
       if(n===seq[idx]){
         btn.classList.add('done');
-        playSound('good');
+        stepOk(btn);
         idx++;
         document.querySelectorAll('.game-progress i').forEach((d,i)=>d.classList.toggle('on', i<idx));
-        if(idx===seq.length) setTimeout(onMissionWin, 300);
+        if(idx===seq.length){ flashModal('ok'); setTimeout(onMissionWin, 350); }
       } else {
-        wrongFeedback(btn);
+        loseLife(btn, {disable:false});   // le bon nombre reste cliquable ensuite
       }
     };
   });

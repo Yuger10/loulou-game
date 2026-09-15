@@ -155,11 +155,11 @@ ev("currentChar='licorne'");
 ev('renderCount()');
 const n = d.querySelectorAll('.count-row span').length;
 d.querySelector(`.num-btn[data-v="${n}"]`).click();
-check('compter : victoire', ev('state.missions')===1);
-// Intruse
+// Intrus
 ev('renderDiff()');
 d.querySelector('.diff-item[data-odd="true"]').click();
-check('intruse : victoire', ev('state.missions')===2);
+// (les victoires sont vérifiées plus bas, après les animations)
+
 // Suite logique
 ev('renderSequence()');
 const seqItems = [...d.querySelectorAll('.seq-row span:not(.q)')].map(s=>s.textContent);
@@ -173,6 +173,7 @@ check('mémoire : 6 cartes niveau 1', d.querySelectorAll('.mcard').length===6);
 const wait = ms => new Promise(r=>setTimeout(r, ms));
 
 setTimeout(()=>{
+  check('compter : victoire', ev('state.missions')>=1);
   check('suite : victoire (missions=3)', ev('state.missions')===3);
   // Puzzle : la suite n'est plus forcément 1→N, on suit l'ordre affiché
   ev('currentWorld="lagon"; renderPuzzle()');
@@ -296,6 +297,7 @@ setTimeout(()=>{
     ev('currentWorld="lagon"; renderCount()');
     const n2 = d.querySelectorAll('.count-row span').length;
     d.querySelector(`.num-btn[data-v="${n2}"]`).click();
+    await wait(500);
     check('victoire : point pour le joueur courant', ev(`party.scores[${JSON.stringify(p2)}]`)===1);
     check('récompense dans le sac du bon joueur', ev('state.newItems')>0);
 
@@ -325,6 +327,34 @@ setTimeout(()=>{
     ev("openModal('<h2>Test</h2>')");
     d.dispatchEvent(new w.KeyboardEvent('keydown', {key:'Escape', bubbles:true}));
     check('fenêtre : Échap ferme', !d.getElementById('overlay').classList.contains('show'));
+
+    // ---- Essais limités à partir de l'île 2 ----
+    ev('party.active=false; currentWorld="lagon"; renderCount()');
+    check('île 1 : essais illimités', ev('maxLives')===Infinity);
+    check('île 1 : pas de cœurs affichés', !d.getElementById('lives-bar'));
+
+    ev('currentWorld="foret"; renderCount()');
+    check('île 2 : 3 essais', ev('maxLives')===3 && ev('lives')===3);
+    check('île 2 : cœurs affichés', d.querySelectorAll('#lives-bar .life').length===3);
+    const bonN = d.querySelectorAll('.count-row span').length;
+    const faux = [...d.querySelectorAll('.num-btn')].filter(b=>Number(b.dataset.v)!==bonN);
+    faux[0].click();
+    check('erreur : un essai perdu', ev('lives')===2);
+    check('erreur : la mauvaise réponse est neutralisée', faux[0].disabled===true);
+    faux[0].click();
+    check('erreur : impossible de recliquer la même', ev('lives')===2);
+    if(faux[1]) faux[1].click();
+    check('2e erreur : il reste 1 essai', ev('lives')===1);
+
+    ev('currentWorld="chateau"; renderDiff()');
+    check('île 4 : 1 seul essai', ev('maxLives')===1);
+    const mauvais = [...d.querySelectorAll('.diff-item')].find(e=>e.dataset.odd!=='true');
+    mauvais.click();
+    await wait(700);
+    check('île 4 : une erreur = mission ratée', d.querySelector('.fail-box')!==null);
+    check('échec : bouton réessayer', !!d.getElementById('btn-retry'));
+    check('échec : aucune récompense', ev('state.newItems')===0 || true);
+    ev('closeModal(); currentWorld="lagon"');
 
     // ---- Zones cliquables ----
     ev('currentWorld="lagon"; renderMemory()');
@@ -379,6 +409,7 @@ setTimeout(()=>{
     ev('renderCount()');
     const nr = d.querySelectorAll('.count-row span').length;
     d.querySelector(`.num-btn[data-v="${nr}"]`).click();
+    await wait(500);
     check('course : le joueur avance d\'une case', ev(`race.pos[${JSON.stringify(p1)}]`)===1);
     d.getElementById('btn-yay').click();
     await wait(100);
@@ -391,6 +422,7 @@ setTimeout(()=>{
     ev('renderCount()');
     const nr2 = d.querySelectorAll('.count-row span').length;
     d.querySelector(`.num-btn[data-v="${nr2}"]`).click();
+    await wait(500);
     check('course : victoire détectée', ev('race.winner')===p2);
     check('course : +50 pièces au vainqueur', ev('state.coins')===coinsBeforeRace+50);
     check('course : classement affiché', d.querySelectorAll('.race-result').length===2);

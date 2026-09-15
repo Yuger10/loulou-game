@@ -109,6 +109,12 @@ Légende priorité : 🔴 haute · 🟠 moyenne · 🟢 basse
 - [x] Toutes les cibles portées à 48 px minimum
 - [x] Deck de jeu centré et agrandi, décor flouté autour
 
+### v14 — Erreurs, animations, responsive
+- [x] Essais limités (❤️) à partir de l'île 2, mauvaise réponse neutralisée définitivement
+- [x] Écran « Raté ! » sans récompense, avec bouton Réessayer
+- [x] Animations d'étape (pulse vert / secousse rouge / cœur brisé) et de mission (rayons, tampon, rebond)
+- [x] Responsive complet : grilles fluides, clamp(), téléphone étroit, paysage, tablette, ordinateur
+
 ---
 
 ## 🔜 À faire

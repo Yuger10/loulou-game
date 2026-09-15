@@ -293,3 +293,34 @@ Boutons du marché, onglets, navigation (62 px), icônes de la barre du haut (48
 - **Le décor autour est flouté** (`backdrop-filter: blur(10px)`) et assombri en dégradé radial : toute l'attention va sur le jeu.
 - Plateaux agrandis : cartes mémoire 84-96 px, images de l'intrus 72 px, nombres 84 px, pastilles Simon 120-136 px, textes et consignes plus grands.
 - Adaptations automatiques pour les petits écrans en hauteur et les grands écrans.
+
+---
+
+# v14 — Erreurs qui comptent, animations, responsive
+
+## 1. Des erreurs qui comptent à partir de l'île 2
+Le clic au hasard jusqu'à tomber juste n'est plus possible.
+
+- **Île 1 (Le Lagon)** : aucun compteur, on apprend sans pression — mais la mauvaise réponse se referme brièvement (impossible de marteler le même bouton).
+- **Île 2 et au-delà** : des ❤️ d'essais apparaissent en haut du jeu.
+  | Île | Essais | Mémoire | Simon |
+  |---|---|---|---|
+  | 🌲 Forêt | 3 | 5 paires ratées | 3 |
+  | ⛰️ Montagne | 2 | 4 | 2 |
+  | 🏰 Château | 1 | 3 | 2 |
+- **Chaque mauvaise réponse est définitivement neutralisée** (grisée, barrée d'un ✖, non recliquable) : impossible de retenter la même.
+- À court d'essais → **écran « Raté ! »** : pas de récompense, pas d'objet, mais un message encourageant et un bouton « 🔁 Réessayer ». Aucune sanction sur les pièces ou la progression.
+- En multijoueur, la règle existante prime : une erreur passe la main au joueur suivant.
+
+## 2. Animations de réussite et d'échec
+- **Bonne étape** : la case pulse, s'entoure de vert, et une étoile ✨ s'envole vers le haut.
+- **Mauvaise étape** : secousse, halo rouge, cœur qui se brise en 💔, tout le deck flashe en rouge.
+- **Mission réussie** : rayons dorés tournants derrière l'emoji, apparition en rebond, tampon ✅ qui s'imprime, objet gagné qui glisse puis se balance, plus les confettis existants.
+- **Mission ratée** : l'emoji tressaute et tout le deck tremble.
+- Tout est désactivé si le système demande « réduire les animations ».
+
+## 3. Contenu enfin responsive
+- Le jeu n'est plus bloqué dans une colonne de 480 px : largeur adaptative (480 → 660 → 820 → 900 px selon l'écran), marges et titres en `clamp()`.
+- **Grilles fluides** (`auto-fit`/`auto-fill`) pour les personnages, le sac, l'album, les avatars, les âges, les cartes mémoire et le choix des jeux.
+- **Carte des îles** à hauteur proportionnelle (230 → 420 px).
+- Cas particuliers traités : téléphone étroit (≤ 360 px), téléphone à l'horizontale, tablette (≥ 640 px), ordinateur (≥ 1024 px, le jeu devient une carte arrondie centrée avec ombre portée) et très grand écran.
