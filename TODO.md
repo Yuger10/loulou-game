@@ -115,6 +115,14 @@ Légende priorité : 🔴 haute · 🟠 moyenne · 🟢 basse
 - [x] Animations d'étape (pulse vert / secousse rouge / cœur brisé) et de mission (rayons, tampon, rebond)
 - [x] Responsive complet : grilles fluides, clamp(), téléphone étroit, paysage, tablette, ordinateur
 
+### v15 — Maths CP
+- [x] Mini-jeu « Opérations magiques » : additions/soustractions illustrées en emojis
+- [x] Progression par île (additions seules jusqu'à 5, puis +/- jusqu'à 10/15/20)
+- [x] Intégré au tirage aléatoire et au sélecteur de jeu, essais limités comme les autres
+
+### À venir (lecture, demandé par l'utilisateur)
+- [ ] Mini-jeu de lecture niveau CP (reconnaissance de mots simples, syllabes, associer mot/image)
+
 ---
 
 ## 🔜 À faire

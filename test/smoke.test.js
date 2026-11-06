@@ -356,6 +356,25 @@ setTimeout(()=>{
     check('échec : aucune récompense', ev('state.newItems')===0 || true);
     ev('closeModal(); currentWorld="lagon"');
 
+    // ---- Opérations magiques (maths CP) ----
+    ev('currentWorld="lagon"; renderMath()');
+    check('maths : équation affichée', !!d.querySelector('.math-equation'));
+    check('maths : illustration en emojis', d.querySelectorAll('.math-group').length===2);
+    check('maths : île 1 = additions uniquement', d.querySelector('.math-op').textContent==='+');
+    check('maths : 3 réponses proposées', d.querySelectorAll('.num-btn').length===3);
+    const a0 = Number(d.querySelectorAll('.eq-num')[0].textContent);
+    const b0 = Number(d.querySelectorAll('.eq-num')[1].textContent);
+    const bonneRep = a0 + b0;
+    d.querySelector(`.num-btn[data-v="${bonneRep}"]`).click();
+    await wait(500);
+    check('maths : bonne réponse validée', ev('state.missions')>0);
+    ev('closeModal()');
+
+    ev('currentWorld="chateau"; renderMath()');
+    check('maths : île 4 permet les soustractions', ev('mathBounds().allowMinus')===true);
+    check('maths : île 4 = 3 essais', ev('maxLives')===3);
+    ev('closeModal(); currentWorld="lagon"');
+
     // ---- Zones cliquables ----
     ev('currentWorld="lagon"; renderMemory()');
     check('mémoire : vraies cases cliquables (boutons)',
@@ -431,7 +450,7 @@ setTimeout(()=>{
 
     // choix du mini-jeu
     ev('closeModal(); openGamePicker("sirene")');
-    check('choix du jeu : 6 jeux + surprise', d.querySelectorAll('.game-choice').length===7);
+    check('choix du jeu : 7 jeux + surprise', d.querySelectorAll('.game-choice').length===8);
     d.querySelector('.game-choice[data-game="simon"]').click();
     check('choix du jeu : lance bien le jeu choisi', d.querySelectorAll('.simon-pad').length===4);
     check('aucune erreur JS', errs.length===0);

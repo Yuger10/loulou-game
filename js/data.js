@@ -239,7 +239,7 @@ function charsOf(world){
 function decosOf(world){
   return Object.entries(DECOS).filter(([,d])=>(d.world||'lagon')===world);
 }
-const GAME_TYPES = ['memory','count','diff','puzzle','sequence','simon'];
+const GAME_TYPES = ['memory','count','diff','puzzle','sequence','simon','math'];
 
 const DECOS = {
   palmier:{emoji:'🌴', name:'Palmier', price:8},

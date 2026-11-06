@@ -7,6 +7,7 @@ const GAME_LIST = [
   { key:'puzzle',   emoji:'🧩', name:'Les nombres',  fn:()=>renderPuzzle() },
   { key:'sequence', emoji:'🔮', name:'La suite',     fn:()=>renderSequence() },
   { key:'simon',    emoji:'🎵', name:'Les couleurs', fn:()=>renderSimon() },
+  { key:'math',     emoji:'➕', name:'Opérations',   fn:()=>renderMath() },
 ];
 
 /* --- Panneau des joueurs --- */

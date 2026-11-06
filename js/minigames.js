@@ -9,6 +9,7 @@ function triesFor(kind){
   if(d <= 1) return Infinity;                       // île 1 : on apprend sans pression
   if(kind === 'memory') return ({2:5, 3:4, 4:3})[d] || 3;   // le mémo demande des essais
   if(kind === 'simon')  return ({2:3, 3:2, 4:2})[d] || 2;
+  if(kind === 'math')   return ({2:4, 3:3, 4:3})[d] || 3;    // le calcul mérite un peu plus de marge
   return ({2:3, 3:2, 4:1})[d] || 2;
 }
 

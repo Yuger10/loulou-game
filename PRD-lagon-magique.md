@@ -324,3 +324,29 @@ Le clic au hasard jusqu'à tomber juste n'est plus possible.
 - **Grilles fluides** (`auto-fit`/`auto-fill`) pour les personnages, le sac, l'album, les avatars, les âges, les cartes mémoire et le choix des jeux.
 - **Carte des îles** à hauteur proportionnelle (230 → 420 px).
 - Cas particuliers traités : téléphone étroit (≤ 360 px), téléphone à l'horizontale, tablette (≥ 640 px), ordinateur (≥ 1024 px, le jeu devient une carte arrondie centrée avec ombre portée) et très grand écran.
+
+---
+
+# v15 — Opérations magiques (maths niveau CP)
+
+## Nouveau mini-jeu
+« ➕ Opérations magiques » rejoint la sélection : additions et soustractions illustrées avec des emojis (étoiles, coquillages, ballons…), pour apprendre le calcul sans se noyer dans l'abstraction des chiffres.
+
+## Progression pensée pour le CP
+| Île | Opération | Nombres jusqu'à |
+|---|---|---|
+| 🌊 Lagon | addition uniquement | 5 |
+| 🌲 Forêt | + et − | 10 |
+| ⛰️ Montagne | + et − | 15 |
+| 🏰 Château | + et − | 20 |
+
+- Les soustractions ne donnent jamais de résultat négatif.
+- Chaque opération est illustrée par deux groupes d'emojis (ex. ⭐⭐⭐ + ⭐⭐) au-dessus de l'équation chiffrée, pour relier le symbole et la quantité.
+- 3 réponses proposées, dont la bonne toujours présente.
+- Essais limités comme les autres jeux à partir de l'île 2 (4 → 3 → 3 essais).
+- La voix énonce l'opération en toutes lettres (« Combien ça fait, 3 plus 2 ? »).
+
+## Intégration
+- Nouveau fichier `js/math.js`, chargé après `minigames.js`.
+- Ajouté à `GAME_TYPES` (tirage aléatoire) et à `GAME_LIST` (sélecteur manuel « 🎮 Choisis ton jeu »).
+- `triesFor('math')` ajouté au système d'essais limités (v14).
