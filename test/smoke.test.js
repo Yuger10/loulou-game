@@ -51,12 +51,12 @@ check('scène déco présente', !!d.getElementById('scene'));
 check('3 missions du jour', ev('state.quests.list.length')===3);
 
 // Carte des îles
-check('carte : 4 îles affichées', d.querySelectorAll('.map-island').length===4);
+check('carte : 5 îles affichées', d.querySelectorAll('.map-island').length===5);
 check('carte : route dessinée', !!d.querySelector('.route-line') && !!d.querySelector('.route-done'));
 check('carte : bateau présent', !!d.getElementById('map-boat'));
-check('carte : îles dessinées (terre + label)', d.querySelectorAll('.map-island .isle-land').length===4);
+check('carte : îles dessinées (terre + label)', d.querySelectorAll('.map-island .isle-land').length===5);
 check('carte : lagon est l\'île courante', !!d.querySelector('.map-island.here[data-world="lagon"]'));
-check('carte : 3 îles verrouillées au niveau 1', d.querySelectorAll('.map-island.locked').length===3);
+check('carte : 4 îles verrouillées au niveau 1', d.querySelectorAll('.map-island.locked').length===4);
 check('carte : prochaine île annoncée', d.getElementById('map-next').innerHTML.includes('La Forêt'));
 d.querySelector('.map-island[data-world="foret"]').click();
 check('carte : île verrouillée non accessible', ev('currentWorld')==='lagon');
@@ -92,6 +92,16 @@ ev('sailing=false; setWorld("chateau")');
 check('navigation vers le château', ev('currentWorld')==='chateau');
 check('difficulté du château = 4', ev('gameDiff()')===4);
 check('château : personnages royaux', [...d.querySelectorAll('.island')].map(b=>b.dataset.char).join()==='princesse,sorciere,chevalier,pegase');
+ev("switchView('carte')");
+check('jungle encore verrouillée au niveau 11', ev('worldUnlocked("jungle")')===false);
+
+ev('state.missions = 70; switchView("carte")');   // niveau 15
+check('jungle déverrouillée au niveau 14', ev('worldUnlocked("jungle")')===true);
+d.querySelector('.map-island[data-world="jungle"]').click();
+ev('sailing=false; setWorld("jungle")');
+check('navigation vers la jungle', ev('currentWorld')==='jungle');
+check('difficulté de la jungle = 4', ev('gameDiff()')===4);
+check('jungle : personnages aventuriers', [...d.querySelectorAll('.island')].map(b=>b.dataset.char).join()==='exploratrice,singe,perroquet,jaguar');
 ev("switchView('carte')");
 check('carte : toutes les îles débloquées', d.getElementById('map-next').innerHTML.includes('toutes les îles'));
 

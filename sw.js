@@ -1,4 +1,4 @@
-const CACHE = 'lagon-v16';
+const CACHE = 'lagon-v17';
 const FILES = [
   './','./index.html','./styles.css','./manifest.json',
   './icon.svg','./icon-192.png','./icon-512.png','./icon-180.png',

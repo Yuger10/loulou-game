@@ -381,3 +381,20 @@ Au CP on ne calcule pas de volume : le programme travaille les **grandeurs et me
 - Vocabulaire partagé `WORDS_CP` ajouté dans `js/data.js` (mot + emoji + genre).
 - Ajoutés à `GAME_TYPES` (tirage aléatoire) et `GAME_LIST` (sélecteur manuel, désormais **10 jeux + surprise**).
 - Essais limités (`triesFor`) suivant le même barème que les autres jeux à partir de l'île 2.
+
+---
+
+# v17 — La Jungle Mystérieuse : une 5e île, le plus gros trésor à collectionner
+
+## Nouvelle île : 🌴 La Jungle
+- Débloquée au **niveau 14** (après le Château), difficulté 4 — le défi ultime en matière de mini-jeux, mais surtout **le plus grand nombre de choses à collectionner**.
+- 4 personnages mixtes : 🧗‍♀️ Maya l'exploratrice, 🐒 Kiko le singe, 🦜 Iris la perruche, 🐆 Jago le jaguar.
+
+## Le plus gros butin du jeu
+- **8 objets à ramasser** (contre 5-7 pour les autres îles) : liane, masque tribal, bananes, fleur tropicale, noix de coco, ananas doré, scarabée doré, tambour sacré.
+- **5 recettes** (contre 4-5 ailleurs) : totem mystérieux, couronne de fleurs, festin tropical, rythme de la jungle, et la recette ultime — le **temple caché** (combine les 3 premières, 65 pièces).
+- **12 décorations** (le plus gros lot du jeu, contre 8-13 ailleurs) : toucan, singe, jaguar, serpent, grenouille dorée, palmier géant, cascade cachée, pont suspendu, temple ancien, papillon géant, coffre au trésor, statue totem.
+
+## Intégration
+- Entièrement data-driven : ajout dans `WORLDS`, `CHARACTERS`, `ITEMS`, `CRAFTED`, `DECOS` de `js/data.js` — aucune autre modification de code nécessaire (carte, marché, album, sac s'adaptent automatiquement).
+- `WORLD_ORDER` suit désormais : lagon → forêt → montagne → château → **jungle**.

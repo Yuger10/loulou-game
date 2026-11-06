@@ -28,6 +28,15 @@ const ITEMS = {
   bougie:{emoji:'🕯️', name:'Bougie magique', price:7, world:'chateau'},
   parchemin:{emoji:'📜', name:'Parchemin', price:8, world:'chateau'},
   bouclier:{emoji:'🛡️', name:'Petit bouclier', price:9, world:'chateau'},
+  // Jungle mystérieuse (5e île : un très grand trésor à collectionner)
+  liane:{emoji:'🌿', name:'Liane', price:3, world:'jungle'},
+  masque:{emoji:'🎭', name:'Masque tribal', price:6, world:'jungle'},
+  banane:{emoji:'🍌', name:'Régime de bananes', price:4, world:'jungle'},
+  fleurtropicale:{emoji:'🌺', name:'Fleur tropicale', price:5, world:'jungle'},
+  noixcoco:{emoji:'🥥', name:'Noix de coco', price:5, world:'jungle'},
+  ananas:{emoji:'🍍', name:'Ananas doré', price:6, world:'jungle'},
+  scarabee:{emoji:'🪲', name:'Scarabée doré', price:7, world:'jungle'},
+  tambour:{emoji:'🥁', name:'Tambour sacré', price:8, world:'jungle'},
 };
 const CRAFTED = {
   collier:{emoji:'📿', name:'Collier magique', price:10,
@@ -71,6 +80,17 @@ const CRAFTED = {
     recipe:{bouclier:1, cle:1, poussiere:2}},
   royaume:{emoji:'🏰', name:'Royaume des étoiles', price:70, tier:2, world:'chateau',
     recipe:{lanterne:1, sceptre:1, parchemin:2}},
+  // Jungle mystérieuse
+  totem:{emoji:'🗿', name:'Totem mystérieux', price:14, world:'jungle',
+    recipe:{masque:1, scarabee:1}},
+  couronnefleurs:{emoji:'🌼', name:'Couronne de fleurs', price:11, world:'jungle',
+    recipe:{fleurtropicale:2, liane:1}},
+  festin:{emoji:'🍲', name:'Festin tropical', price:13, world:'jungle',
+    recipe:{banane:1, noixcoco:1, ananas:1}},
+  rythme:{emoji:'🎶', name:'Rythme de la jungle', price:15, world:'jungle',
+    recipe:{tambour:1, scarabee:1}},
+  templecache:{emoji:'🛕', name:'Temple caché', price:65, tier:2, world:'jungle',
+    recipe:{totem:1, couronnefleurs:1, festin:1}},
 };
 const ALL_ITEMS = Object.assign({}, ITEMS, CRAFTED);
 
@@ -206,6 +226,39 @@ const CHARACTERS = {
       "Ma poussière d'étoile s'envole quand tu réussis un défi !",
       "En selle pour le plus grand galop du royaume ?",
     ]},
+  // --- Jungle mystérieuse ---
+  exploratrice:{
+    emoji:'🧗‍♀️', name:'Maya', title:"l'exploratrice", world:'jungle',
+    loot:['masque','scarabee'],
+    texts:[
+      "Suis-moi dans la jungle, l'aventure commence !",
+      "J'ai égaré ma carte au trésor… un petit défi pour la retrouver ?",
+      "Chut, écoute les bruits de la jungle… prête pour un jeu ?",
+    ]},
+  singe:{
+    emoji:'🐒', name:'Kiko', title:'le singe', world:'jungle',
+    loot:['banane','noixcoco'],
+    texts:[
+      "Ouh ouh ! Attrape-moi si tu es assez maligne !",
+      "J'ai caché des bananes partout… tu m'aides à les retrouver ?",
+      "Un petit jeu avant de sauter de liane en liane ?",
+    ]},
+  perroquet:{
+    emoji:'🦜', name:'Iris', title:'la perruche', world:'jungle',
+    loot:['fleurtropicale','ananas'],
+    texts:[
+      "Coco ! Répète après moi : tu es la meilleure !",
+      "Mes plus belles plumes se sont envolées dans le vent…",
+      "Les perroquets adorent les défis colorés. À toi de jouer !",
+    ]},
+  jaguar:{
+    emoji:'🐆', name:'Jago', title:'le jaguar', world:'jungle',
+    loot:['liane','tambour'],
+    texts:[
+      "Je suis rapide comme l'éclair… et toi ?",
+      "Un vrai félin ne recule jamais devant un défi !",
+      "Chhht… approche doucement, et relève mon défi.",
+    ]},
 };
 
 // Les îles, dans l'ordre du voyage. `diff` = difficulté des mini-jeux (1 à 4).
@@ -231,6 +284,11 @@ const WORLDS = {
     map:{x:88, y:20}, shape:'chateau', icon:'🏰', sand:'#E9D8F5', land:'#B79BE0',
     intro:"Le château des étoiles, le plus grand défi 👑",
     sceneEmpty:"Ton château attend ses décorations !" },
+  jungle:{ name:'La Jungle', emoji:'🌴', level:14, diff:4, short:'Jungle',
+    subtitle:'Le trésor caché',
+    map:{x:60, y:92}, shape:'jungle', icon:'🌴', sand:'#D7E8A0', land:'#2F8F5B',
+    intro:"Bienvenue dans la jungle mystérieuse, le plus grand trésor t'attend 🌴",
+    sceneEmpty:"Ta jungle est encore vide… gagne des pièces pour la décorer !" },
 };
 const WORLD_ORDER = Object.keys(WORLDS);
 function charsOf(world){
@@ -328,6 +386,19 @@ const DECOS = {
   dragonrouge:{emoji:'🐉', name:'Dragon gardien', price:55, world:'chateau'},
   chevalierD:{emoji:'🛡️', name:'Garde du château', price:24, world:'chateau'},
   catapulte:{emoji:'🏹', name:"Tour d'archers", price:30, world:'chateau'},
+  // Jungle mystérieuse (le plus grand trésor à collectionner !)
+  toucanD:{emoji:'🦜', name:'Toucan coloré', price:12, world:'jungle'},
+  singeD:{emoji:'🐒', name:'Singe rigolo', price:14, world:'jungle'},
+  jaguarD:{emoji:'🐆', name:'Jaguar discret', price:30, world:'jungle'},
+  serpent:{emoji:'🐍', name:'Serpent curieux', price:16, world:'jungle'},
+  grenouille:{emoji:'🐸', name:'Grenouille dorée', price:10, world:'jungle'},
+  palmierD:{emoji:'🌴', name:'Palmier géant', price:9, world:'jungle'},
+  cascade:{emoji:'🏞️', name:'Cascade cachée', price:24, world:'jungle'},
+  pontsuspendu:{emoji:'🌉', name:'Pont suspendu', price:28, world:'jungle'},
+  templeD:{emoji:'🛕', name:'Temple ancien', price:48, world:'jungle'},
+  papillonJ:{emoji:'🦋', name:'Papillon géant', price:18, world:'jungle'},
+  coffretresor:{emoji:'💰', name:'Coffre au trésor', price:50, world:'jungle'},
+  totemD:{emoji:'🗿', name:'Statue totem', price:38, world:'jungle'},
 };
 const MISSIONS_PER_LEVEL = 5;
 const ALBUM_REWARD = 100;
