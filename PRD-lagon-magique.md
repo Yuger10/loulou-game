@@ -413,3 +413,18 @@ Le service worker avait une liste de fichiers à mettre en cache (`FILES`) qui n
 
 ## Où trouver les nouveaux jeux
 Dans le jeu : toucher un personnage → **« Choisir un jeu 🎮 »** → les 10 jeux (dont Opérations, Lecture, Petits mots, Volumes) + Surprise s'affichent dans une grille, avec défilement si besoin.
+
+---
+
+# v19 — Déterminants complets : le/la/les, un/une/des
+
+## Correctif
+Le jeu des déterminants ne proposait que le/la et un/une (singulier uniquement). **"des" n'était pas pris en compte**, alors que c'est la forme plurielle de l'article indéfini, enseignée dès le CP avec un/une.
+
+## Ce qui change
+- Chaque mot de `WORDS_CP` a maintenant un **pluriel explicite** (gère les exceptions comme bateau→bateaux, cheval→chevaux, souris→souris).
+- Le jeu tire au sort une manche au **singulier ou au pluriel**, et propose **toujours les 3 déterminants de la famille complète** :
+  - famille définie : **le / la / les**
+  - famille indéfinie : **un / une / des**
+- Île 1-2 : image + mot, 3 options.
+- Île 3-4 : mot seul (sans image) + un intrus de l'autre famille (4 options), pour renforcer la vigilance.

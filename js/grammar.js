@@ -1,36 +1,44 @@
 /* ---------- Mini-jeu : Les petits mots magiques (déterminants, niveau CP) ----------
-   Choisir le bon déterminant (le/la/un/une) devant un nom, en fonction
-   de son genre. Règle simple et sûre, du programme CP/CE1 français :
-   - "le" / "un"  devant un nom masculin singulier
-   - "la" / "une" devant un nom féminin singulier
+   Choisir le bon déterminant devant un nom, selon son genre ET son nombre.
+   Programme CP/CE1 français :
+   - article défini   : le (masc. sing.) / la (fém. sing.) / les (pluriel)
+   - article indéfini : un (masc. sing.) / une (fém. sing.) / des (pluriel)
    Plus l'île est difficile, moins il y a d'indice image (on doit
    connaître le mot, pas seulement reconnaître le dessin). */
+
+const DET_FAMILIES = {
+  defini:   { m:'le',  f:'la',  p:'les' },
+  indefini: { m:'un',  f:'une', p:'des' },
+};
 
 function renderDeterminants(){
   setupLives('determinants');
   const dd = gameDiff();
-  const defini = Math.random() < 0.5;             // "le/la" ou "un/une" ?
+  const family = Math.random() < 0.5 ? 'defini' : 'indefini';
+  const dets = DET_FAMILIES[family];
   const noun = pickRandom(WORDS_CP);
-  const answer = defini
-    ? (noun.gender==='m' ? 'le' : 'la')
-    : (noun.gender==='m' ? 'un' : 'une');
-  const otherOption = defini
-    ? (noun.gender==='m' ? 'la' : 'le')
-    : (noun.gender==='m' ? 'une' : 'un');
+  const plural = Math.random() < 0.4;              // surtout du singulier, CP débutant
+  const shown = plural ? noun.plural : noun.word;
+  const answer = dets[plural ? 'p' : noun.gender];
 
-  // île 3-4 : un 3e intrus de l'autre famille, pour forcer à vraiment lire
-  const extra = dd >= 3 ? (defini ? pickRandom(['un','une']) : pickRandom(['le','la'])) : null;
-  const options = shuffle(extra ? [answer, otherOption, extra] : [answer, otherOption]);
+  // les 3 déterminants de la même famille, toujours tous proposés
+  let options = [dets.m, dets.f, dets.p];
+  // île 3-4 : un intrus de l'autre famille, pour forcer à vraiment lire
+  if(dd >= 3){
+    const otherFamily = DET_FAMILIES[family==='defini' ? 'indefini' : 'defini'];
+    options.push(otherFamily[plural ? 'p' : noun.gender]);
+  }
+  options = shuffle([...new Set(options)]);
 
   const showImage = dd <= 2;
-  const title = defini ? '🔤 "le" ou "la" ?' : '🔤 "un" ou "une" ?';
+  const title = family==='defini' ? '🔤 "le", "la" ou "les" ?' : '🔤 "un", "une" ou "des" ?';
 
   openModal(`
-    ${gameHeader(title, `Quel petit mot va avec « ${noun.word} » ?`, `Quel petit mot va avec le mot ${noun.word} ?`)}
+    ${gameHeader(title, `Quel petit mot va avec « ${shown} » ?`, `Quel petit mot va avec le mot ${shown} ?`)}
     ${livesBar()}
     <div class="det-box">
-      ${showImage ? `<span class="det-emoji">${noun.emoji}</span>` : ''}
-      <span class="det-noun">${noun.word}</span>
+      ${showImage ? `<span class="det-emoji">${plural ? noun.emoji+noun.emoji : noun.emoji}</span>` : ''}
+      <span class="det-noun">${shown}</span>
     </div>
     <div class="det-options">
       ${options.map(o=>`<button type="button" class="det-btn" data-v="${o}">${o}</button>`).join('')}

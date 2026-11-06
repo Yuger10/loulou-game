@@ -395,16 +395,26 @@ setTimeout(()=>{
     check('lecture : île 4 propose 4 images', d.querySelectorAll('.reading-opt').length===4);
     ev('closeModal(); currentWorld="lagon"');
 
-    // ---- Petits mots magiques (déterminants) ----
+    // ---- Petits mots magiques (déterminants : le/la/les, un/une/des) ----
     ev('renderDeterminants()');
     check('déterminants : nom affiché', !!d.querySelector('.det-noun'));
     check('déterminants : image visible (île 1)', !!d.querySelector('.det-emoji'));
-    check('déterminants : 2 options (le/la ou un/une)', d.querySelectorAll('.det-btn').length===2);
+    check('déterminants : 3 options (famille complète)', d.querySelectorAll('.det-btn').length===3);
     const detBtns = [...d.querySelectorAll('.det-btn')];
-    check('déterminants : options cohérentes', detBtns.every(b=>['le','la','un','une'].includes(b.dataset.v)));
+    check('déterminants : options cohérentes', detBtns.every(b=>['le','la','les','un','une','des'].includes(b.dataset.v)));
     ev('closeModal()');
+    // on force la famille indéfinie + le pluriel pour vérifier "des"
+    ev(`window.__origRandom = Math.random;
+        window.__seq = [0.9, 0.5, 0.1];
+        window.__seqI = 0;
+        Math.random = ()=> window.__seqI < window.__seq.length ? window.__seq[window.__seqI++] : 0.5;
+        renderDeterminants();`);
+    const detBtns2 = [...d.querySelectorAll('.det-btn')];
+    check('déterminants : "des" proposé au pluriel indéfini', detBtns2.some(b=>b.dataset.v==='des'));
+    ev('closeModal(); Math.random = window.__origRandom; currentWorld="lagon"');
     ev('currentWorld="chateau"; renderDeterminants()');
     check('déterminants : île 4 sans image', !d.querySelector('.det-emoji'));
+    check('déterminants : île 4 ajoute un intrus (4 options)', d.querySelectorAll('.det-btn').length===4);
     ev('closeModal(); currentWorld="lagon"');
 
     // ---- Grandeurs & volumes ----
