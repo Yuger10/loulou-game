@@ -8,6 +8,9 @@ const GAME_LIST = [
   { key:'sequence', emoji:'🔮', name:'La suite',     fn:()=>renderSequence() },
   { key:'simon',    emoji:'🎵', name:'Les couleurs', fn:()=>renderSimon() },
   { key:'math',     emoji:'➕', name:'Opérations',   fn:()=>renderMath() },
+  { key:'reading',  emoji:'📖', name:'Lecture',      fn:()=>renderReading() },
+  { key:'determinants', emoji:'🔤', name:'Petits mots', fn:()=>renderDeterminants() },
+  { key:'volume',   emoji:'🧪', name:'Volumes',      fn:()=>renderVolume() },
 ];
 
 /* --- Panneau des joueurs --- */

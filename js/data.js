@@ -239,7 +239,49 @@ function charsOf(world){
 function decosOf(world){
   return Object.entries(DECOS).filter(([,d])=>(d.world||'lagon')===world);
 }
-const GAME_TYPES = ['memory','count','diff','puzzle','sequence','simon','math'];
+const GAME_TYPES = ['memory','count','diff','puzzle','sequence','simon','math','reading','determinants','volume'];
+
+/* Vocabulaire niveau CP : mots simples, lus couramment en fin de CP,
+   illustrés par un emoji, avec leur genre pour le jeu des déterminants. */
+const WORDS_CP = [
+  { word:'chat',     emoji:'🐱', gender:'m' },
+  { word:'chien',    emoji:'🐶', gender:'m' },
+  { word:'loup',     emoji:'🐺', gender:'m' },
+  { word:'lion',     emoji:'🦁', gender:'m' },
+  { word:'ours',     emoji:'🐻', gender:'m' },
+  { word:'cheval',   emoji:'🐴', gender:'m' },
+  { word:'cochon',   emoji:'🐷', gender:'m' },
+  { word:'tigre',    emoji:'🐯', gender:'m' },
+  { word:'singe',    emoji:'🐵', gender:'m' },
+  { word:'canard',   emoji:'🦆', gender:'m' },
+  { word:'lapin',    emoji:'🐰', gender:'m' },
+  { word:'poisson',  emoji:'🐠', gender:'m' },
+  { word:'oiseau',   emoji:'🐦', gender:'m' },
+  { word:'soleil',   emoji:'☀️', gender:'m' },
+  { word:'nuage',    emoji:'☁️', gender:'m' },
+  { word:'arbre',    emoji:'🌳', gender:'m' },
+  { word:'bateau',   emoji:'⛵', gender:'m' },
+  { word:'avion',    emoji:'✈️', gender:'m' },
+  { word:'train',    emoji:'🚂', gender:'m' },
+  { word:'ballon',   emoji:'🎈', gender:'m' },
+  { word:'robot',    emoji:'🤖', gender:'m' },
+  { word:'cadeau',   emoji:'🎁', gender:'m' },
+  { word:'gâteau',   emoji:'🎂', gender:'m' },
+  { word:'souris',   emoji:'🐭', gender:'f' },
+  { word:'vache',    emoji:'🐄', gender:'f' },
+  { word:'poule',    emoji:'🐔', gender:'f' },
+  { word:'lune',     emoji:'🌙', gender:'f' },
+  { word:'étoile',   emoji:'⭐', gender:'f' },
+  { word:'pluie',    emoji:'🌧️', gender:'f' },
+  { word:'fleur',    emoji:'🌸', gender:'f' },
+  { word:'maison',   emoji:'🏠', gender:'f' },
+  { word:'voiture',  emoji:'🚗', gender:'f' },
+  { word:'fusée',    emoji:'🚀', gender:'f' },
+  { word:'pomme',    emoji:'🍎', gender:'f' },
+  { word:'fraise',   emoji:'🍓', gender:'f' },
+  { word:'banane',   emoji:'🍌', gender:'f' },
+  { word:'glace',    emoji:'🍦', gender:'f' },
+];
 
 const DECOS = {
   palmier:{emoji:'🌴', name:'Palmier', price:8},

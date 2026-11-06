@@ -120,8 +120,11 @@ Légende priorité : 🔴 haute · 🟠 moyenne · 🟢 basse
 - [x] Progression par île (additions seules jusqu'à 5, puis +/- jusqu'à 10/15/20)
 - [x] Intégré au tirage aléatoire et au sélecteur de jeu, essais limités comme les autres
 
-### À venir (lecture, demandé par l'utilisateur)
-- [ ] Mini-jeu de lecture niveau CP (reconnaissance de mots simples, syllabes, associer mot/image)
+### v16 — Lecture, déterminants, grandeurs & volumes
+- [x] Mini-jeu « Lecture magique » : association image/mot puis lecture seule (sans image)
+- [x] Mini-jeu « Petits mots magiques » : déterminants le/la/un/une selon le genre
+- [x] Mini-jeu « Grandeurs & volumes » : comparaison de contenances puis reconnaissance de solides
+- [x] 38 mots de vocabulaire CP illustrés (`WORDS_CP`), 10 jeux au total + surprise
 
 ---
 

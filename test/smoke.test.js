@@ -375,6 +375,37 @@ setTimeout(()=>{
     check('maths : île 4 = 3 essais', ev('maxLives')===3);
     ev('closeModal(); currentWorld="lagon"');
 
+    // ---- Lecture magique (mots niveau CP) ----
+    ev('currentWorld="lagon"; renderReading()');
+    check('lecture : image affichée (île 1)', !!d.querySelector('.reading-image'));
+    check('lecture : 3 mots proposés', d.querySelectorAll('.reading-word-btn').length===3);
+    ev('closeModal()');
+    ev('currentWorld="chateau"; renderReading()');
+    check('lecture : île 4 montre le mot seul (sans image)', !!d.querySelector('.reading-word') && !d.querySelector('.reading-image'));
+    check('lecture : île 4 propose 4 images', d.querySelectorAll('.reading-opt').length===4);
+    ev('closeModal(); currentWorld="lagon"');
+
+    // ---- Petits mots magiques (déterminants) ----
+    ev('renderDeterminants()');
+    check('déterminants : nom affiché', !!d.querySelector('.det-noun'));
+    check('déterminants : image visible (île 1)', !!d.querySelector('.det-emoji'));
+    check('déterminants : 2 options (le/la ou un/une)', d.querySelectorAll('.det-btn').length===2);
+    const detBtns = [...d.querySelectorAll('.det-btn')];
+    check('déterminants : options cohérentes', detBtns.every(b=>['le','la','un','une'].includes(b.dataset.v)));
+    ev('closeModal()');
+    ev('currentWorld="chateau"; renderDeterminants()');
+    check('déterminants : île 4 sans image', !d.querySelector('.det-emoji'));
+    ev('closeModal(); currentWorld="lagon"');
+
+    // ---- Grandeurs & volumes ----
+    ev('renderVolume()');
+    check('volumes : île 1 compare deux contenants', d.querySelectorAll('.vol-container-btn').length===2);
+    ev('closeModal()');
+    ev('currentWorld="chateau"; renderVolume()');
+    check('volumes : île 4 reconnaît une forme', !!d.querySelector('.vol-shape-emoji'));
+    check('volumes : 4 formes proposées', d.querySelectorAll('.vol-opt-btn').length===4);
+    ev('closeModal(); currentWorld="lagon"');
+
     // ---- Zones cliquables ----
     ev('currentWorld="lagon"; renderMemory()');
     check('mémoire : vraies cases cliquables (boutons)',
@@ -450,7 +481,7 @@ setTimeout(()=>{
 
     // choix du mini-jeu
     ev('closeModal(); openGamePicker("sirene")');
-    check('choix du jeu : 7 jeux + surprise', d.querySelectorAll('.game-choice').length===8);
+    check('choix du jeu : 10 jeux + surprise', d.querySelectorAll('.game-choice').length===11);
     d.querySelector('.game-choice[data-game="simon"]').click();
     check('choix du jeu : lance bien le jeu choisi', d.querySelectorAll('.simon-pad').length===4);
     check('aucune erreur JS', errs.length===0);

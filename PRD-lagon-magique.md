@@ -350,3 +350,34 @@ Le clic au hasard jusqu'à tomber juste n'est plus possible.
 - Nouveau fichier `js/math.js`, chargé après `minigames.js`.
 - Ajouté à `GAME_TYPES` (tirage aléatoire) et à `GAME_LIST` (sélecteur manuel « 🎮 Choisis ton jeu »).
 - `triesFor('math')` ajouté au système d'essais limités (v14).
+
+---
+
+# v16 — Lecture, déterminants, grandeurs & volumes (niveau CP)
+
+> Pas d'accès internet dans l'environnement de développement : ces jeux s'appuient
+> sur le programme officiel CP/CE1 français déjà connu (lecture de mots simples,
+> genre des noms, grandeurs et mesures / solides usuels), sans vérification en ligne.
+
+## 📖 Lecture magique
+Entraînement à la lecture de mots simples (vocabulaire CP : animaux, nature, objets du quotidien), avec 38 mots illustrés (`WORDS_CP` dans `js/data.js`).
+- **Île 1-2** : image affichée, l'enfant choisit le **mot écrit** correspondant (3 options) — association image/mot.
+- **Île 3-4** : seul le **mot est affiché** (plus d'image), l'enfant doit le lire pour retrouver la bonne image parmi 4 — force la lecture réelle, pas la reconnaissance visuelle.
+
+## 🔤 Les petits mots magiques (déterminants)
+Choisir le bon déterminant devant un nom, règle simple et sûre du programme CP/CE1 :
+- **« le »/« un »** devant un nom masculin singulier, **« la »/« une »** devant un nom féminin.
+- Chaque manche tire au sort la famille testée (« le/la » ou « un/une »).
+- **Île 1-2** : image + mot affichés, 2 options.
+- **Île 3-4** : mot seul (sans image) + un 3ᵉ intrus de l'autre famille, pour renforcer la vigilance.
+
+## 🧪 Grandeurs & volumes
+Au CP on ne calcule pas de volume : le programme travaille les **grandeurs et mesures** (comparer des contenances) et la **reconnaissance des solides**.
+- **Île 1-2** : « Touche celui qui contient LE PLUS/LE MOINS » — comparaison de deux contenants (verre/seau, tasse/baignoire…).
+- **Île 3-4** : reconnaître la **forme en volume** d'un objet du quotidien parmi cube 🎲, boule ⚽, cylindre 🥫, cône 🍦, pavé 🎁 (3 puis 4 options).
+
+## Intégration
+- Nouveaux fichiers `js/reading.js`, `js/grammar.js`, `js/volume.js`, chargés après `js/math.js`.
+- Vocabulaire partagé `WORDS_CP` ajouté dans `js/data.js` (mot + emoji + genre).
+- Ajoutés à `GAME_TYPES` (tirage aléatoire) et `GAME_LIST` (sélecteur manuel, désormais **10 jeux + surprise**).
+- Essais limités (`triesFor`) suivant le même barème que les autres jeux à partir de l'île 2.

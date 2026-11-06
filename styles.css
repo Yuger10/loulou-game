@@ -1589,3 +1589,66 @@
     box-shadow:var(--shadow);
   }
   .eq-q.filled{background:none; box-shadow:none; color:#3EC778;}
+
+  /* ================= Lecture magique (v16) ================= */
+  .reading-image-box, .reading-word-box, .det-box, .vol-shape-box{
+    display:flex; align-items:center; justify-content:center;
+    padding:22px 12px; margin-bottom:6px;
+  }
+  .reading-image{font-size:clamp(3.2rem, 14vw, 4.6rem);}
+  .reading-word{
+    font-size:clamp(2rem, 9vw, 2.8rem); font-weight:800;
+    color:var(--ocean-deep); letter-spacing:.5px;
+  }
+  .reading-options{
+    display:flex; flex-wrap:wrap; justify-content:center;
+    gap:14px; max-width:480px; margin:0 auto 10px;
+  }
+  .reading-opt{
+    border:none; background:var(--foam); box-shadow:var(--shadow);
+    border-radius:20px; min-width:84px; min-height:84px;
+    font-size:2.6rem; display:flex; align-items:center; justify-content:center;
+  }
+  .reading-word-btn{
+    font-size:1.5rem; font-weight:800; color:var(--ocean-deep);
+    min-width:120px; padding:14px 18px;
+  }
+
+  /* ================= Petits mots magiques : déterminants (v16) ================= */
+  .det-box{gap:14px; flex-wrap:wrap;}
+  .det-emoji{font-size:clamp(2.6rem, 10vw, 3.4rem);}
+  .det-noun{
+    font-size:clamp(1.8rem, 8vw, 2.4rem); font-weight:800;
+    color:var(--ocean-deep);
+  }
+  .det-options{
+    display:flex; flex-wrap:wrap; justify-content:center;
+    gap:16px; max-width:420px; margin:0 auto 10px;
+  }
+  .det-btn{
+    border:none; background:var(--foam); box-shadow:var(--shadow);
+    border-radius:20px; min-width:96px; min-height:76px;
+    font-size:1.7rem; font-weight:900; color:var(--ocean-deep);
+  }
+
+  /* ================= Grandeurs & volumes (v16) ================= */
+  .vol-containers{
+    display:flex; align-items:flex-end; justify-content:center;
+    gap:30px; padding:16px 12px 10px;
+  }
+  .vol-container-btn{
+    border:none; background:var(--foam); box-shadow:var(--shadow);
+    border-radius:20px; min-width:96px; min-height:96px;
+    font-size:3.4rem; display:flex; align-items:center; justify-content:center;
+  }
+  .vol-shape-emoji{font-size:clamp(3.2rem, 14vw, 4.6rem);}
+  .vol-options{
+    display:flex; flex-wrap:wrap; justify-content:center;
+    gap:14px; max-width:460px; margin:0 auto 10px;
+  }
+  .vol-opt-btn{
+    border:none; background:var(--foam); box-shadow:var(--shadow);
+    border-radius:18px; min-width:100px; min-height:64px;
+    font-size:1.15rem; font-weight:700; color:var(--ocean-deep);
+    padding:10px 16px;
+  }
