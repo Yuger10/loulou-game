@@ -63,6 +63,28 @@ showSplash();
 document.getElementById('avatar-pill').addEventListener('click', ()=>{ playSound('tap'); openPlayers(); });
 document.getElementById('btn-start').addEventListener('click', closeWelcome);
 document.getElementById('name-input').addEventListener('keydown', e=>{ if(e.key==='Enter') closeWelcome(); });
+// Installe le service worker ET recharge automatiquement dès qu'une
+// nouvelle version est prête, pour que les nouveautés (nouveaux jeux,
+// nouvelle île…) soient toujours visibles sans manipulation.
 if('serviceWorker' in navigator && location.protocol!=='file:'){
-  navigator.serviceWorker.register('sw.js').catch(()=>{});
+  navigator.serviceWorker.register('sw.js').then(reg=>{
+    // vérifie s'il y a une mise à jour à chaque lancement
+    reg.update().catch(()=>{});
+    reg.addEventListener('updatefound', ()=>{
+      const sw = reg.installing;
+      if(!sw) return;
+      sw.addEventListener('statechange', ()=>{
+        if(sw.state==='installed' && navigator.serviceWorker.controller){
+          // une nouvelle version vient de s'installer : on l'active tout de suite
+          sw.postMessage('skipWaiting');
+        }
+      });
+    });
+  }).catch(()=>{});
+  let refreshed = false;
+  navigator.serviceWorker.addEventListener('controllerchange', ()=>{
+    if(refreshed) return;
+    refreshed = true;
+    location.reload();
+  });
 }

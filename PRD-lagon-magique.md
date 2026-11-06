@@ -398,3 +398,18 @@ Au CP on ne calcule pas de volume : le programme travaille les **grandeurs et me
 ## Intégration
 - Entièrement data-driven : ajout dans `WORLDS`, `CHARACTERS`, `ITEMS`, `CRAFTED`, `DECOS` de `js/data.js` — aucune autre modification de code nécessaire (carte, marché, album, sac s'adaptent automatiquement).
 - `WORLD_ORDER` suit désormais : lagon → forêt → montagne → château → **jungle**.
+
+---
+
+# v18 — Correctif : les nouveautés n'apparaissaient pas (cache PWA)
+
+## Cause
+Le service worker avait une liste de fichiers à mettre en cache (`FILES`) qui n'avait pas été mise à jour depuis plusieurs versions : `js/math.js`, `js/reading.js`, `js/grammar.js` et `js/volume.js` n'y figuraient pas. Sur un appareil ayant déjà visité le jeu (PWA installée ou simple visite), le navigateur pouvait continuer à afficher une ancienne version tant que l'onglet n'était pas complètement fermé/rouvert, même après un rechargement forcé.
+
+## Correctifs
+- `sw.js` : liste `FILES` complétée avec tous les nouveaux modules, cache renommé `lagon-v18`.
+- `js/init.js` : le service worker vérifie désormais une mise à jour à chaque lancement (`reg.update()`) et, dès qu'une nouvelle version est installée, **recharge automatiquement la page** (`controllerchange` → `location.reload()`). Fini le besoin de deviner s'il faut vider le cache : la mise à jour est désormais automatique.
+- CSS : le bouton « 🎲 Surprise » du sélecteur de jeu utilise `grid-column:1 / -1` (toute la largeur, quel que soit le nombre de colonnes) au lieu d'un `span 3` fixe, pour rester fiable avec la grille adaptative.
+
+## Où trouver les nouveaux jeux
+Dans le jeu : toucher un personnage → **« Choisir un jeu 🎮 »** → les 10 jeux (dont Opérations, Lecture, Petits mots, Volumes) + Surprise s'affichent dans une grille, avec défilement si besoin.

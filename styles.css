@@ -941,7 +941,7 @@
   .game-choice:active{transform:translateY(3px); box-shadow:none;}
   .game-choice .emoji{font-size:1.9rem;}
   .game-choice .nm{font-size:.7rem; font-weight:800;}
-  .game-choice.surprise{grid-column:1 / span 3; background:linear-gradient(160deg,#FFF9E8,#FFE7F3);}
+  .game-choice.surprise{grid-column:1 / -1; background:linear-gradient(160deg,#FFF9E8,#FFE7F3);}
   .game-choice.surprise .emoji{font-size:1.6rem;}
 
   /* ---------- Mode course ---------- */
