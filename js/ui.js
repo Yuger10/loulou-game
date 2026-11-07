@@ -339,30 +339,17 @@ function renderLagon(){
   const ttl = document.getElementById('world-title');
   if(ttl) ttl.innerHTML = `${w.emoji} ${w.name}`;
   renderLevelPill();
-  const el = document.getElementById('islands');
-  el.innerHTML = charsOf(currentWorld).map(([id,c])=>`
-    <button class="island" data-char="${id}">
-      <span class="halo"><span class="emoji">${c.emoji}</span></span>
-      <span class="name">${c.name}<small>${c.title}</small></span>
-      <span class="loot">${c.loot.map(k=>ITEMS[k].emoji).join(' ')}</span>
-    </button>`).join('');
-  el.querySelectorAll('.island').forEach(btn=>{
-    btn.addEventListener('click', ()=> { playSound('tap'); openDialogue(btn.dataset.char); });
-  });
+  // les personnages vivent maintenant dans le paysage de l'île (js/island.js)
+  document.getElementById('islands').innerHTML = '';
   renderQuests();
   renderScene();
   if(typeof renderRaceTrack==='function') renderRaceTrack();
 }
 
 /* ---------- Décorations ---------- */
+// l'île vivante : paysage, personnages et décorations (js/island.js)
 function renderScene(){
-  const sc = document.getElementById('scene');
-  const owned = decosOf(currentWorld).map(([k])=>k).filter(k=>state.decos.includes(k));
-  sc.innerHTML = (owned.length
-    ? owned.map(k=>`<span class="deco">${DECOS[k].emoji}</span>`).join('')
-    : `<span class="empty">${WORLDS[currentWorld].sceneEmpty}</span>`)
-    + `<button class="btn-deco" id="btn-deco">🎨 Décorer</button>`;
-  document.getElementById('btn-deco').onclick = ()=>{ playSound('tap'); openDecoShop(); };
+  renderLiveIsland(document.getElementById('scene'));
 }
 
 function openDecoShop(){

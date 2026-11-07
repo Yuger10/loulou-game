@@ -1732,6 +1732,9 @@
   body[data-world="montagne"]{--world-sky:#E8F4FF; --world-sea:#9FC6E8; --world-deep:#5B8FC7; --world-scene-top:#F2F8FF; --world-scene-floor:#DCE9F7;}
   body[data-world="chateau"]{--world-sky:#3B2E63; --world-sea:#6A4C93; --world-deep:#2A1F47; --world-scene-top:#4B3A7A; --world-scene-floor:#F6EFD9;}
   body[data-world="jungle"]{--world-sky:#D8F0B0; --world-sea:#45A866; --world-deep:#1E5E3A; --world-scene-top:#C9ECB0; --world-scene-floor:#F3E7BF;}
+  /* Cité du Temps : parchemin et laiton ; Volcan des Génies : ciel de braise */
+  body[data-world="cite"]{--world-sky:#F6E7C8; --world-sea:#C9A46A; --world-deep:#5C4128; --world-scene-top:#F8EEDB; --world-scene-floor:#E8D7B5;}
+  body[data-world="volcan"]{--world-sky:#FFD3A8; --world-sea:#E0703A; --world-deep:#5A1A12; --world-scene-top:#FFE0C2; --world-scene-floor:#C9583A;}
 
   /* un attribut hidden doit toujours cacher (la barre de tour vide restait visible) */
   [hidden]{display:none !important;}
@@ -1868,6 +1871,15 @@
   .isle-label b{font-size:.78rem; font-weight:800;}
   .isle-label i{color:var(--lagoon-ink); font-size:.66rem;}
   .map-island.here .isle-label{background:var(--sun); box-shadow:0 3px 0 var(--sun-edge);}
+  /* Carte à 7 îles (v31) : 3 rangées en lacet ; nom sur une ligne, étoiles ou
+     niveau dessous, pour des étiquettes étroites qui ne se chevauchent pas */
+  .isle-label{flex-direction:column; gap:0; line-height:1.05; padding:3px 10px 4px; border-radius:12px;}
+  .isle-label i{font-size:.58rem; letter-spacing:-1px;}
+  .island-map, #view-carte .island-map{height:300px;}
+  @media (min-width:640px){ .island-map, #view-carte .island-map{height:360px;} }
+  /* le titre de la vue ne se coupe jamais en deux (« La / carte » sur iPhone SE) */
+  .view-head h2{white-space:nowrap; min-width:0;}
+  .view-head .level-pill{flex-shrink:1; min-width:0;}
   .map-next{color:var(--ink);}
 
   /* ---------- Onglets & barre du bas ---------- */
