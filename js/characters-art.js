@@ -158,6 +158,27 @@ ART.jaguar=ART.jaguar.replace('</svg>',
 ART.biche=ART.biche.replace('</svg>',
   `<path d="M60 79 V81 M54 81 Q60 87 66 81" fill="none" stroke="${AM}" stroke-width="2.6" stroke-linecap="round"/></svg>`);
 
+// Prince Tao : la visière descendait sur les yeux ; casque relevé sur le front, plumet rouge
+ART.chevalier=human('#9B674C','#38271F','#315C98',
+  `<path d="M25 46 C27 20 44 12 60 12 C76 12 93 20 95 46 C86 38 74 34 60 34 C46 34 34 38 25 46Z" fill="#C9D3DE" ${O()}/>`+
+  `<path d="M30 42 C40 36 50 34 60 34 C70 34 80 36 90 42" fill="none" stroke="#97A6B6" stroke-width="3"/>`+
+  `<path d="M38 26 Q60 18 82 26" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity=".7"/>`+
+  `<path d="M60 12 C56 2 64 -2 70 2 C66 6 68 9 64 12Z" fill="#E85E63" ${O(2)}/>`,
+  `<path d="M43 99 L60 116 L77 99" fill="#E8EDF2" ${O(2)}/><path d="M60 109 L66 117 L60 126 L54 117Z" fill="#F4C95C" ${O(2)}/>`+
+  `<path d="M22 130 C22 112 28 103 36 99 L39 130Z M98 130 C98 112 92 103 84 99 L81 130Z" fill="#97A6B6" ${O(2)}/>`);
+
+// Hector le hibou : ressemblait à un chat à lunettes ; corps de hibou, aigrettes, disque facial, ailes, ventre plumeux
+ART.hibou=svg(
+  `<ellipse cx="24" cy="92" rx="10" ry="24" fill="#7A4A2A" ${O()} transform="rotate(14 24 92)"/><ellipse cx="96" cy="92" rx="10" ry="24" fill="#7A4A2A" ${O()} transform="rotate(-14 96 92)"/>`+
+  `<path d="M36 34 L30 12 L50 28Z M84 34 L90 12 L70 28Z" fill="#98613F" ${O(2)}/>`+
+  `<path d="M60 22 C88 22 98 48 96 78 C94 110 80 128 60 128 C40 128 26 110 24 78 C22 48 32 22 60 22Z" fill="#98613F" ${O()}/>`+
+  `<ellipse cx="60" cy="104" rx="21" ry="20" fill="#E8C9A0"/>`+
+  `<path d="M48 96 q4 4 8 0 q4 4 8 0 q4 4 8 0 M46 106 q4 4 8 0 q4 4 8 0 q4 4 8 0 q4 4 8 0 M50 116 q4 4 8 0 q4 4 8 0 q4 4 8 0" fill="none" stroke="#B88A5A" stroke-width="2" stroke-linecap="round"/>`+
+  `<circle cx="46" cy="56" r="15" fill="#E8C9A0"/><circle cx="74" cy="56" r="15" fill="#E8C9A0"/>`+
+  eyes(46,74,57,4.8,6)+
+  `<circle cx="46" cy="57" r="11" fill="none" stroke="#5A3A22" stroke-width="2.5"/><circle cx="74" cy="57" r="11" fill="none" stroke="#5A3A22" stroke-width="2.5"/><path d="M57 55 Q60 52 63 55" fill="none" stroke="#5A3A22" stroke-width="2.5"/>`+
+  `<path d="M56 68 L60 79 L64 68Z" fill="#E8B94F" ${O(2)}/>`+cheeks(33,87,72));
+
 // Max le robot savant : tête en dôme et lunettes de labo (Bolt a une tête carrée et des chenilles)
 ART.robotsavant=svg(
   `<path d="M34 104 L14 96 L10 106 M86 104 L106 96 L110 106" fill="none" stroke="#C9D6DE" stroke-width="8" stroke-linecap="round"/>`+
