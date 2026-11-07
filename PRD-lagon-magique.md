@@ -494,3 +494,17 @@ Avec 12 mini-jeux, le sélecteur « Choisis ton jeu » montrait toute la liste �
 
 ## 2 défis au lieu de 3
 - `GAME_PICKER_SIZE` passe à **2** : le sélecteur propose 2 grands défis (toujours les moins essayés en priorité) + 🎲 Surprise. Moins de choix, plus facile à lire pour une enfant de 6 ans.
+
+---
+
+# v27 — Analyse académique de la difficulté, 5e palier, minuteur de fluence
+
+Voir **`ANALYSE-DIFFICULTE.md`** pour le détail complet (bugs trouvés,
+raisonnement pédagogique, tableau des 5 paliers, proposition de
+nouveaux mondes). Résumé :
+
+- **Difficulté centralisée et documentée** : tous les paramètres numériques des 12 mini-jeux déplacés dans `js/difficulty.js`, avec le raisonnement pédagogique en commentaire pour chacun (référence au programme CP/CE1/CE2 français).
+- **4 bugs corrigés** : pondération doublée par erreur dans le puzzle des nombres, progression irrégulière du nombre d'images dans « Trouve l'intrus », absence de graduation interne dans « Grandeurs & volumes », nombres toujours potentiellement trop éloignés dans « Comparer les nombres ».
+- **Un vrai 5e palier de difficulté** : l'île Jungle passe de `diff:4` (identique au Château) à `diff:5` — elle offre maintenant un vrai cran de difficulté supplémentaire, pas seulement plus de butin.
+- **Minuteur de réponse (fluence)**, à partir du palier 3 (Montagne), jamais avant 6 ans, jamais sur les jeux à plusieurs étapes (mémoire/Simon/puzzle), jamais en multijoueur, durée généreuse (13 à 26 secondes selon le jeu), temps écoulé traité comme une simple erreur encourageante (pas de pénalité supplémentaire).
+- **Proposition de 2 nouveaux mondes** (non implémentés, à valider) : « Le Volcan des Génies » (CE2, calcul sans support imagé, tables de multiplication) et « La Cité du Temps » (lire l'heure, repères temporels).

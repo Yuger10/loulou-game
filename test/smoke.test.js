@@ -100,7 +100,7 @@ check('jungle déverrouillée au niveau 14', ev('worldUnlocked("jungle")')===tru
 d.querySelector('.map-island[data-world="jungle"]').click();
 ev('sailing=false; setWorld("jungle")');
 check('navigation vers la jungle', ev('currentWorld')==='jungle');
-check('difficulté de la jungle = 4', ev('gameDiff()')===4);
+check('difficulté de la jungle = 5 (palier le plus avancé)', ev('gameDiff()')===5);
 check('jungle : personnages aventuriers', [...d.querySelectorAll('.island')].map(b=>b.dataset.char).join()==='exploratrice,singe,perroquet,jaguar');
 ev("switchView('carte')");
 check('carte : toutes les îles débloquées', d.getElementById('map-next').innerHTML.includes('toutes les îles'));
@@ -357,11 +357,15 @@ setTimeout(()=>{
     check('2e erreur : il reste 1 essai', ev('lives')===1);
 
     ev('currentWorld="chateau"; renderDiff()');
-    check('île 4 : 1 seul essai', ev('maxLives')===1);
+    check('île 4 : 2 essais', ev('maxLives')===2);
+    ev('closeModal()');
+
+    ev('state.missions = 70; currentWorld="jungle"; renderDiff()');
+    check('île 5 (jungle) : 1 seul essai, le palier le plus exigeant', ev('maxLives')===1);
     const mauvais = [...d.querySelectorAll('.diff-item')].find(e=>e.dataset.odd!=='true');
     mauvais.click();
     await wait(700);
-    check('île 4 : une erreur = mission ratée', d.querySelector('.fail-box')!==null);
+    check('île 5 : une erreur = mission ratée', d.querySelector('.fail-box')!==null);
     check('échec : bouton réessayer', !!d.getElementById('btn-retry'));
     check('échec : aucune récompense', ev('state.newItems')===0 || true);
     ev('closeModal(); currentWorld="lagon"');
@@ -381,7 +385,7 @@ setTimeout(()=>{
     ev('closeModal()');
 
     ev('currentWorld="chateau"; renderMath()');
-    check('maths : île 4 permet les soustractions', ev('mathBounds().allowMinus')===true);
+    check('maths : île 4 permet les soustractions', ev('mathBounds(gameDiff()).allowMinus')===true);
     check('maths : île 4 = 3 essais', ev('maxLives')===3);
     ev('closeModal(); currentWorld="lagon"');
 
@@ -492,7 +496,7 @@ setTimeout(()=>{
     ev(`profiles.list.find(p=>p.id===${JSON.stringify(p1)}).age = 6`);
     ev(`profiles.list.find(p=>p.id===${JSON.stringify(p2)}).age = 10`);
     check('âge → difficulté 6 ans = 2 ⭐', ev('ageToDiff(6)')===2);
-    check('âge → difficulté 10 ans = 4 ⭐', ev('ageToDiff(10)')===4);
+    check('âge → difficulté 10 ans = 5 ⭐', ev('ageToDiff(10)')===5);
     check('âge non renseigné → difficulté de l\'île', ev('ageToDiff(null)')===null);
 
     ev(`startRace([${JSON.stringify(p1)}, ${JSON.stringify(p2)}])`);
@@ -513,7 +517,7 @@ setTimeout(()=>{
     d.getElementById('btn-yay').click();
     await wait(100);
     check('course : la main passe au joueur suivant', ev('profiles.current')===p2);
-    check('course : difficulté du joueur de 10 ans = 4', ev('gameDiff()')===4);
+    check('course : difficulté du joueur de 10 ans = 5', ev('gameDiff()')===5);
 
     // arrivée
     ev(`race.pos[${JSON.stringify(p2)}] = race.goal - 1; race.turn = 1; party.turn = 1; renderRaceTrack()`);
@@ -557,6 +561,51 @@ setTimeout(()=>{
     check('âge 5 ans : un peu plus de jeux (volume, suite, simon)', ev('gameTypesForAge(5)').includes('volume') && !ev('gameTypesForAge(5)').includes('math'));
     check('âge 6 ans : tous les jeux (CP)', ev('gameTypesForAge(6)').length===ev('GAME_TYPES').length);
     check('âge non renseigné : tous les jeux (comportement inchangé)', ev('gameTypesForAge(null)').length===ev('GAME_TYPES').length);
+
+    // ---- Palier 5 (Jungle) : un vrai niveau supplémentaire ----
+    check('mémoire : 7 paires au palier 5 (contre 6 au palier 4)', ev('memoryPairs(5)')===7 && ev('memoryPairs(4)')===6);
+    check('intrus : progression régulière (+2 images par palier)', [1,2,3,4,5].map(d=>ev(`diffTotal(${d})`)).join()==='6,8,10,12,14');
+    check('opérations : plafond 30 au palier 5 (contre 20 au palier 4)', ev('mathBounds(5).max')===30 && ev('mathBounds(4).max')===20);
+    check('comparer : nombres proches plus fréquents au palier 5', ev('compareCloseChance(5)')>ev('compareCloseChance(3)'));
+    check("monnaie : jusqu'à 5 pièces à empiler au palier 5", ev('moneyPileSize(5).max')===5);
+    check('essais : la jungle (palier 5) est bien le plus exigeant', ev('livesFor("diff",5)')===1 && ev('livesFor("diff",4)')===2);
+
+    // ---- Correctif : le puzzle ne doit plus doubler la variante "start" ----
+    check('puzzle : chaque variante apparaît une seule fois (palier 2)', ev('puzzleVariants(2)').join()==='from1,start');
+    check('puzzle : pas de doublon à aucun palier', [1,2,3,4,5].every(d=>{
+      const v = ev(`puzzleVariants(${d})`);
+      return new Set(v).size===v.length;
+    }));
+
+    // ---- Minuteur de défi (fluence, à partir du palier 3) ----
+    check('minuteur : absent aux paliers 1-2 (compter)', ev('timerFor("count",1)')===null && ev('timerFor("count",2)')===null);
+    check('minuteur : présent à partir du palier 3 (compter)', ev('timerFor("count",3)')===20);
+    check('minuteur : jamais sur les jeux à plusieurs étapes', ev('timerFor("memory",5)')===null && ev('timerFor("simon",5)')===null && ev('timerFor("puzzle",5)')===null);
+    check('minuteur : durée généreuse et jamais punitive (≥12s partout)', ['count','diff','sequence','reading','math','money','determinants','volume','compare'].every(k=>[3,4,5].every(d=>{
+      const t = ev(`timerFor("${k}",${d})`);
+      return t===null || t>=12;
+    })));
+
+    // la barre de minuteur apparaît bien dans la fenêtre de jeu, au palier 3+
+    ev('currentWorld="montagne"; renderCount()');
+    check('minuteur : barre affichée dans le jeu (île 3)', !!d.getElementById('challenge-timer'));
+    ev('closeModal()');
+    ev('currentWorld="lagon"; renderCount()');
+    check("minuteur : absent sur l'île 1 (découverte sans pression)", !d.getElementById('challenge-timer'));
+    ev('closeModal()');
+
+    // un enfant de moins de 6 ans n'est jamais pressé par le temps, même
+    // si (en théorie) il atteignait une île avancée
+    ev('currentProfile().age = 4; currentWorld="montagne"; renderCount()');
+    check("minuteur : jamais avant 6 ans, même à difficulté élevée", !d.getElementById('challenge-timer'));
+    ev('closeModal(); currentProfile().age = null');
+
+    // temps écoulé : traité comme une erreur encourageante (pas de bouton fautif)
+    ev('currentWorld="montagne"; renderCount(); onResponseTimeout("count")');
+    check('minuteur : temps écoulé = un essai perdu (comme une erreur)', ev('lives')===ev('maxLives')-1);
+    check('minuteur : aucune image de "bouton fautif" affichée', !d.querySelector('.num-btn.ko'));
+    ev('closeModal(); currentWorld="lagon"');
+
     check('aucune erreur JS', errs.length===0);
     if(errs.length) console.log(errs);
     console.log(failed ? `\n${failed} test(s) en échec` : '\nTous les tests passent');

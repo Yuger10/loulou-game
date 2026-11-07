@@ -1,17 +1,12 @@
-/* ---------- Mini-jeu : La monnaie magique (niveau CP-CE1) ----------
+/* ---------- Mini-jeu : La monnaie magique (CP-CE2) ----------
    Composer une somme avec des pièces de différentes valeurs : retrouver
    la pile de pièces qui vaut exactement le prix demandé. Prépare au
-   calcul de la monnaie (compter, additionner des valeurs différentes). */
+   calcul de la monnaie (compter, additionner des valeurs différentes).
+   Valeurs et nombre de pièces centralisés dans js/difficulty.js
+   (moneyDenoms / moneyPileSize) : plus de pièces = plus de termes à
+   additionner mentalement, indépendamment des valeurs elles-mêmes. */
 
-function moneyDenoms(){
-  const dd = gameDiff();
-  if(dd<=1) return [1,2];
-  if(dd===2) return [1,2,5];
-  if(dd===3) return [1,2,5,10];
-  return [1,2,5,10,20];
-}
-
-// construit une pile de pièces au hasard (3 à 4 pièces) et renvoie sa valeur
+// construit une pile de pièces au hasard et renvoie sa valeur
 function randomPile(denoms, size){
   const pile = [];
   for(let i=0;i<size;i++) pile.push(pickRandom(denoms));
@@ -21,8 +16,10 @@ function randomPile(denoms, size){
 
 function renderMoney(){
   setupLives('money');
-  const denoms = moneyDenoms();
-  const size = 2 + Math.floor(Math.random()*2);     // 2 ou 3 pièces dans la bonne pile
+  const dd = gameDiff();
+  const denoms = moneyDenoms(dd);
+  const { min, max } = moneyPileSize(dd);
+  const size = min + Math.floor(Math.random()*(max-min+1));
   const correct = randomPile(denoms, size);
   const target = correct.total;
   const item = pickRandom(['🍭','🧸','🎈','🍦','⚽','🎁','🪁','🍪']);
@@ -31,7 +28,7 @@ function renderMoney(){
   let tries = 0;
   while(options.length < 3 && tries < 30){
     tries++;
-    const p = randomPile(denoms, 2 + Math.floor(Math.random()*2));
+    const p = randomPile(denoms, min + Math.floor(Math.random()*(max-min+1)));
     if(p.total !== target) options.push(p);
   }
   // au cas où (petites valeurs) on n'a pas trouvé 2 distracteurs différents
@@ -51,9 +48,10 @@ function renderMoney(){
     </div>
   `);
   bindQuit();
+  startTimerIfNeeded('money');
   document.querySelectorAll('.money-pile-btn').forEach(btn=>{
     btn.onclick = ()=>{
-      if(Number(btn.dataset.v)===target){ stepOk(btn); flashModal('ok'); setTimeout(onMissionWin, 350); }
+      if(Number(btn.dataset.v)===target){ clearActiveTimer(); stepOk(btn); flashModal('ok'); setTimeout(onMissionWin, 350); }
       else loseLife(btn);
     };
   });

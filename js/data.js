@@ -284,7 +284,7 @@ const WORLDS = {
     map:{x:76, y:26}, shape:'chateau', icon:'🏰', sand:'#E9D8F5', land:'#B79BE0',
     intro:"Le château des étoiles, le plus grand défi 👑",
     sceneEmpty:"Ton château attend ses décorations !" },
-  jungle:{ name:'La Jungle', emoji:'🌴', level:14, diff:4, short:'Jungle',
+  jungle:{ name:'La Jungle', emoji:'🌴', level:14, diff:5, short:'Jungle',
     subtitle:'Le trésor caché',
     map:{x:84, y:66}, shape:'jungle', icon:'🌴', sand:'#D7E8A0', land:'#2F8F5B',
     intro:"Bienvenue dans la jungle mystérieuse, le plus grand trésor t'attend 🌴",

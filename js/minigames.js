@@ -1,21 +1,14 @@
 /* ---------- Mini-jeux ---------- */
 
 /* Essais autorisés : à partir de l'île 2, les erreurs comptent.
-   On évite ainsi de cliquer au hasard jusqu'à tomber juste. */
+   On évite ainsi de cliquer au hasard jusqu'à tomber juste.
+   Le barème complet (par type de jeu et par palier) est centralisé et
+   documenté dans js/difficulty.js (fonction `livesFor`) — voir aussi
+   ANALYSE-DIFFICULTE.md pour le détail académique. */
 let lives = Infinity, maxLives = Infinity, currentGameKind = null;
 
 function triesFor(kind){
-  const d = gameDiff();
-  if(d <= 1) return Infinity;                       // île 1 : on apprend sans pression
-  if(kind === 'memory') return ({2:5, 3:4, 4:3})[d] || 3;   // le mémo demande des essais
-  if(kind === 'simon')  return ({2:3, 3:2, 4:2})[d] || 2;
-  if(kind === 'math')   return ({2:4, 3:3, 4:3})[d] || 3;    // le calcul mérite un peu plus de marge
-  if(kind === 'reading')      return ({2:4, 3:3, 4:3})[d] || 3;
-  if(kind === 'determinants') return ({2:4, 3:3, 4:3})[d] || 3;
-  if(kind === 'volume')       return ({2:4, 3:3, 4:3})[d] || 3;
-  if(kind === 'compare')      return ({2:4, 3:3, 4:3})[d] || 3;
-  if(kind === 'money')        return ({2:4, 3:3, 4:3})[d] || 3;
-  return ({2:3, 3:2, 4:1})[d] || 2;
+  return livesFor(kind, gameDiff());
 }
 
 function setupLives(kind){
@@ -70,6 +63,74 @@ function loseLife(el, opts){
   if(lives <= 0){ setTimeout(onMissionFail, 520); return true; }
   showToast(lives === 1 ? '⚠️ Dernier essai !' : `${lives} essais restants`);
   return false;
+}
+
+/* =====================================================================
+   MINUTEUR DE RÉPONSE — fluence, à partir du palier 3 (voir
+   js/difficulty.js pour la table des durées et le détail académique).
+   Principes :
+   - jamais pour un enfant de moins de 6 ans (currentPlayerAge) ;
+   - jamais pour les jeux à plusieurs étapes (mémoire, Simon, puzzle) ;
+   - le temps écoulé compte comme un essai perdu (même système de
+     cœurs ❤️ que les autres erreurs), jamais comme un échec immédiat ;
+   - toujours annulé dès qu'une nouvelle fenêtre s'ouvre ou se ferme
+     (voir les appels à `clearActiveTimer()` dans openModal/closeModal,
+     js/ui.js) : aucun minuteur ne continue à tourner « dans le vide ».
+   ===================================================================== */
+let activeTimerInterval = null;
+
+function clearActiveTimer(){
+  if(activeTimerInterval){ clearInterval(activeTimerInterval); activeTimerInterval = null; }
+}
+
+// Insère la barre de minuteur juste après la consigne, et démarre le
+// décompte. `kind` = type de jeu (sert à lire la durée adaptée dans
+// TIMER_SECONDS) ; appelé par chaque jeu « une question = une réponse »
+// juste après son propre openModal(...).
+function startTimerIfNeeded(kind){
+  clearActiveTimer();
+  // en multijoueur (chacun son tour / course), on garde l'expérience
+  // simple : pas de minuteur qui se superpose au passage de main.
+  if(typeof party!=='undefined' && party.active) return;
+  if(typeof race!=='undefined' && race.active) return;
+  const dd = gameDiff();
+  // jamais de pression temporelle avant le CP (programme de maternelle)
+  const age = typeof currentPlayerAge === 'function' ? currentPlayerAge() : null;
+  if(age && age < 6) return;
+  const seconds = timerFor(kind, dd);
+  if(!seconds) return;
+
+  const hint = document.querySelector('.puzzle-hint');
+  if(!hint) return;
+  const bar = document.createElement('div');
+  bar.className = 'challenge-timer';
+  bar.id = 'challenge-timer';
+  bar.innerHTML = `<i id="challenge-timer-bar" style="width:100%"></i>`;
+  hint.insertAdjacentElement('afterend', bar);
+
+  let remaining = seconds;
+  activeTimerInterval = setInterval(()=>{
+    remaining -= 1;
+    const el = document.getElementById('challenge-timer-bar');
+    const wrap = document.getElementById('challenge-timer');
+    if(el) el.style.width = Math.max(0, (remaining/seconds)*100) + '%';
+    if(wrap) wrap.classList.toggle('urgent', remaining <= 5);
+    if(remaining <= 0){
+      clearActiveTimer();
+      onResponseTimeout(kind);
+    }
+  }, 1000);
+}
+
+// Temps écoulé : traité EXACTEMENT comme une mauvaise réponse (même
+// cœurs ❤️, même message d'encouragement), sans jamais désigner un
+// bouton fautif puisque l'enfant n'a rien cliqué de faux. Si la mission
+// n'est pas ratée, on redonne simplement un nouveau temps complet sur
+// la même question — aucune pénalité au-delà de l'essai perdu.
+function onResponseTimeout(kind){
+  showToast('⏰ Temps écoulé ! On réessaie 👀');
+  const failed = loseLife(null);
+  if(!failed) startTimerIfNeeded(kind);
 }
 
 // petit flash coloré sur tout le deck
@@ -255,11 +316,12 @@ function onMissionWin(){
   if(againBtn) againBtn.onclick = ()=> { playSound('tap'); renderLagon(); startMinigame(); };
 }
 
-/* Jeu 1 : mémoire */
+/* Jeu 1 : mémoire (pas de minuteur : tâche à plusieurs étapes, voir
+   js/difficulty.js § « MINUTEUR » pour la justification). */
 function renderMemory(){
   setupLives('memory');
   const dd = gameDiff();
-  const pairs = dd===1 ? 3 : (dd===2 ? 4 : (dd===3 ? 5 : 6));
+  const pairs = memoryPairs(dd);
   const pool = shuffle(Object.values(ALL_ITEMS).map(i=>i.emoji)).slice(0,pairs);
   const cards = shuffle([...pool, ...pool]).map((e,i)=>({id:i, emoji:e, flipped:false, matched:false}));
   let first=null, lock=false;
@@ -313,12 +375,12 @@ function renderMemory(){
   render();
 }
 
-/* Jeu 2 : compter */
+/* Jeu 2 : compter (dénombrement — voir js/difficulty.js § countRange) */
 function renderCount(){
   setupLives('count');
   const emoji = pickRandom(['⭐','🐚','🌸','🦪','🐠','🦋']);
   const dd = gameDiff();
-  const min = dd>=3 ? 4 : 3, max = Math.min(12, 5 + dd*2); // île 1 : 3–7 … île 4 : 4–12
+  const { min, max } = countRange(dd);
   const n = min + Math.floor(Math.random()*(max-min+1));
   let options = new Set([n]);
   while(options.size<3){ options.add(Math.max(1, n + (Math.floor(Math.random()*5)-2))); }
@@ -333,19 +395,21 @@ function renderCount(){
     </div>
   `);
   bindQuit();
+  startTimerIfNeeded('count');
   document.querySelectorAll('.num-btn').forEach(btn=>{
     btn.onclick = ()=>{
-      if(Number(btn.dataset.v)===n){ stepOk(btn); flashModal('ok'); setTimeout(onMissionWin, 350); }
+      if(Number(btn.dataset.v)===n){ clearActiveTimer(); stepOk(btn); flashModal('ok'); setTimeout(onMissionWin, 350); }
       else loseLife(btn);
     };
   });
 }
 
-/* Jeu 3 : trouver l'intrus */
+/* Jeu 3 : trouver l'intrus (discrimination visuelle — voir
+   js/difficulty.js § diffTotal / diffMirrorChance) */
 function renderDiff(){
   setupLives('diff');
   const dd = gameDiff();
-  const total = dd>=4 ? 12 : (dd===3 ? 9 : (dd===2 ? 8 : 6));
+  const total = diffTotal(dd);
   // emojis qui se voient bien à l'envers (pas symétriques)
   const MIRRORABLE = ['🐠','🦋','🐌','🦄','🐬','🦊','🐿️','🦉','🦌','🦔','🐟','🎩'];
   // niveaux élevés : l'intrus ressemble un peu plus aux autres
@@ -353,8 +417,8 @@ function renderDiff(){
     ? [['🐚','🐌'],['🌸','🌺'],['⭐','🌟'],['🦋','🐝'],['🎀','🎁'],['🐠','🐟'],['🍄','🌰'],['🍀','🌿']]
     : [['🐚','🦄'],['🦋','💎'],['🌸','🍓'],['⭐','🌙'],['🎀','🧜‍♀️'],['🍄','🦊']];
 
-  // 1 fois sur 3 (dès le niveau 2) : même image, mais retournée
-  const mirrorMode = dd>=2 && Math.random() < (dd>=3 ? 0.5 : 0.35);
+  // au-delà du palier 1 : chance croissante que ce soit la variante miroir
+  const mirrorMode = Math.random() < diffMirrorChance(dd);
   let base, odd, items, hint;
   if(mirrorMode){
     base = pickRandom(MIRRORABLE);
@@ -380,15 +444,19 @@ function renderDiff(){
     </div>
   `);
   bindQuit();
+  startTimerIfNeeded('diff');
   document.querySelectorAll('.diff-item').forEach(el=>{
     el.onclick = ()=>{
-      if(el.dataset.odd==='true'){ stepOk(el); flashModal('ok'); setTimeout(onMissionWin, 350); }
+      if(el.dataset.odd==='true'){ clearActiveTimer(); stepOk(el); flashModal('ok'); setTimeout(onMissionWin, 350); }
       else loseLife(el);
     };
   });
 }
 
-/* Jeu 6 : mémoire de séquence (Simon) */
+/* Jeu 6 : mémoire de séquence (Simon). Pas de minuteur : la tâche est
+   déjà chronométrée par nature (on répète une séquence qui vient de
+   s'afficher) — un décompte en plus ferait double pression, voir
+   js/difficulty.js § « MINUTEUR ». Longueur dans § simonLength. */
 function renderSimon(){
   setupLives('simon');
   const PADS = [
@@ -397,7 +465,7 @@ function renderSimon(){
     {k:'c', emoji:'🟢', freq:659, name:'vert'},
     {k:'d', emoji:'🔴', freq:784, name:'rouge'},
   ];
-  const len = Math.min(7, 2 + gameDiff()); // île 1 : 3 … île 4 : 6
+  const len = simonLength(gameDiff());
   const seq = Array.from({length:len},()=>pickRandom(PADS));
   let pos = 0, playing = true;
 
@@ -468,19 +536,22 @@ function renderSimon(){
   });
 }
 
-/* Jeu 5 : suite logique */
+/* Jeu 5 : suite logique (notion de « suite organisée », cycle 1 puis
+   algorithme simple en cycle 2 — voir js/difficulty.js § sequence*) */
 function renderSequence(){
   setupLives('sequence');
   const symbols = shuffle(['🐚','⭐','🌸','🎀','💎','🦋','🐠']).slice(0,3);
   const [A,B,C] = symbols;
   const dd = gameDiff();
-  const patterns = dd===1
+  // le motif qui se répète grandit avec le palier : 2 éléments (le plus
+  // simple) → jusqu'à 4 éléments combinés (palier 5)
+  const patterns = dd<=1
     ? [[A,B]]
     : dd===2 ? [[A,B],[A,A,B],[A,B,C]]
     : dd===3 ? [[A,B,B],[A,A,B],[A,B,C]]
     : [[A,B,C],[A,B,A,C],[A,A,B,C],[A,B,B,C]];
   const pattern = pickRandom(patterns);
-  const shown = pattern.length===2 ? 5 : (pattern.length===3 ? 6 : 7);
+  const shown = sequencePatternLength(dd);
   const seq = Array.from({length:shown},(_,i)=>pattern[i%pattern.length]);
   const answer = pattern[shown%pattern.length];
   const options = shuffle([...new Set([answer, ...symbols])]).slice(0,3);
@@ -498,9 +569,11 @@ function renderSequence(){
     </div>
   `);
   bindQuit();
+  startTimerIfNeeded('sequence');
   document.querySelectorAll('.seq-btn').forEach(btn=>{
     btn.onclick = ()=>{
       if(btn.dataset.v===answer){
+        clearActiveTimer();
         const q = document.querySelector('.seq-row .q');
         q.textContent = answer; q.style.border='none'; q.classList.add('filled');
         stepOk(btn); flashModal('ok');
@@ -510,18 +583,17 @@ function renderSequence(){
   });
 }
 
-/* Jeu 4 : puzzle (remettre les nombres dans l'ordre) */
+/* Jeu 4 : puzzle des nombres (remettre une suite dans l'ordre). Pas de
+   minuteur : tâche à plusieurs clics successifs (voir js/difficulty.js
+   § « MINUTEUR »). Longueur et variantes dans § puzzleCount/Variants —
+   corrige un bug où la variante « start » était comptée deux fois dans
+   la liste de tirage (probabilité doublée par erreur). */
 function renderPuzzle(){
   setupLives('puzzle');
   const dd = gameDiff();
-  const count = Math.min(9, 3 + dd); // île 1 : 4 … île 4 : 7
+  const count = puzzleCount(dd);
   const lvl = dd;
-
-  // variantes : à partir de 1, à partir d'un autre nombre, de 2 en 2, ou à l'envers
-  const variants = ['from1'];
-  if(lvl>=1) variants.push('start');            // ex. 6 → 9
-  if(lvl>=2) variants.push('start','desc');     // à l'envers : 7 → 4
-  if(lvl>=3) variants.push('step2');            // de 2 en 2 : 2, 4, 6, 8
+  const variants = puzzleVariants(dd);
   const variant = pickRandom(variants);
 
   let seq, hint;
@@ -529,7 +601,7 @@ function renderPuzzle(){
     seq = Array.from({length:count},(_,i)=>i+1);
     hint = `Touche les nombres dans l'ordre : 1 → ${count}`;
   } else if(variant==='start'){
-    const maxStart = lvl>=3 ? 12 : 8;
+    const maxStart = puzzleStartMax(dd);
     const start = 2 + Math.floor(Math.random()*(maxStart-1));
     seq = Array.from({length:count},(_,i)=>start+i);
     hint = `Touche les nombres dans l'ordre : ${seq[0]} → ${seq[seq.length-1]}`;

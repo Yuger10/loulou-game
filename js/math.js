@@ -1,21 +1,13 @@
-/* ---------- Mini-jeu : Opérations magiques (niveau CP) ----------
+/* ---------- Mini-jeu : Opérations magiques (niveau CP-CE2) ----------
    Additions et soustractions illustrées avec des emojis, pour
    apprendre le calcul sans se noyer dans les chiffres.
-   Difficulté suit gameDiff() comme les autres jeux. */
+   Les bornes (mathBounds) sont centralisées et documentées dans
+   js/difficulty.js — voir aussi ANALYSE-DIFFICULTE.md. */
 
 const MATH_EMOJIS = ['⭐','🐚','🌸','🦪','🐠','🦋','🍎','🎈'];
 
-// Bornes pensées pour un enfant de CP : on reste sous 10, puis sous 20.
-function mathBounds(){
-  const dd = gameDiff();
-  if(dd<=1) return { max:5,  allowMinus:false };   // île 1 : additions jusqu'à 5
-  if(dd===2) return { max:10, allowMinus:true  };   // île 2 : +/- jusqu'à 10
-  if(dd===3) return { max:15, allowMinus:true  };   // île 3 : +/- jusqu'à 15
-  return { max:20, allowMinus:true };                // île 4 : +/- jusqu'à 20
-}
-
 function makeMathProblem(){
-  const { max, allowMinus } = mathBounds();
+  const { max, allowMinus } = mathBounds(gameDiff());
   const isMinus = allowMinus && Math.random()<0.5;
   let a, b, result, op;
   if(isMinus){
@@ -70,9 +62,11 @@ function renderMath(){
     </div>
   `);
   bindQuit();
+  startTimerIfNeeded('math');
   document.querySelectorAll('.num-btn').forEach(btn=>{
     btn.onclick = ()=>{
       if(Number(btn.dataset.v)===result){
+        clearActiveTimer();
         const q = document.querySelector('.eq-q');
         if(q){ q.textContent = result; q.classList.add('filled'); }
         stepOk(btn); flashModal('ok');

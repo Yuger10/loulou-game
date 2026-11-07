@@ -1,22 +1,26 @@
-/* ---------- Mini-jeu : Comparer les nombres (niveau CP) ----------
+/* ---------- Mini-jeu : Comparer les nombres (CP-CE2) ----------
    Choisir le bon signe < / > / = entre deux nombres. Programme CP :
    comparaison et rangement des nombres, introduction des symboles
-   mathématiques. Les nombres grandissent avec la difficulté de l'île. */
-
-function compareRange(){
-  const dd = gameDiff();
-  if(dd<=1) return 10;
-  if(dd===2) return 20;
-  if(dd===3) return 50;
-  return 100;
-}
+   mathématiques. Bornes dans js/difficulty.js (compareRange).
+   Correctif pédagogique : à partir du palier 3, une partie des manches
+   force des nombres PROCHES (compareCloseChance) — sinon l'exercice
+   peut rester trivial même au palier maximal (comparer 3 et 97 ne
+   demande aucune réflexion sur l'ordre de grandeur réel). */
 
 function renderCompare(){
   setupLives('compare');
-  const max = compareRange();
+  const dd = gameDiff();
+  const max = compareRange(dd);
   let a = 1 + Math.floor(Math.random()*max);
-  let b = 1 + Math.floor(Math.random()*max);
-  if(Math.random() < 0.2) b = a;              // parfois une égalité, pour la tester aussi
+  let b;
+  if(Math.random() < compareCloseChance(dd)){
+    // nombre voisin de a (écart de 1 à 5), toujours dans les bornes
+    const delta = 1 + Math.floor(Math.random()*5);
+    b = Math.random()<0.5 ? Math.max(1, a-delta) : Math.min(max, a+delta);
+  } else {
+    b = 1 + Math.floor(Math.random()*max);
+  }
+  if(Math.random() < compareEqualChance(dd)) b = a;     // teste aussi l'égalité
   const answer = a<b ? '<' : (a>b ? '>' : '=');
   const options = shuffle(['<','>','=']);
 
@@ -33,9 +37,11 @@ function renderCompare(){
     </div>
   `);
   bindQuit();
+  startTimerIfNeeded('compare');
   document.querySelectorAll('.cmp-btn').forEach(btn=>{
     btn.onclick = ()=>{
       if(btn.dataset.v===answer){
+        clearActiveTimer();
         const q = document.querySelector('.cmp-q');
         if(q){ q.textContent = answer; q.classList.add('filled'); }
         stepOk(btn); flashModal('ok');

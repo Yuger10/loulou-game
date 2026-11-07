@@ -1,7 +1,8 @@
-/* ---------- Mini-jeu : Lecture magique (niveau CP) ----------
+/* ---------- Mini-jeu : Lecture magique (niveau GS-CE1) ----------
    Association image <-> mot écrit, pour s'entraîner à lire des mots
-   simples. Plus l'île est difficile, plus on retire les indices visuels
-   (ça force à vraiment lire, pas juste reconnaître l'image). */
+   simples. Plus le palier est élevé, plus on retire les indices
+   visuels (ça force à vraiment lire, pas juste reconnaître l'image).
+   Seuils centralisés dans js/difficulty.js (readingWordOnly/Options). */
 
 function pickDistractors(pool, correct, count){
   const others = pool.filter(w=>w.word!==correct.word);
@@ -14,10 +15,10 @@ function renderReading(){
   const pool = WORDS_CP;
   const correct = pickRandom(pool);
 
-  // île 1-2 : on voit l'image, on choisit le mot écrit (association)
-  // île 3-4 : on ne voit QUE le mot, il faut le lire pour trouver l'image
-  const wordToImage = dd >= 3;
-  const nOptions = dd >= 3 ? 4 : 3;
+  // paliers 1-2 : on voit l'image, on choisit le mot écrit (association)
+  // paliers 3-5 : on ne voit QUE le mot, il faut le lire pour trouver l'image
+  const wordToImage = readingWordOnly(dd);
+  const nOptions = readingOptions(dd);
   const distractors = pickDistractors(pool, correct, nOptions - 1);
   const options = shuffle([correct, ...distractors]);
 
@@ -30,13 +31,6 @@ function renderReading(){
         ${options.map(o=>`<button type="button" class="reading-opt" data-w="${o.word}" aria-label="${o.word}">${o.emoji}</button>`).join('')}
       </div>
     `);
-    bindQuit();
-    document.querySelectorAll('.reading-opt').forEach(btn=>{
-      btn.onclick = ()=>{
-        if(btn.dataset.w===correct.word){ stepOk(btn); flashModal('ok'); setTimeout(onMissionWin, 350); }
-        else loseLife(btn);
-      };
-    });
   } else {
     openModal(`
       ${gameHeader('📖 Lecture magique', 'Quel mot va avec cette image ?', 'Quel mot va avec cette image ?')}
@@ -46,12 +40,13 @@ function renderReading(){
         ${options.map(o=>`<button type="button" class="reading-opt reading-word-btn" data-w="${o.word}">${o.word}</button>`).join('')}
       </div>
     `);
-    bindQuit();
-    document.querySelectorAll('.reading-opt').forEach(btn=>{
-      btn.onclick = ()=>{
-        if(btn.dataset.w===correct.word){ stepOk(btn); flashModal('ok'); setTimeout(onMissionWin, 350); }
-        else loseLife(btn);
-      };
-    });
   }
+  bindQuit();
+  startTimerIfNeeded('reading');
+  document.querySelectorAll('.reading-opt').forEach(btn=>{
+    btn.onclick = ()=>{
+      if(btn.dataset.w===correct.word){ clearActiveTimer(); stepOk(btn); flashModal('ok'); setTimeout(onMissionWin, 350); }
+      else loseLife(btn);
+    };
+  });
 }

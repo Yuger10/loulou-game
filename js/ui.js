@@ -399,6 +399,9 @@ function openDecoShop(){
 let currentChar = null;
 
 function openModal(html){
+  // tout nouveau contenu invalide un éventuel minuteur de défi en cours
+  // (voir js/minigames.js) : jamais de décompte qui tourne « dans le vide ».
+  if(typeof clearActiveTimer==='function') clearActiveTimer();
   const body = document.getElementById('modal-body') || document.getElementById('modal');
   body.innerHTML = html;
   const ov = document.getElementById('overlay');
@@ -409,6 +412,7 @@ function openModal(html){
   if(m) m.scrollTop = 0;
 }
 function closeModal(){
+  if(typeof clearActiveTimer==='function') clearActiveTimer();
   document.getElementById('overlay').classList.remove('show');
   document.body.classList.remove('modal-open');
   if(window.speechSynthesis) speechSynthesis.cancel();

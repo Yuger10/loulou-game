@@ -1,15 +1,19 @@
-/* ---------- Mini-jeu : Grandeurs & volumes (niveau CP) ----------
-   Au CP, on ne calcule pas de volume : on compare des contenances
-   (« qui contient le plus ? ») et on reconnaît les formes en volume
-   (solides du quotidien). C'est le programme officiel « grandeurs et
-   mesures » / « espace et géométrie » de CP-CE1.
-   - île 1-2 : comparer deux contenants, trouver celui qui contient le plus
-   - île 3-4 : reconnaître le solide (cube, boule, cylindre, cône, pavé) */
+/* ---------- Mini-jeu : Grandeurs & volumes (GS-CE1) ----------
+   Deux compétences enchaînées dans le temps, et non juste « plus dur » :
+   - paliers 1-2 : comparer des contenances (« qui contient le plus ? »),
+     une compétence de cycle 1 (grande section) ;
+   - paliers 3-5 : reconnaître les solides du quotidien (cube, boule,
+     cylindre, cône, pavé), une compétence qui se construit en CP-CE1.
+   Seuils et tailles centralisés dans js/difficulty.js
+   (volumeUsesCapacityCompare / ContainerCount / AskLessChance / solidOptions). */
 
 const CONTAINER_PAIRS = [
   ['🥤','🪣'], ['☕','🛁'], ['🍶','🏊'], ['🥛','🛢️'],
   ['🧴','🚰'], ['🥣','🍲'], ['🧃','🛳️'], ['🥄','🍳'],
 ];
+// un 3e contenant, de taille intermédiaire, pour le palier 2 (3 contenants
+// à classer au lieu de 2 — davantage de comparaisons mentales à faire)
+const CONTAINER_MID = ['🧋','🫖','🪙','🧊','🍯','🧱','🚲','🛶'];
 
 const SOLIDS = [
   { name:'cube',     items:['🎲','🧊','🗃️'] },
@@ -22,16 +26,22 @@ const SOLIDS = [
 function renderVolume(){
   setupLives('volume');
   const dd = gameDiff();
-  if(dd <= 2) renderCapacityCompare();
-  else renderSolidShape();
+  if(volumeUsesCapacityCompare(dd)) renderCapacityCompare(dd);
+  else renderSolidShape(dd);
 }
 
-// île 1-2 : quel récipient contient le plus (ou le moins) ?
-function renderCapacityCompare(){
-  const [small, big] = pickRandom(CONTAINER_PAIRS);
-  const askMore = Math.random() < 0.7;              // surtout "le plus", parfois "le moins"
+// paliers 1-2 : quel récipient contient le plus (ou le moins) ?
+function renderCapacityCompare(dd){
+  const pairIdx = Math.floor(Math.random()*CONTAINER_PAIRS.length);
+  const [small, big] = CONTAINER_PAIRS[pairIdx];
+  const nContainers = volumeContainerCount(dd);
+  // palier 2 : un 3e contenant de taille intermédiaire, pour forcer un
+  // vrai classement (petit/moyen/grand) plutôt qu'un simple duel
+  const containers = nContainers>=3 ? [small, CONTAINER_MID[pairIdx], big] : [small, big];
+
+  const askMore = Math.random() > volumeAskLessChance(dd);
   const answer = askMore ? big : small;
-  const options = shuffle([small, big]);
+  const options = shuffle(containers);
   const question = askMore ? 'Touche celui qui contient LE PLUS' : 'Touche celui qui contient LE MOINS';
 
   openModal(`
@@ -42,20 +52,20 @@ function renderCapacityCompare(){
     </div>
   `);
   bindQuit();
+  startTimerIfNeeded('volume');
   document.querySelectorAll('.vol-container-btn').forEach(btn=>{
     btn.onclick = ()=>{
-      if(btn.dataset.v===answer){ stepOk(btn); flashModal('ok'); setTimeout(onMissionWin, 350); }
+      if(btn.dataset.v===answer){ clearActiveTimer(); stepOk(btn); flashModal('ok'); setTimeout(onMissionWin, 350); }
       else loseLife(btn);
     };
   });
 }
 
-// île 3-4 : reconnaître la forme en volume (solide) d'un objet du quotidien
-function renderSolidShape(){
-  const dd = gameDiff();
+// paliers 3-5 : reconnaître la forme en volume (solide) d'un objet du quotidien
+function renderSolidShape(dd){
   const solid = pickRandom(SOLIDS);
   const item = pickRandom(solid.items);
-  const nOptions = dd >= 4 ? 4 : 3;
+  const nOptions = solidOptions(dd);
   const distractors = shuffle(SOLIDS.filter(s=>s.name!==solid.name)).slice(0, nOptions - 1);
   const options = shuffle([solid, ...distractors]);
 
@@ -68,9 +78,10 @@ function renderSolidShape(){
     </div>
   `);
   bindQuit();
+  startTimerIfNeeded('volume');
   document.querySelectorAll('.vol-opt-btn').forEach(btn=>{
     btn.onclick = ()=>{
-      if(btn.dataset.v===solid.name){ stepOk(btn); flashModal('ok'); setTimeout(onMissionWin, 350); }
+      if(btn.dataset.v===solid.name){ clearActiveTimer(); stepOk(btn); flashModal('ok'); setTimeout(onMissionWin, 350); }
       else loseLife(btn);
     };
   });
