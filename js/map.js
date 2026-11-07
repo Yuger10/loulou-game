@@ -1,8 +1,10 @@
 /* ---------- Carte des îles (mer animée, route, bateau) ---------- */
 
-// courbe douce passant par toutes les îles
-function mapRoutePath(){
-  const pts = WORLD_ORDER.map(id=>WORLDS[id].map);
+// courbe douce passant par les îles (toutes, ou de l'île `from` à l'île `to`) ;
+// un morceau suit exactement le tracé complet, pour s'y superposer
+function mapRoutePath(from, to){
+  const all = WORLD_ORDER.map(id=>WORLDS[id].map);
+  const pts = all.slice(from || 0, (to == null ? all.length - 1 : to) + 1);
   let d = `M ${pts[0].x} ${pts[0].y}`;
   for(let i=1;i<pts.length;i++){
     const a = pts[i-1], b = pts[i];
@@ -15,8 +17,10 @@ function mapRoutePath(){
 function renderMap(){
   const el = document.getElementById('island-map');
   if(!el) return;
-  const currentIdx = WORLD_ORDER.indexOf(currentWorld);
   const route = mapRoutePath();
+  // progression = dernière île débloquée (et non l'île où l'on se trouve)
+  const reached = WORLD_ORDER.reduce((m, id, i)=> worldUnlocked(id) ? i : m, 0);
+  const hasNext = reached < WORLD_ORDER.length - 1;
 
   el.innerHTML = `
     <div class="sea" aria-hidden="true">
@@ -26,8 +30,11 @@ function renderMap(){
       <span class="mapfish f1">🐟</span><span class="mapfish f2">🐠</span>
     </div>
     <svg class="route" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+      <path d="${route}" class="route-band"/>
+      <path d="${mapRoutePath(0, reached)}" class="route-band-done"/>
       <path d="${route}" class="route-line"/>
-      <path d="${route}" class="route-done" style="--pct:${currentIdx/(WORLD_ORDER.length-1)}"/>
+      <path d="${mapRoutePath(0, reached)}" class="route-done"/>
+      ${hasNext ? `<path d="${mapRoutePath(reached, reached + 1)}" class="route-next"/>` : ''}
     </svg>
     ${WORLD_ORDER.map((id,i)=>{
       const w = WORLDS[id];
