@@ -17,6 +17,7 @@ const GAME_LIST = [
   { key:'calendar', emoji:'📅', name:'Calendrier',   fn:()=>renderCalendar() },
   { key:'calc',     emoji:'🌋', name:'Calcul mental', fn:()=>renderCalc() },
   { key:'shapes',   emoji:'🍡', name:'Formes et couleurs', fn:()=>renderShapes() },
+  { key:'planets',  emoji:'🪐', name:'Les planètes', fn:()=>renderPlanets() },
 ];
 
 /* --- Panneau des joueurs --- */

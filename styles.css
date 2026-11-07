@@ -2470,3 +2470,38 @@
   @media (max-height:520px) and (orientation:landscape){ .sq-board{max-width:360px; gap:6px; padding:8px;} .sq-item{min-height:48px;} }
   @media (prefers-reduced-motion:reduce){ .sq-item.squish .sq-svg, .sq-item.sq-petit.squish .sq-svg, .sq-item.found .sq-check{animation:none;} }
 
+
+  /* =====================================================================
+     Les planètes — quiz illustré (v38)
+     ===================================================================== */
+  .pl-space{
+    position:relative; max-width:480px; margin:0 auto 12px; padding:16px 12px 14px; border-radius:var(--radius-lg, 24px);
+    background:
+      radial-gradient(1.5px 1.5px at 12% 20%, #fff, transparent), radial-gradient(1.5px 1.5px at 30% 78%, #fff, transparent),
+      radial-gradient(2px 2px at 54% 12%, #FFE9A8, transparent), radial-gradient(1.5px 1.5px at 72% 70%, #fff, transparent),
+      radial-gradient(1.5px 1.5px at 90% 30%, #fff, transparent), radial-gradient(2px 2px at 84% 88%, #FFE9A8, transparent),
+      linear-gradient(160deg, #1B2350 0%, #2C2468 100%);
+    border:3px solid #fff; box-shadow:0 4px 0 rgba(18,59,79,.12);
+  }
+  .pl-options{display:flex; flex-wrap:wrap; justify-content:center; gap:12px;}
+  .pl-opt{
+    position:relative; flex:1 1 92px; max-width:128px; min-height:118px; padding:8px 6px 8px;
+    display:flex; flex-direction:column; align-items:center; gap:4px;
+    background:#fff; color:var(--ink); border:2px solid rgba(18,59,79,.06); border-radius:var(--radius-md, 18px);
+    box-shadow:0 6px 0 var(--edge, #C4D7DC), inset 0 3px 0 rgba(255,255,255,.9); cursor:pointer;
+  }
+  .pl-opt:nth-child(4n+1){--edge:var(--edge-coral);} .pl-opt:nth-child(4n+2){--edge:var(--edge-lilac);}
+  .pl-opt:nth-child(4n+3){--edge:var(--edge-sun);}   .pl-opt:nth-child(4n+4){--edge:var(--edge-mint);}
+  .pl-opt:not(:disabled):active{transform:translateY(6px); box-shadow:0 0 0 var(--edge), inset 0 3px 0 rgba(255,255,255,.9);}
+  .pl-opt .pl-svg{width:72px; height:72px; display:block;}
+  .pl-name{font-family:'Baloo 2',sans-serif; font-weight:800; font-size:1rem; line-height:1.1;}
+  .pl-options.txt{flex-direction:column; align-items:stretch; max-width:360px; margin:0 auto;}
+  .pl-opt.pl-txt{max-width:none; min-height:58px; justify-content:center; font-family:'Baloo 2',sans-serif; font-weight:800; font-size:1.15rem; text-align:center;}
+  .pl-opt.done{background:#DFF6DE; border-color:#9BDDAE; box-shadow:0 2px 0 #9BDDAE; transform:translateY(4px);}
+  .pl-rank{position:absolute; top:-8px; left:-8px; width:28px; height:28px; border-radius:50%; display:grid; place-items:center;
+    background:var(--sun); color:var(--ink); font-family:'Baloo 2',sans-serif; font-weight:800; box-shadow:0 0 0 3px #fff;}
+  .pl-sun{position:absolute; left:-18px; top:50%; width:46px; height:46px; transform:translateY(-50%); pointer-events:none;}
+  .pl-sun .pl-svg{width:100%; height:100%;}
+  .pl-opt.ko{background:#FFE2DC; border-color:#F4B7A9; box-shadow:0 2px 0 #F4B7A9; opacity:1; filter:none;}
+  .fun-fact{background:#EAF1FF !important; text-align:left; font-weight:700;}
+  @media (max-height:520px) and (orientation:landscape){ .pl-opt{min-height:92px;} .pl-opt .pl-svg{width:52px; height:52px;} }

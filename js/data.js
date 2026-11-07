@@ -511,7 +511,7 @@ function charsOfForPlayer(world, gender){
 function decosOf(world){
   return Object.entries(DECOS).filter(([,d])=>(d.world||'lagon')===world);
 }
-const GAME_TYPES = ['memory','count','diff','puzzle','sequence','simon','math','reading','determinants','volume','compare','money','clock','calendar','calc','shapes'];
+const GAME_TYPES = ['memory','count','diff','puzzle','sequence','simon','math','reading','determinants','volume','compare','money','clock','calendar','calc','shapes','planets'];
 
 /* Quels types de défis proposer selon l'âge (programme de l'école
    maternelle, cycle 1, 3-6 ans — repères eduscol.education.fr) :
@@ -529,10 +529,12 @@ const AGE_GAME_TYPES = [
   // dès la petite section, au même titre que la mémoire ou l'intrus.
   // « Formes et couleurs » (shapes) aussi : reconnaître et trier formes et
   // couleurs est au programme dès la petite section (cycle 1).
+  // « Les planètes » : dès 5 ans seulement (le Soleil, la Lune, la Terre,
+  // le jour et la nuit) ; plus tôt, ces notions sont trop abstraites.
   { max:4, types:['memory','count','diff','calendar','shapes'] },
   // à 5 ans (MS/GS) : + comparer des tailles, suites simples, couleurs,
   // et lire l'heure en heures pleines (« il est 3 heures »).
-  { max:5, types:['memory','count','diff','volume','sequence','simon','clock','calendar','shapes'] },
+  { max:5, types:['memory','count','diff','volume','sequence','simon','clock','calendar','shapes','planets'] },
   // 6 ans et plus (ou âge non précisé) : tous les jeux, dont le calcul
   // mental abstrait (calc), réservé au CP confirmé et plus.
 ];

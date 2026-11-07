@@ -656,7 +656,7 @@ setTimeout(()=>{
     ev('closeModal()');
 
     // ---- Compteur de défis joués, et variété forcée ----
-    ev('state.gameCounts = {}; state.gameCounts["memory"]=1; state.gameCounts["count"]=1; state.gameCounts["diff"]=1; state.gameCounts["puzzle"]=1; state.gameCounts["sequence"]=1; state.gameCounts["simon"]=1; state.gameCounts["math"]=1; state.gameCounts["reading"]=1; state.gameCounts["determinants"]=1; state.gameCounts["volume"]=1; state.gameCounts["clock"]=1; state.gameCounts["calendar"]=1; state.gameCounts["calc"]=1; state.gameCounts["compare"]=0; state.gameCounts["shapes"]=1; state.gameCounts["money"]=0; openGamePicker("sirene")');
+    ev('state.gameCounts = {}; state.gameCounts["memory"]=1; state.gameCounts["count"]=1; state.gameCounts["diff"]=1; state.gameCounts["puzzle"]=1; state.gameCounts["sequence"]=1; state.gameCounts["simon"]=1; state.gameCounts["math"]=1; state.gameCounts["reading"]=1; state.gameCounts["determinants"]=1; state.gameCounts["volume"]=1; state.gameCounts["clock"]=1; state.gameCounts["calendar"]=1; state.gameCounts["calc"]=1; state.gameCounts["compare"]=0; state.gameCounts["shapes"]=1; state.gameCounts["planets"]=1; state.gameCounts["money"]=0; openGamePicker("sirene")');
     const leastPlayed = [...d.querySelectorAll('.game-choice:not(.surprise)')].map(b=>b.dataset.game);
     check('variété : les 2 jeux jamais essayés remontent en priorité', leastPlayed.includes('compare') && leastPlayed.includes('money'));
     ev('closeModal()');
@@ -755,6 +755,33 @@ setTimeout(()=>{
       check('formes : la consigne montre la couleur attendue (palier 1)', !!d.querySelector('.puzzle-hint .sq-dot'));
       check('formes : jeu enregistré dans la liste', ev('GAME_LIST.some(g=>g.key==="shapes") && GAME_TYPES.includes("shapes")'));
       check('formes : pas de minuteur (plusieurs touches)', ev('timerFor("shapes",5)')===null);
+      ev('closeModal()');
+    }
+    // ---- Les planètes : exactitude scientifique ----
+    {
+      check('planètes : 8 planètes dans l\'ordre (pas de Pluton)', ev('PLANET_IDS.join()')==='mercure,venus,terre,mars,jupiter,saturne,uranus,neptune' && !ev('PLANET_IDS').includes('pluton') && ev('PLANET_QUESTIONS[5][0]().fact').includes('Pluton est une planète naine'));
+      check('planètes : extrêmes calculés (proche Mercure, lointaine Neptune, grande Jupiter, petite Mercure, chaude Vénus)',
+        ev('closestPlanet()')==='mercure' && ev('farthestPlanet()')==='neptune' && ev('largestPlanet()')==='jupiter' && ev('smallestPlanet()')==='mercure' && ev('hottestPlanet()')==='venus');
+      check('planètes : tailles dans le bon ordre (Jupiter > Saturne > Uranus > Neptune > Terre > Vénus > Mars > Mercure)',
+        ev('["jupiter","saturne","uranus","neptune","terre","venus","mars","mercure"].every((id,i,a)=>i===0 || SOLAR_DATA[a[i-1]].diameter > SOLAR_DATA[id].diameter)'));
+      // chaque question de chaque palier : une seule bonne réponse, présente dans les choix, sans doublon, avec une phrase à retenir
+      const bad = ev(`(()=>{ const out=[]; for(const t of [1,2,3,4,5,6]) PLANET_QUESTIONS[t].forEach((f,i)=>{ for(let k=0;k<5;k++){ const q=f();
+          if(!q.say || !q.fact) out.push(t+':'+i+' sans texte');
+          if(q.type!=='order'){ if(!q.options.includes(q.answer)) out.push(t+':'+i+' réponse absente');
+            if(new Set(q.options).size!==q.options.length) out.push(t+':'+i+' doublon');
+            if(q.type==='pic' && !q.options.every(id=>bodySVG(id).startsWith('<svg'))) out.push(t+':'+i+' dessin manquant'); } } }); return out; })()`);
+      check('planètes : chaque question a une seule bonne réponse parmi des choix valides', bad.length===0);
+      if(bad.length) console.log('   ', bad.slice(0,5));
+      check('planètes : toutes dessinées à la même taille (aucune fausse taille suggérée)', ev('PLANET_IDS.every(id=>{ const r=PLANET_DISC_R[id]; if(!r) return false; const m=bodySVG(id).match(/scale\\(([0-9.]+)\\)/); const k=m?Number(m[1]):1; return Math.abs(r*k - PLANET_DRAW_R) < 0.1; })'));
+      check('planètes : le jour et la nuit viennent de la rotation de la Terre', ev('PLANET_QUESTIONS[5][3]().answer')==='La Terre tourne sur elle-même');
+      check('planètes : le Soleil est une étoile, la Lune un satellite', ev('PLANET_QUESTIONS[2][3]().answer')==='une étoile' && ev('PLANET_QUESTIONS[5][5]().answer')==='un satellite de la Terre');
+      check('planètes : pas avant 5 ans', !ev('gameTypesForAge(4)').includes('planets') && ev('gameTypesForAge(5)').includes('planets'));
+      check('planètes : pas de minuteur', ev('timerFor("planets",5)')===null);
+      ev('closeModal(); currentWorld="lagon"; playGame("planets")');
+      check('planètes : le quiz s\'affiche avec ses choix', d.querySelectorAll('.pl-opt').length>=2);
+      // bonne réponse : la phrase à retenir est affichée sur l'écran de victoire
+      ev('missionFact = "Phrase de test."; onMissionWin()');
+      check('planètes : la phrase à retenir apparaît à la victoire', !!d.querySelector('.win-box .fun-fact') && d.querySelector('.win-box .fun-fact').textContent.includes('Phrase de test.'));
       ev('closeModal()');
     }
     // ---- Chaque nouveau monde : couleurs propres et place sur la carte ----

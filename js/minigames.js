@@ -200,6 +200,9 @@ function stepOk(el){
 }
 
 let lastGame = null;
+// Phrase à retenir (vraie et vérifiée) qu'un jeu peut faire afficher et dire
+// sur l'écran de victoire, ex. le quiz des planètes. Utilisée une seule fois.
+let missionFact = null;
 // Fonction de rendu pour un type de jeu donné (doit couvrir GAME_TYPES).
 // Résolu au moment de l'appel (et non au chargement) : les mini-jeux les
 // plus récents sont définis dans des fichiers chargés après celui-ci.
@@ -221,6 +224,7 @@ function gameRenderer(key){
     case 'calendar': return renderCalendar;
     case 'calc': return renderCalc;
     case 'shapes': return renderShapes;
+    case 'planets': return renderPlanets;
     default: return renderMemory;
   }
 }
@@ -268,6 +272,7 @@ function progressDots(done, total){
 
 /* Mission ratée : on encourage, on ne punit pas — mais pas de récompense. */
 function onMissionFail(){
+  missionFact = null;
   bindQuit._last = null;
   lives = 0;
   const c = CHARACTERS[currentChar] || CHARACTERS.sirene;
@@ -335,7 +340,8 @@ function onMissionWin(){
     `Incroyable, tu as tout trouvé !`,
     `Trop ${ac('malin','maligne')} ! 💪`,
   ]);
-  setTimeout(()=> speak(`${levelUp ? `Niveau ${level()} ! ` : ''}${praise} ${c.name} t'offre ${it.name}${bonus ? `, et une surprise : ${ITEMS[bonus].name}` : ''}.`), 300);
+  const fact = missionFact; missionFact = null;
+  setTimeout(()=> speak(`${levelUp ? `Niveau ${level()} ! ` : ''}${praise} ${fact ? fact + ' ' : ''}${c.name} t'offre ${it.name}${bonus ? `, et une surprise : ${ITEMS[bonus].name}` : ''}.`), 300);
 
   openModal(`
     <div class="reward-box win-box">
@@ -343,6 +349,7 @@ function onMissionWin(){
       ${typeof buddySlot==='function' ? buddySlot('cheer','buddy-big win-emoji') : `<span class="big-emoji win-emoji">${levelUp ? '🌟' : '🎉'}</span>`}
       <span class="win-stamp">${levelUp ? '🌟' : '✅'}</span>
       <h2>${levelUp ? `Niveau ${level()} !` : praise}</h2>
+      ${fact ? `<div class="speech fun-fact"><span aria-hidden="true">💡</span> ${fact}</div>` : ''}
       <div class="speech reward-item" style="display:flex; align-items:center; justify-content:center; gap:10px;">
         <span class="reward-emoji" data-gain-item style="font-size:2rem;">${it.emoji}</span>
         <span>${c.name} t'offre : <strong>${it.name}</strong></span>
