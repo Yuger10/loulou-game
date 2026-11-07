@@ -16,6 +16,7 @@ const GAME_LIST = [
   { key:'clock',    emoji:'🕐', name:"L'heure",      fn:()=>renderClock() },
   { key:'calendar', emoji:'📅', name:'Calendrier',   fn:()=>renderCalendar() },
   { key:'calc',     emoji:'🌋', name:'Calcul mental', fn:()=>renderCalc() },
+  { key:'shapes',   emoji:'🍡', name:'Formes et couleurs', fn:()=>renderShapes() },
 ];
 
 /* --- Panneau des joueurs --- */
@@ -281,7 +282,13 @@ function pickPickerChoices(n){
   const pool = GAME_LIST.filter(g=>allowed.has(g.key));
   const withCount = shuffle(pool.length ? pool : GAME_LIST).map(g=>({ g, c: gameCount(g.key) }));
   withCount.sort((a,b)=>a.c-b.c);
-  return withCount.slice(0, n).map(x=>x.g);
+  const choices = withCount.slice(0, n).map(x=>x.g);
+  // une île peut avoir « son » mini-jeu (WORLDS[id].game) : il est toujours
+  // proposé quand on y joue (s'il convient à l'âge du joueur)
+  const own = typeof currentWorld!=='undefined' && WORLDS[currentWorld] && WORLDS[currentWorld].game;
+  const ownGame = own && pool.find(g=>g.key===own);
+  if(ownGame && !choices.includes(ownGame)) choices[0] = ownGame;
+  return choices;
 }
 
 function openGamePicker(charId){

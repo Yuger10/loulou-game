@@ -179,6 +179,50 @@ ART.hibou=svg(
   `<circle cx="46" cy="57" r="11" fill="none" stroke="#5A3A22" stroke-width="2.5"/><circle cx="74" cy="57" r="11" fill="none" stroke="#5A3A22" stroke-width="2.5"/><path d="M57 55 Q60 52 63 55" fill="none" stroke="#5A3A22" stroke-width="2.5"/>`+
   `<path d="M56 68 L60 79 L64 68Z" fill="#E8B94F" ${O(2)}/>`+cheeks(33,87,72));
 
+// ---- Pays Squishy : personnages tout ronds, le visage sur le corps ----
+// Mimi la chatte mochi : boule blanc-rose, oreilles pointues, nœud, petites pattes
+ART.mochichat=svg(
+  `<path d="M96 104 C114 104 116 84 104 80" fill="none" stroke="#F3D3DE" stroke-width="9" stroke-linecap="round"/>`+
+  `<path d="M28 52 L26 22 L50 38Z M92 52 L94 22 L70 38Z" fill="#FFF4F7" ${O()}/><path d="M31 44 L30 29 L43 38Z M89 44 L90 29 L77 38Z" fill="#FFB3CC"/>`+
+  `<path d="M60 30 C92 30 108 54 108 80 C108 108 88 124 60 124 C32 124 12 108 12 80 C12 54 28 30 60 30Z" fill="#FFF4F7" ${O()}/>`+
+  `<ellipse cx="40" cy="120" rx="10" ry="6" fill="#FFF4F7" ${O(2)}/><ellipse cx="80" cy="120" rx="10" ry="6" fill="#FFF4F7" ${O(2)}/>`+
+  `<path d="M76 34 L88 26 L88 42Z M76 34 L64 26 L64 42Z" fill="#FF8FB8" ${O(2)}/><circle cx="76" cy="34" r="4" fill="#E2679A" ${O(1.5)}/>`+
+  eyes(45,75,74,5.4,6.8)+cheeks(32,88,86)+
+  `<path d="M57 82 L63 82 L60 86Z" fill="#FF8FB8"/><path d="M60 86 Q55 92 51 88 M60 86 Q65 92 69 88" fill="none" stroke="${AM}" stroke-width="2.4" stroke-linecap="round"/>`+
+  `<path d="M22 80 H8 M23 86 L10 90 M98 80 H112 M97 86 L110 90" stroke="#D9B8C4" stroke-width="2" stroke-linecap="round"/>`);
+
+// Pépito le donut : glaçage rose ondulé, vermicelles, visage sous le trou
+ART.donut=svg(
+  `<ellipse cx="60" cy="74" rx="52" ry="50" fill="#E8B07A" ${O()}/>`+
+  `<path d="M60 30 C78 28 98 40 102 58 C106 72 98 76 100 88 C102 100 90 112 76 108 C68 114 52 114 44 108 C30 112 18 100 20 88 C22 76 14 72 18 58 C22 40 42 28 60 30Z" fill="#FF9CC8" ${O(2.4)}/>`+
+  `<ellipse cx="60" cy="56" rx="13" ry="11" fill="#C98B52" ${O(2.4)}/><ellipse cx="60" cy="58" rx="8" ry="5" fill="#A86F3E"/>`+
+  `<g stroke-linecap="round" stroke-width="4"><path d="M36 46 l6 -4" stroke="#FFE07A"/><path d="M84 46 l-6 -4" stroke="#6FB8F5"/><path d="M30 64 l2 7" stroke="#6ED38C"/><path d="M90 64 l-2 7" stroke="#FFE07A"/><path d="M44 36 l5 2" stroke="#BFA3EC"/><path d="M76 36 l-5 2" stroke="#fff"/><path d="M36 100 l6 3" stroke="#6FB8F5"/><path d="M84 100 l-6 3" stroke="#BFA3EC"/></g>`+
+  eyes(46,74,84,5,6.4)+cheeks(34,86,94)+smile(52,68,95,7)+
+  `<path d="M60 30 C78 28 98 40 102 58" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" opacity=".5"/>`);
+
+// Avo l'avocat : forme de poire, chair vert clair, noyau-ventre, petites joues
+ART.avocat=svg(
+  `<path d="M60 6 C80 6 88 26 92 44 C100 62 108 78 106 96 C104 116 86 128 60 128 C34 128 16 116 14 96 C12 78 20 62 28 44 C32 26 40 6 60 6Z" fill="#3E8E4A" ${O()}/>`+
+  `<path d="M60 16 C75 16 81 32 84 47 C90 62 97 78 95 94 C93 110 80 118 60 118 C40 118 27 110 25 94 C23 78 30 62 36 47 C39 32 45 16 60 16Z" fill="#CDEB9A"/>`+
+  `<path d="M60 22 C72 22 77 36 79 48 C84 60 90 74 89 88" fill="none" stroke="#E6F7C4" stroke-width="5" stroke-linecap="round"/>`+
+  `<circle cx="60" cy="92" r="19" fill="#A0673A" ${O(2.4)}/><ellipse cx="54" cy="86" rx="5" ry="3.5" fill="#C99364" transform="rotate(-30 54 86)"/>`+
+  eyes(49,71,52,4.8,6.2)+cheeks(39,81,62)+smile(54,66,63,6)+
+  `<path d="M22 94 Q12 92 12 84 M98 94 Q108 92 108 84" fill="none" stroke="#3E8E4A" stroke-width="5" stroke-linecap="round"/>`);
+
+// Bulle la petite phoque : boule gris-bleu, museau blanc, moustaches, nageoires
+ART.phoque=svg(
+  `<path d="M100 112 C112 112 118 104 116 96 C110 102 104 104 96 104Z" fill="#9DB3C8" ${O(2)}/>`+
+  `<path d="M60 26 C90 26 106 50 106 78 C106 108 86 124 60 124 C34 124 14 108 14 78 C14 50 30 26 60 26Z" fill="#C9D6E3" ${O()}/>`+
+  `<ellipse cx="60" cy="104" rx="26" ry="16" fill="#E6EEF5"/>`+
+  `<ellipse cx="22" cy="104" rx="12" ry="7" fill="#9DB3C8" ${O(2)} transform="rotate(-30 22 104)"/><ellipse cx="98" cy="104" rx="12" ry="7" fill="#9DB3C8" ${O(2)} transform="rotate(30 98 104)"/>`+
+  `<path d="M38 44 Q46 38 54 42" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" opacity=".7"/>`+
+  eyes(44,76,62,5.4,6.8)+cheeks(30,90,74)+
+  `<ellipse cx="51" cy="78" rx="10" ry="8" fill="#fff" ${O(2)}/><ellipse cx="69" cy="78" rx="10" ry="8" fill="#fff" ${O(2)}/>`+
+  `<ellipse cx="60" cy="72" rx="5" ry="3.6" fill="${AI}"/>`+
+  `<g fill="#8FA4B8"><circle cx="47" cy="78" r="1.3"/><circle cx="53" cy="81" r="1.3"/><circle cx="67" cy="81" r="1.3"/><circle cx="73" cy="78" r="1.3"/></g>`+
+  `<path d="M42 78 H28 M43 83 L30 87 M78 78 H92 M77 83 L90 87" stroke="#7C8E99" stroke-width="1.8" stroke-linecap="round"/>`+
+  `<path d="M56 88 Q60 92 64 88" fill="none" stroke="${AM}" stroke-width="2.4" stroke-linecap="round"/>`);
+
 // Max le robot savant : tête en dôme et lunettes de labo (Bolt a une tête carrée et des chenilles)
 ART.robotsavant=svg(
   `<path d="M34 104 L14 96 L10 106 M86 104 L106 96 L110 106" fill="none" stroke="#C9D6DE" stroke-width="8" stroke-linecap="round"/>`+

@@ -52,6 +52,13 @@ const ITEMS = {
   ananas:{emoji:'🍍', name:'Ananas doré', price:6, world:'jungle'},
   scarabee:{emoji:'🪲', name:'Scarabée doré', price:7, world:'jungle'},
   tambour:{emoji:'🥁', name:'Tambour sacré', price:8, world:'jungle'},
+  // Pays Squishy (8e île) : tout est doux, rond et moelleux
+  mochi:{emoji:'🍡', name:'Mochi moelleux', price:9, world:'squishy'},
+  donutrose:{emoji:'🍩', name:'Donut rose', price:8, world:'squishy'},
+  cupcake:{emoji:'🧁', name:'Cupcake nuage', price:10, world:'squishy'},
+  bonbonsq:{emoji:'🍬', name:'Bonbon squishy', price:7, world:'squishy'},
+  sucette:{emoji:'🍭', name:'Sucette arc-en-ciel', price:9, world:'squishy'},
+  peluche:{emoji:'🧸', name:'Peluche toute douce', price:11, world:'squishy'},
 };
 const CRAFTED = {
   collier:{emoji:'📿', name:'Collier magique', price:10,
@@ -128,6 +135,17 @@ const CRAFTED = {
     recipe:{pierrelave:2, cristalfeu:1}},
   couronnegenie:{emoji:'👑', name:'Couronne du génie', price:72, tier:2, world:'volcan',
     recipe:{lampegenie:1, potionsavante:1, grimoirevolcan:1}},
+  // Pays Squishy
+  boitesquishy:{emoji:'🎁', name:'Boîte à squishies', price:24, world:'squishy',
+    recipe:{mochi:1, bonbonsq:2}},
+  gateaumoelleux:{emoji:'🎂', name:'Gâteau moelleux', price:26, world:'squishy',
+    recipe:{cupcake:1, donutrose:1}},
+  pinata:{emoji:'🪅', name:'Piñata squishy', price:28, world:'squishy',
+    recipe:{sucette:1, bonbonsq:1, peluche:1}},
+  sacsquishy:{emoji:'🛍️', name:'Sac de squishies', price:27, world:'squishy',
+    recipe:{peluche:1, mochi:1}},
+  coeurcalin:{emoji:'💝', name:'Cœur des câlins', price:84, tier:2, world:'squishy',
+    recipe:{boitesquishy:1, gateaumoelleux:1, pinata:1}},
 };
 const ALL_ITEMS = Object.assign({}, ITEMS, CRAFTED);
 
@@ -390,6 +408,43 @@ const CHARACTERS = {
       "BIP ! Mes circuits adorent les défis de calcul mental.",
       "Active ton cerveau, comme moi j'active mes rotors.",
     ]},
+  // ---- Pays Squishy : on trie les formes et les couleurs ----
+  mochichat:{
+    emoji:'🐱', name:'Mimi', title:'la chatte mochi', world:'squishy',
+    gender:'f',
+    loot:['mochi','peluche'],
+    texts:[
+      "Miaou ! Je suis toute ronde et toute douce. Tu m'aides à ranger les squishies ?",
+      "Les ronds avec les ronds, les cœurs avec les cœurs : c'est mon jeu préféré !",
+      "Squish ! Quand on m'appuie dessus, je reprends toujours ma forme.",
+    ]},
+  donut:{
+    emoji:'🍩', name:'Pépito', title:'le donut', world:'squishy',
+    gender:'m',
+    loot:['donutrose','bonbonsq'],
+    texts:[
+      "Je suis un donut, alors je connais bien les ronds ! Et toi ?",
+      "Mes vermicelles sont de toutes les couleurs. Tu les reconnais ?",
+      "Trouve tous les squishies que je te demande, et je te donne un bonbon !",
+    ]},
+  avocat:{
+    emoji:'🥑', name:'Avo', title:"l'avocat", world:'squishy',
+    gender:'m',
+    loot:['cupcake','sucette'],
+    texts:[
+      "Coucou ! Je suis vert dehors et vert clair dedans. Quelle couleur préfères-tu ?",
+      "Un triangle a trois côtés, un carré en a quatre. On compte ensemble ?",
+      "Les squishies se sont tous mélangés… Aide-moi à les trier !",
+    ]},
+  phoque:{
+    emoji:'🦭', name:'Bulle', title:'la petite phoque', world:'squishy',
+    gender:'f',
+    loot:['bonbonsq','cupcake'],
+    texts:[
+      "Plouf ! Les étoiles et les cœurs sont tombés dans l'eau. Tu m'aides ?",
+      "Les grands d'un côté, les petits de l'autre : c'est facile avec toi !",
+      "Je suis toute grise et toute douce. Tu veux jouer avec moi ?",
+    ]},
 };
 
 // Les îles, dans l'ordre du voyage. `diff` = difficulté des mini-jeux (1 à 4).
@@ -402,34 +457,40 @@ const WORLDS = {
     sceneEmpty:"Ton lagon est encore vide… gagne des pièces pour le décorer !" },
   foret:{ name:'La Forêt', emoji:'🌲', level:3, diff:2, short:'Forêt',
     subtitle:'Les bois enchantés',
-    map:{x:16, y:50}, shape:'foret', icon:'🌲', sand:'#E8D9A0', land:'#6FBF73',
+    map:{x:42, y:82}, shape:'foret', icon:'🌲', sand:'#E8D9A0', land:'#6FBF73',
     intro:"La forêt enchantée t'attend 🌿",
     sceneEmpty:"Ta forêt est encore vide… gagne des pièces pour la décorer !" },
   montagne:{ name:'La Montagne', emoji:'⛰️', level:6, diff:3, short:'Montagne',
     subtitle:'Au-dessus des nuages',
-    map:{x:32, y:18}, shape:'montagne', icon:'🏔️', sand:'#DCE6EF', land:'#9FC6E8',
+    map:{x:68, y:82}, shape:'montagne', icon:'🏔️', sand:'#DCE6EF', land:'#9FC6E8',
     intro:"Tout là-haut, les défis sont plus durs ☁️",
     sceneEmpty:"Ta montagne est toute nue… gagne des pièces pour la décorer !" },
   chateau:{ name:'Le Château', emoji:'🏰', level:10, diff:4, short:'Château',
     subtitle:'Le royaume des étoiles',
-    map:{x:50, y:50}, shape:'chateau', icon:'🏰', sand:'#E9D8F5', land:'#B79BE0',
+    map:{x:84, y:50}, shape:'chateau', icon:'🏰', sand:'#E9D8F5', land:'#B79BE0',
     intro:"Le château des étoiles, le plus grand défi 👑",
     sceneEmpty:"Ton château attend ses décorations !" },
   jungle:{ name:'La Jungle', emoji:'🌴', level:14, diff:5, short:'Jungle',
     subtitle:'Le trésor caché',
-    map:{x:66, y:82}, shape:'jungle', icon:'🌴', sand:'#D7E8A0', land:'#2F8F5B',
+    map:{x:58, y:50}, shape:'jungle', icon:'🌴', sand:'#D7E8A0', land:'#2F8F5B',
     intro:"Bienvenue dans la jungle mystérieuse, le plus grand trésor t'attend 🌴",
     sceneEmpty:"Ta jungle est encore vide… gagne des pièces pour la décorer !" },
   cite:{ name:'La Cité du Temps', emoji:'🕰️', level:18, diff:5, short:'Cité',
     subtitle:'Les heures enchantées',
-    map:{x:84, y:50}, shape:'cite', icon:'🕰️', sand:'#F0E6D2', land:'#8C7355',
+    map:{x:32, y:50}, shape:'cite', icon:'🕰️', sand:'#F0E6D2', land:'#8C7355',
     intro:"Bienvenue dans la Cité du Temps, où chaque heure compte 🕰️",
     sceneEmpty:"Ta cité attend ses décorations horlogères !" },
   volcan:{ name:'Le Volcan', emoji:'🌋', level:22, diff:6, short:'Volcan',
     subtitle:'Les défis des génies',
-    map:{x:72, y:18}, shape:'volcan', icon:'🌋', sand:'#4A2A1E', land:'#8B2E1F',
+    map:{x:30, y:18}, shape:'volcan', icon:'🌋', sand:'#4A2A1E', land:'#8B2E1F',
     intro:"Le Volcan des Génies, le plus grand défi de calcul mental 🌋",
     sceneEmpty:"Ton volcan attend ses décorations brûlantes !" },
+  squishy:{ name:'Le Pays Squishy', emoji:'🍡', level:26, diff:6, short:'Squishy',
+    subtitle:'Le monde tout doux',
+    game:'shapes',   // son mini-jeu, toujours proposé sur cette île
+    map:{x:70, y:18}, shape:'squishy', icon:'🍡', sand:'#FFE3F1', land:'#F4A9CE',
+    intro:"Bienvenue au Pays Squishy, où tout est doux et moelleux 🍡",
+    sceneEmpty:"Ton Pays Squishy attend ses décorations toutes douces !" },
 };
 const WORLD_ORDER = Object.keys(WORLDS);
 function charsOf(world){
@@ -450,7 +511,7 @@ function charsOfForPlayer(world, gender){
 function decosOf(world){
   return Object.entries(DECOS).filter(([,d])=>(d.world||'lagon')===world);
 }
-const GAME_TYPES = ['memory','count','diff','puzzle','sequence','simon','math','reading','determinants','volume','compare','money','clock','calendar','calc'];
+const GAME_TYPES = ['memory','count','diff','puzzle','sequence','simon','math','reading','determinants','volume','compare','money','clock','calendar','calc','shapes'];
 
 /* Quels types de défis proposer selon l'âge (programme de l'école
    maternelle, cycle 1, 3-6 ans — repères eduscol.education.fr) :
@@ -466,10 +527,12 @@ const GAME_TYPES = ['memory','count','diff','puzzle','sequence','simon','math','
 const AGE_GAME_TYPES = [
   // « Quelle saison ? » (calendar) ne demande aucune lecture : accessible
   // dès la petite section, au même titre que la mémoire ou l'intrus.
-  { max:4, types:['memory','count','diff','calendar'] },
+  // « Formes et couleurs » (shapes) aussi : reconnaître et trier formes et
+  // couleurs est au programme dès la petite section (cycle 1).
+  { max:4, types:['memory','count','diff','calendar','shapes'] },
   // à 5 ans (MS/GS) : + comparer des tailles, suites simples, couleurs,
   // et lire l'heure en heures pleines (« il est 3 heures »).
-  { max:5, types:['memory','count','diff','volume','sequence','simon','clock','calendar'] },
+  { max:5, types:['memory','count','diff','volume','sequence','simon','clock','calendar','shapes'] },
   // 6 ans et plus (ou âge non précisé) : tous les jeux, dont le calcul
   // mental abstrait (calc), réservé au CP confirmé et plus.
 ];
@@ -600,6 +663,12 @@ const DECOS = {
   meteoriteD:{emoji:'☄️', name:'Pluie de météorites', price:30, world:'volcan'},
   laboratoire:{emoji:'🧫', name:'Laboratoire secret', price:26, world:'volcan'},
   trophee:{emoji:'🏆', name:'Trophée du génie', price:42, world:'volcan'},
+  // Pays Squishy
+  glacegeante:{emoji:'🍦', name:'Glace géante', price:30, world:'squishy'},
+  oursguimauve:{emoji:'🧸', name:'Ours en guimauve', price:35, world:'squishy'},
+  flan:{emoji:'🍮', name:'Flan tremblotant', price:25, world:'squishy'},
+  ballons:{emoji:'🎈', name:'Ballons pastel', price:20, world:'squishy'},
+  gateauchateau:{emoji:'🍰', name:'Gâteau château', price:50, world:'squishy'},
 };
 const MISSIONS_PER_LEVEL = 5;
 const ALBUM_REWARD = 100;

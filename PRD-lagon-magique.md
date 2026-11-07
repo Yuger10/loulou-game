@@ -675,3 +675,28 @@ qu'elle avait fait. Observé précisément sur « Grandeurs & volumes » et
 - Personnages plus grands sur l'île vivante (au moins la taille des anciens emojis) ; places écartées pour qu'aucune bulle ne cache le nom d'un voisin.
 - Les fonctions de dessin sont enfermées dans `CHAR_ART` : plus de noms globaux génériques (`face`, `robot`…).
 
+---
+
+# v36 — Le Pays Squishy (8e île) et le mini-jeu « Formes et couleurs »
+
+## L'île
+- **Le Pays Squishy** 🍡 : 8e île, débloquée au niveau 26, juste après le Volcan. C'est la récompense finale, un monde tout doux. Palier 6 (comme le Volcan).
+- Paysage dessiné : collines de guimauve, arc-en-ciel, nuages moelleux, sucettes géantes qui se dandinent, bonbons. Thème de couleurs pastel (`body[data-world="squishy"]`).
+- 4 personnages dessinés en SVG, le visage sur le corps comme de vrais squishies : **Mimi** la chatte mochi, **Pépito** le donut, **Avo** l'avocat, **Bulle** la petite phoque.
+- 6 objets (mochi, donut rose, cupcake, bonbon, sucette, peluche), 5 objets à fabriquer (dont le *Cœur des câlins*), 5 décorations (glace géante, ours en guimauve, flan, ballons, gâteau château).
+- Carte à 8 îles : 3 rangées en serpentin (Lagon → Forêt → Montagne, puis Château → Jungle → Cité, puis Volcan → Squishy).
+
+## Le mini-jeu « Formes et couleurs » (`js/shapes.js`)
+- « Touche tous les… » : on trie des squishies (formes moelleuses avec un visage) en touchant **tous** ceux qui répondent à la consigne. Ils s'écrasent un peu quand on les touche (squish !).
+- Progression du programme (cycle 1 « Explorer des formes », puis cycle 2 « Espace et géométrie »), réglée dans `shapesRound` (`js/difficulty.js`) :
+  1. une couleur (« tous les squishies roses ») ;
+  2. une forme (« toutes les étoiles ») ;
+  3. forme et couleur (« tous les cœurs bleus ») ;
+  4. taille et forme (« tous les petits triangles ») ;
+  5. nombre de côtés (« les formes qui ont 4 côtés ») ;
+  6. nombre de sommets (« les formes qui ont 6 sommets »).
+- La consigne montre la couleur ou la forme attendue en image pour un enfant qui ne lit pas encore (sauf aux paliers 5-6, où compter est l'exercice). Accords en français (toutes les étoiles jaunes, tous les grands ronds).
+- Ouvert dès 3 ans (formes et couleurs sont au programme de petite section). Pas de minuteur ; essais généreux.
+- Sur l'île Squishy, le choix du jeu propose toujours « Formes et couleurs » (`WORLDS[id].game`).
+- Cache `lagon-v36`.
+

@@ -67,6 +67,9 @@
 @keyframes isleSmoke{0%{transform:translate(0,10px) scale(.6); opacity:0;} 20%{opacity:.85;} 100%{transform:translate(14px,-60px) scale(1.6); opacity:0;}}
 .ls-lava{animation:isleLava 2.4s ease-in-out infinite alternate;}
 @keyframes isleLava{from{opacity:.45;} to{opacity:1;}}
+/* Pays Squishy : les sucettes se dandinent */
+.ls-lolly{transform-box:fill-box; transform-origin:50% 100%; animation:isleSway 4s ease-in-out infinite;}
+.ls-lolly.l2{animation-delay:-2s;}
 @keyframes isleVines{0%,100%{transform:skewX(-2deg);} 50%{transform:skewX(2deg);}}
 
 /* --- les personnages vivent dans le paysage --- */
@@ -167,7 +170,7 @@
 
 @media (prefers-reduced-motion:reduce){
   .ls-cloud, .ls-waves path, .ls-palm, .ls-tree, .ls-vines,
-  .ls-gear, .ls-clock-m, .ls-clock-h, .ls-smoke circle, .ls-lava,
+  .ls-gear, .ls-clock-m, .ls-clock-h, .ls-smoke circle, .ls-lava, .ls-lolly,
   #scene.live-isle .isle-char .emoji, #scene.live-isle .isle-char .ic-bubble,
   #scene.live-isle .deco, #scene.live-isle .isle-tip{animation:none;}
 }

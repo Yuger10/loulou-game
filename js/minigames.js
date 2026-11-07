@@ -220,6 +220,7 @@ function gameRenderer(key){
     case 'clock': return renderClock;
     case 'calendar': return renderCalendar;
     case 'calc': return renderCalc;
+    case 'shapes': return renderShapes;
     default: return renderMemory;
   }
 }
