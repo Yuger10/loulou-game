@@ -260,6 +260,7 @@ function onMissionWin(){
   // course : on avance d'une case ; si la ligne d'arrivée est franchie, l'écran de victoire s'affiche
   if(typeof partyAfterWin==='function' && partyAfterWin()) return;
   const c = CHARACTERS[currentChar] || CHARACTERS.sirene;
+  if(typeof markHelped==='function') markHelped(currentChar);   // ❤️ sur l'île
   const prevLevel = level();
   state.missions += 1;
   const key = pickRandom(c.loot);

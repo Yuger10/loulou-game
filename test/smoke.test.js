@@ -635,14 +635,27 @@ setTimeout(()=>{
     check('gain : les pièces arrivent à la fermeture', d.getElementById('coin-count').textContent===String(ev('state.coins')) && ev('coinsInFlight')===0);
     ev('addCoins(3); gainCoins(3, null); addCoins(-2); spendCoins(2, null)');
     check('gain : vente et achat gardent le compteur juste', d.getElementById('coin-count').textContent===String(ev('state.coins')) && ev('coinsInFlight')===0);
-    // ---- Feuille de style : une accolade perdue (ex. lors d'une fusion) enferme
+    // ---- L'île vivante ----
+    ev('closeModal(); currentWorld="lagon"; state.decos=["palmier","dauphin"]; state.decoPos={}; renderLagon(); switchView("ile")');
+    check('île vivante : paysage dessiné dans la scène', !!d.querySelector('#scene.live-isle svg.isle-land'));
+    check('île vivante : les personnages sont dans le paysage', d.querySelectorAll('#scene .isle-char[data-char]').length===4);
+    check('île vivante : décorations posées dans le paysage', d.querySelectorAll('#scene .deco[data-deco-key]').length===2);
+    check('île vivante : un dauphin va dans l\'eau, pas sur la plage', Number(d.querySelector('#scene .deco[data-deco-key="dauphin"]').dataset.vy) < 200);
+    ev('moveDeco("palmier", 300, 300); renderScene()');
+    check('île vivante : une décoration déplacée garde sa place', d.querySelector('#scene .deco[data-deco-key="palmier"]').dataset.vx==='300' && ev('state.decoPos.palmier.y')===300);
+    ev('state.helped=null; markHelped("licorne"); renderScene()');
+    check('île vivante : ❤️ sur le personnage aidé aujourd\'hui', d.querySelector('#scene .isle-char[data-char="licorne"] .ic-bubble').textContent.trim()==='❤️');
+    check('île vivante : moment de la journée selon l\'heure', ev('isleTimeOfDay(new Date(2026,0,1,22))')==='nuit' && ev('isleTimeOfDay(new Date(2026,0,1,8))')==='matin' && ev('isleTimeOfDay(new Date(2026,0,1,13))')==='jour' && ev('isleTimeOfDay(new Date(2026,0,1,18))')==='soir');
+    check('île vivante : une nouvelle île a un paysage par défaut', ev('(WORLDS.__test={name:"T",shape:"inconnue",sand:"#eee",land:"#8c8"}, landscapeSVG("__test").includes("<svg"))'));
+    ev('delete WORLDS.__test');
+    // ---- Feuilles de style : une accolade perdue (ex. lors d'une fusion) enferme
     //      silencieusement tout le reste dans une media query ----
-    {
-      const css = fs.readFileSync(path.join(__dirname, '..', 'styles.css'), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
+    ['styles.css','island.css'].forEach(f=>{
+      const css = fs.readFileSync(path.join(__dirname, '..', f), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
       let depth = 0, min = 0;
       for(const ch of css){ if(ch==='{') depth++; else if(ch==='}') depth--; min = Math.min(min, depth); }
-      check('styles.css : accolades équilibrées', depth===0 && min===0);
-    }
+      check(`${f} : accolades équilibrées`, depth===0 && min===0);
+    });
     check('aucune erreur JS', errs.length===0);
     if(errs.length) console.log(errs);
     console.log(failed ? `\n${failed} test(s) en échec` : '\nTous les tests passent');

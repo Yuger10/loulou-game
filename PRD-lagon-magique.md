@@ -541,3 +541,14 @@ Ce que l'on gagne se voit arriver (`js/gains.js`) :
 - Sons dédiés (« tick » par pièce, « pop » à l'arrivée dans le sac), anneau doré à l'arrivée.
 - Le compteur affiché tient compte des pièces encore en vol (`coinsInFlight`) : il reste toujours juste. Sans animation possible ou avec « réduire les animations », tout se met à jour d'un coup.
 - Correctif : « Tu as N pièces » dans l'onglet Acheter était blanc sur blanc depuis la v24.
+
+---
+
+# v30 — L'île vivante
+
+La vue Île devient un paysage dessiné où vivent les personnages (`js/island.js`, `island.css`) :
+- **Un paysage par île**, dessiné en SVG : plage, mer et palmier (Lagon), collines et sapins (Forêt), sommets enneigés (Montagne), château illuminé (Château), lianes et grandes feuilles (Jungle). Une île inconnue reçoit un paysage générique à ses couleurs (`sand`, `land` et jetons `--world-*`) : une nouvelle île est jolie sans rien faire de plus.
+- **Les personnages vivent dans le paysage** : on les touche directement pour jouer. Une bulle au-dessus de chacun : 📜 mission du jour, ❤️ déjà aidé aujourd'hui (`state.helped`), 💬 il a envie de jouer.
+- **Les décorations se posent où l'on veut** : on les fait glisser du doigt, leur place est gardée (`state.decoPos`). Par défaut, chacune va dans sa zone : arc-en-ciel et lune dans le ciel, dauphin et tortue dans l'eau, le reste sur le sol. Un simple toucher la fait se trémousser et dire son nom.
+- **Le ciel suit l'heure réelle** : matin rosé, journée, coucher de soleil, nuit étoilée avec la lune.
+- Les places sont exprimées en coordonnées du dessin et recalculées selon la taille de l'écran : tout reste au bon endroit sur téléphone, tablette, ordinateur et à l'horizontale.
