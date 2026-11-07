@@ -568,17 +568,26 @@ setTimeout(()=>{
     ev('openNewPlayer()');
     check('création : choix fille / garçon / neutre', d.querySelectorAll('.gender-opt').length===3);
     // ---- Compagnons ----
-    check('compagnon : les 6 proposés sans genre', d.querySelectorAll('.buddy-opt').length===6);
+    check('compagnon : les 7 proposés sans genre', d.querySelectorAll('.buddy-opt').length===7);
     d.querySelector('.gender-opt[data-gender="f"]').click();
     check('compagnon : fille → sirène, princesse, fée', [...d.querySelectorAll('.buddy-opt')].map(b=>b.dataset.buddy).join()==='perle,rose,lili');
     d.querySelector('.gender-opt[data-gender="m"]').click();
-    check('compagnon : garçon → pirate, chevalier, explorateur', [...d.querySelectorAll('.buddy-opt')].map(b=>b.dataset.buddy).join()==='tom,leo,sam');
+    check('compagnon : garçon → pirate, chevalier, explorateur, super-héros', [...d.querySelectorAll('.buddy-opt')].map(b=>b.dataset.buddy).join()==='tom,leo,sam,zap');
     check('compagnon : garçon → pirate présélectionné', d.querySelector('.buddy-opt.sel').dataset.buddy==='tom');
     d.querySelector('[data-buddy-more]').click();
-    check('compagnon : « voir les autres » montre tout le monde', d.querySelectorAll('.buddy-opt').length===6);
+    check('compagnon : « voir les autres » montre tout le monde', d.querySelectorAll('.buddy-opt').length===7);
     d.querySelector('.buddy-opt[data-buddy="rose"]').click();
     check('compagnon : on peut choisir librement', d.querySelector('.buddy-opt.sel').dataset.buddy==='rose');
     ev('closeModal()');
+    // ---- Avatar dessiné : Zap le super-héros ----
+    check('avatar : le super-héros dessiné est proposé', ev('AVATARS.includes("art:zap")'));
+    check('avatar dessiné : image en HTML, emoji dans le texte', ev('avatarHTML("art:zap")').includes('<svg') && ev('avatarText("art:zap")')==='🦸‍♂️' && ev('avatarText("🦁")')==='🦁' && ev('avatarHTML("🦁")')==='🦁');
+    ev('state.avatar="art:zap"; renderProfile(); renderMap()');
+    check('avatar dessiné : en haut de l\'écran', !!d.querySelector('#avatar-pill .av .av-art svg'));
+    check('avatar dessiné : sur le bateau de la carte', !!d.querySelector('#map-boat .boat-av .av-art svg'));
+    ev('openNewPlayer()');
+    check('avatar dessiné : dans le choix des avatars', !!d.querySelector('.avatar-opt[data-av="art:zap"] svg'));
+    ev('closeModal(); state.avatar="👧"; renderProfile(); renderMap()');
     check('compagnon par défaut : fille → sirène, garçon → pirate', ev("defaultCompanionFor('f')")==='perle' && ev("defaultCompanionFor('m')")==='tom');
     // ---- Illustrations SVG des personnages ----
     check('personnages : les 32 ids possèdent un SVG', ev('Object.keys(CHARACTERS).length===32 && Object.keys(CHARACTERS).every(k=>charArtSVG(k).startsWith("<svg"))'));

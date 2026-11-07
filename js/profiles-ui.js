@@ -28,7 +28,7 @@ function openPlayers(){
       <div id="players-list">
         ${profiles.list.map(p=>`
           <div class="market-row player-row ${p.id===profiles.current?'current':''}">
-            <span class="emoji">${p.avatar}<span class="row-buddy">${companionSVG(companionOf(p),'happy')}</span></span>
+            <span class="emoji">${avatarHTML(p.avatar)}<span class="row-buddy">${companionSVG(companionOf(p),'happy')}</span></span>
             <div class="info">
               <div class="name">${p.name || 'Sans nom'} ${p.id===profiles.current?'<small>(en cours)</small>':''}</div>
               <div class="sub">${p.age?`🎂 ${p.age} ans · `:''}${playerSummary(p.id)}</div>
@@ -68,7 +68,7 @@ function openPlayers(){
       closeModal();
       renderProfile(); renderLagon();
       speak(`Mode solo. À toi de jouer ${currentProfile().name || ''} !`);
-      showToast(`👤 ${currentProfile().avatar} ${currentProfile().name || ''}`);
+      showToast(`👤 ${avatarText(currentProfile().avatar)} ${currentProfile().name || ''}`);
     };
     document.getElementById('btn-turns').onclick = ()=>{
       playSound('tap');
@@ -147,7 +147,7 @@ function openNewPlayer(){
       ${gameHeader('➕ Nouveau joueur', 'Choisis un prénom, un avatar et ton âge')}
       <input id="np-name" class="name-input-modal" type="text" maxlength="12" placeholder="Prénom" autocomplete="off">
       <div class="avatar-grid">
-        ${AVATARS.map(a=>`<button class="avatar-opt ${a===av?'sel':''}" data-av="${a}">${a}</button>`).join('')}
+        ${AVATARS.map(a=>`<button class="avatar-opt ${a===av?'sel':''}" data-av="${a}" aria-label="${avatarText(a)}">${avatarHTML(a)}</button>`).join('')}
       </div>
       ${genderSelector(gen)}
       ${companionSelector(comp || defaultCompanionFor(gen), gen, allBuddies)}
@@ -177,7 +177,7 @@ function openNewPlayer(){
       addProfile(name, av, age, gen, comp || defaultCompanionFor(gen));
       playSound('win'); confetti();
       speak(`Bienvenue ${name || ''} !`);
-      showToast(`${av} ${name || 'Nouveau joueur'} ajouté !`);
+      showToast(`${avatarText(av)} ${name || 'Nouveau joueur'} ajouté !`);
       openPlayers();
     };
     document.getElementById('np-cancel').onclick = ()=>{ playSound('tap'); openPlayers(); };
@@ -198,7 +198,7 @@ function openPlayerSettings(id){
       ${gameHeader(`⚙️ ${p.name || 'Joueur'}`, 'Modifier, réinitialiser ou supprimer')}
       <input id="pe-name" class="name-input-modal" type="text" maxlength="12" value="${(p.name||'').replace(/"/g,'&quot;')}" placeholder="Prénom">
       <div class="avatar-grid">
-        ${AVATARS.map(a=>`<button class="avatar-opt ${a===av?'sel':''}" data-av="${a}">${a}</button>`).join('')}
+        ${AVATARS.map(a=>`<button class="avatar-opt ${a===av?'sel':''}" data-av="${a}" aria-label="${avatarText(a)}">${avatarHTML(a)}</button>`).join('')}
       </div>
       ${genderSelector(gen)}
       ${companionSelector(comp, gen, allBuddies)}
@@ -296,7 +296,7 @@ function openGamePicker(charId){
   const who = party.active ? (partyCurrent() || currentProfile()) : currentProfile();
   const choices = pickPickerChoices(Math.min(GAME_PICKER_SIZE, GAME_LIST.length));
   openModal(`
-    ${gameHeader('🎮 Choisis ton jeu', party.active ? `${who.avatar} ${who.name || 'À toi'} choisit !` : 'À quoi veux-tu jouer ?')}
+    ${gameHeader('🎮 Choisis ton jeu', party.active ? `${avatarText(who.avatar)} ${who.name || 'À toi'} choisit !` : 'À quoi veux-tu jouer ?')}
     <div class="game-picker">
       ${choices.map(g=>`<button class="game-choice" data-game="${g.key}">
         <span class="emoji">${g.emoji}</span><span class="nm">${g.name}</span>

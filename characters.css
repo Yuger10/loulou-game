@@ -10,3 +10,9 @@
 .ic-chars .char-art{width:1.35em;height:1.55em}
 .char-header .char-art{width:2.1em;height:2.4em}
 .fail-box .char-art{width:1.1em;height:1.25em}
+/* avatar dessiné (ex. Zap le super-héros) : la taille suit celle de l'emoji qu'il remplace */
+.av-art{display:inline-block; width:1.1em; height:1.2em; vertical-align:middle; line-height:0;}
+.av-art svg{width:100%; height:100%; display:block; overflow:visible;}
+.avatar-opt .av-art{width:1.15em; height:1.25em;}
+#avatar-pill .av .av-art{width:1.45em; height:1.55em; margin:-.2em 0;}
+.boat .boat-av .av-art{width:1.3em; height:1.4em;}
