@@ -490,6 +490,24 @@ setTimeout(()=>{
     check('accord neutre par défaut', ev("ac('fort')")==='fort');
     ev('openNewPlayer()');
     check('création : choix fille / garçon / neutre', d.querySelectorAll('.gender-opt').length===3);
+    // ---- Compagnons ----
+    check('compagnon : les 6 proposés sans genre', d.querySelectorAll('.buddy-opt').length===6);
+    d.querySelector('.gender-opt[data-gender="f"]').click();
+    check('compagnon : fille → sirène, princesse, fée', [...d.querySelectorAll('.buddy-opt')].map(b=>b.dataset.buddy).join()==='perle,rose,lili');
+    d.querySelector('.gender-opt[data-gender="m"]').click();
+    check('compagnon : garçon → pirate, chevalier, explorateur', [...d.querySelectorAll('.buddy-opt')].map(b=>b.dataset.buddy).join()==='tom,leo,sam');
+    check('compagnon : garçon → pirate présélectionné', d.querySelector('.buddy-opt.sel').dataset.buddy==='tom');
+    d.querySelector('[data-buddy-more]').click();
+    check('compagnon : « voir les autres » montre tout le monde', d.querySelectorAll('.buddy-opt').length===6);
+    d.querySelector('.buddy-opt[data-buddy="rose"]').click();
+    check('compagnon : on peut choisir librement', d.querySelector('.buddy-opt.sel').dataset.buddy==='rose');
+    ev('closeModal()');
+    check('compagnon par défaut : fille → sirène, garçon → pirate', ev("defaultCompanionFor('f')")==='perle' && ev("defaultCompanionFor('m')")==='tom');
+    check('compagnon : un dessin pour chaque compagnon et chaque humeur', ev("COMPANION_ORDER.every(k=>BUDDY_MOODS.every(m=>companionSVG(k,m).startsWith('<svg')))"));
+    ev('playGame("count")');
+    check('mini-jeu : le compagnon dit la consigne', !!d.querySelector('.puzzle-hint .buddy-slot svg'));
+    ev("buddyReact('wow', 0)");
+    check('mini-jeu : le compagnon réagit', !!d.querySelector('.puzzle-hint .buddy-slot .buddy--wow'));
     ev('closeModal()');
 
     // ---- Mode course (compétition équitable) ----

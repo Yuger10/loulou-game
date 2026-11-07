@@ -39,6 +39,7 @@ function renderLives(){
 // Une erreur : la proposition fautive est neutralisée et un essai est perdu.
 function loseLife(el, opts){
   opts = opts || {};
+  if(typeof buddyReact==='function') buddyReact('oops', 1300);
   // multijoueur : la règle reste « une erreur = on passe la main »
   if(typeof party!=='undefined' && party.active){ wrongFeedback(el); return false; }
 
@@ -146,6 +147,7 @@ function flashModal(kind){
 // bonne étape : pastille verte + petite étoile qui monte
 function stepOk(el){
   playSound('good');
+  if(typeof buddyReact==='function') buddyReact('wow', 900);
   if(!el) return;
   el.classList.add('ok-flash');
   setTimeout(()=> el.classList.remove('ok-flash'), 600);
@@ -201,8 +203,9 @@ function gameHeader(title, hint, spoken){
   const say = (spoken || hint).replace(/"/g,'&quot;');
   return `
     <div class="game-head"><h2>${title}</h2></div>
-    <p class="puzzle-hint">
-      <span>${hint}</span>
+    <p class="puzzle-hint has-buddy">
+      <span class="hint-txt">${hint}</span>
+      ${typeof buddySlot==='function' ? buddySlot('think') : ''}
       <button class="btn-speak" data-say="${say}" aria-label="Écouter la consigne">🔈</button>
     </p>
   `;
@@ -235,7 +238,7 @@ function onMissionFail(){
 
   openModal(`
     <div class="reward-box fail-box">
-      <span class="big-emoji fail-emoji">😅</span>
+      ${typeof buddySlot==='function' ? buddySlot('oops','buddy-big fail-emoji') : '<span class="big-emoji fail-emoji">😅</span>'}
       <h2>Raté !</h2>
       <div class="speech">${msg}</div>
       <div class="speech" style="background:#FFF1EC;">
@@ -291,8 +294,8 @@ function onMissionWin(){
   openModal(`
     <div class="reward-box win-box">
       <span class="win-rays" aria-hidden="true"></span>
-      <span class="big-emoji win-emoji">${levelUp ? '🌟' : '🎉'}</span>
-      <span class="win-stamp">✅</span>
+      ${typeof buddySlot==='function' ? buddySlot('cheer','buddy-big win-emoji') : `<span class="big-emoji win-emoji">${levelUp ? '🌟' : '🎉'}</span>`}
+      <span class="win-stamp">${levelUp ? '🌟' : '✅'}</span>
       <h2>${levelUp ? `Niveau ${level()} !` : praise}</h2>
       <div class="speech reward-item" style="display:flex; align-items:center; justify-content:center; gap:10px;">
         <span class="reward-emoji" style="font-size:2rem;">${it.emoji}</span>

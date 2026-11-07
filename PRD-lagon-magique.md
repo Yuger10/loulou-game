@@ -508,3 +508,23 @@ nouveaux mondes). Résumé :
 - **Un vrai 5e palier de difficulté** : l'île Jungle passe de `diff:4` (identique au Château) à `diff:5` — elle offre maintenant un vrai cran de difficulté supplémentaire, pas seulement plus de butin.
 - **Minuteur de réponse (fluence)**, à partir du palier 3 (Montagne), jamais avant 6 ans, jamais sur les jeux à plusieurs étapes (mémoire/Simon/puzzle), jamais en multijoueur, durée généreuse (13 à 26 secondes selon le jeu), temps écoulé traité comme une simple erreur encourageante (pas de pénalité supplémentaire).
 - **Proposition de 2 nouveaux mondes** (non implémentés, à valider) : « Le Volcan des Génies » (CE2, calcul sans support imagé, tables de multiplication) et « La Cité du Temps » (lire l'heure, repères temporels).
+
+---
+
+# v28 — Compagnons d'aventure + tous les écrans
+
+## Un compagnon pour chaque joueur
+- 6 compagnons dessinés en SVG (`js/companions.js`), sans image externe : léger, net, identique sur iOS, Android et ordinateur.
+  - Filles : **Perle** la sirène, **Rose** la princesse, **Lili** la fée.
+  - Garçons : **Tom** le pirate, **Léo** le chevalier, **Sam** l'explorateur.
+- Le profil (« Comment on te parle ? ») décide des compagnons proposés en premier et de celui présélectionné (fille → Perle, garçon → Tom) ; « Voir les autres compagnons » laisse toujours le libre choix.
+- 6 humeurs : content, réfléchit, waouh, fête, oups, dodo. Il cligne des yeux.
+- Il dit la consigne de chaque mini-jeu, fait « waouh » à une bonne étape, « oups » (encourageant) à une erreur, fait la fête à la victoire et console à l'échec. Il accueille le joueur sur l'écran titre.
+- Choix à l'accueil, à la création d'un joueur et dans ses réglages (`profile.companion`). En multijoueur, chacun voit son propre compagnon.
+
+## Ordinateur, tablette, mobile
+- Ordinateur et tablette à l'horizontale : deux colonnes (carte + fiche de l'île, personnages + décor et missions), barre du bas toujours visible.
+- iPhone : encoche et barre d'accueil respectées (`viewport-fit=cover`), hauteur d'écran réelle (`dvh`).
+- Téléphone à l'horizontale : barre du bas compacte, mini-jeux sans défilement.
+- PWA : l'orientation n'est plus bloquée en portrait (tablettes, Chromebooks).
+- Correctif : les rayons de victoire n'affichaient qu'un seul rayon.

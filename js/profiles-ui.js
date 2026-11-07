@@ -24,7 +24,7 @@ function openPlayers(){
       <div id="players-list">
         ${profiles.list.map(p=>`
           <div class="market-row player-row ${p.id===profiles.current?'current':''}">
-            <span class="emoji">${p.avatar}</span>
+            <span class="emoji">${p.avatar}<span class="row-buddy">${companionSVG(companionOf(p),'happy')}</span></span>
             <div class="info">
               <div class="name">${p.name || 'Sans nom'} ${p.id===profiles.current?'<small>(en cours)</small>':''}</div>
               <div class="sub">${p.age?`🎂 ${p.age} ans · `:''}${playerSummary(p.id)}</div>
@@ -137,7 +137,7 @@ function ageSelector(sel){
 /* --- Nouveau joueur --- */
 function openNewPlayer(){
   let av = pickRandom(AVATARS);
-  let age = null, gen = '';
+  let age = null, gen = '', comp = null, allBuddies = false;
   const render = ()=>{
     openModal(`
       ${gameHeader('➕ Nouveau joueur', 'Choisis un prénom, un avatar et ton âge')}
@@ -146,6 +146,7 @@ function openNewPlayer(){
         ${AVATARS.map(a=>`<button class="avatar-opt ${a===av?'sel':''}" data-av="${a}">${a}</button>`).join('')}
       </div>
       ${genderSelector(gen)}
+      ${companionSelector(comp || defaultCompanionFor(gen), gen, allBuddies)}
       ${ageSelector(age)}
       <button class="btn-primary" id="np-ok">C'est parti ! 🎮</button>
       <button class="btn-ghost" id="np-cancel">Annuler</button>
@@ -160,11 +161,16 @@ function openNewPlayer(){
       b.onclick = ()=>{ age = Number(b.dataset.age); playSound('tap'); redraw(); };
     });
     document.querySelectorAll('.gender-opt').forEach(b=>{
-      b.onclick = ()=>{ gen = b.dataset.gender; playSound('tap'); redraw(); };
+      b.onclick = ()=>{
+        gen = b.dataset.gender; playSound('tap');
+        if(comp && !allBuddies && !companionsFor(gen).includes(comp)) comp = null;
+        redraw();
+      };
     });
+    bindCompanionSelector(document, k=>{ comp = k; redraw(); }, ()=>{ allBuddies = true; redraw(); });
     document.getElementById('np-ok').onclick = ()=>{
       const name = (document.getElementById('np-name').value || '').trim().slice(0,12);
-      addProfile(name, av, age, gen);
+      addProfile(name, av, age, gen, comp || defaultCompanionFor(gen));
       playSound('win'); confetti();
       speak(`Bienvenue ${name || ''} !`);
       showToast(`${av} ${name || 'Nouveau joueur'} ajouté !`);
@@ -182,6 +188,7 @@ function openPlayerSettings(id){
   let av = p.avatar;
   let age = p.age || null;
   let gen = p.gender || '';
+  let comp = companionOf(p), allBuddies = !companionsFor(gen).includes(comp);
   const render = ()=>{
     openModal(`
       ${gameHeader(`⚙️ ${p.name || 'Joueur'}`, 'Modifier, réinitialiser ou supprimer')}
@@ -190,6 +197,7 @@ function openPlayerSettings(id){
         ${AVATARS.map(a=>`<button class="avatar-opt ${a===av?'sel':''}" data-av="${a}">${a}</button>`).join('')}
       </div>
       ${genderSelector(gen)}
+      ${companionSelector(comp, gen, allBuddies)}
       ${ageSelector(age)}
       <div class="speech" style="font-size:.82rem;">${playerSummary(id)}</div>
       <button class="btn-primary" id="pe-save">Enregistrer ✅</button>
@@ -209,11 +217,13 @@ function openPlayerSettings(id){
     document.querySelectorAll('.gender-opt').forEach(b=>{
       b.onclick = ()=>{ gen = b.dataset.gender; playSound('tap'); redraw(); };
     });
+    bindCompanionSelector(document, k=>{ comp = k; redraw(); }, ()=>{ allBuddies = true; redraw(); });
     document.getElementById('pe-save').onclick = ()=>{
       p.name = (document.getElementById('pe-name').value||'').trim().slice(0,12);
       p.avatar = av;
       p.age = age;
       p.gender = gen;
+      p.companion = comp;
       saveProfiles();
       if(id === profiles.current){
         state.name = p.name; state.avatar = p.avatar; save();
