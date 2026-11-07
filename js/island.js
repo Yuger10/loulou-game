@@ -21,7 +21,7 @@
 // un dauphin dans l'eau, quel que soit le format d'écran.
 const ISLE_W = 480, ISLE_H = 360;
 const ISLE_CHAR_SLOTS = [
-  {x:150, y:262}, {x:330, y:256}, {x:205, y:334}, {x:300, y:336}, {x:112, y:320}, {x:372, y:318},
+  {x:126, y:250}, {x:354, y:248}, {x:198, y:340}, {x:284, y:342}, {x:96, y:330}, {x:384, y:330},
 ];
 const ISLE_GROUND_SLOTS = [
   {x:242, y:262}, {x:110, y:276}, {x:378, y:276}, {x:248, y:348}, {x:150, y:350}, {x:345, y:350},
