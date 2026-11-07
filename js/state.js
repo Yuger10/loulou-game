@@ -17,6 +17,9 @@ const DEFAULT_STATE = {
   visited: [],
   gameCounts: {},     // nombre de fois jouées, par type de mini-jeu (pour forcer la variété)
   storySolved: {},     // énigmes d'histoire déjà résolues, par île (js/story.js)
+  skills: {},         // réussites et erreurs par mini-jeu (espace parents)
+  playTime: {},       // secondes de jeu actif, par jour (espace parents)
+  pauseExtra: null,   // minutes ajoutées aujourd'hui par un adulte { date, min }
 };
 // copie profonde : sinon inventory/seen/decos seraient partagés avec DEFAULT_STATE
 function freshState(extra){
@@ -39,6 +42,9 @@ let state = {
   visited: [],        // îles déjà découvertes (pour annoncer les nouvelles)
   gameCounts: {},     // nombre de fois jouées, par type de mini-jeu
   storySolved: {},    // énigmes d'histoire déjà résolues, par île
+  skills: {},
+  playTime: {},
+  pauseExtra: null,
 };
 
 function save(){
@@ -76,9 +82,11 @@ function load(){
     if(!raw){ state = freshState(); return; }
     const saved = migrate(JSON.parse(raw));
     // ne garde que les clés connues : une sauvegarde ancienne ou corrompue ne casse pas le jeu
+    // (une clé absente garde la valeur par défaut de freshState, qui est une
+    // COPIE : sinon deux joueurs partageraient le même objet, ex. skills)
     const clean = {};
     Object.keys(DEFAULT_STATE).forEach(k=>{
-      clean[k] = (saved[k] !== undefined && saved[k] !== null) || k==='quests' ? saved[k] : DEFAULT_STATE[k];
+      if((saved[k] !== undefined && saved[k] !== null) || k==='quests') clean[k] = saved[k];
     });
     state = freshState(clean);
     save();

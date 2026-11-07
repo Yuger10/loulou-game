@@ -39,7 +39,10 @@ function openPlayers(){
           </div>`).join('')}
       </div>
       <button class="btn-craft" id="btn-add-player">➕ Ajouter un joueur</button>
-      <button class="btn-small ghost bk-open ${typeof backupDue==='function' && backupDue() ? 'due' : ''}" id="btn-backup">💾 Sauvegarde${typeof backupDue==='function' && backupDue() ? ' · à faire' : ''}</button>
+      <div class="adult-row">
+        <button class="btn-small ghost bk-open ${typeof backupDue==='function' && backupDue() ? 'due' : ''}" id="btn-backup">💾 Sauvegarde${typeof backupDue==='function' && backupDue() ? ' · à faire' : ''}</button>
+        <button class="btn-small ghost" id="btn-parents">👪 Espace parents</button>
+      </div>
       <div class="mode-row">
         <button class="btn-primary" id="btn-solo">👤 Solo</button>
         <button class="btn-primary alt" id="btn-turns">🎲 Chacun<br>son tour</button>
@@ -63,6 +66,7 @@ function openPlayers(){
     });
     document.getElementById('btn-add-player').onclick = ()=>{ playSound('tap'); openNewPlayer(); };
     document.getElementById('btn-backup').onclick = ()=>{ playSound('tap'); openBackup(); };
+    document.getElementById('btn-parents').onclick = ()=>{ playSound('tap'); openParents(); };
     document.getElementById('btn-solo').onclick = ()=>{
       playSound('tap');
       const id = [...sel][0] || profiles.current;
