@@ -84,7 +84,7 @@ function raceWin(p){
       <h2>${p.name || 'Joueur'} gagne la course !</h2>
       <div class="speech" style="display:flex; align-items:center; justify-content:center; gap:10px;">
         <span style="font-size:2.2rem;">${p.avatar}</span>
-        <span><strong>+${RACE_PRIZE} pièces</strong> 🪙</span>
+        <span><strong>+${RACE_PRIZE} pièces</strong> <span data-gain-coins>🪙</span></span>
       </div>
       <div class="race-results">
         ${classement.map((r,i)=>`<div class="race-result">
@@ -98,6 +98,7 @@ function raceWin(p){
     <button class="btn-primary" id="race-again">🔁 Refaire une course</button>
     <button class="btn-ghost" id="race-done">Terminer</button>
   `);
+  if(typeof queueGain==='function') queueGain({ coins:RACE_PRIZE });
   document.getElementById('race-again').onclick = ()=>{
     playSound('tap'); closeModal(); startRace(race.players);
   };

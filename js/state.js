@@ -96,6 +96,24 @@ function renderProfile(){
   document.getElementById('player-name').textContent = state.name || 'Toi';
 }
 let pendingAvatar = '👧';
+let pendingGender = '', pendingCompanion = null, welcomeAllBuddies = false;
+// prénom, « tu es… » et compagnon sur l'écran d'accueil
+function renderWelcomeExtra(){
+  const box = document.getElementById('welcome-extra');
+  if(!box) return;
+  const comp = pendingCompanion || defaultCompanionFor(pendingGender);
+  box.innerHTML = genderSelector(pendingGender) + companionSelector(comp, pendingGender, welcomeAllBuddies);
+  box.querySelectorAll('.gender-opt').forEach(b=>{
+    b.onclick = ()=>{
+      pendingGender = b.dataset.gender; playSound('tap');
+      // le compagnon suit le profil tant que l'enfant n'en a pas choisi un autre
+      if(pendingCompanion && !companionsFor(pendingGender).includes(pendingCompanion) && !welcomeAllBuddies) pendingCompanion = null;
+      renderWelcomeExtra();
+    };
+  });
+  bindCompanionSelector(box, k=>{ pendingCompanion = k; renderWelcomeExtra(); speak(`${COMPANIONS[k].name} ${COMPANIONS[k].title} part à l'aventure avec toi !`); },
+    ()=>{ welcomeAllBuddies = true; renderWelcomeExtra(); });
+}
 function openWelcome(){
   const grid = document.getElementById('avatar-grid');
   pendingAvatar = state.avatar || '👧';
@@ -108,15 +126,28 @@ function openWelcome(){
     };
   });
   document.getElementById('name-input').value = state.name || '';
+  const p0 = typeof currentProfile==='function' && currentProfile();
+  pendingGender = (p0 && p0.gender) || '';
+  pendingCompanion = (p0 && p0.companion) || null;
+  welcomeAllBuddies = false;
+  renderWelcomeExtra();
   document.getElementById('welcome').classList.add('show');
 }
 function closeWelcome(){
   const name = document.getElementById('name-input').value.trim().slice(0,12);
   state.name = name;
   state.avatar = pendingAvatar;
+  const p1 = typeof currentProfile==='function' && currentProfile();
+  if(p1){
+    p1.gender = pendingGender;
+    p1.companion = pendingCompanion || defaultCompanionFor(pendingGender);
+    if(typeof saveProfiles==='function') saveProfiles();
+  }
   save();
   renderProfile();
   document.getElementById('welcome').classList.remove('show');
+  const extra = document.getElementById('welcome-extra');
+  if(extra) extra.innerHTML = '';
   playSound('win');
   const who = name ? name : 'toi';
   speak(`Bonjour ${who} ! Bienvenue dans le lagon magique.`);
@@ -240,14 +271,15 @@ function openChest(){
       <span class="big-emoji">🎁</span>
       <h2>Coffre du jour ouvert !</h2>
       <div class="speech" style="display:flex; align-items:center; justify-content:center; gap:10px;">
-        <span style="font-size:2rem;">🪙</span><span><strong>+${bonusCoins} pièces</strong></span>
+        <span data-gain-coins style="font-size:2rem;">🪙</span><span><strong>+${bonusCoins} pièces</strong></span>
       </div>
       <div class="speech" style="display:flex; align-items:center; justify-content:center; gap:10px; background:#FFF9E8;">
-        <span style="font-size:2rem;">${ITEMS[gift].emoji}</span><span><strong>${ITEMS[gift].name}</strong></span>
+        <span data-gain-item style="font-size:2rem;">${ITEMS[gift].emoji}</span><span><strong>${ITEMS[gift].name}</strong></span>
       </div>
     </div>
     <button class="btn-primary" id="btn-yay">Merci ! 🎉</button>
   `);
+  if(typeof queueGain==='function') queueGain({ items:[ITEMS[gift].emoji], coins:bonusCoins });
   document.getElementById('btn-yay').onclick = ()=>{ playSound('tap'); closeModal(); renderLagon(); };
   renderQuests();
 }
@@ -284,11 +316,12 @@ function checkAlbumComplete(){
       <h2>Album complet !</h2>
       <div class="speech">Tu as découvert les <strong>${total}</strong> objets et décorations du jeu${who?', '+who:''} ! 🌟</div>
       <div class="speech" style="display:flex; align-items:center; justify-content:center; gap:10px; background:#FFF9E8;">
-        <span style="font-size:2rem;">🪙</span><span><strong>+${ALBUM_REWARD} pièces</strong></span>
+        <span data-gain-coins style="font-size:2rem;">🪙</span><span><strong>+${ALBUM_REWARD} pièces</strong></span>
       </div>
     </div>
     <button class="btn-primary" id="btn-yay">Waouh ! 🎉</button>
   `);
+  if(typeof queueGain==='function') queueGain({ coins:ALBUM_REWARD });
   document.getElementById('btn-yay').onclick = ()=>{ playSound('tap'); closeModal(); };
 }
 function renderAlbum(){

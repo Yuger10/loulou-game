@@ -62,9 +62,10 @@ function switchProfile(id, silent){
   }
 }
 
-function addProfile(name, avatar, age, gender){
+function addProfile(name, avatar, age, gender, companion){
   const id = newId();
-  profiles.list.push({ id, name: name||'', avatar: avatar||'👧', age: age||null, gender: gender||'' });
+  profiles.list.push({ id, name: name||'', avatar: avatar||'👧', age: age||null, gender: gender||'',
+    companion: companion || (typeof defaultCompanionFor==='function' ? defaultCompanionFor(gender||'') : null) });
   profiles.current = id; saveProfiles();
   state = freshState({ name: name||'', avatar: avatar||'👧', visited:['lagon'] });
   save();

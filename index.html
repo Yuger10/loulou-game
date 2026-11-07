@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="theme-color" content="#2EC4C6">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -105,6 +105,7 @@
   <h1 class="title">🌊<br>Le Lagon Magique</h1>
   <div class="stars">⭐ ✨ ⭐</div>
   <div class="cast"><span>🧜‍♀️</span><span>🏴‍☠️</span><span>🦄</span><span>🤖</span><span>🐉</span></div>
+  <div class="splash-buddy" id="splash-buddy" hidden></div>
   <div class="hello" id="splash-hello">En route pour l'aventure ?</div>
   <button class="btn-primary" id="btn-splash-play">Jouer 🎮</button>
   <div class="waves"></div>
@@ -117,6 +118,7 @@
     <input id="name-input" type="text" maxlength="12" placeholder="Ton prénom" autocomplete="off">
     <label>Choisis ton avatar</label>
     <div class="avatar-grid" id="avatar-grid"></div>
+    <div id="welcome-extra"></div>
     <button class="btn-primary" id="btn-start">C'est parti ! 🎮</button>
   </div>
 </div>
@@ -128,8 +130,10 @@
 <script src="js/data.js"></script>
 <script src="js/difficulty.js"></script>
 <script src="js/players.js"></script>
+<script src="js/companions.js"></script>
 <script src="js/state.js"></script>
 <script src="js/ui.js"></script>
+<script src="js/gains.js"></script>
 <script src="js/map.js"></script>
 <script src="js/minigames.js"></script>
 <script src="js/math.js"></script>

@@ -18,7 +18,9 @@ function addCoins(n){
   const pill = document.getElementById('coin-pill');
   pill.classList.remove('bump'); void pill.offsetWidth; pill.classList.add('bump');
 }
-function renderCoins(){ document.getElementById('coin-count').textContent = state.coins; }
+// pièces comptées mais encore en vol (voir gains.js) : l'affichage les attend
+var coinsInFlight = 0;
+function renderCoins(){ document.getElementById('coin-count').textContent = state.coins - (coinsInFlight || 0); }
 function pickRandom(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
 function shuffle(arr){ return arr.map(v=>[Math.random(),v]).sort((a,b)=>a[0]-b[0]).map(v=>v[1]); }
 function level(){ return 1 + Math.floor(state.missions / MISSIONS_PER_LEVEL); }
@@ -74,6 +76,8 @@ function playSound(kind){
     else if(kind==='wrong') tone(220, 0, .2, 'square', .08);
     else if(kind==='win') { [523,659,784,1047].forEach((f,i)=>tone(f, i*.11, .22)); }
     else if(kind==='coin') { tone(988, 0, .08, 'triangle'); tone(1319, .07, .14, 'triangle'); }
+    else if(kind==='tick') tone(1568, 0, .05, 'triangle', .05);
+    else if(kind==='pop') { tone(784, 0, .06, 'sine', .12); tone(1175, .05, .1, 'sine', .1); }
   }catch(e){}
 }
 document.getElementById('sound-btn').addEventListener('click', ()=>{
@@ -383,7 +387,14 @@ function openDecoShop(){
       const k = btn.dataset.deco;
       const d = DECOS[k];
       if(state.coins < d.price || state.decos.includes(k)) return;
+      const rowEmoji = btn.closest('.market-row').querySelector('.emoji');
+      const fromPt = typeof gainCenter==='function' ? gainCenter(rowEmoji) : null;
       addCoins(-d.price);
+      if(typeof spendCoins==='function'){
+        spendCoins(d.price, rowEmoji);
+        const scene = document.getElementById('scene');
+        flyEmoji(d.emoji, fromPt, gainCenter(scene), { delay:480, size:'2.6rem', endScale:.9, onLand:()=>{ playSound('pop'); gainLand(scene, true); } });
+      }
       state.decos.push(k); save();
       setTimeout(checkAlbumComplete, 900);
       playSound('win'); confetti();
@@ -402,6 +413,8 @@ function openModal(html){
   // tout nouveau contenu invalide un éventuel minuteur de défi en cours
   // (voir js/minigames.js) : jamais de décompte qui tourne « dans le vide ».
   if(typeof clearActiveTimer==='function') clearActiveTimer();
+  // gains d'une fenêtre précédente : ils partent avant que son contenu ne disparaisse
+  if(typeof flushPendingGain==='function') flushPendingGain();
   const body = document.getElementById('modal-body') || document.getElementById('modal');
   body.innerHTML = html;
   const ov = document.getElementById('overlay');
@@ -413,6 +426,7 @@ function openModal(html){
 }
 function closeModal(){
   if(typeof clearActiveTimer==='function') clearActiveTimer();
+  if(typeof flushPendingGain==='function') flushPendingGain();
   document.getElementById('overlay').classList.remove('show');
   document.body.classList.remove('modal-open');
   if(window.speechSynthesis) speechSynthesis.cancel();

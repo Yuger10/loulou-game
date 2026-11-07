@@ -490,6 +490,24 @@ setTimeout(()=>{
     check('accord neutre par défaut', ev("ac('fort')")==='fort');
     ev('openNewPlayer()');
     check('création : choix fille / garçon / neutre', d.querySelectorAll('.gender-opt').length===3);
+    // ---- Compagnons ----
+    check('compagnon : les 6 proposés sans genre', d.querySelectorAll('.buddy-opt').length===6);
+    d.querySelector('.gender-opt[data-gender="f"]').click();
+    check('compagnon : fille → sirène, princesse, fée', [...d.querySelectorAll('.buddy-opt')].map(b=>b.dataset.buddy).join()==='perle,rose,lili');
+    d.querySelector('.gender-opt[data-gender="m"]').click();
+    check('compagnon : garçon → pirate, chevalier, explorateur', [...d.querySelectorAll('.buddy-opt')].map(b=>b.dataset.buddy).join()==='tom,leo,sam');
+    check('compagnon : garçon → pirate présélectionné', d.querySelector('.buddy-opt.sel').dataset.buddy==='tom');
+    d.querySelector('[data-buddy-more]').click();
+    check('compagnon : « voir les autres » montre tout le monde', d.querySelectorAll('.buddy-opt').length===6);
+    d.querySelector('.buddy-opt[data-buddy="rose"]').click();
+    check('compagnon : on peut choisir librement', d.querySelector('.buddy-opt.sel').dataset.buddy==='rose');
+    ev('closeModal()');
+    check('compagnon par défaut : fille → sirène, garçon → pirate', ev("defaultCompanionFor('f')")==='perle' && ev("defaultCompanionFor('m')")==='tom');
+    check('compagnon : un dessin pour chaque compagnon et chaque humeur', ev("COMPANION_ORDER.every(k=>BUDDY_MOODS.every(m=>companionSVG(k,m).startsWith('<svg')))"));
+    ev('playGame("count")');
+    check('mini-jeu : le compagnon dit la consigne', !!d.querySelector('.puzzle-hint .buddy-slot svg'));
+    ev("buddyReact('wow', 0)");
+    check('mini-jeu : le compagnon réagit', !!d.querySelector('.puzzle-hint .buddy-slot .buddy--wow'));
     ev('closeModal()');
 
     // ---- Mode course (compétition équitable) ----
@@ -606,6 +624,25 @@ setTimeout(()=>{
     check('minuteur : aucune image de "bouton fautif" affichée', !d.querySelector('.num-btn.ko'));
     ev('closeModal(); currentWorld="lagon"');
 
+    // ---- Animations de gain (sans animation dans jsdom : tout est compté tout de suite) ----
+    ev('closeModal(); onMissionWin()');
+    check('gain : l\'objet gagné est repéré pour s\'envoler vers le sac', !!d.querySelector('#modal-body [data-gain-item]'));
+    ev('closeModal()');
+    check('gain : après la fenêtre, le compteur affiche le vrai total', d.getElementById('coin-count').textContent===String(ev('state.coins')));
+    ev('state.coins += 7; openModal("<div class=reward-box><span data-gain-coins>🪙</span></div>"); queueGain({coins:7})');
+    check('gain : le compteur attend les pièces tant que la fenêtre est ouverte', d.getElementById('coin-count').textContent===String(ev('state.coins')-7));
+    ev('closeModal()');
+    check('gain : les pièces arrivent à la fermeture', d.getElementById('coin-count').textContent===String(ev('state.coins')) && ev('coinsInFlight')===0);
+    ev('addCoins(3); gainCoins(3, null); addCoins(-2); spendCoins(2, null)');
+    check('gain : vente et achat gardent le compteur juste', d.getElementById('coin-count').textContent===String(ev('state.coins')) && ev('coinsInFlight')===0);
+    // ---- Feuille de style : une accolade perdue (ex. lors d'une fusion) enferme
+    //      silencieusement tout le reste dans une media query ----
+    {
+      const css = fs.readFileSync(path.join(__dirname, '..', 'styles.css'), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
+      let depth = 0, min = 0;
+      for(const ch of css){ if(ch==='{') depth++; else if(ch==='}') depth--; min = Math.min(min, depth); }
+      check('styles.css : accolades équilibrées', depth===0 && min===0);
+    }
     check('aucune erreur JS', errs.length===0);
     if(errs.length) console.log(errs);
     console.log(failed ? `\n${failed} test(s) en échec` : '\nTous les tests passent');

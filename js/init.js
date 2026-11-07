@@ -26,6 +26,13 @@ function showSplash(){
   const sp = document.getElementById('splash');
   document.getElementById('splash-hello').textContent =
     state.name ? `Coucou ${state.name} ${state.avatar} !` : "En route pour l'aventure ?";
+  // joueur connu : son compagnon l'accueille ; sinon la troupe des personnages
+  const bud = document.getElementById('splash-buddy');
+  const cast = sp.querySelector('.cast');
+  if(bud && state.name && typeof companionSVG==='function'){
+    bud.innerHTML = companionSVG(currentCompanion(), 'cheer');
+    bud.hidden = false; if(cast) cast.hidden = true;
+  } else if(bud){ bud.hidden = true; if(cast) cast.hidden = false; }
   sp.classList.remove('hiding');
   sp.classList.add('show');
 }
