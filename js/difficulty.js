@@ -19,7 +19,7 @@
    eduscol.education.fr si une confirmation précise est nécessaire.
 
    -----------------------------------------------------------------
-   LES 5 PALIERS DE DIFFICULTÉ (1 par île, dont la nouvelle île 5)
+   LES PALIERS DE DIFFICULTÉ (1 par île)
    -----------------------------------------------------------------
    Palier 1 — 🌊 Lagon      — grande section / début CP (5-6 ans)
      Découverte. Aucune pénalité d'erreur, pas de minuteur. On explore
@@ -39,18 +39,28 @@
      Consolidation : mêmes types d'exercices, exigences plus poussées
      (nombres plus grands, moins d'indices visuels, temps plus court).
 
-   Palier 5 — 🌴 Jungle      — fin CE1 / début CE2 (9-10 ans)
-     Palier de perfectionnement : le niveau le plus avancé du jeu. Les
-     exercices se rapprochent de ce qui est attendu en CE2 (nombres
+   Palier 5 — 🌴 Jungle, 🕰️ Cité du Temps — fin CE1 / début CE2 (9-10 ans)
+     Palier de perfectionnement pour les 12 jeux « historiques » (nombres
      jusqu'à 100, calculs à 3 termes, lecture fluide sans aucune image).
+     La Cité du Temps est au même palier numérique que la Jungle : elle
+     n'ajoute pas de nombres plus grands, mais de NOUVELLES compétences
+     (lire l'heure, repères temporels) — cf. `clockBounds`/`calendarMode`.
+
+   Palier 6 — 🌋 Volcan des Génies — CE2 confirmé (10-11 ans)
+     Palier exclusif au mini-jeu « Calcul mental » (voir `calcBounds`) :
+     calcul SANS aucun support imagé, nombres à deux chiffres, tables de
+     multiplication. Les 12 jeux historiques restent bloqués à leurs
+     valeurs du palier 5 sur cette île (`tierValue` plafonne à 5) — il
+     n'y a pédagogiquement rien à gagner à leur donner des nombres encore
+     plus grands ; seul le calcul pur continue de progresser.
 
    Un joueur sans âge renseigné n'est jamais concerné par le minuteur
    (voir `timerFor`) ; un enfant de moins de 6 ans ne voit jamais les
-   paliers 3 à 5, quelle que soit l'île (voir `gameTypesForAge` dans
+   paliers 3 et plus, quelle que soit l'île (voir `gameTypesForAge` dans
    js/data.js) : la pression temporelle n'a pas sa place avant le CP.
    ===================================================================== */
 
-// Les 5 paliers eux-mêmes (texte + repère scolaire), utilisés pour l'affichage
+// Les paliers eux-mêmes (texte + repère scolaire), utilisés pour l'affichage
 // (étoiles sur la carte) et pour la documentation ci-dessus.
 const DIFFICULTY_TIERS = [
   { n:1, island:'lagon',    schoolLevel:'GS / début CP',  label:'Découverte' },
@@ -58,10 +68,14 @@ const DIFFICULTY_TIERS = [
   { n:3, island:'montagne', schoolLevel:'fin CP / CE1',     label:'Fluence' },
   { n:4, island:'chateau',  schoolLevel:'CE1',              label:'Consolidation' },
   { n:5, island:'jungle',   schoolLevel:'fin CE1 / CE2',     label:'Perfectionnement' },
+  { n:5, island:'cite',     schoolLevel:'fin CE1 / CE2',     label:'Nouvelles compétences (temps)' },
+  { n:6, island:'volcan',   schoolLevel:'CE2',               label:'Calcul mental pur' },
 ];
 
 // Petit utilitaire : interpole/clampe un tableau de valeurs { 1:x, 2:y, ... }
-// sur les 5 paliers, pour éviter les lectures `|| valeurPiochée`au hasard.
+// sur les 5 paliers « historiques », pour éviter les lectures `|| valeur
+// piochée` au hasard. Les jeux qui vont au-delà (calcul mental, palier 6)
+// ont leur propre fonction de bornes qui n'utilise pas `tierValue`.
 function tierValue(table, dd){
   const d = Math.max(1, Math.min(5, Number(dd) || 1));
   return (d in table) ? table[d] : table[Object.keys(table).map(Number).sort((a,b)=>a-b).pop()];
@@ -279,8 +293,10 @@ const LIVES_TABLE = {
 function livesFor(kind, dd){
   const d = Math.max(1, Math.min(5, Number(dd) || 1));
   if(d <= 1) return Infinity;                  // île 1 : on apprend sans pression
-  const GENEROUS_KINDS = ['math','reading','determinants','volume','compare','money'];
+  const GENEROUS_KINDS = ['math','reading','determinants','volume','compare','money','clock','calendar','calc'];
   const table = LIVES_TABLE[kind] || (GENEROUS_KINDS.includes(kind) ? LIVES_TABLE.generous : LIVES_TABLE.default);
+  // le calcul mental (palier 6, Volcan) emprunte le barème d'essais du
+  // palier 5 : seul le minuteur continue de se resserrer au-delà.
   return table[d] !== undefined ? table[d] : table[4];
 }
 
@@ -310,13 +326,80 @@ const TIMER_SECONDS = {
   determinants: {3:16, 4:14, 5:13},
   volume:       {3:16, 4:14, 5:13},
   compare:      {3:16, 4:14, 5:13},
+  clock:        {3:18, 4:16, 5:14},
+  calc:         {3:28, 4:24, 5:22, 6:20},   // calcul abstrait : le plus généreux de tous
 };
 // jeux à plusieurs étapes : jamais de minuteur, quelle que soit la difficulté
-const NO_TIMER_KINDS = ['memory','simon','puzzle'];
+const NO_TIMER_KINDS = ['memory','simon','puzzle','calendar'];
 function timerFor(kind, dd){
   if(NO_TIMER_KINDS.includes(kind)) return null;
   const table = TIMER_SECONDS[kind];
   if(!table) return null;
-  const d = Math.max(1, Math.min(5, Number(dd) || 1));
+  // le calcul mental va jusqu'au palier 6 (Volcan) ; les autres jeux
+  // restent plafonnés au palier 5 comme avant.
+  const d = Math.max(1, Math.min(kind==='calc' ? 6 : 5, Number(dd) || 1));
   return table[d] || null;            // undefined aux paliers 1-2 → pas de minuteur
 }
+
+/* =====================================================================
+   NOUVEAUX MONDES — Cité du Temps (palier 5, nouvelles compétences) et
+   Volcan des Génies (palier 6, calcul mental pur). Voir
+   ANALYSE-DIFFICULTE.md § 5 pour la proposition d'origine.
+   ===================================================================== */
+
+/* ---------------------------------------------------------------------
+   13) QUELLE HEURE EST-IL ? — lecture de l'heure sur une horloge à
+   aiguilles. Programme « grandeurs et mesures » CP-CE1 : heures pleines
+   d'abord, demi-heures ensuite, quarts d'heure au palier le plus élevé
+   (compétence CE1-CE2, rarement maîtrisée avant). Accessible dès 5 ans
+   (MS/GS) en heures pleines : lire « il est 3 heures » sur une horloge
+   ne demande pas de savoir lire des chiffres composés.
+   --------------------------------------------------------------------- */
+function clockGranularity(dd){
+  // minutes possibles affichées sur l'horloge, selon le palier
+  if(dd<=2) return [0];                 // heures pleines : 3h, 7h…
+  if(dd<=4) return [0,30];              // + demi-heures : 3h30
+  return [0,15,30,45];                  // + quarts d'heure : 3h15, 3h45
+}
+function clockOptions(dd){
+  return dd>=4 ? 4 : 3;
+}
+
+/* ---------------------------------------------------------------------
+   14) JOURS, MOIS, SAISONS — repères temporels, domaine « explorer le
+   monde » (cycle 1) prolongé en cycle 2. Deux familles d'exercices :
+   - « quelle saison ? » (reconnaissance d'une scène) : accessible dès
+     la petite section (3-4 ans), aucune lecture nécessaire ;
+   - « remets les jours dans l'ordre » : demande de lire des mots,
+     réservé à partir du CP confirmé (palier 2+).
+   Pas de minuteur sur ce jeu (voir NO_TIMER_KINDS) : la notion de temps
+   qui passe n'a pas à être elle-même chronométrée, ce serait un comble
+   pédagogique contre-productif.
+   --------------------------------------------------------------------- */
+function calendarUsesWeekdayOrder(dd){ return dd >= 2; }
+function calendarWeekdayCount(dd){
+  return tierValue({1:3, 2:3, 3:4, 4:5, 5:6}, dd);
+}
+
+/* ---------------------------------------------------------------------
+   15) CALCUL MENTAL — la seule compétence du jeu qui va jusqu'au
+   palier 6 (Volcan des Génies). Calcul SANS AUCUN support imagé : à la
+   différence du jeu « Opérations » (qui illustre chaque terme par des
+   emojis), on reste ici dans l'abstraction pure, ce qui correspond à
+   l'attendu de fin CE1/CE2 (calcul mental automatisé). Multiplication
+   introduite au palier 5 (tables de 2, 5 et 10 : les plus régulières,
+   toujours enseignées en premier).
+   --------------------------------------------------------------------- */
+function calcBounds(dd){
+  const d = Math.max(1, Math.min(6, Number(dd) || 1));
+  const table = {
+    1:{max:20,  terms:2, allowMinus:true,  allowMulti:false},
+    2:{max:30,  terms:2, allowMinus:true,  allowMulti:false},
+    3:{max:50,  terms:2, allowMinus:true,  allowMulti:false},
+    4:{max:70,  terms:2, allowMinus:true,  allowMulti:false},
+    5:{max:100, terms:3, allowMinus:true,  allowMulti:true},   // + multiplication
+    6:{max:100, terms:3, allowMinus:true,  allowMulti:true},   // Volcan : idem, en moins de temps (timerFor)
+  };
+  return table[d];
+}
+const CALC_MULT_TABLES = [2, 5, 10];

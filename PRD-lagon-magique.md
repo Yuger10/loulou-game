@@ -541,3 +541,45 @@ Ce que l'on gagne se voit arriver (`js/gains.js`) :
 - Sons dédiés (« tick » par pièce, « pop » à l'arrivée dans le sac), anneau doré à l'arrivée.
 - Le compteur affiché tient compte des pièces encore en vol (`coinsInFlight`) : il reste toujours juste. Sans animation possible ou avec « réduire les animations », tout se met à jour d'un coup.
 - Correctif : « Tu as N pièces » dans l'onglet Acheter était blanc sur blanc depuis la v24.
+
+---
+
+# v30 — Deux nouveaux mondes : La Cité du Temps et Le Volcan des Génies
+
+Mise en œuvre de la proposition de `ANALYSE-DIFFICULTE.md` § 5.
+
+## 🕰️ La Cité du Temps (6e île, niveau 18)
+Même palier numérique que la Jungle (palier 5) — ce monde n'ajoute pas
+de nombres plus grands, mais deux compétences nouvelles :
+- **Quelle heure est-il ?** : horloge à aiguilles dessinée en CSS (pas
+  d'image). Heures pleines → demi-heures → quarts d'heure selon le palier.
+- **Jours, mois, saisons** : reconnaissance d'une saison (accessible dès
+  3-4 ans, aucune lecture nécessaire) puis, à partir du CP confirmé,
+  remettre les jours de la semaine dans l'ordre. Jamais de minuteur.
+- 4 personnages : Horace l'horloger, Clio la gardienne du temps, Tic le
+  robot-coucou, Nocta la chouette des nuits.
+- 7 objets, 5 recettes (dont 1 tier 2 : la Machine à remonter le temps),
+  9 décorations.
+
+## 🌋 Le Volcan des Génies (7e île, niveau 22)
+**Le seul mini-jeu du jeu à aller jusqu'au palier 6** :
+- **Calcul mental** : calcul sans aucun support imagé (contrairement au
+  jeu « Opérations »), nombres jusqu'à 100, expressions à 3 termes,
+  tables de multiplication (×2, ×5, ×10) à partir du palier 5.
+- 4 personnages : Nova le génie, Léa la savante, Pyra la dragonne de
+  lave, Max le robot savant.
+- 6 objets, 5 recettes (dont 1 tier 2 : la Couronne du génie), 9 décorations.
+
+## Intégration
+- Nouveaux fichiers `js/clock.js`, `js/calendar.js`, `js/calc.js`.
+- 3 nouvelles fonctions de difficulté dans `js/difficulty.js`
+  (`clockGranularity`/`clockOptions`, `calendarUsesWeekdayOrder`/
+  `calendarWeekdayCount`, `calcBounds`) — `calcBounds` est la seule à
+  dépasser le palier 5, les autres jeux restent plafonnés à 5 sur ces
+  deux îles.
+- `gameTypesForAge` étendu : « saisons » dès 3-4 ans, + lecture de
+  l'heure et calendrier dès 5 ans ; le calcul mental reste réservé à
+  6 ans et plus (comme les autres jeux abstraits).
+- 15 jeux au total désormais dans le sélecteur (+ Surprise).
+- Entièrement data-driven (`WORLDS`/`CHARACTERS`/`ITEMS`/`CRAFTED`/`DECOS`
+  dans `js/data.js`) : carte, marché, album, sac s'adaptent automatiquement.
