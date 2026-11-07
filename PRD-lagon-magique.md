@@ -605,3 +605,14 @@ La vue Île devient un paysage dessiné où vivent les personnages (`js/island.j
 - La carte trace un vrai sentier entre les 7 îles, dans l'ordre des paliers de difficulté : une bande claire, de gros pointillés blancs, **dorés jusqu'à la dernière île débloquée** (et non plus jusqu'à l'île où l'on se trouve), et un tronçon animé qui avance vers la prochaine île à débloquer.
 - Correctif : la partie dorée était découpée de gauche à droite (`clip-path`), ce qui ne suivait plus le chemin depuis la carte en lacet ; elle est maintenant un morceau du même tracé.
 
+
+
+---
+
+# v33 — 28 personnages illustrés en SVG
+
+- Les 28 personnages des sept îles ont chacun une illustration SVG originale intégrée au code, sans police emoji ni ressource externe. Le dessin reste identique sur iOS, Android et ordinateur.
+- Silhouettes, accessoires et couleurs dominantes différencient les personnages : Tiago pirate, Marina sirène, Étincelle licorne, Luna danseuse ; Sylvie, Maïa, Hector et Balto ; Zéphyr, Ariane, Céleste et Bolt ; Aurore, Morgane, Tao et Comète ; Maya, Kiko, Iris et Jago ; Horace, Clio, Tic et Nocta ; Nova, Léa, Pyra et Max.
+- Les visages reprennent les yeux, joues, bouche et traits des six compagnons SVG. Les illustrations sont affichées sur la scène vivante, la carte, la fiche d'île, les dialogues et l'écran d'échec. Les emojis d'objets des cartes mémoire restent inchangés.
+- Nouveau module `js/characters-art.js` et feuille `characters.css`; cache PWA passé à `lagon-v33`.
+- Tests de garde : couverture des ids, viewBox, taille maximale, éléments et attributs interdits, rendu de la scène et repli emoji pour un id inconnu.
