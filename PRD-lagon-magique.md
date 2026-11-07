@@ -707,3 +707,24 @@ qu'elle avait fait. Observé précisément sur « Grandeurs & volumes » et
 - **Zap le super-héros** : 7e compagnon dessiné (combinaison bleue, cape orange, éclair doré, petit masque troué qui laisse voir les yeux et l'expression). Proposé aux garçons avec Tom, Léo et Sam ; libre pour tous via « Voir les autres compagnons ».
 - **Avatar dessiné** : on peut aussi le choisir comme avatar (valeur `art:zap`). Il s'affiche en image en haut de l'écran, sur le bateau de la carte, dans la liste des joueurs, au passage de tour et dans la course. Dans le texte simple (notifications, voix), il devient l'emoji 🦸‍♂️ (`avatarText`). Mécanisme générique : `art:<id>` pour tout compagnon dessiné.
 
+---
+
+# v38 — Mini-jeu « Les planètes »
+
+Un quiz illustré sur le Soleil, la Lune, la Terre et les 8 planètes (`js/planets.js`).
+
+## Adapté à l'âge (palier de l'île, plafonné par l'âge de l'enfant)
+1. GS/CP : reconnaître le Soleil, la Lune, la Terre ; quand voit-on les étoiles.
+2. CP : on habite sur la Terre ; le Soleil est une étoile qui produit sa lumière ; la Lune tourne autour de la Terre.
+3. CE1 : reconnaître les planètes (anneaux de Saturne, Mars la rouge, tache de Jupiter, la Terre bleue).
+4. CE1/CE2 : la plus proche, la plus éloignée, la plus grande, la plus petite ; celle qui suit la Terre.
+5. CE2 : 8 planètes ; 1 jour, 1 an ; pourquoi le jour et la nuit ; Vénus la plus chaude ; la Lune est un satellite.
+6. CE2/CM1 : l'ordre des planètes (4 voisines à remettre dans l'ordre), planètes rocheuses et géantes, Uranus couchée sur le côté.
+- Proposé à partir de 5 ans seulement. Pas de minuteur.
+
+## Exactitude scientifique
+- Les réponses sont calculées à partir d'un tableau de données (ordre, diamètre, température moyenne, d'après la NASA), jamais écrites à la main ; des tests vérifient chaque question.
+- 8 planètes (Pluton est une planète naine depuis 2006) ; Vénus est la plus chaude, pas Mercure ; Saturne a de grands anneaux « bien visibles » (pas « la seule à anneaux ») ; le jour et la nuit viennent de la rotation de la Terre.
+- Dessins pas à l'échelle : toutes les planètes ont le même diamètre à l'écran, pour qu'aucune image ne donne une fausse taille.
+- Après une bonne réponse, une phrase vraie à retenir est affichée et lue sur l'écran de victoire (`missionFact`).
+

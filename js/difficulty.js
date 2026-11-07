@@ -300,7 +300,7 @@ const LIVES_TABLE = {
 function livesFor(kind, dd){
   const d = Math.max(1, Math.min(5, Number(dd) || 1));
   if(d <= 1) return Infinity;                  // île 1 : on apprend sans pression
-  const GENEROUS_KINDS = ['math','reading','determinants','volume','compare','money','clock','calendar','calc','shapes'];
+  const GENEROUS_KINDS = ['math','reading','determinants','volume','compare','money','clock','calendar','calc','shapes','planets'];
   const table = LIVES_TABLE[kind] || (GENEROUS_KINDS.includes(kind) ? LIVES_TABLE.generous : LIVES_TABLE.default);
   // le calcul mental (palier 6, Volcan) emprunte le barème d'essais du
   // palier 5 : seul le minuteur continue de se resserrer au-delà.
@@ -337,7 +337,7 @@ const TIMER_SECONDS = {
   calc:         {3:28, 4:24, 5:22, 6:20},   // calcul abstrait : le plus généreux de tous
 };
 // jeux à plusieurs étapes : jamais de minuteur, quelle que soit la difficulté
-const NO_TIMER_KINDS = ['memory','simon','puzzle','calendar','shapes'];
+const NO_TIMER_KINDS = ['memory','simon','puzzle','calendar','shapes','planets'];
 function timerFor(kind, dd){
   if(NO_TIMER_KINDS.includes(kind)) return null;
   const table = TIMER_SECONDS[kind];
@@ -441,4 +441,14 @@ function shapesRound(dd){
     { criterion:'vertices',   items:9, targets:3, shapes:['triangle','carre','rectangle','losange','pentagone','hexagone','octogone'], colors:['rose','bleu','jaune','vert','violet','orange'] },
   ][d];
 }
+
+/* ---------------------------------------------------------------------
+   LES PLANÈTES — quiz illustré (« Questionner le monde », puis cycle 3)
+   ---------------------------------------------------------------------
+   Le palier du quiz suit celui de l'île (et donc l'âge de l'enfant, qui
+   le plafonne en solo) : du Soleil, de la Lune et de la Terre (GS/CP)
+   jusqu'à l'ordre des planètes et aux planètes rocheuses ou géantes.
+   Pas de minuteur : on lit la question, ou on l'écoute, à son rythme.
+   La banque de questions et les règles d'exactitude sont dans js/planets.js. */
+function planetsTier(dd){ return Math.max(1, Math.min(6, Number(dd) || 1)); }
 
