@@ -14,8 +14,9 @@ const COMPANIONS = {
   tom:    { name:'Tom',    title:'le pirate',      group:'m', skin:'#F6C9A6', hair:'#7A4426', hairDark:'#56301A', outfit:'#FFFFFF', outfitDark:'#3A7BD5', style:'pirate' },
   leo:    { name:'Léo',    title:'le chevalier',   group:'m', skin:'#C98B62', hair:'#4A2C1A', hairDark:'#2E1A0E', outfit:'#C9D3DE', outfitDark:'#97A6B6', style:'knight' },
   sam:    { name:'Sam',    title:"l'explorateur",  group:'m', skin:'#8D5A3B', hair:'#2B2420', hairDark:'#16110E', outfit:'#D9B26F', outfitDark:'#B38B47', style:'explorer' },
+  zap:    { name:'Zap',    title:'le super-héros', group:'m', skin:'#EDB98F', hair:'#4A2C1A', hairDark:'#2E1A0E', outfit:'#3A7BD5', outfitDark:'#24427A', style:'hero' },
 };
-const COMPANION_ORDER = ['perle','rose','lili','tom','leo','sam'];
+const COMPANION_ORDER = ['perle','rose','lili','tom','leo','sam','zap'];
 const BUDDY_MOODS = ['happy','think','wow','cheer','oops','sleepy'];
 
 const INK = '#2B2140';
@@ -144,6 +145,19 @@ function buddyParts(c){
         `<path d="M60 15 C58 6 64 0 72 2 C68 6 70 10 66 14 Z" fill="#F46B5D"/>`,
         `<rect x="56" y="13" width="8" height="5" rx="2" fill="${c.outfitDark}"/>`);
       break;
+    case 'hero':
+      // Zap : cape orange derrière, combinaison bleue, éclair doré, masque troué (les yeux restent visibles)
+      back.push(`<path d="M30 102 C18 110 10 122 6 130 L114 130 C110 122 102 110 90 102Z" fill="#FF8A3D"/>`,
+        `<path d="M30 102 C22 110 16 120 13 130 M90 102 C98 110 104 120 107 130" fill="none" stroke="#E0692A" stroke-width="2.5"/>`);
+      body = `<path d="M22 130 C22 104 38 94 60 94 C82 94 98 104 98 130 Z" fill="${c.outfit}"/>
+        <path d="M34 100 L49 95 L44 109Z M86 100 L71 95 L76 109Z" fill="#FF8A3D"/>
+        <path d="M63 101 L51 116 L59 116 L55 128 L70 110 L62 110 L66 101Z" fill="#FFD54A" stroke="#B8901A" stroke-width="1.6" stroke-linejoin="round"/>
+        <path d="M30 112 Q36 106 40 108" fill="none" stroke="#6FA3EA" stroke-width="3" stroke-linecap="round"/>`;
+      front.push(`<path d="M27 52 C25 30 40 19 60 19 C80 19 95 30 93 52 C88 44 82 40 76 39 L73 29 L66 37 L60 25 L54 37 L47 29 L44 39 C38 40 32 44 27 52Z" fill="${c.hair}"/>`,
+        `<path fill-rule="evenodd" fill="${c.outfitDark}" d="M26 55 C32 47 50 48 60 53 C70 48 88 47 94 55 C95 63 91 71 83 73 C74 75 66 71 60 67 C54 71 46 75 37 73 C29 71 25 63 26 55Z M37.5 61 a9.5 10 0 1 0 19 0 a9.5 10 0 1 0 -19 0Z M63.5 61 a9.5 10 0 1 0 19 0 a9.5 10 0 1 0 -19 0Z"/>`,
+        `<path d="M29 56 C34 51 44 50 52 52" fill="none" stroke="#5B86C9" stroke-width="2" stroke-linecap="round"/>`,
+        `<path d="M93 57 L104 52 L102 60 Z" fill="${c.outfitDark}"/>`);
+      break;
     case 'explorer':
       body = `<path d="M22 130 C22 104 38 94 60 94 C82 94 98 104 98 130 Z" fill="${c.outfit}"/>
         <path d="M44 95 L60 110 L76 95" fill="#5FCB7E"/><path d="M60 110 L56 122 L64 122 Z" fill="#4AB067"/>
@@ -249,3 +263,21 @@ function bindCompanionSelector(root, onPick, onMore){
   const more = (root||document).querySelector('[data-buddy-more]');
   if(more) more.onclick = ()=>{ playSound('tap'); onMore(); };
 }
+
+/* ---- avatars dessinés ----
+   Un avatar vaut d'ordinaire un emoji ; « art:<id> » désigne un compagnon
+   dessiné (ex. « art:zap », le super-héros). avatarHTML l'affiche en image
+   partout où l'avatar est affiché ; avatarText le remplace par un emoji
+   dans le texte simple (notifications, voix). */
+const AVATAR_ART_EMOJI = { zap:'🦸‍♂️' };
+function isArtAvatar(av){ return typeof av==='string' && av.startsWith('art:') && !!COMPANIONS[av.slice(4)]; }
+function avatarHTML(av){
+  if(!isArtAvatar(av)) return av || '👧';
+  const id = av.slice(4), c = COMPANIONS[id];
+  return `<span class="av-art" role="img" aria-label="${c.name} ${c.title}">${companionSVG(id,'happy')}</span>`;
+}
+function avatarText(av){
+  if(!isArtAvatar(av)) return av || '👧';
+  return AVATAR_ART_EMOJI[av.slice(4)] || '🙂';
+}
+

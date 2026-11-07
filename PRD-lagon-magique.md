@@ -700,3 +700,10 @@ qu'elle avait fait. Observé précisément sur « Grandeurs & volumes » et
 - Sur l'île Squishy, le choix du jeu propose toujours « Formes et couleurs » (`WORLDS[id].game`).
 - Cache `lagon-v36`.
 
+---
+
+# v37 — Zap le super-héros (compagnon et avatar dessinés)
+
+- **Zap le super-héros** : 7e compagnon dessiné (combinaison bleue, cape orange, éclair doré, petit masque troué qui laisse voir les yeux et l'expression). Proposé aux garçons avec Tom, Léo et Sam ; libre pour tous via « Voir les autres compagnons ».
+- **Avatar dessiné** : on peut aussi le choisir comme avatar (valeur `art:zap`). Il s'affiche en image en haut de l'écran, sur le bateau de la carte, dans la liste des joueurs, au passage de tour et dans la course. Dans le texte simple (notifications, voix), il devient l'emoji 🦸‍♂️ (`avatarText`). Mécanisme générique : `art:<id>` pour tout compagnon dessiné.
+

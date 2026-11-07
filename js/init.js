@@ -25,7 +25,7 @@ switchView('carte');
 function showSplash(){
   const sp = document.getElementById('splash');
   document.getElementById('splash-hello').textContent =
-    state.name ? `Coucou ${state.name} ${state.avatar} !` : "En route pour l'aventure ?";
+    state.name ? `Coucou ${state.name} ${avatarText(state.avatar)} !` : "En route pour l'aventure ?";
   // joueur connu : son compagnon l'accueille ; sinon la troupe des personnages
   const bud = document.getElementById('splash-buddy');
   const cast = sp.querySelector('.cast');

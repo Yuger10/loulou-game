@@ -92,7 +92,7 @@ function resetState(){
 /* ---------- Profil (prénom + avatar) ---------- */
 function hello(){ return state.name ? state.name : ''; }
 function renderProfile(){
-  document.querySelector('#avatar-pill .av').textContent = state.avatar || '👧';
+  document.querySelector('#avatar-pill .av').innerHTML = avatarHTML(state.avatar);
   document.getElementById('player-name').textContent = state.name || 'Toi';
 }
 let pendingAvatar = '👧';
@@ -117,7 +117,7 @@ function renderWelcomeExtra(){
 function openWelcome(){
   const grid = document.getElementById('avatar-grid');
   pendingAvatar = state.avatar || '👧';
-  grid.innerHTML = AVATARS.map(a=>`<button class="avatar-opt ${a===pendingAvatar?'sel':''}" data-av="${a}">${a}</button>`).join('');
+  grid.innerHTML = AVATARS.map(a=>`<button class="avatar-opt ${a===pendingAvatar?'sel':''}" data-av="${a}" aria-label="${avatarText(a)}">${avatarHTML(a)}</button>`).join('');
   grid.querySelectorAll('.avatar-opt').forEach(b=>{
     b.onclick = ()=>{
       pendingAvatar = b.dataset.av;

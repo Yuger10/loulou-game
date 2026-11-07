@@ -58,7 +58,7 @@ function switchProfile(id, silent){
     playSound('good');
     const p = currentProfile();
     speak(`À toi de jouer ${p.name || ''} !`);
-    showToast(`${p.avatar} ${p.name || 'Joueur'}`);
+    showToast(`${avatarText(p.avatar)} ${p.name || 'Joueur'}`);
   }
 }
 
@@ -136,7 +136,7 @@ function startParty(ids){
   playSound('win');
   const p = partyCurrent();
   speak(`Mode chacun son tour ! ${p.name || 'Joueur 1'} commence.`);
-  showToast(`🎲 ${p.avatar} ${p.name || 'Joueur 1'} commence !`);
+  showToast(`🎲 ${avatarText(p.avatar)} ${p.name || 'Joueur 1'} commence !`);
   return true;
 }
 function stopParty(){
@@ -163,7 +163,7 @@ function showTurnOverlay(p, reason){
   if(!el) return;
   el.innerHTML = `
     <div class="turn-card">
-      <span class="turn-av">${p.avatar}</span>
+      <span class="turn-av">${avatarHTML(p.avatar)}</span>
       <h2>${reason==='wrong' ? 'Oups ! On change' : 'Au tour de'}</h2>
       <p class="turn-name">${p.name || 'Joueur'}</p>
       <p class="turn-sub">${reason==='wrong' ? 'Ce n\'est pas grave, à toi de jouer !' : 'À toi !'}</p>
@@ -184,7 +184,7 @@ function renderTurnBar(){
   const isRace = party.mode==='race';
   bar.innerHTML = partyPlayers().map((p,i)=>`
     <span class="turn-chip ${i===party.turn?'on':''}">
-      <b>${p.avatar}</b> ${p.name || 'Joueur '+(i+1)}
+      <b>${avatarHTML(p.avatar)}</b> ${p.name || 'Joueur '+(i+1)}
       <i>${isRace ? ((race.pos[p.id]||0)+'/'+race.goal+' ⛵') : ((party.scores[p.id]||0)+' 🏅')}</i>
     </span>`).join('')
     + `<button class="turn-stop" id="turn-stop">✖️</button>`;
