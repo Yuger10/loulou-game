@@ -310,23 +310,32 @@ function checkNewIsland(){
   const w = WORLDS[id];
   playSound('win'); confetti(); vibrate([70,50,70,50,180]);
   const who = hello();
-  speak(`Nouvelle île débloquée${who?', '+who:''} ! ${w.name} : ${w.subtitle}. Attention, les défis y sont plus difficiles !`);
-  openModal(`
-    <div class="reward-box">
-      <span class="big-emoji">${w.emoji}</span>
-      <h2>Nouvelle île !</h2>
-      <div class="speech"><strong>${w.name}</strong> — ${w.subtitle}<br>
-        Tu peux y aller depuis la carte 🗺️</div>
-      <div class="speech" style="background:#FFF9E8;">
-        ⚔️ Les défis sont plus difficiles ici : ${'⭐'.repeat(w.diff)}<br>
-        🎁 ${charsOf(id).length} nouveaux amis et de nouveaux objets à découvrir
+  const showUnlockModal = ()=>{
+    speak(`Nouvelle île débloquée${who?', '+who:''} ! ${w.name} : ${w.subtitle}. Attention, les défis y sont plus difficiles !`);
+    openModal(`
+      <div class="reward-box">
+        <span class="big-emoji">${w.emoji}</span>
+        <h2>Nouvelle île !</h2>
+        <div class="speech"><strong>${w.name}</strong> — ${w.subtitle}<br>
+          Tu peux y aller depuis la carte 🗺️</div>
+        <div class="speech" style="background:#FFF9E8;">
+          ⚔️ Les défis sont plus difficiles ici : ${'⭐'.repeat(w.diff)}<br>
+          🎁 ${charsOf(id).length} nouveaux amis et de nouveaux objets à découvrir
+        </div>
       </div>
-    </div>
-    <button class="btn-primary" id="btn-go">Y aller ! ${w.emoji}</button>
-    <button class="btn-ghost" id="btn-stay">Plus tard</button>
-  `);
-  document.getElementById('btn-go').onclick = ()=>{ playSound('tap'); closeModal(); setWorld(id); };
-  document.getElementById('btn-stay').onclick = ()=>{ playSound('tap'); closeModal(); renderLagon(); };
+      <button class="btn-primary" id="btn-go">Y aller ! ${w.emoji}</button>
+      <button class="btn-ghost" id="btn-stay">Plus tard</button>
+    `);
+    document.getElementById('btn-go').onclick = ()=>{ playSound('tap'); closeModal(); setWorld(id); };
+    document.getElementById('btn-stay').onclick = ()=>{ playSound('tap'); closeModal(); renderLagon(); };
+  };
+  // le fil de l'histoire (js/story.js) précède l'écran habituel : une
+  // nouvelle île est d'abord racontée, avec son énigme à résoudre.
+  if(typeof openStoryChapter==='function' && typeof STORY!=='undefined' && STORY[id] && typeof storySolved==='function' && !storySolved(id)){
+    openStoryChapter(id, showUnlockModal);
+  } else {
+    showUnlockModal();
+  }
   return true;
 }
 function renderLevelPill(){
@@ -424,6 +433,9 @@ function openModal(html){
   // (anti-devinette) : sans ça, l'ancienne question pourrait réapparaître
   // par-dessus un autre jeu déjà ouvert.
   if(typeof clearPendingRetry==='function') clearPendingRetry();
+  // relance programmée après une mauvaise réponse à une énigme d'histoire
+  // (js/story.js) : même précaution anti-fantôme que ci-dessus.
+  if(typeof storyClearPendingRetry==='function') storyClearPendingRetry();
   // gains d'une fenêtre précédente : ils partent avant que son contenu ne disparaisse
   if(typeof flushPendingGain==='function') flushPendingGain();
   const body = document.getElementById('modal-body') || document.getElementById('modal');
@@ -438,6 +450,7 @@ function openModal(html){
 function closeModal(){
   if(typeof clearActiveTimer==='function') clearActiveTimer();
   if(typeof clearPendingRetry==='function') clearPendingRetry();
+  if(typeof storyClearPendingRetry==='function') storyClearPendingRetry();
   if(typeof flushPendingGain==='function') flushPendingGain();
   document.getElementById('overlay').classList.remove('show');
   document.body.classList.remove('modal-open');

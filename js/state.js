@@ -1,5 +1,5 @@
 /* ---------- État ---------- */
-const SAVE_VERSION = 2;
+const SAVE_VERSION = 3;
 const DEFAULT_STATE = {
   v: SAVE_VERSION,
   coins: 5,
@@ -16,6 +16,7 @@ const DEFAULT_STATE = {
   albumReward: false,
   visited: [],
   gameCounts: {},     // nombre de fois jouées, par type de mini-jeu (pour forcer la variété)
+  storySolved: {},     // énigmes d'histoire déjà résolues, par île (js/story.js)
 };
 // copie profonde : sinon inventory/seen/decos seraient partagés avec DEFAULT_STATE
 function freshState(extra){
@@ -37,6 +38,7 @@ let state = {
   albumReward: false, // récompense d'album complet déjà donnée
   visited: [],        // îles déjà découvertes (pour annoncer les nouvelles)
   gameCounts: {},     // nombre de fois jouées, par type de mini-jeu
+  storySolved: {},    // énigmes d'histoire déjà résolues, par île
 };
 
 function save(){
@@ -60,6 +62,9 @@ function migrate(saved){
   }
   if(v < 2){
     saved.gameCounts = saved.gameCounts || {};
+  }
+  if(v < 3){
+    saved.storySolved = saved.storySolved || {};
   }
   saved.v = SAVE_VERSION;
   return saved;
@@ -154,6 +159,11 @@ function closeWelcome(){
   speak(`Bonjour ${who} ! Bienvenue dans le lagon magique.`);
   showToast(name ? `Bonjour ${name} ! ✨` : 'Bonne aventure ! ✨');
   renderLagon();
+  // premier lancement : le fil de l'histoire commence par le chapitre du
+  // Lagon (jamais répété une fois résolu — voir js/story.js)
+  if(typeof openStoryChapter === 'function' && typeof storySolved === 'function' && !storySolved('lagon')){
+    setTimeout(()=> openStoryChapter('lagon'), 600);
+  }
 }
 
 /* ---------- Quêtes du jour ---------- */
