@@ -2071,8 +2071,9 @@
   .ko::after{color:#C9452C; font-size:2.2rem; text-shadow:0 2px 0 #fff;}
   /* réponses en mots (formes, volumes) aussi grandes que les autres */
   .vol-opt-btn{min-width:128px; min-height:68px; font-size:1.35rem;}
-  /* choix du jeu : 3 défis côte à côte + Surprise en dessous (v22 de main) */
-  .game-picker, #modal .game-picker{grid-template-columns:repeat(3, 1fr); gap:10px;}
-  .game-choice{min-height:118px; padding:14px 4px 12px;}
-  .game-choice .nm{font-size:.9rem;}
+  /* choix du jeu : 2 grands défis côte à côte + Surprise en dessous */
+  .game-picker, #modal .game-picker{grid-template-columns:repeat(2, 1fr); gap:12px;}
+  .game-choice{min-height:136px; padding:16px 6px 14px;}
+  .game-choice .emoji{width:68px; height:68px; font-size:2.5rem;}
+  .game-choice .nm{font-size:1.05rem;}
   .game-choice.surprise{min-height:64px;}
