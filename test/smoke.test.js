@@ -635,6 +635,14 @@ setTimeout(()=>{
     check('gain : les pièces arrivent à la fermeture', d.getElementById('coin-count').textContent===String(ev('state.coins')) && ev('coinsInFlight')===0);
     ev('addCoins(3); gainCoins(3, null); addCoins(-2); spendCoins(2, null)');
     check('gain : vente et achat gardent le compteur juste', d.getElementById('coin-count').textContent===String(ev('state.coins')) && ev('coinsInFlight')===0);
+    // ---- Feuille de style : une accolade perdue (ex. lors d'une fusion) enferme
+    //      silencieusement tout le reste dans une media query ----
+    {
+      const css = fs.readFileSync(path.join(__dirname, '..', 'styles.css'), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
+      let depth = 0, min = 0;
+      for(const ch of css){ if(ch==='{') depth++; else if(ch==='}') depth--; min = Math.min(min, depth); }
+      check('styles.css : accolades équilibrées', depth===0 && min===0);
+    }
     check('aucune erreur JS', errs.length===0);
     if(errs.length) console.log(errs);
     console.log(failed ? `\n${failed} test(s) en échec` : '\nTous les tests passent');
