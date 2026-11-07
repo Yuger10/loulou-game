@@ -54,6 +54,7 @@ document.querySelectorAll('[data-sactab]').forEach(b=>{
   b.addEventListener('click', ()=>{ playSound('tap'); setSacTab(b.dataset.sactab); });
 });
 document.getElementById('quests-btn').addEventListener('click', ()=>{ playSound('tap'); openQuestsModal(); });
+document.getElementById('story-btn').addEventListener('click', ()=>{ playSound('tap'); openStoryJournal(); });
 
 // fermeture facile des fenêtres : croix, poignée, clic à côté, touche Échap
 document.getElementById('modal-close').addEventListener('click', ()=>{ playSound('tap'); closeModal(); });
