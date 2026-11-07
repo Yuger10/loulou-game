@@ -13,6 +13,8 @@ function triesFor(kind){
   if(kind === 'reading')      return ({2:4, 3:3, 4:3})[d] || 3;
   if(kind === 'determinants') return ({2:4, 3:3, 4:3})[d] || 3;
   if(kind === 'volume')       return ({2:4, 3:3, 4:3})[d] || 3;
+  if(kind === 'compare')      return ({2:4, 3:3, 4:3})[d] || 3;
+  if(kind === 'money')        return ({2:4, 3:3, 4:3})[d] || 3;
   return ({2:3, 3:2, 4:1})[d] || 2;
 }
 

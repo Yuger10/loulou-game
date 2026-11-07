@@ -428,3 +428,24 @@ Le jeu des déterminants ne proposait que le/la et un/une (singulier uniquement)
   - famille indéfinie : **un / une / des**
 - Île 1-2 : image + mot, 3 options.
 - Île 3-4 : mot seul (sans image) + un intrus de l'autre famille (4 options), pour renforcer la vigilance.
+
+---
+
+# v20 — Comparer les nombres & la monnaie magique
+
+## ⚖️ Comparer les nombres
+Programme CP : comparaison et rangement des nombres, symboles `<`, `>`, `=`.
+- Deux nombres affichés côte à côte, l'enfant choisit le bon signe parmi les 3.
+- Nombres qui grandissent avec l'île : jusqu'à 10 (Lagon) → 20 (Forêt) → 50 (Montagne) → 100 (Château/Jungle).
+- Une égalité apparaît environ 1 fois sur 5, pour ne pas être oubliée.
+
+## 💰 La monnaie magique
+Prépare au calcul de monnaie (composer une somme avec des pièces de valeurs différentes), en réutilisant la pièce du jeu (🪙) déjà familière.
+- Un prix est annoncé (ex. « Quelle pile de pièces vaut 7 ? ») avec un objet à acheter.
+- 3 piles de pièces proposées (valeurs 1, 2, puis 5, 10, 20 selon l'île), une seule vaut exactement le prix.
+- Valeurs disponibles : île 1 → {1,2}, île 2 → {1,2,5}, île 3 → {1,2,5,10}, île 4/5 → {1,2,5,10,20}.
+
+## Intégration
+- Nouveaux fichiers `js/compare.js`, `js/money.js`, chargés après `js/volume.js`.
+- Ajoutés à `GAME_TYPES` et `GAME_LIST` (désormais **12 jeux + surprise**).
+- Essais limités comme les autres jeux à partir de l'île 2.

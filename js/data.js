@@ -297,7 +297,7 @@ function charsOf(world){
 function decosOf(world){
   return Object.entries(DECOS).filter(([,d])=>(d.world||'lagon')===world);
 }
-const GAME_TYPES = ['memory','count','diff','puzzle','sequence','simon','math','reading','determinants','volume'];
+const GAME_TYPES = ['memory','count','diff','puzzle','sequence','simon','math','reading','determinants','volume','compare','money'];
 
 /* Vocabulaire niveau CP : mots simples, lus couramment en fin de CP,
    illustrés par un emoji, avec leur genre pour le jeu des déterminants. */

@@ -426,6 +426,35 @@ setTimeout(()=>{
     check('volumes : 4 formes proposées', d.querySelectorAll('.vol-opt-btn').length===4);
     ev('closeModal(); currentWorld="lagon"');
 
+    // ---- Comparer les nombres ----
+    ev('renderCompare()');
+    check('comparer : équation affichée', !!d.querySelector('.cmp-equation'));
+    check('comparer : 3 signes proposés (<,>,=)', d.querySelectorAll('.cmp-btn').length===3);
+    const cmpA = Number(d.querySelectorAll('.cmp-num')[0].textContent);
+    const cmpB = Number(d.querySelectorAll('.cmp-num')[1].textContent);
+    const cmpAnswer = cmpA<cmpB ? '<' : (cmpA>cmpB ? '>' : '=');
+    d.querySelector(`.cmp-btn[data-v="${cmpAnswer}"]`).click();
+    await wait(500);
+    check('comparer : bon signe validé', ev('state.missions')>0);
+    ev('closeModal()');
+    check("comparer : nombres limités à 10 sur l'île 1", cmpA<=10 && cmpB<=10);
+    ev('currentWorld="chateau"; renderCompare()');
+    const cmpA2 = Number(d.querySelectorAll('.cmp-num')[0].textContent);
+    check("comparer : nombres jusqu'à 100 sur l'île 4", cmpA2<=100);
+    ev('closeModal(); currentWorld="lagon"');
+
+    // ---- La monnaie magique ----
+    ev('renderMoney()');
+    check('monnaie : prix affiché', !!d.querySelector('.money-price'));
+    check('monnaie : 3 piles de pièces proposées', d.querySelectorAll('.money-pile-btn').length===3);
+    check('monnaie : chaque pile affiche ses pièces', d.querySelectorAll('.coin-chip').length>=6);
+    const target = parseInt(d.querySelector('.money-price').textContent, 10);
+    const goodPile = [...d.querySelectorAll('.money-pile-btn')].find(b=>Number(b.dataset.v)===target);
+    goodPile.click();
+    await wait(500);
+    check('monnaie : bonne pile validée', ev('state.missions')>0);
+    ev('closeModal(); currentWorld="lagon"');
+
     // ---- Zones cliquables ----
     ev('currentWorld="lagon"; renderMemory()');
     check('mémoire : vraies cases cliquables (boutons)',
@@ -501,7 +530,7 @@ setTimeout(()=>{
 
     // choix du mini-jeu
     ev('closeModal(); openGamePicker("sirene")');
-    check('choix du jeu : 10 jeux + surprise', d.querySelectorAll('.game-choice').length===11);
+    check('choix du jeu : 12 jeux + surprise', d.querySelectorAll('.game-choice').length===13);
     d.querySelector('.game-choice[data-game="simon"]').click();
     check('choix du jeu : lance bien le jeu choisi', d.querySelectorAll('.simon-pad').length===4);
     check('aucune erreur JS', errs.length===0);

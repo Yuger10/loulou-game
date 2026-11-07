@@ -1,9 +1,9 @@
-const CACHE = 'lagon-v19';
+const CACHE = 'lagon-v20';
 const FILES = [
   './','./index.html','./styles.css','./manifest.json',
   './icon.svg','./icon-192.png','./icon-512.png','./icon-180.png',
   './js/data.js','./js/players.js','./js/race.js','./js/profiles-ui.js','./js/state.js','./js/ui.js','./js/map.js',
-  './js/minigames.js','./js/math.js','./js/reading.js','./js/grammar.js','./js/volume.js','./js/market.js','./js/init.js'
+  './js/minigames.js','./js/math.js','./js/reading.js','./js/grammar.js','./js/volume.js','./js/compare.js','./js/money.js','./js/market.js','./js/init.js'
 ];
 self.addEventListener('install', e=>{
   e.waitUntil(caches.open(CACHE).then(c=>c.addAll(FILES)).then(()=>self.skipWaiting()));

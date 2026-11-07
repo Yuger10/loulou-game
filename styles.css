@@ -1652,3 +1652,55 @@
     font-size:1.15rem; font-weight:700; color:var(--ocean-deep);
     padding:10px 16px;
   }
+
+  /* ================= Comparer les nombres (v20) ================= */
+  .cmp-equation{
+    display:flex; align-items:center; justify-content:center;
+    gap:16px; margin:16px 0 20px;
+    font-size:clamp(2.2rem, 10vw, 3rem); font-weight:900;
+    color:var(--ocean-deep);
+  }
+  .cmp-q{
+    display:inline-flex; align-items:center; justify-content:center;
+    min-width:1.1em; min-height:1.1em;
+    background:var(--foam); border-radius:16px;
+    box-shadow:var(--shadow); font-size:.85em;
+  }
+  .cmp-q.filled{background:none; box-shadow:none; color:#3EC778;}
+  .cmp-options{
+    display:flex; justify-content:center; gap:16px;
+    max-width:400px; margin:0 auto 10px;
+  }
+  .cmp-btn{
+    border:none; background:var(--foam); box-shadow:var(--shadow);
+    border-radius:20px; min-width:84px; min-height:84px;
+    font-size:2.4rem; font-weight:900; color:var(--ocean-deep);
+  }
+
+  /* ================= La monnaie magique (v20) ================= */
+  .money-target{
+    display:flex; align-items:center; justify-content:center;
+    gap:14px; margin:12px 0 18px;
+  }
+  .money-item{font-size:clamp(2.6rem, 10vw, 3.2rem);}
+  .money-price{
+    font-size:clamp(1.4rem, 6vw, 1.8rem); font-weight:900;
+    color:var(--ocean-deep); background:var(--foam);
+    border-radius:16px; padding:8px 16px; box-shadow:var(--shadow);
+  }
+  .money-options{
+    display:flex; flex-direction:column; gap:14px;
+    max-width:380px; margin:0 auto 10px;
+  }
+  .money-pile-btn{
+    border:none; background:var(--foam); box-shadow:var(--shadow);
+    border-radius:20px; min-height:68px; padding:10px 14px;
+    display:flex; align-items:center; justify-content:center; gap:8px; flex-wrap:wrap;
+  }
+  .coin-chip{
+    display:inline-flex; align-items:center; justify-content:center;
+    width:40px; height:40px; border-radius:50%;
+    background:radial-gradient(circle at 35% 30%, #FFE9A8, #E6B84A 70%, #C99A2E);
+    box-shadow:inset 0 -3px 0 rgba(0,0,0,.15), 0 2px 0 rgba(18,59,79,.2);
+    font-weight:900; font-size:1rem; color:#5B3E00;
+  }

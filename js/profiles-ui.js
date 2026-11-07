@@ -11,6 +11,8 @@ const GAME_LIST = [
   { key:'reading',  emoji:'📖', name:'Lecture',      fn:()=>renderReading() },
   { key:'determinants', emoji:'🔤', name:'Petits mots', fn:()=>renderDeterminants() },
   { key:'volume',   emoji:'🧪', name:'Volumes',      fn:()=>renderVolume() },
+  { key:'compare',  emoji:'⚖️', name:'Comparer',     fn:()=>renderCompare() },
+  { key:'money',    emoji:'💰', name:'La monnaie',   fn:()=>renderMoney() },
 ];
 
 /* --- Panneau des joueurs --- */
