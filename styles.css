@@ -1704,3 +1704,219 @@
     box-shadow:inset 0 -3px 0 rgba(0,0,0,.15), 0 2px 0 rgba(18,59,79,.2);
     font-weight:900; font-size:1rem; color:#5B3E00;
   }
+
+  /* =====================================================================
+     Refonte graphique v21 — voir le design system « Le Lagon Magique »
+     Jetons partagés, un thème de couleur par île, boutons « bonbons »,
+     cartes personnages teintées, meilleurs contrastes.
+     ===================================================================== */
+  :root{
+    --ink:#123B4F;           --ink-soft:#3D5E6E;
+    --lagoon-ink:#0F7577;    --lagoon-tint:#DDF6F6;
+    --coral-strong:#E8573A;  --coral-edge:#B8432B;  --coral-tint:#FFE7E0;
+    --sun-edge:#D9A62A;
+    --tint-coral:#FFE9E2; --tint-lilac:#EFE7FC; --tint-sun:#FFF3CF; --tint-mint:#E0F5E6;
+    --disabled:#C9D3D8;
+    --radius-sm:12px; --radius-md:18px; --radius-lg:24px; --radius-xl:30px;
+    --shadow-candy-sm:0 3px 0 rgba(18,59,79,.16);
+    --shadow-candy:0 6px 0 rgba(18,59,79,.14), 0 14px 24px -14px rgba(18,59,79,.45);
+    --shadow-coral:0 5px 0 var(--coral-edge), inset 0 2px 0 rgba(255,255,255,.35);
+    --shadow-sun:0 4px 0 var(--sun-edge), inset 0 2px 0 rgba(255,255,255,.5);
+    --card-shine:inset 0 3px 0 rgba(255,255,255,.9);
+    /* couleurs du monde courant (surchargées par île plus bas) */
+    --world-sky:#BDEBEA; --world-sea:#2EC4C6; --world-deep:#1FA3A5;
+    --world-scene-top:#8FE3E6; --world-scene-floor:#FFF3DE;
+    --shadow:var(--shadow-candy);
+  }
+  body[data-world="foret"]{--world-sky:#CDEFC4; --world-sea:#66BB6A; --world-deep:#2E7D52; --world-scene-top:#DFF3D2; --world-scene-floor:#F6EFD9;}
+  body[data-world="montagne"]{--world-sky:#E8F4FF; --world-sea:#9FC6E8; --world-deep:#5B8FC7; --world-scene-top:#F2F8FF; --world-scene-floor:#DCE9F7;}
+  body[data-world="chateau"]{--world-sky:#3B2E63; --world-sea:#6A4C93; --world-deep:#2A1F47; --world-scene-top:#4B3A7A; --world-scene-floor:#F6EFD9;}
+  body[data-world="jungle"]{--world-sky:#D8F0B0; --world-sea:#45A866; --world-deep:#1E5E3A; --world-scene-top:#C9ECB0; --world-scene-floor:#F3E7BF;}
+
+  /* un attribut hidden doit toujours cacher (la barre de tour vide restait visible) */
+  [hidden]{display:none !important;}
+
+  /* ---------- Fond : dégradé du monde + rayons de lumière + reflets ---------- */
+  body, body[data-world]{
+    background:linear-gradient(180deg, var(--world-sky) 0%, var(--world-sea) 42%, var(--world-deep) 100%);
+    background-attachment:fixed;
+  }
+  body::before{
+    content:''; position:fixed; inset:0; pointer-events:none; z-index:0;
+    background:
+      radial-gradient(120% 60% at 50% -10%, rgba(255,255,255,.55), transparent 60%),
+      repeating-linear-gradient(105deg, rgba(255,255,255,.07) 0 26px, transparent 26px 70px),
+      radial-gradient(ellipse 30px 12px at 20% 64%, rgba(255,255,255,.12), transparent),
+      radial-gradient(ellipse 40px 14px at 78% 78%, rgba(255,255,255,.10), transparent);
+    -webkit-mask-image:linear-gradient(180deg,#000 0%, rgba(0,0,0,.6) 55%, transparent 90%);
+            mask-image:linear-gradient(180deg,#000 0%, rgba(0,0,0,.6) 55%, transparent 90%);
+  }
+  body[data-world="chateau"]::before{
+    background:
+      radial-gradient(1.5px 1.5px at 12% 14%, #fff, transparent),
+      radial-gradient(1.5px 1.5px at 34% 8%, #fff, transparent),
+      radial-gradient(2px 2px at 58% 18%, #FFE9A8, transparent),
+      radial-gradient(1.5px 1.5px at 82% 10%, #fff, transparent),
+      radial-gradient(1.5px 1.5px at 72% 32%, #fff, transparent),
+      radial-gradient(2px 2px at 22% 36%, #FFE9A8, transparent),
+      radial-gradient(1.5px 1.5px at 90% 46%, #fff, transparent),
+      radial-gradient(120% 50% at 50% -10%, rgba(255,233,168,.25), transparent 60%);
+  }
+  #app{z-index:1;}
+  .bubble{border:1.5px solid rgba(255,255,255,.55); background:radial-gradient(circle at 32% 30%, rgba(255,255,255,.75) 0 18%, rgba(255,255,255,.18) 22% 100%);}
+
+  /* ---------- Titres posés sur le fond ---------- */
+  .view-head h2{
+    font-size:1.5rem; font-weight:800; letter-spacing:.2px;
+    text-shadow:0 2px 0 var(--world-deep), 0 4px 10px rgba(18,59,79,.25);
+  }
+  .view-hint{
+    display:table; margin:0 auto 14px; padding:6px 14px;
+    background:rgba(18,59,79,.28); border-radius:var(--radius-pill, 999px);
+    font-weight:700; opacity:1;
+  }
+  .chip-btn{background:var(--foam); box-shadow:var(--shadow-candy-sm); color:var(--ink);}
+
+  /* ---------- Barre du haut ---------- */
+  .avatar-pill, .coin-pill, .icon-btn, .sound-btn{box-shadow:var(--shadow-candy-sm), var(--card-shine);}
+  .avatar-pill{font-weight:800;}
+  .coin-pill{font-family:'Baloo 2',sans-serif; font-weight:800; font-size:1.15rem;}
+  .icon-btn .badge, nav.bottomnav button .badge{background:var(--coral-strong); color:#fff; box-shadow:0 0 0 2px var(--foam);}
+
+  /* ---------- Boutons bonbons ---------- */
+  .btn-primary{
+    background:linear-gradient(180deg, #F2694B 0%, var(--coral-strong) 100%);
+    color:#fff; font-weight:800; font-size:1.125rem; border-radius:var(--radius-md);
+    box-shadow:var(--shadow-coral); text-shadow:0 1px 0 rgba(120,30,10,.35);
+  }
+  .btn-primary:active{transform:translateY(5px); box-shadow:none;}
+  .btn-primary.alt{background:var(--lagoon-dark); box-shadow:0 5px 0 #17797B, inset 0 2px 0 rgba(255,255,255,.3); text-shadow:0 1px 0 rgba(10,60,60,.35);}
+  .btn-primary.race{background:var(--sun); color:var(--ink); box-shadow:var(--shadow-sun); text-shadow:none;}
+  .btn-ghost{color:var(--ink-soft); opacity:1;}
+  .btn-small, .btn-craft{background:var(--coral-strong); box-shadow:0 4px 0 var(--coral-edge); font-weight:800;}
+  .btn-small.ghost{background:#E4EEF1; color:var(--ink); box-shadow:0 4px 0 #C4D3D9;}
+  .btn-small:disabled, .btn-craft:disabled{background:var(--disabled); color:var(--ink-soft); box-shadow:none;}
+  .btn-deco, .btn-chest{background:var(--sun); color:var(--ink); box-shadow:var(--shadow-sun); font-weight:800;}
+  .btn-speak{background:var(--sun); box-shadow:var(--shadow-sun);}
+
+  /* ---------- Cartes ---------- */
+  .island-card, .quests, .market-row, .recipe-card, .item-card, .welcome-card{
+    box-shadow:var(--shadow-candy), var(--card-shine);
+  }
+  .island-card{border-radius:var(--radius-lg);}
+  .island-card .ic-emoji{
+    width:62px; height:62px; border-radius:50%; display:grid; place-items:center; flex-shrink:0;
+    background:var(--lagoon-tint); font-size:2.2rem;
+  }
+  .island-card .ic-sub, .quest .cnt, .item-card .qty, .market-row .info .sub, .recipe-card .result .price{color:var(--lagoon-ink);}
+  .quests{background:var(--foam); border-radius:var(--radius-lg);}
+  .quest-bar i{background:linear-gradient(90deg, var(--coral), var(--coral-strong));}
+  .empty-state{
+    background:var(--foam); border-radius:var(--radius-lg); box-shadow:var(--shadow-candy), var(--card-shine);
+    padding:22px 20px 26px; line-height:1.45; color:var(--ink);
+  }
+  .empty-state .es-art{
+    display:grid; place-items:center; width:84px; height:84px; margin:0 auto 12px;
+    border-radius:50%; background:var(--lagoon-tint); font-size:2.8rem;
+    animation:sway 3s ease-in-out infinite;
+  }
+
+  /* ---------- Cartes personnages ---------- */
+  .islands{gap:14px;}
+  .island{
+    border-radius:var(--radius-xl); padding:16px 10px 14px; gap:6px;
+    box-shadow:var(--shadow-candy), var(--card-shine);
+  }
+  .island:nth-child(4n+1){background:var(--tint-coral);}
+  .island:nth-child(4n+2){background:var(--tint-lilac);}
+  .island:nth-child(4n+3){background:var(--tint-sun);}
+  .island:nth-child(4n+4){background:var(--tint-mint);}
+  .island:active{transform:translateY(5px); box-shadow:var(--card-shine);}
+  .island .halo{
+    width:76px; height:76px; border-radius:50%; display:grid; place-items:center;
+    background:radial-gradient(circle at 50% 42%, #fff 0 62%, rgba(255,255,255,.55) 63% 100%);
+    box-shadow:0 4px 0 rgba(18,59,79,.07);
+  }
+  .island .emoji{font-size:2.7rem; line-height:1;}
+  .island .name{
+    font-family:'Baloo 2',sans-serif; font-weight:800; font-size:1.1rem; line-height:1.1;
+    display:flex; flex-direction:column; align-items:center;
+  }
+  .island .name small{font-family:'Quicksand',sans-serif; font-weight:700; font-size:.85rem; color:var(--lagoon-ink);}
+  .island .loot{opacity:1; background:rgba(255,255,255,.75); border-radius:999px; padding:2px 10px; font-size:.95rem;}
+
+  /* ---------- Scène décorée : un vrai petit aquarium ---------- */
+  .scene{
+    background:
+      radial-gradient(ellipse 70% 26px at 50% 100%, var(--world-scene-floor) 0 98%, transparent 100%),
+      linear-gradient(180deg, var(--world-scene-top) 0%, var(--world-scene-floor) 100%);
+    border:3px solid rgba(255,255,255,.8);
+    border-radius:var(--radius-lg);
+    box-shadow:var(--shadow-candy), inset 0 0 0 1px rgba(18,59,79,.06);
+    padding:46px 12px 10px; min-height:110px;
+  }
+  body[data-world] .scene{background:
+      radial-gradient(ellipse 70% 26px at 50% 100%, var(--world-scene-floor) 0 98%, transparent 100%),
+      linear-gradient(180deg, var(--world-scene-top) 0%, var(--world-scene-floor) 100%);}
+  .scene .empty{opacity:1; color:var(--ink-soft); font-size:.85rem; text-align:center;}
+  body[data-world="chateau"] .scene .empty{color:var(--ink);}
+  .btn-deco{top:10px; right:10px;}
+
+  /* ---------- Carte des îles ---------- */
+  .island-map{border:4px solid rgba(255,255,255,.85); box-shadow:var(--shadow-candy);}
+  .isle-label{box-shadow:var(--shadow-candy-sm); padding:3px 10px;}
+  .isle-label b{font-size:.78rem; font-weight:800;}
+  .isle-label i{color:var(--lagoon-ink); font-size:.66rem;}
+  .map-island.here .isle-label{background:var(--sun); box-shadow:0 3px 0 var(--sun-edge);}
+  .map-next{color:var(--ink);}
+
+  /* ---------- Onglets & barre du bas ---------- */
+  .tab-btn{background:rgba(255,255,255,.6); color:var(--ink); font-weight:800; border-radius:var(--radius-md);}
+  .tab-btn.active{background:var(--foam); box-shadow:var(--shadow-candy-sm), var(--card-shine); color:var(--lagoon-ink);}
+  nav.bottomnav{box-shadow:0 -6px 18px rgba(18,59,79,.18);}
+  nav.bottomnav button{color:var(--ink-soft); font-weight:800;}
+  nav.bottomnav button.active{background:var(--lagoon-tint); color:var(--lagoon-ink);}
+  .reset-btn{background:rgba(18,59,79,.28); color:#fff;}
+
+  /* ---------- Fenêtres ---------- */
+  #modal{border-radius:var(--radius-xl) var(--radius-xl) 0 0;}
+  .char-header .emoji{
+    width:64px; height:64px; border-radius:50%; display:grid; place-items:center; flex-shrink:0;
+    background:var(--foam); box-shadow:var(--shadow-candy-sm);
+  }
+  #modal .char-header .emoji{font-size:2.4rem;}
+  .speech{border-radius:var(--radius-lg) var(--radius-lg) var(--radius-lg) 6px; box-shadow:var(--shadow-candy-sm);}
+
+  /* ---------- Écran titre et accueil ---------- */
+  #splash, #welcome{
+    background:linear-gradient(180deg, var(--world-sky) 0%, var(--world-sea) 50%, var(--world-deep) 100%);
+  }
+  #splash::before{
+    content:''; position:absolute; left:50%; top:30%; width:520px; height:520px; transform:translate(-50%,-50%);
+    background:repeating-conic-gradient(from 0deg, rgba(255,255,255,.14) 0 10deg, transparent 10deg 24deg);
+    -webkit-mask-image:radial-gradient(circle, #000 0 30%, transparent 70%);
+            mask-image:radial-gradient(circle, #000 0 30%, transparent 70%);
+    animation:splashRays 60s linear infinite; pointer-events:none;
+  }
+  @keyframes splashRays{from{transform:translate(-50%,-50%) rotate(0);} to{transform:translate(-50%,-50%) rotate(360deg);}
+  }
+  #splash > *{position:relative;}
+  #splash .fish{position:absolute;}
+  #splash .waves{
+    position:absolute; height:120px;
+    background:
+      radial-gradient(ellipse 60% 70px at 50% 100%, #FFE2A8 0 98%, transparent 100%),
+      radial-gradient(ellipse 80% 90px at 50% 100%, rgba(255,255,255,.45) 0 98%, transparent 100%);
+  }
+  #splash .title, #welcome h1{
+    font-size:2.6rem; line-height:1.02; letter-spacing:.3px;
+    text-shadow:0 3px 0 var(--world-deep), 0 6px 0 rgba(18,59,79,.25), 0 10px 24px rgba(18,59,79,.3);
+  }
+  #welcome h1{font-size:2.2rem;}
+  #splash .cast span{filter:drop-shadow(0 5px 0 rgba(18,59,79,.18));}
+  #splash .hello{background:var(--foam); box-shadow:var(--shadow-candy-sm); color:var(--ink);}
+  .avatar-opt.sel, .age-opt.sel, .gender-opt.sel{background:var(--coral-tint); border-color:var(--coral-strong);}
+
+  @media (prefers-reduced-motion:reduce){
+    #splash::before, .empty-state .es-art{animation:none;}
+  }
