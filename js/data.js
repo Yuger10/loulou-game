@@ -28,6 +28,21 @@ const ITEMS = {
   bougie:{emoji:'🕯️', name:'Bougie magique', price:7, world:'chateau'},
   parchemin:{emoji:'📜', name:'Parchemin', price:8, world:'chateau'},
   bouclier:{emoji:'🛡️', name:'Petit bouclier', price:9, world:'chateau'},
+  // Cité du Temps (6e île)
+  sablier:{emoji:'⏳', name:'Sablier doré', price:7, world:'cite'},
+  pendule:{emoji:'🕰️', name:'Petite pendule', price:6, world:'cite'},
+  rouage:{emoji:'⚙️', name:'Rouage brillant', price:5, world:'cite'},
+  calendrier:{emoji:'📆', name:'Vieux calendrier', price:6, world:'cite'},
+  cadransolaire:{emoji:'🧭', name:'Cadran solaire', price:7, world:'cite'},
+  cloche:{emoji:'🔔', name:'Cloche du beffroi', price:8, world:'cite'},
+  plumehibou:{emoji:'🪶', name:'Plume de chouette', price:5, world:'cite'},
+  // Volcan des Génies (7e île)
+  pierrelave:{emoji:'🌋', name:'Pierre de lave', price:8, world:'volcan'},
+  cristalfeu:{emoji:'🔥', name:'Cristal de feu', price:9, world:'volcan'},
+  gemmeardente:{emoji:'🔶', name:'Gemme ardente', price:7, world:'volcan'},
+  parcheminsavant:{emoji:'📜', name:'Parchemin savant', price:10, world:'volcan'},
+  fiole:{emoji:'⚗️', name:'Fiole bouillonnante', price:6, world:'volcan'},
+  meteorite:{emoji:'☄️', name:'Météorite', price:11, world:'volcan'},
   // Jungle mystérieuse (5e île : un très grand trésor à collectionner)
   liane:{emoji:'🌿', name:'Liane', price:3, world:'jungle'},
   masque:{emoji:'🎭', name:'Masque tribal', price:6, world:'jungle'},
@@ -91,6 +106,28 @@ const CRAFTED = {
     recipe:{tambour:1, scarabee:1}},
   templecache:{emoji:'🛕', name:'Temple caché', price:65, tier:2, world:'jungle',
     recipe:{totem:1, couronnefleurs:1, festin:1}},
+  // Cité du Temps
+  horlogemagique:{emoji:'🕰️', name:'Horloge magique', price:16, world:'cite',
+    recipe:{pendule:1, rouage:2}},
+  sablierderare:{emoji:'⏳', name:'Sablier des rêves', price:14, world:'cite',
+    recipe:{sablier:2, plumehibou:1}},
+  carillontemps:{emoji:'🔔', name:'Carillon du temps', price:15, world:'cite',
+    recipe:{cloche:1, rouage:1}},
+  almanach:{emoji:'📖', name:'Almanach mystérieux', price:18, world:'cite',
+    recipe:{calendrier:2, cadransolaire:1}},
+  machinetemps:{emoji:'🌀', name:'Machine à remonter le temps', price:68, tier:2, world:'cite',
+    recipe:{horlogemagique:1, sablierderare:1, carillontemps:1}},
+  // Volcan des Génies
+  lampegenie:{emoji:'🪔', name:'Lampe du génie', price:20, world:'volcan',
+    recipe:{cristalfeu:1, gemmeardente:2}},
+  potionsavante:{emoji:'🧪', name:'Potion du génie', price:18, world:'volcan',
+    recipe:{fiole:2, pierrelave:1}},
+  grimoirevolcan:{emoji:'📔', name:'Grimoire des flammes', price:22, world:'volcan',
+    recipe:{parcheminsavant:1, meteorite:1}},
+  bouclierlave:{emoji:'🛡️', name:'Bouclier de lave', price:24, world:'volcan',
+    recipe:{pierrelave:2, cristalfeu:1}},
+  couronnegenie:{emoji:'👑', name:'Couronne du génie', price:72, tier:2, world:'volcan',
+    recipe:{lampegenie:1, potionsavante:1, grimoirevolcan:1}},
 };
 const ALL_ITEMS = Object.assign({}, ITEMS, CRAFTED);
 
@@ -259,6 +296,72 @@ const CHARACTERS = {
       "Un vrai félin ne recule jamais devant un défi !",
       "Chhht… approche doucement, et relève mon défi.",
     ]},
+  // --- Cité du Temps ---
+  horloger:{
+    emoji:'🧑‍🔧', name:'Horace', title:"l'horloger", world:'cite',
+    loot:['rouage','pendule'],
+    texts:[
+      "Le temps presse ! Un petit défi avant que l'horloge sonne ?",
+      "Mes rouages sont tout emmêlés… tu m'aides à les remettre en place ?",
+      "Dans la Cité du Temps, chaque seconde compte. Prête ?",
+    ]},
+  gardienne:{
+    emoji:'⏳', name:'Clio', title:'la gardienne du temps', world:'cite',
+    loot:['sablier','cadransolaire'],
+    texts:[
+      "Je garde le temps qui passe… veux-tu apprendre à le lire avec moi ?",
+      "Mon sablier s'est renversé ! Un défi pour le redresser ?",
+      "Le temps ne s'arrête jamais, mais toi, tu peux toujours réessayer.",
+    ]},
+  robotcoucou:{
+    emoji:'🤖', name:'Tic', title:'le robot-coucou', world:'cite',
+    loot:['cloche','rouage'],
+    texts:[
+      "Coucou coucou ! Il est l'heure… de jouer !",
+      "Mes aiguilles tournent dans le vide, aide-moi à les régler.",
+      "Tic-tac, tic-tac… à toi de résoudre ce défi !",
+    ]},
+  chouette:{
+    emoji:'🦉', name:'Nocta', title:'la chouette des nuits', world:'cite',
+    loot:['plumehibou','calendrier'],
+    texts:[
+      "Hou hou… la nuit est le moment parfait pour un défi.",
+      "Je veille sur les horloges endormies. Tu veilles sur tes réponses ?",
+      "Un peu de sagesse et beaucoup de patience… tu es prête ?",
+    ]},
+  // --- Volcan des Génies ---
+  genie:{
+    emoji:'🧞‍♂️', name:'Nova', title:'le génie', world:'volcan',
+    loot:['cristalfeu','gemmeardente'],
+    texts:[
+      "Trois défis, trois vœux ! Lequel veux-tu résoudre en premier ?",
+      "Mes pouvoirs s'affaiblissent… un calcul bien fait me redonne des forces !",
+      "Un génie n'a pas besoin de lampe pour briller. Montre-moi !",
+    ]},
+  savante:{
+    emoji:'👩‍🔬', name:'Léa', title:'la savante', world:'volcan',
+    loot:['parcheminsavant','fiole'],
+    texts:[
+      "La science n'a pas de limite… sauf si tu abandonnes. Allez !",
+      "J'ai besoin d'un esprit vif pour cette expérience. Le tien fera l'affaire !",
+      "Chaque calcul juste, c'est une découverte en plus.",
+    ]},
+  dragonlave:{
+    emoji:'🐉', name:'Pyra', title:'la dragonne de lave', world:'volcan',
+    loot:['pierrelave','meteorite'],
+    texts:[
+      "Grrr… seuls les plus courageux affrontent le volcan !",
+      "Ma lave bouillonne quand tu réfléchis fort. On tente ?",
+      "Un vrai génie garde son sang-froid, même au cœur du volcan.",
+    ]},
+  robotsavant:{
+    emoji:'🤖', name:'Max', title:'le robot savant', world:'volcan',
+    loot:['fiole','gemmeardente'],
+    texts:[
+      "Calcul en cours… processeur chauffé à blanc, comme le volcan !",
+      "BIP ! Mes circuits adorent les défis de calcul mental.",
+      "Active ton cerveau, comme moi j'active mes rotors.",
+    ]},
 };
 
 // Les îles, dans l'ordre du voyage. `diff` = difficulté des mini-jeux (1 à 4).
@@ -289,6 +392,16 @@ const WORLDS = {
     map:{x:84, y:66}, shape:'jungle', icon:'🌴', sand:'#D7E8A0', land:'#2F8F5B',
     intro:"Bienvenue dans la jungle mystérieuse, le plus grand trésor t'attend 🌴",
     sceneEmpty:"Ta jungle est encore vide… gagne des pièces pour la décorer !" },
+  cite:{ name:'La Cité du Temps', emoji:'🕰️', level:18, diff:5, short:'Cité',
+    subtitle:'Les heures enchantées',
+    map:{x:96, y:40}, shape:'cite', icon:'🕰️', sand:'#F0E6D2', land:'#8C7355',
+    intro:"Bienvenue dans la Cité du Temps, où chaque heure compte 🕰️",
+    sceneEmpty:"Ta cité attend ses décorations horlogères !" },
+  volcan:{ name:'Le Volcan', emoji:'🌋', level:22, diff:6, short:'Volcan',
+    subtitle:'Les défis des génies',
+    map:{x:92, y:92}, shape:'volcan', icon:'🌋', sand:'#4A2A1E', land:'#8B2E1F',
+    intro:"Le Volcan des Génies, le plus grand défi de calcul mental 🌋",
+    sceneEmpty:"Ton volcan attend ses décorations brûlantes !" },
 };
 const WORLD_ORDER = Object.keys(WORLDS);
 function charsOf(world){
@@ -297,7 +410,7 @@ function charsOf(world){
 function decosOf(world){
   return Object.entries(DECOS).filter(([,d])=>(d.world||'lagon')===world);
 }
-const GAME_TYPES = ['memory','count','diff','puzzle','sequence','simon','math','reading','determinants','volume','compare','money'];
+const GAME_TYPES = ['memory','count','diff','puzzle','sequence','simon','math','reading','determinants','volume','compare','money','clock','calendar','calc'];
 
 /* Quels types de défis proposer selon l'âge (programme de l'école
    maternelle, cycle 1, 3-6 ans — repères eduscol.education.fr) :
@@ -311,9 +424,14 @@ const GAME_TYPES = ['memory','count','diff','puzzle','sequence','simon','math','
      calculs — tout l'éventail du jeu est alors ouvert.
    Un joueur sans âge renseigné garde l'accès à tous les jeux (comme avant). */
 const AGE_GAME_TYPES = [
-  { max:4, types:['memory','count','diff'] },
-  { max:5, types:['memory','count','diff','volume','sequence','simon'] },
-  // 6 ans et plus (ou âge non précisé) : tous les jeux, comme aujourd'hui.
+  // « Quelle saison ? » (calendar) ne demande aucune lecture : accessible
+  // dès la petite section, au même titre que la mémoire ou l'intrus.
+  { max:4, types:['memory','count','diff','calendar'] },
+  // à 5 ans (MS/GS) : + comparer des tailles, suites simples, couleurs,
+  // et lire l'heure en heures pleines (« il est 3 heures »).
+  { max:5, types:['memory','count','diff','volume','sequence','simon','clock','calendar'] },
+  // 6 ans et plus (ou âge non précisé) : tous les jeux, dont le calcul
+  // mental abstrait (calc), réservé au CP confirmé et plus.
 ];
 function gameTypesForAge(age){
   const a = Number(age);
@@ -422,6 +540,26 @@ const DECOS = {
   papillonJ:{emoji:'🦋', name:'Papillon géant', price:18, world:'jungle'},
   coffretresor:{emoji:'💰', name:'Coffre au trésor', price:50, world:'jungle'},
   totemD:{emoji:'🗿', name:'Statue totem', price:38, world:'jungle'},
+  // Cité du Temps
+  horlogeD:{emoji:'🕰️', name:'Grande horloge', price:20, world:'cite'},
+  pendulemurale:{emoji:'🕐', name:'Pendule murale', price:14, world:'cite'},
+  tourhorloge:{emoji:'🗼', name:"Tour de l'horloge", price:40, world:'cite'},
+  sablierD:{emoji:'⏳', name:'Sablier géant', price:18, world:'cite'},
+  cadransolaireD:{emoji:'☀️', name:'Cadran solaire', price:22, world:'cite'},
+  chouetteD:{emoji:'🦉', name:'Chouette veilleuse', price:16, world:'cite'},
+  engrenageD:{emoji:'⚙️', name:'Engrenages dorés', price:24, world:'cite'},
+  calendrierD:{emoji:'📆', name:'Calendrier magique', price:12, world:'cite'},
+  portailtemporel:{emoji:'🌀', name:'Portail temporel', price:55, world:'cite'},
+  // Volcan des Génies
+  volcanD:{emoji:'🌋', name:'Volcan en éruption', price:45, world:'volcan'},
+  lavecoulee:{emoji:'🔥', name:'Coulée de lave', price:20, world:'volcan'},
+  cristalD:{emoji:'💎', name:'Cristaux brillants', price:16, world:'volcan'},
+  genieD:{emoji:'🧞', name:'Statue du génie', price:38, world:'volcan'},
+  dragonlaveD:{emoji:'🐉', name:'Dragon de lave', price:50, world:'volcan'},
+  fumerolle:{emoji:'💨', name:'Fumerolles', price:10, world:'volcan'},
+  meteoriteD:{emoji:'☄️', name:'Pluie de météorites', price:30, world:'volcan'},
+  laboratoire:{emoji:'🧫', name:'Laboratoire secret', price:26, world:'volcan'},
+  trophee:{emoji:'🏆', name:'Trophée du génie', price:42, world:'volcan'},
 };
 const MISSIONS_PER_LEVEL = 5;
 const ALBUM_REWARD = 100;

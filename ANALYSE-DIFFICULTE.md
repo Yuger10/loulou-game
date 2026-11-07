@@ -146,3 +146,45 @@ tester les 5 paliers actuels et le minuteur en situation réelle avec
 l'enfant (priorité déjà identifiée dans `TODO.md`), pour calibrer plus
 finement les durées et les bornes numériques avant d'investir dans du
 nouveau contenu.
+
+---
+
+## 6. Mise à jour (v30) — les deux mondes ont été construits
+
+Les deux propositions ci-dessus ont finalement été implémentées,
+légèrement adaptées :
+
+### 🕰️ La Cité du Temps (6e île, niveau 18, palier 5)
+Même plafond numérique que la Jungle (palier 5) — ce monde n'ajoute
+**pas** de nombres plus grands, mais deux compétences entièrement
+nouvelles :
+- **Quelle heure est-il ?** (`js/clock.js`) — horloge à aiguilles dessinée
+  en CSS. Heures pleines (paliers 1-2) → demi-heures (3-4) → quarts
+  d'heure (5-6). Accessible dès 5 ans en heures pleines.
+- **Jours, mois, saisons** (`js/calendar.js`) — reconnaître une saison
+  (dès la petite section, 3-4 ans, aucune lecture requise) puis, à
+  partir du CP confirmé, remettre les jours de la semaine dans l'ordre.
+  Jamais de minuteur sur ce jeu : chronométrer la notion de temps qui
+  passe serait pédagogiquement absurde.
+- 4 personnages : Horace l'horloger, Clio la gardienne du temps, Tic le
+  robot-coucou, Nocta la chouette des nuits.
+
+### 🌋 Le Volcan des Génies (7e île, niveau 22, **palier 6, nouveau**)
+Le seul mini-jeu du jeu à dépasser le palier 5 :
+- **Calcul mental** (`js/calc.js`) — calcul **sans aucun support imagé**
+  (à la différence du jeu « Opérations »), nombres jusqu'à 100,
+  expressions à 3 termes, et **tables de multiplication (×2, ×5, ×10)**
+  à partir du palier 5. Les 11 autres jeux restent plafonnés à leurs
+  valeurs du palier 5 sur cette île (`tierValue` plafonne à 5) : rien à
+  gagner pédagogiquement à leur donner des nombres encore plus grands.
+- 4 personnages : Nova le génie, Léa la savante, Pyra la dragonne de
+  lave, Max le robot savant.
+
+### Ce qui n'a pas changé
+- Les règles de conception du minuteur (jamais avant le palier 3, jamais
+  avant 6 ans, jamais sur les jeux à plusieurs étapes, jamais en
+  multijoueur, toujours encourageant) s'appliquent à l'identique aux
+  3 nouveaux jeux.
+- `gameTypesForAge` a été étendu : « Quelle saison ? » dès 3-4 ans
+  (aucune lecture nécessaire), + lecture de l'heure (heures pleines) et
+  calendrier dès 5 ans. Le calcul mental reste réservé à 6 ans et plus.

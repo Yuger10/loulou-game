@@ -176,6 +176,9 @@ function gameRenderer(key){
     case 'volume': return renderVolume;
     case 'compare': return renderCompare;
     case 'money': return renderMoney;
+    case 'clock': return renderClock;
+    case 'calendar': return renderCalendar;
+    case 'calc': return renderCalc;
     default: return renderMemory;
   }
 }

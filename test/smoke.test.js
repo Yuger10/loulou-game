@@ -51,12 +51,12 @@ check('scène déco présente', !!d.getElementById('scene'));
 check('3 missions du jour', ev('state.quests.list.length')===3);
 
 // Carte des îles
-check('carte : 5 îles affichées', d.querySelectorAll('.map-island').length===5);
+check('carte : 7 îles affichées', d.querySelectorAll('.map-island').length===7);
 check('carte : route dessinée', !!d.querySelector('.route-line') && !!d.querySelector('.route-done'));
 check('carte : bateau présent', !!d.getElementById('map-boat'));
-check('carte : îles dessinées (terre + label)', d.querySelectorAll('.map-island .isle-land').length===5);
+check('carte : îles dessinées (terre + label)', d.querySelectorAll('.map-island .isle-land').length===7);
 check('carte : lagon est l\'île courante', !!d.querySelector('.map-island.here[data-world="lagon"]'));
-check('carte : 4 îles verrouillées au niveau 1', d.querySelectorAll('.map-island.locked').length===4);
+check('carte : 6 îles verrouillées au niveau 1', d.querySelectorAll('.map-island.locked').length===6);
 check('carte : prochaine île annoncée', d.getElementById('map-next').innerHTML.includes('La Forêt'));
 d.querySelector('.map-island[data-world="foret"]').click();
 check('carte : île verrouillée non accessible', ev('currentWorld')==='lagon');
@@ -102,6 +102,26 @@ ev('sailing=false; setWorld("jungle")');
 check('navigation vers la jungle', ev('currentWorld')==='jungle');
 check('difficulté de la jungle = 5 (palier le plus avancé)', ev('gameDiff()')===5);
 check('jungle : personnages aventuriers', [...d.querySelectorAll('.island')].map(b=>b.dataset.char).join()==='exploratrice,singe,perroquet,jaguar');
+ev("switchView('carte')");
+check('cité du temps encore verrouillée au niveau 15', ev('worldUnlocked("cite")')===false);
+
+ev('state.missions = 85; switchView("carte")');   // niveau 18
+check('cité du temps déverrouillée au niveau 18', ev('worldUnlocked("cite")')===true);
+d.querySelector('.map-island[data-world="cite"]').click();
+ev('sailing=false; setWorld("cite")');
+check('navigation vers la cité du temps', ev('currentWorld')==='cite');
+check('difficulté de la cité = 5 (nouvelles compétences, pas plus de nombres)', ev('gameDiff()')===5);
+check('cité : personnages du temps', [...d.querySelectorAll('.island')].map(b=>b.dataset.char).join()==='horloger,gardienne,robotcoucou,chouette');
+ev("switchView('carte')");
+check('volcan encore verrouillé au niveau 18', ev('worldUnlocked("volcan")')===false);
+
+ev('state.missions = 105; switchView("carte")');   // niveau 22
+check('volcan déverrouillé au niveau 22', ev('worldUnlocked("volcan")')===true);
+d.querySelector('.map-island[data-world="volcan"]').click();
+ev('sailing=false; setWorld("volcan")');
+check('navigation vers le volcan', ev('currentWorld')==='volcan');
+check('difficulté du volcan = 6 (le palier le plus élevé)', ev('gameDiff()')===6);
+check('volcan : personnages savants', [...d.querySelectorAll('.island')].map(b=>b.dataset.char).join()==='genie,savante,dragonlave,robotsavant');
 ev("switchView('carte')");
 check('carte : toutes les îles débloquées', d.getElementById('map-next').innerHTML.includes('toutes les îles'));
 
@@ -459,6 +479,38 @@ setTimeout(()=>{
     check('monnaie : bonne pile validée', ev('state.missions')>0);
     ev('closeModal(); currentWorld="lagon"');
 
+    // ---- Correctif : volumes gradués même aux îles 1-2 ----
+    ev('currentWorld="foret"; renderVolume()');
+    check("volumes : île 2 compare 3 contenants (plus exigeant qu'île 1)", d.querySelectorAll('.vol-container-btn').length===3);
+    ev('closeModal(); currentWorld="lagon"');
+
+    // ---- Quelle heure est-il ? ----
+    ev('renderClock()');
+    check('heure : horloge dessinée', !!d.querySelector('.clock-face'));
+    check('heure : 3 horaires proposés (île 1 : heures pleines)', d.querySelectorAll('.clock-opt-btn').length===3);
+    check('heure : île 1, toujours une heure pleine', [...d.querySelectorAll('.clock-opt-btn')].every(b=>!b.dataset.v.includes('15') && !b.dataset.v.includes('30') && !b.dataset.v.includes('45')));
+    ev('closeModal()');
+    ev('currentWorld="chateau"; renderClock()');
+    check('heure : île 4, 4 horaires proposés', d.querySelectorAll('.clock-opt-btn').length===4);
+    ev('closeModal(); currentWorld="lagon"');
+
+    // ---- Jours, mois, saisons ----
+    ev('window.__origRandom2 = Math.random; Math.random = ()=>0.9; renderCalendar()');  // force la saison (île 1)
+    check('calendrier : île 1 propose une saison (pas de lecture)', !!d.querySelector('.season-scene'));
+    check('calendrier : 3 saisons proposées', d.querySelectorAll('.season-btn').length===3);
+    ev('closeModal(); Math.random = window.__origRandom2');
+    ev('currentWorld="montagne"; window.__origRandom3 = Math.random; Math.random = ()=>0.1; renderCalendar()');  // force l'ordre des jours (île 3)
+    check("calendrier : île 3 propose aussi l'ordre des jours", !!d.querySelector('.weekday-row'));
+    ev('closeModal(); Math.random = window.__origRandom3; currentWorld="lagon"');
+
+    // ---- Calcul mental (Volcan, palier 6) ----
+    ev('currentWorld="volcan"; renderCalc()');
+    check('calcul : équation affichée (sans aucune image)', !!d.querySelector('.calc-expr') && !d.querySelector('.math-illustration'));
+    check('calcul : 3 réponses proposées', d.querySelectorAll('.num-btn').length===3);
+    check("calcul : bornes du palier 6 (jusqu'à 100, multiplication possible)", ev('calcBounds(6).max')===100 && ev('calcBounds(6).allowMulti')===true);
+    check("calcul : palier 1 reste simple (jusqu'à 20, pas de multiplication)", ev('calcBounds(1).max')===20 && ev('calcBounds(1).allowMulti')===false);
+    ev('closeModal(); currentWorld="lagon"');
+
     // ---- Zones cliquables ----
     ev('currentWorld="lagon"; renderMemory()');
     check('mémoire : vraies cases cliquables (boutons)',
@@ -565,7 +617,7 @@ setTimeout(()=>{
     ev('closeModal()');
 
     // ---- Compteur de défis joués, et variété forcée ----
-    ev('state.gameCounts = {}; state.gameCounts["memory"]=1; state.gameCounts["count"]=1; state.gameCounts["diff"]=1; state.gameCounts["puzzle"]=1; state.gameCounts["sequence"]=1; state.gameCounts["simon"]=1; state.gameCounts["math"]=1; state.gameCounts["reading"]=1; state.gameCounts["determinants"]=1; state.gameCounts["volume"]=1; state.gameCounts["compare"]=0; state.gameCounts["money"]=0; openGamePicker("sirene")');
+    ev('state.gameCounts = {}; state.gameCounts["memory"]=1; state.gameCounts["count"]=1; state.gameCounts["diff"]=1; state.gameCounts["puzzle"]=1; state.gameCounts["sequence"]=1; state.gameCounts["simon"]=1; state.gameCounts["math"]=1; state.gameCounts["reading"]=1; state.gameCounts["determinants"]=1; state.gameCounts["volume"]=1; state.gameCounts["clock"]=1; state.gameCounts["calendar"]=1; state.gameCounts["calc"]=1; state.gameCounts["compare"]=0; state.gameCounts["money"]=0; openGamePicker("sirene")');
     const leastPlayed = [...d.querySelectorAll('.game-choice:not(.surprise)')].map(b=>b.dataset.game);
     check('variété : les 2 jeux jamais essayés remontent en priorité', leastPlayed.includes('compare') && leastPlayed.includes('money'));
     ev('closeModal()');
@@ -574,9 +626,10 @@ setTimeout(()=>{
     ev('closeModal(); state.gameCounts = {}; renderLagon()');
 
     // ---- Défis adaptés à l\'âge (programme maternelle 3-6 ans) ----
-    check('âge 3 ans : seulement mémoire/compter/intrus', ev('gameTypesForAge(3)').join()==='memory,count,diff');
-    check('âge 4 ans : encore limité aux jeux visuels', ev('gameTypesForAge(4)').join()==='memory,count,diff');
-    check('âge 5 ans : un peu plus de jeux (volume, suite, simon)', ev('gameTypesForAge(5)').includes('volume') && !ev('gameTypesForAge(5)').includes('math'));
+    check('âge 3 ans : mémoire/compter/intrus + saisons (sans lecture)', ev('gameTypesForAge(3)').join()==='memory,count,diff,calendar');
+    check('âge 4 ans : encore limité aux jeux visuels', ev('gameTypesForAge(4)').join()==='memory,count,diff,calendar');
+    check('âge 5 ans : un peu plus de jeux (volume, suite, simon, heure)', ev('gameTypesForAge(5)').includes('volume') && ev('gameTypesForAge(5)').includes('clock') && !ev('gameTypesForAge(5)').includes('math'));
+    check('âge 5 ans : pas encore de calcul mental abstrait', !ev('gameTypesForAge(5)').includes('calc'));
     check('âge 6 ans : tous les jeux (CP)', ev('gameTypesForAge(6)').length===ev('GAME_TYPES').length);
     check('âge non renseigné : tous les jeux (comportement inchangé)', ev('gameTypesForAge(null)').length===ev('GAME_TYPES').length);
 

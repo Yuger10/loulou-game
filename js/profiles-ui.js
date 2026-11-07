@@ -13,6 +13,9 @@ const GAME_LIST = [
   { key:'volume',   emoji:'🧪', name:'Volumes',      fn:()=>renderVolume() },
   { key:'compare',  emoji:'⚖️', name:'Comparer',     fn:()=>renderCompare() },
   { key:'money',    emoji:'💰', name:'La monnaie',   fn:()=>renderMoney() },
+  { key:'clock',    emoji:'🕐', name:"L'heure",      fn:()=>renderClock() },
+  { key:'calendar', emoji:'📅', name:'Calendrier',   fn:()=>renderCalendar() },
+  { key:'calc',     emoji:'🌋', name:'Calcul mental', fn:()=>renderCalc() },
 ];
 
 /* --- Panneau des joueurs --- */
