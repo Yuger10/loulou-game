@@ -43,6 +43,12 @@
         <h2>🗺️ La carte</h2>
         <div class="level-pill" id="level-pill"></div>
       </div>
+      <div class="install-hint" id="install-hint" hidden>
+        <span aria-hidden="true">📲</span>
+        <span class="ih-txt">Installe le jeu sur l'écran d'accueil pour ne jamais perdre ta partie.</span>
+        <button type="button" class="chip-btn" data-install-how>Comment ?</button>
+        <button type="button" class="ih-close" data-install-close aria-label="Masquer ce message">✕</button>
+      </div>
       <div class="island-map" id="island-map"></div>
       <div class="map-next" id="map-next" hidden></div>
       <div class="island-card" id="island-card"></div>
@@ -154,6 +160,7 @@
 <script src="js/market.js"></script>
 <script src="js/race.js"></script>
 <script src="js/profiles-ui.js"></script>
+<script src="js/backup.js"></script>
 <script src="js/init.js"></script>
 </body>
 </html>

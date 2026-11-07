@@ -784,6 +784,34 @@ setTimeout(()=>{
       check('planètes : la phrase à retenir apparaît à la victoire', !!d.querySelector('.win-box .fun-fact') && d.querySelector('.win-box .fun-fact').textContent.includes('Phrase de test.'));
       ev('closeModal()');
     }
+    // ---- Sauvegarde et restauration (Phase 1 : ne rien perdre) ----
+    {
+      ev('closeModal(); save(); saveProfiles()');
+      const before = ev('JSON.stringify({coins: state.coins, missions: state.missions, names: profiles.list.map(p=>p.name)})');
+      const backup = ev('JSON.stringify(buildBackup())');
+      const B = JSON.parse(backup);
+      check('sauvegarde : contient les joueurs et chaque partie', !!B.data['lagon-magique-profiles'] && Object.keys(B.data).some(k=>k.startsWith('lagon-magique-save:')));
+      check('sauvegarde : lisible et reconnue', ev(`parseBackupText(${JSON.stringify(backup)}).ok`)===true);
+      // on abîme la partie, puis on restaure : tout revient
+      ev('state.coins = 999; state.missions = 0; save()');
+      ev(`applyBackup(JSON.parse(${JSON.stringify(backup)}))`);
+      check('restauration : la partie revient à l\'identique', ev('JSON.stringify({coins: state.coins, missions: state.missions, names: profiles.list.map(p=>p.name)})')===before);
+      check('restauration : une copie de la partie remplacée est gardée', ev('undoRestoreAvailable()')===true);
+      // code de transfert simple (sans compression)
+      const code = 'LAGON1:' + ev(`utf8ToB64(${JSON.stringify(backup)})`);
+      check('code de transfert : relu correctement (accents compris)', ev(`parseBackupText(${JSON.stringify(code)}).ok`)===true && ev(`parseBackupText(${JSON.stringify(code)}).players.length`)>=1);
+      check('code de transfert : un code tronqué est refusé', ev(`parseBackupText(${JSON.stringify(code.slice(0, code.length-40))}).ok`)===false);
+      check('sauvegarde : un fichier étranger est refusé', ev('parseBackupText(JSON.stringify({app:"autre", data:{}})).ok')===false && ev('parseBackupText("bonjour").ok')===false);
+      check('sauvegarde : une clé étrangère est refusée', ev('parseBackupText(JSON.stringify({app:"lagon-magique", data:{"autre-site":"{}"}})).ok')===false);
+      ev('openPlayers()');
+      check('sauvegarde : accessible depuis le panneau des joueurs', !!d.getElementById('btn-backup'));
+      ev('openBackup()');
+      check('sauvegarde : la fenêtre propose enregistrer, transférer, restaurer, installer', !!d.getElementById('bk-export') && !!d.getElementById('bk-code') && !!d.getElementById('bk-file') && !!d.getElementById('bk-install-zone'));
+      ev('closeModal()');
+      check('rappel : sauvegarde à faire si jamais faite après quelques missions', ev('(localStorage.removeItem("lagon-magique-meta"), state.missions=10, backupDue())')===true);
+      check('rappel : plus de rappel juste après une sauvegarde', ev('(setBackupMeta({lastBackupAt:new Date().toISOString()}), backupDue())')===false);
+      ev('localStorage.removeItem("lagon-magique-meta")');
+    }
     // ---- Chaque nouveau monde : couleurs propres et place sur la carte ----
     {
       const css = fs.readFileSync(path.join(__dirname, '..', 'styles.css'), 'utf8');
