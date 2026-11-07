@@ -301,7 +301,7 @@ function renderLiveIsland(sc){
       return `<button class="island isle-char" data-char="${id}" data-vx="${p.x}" data-vy="${p.y}" aria-label="${c.name} ${c.title}, ${mood.label}"
         style="z-index:${isleZ(p.y)}; --d:${i*0.6}s">
         <span class="ic-bubble">${mood.icon}</span>
-        <span class="emoji">${c.emoji}</span>
+        <span class="emoji">${charFace(id)}</span>
         <span class="ic-shadow"></span>
         <span class="name">${c.name}</span>
       </button>`;
