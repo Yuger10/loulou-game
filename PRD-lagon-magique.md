@@ -656,12 +656,22 @@ qu'elle avait fait. Observé précisément sur « Grandeurs & volumes » et
   restent inchangés : y régénérer la question effacerait une progression
   déjà correcte, ce serait injuste.
 
+
 ---
 
 # v34 — 28 personnages illustrés en SVG
 
 - Les 28 personnages des sept îles ont chacun une illustration SVG originale intégrée au code, sans police emoji ni ressource externe. Le dessin reste identique sur iOS, Android et ordinateur.
 - Silhouettes, accessoires et couleurs dominantes différencient les personnages : Tiago pirate, Marina sirène, Étincelle licorne, Luna danseuse ; Sylvie, Maïa, Hector et Balto ; Zéphyr, Ariane, Céleste et Bolt ; Aurore, Morgane, Tao et Comète ; Maya, Kiko, Iris et Jago ; Horace, Clio, Tic et Nocta ; Nova, Léa, Pyra et Max.
-- Les visages reprennent les yeux, joues, bouche et traits des six compagnons SVG. Les illustrations sont affichées sur la scène vivante, la carte, la fiche d'île, les dialogues et l'écran d'échec. Les emojis d'objets des cartes mémoire restent inchangés. Intégré au tri par genre (v33) : l'ordre change, le dessin suit.
-- Nouveau module `js/characters-art.js` et feuille `characters.css` ; cache PWA passé à `lagon-v34`.
+- Les visages reprennent les yeux, joues, bouche et traits des six compagnons SVG. Les illustrations sont affichées sur la scène vivante, la carte, la fiche d'île, les dialogues et l'écran d'échec. Les emojis d'objets des cartes mémoire restent inchangés.
+- Nouveau module `js/characters-art.js` et feuille `characters.css`; cache PWA passé à `lagon-v34` (puis `lagon-v35` pour la relecture).
 - Tests de garde : couverture des ids, viewBox, taille maximale, éléments et attributs interdits, rendu de la scène et repli emoji pour un id inconnu.
+- **Relecture et corrections** :
+  - visages dégagés (les ailes de Sylvie, Zéphyr et Pyra passaient devant) ;
+  - vraies têtes de dragons (museau, cornes, crête de nuage ou de flammes) ;
+  - Ariane en aigle (tête blanche, bec crochu, ailes déployées), Iris en perruche (masque jaune, joues bleues, longue queue), Nocta en chouette (disque facial, grands yeux dorés, lune sur le ventre) ;
+  - Comète et Étincelle en chevaux (museau, crinière ; ailes pour le pégase, corne et crinière arc-en-ciel pour la licorne) ;
+  - Max en robot à tête de dôme et lunettes de labo, pour ne plus ressembler à Bolt.
+- Personnages plus grands sur l'île vivante (au moins la taille des anciens emojis) ; places écartées pour qu'aucune bulle ne cache le nom d'un voisin.
+- Les fonctions de dessin sont enfermées dans `CHAR_ART` : plus de noms globaux génériques (`face`, `robot`…).
+
