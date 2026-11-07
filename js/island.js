@@ -141,6 +141,64 @@ const ISLE_SCENERY = {
     <g fill="#3FA86A"><ellipse cx="96" cy="356" rx="60" ry="18" transform="rotate(-24 96 356)"/><ellipse cx="400" cy="352" rx="62" ry="18" transform="rotate(22 400 352)"/></g>
     <g fill="#245F3C"><ellipse cx="118" cy="40" rx="50" ry="14" transform="rotate(28 118 40)"/><ellipse cx="380" cy="30" rx="54" ry="14" transform="rotate(-26 380 30)"/></g>
     <g><circle cx="300" cy="300" r="4" fill="#FF8FB8"/><circle cx="140" cy="290" r="4" fill="#FFD54A"/></g>`,
+  // Cité du Temps : tour de l'horloge (les aiguilles tournent), engrenages dans le ciel, toits, réverbères
+  cite: (w)=>`
+    <g class="ls-gear g1" style="transform-origin:92px 74px">
+      <circle cx="92" cy="74" r="25" fill="none" stroke="#C9A46A" stroke-width="10" stroke-dasharray="7 6"/>
+      <circle cx="92" cy="74" r="20" fill="#D9B97E"/><circle cx="92" cy="74" r="7" fill="#8C7355"/>
+    </g>
+    <g class="ls-gear g2" style="transform-origin:134px 108px">
+      <circle cx="134" cy="108" r="15" fill="none" stroke="#B8925A" stroke-width="8" stroke-dasharray="5 5"/>
+      <circle cx="134" cy="108" r="11" fill="#CFAE72"/><circle cx="134" cy="108" r="4" fill="#8C7355"/>
+    </g>
+    <g fill="#D8C3A0">
+      <rect x="22" y="172" width="44" height="76"/><path d="M18 174 L44 142 L70 174 Z"/>
+      <rect x="76" y="190" width="56" height="58"/><path d="M72 192 L104 166 L136 192 Z"/>
+      <rect x="146" y="180" width="40" height="68"/><path d="M142 182 L166 154 L190 182 Z"/>
+      <rect x="296" y="182" width="42" height="66"/><path d="M292 184 L317 156 L342 184 Z"/>
+      <rect x="350" y="168" width="52" height="80"/><path d="M346 170 L376 136 L406 170 Z"/>
+      <rect x="414" y="190" width="48" height="58"/><path d="M410 192 L438 166 L466 192 Z"/>
+    </g>
+    <g fill="#FFF1C9"><rect x="36" y="190" width="8" height="10" rx="2"/><rect x="96" y="206" width="8" height="10" rx="2"/><rect x="160" y="196" width="8" height="10" rx="2"/>
+      <rect x="310" y="198" width="8" height="10" rx="2"/><rect x="368" y="186" width="8" height="10" rx="2"/><rect x="430" y="206" width="8" height="10" rx="2"/></g>
+    <rect x="212" y="98" width="56" height="150" fill="#8C7355"/>
+    <path d="M204 102 L240 52 L276 102 Z" fill="#6E4B2A"/>
+    <circle cx="240" cy="134" r="22" fill="#FFF8E6" stroke="#5C4128" stroke-width="4"/>
+    <g fill="#5C4128"><circle cx="240" cy="117" r="2"/><circle cx="257" cy="134" r="2"/><circle cx="240" cy="151" r="2"/><circle cx="223" cy="134" r="2"/></g>
+    <g class="ls-clock-h" style="transform-origin:240px 134px"><line x1="240" y1="134" x2="251" y2="134" stroke="#5C4128" stroke-width="4" stroke-linecap="round"/></g>
+    <g class="ls-clock-m" style="transform-origin:240px 134px"><line x1="240" y1="134" x2="240" y2="118" stroke="#E8573A" stroke-width="3" stroke-linecap="round"/></g>
+    <circle cx="240" cy="134" r="3" fill="#5C4128"/>
+    <path d="M230 248 L230 222 C230 212 250 212 250 222 L250 248 Z" fill="#5C4128"/>
+    <path d="M0 248 C140 232 340 232 480 248 L480 360 L0 360 Z" fill="${w.land}"/>
+    <g fill="${w.sand}" opacity=".35">
+      <ellipse cx="60" cy="280" rx="14" ry="5"/><ellipse cx="100" cy="300" rx="14" ry="5"/><ellipse cx="380" cy="284" rx="14" ry="5"/>
+      <ellipse cx="420" cy="306" rx="14" ry="5"/><ellipse cx="140" cy="334" rx="14" ry="5"/><ellipse cx="340" cy="330" rx="14" ry="5"/>
+    </g>
+    <path d="M196 360 C214 320 236 290 240 250" fill="none" stroke="${w.sand}" stroke-width="18" stroke-linecap="round" opacity=".9"/>
+    <g><rect x="120" y="244" width="4" height="40" fill="#5C4128"/><circle cx="122" cy="240" r="7" fill="#FFE07A"/><circle cx="122" cy="240" r="16" fill="#FFE07A" opacity=".25"/>
+      <rect x="356" y="244" width="4" height="40" fill="#5C4128"/><circle cx="358" cy="240" r="7" fill="#FFE07A"/><circle cx="358" cy="240" r="16" fill="#FFE07A" opacity=".25"/></g>`,
+  // Volcan des Génies : cône fumant, coulées de lave, fissures qui rougeoient
+  volcan: (w)=>`
+    <path d="M0 236 L60 186 L118 214 L176 176 L214 200 L300 192 L352 170 L410 206 L480 180 L480 360 L0 360 Z" fill="#B4553A" opacity=".55"/>
+    <g class="ls-smoke">
+      <circle class="s1" cx="236" cy="78" r="14" fill="#A99A94"/><circle class="s2" cx="248" cy="70" r="12" fill="#BCAFA9"/><circle class="s3" cx="228" cy="66" r="10" fill="#9C8F8A"/>
+    </g>
+    <ellipse cx="240" cy="96" rx="56" ry="18" fill="#FFB06A" opacity=".35"/>
+    <path d="M118 248 L206 96 L274 96 L362 248 Z" fill="#6B2A1E"/>
+    <path d="M206 96 L196 114 L284 114 L274 96 Z" fill="#5A2218"/>
+    <ellipse cx="240" cy="96" rx="34" ry="8" fill="#FF7A3A"/>
+    <g fill="none" stroke-linecap="round">
+      <path d="M226 100 C220 132 238 152 226 194 C220 214 232 230 228 246" stroke="#FF8A3A" stroke-width="9"/>
+      <path d="M256 100 C262 126 250 150 262 182" stroke="#FFA54A" stroke-width="7"/>
+      <path d="M226 100 C220 132 238 152 226 194" stroke="#FFD27A" stroke-width="3" opacity=".8"/>
+    </g>
+    <path d="M0 250 C140 234 340 234 480 250 L480 360 L0 360 Z" fill="${w.land}"/>
+    <g class="ls-lava" fill="none" stroke="#FF8A3A" stroke-width="3" stroke-linecap="round" opacity=".85">
+      <path d="M40 290 l18 6 l10 -8 l16 4"/><path d="M380 300 l14 -6 l12 8 l18 -4"/><path d="M120 336 l16 -4 l10 6"/><path d="M330 340 l12 4 l14 -6"/>
+    </g>
+    <path d="M196 360 C214 322 236 292 238 252" fill="none" stroke="#C9583A" stroke-width="18" stroke-linecap="round" opacity=".9"/>
+    <g fill="${w.sand}"><ellipse cx="80" cy="266" rx="22" ry="9"/><ellipse cx="404" cy="272" rx="26" ry="10"/><ellipse cx="300" cy="318" rx="14" ry="6"/></g>
+    <g fill="#FF8A3A" opacity=".8"><ellipse cx="150" cy="300" rx="16" ry="4"/></g>`,
 };
 // paysage générique, aux couleurs du monde (toute nouvelle île en profite)
 function isleGenericScenery(w){

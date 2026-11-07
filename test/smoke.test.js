@@ -701,6 +701,23 @@ setTimeout(()=>{
     check('île vivante : moment de la journée selon l\'heure', ev('isleTimeOfDay(new Date(2026,0,1,22))')==='nuit' && ev('isleTimeOfDay(new Date(2026,0,1,8))')==='matin' && ev('isleTimeOfDay(new Date(2026,0,1,13))')==='jour' && ev('isleTimeOfDay(new Date(2026,0,1,18))')==='soir');
     check('île vivante : une nouvelle île a un paysage par défaut', ev('(WORLDS.__test={name:"T",shape:"inconnue",sand:"#eee",land:"#8c8"}, landscapeSVG("__test").includes("<svg"))'));
     ev('delete WORLDS.__test');
+    // ---- Chaque nouveau monde : couleurs propres et place sur la carte ----
+    {
+      const css = fs.readFileSync(path.join(__dirname, '..', 'styles.css'), 'utf8');
+      const ids = ev('Object.keys(WORLDS)');
+      const sansTheme = ids.filter(id=>id!=='lagon' && !css.includes(`body[data-world="${id}"]{--world-sky`));
+      check('carte : chaque monde a son thème de couleurs (--world-*)', sansTheme.length===0);
+      if(sansTheme.length) console.log('   sans thème :', sansTheme.join(', '));
+      const pos = ids.map(id=>({id, ...ev(`WORLDS[${JSON.stringify(id)}].map`)}));
+      const dehors = pos.filter(p=>p.x<14 || p.x>86 || p.y<15 || p.y>85);
+      check('carte : chaque île tient dans le cadre (x 14–86 %, y 15–85 %)', dehors.length===0);
+      if(dehors.length) console.log('   hors cadre :', dehors.map(p=>p.id).join(', '));
+      // une île + son étiquette ≈ 24 % de large et 30 % de haut sur téléphone
+      const collisions = [];
+      pos.forEach((a,i)=>pos.slice(i+1).forEach(b=>{ if(Math.abs(a.x-b.x)<24 && Math.abs(a.y-b.y)<30) collisions.push(a.id+'/'+b.id); }));
+      check('carte : aucune île ne chevauche une autre', collisions.length===0);
+      if(collisions.length) console.log('   chevauchements :', collisions.join(', '));
+    }
     // ---- Feuilles de style : une accolade perdue (ex. lors d'une fusion) enferme
     //      silencieusement tout le reste dans une media query ----
     ['styles.css','island.css'].forEach(f=>{

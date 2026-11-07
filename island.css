@@ -55,6 +55,18 @@
 .ls-tree{transform-origin:378px 260px; animation:isleSway 6s ease-in-out infinite;}
 .ls-vines{animation:isleVines 6s ease-in-out infinite; transform-origin:240px 0;}
 @keyframes isleSway{0%,100%{transform:rotate(-1.6deg);} 50%{transform:rotate(1.6deg);}}
+/* Cité du Temps : engrenages et aiguilles qui tournent */
+.ls-gear.g1{animation:isleSpin 16s linear infinite;}
+.ls-gear.g2{animation:isleSpin 10s linear infinite reverse;}
+.ls-clock-m{animation:isleSpin 24s linear infinite;}
+.ls-clock-h{animation:isleSpin 288s linear infinite;}
+@keyframes isleSpin{to{transform:rotate(360deg);}}
+/* Volcan : la fumée monte, les fissures rougeoient */
+.ls-smoke circle{transform-box:fill-box; transform-origin:center; animation:isleSmoke 4.2s ease-out infinite;}
+.ls-smoke .s2{animation-delay:-1.4s;} .ls-smoke .s3{animation-delay:-2.8s;}
+@keyframes isleSmoke{0%{transform:translate(0,10px) scale(.6); opacity:0;} 20%{opacity:.85;} 100%{transform:translate(14px,-60px) scale(1.6); opacity:0;}}
+.ls-lava{animation:isleLava 2.4s ease-in-out infinite alternate;}
+@keyframes isleLava{from{opacity:.45;} to{opacity:1;}}
 @keyframes isleVines{0%,100%{transform:skewX(-2deg);} 50%{transform:skewX(2deg);}}
 
 /* --- les personnages vivent dans le paysage --- */
@@ -155,6 +167,7 @@
 
 @media (prefers-reduced-motion:reduce){
   .ls-cloud, .ls-waves path, .ls-palm, .ls-tree, .ls-vines,
+  .ls-gear, .ls-clock-m, .ls-clock-h, .ls-smoke circle, .ls-lava,
   #scene.live-isle .isle-char .emoji, #scene.live-isle .isle-char .ic-bubble,
   #scene.live-isle .deco, #scene.live-isle .isle-tip{animation:none;}
 }

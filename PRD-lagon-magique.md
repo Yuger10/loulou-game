@@ -594,3 +594,6 @@ La vue Île devient un paysage dessiné où vivent les personnages (`js/island.j
 - **Les décorations se posent où l'on veut** : on les fait glisser du doigt, leur place est gardée (`state.decoPos`). Par défaut, chacune va dans sa zone : arc-en-ciel et lune dans le ciel, dauphin et tortue dans l'eau, le reste sur le sol. Un simple toucher la fait se trémousser et dire son nom.
 - **Le ciel suit l'heure réelle** : matin rosé, journée, coucher de soleil, nuit étoilée avec la lune.
 - Les places sont exprimées en coordonnées du dessin et recalculées selon la taille de l'écran : tout reste au bon endroit sur téléphone, tablette, ordinateur et à l'horizontale.
+- **Cité du Temps et Volcan des Génies** : paysages sur mesure (tour de l'horloge dont les aiguilles tournent, engrenages, toits et réverbères ; volcan qui fume, coulées de lave, fissures qui rougeoient) et thèmes de couleurs propres (`body[data-world="cite"|"volcan"]`), qui manquaient.
+- **Carte à 7 îles** : 3 rangées en lacet (le Volcan, défi final, tout en haut à droite) ; étiquettes sur deux lignes (nom, puis étoiles ou niveau) ; plus aucune île ne sort du cadre ni n'en chevauche une autre.
+- **Tests de garde** pour les prochains mondes : chaque monde a son thème `--world-*`, chaque île tient dans le cadre de la carte (x 14–86 %, y 15–85 %), aucune île n'en chevauche une autre.
