@@ -286,7 +286,7 @@ function onMissionFail(){
       <h2>Raté !</h2>
       <div class="speech">${msg}</div>
       <div class="speech" style="background:#FFF1EC;">
-        ${c.emoji} <strong>${c.name}</strong> t'attend pour un nouvel essai !
+        ${charFace(currentChar)} <strong>${c.name}</strong> t'attend pour un nouvel essai !
       </div>
     </div>
     <button class="btn-primary" id="btn-retry">🔁 Réessayer</button>

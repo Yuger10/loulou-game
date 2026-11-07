@@ -1,8 +1,8 @@
-const CACHE = 'lagon-v33';
+const CACHE = 'lagon-v34';
 const FILES = [
-  './','./index.html','./styles.css','./island.css','./manifest.json',
+  './','./index.html','./styles.css','./island.css','./characters.css','./manifest.json',
   './icon.svg','./icon-192.png','./icon-512.png','./icon-180.png',
-  './js/data.js','./js/difficulty.js','./js/players.js','./js/companions.js','./js/race.js','./js/profiles-ui.js','./js/state.js','./js/ui.js','./js/gains.js','./js/map.js','./js/island.js',
+  './js/data.js','./js/difficulty.js','./js/players.js','./js/companions.js','./js/characters-art.js','./js/race.js','./js/profiles-ui.js','./js/state.js','./js/ui.js','./js/gains.js','./js/map.js','./js/island.js',
   './js/minigames.js','./js/math.js','./js/reading.js','./js/grammar.js','./js/volume.js','./js/compare.js','./js/money.js','./js/clock.js','./js/calendar.js','./js/calc.js','./js/market.js','./js/init.js'
 ];
 self.addEventListener('install', e=>{

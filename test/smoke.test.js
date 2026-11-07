@@ -567,6 +567,11 @@ setTimeout(()=>{
     check('compagnon : on peut choisir librement', d.querySelector('.buddy-opt.sel').dataset.buddy==='rose');
     ev('closeModal()');
     check('compagnon par défaut : fille → sirène, garçon → pirate', ev("defaultCompanionFor('f')")==='perle' && ev("defaultCompanionFor('m')")==='tom');
+    // ---- Illustrations SVG des personnages ----
+    check('personnages : les 28 ids possèdent un SVG', ev('Object.keys(CHARACTERS).length===28 && Object.keys(CHARACTERS).every(k=>charArtSVG(k).startsWith("<svg"))'));
+    check('personnages : viewBox et longueur SVG valides', ev('Object.values(CHAR_ART).every(s=>s.startsWith("<svg") && s.includes(\'viewBox="0 0 120 130"\') && s.length<=6000)'));
+    check('personnages : aucun élément ou attribut SVG interdit', ev('Object.values(CHAR_ART).every(s=>!/\\bid\\s*=|\\bhref\\s*=|url\\s*\\(|<\\s*(?:defs|linearGradient|radialGradient|clipPath|mask|filter|text|image|style|script)\\b/i.test(s))'));
+    check('personnages : fallback emoji pour id inconnu', ev('charFace("__unknown").includes("❔")'));
     check('compagnon : un dessin pour chaque compagnon et chaque humeur', ev("COMPANION_ORDER.every(k=>BUDDY_MOODS.every(m=>companionSVG(k,m).startsWith('<svg')))"));
     ev('playGame("count")');
     check('mini-jeu : le compagnon dit la consigne', !!d.querySelector('.puzzle-hint .buddy-slot svg'));
@@ -704,6 +709,7 @@ setTimeout(()=>{
     ev('closeModal(); currentWorld="lagon"; state.decos=["palmier","dauphin"]; state.decoPos={}; renderLagon(); switchView("ile")');
     check('île vivante : paysage dessiné dans la scène', !!d.querySelector('#scene.live-isle svg.isle-land'));
     check('île vivante : les personnages sont dans le paysage', d.querySelectorAll('#scene .isle-char[data-char]').length===4);
+    check('île vivante : les personnages affichent les SVG', d.querySelectorAll('#scene .isle-char .char-art svg').length===4);
     check('île vivante : décorations posées dans le paysage', d.querySelectorAll('#scene .deco[data-deco-key]').length===2);
     check('île vivante : un dauphin va dans l\'eau, pas sur la plage', Number(d.querySelector('#scene .deco[data-deco-key="dauphin"]').dataset.vy) < 200);
     ev('moveDeco("palmier", 300, 300); renderScene()');
@@ -732,7 +738,7 @@ setTimeout(()=>{
     }
     // ---- Feuilles de style : une accolade perdue (ex. lors d'une fusion) enferme
     //      silencieusement tout le reste dans une media query ----
-    ['styles.css','island.css'].forEach(f=>{
+    ['styles.css','island.css','characters.css'].forEach(f=>{
       const css = fs.readFileSync(path.join(__dirname, '..', f), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
       let depth = 0, min = 0;
       for(const ch of css){ if(ch==='{') depth++; else if(ch==='}') depth--; min = Math.min(min, depth); }

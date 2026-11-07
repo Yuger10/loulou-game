@@ -655,3 +655,13 @@ qu'elle avait fait. Observé précisément sur « Grandeurs & volumes » et
 - Les jeux à plusieurs étapes (mémoire, Simon, puzzle, ordre des jours)
   restent inchangés : y régénérer la question effacerait une progression
   déjà correcte, ce serait injuste.
+
+---
+
+# v34 — 28 personnages illustrés en SVG
+
+- Les 28 personnages des sept îles ont chacun une illustration SVG originale intégrée au code, sans police emoji ni ressource externe. Le dessin reste identique sur iOS, Android et ordinateur.
+- Silhouettes, accessoires et couleurs dominantes différencient les personnages : Tiago pirate, Marina sirène, Étincelle licorne, Luna danseuse ; Sylvie, Maïa, Hector et Balto ; Zéphyr, Ariane, Céleste et Bolt ; Aurore, Morgane, Tao et Comète ; Maya, Kiko, Iris et Jago ; Horace, Clio, Tic et Nocta ; Nova, Léa, Pyra et Max.
+- Les visages reprennent les yeux, joues, bouche et traits des six compagnons SVG. Les illustrations sont affichées sur la scène vivante, la carte, la fiche d'île, les dialogues et l'écran d'échec. Les emojis d'objets des cartes mémoire restent inchangés. Intégré au tri par genre (v33) : l'ordre change, le dessin suit.
+- Nouveau module `js/characters-art.js` et feuille `characters.css` ; cache PWA passé à `lagon-v34`.
+- Tests de garde : couverture des ids, viewBox, taille maximale, éléments et attributs interdits, rendu de la scène et repli emoji pour un id inconnu.

@@ -48,7 +48,7 @@ function renderMap(){
           <span class="isle-land"></span>
           <span class="isle-icon">${w.icon}</span>
           ${locked ? '<span class="isle-lock">🔒</span>' : ''}
-          ${!locked ? `<span class="isle-chars">${charsOf(id).map(([,c])=>c.emoji).join('')}</span>` : ''}
+          ${!locked ? `<span class="isle-chars">${charsOf(id).map(([cid])=>charFace(cid)).join('')}</span>` : ''}
         </span>
         <span class="isle-label"><b>${i+1}. ${w.short}</b><i>${locked?`niv. ${w.level}`:'⭐'.repeat(w.diff)}</i></span>
       </button>`;

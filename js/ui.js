@@ -343,7 +343,7 @@ function renderIslandCard(){
     <div class="ic-head"><span class="ic-emoji">${w.emoji}</span>
       <div><div class="ic-name">${w.name}</div><div class="ic-sub">${w.subtitle} · ${'⭐'.repeat(w.diff)}</div></div>
     </div>
-    <div class="ic-chars">${charsOfForPlayer(currentWorld, typeof playerGender==='function' ? playerGender() : '').map(([,c])=>`<span>${c.emoji}</span>`).join('')}</div>
+    <div class="ic-chars">${charsOfForPlayer(currentWorld, typeof playerGender==='function' ? playerGender() : '').map(([cid])=>charFace(cid)).join('')}</div>
     <button class="btn-primary" id="ic-go">🏝️ Débarquer sur l'île</button>`;
   const b = document.getElementById('ic-go');
   if(b) b.onclick = ()=>{ playSound('tap'); switchView('ile'); };
@@ -483,7 +483,7 @@ function openDialogue(charId){
   const text = greet + (contextualLine(charId) || pickRandom(c.texts));
   openModal(`
     <div class="char-header">
-      <span class="emoji">${c.emoji}</span>
+      <span class="emoji">${charFace(charId)}</span>
       <h2>${c.name} ${c.title}</h2>
     </div>
     ${speechBubble(text)}
