@@ -597,3 +597,11 @@ La vue Île devient un paysage dessiné où vivent les personnages (`js/island.j
 - **Cité du Temps et Volcan des Génies** : paysages sur mesure (tour de l'horloge dont les aiguilles tournent, engrenages, toits et réverbères ; volcan qui fume, coulées de lave, fissures qui rougeoient) et thèmes de couleurs propres (`body[data-world="cite"|"volcan"]`), qui manquaient.
 - **Carte à 7 îles** : 3 rangées en lacet (le Volcan, défi final, tout en haut à droite) ; étiquettes sur deux lignes (nom, puis étoiles ou niveau) ; plus aucune île ne sort du cadre ni n'en chevauche une autre.
 - **Tests de garde** pour les prochains mondes : chaque monde a son thème `--world-*`, chaque île tient dans le cadre de la carte (x 14–86 %, y 15–85 %), aucune île n'en chevauche une autre.
+
+---
+
+# v32 — Le parcours entre les îles se voit
+
+- La carte trace un vrai sentier entre les 7 îles, dans l'ordre des paliers de difficulté : une bande claire, de gros pointillés blancs, **dorés jusqu'à la dernière île débloquée** (et non plus jusqu'à l'île où l'on se trouve), et un tronçon animé qui avance vers la prochaine île à débloquer.
+- Correctif : la partie dorée était découpée de gauche à droite (`clip-path`), ce qui ne suivait plus le chemin depuis la carte en lacet ; elle est maintenant un morceau du même tracé.
+
