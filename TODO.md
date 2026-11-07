@@ -28,13 +28,15 @@ La partie est enregistrée dans le navigateur. Safari peut effacer ces données 
 - [ ] **Mettre le jeu en ligne en `https://`** (GitHub Pages) — *à faire par le propriétaire du dépôt : Settings → Pages → « Deploy from a branch » → `main`, dossier `/ (root)`* ; puis mettre l'adresse dans le README.
   Pourquoi c'est important : ouvert depuis le Mac par le Wi-Fi (`http://`), le navigateur n'active ni le mode hors-ligne, ni le stockage protégé, et l'installation sur iPhone reste un simple raccourci. En `https://`, tout fonctionne, et on peut jouer sans le Mac allumé.
 
-### Phase 2 — Espace parents 🟠
-- [ ] Accès discret réservé aux adultes (appui long, ou petite opération à résoudre)
-- [ ] Progrès par compétence : lecture, nombres, calcul, heure, formes, planètes… acquis / en cours / difficile
-- [ ] Enregistrer les réussites et les erreurs par mini-jeu et par palier (aujourd'hui : seulement le nombre de parties)
-- [ ] Temps de jeu par jour et par enfant
-- [ ] Pause douce réglable après X minutes (« Zap est fatigué, on revient demain ? »)
-- [ ] Y regrouper les réglages adultes : voix, remise à zéro, sauvegarde
+### Phase 2 — Espace parents 🟠 ✅
+Panneau des joueurs → 👪 *Espace parents*.
+- [x] Accès discret réservé aux adultes : une multiplication à résoudre (6 × 6 à 9 × 9), valable 5 minutes — v41
+- [x] Progrès par compétence : lecture, nombres, calcul, temps et mesures, formes, sciences, mémoire et logique → à l'aise / en cours / à travailler / pas encore joué — v41
+- [x] Enregistrer les réussites et les erreurs par mini-jeu et par palier — v41
+- [x] Temps de jeu actif par jour et par enfant (graphique des 7 derniers jours) — v41
+- [x] Pause douce réglable par enfant (15 à 60 min) : « Perle est fatiguée, on revient demain ? » ; un adulte peut ajouter 10 min — v41
+- [x] Y regrouper les réglages adultes : sauvegarde, prénom / âge / compagnon, remise à zéro — v41
+- [ ] À observer : les seuils « à l'aise / à travailler » sont-ils justes avec les enfants ? (à noter dans les Notes de session)
 
 ### Phase 3 — Un jeu qui s'adapte à chaque enfant 🟠
 - [ ] Reproposer plus souvent (et un peu plus facile) ce qui est souvent raté
@@ -44,7 +46,8 @@ La partie est enregistrée dans le navigateur. Safari peut effacer ces données 
 ### Phase 4 — Plus de plaisir 🟢
 - [ ] Habiller son avatar : tenues et accessoires gagnés (cape d'une autre couleur pour Zap, couronnes, chapeaux…)
 - [ ] Offrir un objet à un personnage : il remercie avec une petite animation
-- [ ] Une petite histoire par île, qui avance à chaque mission
+- [x] Une petite histoire par île : un chapitre et une énigme en images à chaque nouvelle île, relisible dans « 📖 Mon histoire » — v40
+- [ ] Faire avancer l'histoire aussi à chaque mission (pas seulement à chaque île)
 - [ ] Musique d'ambiance douce, activable
 - [ ] Décorations de saison : Noël, Halloween, anniversaire
 - [ ] Mini-jeu « Assembler l'image » (vrai puzzle 2×2 puis 3×3)
@@ -88,6 +91,8 @@ La partie est enregistrée dans le navigateur. Safari peut effacer ces données 
 | v37 | Zap le super-héros, compagnon et avatar dessinés |
 | v38 | Mini-jeu « Les planètes », exact et adapté à l'âge |
 | v39 | Sauvegarde et restauration (fichier, code de transfert), stockage protégé, invitation à installer, rappel de sauvegarde |
+| v40 | L'Histoire du Lagon Magique : un chapitre et une énigme en images par île |
+| v41 | Espace parents : accès adulte, progrès par compétence, temps de jeu, pause douce |
 
 ---
 

@@ -741,3 +741,26 @@ Toute la partie vit dans le stockage du navigateur. Safari peut l'effacer après
 - **Rappel** : un point doré sur le bouton du joueur et « Sauvegarde · à faire » quand la dernière sauvegarde a plus de 2 semaines (ou jamais, après 5 missions).
 - Limite : en `http://` (depuis le Mac par le Wi-Fi), le navigateur désactive hors-ligne et stockage protégé ; d'où la mise en ligne en `https://` prévue dans la feuille de route.
 
+---
+
+# v40 — L'Histoire du Lagon Magique
+
+Un fil narratif relie les huit îles (`js/story.js`) : à chaque nouvelle île, un ami raconte un petit bout d'histoire (lu à voix haute) puis pose une énigme en images, une seule fois par île, avec des pièces en plus. Les chapitres se relisent depuis « 📖 Mon histoire » dans l'en-tête.
+
+---
+
+# v41 — Espace parents
+
+Réservé aux adultes : panneau des joueurs → 👪 *Espace parents* (`js/parents.js`).
+- **Accès** : une multiplication à résoudre (de 6 × 6 à 9 × 9) ; l'accès reste ouvert 5 minutes.
+- **Un onglet par enfant**, avec :
+  - **Temps de jeu** : aujourd'hui, moyenne des jours joués, graphique des 7 derniers jours. Seul le jeu *actif* compte (un toucher dans les 90 dernières secondes, écran visible, hors écran titre) ; 60 jours gardés.
+  - **Pause douce** : pas de pause, ou après 15, 20, 30, 45, 60 minutes de jeu dans la journée. Ensuite, plus de nouveau défi jusqu'au lendemain : le compagnon s'endort (« Perle est fatiguée : on fait une pause et on revient demain ? », accordé fille / garçon) ; l'île, le sac et l'album restent ouverts ; jamais au milieu d'une mission ; pas en mode à plusieurs. Un adulte peut ajouter 10 minutes (après la multiplication).
+  - **Progrès par compétence** : les mini-jeux rangés en 7 compétences (lecture et langage, nombres, calcul, temps et mesures, formes et espace, sciences, mémoire et logique), seulement ceux proposés à l'âge de l'enfant. Pour chaque jeu : missions réussies et ratées, erreurs par mission, niveau atteint, et un état calculé sur les 6 dernières missions :
+    - *À l'aise* : au moins 3 missions, aucune ratée, 0,5 erreur par mission au plus ;
+    - *À travailler* : au moins un tiers de ratées, ou 1,5 erreur par mission ou plus (au mémo, retourner deux cartes différentes fait partie du jeu : seuil 3 fois plus haut) ;
+    - *En cours* entre les deux ; *Pas assez joué* sous 2 missions ; *Pas encore joué*.
+  - **Réglages** : sauvegarde, prénom / âge / compagnon / remise à zéro.
+- **Données** (dans la partie de chaque enfant, donc dans la sauvegarde) : `skills[jeu] = { wins, fails, errors, last, recent[10] }`, `playTime[jour]` en secondes, `pauseExtra`. Le réglage `pauseMin` est dans le profil. Une erreur = un essai perdu (`loseLife`, minuteur compris). À plusieurs, une erreur passe la main : rien n'est compté.
+- **Correctif** : une ancienne partie à laquelle il manquait une donnée recevait l'objet *par défaut* lui-même, partagé avec les autres joueurs ; elle reçoit maintenant sa propre copie.
+- Cache `lagon-v41`.

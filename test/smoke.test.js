@@ -812,6 +812,64 @@ setTimeout(()=>{
       check('rappel : plus de rappel juste après une sauvegarde', ev('(setBackupMeta({lastBackupAt:new Date().toISOString()}), backupDue())')===false);
       ev('localStorage.removeItem("lagon-magique-meta")');
     }
+    // ---- Espace parents (Phase 2) ----
+    {
+      ev('closeModal(); party.active = false; if(typeof race!=="undefined") race.active = false');
+      const inGroups = ev('SKILL_GROUPS.flatMap(g=>g.games)');
+      const sansGroupe = ev('GAME_TYPES').filter(k=>!inGroups.includes(k));
+      check('parents : chaque mini-jeu est rangé dans une compétence', sansGroupe.length===0);
+      // une vraie mission : une erreur, puis la victoire
+      ev('state.skills = {}; currentWorld = "lagon"; playGame("count"); loseLife(null); onMissionWin()');
+      check('parents : une mission gagnée est enregistrée avec ses erreurs', ev('state.skills.count.wins')===1 && ev('state.skills.count.errors')===1 && ev('state.skills.count.recent[0].t')===1);
+      ev('closeModal(); playGame("count"); onMissionFail()');
+      check('parents : une mission ratée est enregistrée', ev('state.skills.count.fails')===1 && ev('state.skills.count.recent[1].e')===0);
+      ev('closeModal()');
+      check('parents : à plusieurs, rien n\'est compté (une erreur passe la main)', ev('(party.active = true, lastGame = "count", recordMission(true), party.active = false, state.skills.count.wins)')===1);
+      check('parents : jamais joué → « pas encore joué »', ev('skillStatus(undefined, "count")')==='jamais');
+      check('parents : jeu tout juste commencé → « pas assez joué »', ev('skillStatus({wins:1, fails:0, recent:[{t:1,e:0,ok:true}]}, "count")')==='nouveau');
+      check('parents : réussi sans erreur → « à l\'aise »', ev('skillStatus({wins:3, fails:0, recent:[{t:1,e:0,ok:true},{t:1,e:0,ok:true},{t:2,e:1,ok:true}]}, "count")')==='aise');
+      check('parents : souvent raté → « à travailler »', ev('skillStatus({wins:1, fails:2, recent:[{t:1,e:2,ok:false},{t:1,e:0,ok:true},{t:1,e:2,ok:false}]}, "count")')==='difficile');
+      check('parents : au mémo, retourner deux cartes différentes n\'est pas « difficile »', ev('skillStatus({wins:3, fails:0, recent:[{t:1,e:3,ok:true},{t:1,e:3,ok:true},{t:1,e:3,ok:true}]}, "memory")')!=='difficile' && ev('skillStatus({wins:3, fails:0, recent:[{t:1,e:3,ok:true},{t:1,e:3,ok:true},{t:1,e:3,ok:true}]}, "count")')==='difficile');
+      check('parents : les progrès partent avec la sauvegarde', JSON.stringify(ev('buildBackup()').data).includes('skills'));
+      // temps de jeu et pause douce
+      ev('state.playTime = {}; tickPlayTime(600)');
+      check('temps de jeu : compté par jour', ev('playMinutesToday()')===10);
+      check('pause douce : pas de pause par défaut', ev('pauseDue()')===false);
+      ev('currentProfile().pauseMin = 10');
+      check('pause douce : due une fois le temps atteint', ev('pauseDue()')===true);
+      ev('playGame("count")');
+      check('pause douce : plus de nouveau défi, l\'écran de pause s\'affiche', !!d.querySelector('.pause-box') && !d.querySelector('.count-row'));
+      check('pause douce : accord avec le compagnon (fatigué / fatiguée)', d.querySelector('.pause-box .speech').textContent.includes(ev('COMPANIONS[currentCompanion()].group')==='f' ? 'fatiguée' : 'fatigué\u00a0'));
+      ev('closeModal()');
+      check('pause douce : jamais en mode à plusieurs', ev('(party.active = true, pauseDue())')===false);
+      ev('party.active = false; state.pauseExtra = { date: todayKey(), min: 10 }');
+      check('pause douce : un adulte peut ajouter 10 minutes', ev('pauseDue()')===false);
+      ev('currentProfile().pauseMin = 0; state.pauseExtra = null; state.playTime = {}; save(); saveProfiles()');
+      // accès réservé aux adultes
+      ev('parentUnlockedUntil = 0; openPlayers()');
+      check('parents : bouton dans le panneau des joueurs', !!d.getElementById('btn-parents'));
+      d.getElementById('btn-parents').click();
+      check('parents : une question pour adultes protège l\'accès', !!d.getElementById('gate-in') && !d.querySelector('.ps-tabs'));
+      const q = d.querySelector('.gate-q').textContent.match(/(\d+) × (\d+)/);
+      d.getElementById('gate-in').value = String(Number(q[1])*Number(q[2]) + 1);
+      d.getElementById('gate-ok').click();
+      check('parents : une mauvaise réponse n\'ouvre pas', !d.querySelector('.ps-tabs') && d.getElementById('gate-err').textContent.length>0);
+      d.getElementById('gate-in').value = String(Number(q[1])*Number(q[2]));
+      d.getElementById('gate-ok').click();
+      check('parents : la bonne réponse ouvre l\'espace parents', !!d.querySelector('.ps-tabs'));
+      check('parents : un onglet par enfant', d.querySelectorAll('.ps-tab').length===ev('profiles.list.length'));
+      check('parents : temps de jeu sur 7 jours', d.querySelectorAll('.pt-col').length===7);
+      check('parents : progrès par compétence affichés', d.querySelectorAll('.sk-row').length>0 && d.querySelector('.sk-row').textContent.length>0);
+      d.querySelector('[data-pause="20"]').click();
+      check('parents : la pause se règle par enfant', ev('currentProfile().pauseMin')===20 && d.querySelector('[data-pause="20"]').classList.contains('on'));
+      ev('currentProfile().pauseMin = 0; saveProfiles(); closeModal(); openParents()');
+      check('parents : pas de nouvelle question pendant 5 minutes', !!d.querySelector('.ps-tabs'));
+      ev('closeModal(); parentUnlockedUntil = 0');
+      // une ancienne partie sans ces données ne partage pas ses objets avec les autres joueurs
+      ev('window.__keep = JSON.stringify(state); localStorage.setItem(currentSaveKey(), JSON.stringify({v: SAVE_VERSION, coins: 3})); load(); state.skills.x = 1');
+      check('chargement : une ancienne partie reçoit ses propres données (pas partagées)', ev('DEFAULT_STATE.skills.x')===undefined && ev('freshState().skills.x')===undefined);
+      ev('localStorage.setItem(currentSaveKey(), __keep); load()');
+    }
     // ---- Chaque nouveau monde : couleurs propres et place sur la carte ----
     {
       const css = fs.readFileSync(path.join(__dirname, '..', 'styles.css'), 'utf8');

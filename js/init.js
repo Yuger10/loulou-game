@@ -98,3 +98,4 @@ if('serviceWorker' in navigator && location.protocol!=='file:'){
   });
 }
 if(typeof initBackup==='function') initBackup();
+if(typeof startPlayTimeTracker==='function') startPlayTimeTracker();

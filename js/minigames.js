@@ -72,6 +72,7 @@ function loseLife(el, opts){
   if(typeof buddyReact==='function') buddyReact('oops', 1300);
   // multijoueur : la règle reste « une erreur = on passe la main »
   if(typeof party!=='undefined' && party.active){ wrongFeedback(el); return false; }
+  if(typeof noteAnswerError==='function') noteAnswerError();   // pour l'espace parents
 
   playSound('wrong');
   vibrate(90);
@@ -232,6 +233,9 @@ function gameRenderer(key){
 // Lance un type de jeu précis, en comptant le coup pour ce joueur
 // (utilisé pour proposer en priorité les jeux les moins essayés).
 function playGame(key){
+  // pause douce réglée par les parents : plus de nouveau défi aujourd'hui
+  if(typeof pauseDue==='function' && pauseDue()){ showPauseScreen(); return; }
+  if(typeof missionErrors!=='undefined') missionErrors = 0;
   trackGamePlayed(key);
   lastGame = key;
   gameRenderer(key)();
@@ -272,6 +276,7 @@ function progressDots(done, total){
 
 /* Mission ratée : on encourage, on ne punit pas — mais pas de récompense. */
 function onMissionFail(){
+  if(typeof recordMission==='function') recordMission(false);
   missionFact = null;
   bindQuit._last = null;
   lives = 0;
@@ -305,6 +310,7 @@ function onMissionFail(){
 }
 
 function onMissionWin(){
+  if(typeof recordMission==='function') recordMission(true);   // avant le mode course, qui s'arrête plus bas
   bindQuit._last = null;
   if(typeof partyScore==='function') partyScore();
   // course : on avance d'une case ; si la ligne d'arrivée est franchie, l'écran de victoire s'affiche
