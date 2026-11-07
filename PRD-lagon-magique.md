@@ -449,3 +449,15 @@ Prépare au calcul de monnaie (composer une somme avec des pièces de valeurs di
 - Nouveaux fichiers `js/compare.js`, `js/money.js`, chargés après `js/volume.js`.
 - Ajoutés à `GAME_TYPES` et `GAME_LIST` (désormais **12 jeux + surprise**).
 - Essais limités comme les autres jeux à partir de l'île 2.
+
+---
+
+# v21 — Seulement 3 défis proposés à chaque tour
+
+## Pourquoi
+Avec 12 mini-jeux, le sélecteur « Choisis ton jeu » montrait toute la liste à chaque fois : trop de choix, et toujours les mêmes jeux préférés revenaient. Le but est de tous les faire tourner et de garder la surprise.
+
+## Changement
+- `openGamePicker()` tire désormais **3 défis au hasard** (`GAME_PICKER_SIZE = 3`) parmi les 12 disponibles, plus le bouton 🎲 Surprise (qui lui tire parmi tous les types).
+- Un nouveau tirage de 3 défis différents est proposé à chaque fois qu'on rouvre le sélecteur.
+- Le bouton 🎲 Surprise reste disponible pour piocher dans toute la liste sans repasser par le sélecteur.

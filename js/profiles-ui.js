@@ -251,13 +251,19 @@ function openPlayerSettings(id){
 }
 
 /* --- Choix du mini-jeu --- */
+// Nombre de défis proposés à chaque fois (+ le bouton Surprise).
+// On ne montre jamais toute la liste : un petit choix à chaque tour,
+// pour garder la surprise et faire tourner tous les jeux.
+const GAME_PICKER_SIZE = 3;
+
 function openGamePicker(charId){
   if(charId) currentChar = charId;
   const who = party.active ? (partyCurrent() || currentProfile()) : currentProfile();
+  const choices = shuffle(GAME_LIST).slice(0, Math.min(GAME_PICKER_SIZE, GAME_LIST.length));
   openModal(`
     ${gameHeader('🎮 Choisis ton jeu', party.active ? `${who.avatar} ${who.name || 'À toi'} choisit !` : 'À quoi veux-tu jouer ?')}
     <div class="game-picker">
-      ${GAME_LIST.map(g=>`<button class="game-choice" data-game="${g.key}">
+      ${choices.map(g=>`<button class="game-choice" data-game="${g.key}">
         <span class="emoji">${g.emoji}</span><span class="nm">${g.name}</span>
       </button>`).join('')}
       <button class="game-choice surprise" data-game="random">

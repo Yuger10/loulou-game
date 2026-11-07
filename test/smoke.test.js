@@ -528,11 +528,18 @@ setTimeout(()=>{
     check('course terminée : retour au solo', ev('party.active')===false);
     ev('closeModal(); stopRace(true)');
 
-    // choix du mini-jeu
+    // choix du mini-jeu : seulement 3 défis tirés au sort + surprise (pas toute la liste)
     ev('closeModal(); openGamePicker("sirene")');
-    check('choix du jeu : 12 jeux + surprise', d.querySelectorAll('.game-choice').length===13);
-    d.querySelector('.game-choice[data-game="simon"]').click();
-    check('choix du jeu : lance bien le jeu choisi', d.querySelectorAll('.simon-pad').length===4);
+    check('choix du jeu : 3 défis + surprise proposés', d.querySelectorAll('.game-choice').length===4);
+    const pickedKeys = [...d.querySelectorAll('.game-choice:not(.surprise)')].map(b=>b.dataset.game);
+    check('choix du jeu : tous les défis proposés existent bien', pickedKeys.every(k=>ev(`GAME_LIST.some(g=>g.key==="${k}")`)));
+    check('choix du jeu : pas de doublon', new Set(pickedKeys).size===pickedKeys.length);
+    d.querySelector('.game-choice:not(.surprise)').click();
+    check('choix du jeu : lance bien un mini-jeu', !!d.querySelector('#modal-body h2'));
+    // un nouveau tirage propose en général une sélection différente
+    ev('closeModal(); openGamePicker("sirene")');
+    const pickedKeys2 = [...d.querySelectorAll('.game-choice:not(.surprise)')].map(b=>b.dataset.game);
+    check('choix du jeu : toujours 3 défis au tirage suivant', pickedKeys2.length===3);
     check('aucune erreur JS', errs.length===0);
     if(errs.length) console.log(errs);
     console.log(failed ? `\n${failed} test(s) en échec` : '\nTous les tests passent');
