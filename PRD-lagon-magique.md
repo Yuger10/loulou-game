@@ -764,3 +764,19 @@ Réservé aux adultes : panneau des joueurs → 👪 *Espace parents* (`js/paren
 - **Données** (dans la partie de chaque enfant, donc dans la sauvegarde) : `skills[jeu] = { wins, fails, errors, last, recent[10] }`, `playTime[jour]` en secondes, `pauseExtra`. Le réglage `pauseMin` est dans le profil. Une erreur = un essai perdu (`loseLife`, minuteur compris). À plusieurs, une erreur passe la main : rien n'est compté.
 - **Correctif** : une ancienne partie à laquelle il manquait une donnée recevait l'objet *par défaut* lui-même, partagé avec les autres joueurs ; elle reçoit maintenant sa propre copie.
 - Cache `lagon-v41`.
+
+---
+
+# v42 — Un jeu qui s'adapte à chaque enfant
+
+Avant, changer d'île suffisait à rendre tous les mini-jeux plus difficiles, même un jeu jamais réussi. Désormais chaque mini-jeu a son propre niveau, pour chaque enfant (`js/adaptive.js`, branché sur `gameDiff()`).
+- **Niveau joué** = le plus petit entre le palier de l'île (plafonné par l'âge) et le niveau acquis dans ce jeu. L'île et l'âge restent des plafonds.
+- **Premier essai d'un jeu** : un cran sous l'île, pour se placer (niveau 1 au minimum). Les enfants qui jouaient déjà repartent donc un cran plus bas dans chaque jeu, et remontent dès 2 réussites.
+- **Monter** : 2 missions réussies d'affilée à ce niveau, avec au plus 1 erreur chacune (3 au mémo). Le niveau du calcul mental, des formes et des planètes va jusqu'à 6, les autres jusqu'à 5. Les missions jouées sur une île plus facile ne comptent pas pour monter.
+- **Redescendre (« soutien »)** : 2 missions ratées sur les 3 dernières à ce niveau → un cran plus facile ; on remonte ensuite de la même façon.
+- **Ce qui est à travailler revient plus souvent** : une fois sur deux, un jeu « à travailler » ou redescendu prend une des deux places du choix des jeux, et la Surprise le choisit ; jamais deux fois de suite le même jeu.
+- **Le compagnon encourage** : quand un jeu monte d'un niveau, ou n'est plus « à travailler », l'écran de victoire affiche et dit une phrase propre au jeu (« Tu lis de mieux en mieux ! », « Tu comptes de mieux en mieux ! »…), valable pour une fille comme pour un garçon.
+- **À plusieurs** (chacun son tour, course) : rien ne change, chacun joue à la difficulté de son âge.
+- **Espace parents** : le niveau affiché est celui du jeu, avec « redescendu d'un cran pour s'entraîner » quand c'est le cas, et l'explication des règles.
+- Données dans la partie de l'enfant : `skills[jeu].lvl`, `atLvl` (3 dernières missions à ce niveau), `support`.
+- Cache `lagon-v42`.

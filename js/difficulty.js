@@ -60,6 +60,11 @@
      du tri par couleur (petite section) aux polygones et à leurs sommets
      (CE2) ; sur cette île il propose donc le plus difficile.
 
+   Niveau propre à chaque jeu (v42, js/adaptive.js) : en solo, le palier
+   joué est aussi limité par ce que l'enfant a ACQUIS dans ce jeu. Changer
+   d'île ne suffit plus : on monte d'un cran après 2 réussites d'affilée
+   presque sans erreur, on redescend d'un cran après 2 missions ratées.
+
    Un joueur sans âge renseigné n'est jamais concerné par le minuteur
    (voir `timerFor`) ; un enfant de moins de 6 ans ne voit jamais les
    paliers 3 et plus, quelle que soit l'île (voir `gameTypesForAge` dans

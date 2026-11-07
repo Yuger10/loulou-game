@@ -2610,3 +2610,8 @@
   .sk-pill.mid{background:var(--tint-sun); color:#7A5A00;}
   .sk-pill.hard{background:var(--coral-tint); color:#A83A22;}
   .sk-pill.new{background:#EEF2F4; color:var(--ink-soft);}
+
+  /* =====================================================================
+     Un jeu qui s'adapte (v42) : le compagnon dit ce qui progresse
+     ===================================================================== */
+  .progress-cheer{background:var(--tint-mint) !important; color:#1B5E36; font-weight:800; display:flex; align-items:center; justify-content:center; gap:8px;}

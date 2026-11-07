@@ -295,6 +295,12 @@ function pickPickerChoices(n){
   const own = typeof currentWorld!=='undefined' && WORLDS[currentWorld] && WORLDS[currentWorld].game;
   const ownGame = own && pool.find(g=>g.key===own);
   if(ownGame && !choices.includes(ownGame)) choices[0] = ownGame;
+  // Phase 3 : un jeu à travailler revient plus souvent (js/adaptive.js)
+  const practice = typeof pickPracticeGame==='function' ? pickPracticeGame(pool.map(g=>g.key)) : null;
+  if(practice && !choices.some(g=>g.key===practice)){
+    const slot = choices.length > 1 && choices[choices.length-1]!==ownGame ? choices.length-1 : (choices[0]===ownGame ? -1 : 0);
+    if(slot >= 0) choices[slot] = pool.find(g=>g.key===practice);
+  }
   return choices;
 }
 

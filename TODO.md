@@ -38,10 +38,12 @@ Panneau des joueurs → 👪 *Espace parents*.
 - [x] Y regrouper les réglages adultes : sauvegarde, prénom / âge / compagnon, remise à zéro — v41
 - [ ] À observer : les seuils « à l'aise / à travailler » sont-ils justes avec les enfants ? (à noter dans les Notes de session)
 
-### Phase 3 — Un jeu qui s'adapte à chaque enfant 🟠
-- [ ] Reproposer plus souvent (et un peu plus facile) ce qui est souvent raté
-- [ ] Ne passer au palier suivant d'une compétence que lorsqu'elle est acquise, pas seulement en changeant d'île
-- [ ] Le compagnon encourage sur ce qui progresse (« Tu lis de mieux en mieux ! »)
+### Phase 3 — Un jeu qui s'adapte à chaque enfant 🟠 ✅
+Chaque mini-jeu a maintenant son propre niveau pour chaque enfant (`js/adaptive.js`).
+- [x] Reproposer plus souvent (et un peu plus facile) ce qui est souvent raté : une fois sur deux, un jeu à travailler prend une place dans le choix et dans la Surprise ; après 2 missions ratées, le jeu redescend d'un cran — v42
+- [x] Ne passer au palier suivant d'une compétence que lorsqu'elle est acquise : 2 réussites d'affilée presque sans erreur ; l'île et l'âge restent des plafonds — v42
+- [x] Le compagnon encourage sur ce qui progresse (« Tu lis de mieux en mieux ! »), sur l'écran de victoire — v42
+- [ ] À observer : la montée (2 réussites) est-elle trop rapide ou trop lente ? Les jeux à travailler reviennent-ils trop souvent ?
 
 ### Phase 4 — Plus de plaisir 🟢
 - [ ] Habiller son avatar : tenues et accessoires gagnés (cape d'une autre couleur pour Zap, couronnes, chapeaux…)
@@ -93,6 +95,7 @@ Panneau des joueurs → 👪 *Espace parents*.
 | v39 | Sauvegarde et restauration (fichier, code de transfert), stockage protégé, invitation à installer, rappel de sauvegarde |
 | v40 | L'Histoire du Lagon Magique : un chapitre et une énigme en images par île |
 | v41 | Espace parents : accès adulte, progrès par compétence, temps de jeu, pause douce |
+| v42 | Un jeu qui s'adapte : un niveau par mini-jeu et par enfant, ce qui est raté revient plus souvent, le compagnon encourage les progrès |
 
 ---
 

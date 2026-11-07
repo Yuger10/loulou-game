@@ -697,7 +697,8 @@ setTimeout(()=>{
     })));
 
     // la barre de minuteur apparaît bien dans la fenêtre de jeu, au palier 3+
-    ev('currentWorld="montagne"; renderCount()');
+    // (« Compter » déjà acquis jusqu'au niveau 5 : seule l'île fixe le palier)
+    ev('currentWorld="montagne"; lastGame="count"; state.skills = Object.assign(state.skills||{}, {count:{wins:4, fails:0, errors:0, last:null, recent:[], lvl:5}}); renderCount()');
     check('minuteur : barre affichée dans le jeu (île 3)', !!d.getElementById('challenge-timer'));
     ev('closeModal()');
     ev('currentWorld="lagon"; renderCount()');
@@ -869,6 +870,46 @@ setTimeout(()=>{
       ev('window.__keep = JSON.stringify(state); localStorage.setItem(currentSaveKey(), JSON.stringify({v: SAVE_VERSION, coins: 3})); load(); state.skills.x = 1');
       check('chargement : une ancienne partie reçoit ses propres données (pas partagées)', ev('DEFAULT_STATE.skills.x')===undefined && ev('freshState().skills.x')===undefined);
       ev('localStorage.setItem(currentSaveKey(), __keep); load()');
+    }
+    // ---- Phase 3 : un jeu qui s'adapte à chaque enfant ----
+    {
+      ev('closeModal(); party.active = false; currentProfile().age = 0; state.skills = {}; currentWorld = "montagne"; lastGame = "reading"');
+      check('adaptatif : chaque mini-jeu a une phrase d\'encouragement', ev('GAME_TYPES').every(k=>ev(`!!PROGRESS_CHEERS[${JSON.stringify(k)}]`)));
+      check('adaptatif : jeu jamais joué → un cran sous l\'île (placement)', ev('gameDiff()')===2);
+      check('adaptatif : à plusieurs, la difficulté ne change pas', ev('(party.active = true, adaptTier(3, "reading"))')===3 && ev('(party.active = false, true)'));
+      // deux réussites sans erreur → le jeu monte d'un cran, le compagnon félicite
+      ev('playGame("reading"); recordMission(true)');
+      check('adaptatif : le premier passage fixe le niveau du jeu', ev('state.skills.reading.lvl')===2 && ev('missionProgress')===null);
+      ev('playGame("reading"); onMissionWin()');
+      check('adaptatif : 2 réussites d\'affilée → niveau suivant', ev('state.skills.reading.lvl')===3 && ev('gameDiff()')===3);
+      check('adaptatif : le compagnon dit ce qui progresse', !!d.querySelector('.win-box .progress-cheer') && d.querySelector('.win-box .progress-cheer').textContent.includes('Tu lis de mieux en mieux'));
+      ev('closeModal()');
+      check('adaptatif : jamais au-dessus de l\'île', ev('(state.skills.reading.lvl = 5, gameDiff())')===3);
+      check('adaptatif : jamais au-dessus de l\'âge', ev('(currentProfile().age = 6, state.skills.reading.lvl = 5, gameDiff())')===ev('Math.min(ageToDiff(6), 3)') && ev('(currentProfile().age = 0, true)'));
+      // une réussite avec des erreurs ne fait pas monter
+      ev('state.skills.reading = {wins:0, fails:0, errors:0, last:null, recent:[], lvl:3}; playGame("reading"); noteAnswerError(); noteAnswerError(); recordMission(true); playGame("reading"); recordMission(true)');
+      check('adaptatif : réussir avec beaucoup d\'erreurs ne fait pas monter', ev('state.skills.reading.lvl')===3);
+      // deux missions ratées → un cran plus facile (soutien)
+      ev('playGame("reading"); recordMission(false); playGame("reading"); recordMission(false)');
+      check('adaptatif : 2 missions ratées → un cran plus facile', ev('state.skills.reading.lvl')===2 && ev('state.skills.reading.support')===true && ev('gameDiff()')===2);
+      check('adaptatif : un jeu redescendu est « à travailler »', ev('needsPractice("reading")')===true);
+      // ce qui est à travailler revient plus souvent
+      ev('PRACTICE_CHANCE = 1; lastGame = "count"');
+      check('adaptatif : le jeu à travailler est proposé dans le choix', ev('pickPickerChoices(2).map(g=>g.key)').includes('reading'));
+      check('adaptatif : …et par la Surprise', ev('pickPracticeGame(GAME_TYPES)')==='reading');
+      ev('lastGame = "reading"');
+      check('adaptatif : …mais jamais deux fois de suite', ev('pickPracticeGame(GAME_TYPES)')===null);
+      ev('PRACTICE_CHANCE = 0');
+      check('adaptatif : …et pas à chaque fois', ev('pickPracticeGame(GAME_TYPES)')===null);
+      ev('PRACTICE_CHANCE = 0.5');
+      // en remontant, le jeu sort du soutien
+      ev('playGame("reading"); recordMission(true); playGame("reading"); recordMission(true)');
+      check('adaptatif : 2 réussites → on remonte et on sort du soutien', ev('state.skills.reading.lvl')===3 && ev('state.skills.reading.support')===false);
+      // sur une île plus facile, les missions ne comptent pas pour monter
+      ev('currentWorld = "lagon"; playGame("reading"); recordMission(true); playGame("reading"); recordMission(true)');
+      check('adaptatif : sur une île plus facile, le niveau du jeu ne bouge pas', ev('state.skills.reading.lvl')===3);
+      check('adaptatif : le niveau du calcul mental va jusqu\'à 6, les autres jeux jusqu\'à 5', ev('gameMaxTier("calc")')===6 && ev('gameMaxTier("reading")')===5);
+      ev('state.skills = {}; currentWorld = "lagon"; lastGame = null; save()');
     }
     // ---- Chaque nouveau monde : couleurs propres et place sur la carte ----
     {
