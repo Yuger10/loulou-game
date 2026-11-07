@@ -138,6 +138,19 @@ ART.chouette=svg(
   eyes(46,74,57,4.4,5.2)+
   `<path d="M56 68 L60 79 L64 68Z" fill="#F2A24B" ${O(2)}/>`+cheeks(33,87,72));
 
+// Kiko le singe : le museau clair recouvrait les yeux ; masque clair autour des yeux, yeux dessinés PAR-DESSUS
+ART.singe=svg(
+  `<path d="M86 116 C108 120 116 100 106 88 C100 82 94 88 98 94" fill="none" stroke="#A85F37" stroke-width="7" stroke-linecap="round"/>`+
+  `<circle cx="25" cy="54" r="13" fill="#A85F37" ${O()}/><circle cx="25" cy="54" r="7" fill="#F0C69D"/>`+
+  `<circle cx="95" cy="54" r="13" fill="#A85F37" ${O()}/><circle cx="95" cy="54" r="7" fill="#F0C69D"/>`+
+  `<ellipse cx="60" cy="110" rx="30" ry="21" fill="#A85F37" ${O()}/><ellipse cx="60" cy="114" rx="16" ry="13" fill="#F0C69D"/>`+
+  `<path d="M54 30 Q56 18 62 22 M60 29 Q66 16 70 24" fill="none" stroke="#A85F37" stroke-width="4" stroke-linecap="round"/>`+
+  `<ellipse cx="60" cy="56" rx="31" ry="29" fill="#A85F37" ${O()}/>`+
+  `<path d="M60 44 C52 36 34 38 34 54 C34 62 38 66 42 70 C40 78 46 88 60 88 C74 88 80 78 78 70 C82 66 86 62 86 54 C86 38 68 36 60 44Z" fill="#F0C69D" ${O(2)}/>`+
+  eyes(48,72,55,4.8,6.2)+
+  `<ellipse cx="56" cy="70" rx="1.8" ry="1.4" fill="${AI}"/><ellipse cx="64" cy="70" rx="1.8" ry="1.4" fill="${AI}"/>`+
+  cheeks(40,80,67)+smile(51,69,77,7));
+
 // Max le robot savant : tête en dôme et lunettes de labo (Bolt a une tête carrée et des chenilles)
 ART.robotsavant=svg(
   `<path d="M34 104 L14 96 L10 106 M86 104 L106 96 L110 106" fill="none" stroke="#C9D6DE" stroke-width="8" stroke-linecap="round"/>`+
