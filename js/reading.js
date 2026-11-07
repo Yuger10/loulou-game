@@ -46,7 +46,7 @@ function renderReading(){
   document.querySelectorAll('.reading-opt').forEach(btn=>{
     btn.onclick = ()=>{
       if(btn.dataset.w===correct.word){ clearActiveTimer(); stepOk(btn); flashModal('ok'); setTimeout(onMissionWin, 350); }
-      else loseLife(btn);
+      else loseLife(btn, { onRetry: renderReading });
     };
   });
 }

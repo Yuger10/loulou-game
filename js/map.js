@@ -75,12 +75,15 @@ function renderMap(){
       const w = WORLDS[nxt];
       const need = (w.level-1) * MISSIONS_PER_LEVEL;
       const pct = Math.min(100, Math.round(state.missions/need*100));
+      const say = `Prochaine île : ${w.name}, au niveau ${w.level}`.replace(/"/g,'&quot;');
       info.innerHTML = `🗺️ Prochaine île : <strong>${w.name}</strong> au niveau ${w.level}
+        <button type="button" class="btn-speak map-next-speak" data-say="${say}" aria-label="Écouter">🔈</button>
         <div class="quest-bar"><i style="width:${pct}%"></i></div>`;
     } else {
       info.innerHTML = `🏆 Tu as débloqué toutes les îles !`;
     }
     info.hidden = false;
+    bindSpeakButtons();
   }
 }
 

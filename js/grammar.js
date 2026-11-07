@@ -50,7 +50,7 @@ function renderDeterminants(){
   document.querySelectorAll('.det-btn').forEach(btn=>{
     btn.onclick = ()=>{
       if(btn.dataset.v===answer){ clearActiveTimer(); stepOk(btn); flashModal('ok'); setTimeout(onMissionWin, 350); }
-      else loseLife(btn);
+      else loseLife(btn, { onRetry: renderDeterminants });
     };
   });
 }

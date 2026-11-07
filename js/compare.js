@@ -47,7 +47,7 @@ function renderCompare(){
         stepOk(btn); flashModal('ok');
         setTimeout(onMissionWin, 350);
       } else {
-        loseLife(btn);
+        loseLife(btn, { onRetry: renderCompare });
       }
     };
   });

@@ -22,24 +22,32 @@ function renderCalendar(){
 }
 
 // Dès la petite section : associer une scène illustrée à sa saison.
+// Seulement 3 options : sans précaution, une erreur laisserait deviner
+// la bonne réponse PAR ÉLIMINATION (observé en situation réelle). Une
+// erreur relance donc une NOUVELLE scène, jamais la même à éliminer —
+// et les 3 noms proposés sont annoncés à voix haute (sans révéler
+// lequel est juste), pour relier le mot entendu à l'image vue.
 function renderSeasonGuess(){
   const correct = pickRandom(SEASONS);
   const options = shuffle(SEASONS).slice(0,3);
   if(!options.includes(correct)) options[0] = correct;
+  const shown = shuffle(options);
 
   openModal(`
     ${gameHeader('📅 Quelle saison ?', "Regarde l'image… à quelle saison ça correspond ?", "Regarde l'image, à quelle saison ça correspond ?")}
     ${livesBar()}
     <div class="season-scene">${correct.scene}</div>
     <div class="season-options">
-      ${shuffle(options).map(o=>`<button type="button" class="season-btn" data-v="${o.name}">${o.name}</button>`).join('')}
+      ${shown.map(o=>`<button type="button" class="season-btn" data-v="${o.name}">${o.name}</button>`).join('')}
     </div>
   `);
   bindQuit();
+  // annonce les 3 mots proposés (vocabulaire), un peu après la consigne
+  setTimeout(()=> speak(shown.map(o=>o.name).join(', ')), 1600);
   document.querySelectorAll('.season-btn').forEach(btn=>{
     btn.onclick = ()=>{
       if(btn.dataset.v===correct.name){ stepOk(btn); flashModal('ok'); setTimeout(onMissionWin, 350); }
-      else loseLife(btn);
+      else loseLife(btn, { onRetry: renderSeasonGuess });
     };
   });
 }
