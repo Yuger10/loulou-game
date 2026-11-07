@@ -54,6 +54,12 @@
      n'y a pédagogiquement rien à gagner à leur donner des nombres encore
      plus grands ; seul le calcul pur continue de progresser.
 
+   Palier 6 — 🍡 Pays Squishy — CE2 (10-11 ans)
+     8e île, la récompense après le Volcan : même palier 6. Son mini-jeu
+     « Formes et couleurs » (voir `shapesRound`) couvre toute la scolarité,
+     du tri par couleur (petite section) aux polygones et à leurs sommets
+     (CE2) ; sur cette île il propose donc le plus difficile.
+
    Un joueur sans âge renseigné n'est jamais concerné par le minuteur
    (voir `timerFor`) ; un enfant de moins de 6 ans ne voit jamais les
    paliers 3 et plus, quelle que soit l'île (voir `gameTypesForAge` dans
@@ -70,6 +76,7 @@ const DIFFICULTY_TIERS = [
   { n:5, island:'jungle',   schoolLevel:'fin CE1 / CE2',     label:'Perfectionnement' },
   { n:5, island:'cite',     schoolLevel:'fin CE1 / CE2',     label:'Nouvelles compétences (temps)' },
   { n:6, island:'volcan',   schoolLevel:'CE2',               label:'Calcul mental pur' },
+  { n:6, island:'squishy',  schoolLevel:'CE2',               label:'Formes, couleurs et polygones' },
 ];
 
 // Petit utilitaire : interpole/clampe un tableau de valeurs { 1:x, 2:y, ... }
@@ -293,7 +300,7 @@ const LIVES_TABLE = {
 function livesFor(kind, dd){
   const d = Math.max(1, Math.min(5, Number(dd) || 1));
   if(d <= 1) return Infinity;                  // île 1 : on apprend sans pression
-  const GENEROUS_KINDS = ['math','reading','determinants','volume','compare','money','clock','calendar','calc'];
+  const GENEROUS_KINDS = ['math','reading','determinants','volume','compare','money','clock','calendar','calc','shapes'];
   const table = LIVES_TABLE[kind] || (GENEROUS_KINDS.includes(kind) ? LIVES_TABLE.generous : LIVES_TABLE.default);
   // le calcul mental (palier 6, Volcan) emprunte le barème d'essais du
   // palier 5 : seul le minuteur continue de se resserrer au-delà.
@@ -330,7 +337,7 @@ const TIMER_SECONDS = {
   calc:         {3:28, 4:24, 5:22, 6:20},   // calcul abstrait : le plus généreux de tous
 };
 // jeux à plusieurs étapes : jamais de minuteur, quelle que soit la difficulté
-const NO_TIMER_KINDS = ['memory','simon','puzzle','calendar'];
+const NO_TIMER_KINDS = ['memory','simon','puzzle','calendar','shapes'];
 function timerFor(kind, dd){
   if(NO_TIMER_KINDS.includes(kind)) return null;
   const table = TIMER_SECONDS[kind];
@@ -403,3 +410,35 @@ function calcBounds(dd){
   return table[d];
 }
 const CALC_MULT_TABLES = [2, 5, 10];
+
+/* ---------------------------------------------------------------------
+   FORMES ET COULEURS (mini-jeu du Pays Squishy) — « Touche tous les… »
+   ---------------------------------------------------------------------
+   On trie des squishies : l'enfant touche TOUS ceux qui répondent à la
+   consigne (2 ou 3 sur le plateau). Le critère suit la progression du
+   programme « Explorer des formes, des grandeurs » (cycle 1) puis
+   « Espace et géométrie » (cycle 2) :
+     palier 1 (GS)        une couleur              « tous les squishies roses »
+     palier 2 (CP)        une forme                « toutes les étoiles »
+     palier 3 (CP/CE1)    forme ET couleur         « tous les cœurs bleus »
+     palier 4 (CE1)       taille ET forme          « tous les petits triangles »
+     palier 5 (CE1/CE2)   nombre de côtés          « les formes qui ont 4 côtés »
+     palier 6 (CE2)       nombre de sommets        « les formes qui ont 6 sommets »
+   Les couleurs se distinguent aussi par la clarté, et la consigne montre
+   la couleur ou la forme attendue en image (pastille, silhouette) pour un
+   enfant qui ne lit pas encore ; aux paliers 5-6, compter les côtés ou
+   les sommets EST l'exercice, la consigne n'a donc pas d'image.
+   Pas de minuteur (jeu à plusieurs touches) ; essais généreux. */
+function shapesRound(dd){
+  const d = Math.max(1, Math.min(6, Number(dd) || 1));
+  return [
+    null,
+    { criterion:'color',      items:6, targets:2, shapes:['rond','carre','triangle'],                               colors:['rose','bleu','jaune'] },
+    { criterion:'shape',      items:6, targets:2, shapes:['rond','carre','triangle','etoile','coeur'],             colors:['rose','bleu','jaune','vert'] },
+    { criterion:'shapeColor', items:8, targets:2, shapes:['rond','carre','triangle','etoile','coeur'],             colors:['rose','bleu','jaune','vert'] },
+    { criterion:'sizeShape',  items:8, targets:2, shapes:['rond','carre','triangle','etoile','coeur'],             colors:['rose','bleu','jaune','vert','violet'] },
+    { criterion:'sides',      items:8, targets:3, shapes:['rond','triangle','carre','rectangle','losange','pentagone','hexagone'], colors:['rose','bleu','jaune','vert','violet','orange'] },
+    { criterion:'vertices',   items:9, targets:3, shapes:['triangle','carre','rectangle','losange','pentagone','hexagone','octogone'], colors:['rose','bleu','jaune','vert','violet','orange'] },
+  ][d];
+}
+

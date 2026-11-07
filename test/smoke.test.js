@@ -63,12 +63,12 @@ check('scène déco présente', !!d.getElementById('scene'));
 check('3 missions du jour', ev('state.quests.list.length')===3);
 
 // Carte des îles
-check('carte : 7 îles affichées', d.querySelectorAll('.map-island').length===7);
+check('carte : 8 îles affichées', d.querySelectorAll('.map-island').length===8);
 check('carte : route dessinée', !!d.querySelector('.route-line') && !!d.querySelector('.route-done'));
 check('carte : bateau présent', !!d.getElementById('map-boat'));
-check('carte : îles dessinées (terre + label)', d.querySelectorAll('.map-island .isle-land').length===7);
+check('carte : îles dessinées (terre + label)', d.querySelectorAll('.map-island .isle-land').length===8);
 check('carte : lagon est l\'île courante', !!d.querySelector('.map-island.here[data-world="lagon"]'));
-check('carte : 6 îles verrouillées au niveau 1', d.querySelectorAll('.map-island.locked').length===6);
+check('carte : 7 îles verrouillées au niveau 1', d.querySelectorAll('.map-island.locked').length===7);
 check('carte : prochaine île annoncée', d.getElementById('map-next').innerHTML.includes('La Forêt'));
 d.querySelector('.map-island[data-world="foret"]').click();
 check('carte : île verrouillée non accessible', ev('currentWorld')==='lagon');
@@ -134,6 +134,19 @@ ev('sailing=false; setWorld("volcan")');
 check('navigation vers le volcan', ev('currentWorld')==='volcan');
 check('difficulté du volcan = 6 (le palier le plus élevé)', ev('gameDiff()')===6);
 check('volcan : personnages savants', [...d.querySelectorAll('.island')].map(b=>b.dataset.char).join()==='genie,savante,dragonlave,robotsavant');
+ev("switchView('carte')");
+check('pays squishy encore verrouillé au niveau 22', ev('worldUnlocked("squishy")')===false);
+
+ev('state.missions = 125; switchView("carte")');   // niveau 26
+check('pays squishy déverrouillé au niveau 26', ev('worldUnlocked("squishy")')===true);
+d.querySelector('.map-island[data-world="squishy"]').click();
+ev('sailing=false; setWorld("squishy")');
+check('navigation vers le pays squishy', ev('currentWorld')==='squishy');
+check('difficulté du pays squishy = 6', ev('gameDiff()')===6);
+check('squishy : personnages tout doux', [...d.querySelectorAll('.island')].map(b=>b.dataset.char).join()==='mochichat,donut,avocat,phoque');
+ev('openGamePicker("mochichat")');
+check('squishy : son mini-jeu « Formes et couleurs » est toujours proposé', !!d.querySelector('.game-choice[data-game="shapes"]'));
+ev('closeModal()');
 ev("switchView('carte')");
 check('carte : toutes les îles débloquées', d.getElementById('map-next').innerHTML.includes('toutes les îles'));
 
@@ -568,7 +581,7 @@ setTimeout(()=>{
     ev('closeModal()');
     check('compagnon par défaut : fille → sirène, garçon → pirate', ev("defaultCompanionFor('f')")==='perle' && ev("defaultCompanionFor('m')")==='tom');
     // ---- Illustrations SVG des personnages ----
-    check('personnages : les 28 ids possèdent un SVG', ev('Object.keys(CHARACTERS).length===28 && Object.keys(CHARACTERS).every(k=>charArtSVG(k).startsWith("<svg"))'));
+    check('personnages : les 32 ids possèdent un SVG', ev('Object.keys(CHARACTERS).length===32 && Object.keys(CHARACTERS).every(k=>charArtSVG(k).startsWith("<svg"))'));
     check('personnages : viewBox et longueur SVG valides', ev('Object.values(CHAR_ART).every(s=>s.startsWith("<svg") && s.includes(\'viewBox="0 0 120 130"\') && s.length<=6000)'));
     check('personnages : aucun élément ou attribut SVG interdit', ev('Object.values(CHAR_ART).every(s=>!/\\bid\\s*=|\\bhref\\s*=|url\\s*\\(|<\\s*(?:defs|linearGradient|radialGradient|clipPath|mask|filter|text|image|style|script)\\b/i.test(s))'));
     check('personnages : fallback emoji pour id inconnu', ev('charFace("__unknown").includes("❔")'));
@@ -634,7 +647,7 @@ setTimeout(()=>{
     ev('closeModal()');
 
     // ---- Compteur de défis joués, et variété forcée ----
-    ev('state.gameCounts = {}; state.gameCounts["memory"]=1; state.gameCounts["count"]=1; state.gameCounts["diff"]=1; state.gameCounts["puzzle"]=1; state.gameCounts["sequence"]=1; state.gameCounts["simon"]=1; state.gameCounts["math"]=1; state.gameCounts["reading"]=1; state.gameCounts["determinants"]=1; state.gameCounts["volume"]=1; state.gameCounts["clock"]=1; state.gameCounts["calendar"]=1; state.gameCounts["calc"]=1; state.gameCounts["compare"]=0; state.gameCounts["money"]=0; openGamePicker("sirene")');
+    ev('state.gameCounts = {}; state.gameCounts["memory"]=1; state.gameCounts["count"]=1; state.gameCounts["diff"]=1; state.gameCounts["puzzle"]=1; state.gameCounts["sequence"]=1; state.gameCounts["simon"]=1; state.gameCounts["math"]=1; state.gameCounts["reading"]=1; state.gameCounts["determinants"]=1; state.gameCounts["volume"]=1; state.gameCounts["clock"]=1; state.gameCounts["calendar"]=1; state.gameCounts["calc"]=1; state.gameCounts["compare"]=0; state.gameCounts["shapes"]=1; state.gameCounts["money"]=0; openGamePicker("sirene")');
     const leastPlayed = [...d.querySelectorAll('.game-choice:not(.surprise)')].map(b=>b.dataset.game);
     check('variété : les 2 jeux jamais essayés remontent en priorité', leastPlayed.includes('compare') && leastPlayed.includes('money'));
     ev('closeModal()');
@@ -643,8 +656,8 @@ setTimeout(()=>{
     ev('closeModal(); state.gameCounts = {}; renderLagon()');
 
     // ---- Défis adaptés à l\'âge (programme maternelle 3-6 ans) ----
-    check('âge 3 ans : mémoire/compter/intrus + saisons (sans lecture)', ev('gameTypesForAge(3)').join()==='memory,count,diff,calendar');
-    check('âge 4 ans : encore limité aux jeux visuels', ev('gameTypesForAge(4)').join()==='memory,count,diff,calendar');
+    check('âge 3 ans : mémoire/compter/intrus + saisons + formes (sans lecture)', ev('gameTypesForAge(3)').join()==='memory,count,diff,calendar,shapes');
+    check('âge 4 ans : encore limité aux jeux visuels', ev('gameTypesForAge(4)').join()==='memory,count,diff,calendar,shapes');
     check('âge 5 ans : un peu plus de jeux (volume, suite, simon, heure)', ev('gameTypesForAge(5)').includes('volume') && ev('gameTypesForAge(5)').includes('clock') && !ev('gameTypesForAge(5)').includes('math'));
     check('âge 5 ans : pas encore de calcul mental abstrait', !ev('gameTypesForAge(5)').includes('calc'));
     check('âge 6 ans : tous les jeux (CP)', ev('gameTypesForAge(6)').length===ev('GAME_TYPES').length);
@@ -719,6 +732,22 @@ setTimeout(()=>{
     check('île vivante : moment de la journée selon l\'heure', ev('isleTimeOfDay(new Date(2026,0,1,22))')==='nuit' && ev('isleTimeOfDay(new Date(2026,0,1,8))')==='matin' && ev('isleTimeOfDay(new Date(2026,0,1,13))')==='jour' && ev('isleTimeOfDay(new Date(2026,0,1,18))')==='soir');
     check('île vivante : une nouvelle île a un paysage par défaut', ev('(WORLDS.__test={name:"T",shape:"inconnue",sand:"#eee",land:"#8c8"}, landscapeSVG("__test").includes("<svg"))'));
     ev('delete WORLDS.__test');
+    // ---- Formes et couleurs (Pays Squishy) ----
+    {
+      // chaque palier : le bon nombre de squishies, exactement `targets` bonnes réponses
+      const okRounds = [1,2,3,4,5,6].every(dd=>ev(`(()=>{ for(let k=0;k<40;k++){ const r=shapesBuildRound(${dd}); const cfg=shapesRound(${dd});
+        if(r.items.length!==cfg.items || r.targets!==cfg.targets) return false; } return true; })()`));
+      check('formes : chaque palier a le bon nombre de squishies et de bonnes réponses', okRounds);
+      check('formes : palier 1 = couleur, palier 6 = sommets', ev('shapesRound(1).criterion')==='color' && ev('shapesRound(6).criterion')==='vertices');
+      check('formes : accords en français (féminin, pluriel)', ev('(()=>{ for(let k=0;k<200;k++){ const r=shapesBuildRound(3); if(/étoiles/.test(r.say) && !/toutes les étoiles (roses|bleues|jaunes|vertes)/.test(r.say)) return false; } return true; })()'));
+      ev('closeModal(); currentWorld="lagon"; playGame("shapes")');
+      const items = [...d.querySelectorAll('.sq-item')];
+      check('formes : le plateau s\'affiche', items.length===ev('shapesRound(1).items'));
+      check('formes : la consigne montre la couleur attendue (palier 1)', !!d.querySelector('.puzzle-hint .sq-dot'));
+      check('formes : jeu enregistré dans la liste', ev('GAME_LIST.some(g=>g.key==="shapes") && GAME_TYPES.includes("shapes")'));
+      check('formes : pas de minuteur (plusieurs touches)', ev('timerFor("shapes",5)')===null);
+      ev('closeModal()');
+    }
     // ---- Chaque nouveau monde : couleurs propres et place sur la carte ----
     {
       const css = fs.readFileSync(path.join(__dirname, '..', 'styles.css'), 'utf8');

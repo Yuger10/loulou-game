@@ -199,6 +199,22 @@ const ISLE_SCENERY = {
     <path d="M196 360 C214 322 236 292 238 252" fill="none" stroke="#C9583A" stroke-width="18" stroke-linecap="round" opacity=".9"/>
     <g fill="${w.sand}"><ellipse cx="80" cy="266" rx="22" ry="9"/><ellipse cx="404" cy="272" rx="26" ry="10"/><ellipse cx="300" cy="318" rx="14" ry="6"/></g>
     <g fill="#FF8A3A" opacity=".8"><ellipse cx="150" cy="300" rx="16" ry="4"/></g>`,
+  // Pays Squishy : collines de guimauve, nuages moelleux, sucettes géantes, bonbons
+  squishy: (w)=>`
+    <g class="ls-cloud c3" fill="#fff"><ellipse cx="96" cy="86" rx="34" ry="16"/><ellipse cx="116" cy="76" rx="22" ry="16"/><ellipse cx="78" cy="78" rx="16" ry="12"/></g>
+    <path d="M60 178 Q240 70 420 178" fill="none" stroke="#FFB3D1" stroke-width="10" stroke-linecap="round" opacity=".55"/>
+    <path d="M70 180 Q240 84 410 180" fill="none" stroke="#FFE07A" stroke-width="9" stroke-linecap="round" opacity=".55"/>
+    <path d="M80 182 Q240 98 400 182" fill="none" stroke="#9FDCF5" stroke-width="9" stroke-linecap="round" opacity=".55"/>
+    <g><ellipse cx="70" cy="226" rx="96" ry="58" fill="#D9C2F5"/><ellipse cx="240" cy="214" rx="110" ry="58" fill="#BFEFD8"/><ellipse cx="412" cy="226" rx="100" ry="60" fill="#FFD1E6"/></g>
+    <g fill="#fff" opacity=".55"><ellipse cx="44" cy="192" rx="18" ry="6"/><ellipse cx="220" cy="172" rx="22" ry="6"/><ellipse cx="392" cy="190" rx="20" ry="6"/></g>
+    <path d="M0 252 C140 236 340 236 480 252 L480 360 L0 360 Z" fill="${w.land}"/>
+    <path d="M0 262 C140 248 340 248 480 262" fill="none" stroke="#fff" stroke-width="5" stroke-dasharray="1 16" stroke-linecap="round" opacity=".7"/>
+    <path d="M190 360 C210 322 236 296 240 254" fill="none" stroke="${w.sand}" stroke-width="18" stroke-linecap="round"/>
+    <path d="M190 360 C210 322 236 296 240 254" fill="none" stroke="#FFB3D1" stroke-width="18" stroke-linecap="round" stroke-dasharray="7 11" opacity=".8"/>
+    <g class="ls-lolly l1"><rect x="171" y="196" width="6" height="58" rx="3" fill="#fff"/><circle cx="174" cy="190" r="20" fill="#FF8FB8"/><path d="M174 190 m-13 0 a13 13 0 1 1 13 13 a7.5 7.5 0 1 1 -7.5 -7.5" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round"/></g>
+    <g class="ls-lolly l2"><rect x="301" y="200" width="6" height="52" rx="3" fill="#fff"/><circle cx="304" cy="194" r="17" fill="#9FDCF5"/><path d="M304 194 m-11 0 a11 11 0 1 1 11 11 a6.5 6.5 0 1 1 -6.5 -6.5" fill="none" stroke="#fff" stroke-width="4.5" stroke-linecap="round"/></g>
+    <g><path d="M118 300 q10 -24 20 0z" fill="#FFE07A"/><path d="M340 318 q10 -24 20 0z" fill="#BFA3EC"/><path d="M372 292 q8 -18 16 0z" fill="#6ED38C"/><path d="M88 334 q8 -18 16 0z" fill="#FF8FB8"/></g>
+    <g fill="#fff" opacity=".7"><circle cx="130" cy="292" r="2"/><circle cx="350" cy="310" r="2"/><circle cx="380" cy="287" r="1.6"/></g>`,
 };
 // paysage générique, aux couleurs du monde (toute nouvelle île en profite)
 function isleGenericScenery(w){
