@@ -299,6 +299,29 @@ function decosOf(world){
 }
 const GAME_TYPES = ['memory','count','diff','puzzle','sequence','simon','math','reading','determinants','volume','compare','money'];
 
+/* Quels types de défis proposer selon l'âge (programme de l'école
+   maternelle, cycle 1, 3-6 ans — repères eduscol.education.fr) :
+   - Petite section (3-4 ans) : tout juste le dénombrement (1 à 3), la
+     reconnaissance visuelle (mémoire, intrus), pas encore de lecture ni
+     de logique de suite.
+   - Moyenne section (4-5 ans) : dénombrer jusqu'à 10, comparer des
+     grandeurs (le plus grand/le plus petit), débuter les suites simples.
+   - Grande section / 6 ans (début CP) : principe alphabétique et débuts
+     de lecture, décomposer les nombres, suites de nombres, premiers
+     calculs — tout l'éventail du jeu est alors ouvert.
+   Un joueur sans âge renseigné garde l'accès à tous les jeux (comme avant). */
+const AGE_GAME_TYPES = [
+  { max:4, types:['memory','count','diff'] },
+  { max:5, types:['memory','count','diff','volume','sequence','simon'] },
+  // 6 ans et plus (ou âge non précisé) : tous les jeux, comme aujourd'hui.
+];
+function gameTypesForAge(age){
+  const a = Number(age);
+  if(!a) return GAME_TYPES;
+  const tier = AGE_GAME_TYPES.find(r=>a<=r.max);
+  return tier ? tier.types : GAME_TYPES;
+}
+
 /* Vocabulaire niveau CP : mots simples, lus couramment en fin de CP,
    illustrés par un emoji, avec leur genre pour le jeu des déterminants. */
 const WORDS_CP = [

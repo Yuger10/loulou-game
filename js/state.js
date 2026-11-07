@@ -1,5 +1,5 @@
 /* ---------- État ---------- */
-const SAVE_VERSION = 1;
+const SAVE_VERSION = 2;
 const DEFAULT_STATE = {
   v: SAVE_VERSION,
   coins: 5,
@@ -15,6 +15,7 @@ const DEFAULT_STATE = {
   quests: null,
   albumReward: false,
   visited: [],
+  gameCounts: {},     // nombre de fois jouées, par type de mini-jeu (pour forcer la variété)
 };
 // copie profonde : sinon inventory/seen/decos seraient partagés avec DEFAULT_STATE
 function freshState(extra){
@@ -35,6 +36,7 @@ let state = {
   quests: null,       // quêtes du jour { date, list:[{type,target,goal,done,n}], claimed }
   albumReward: false, // récompense d'album complet déjà donnée
   visited: [],        // îles déjà découvertes (pour annoncer les nouvelles)
+  gameCounts: {},     // nombre de fois jouées, par type de mini-jeu
 };
 
 function save(){
@@ -55,6 +57,9 @@ function migrate(saved){
     saved.albumReward = saved.albumReward || false;
     saved.visited = saved.visited || [];
     saved.decos = saved.decos || [];
+  }
+  if(v < 2){
+    saved.gameCounts = saved.gameCounts || {};
   }
   saved.v = SAVE_VERSION;
   return saved;

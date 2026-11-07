@@ -239,7 +239,7 @@ setTimeout(()=>{
     check('sauvegarde versionnée', JSON.parse(w.localStorage.getItem(ev('currentSaveKey()'))).v === ev('SAVE_VERSION'));
     const migrated = ev("JSON.stringify(migrate({coins:9, inventory:{perle:2}, missions:7, sound:false}))");
     const m = JSON.parse(migrated);
-    check('migration v0 : champs manquants ajoutés', m.v===1 && m.avatar==='👧' && Array.isArray(m.decos) && typeof m.seen==='object');
+    check('migration v0 : champs manquants ajoutés', m.v===ev('SAVE_VERSION') && m.avatar==='👧' && Array.isArray(m.decos) && typeof m.seen==='object' && typeof m.gameCounts==='object');
     check('migration v0 : données conservées', m.coins===9 && m.inventory.perle===2 && m.missions===7);
 
     // Reset
@@ -540,6 +540,23 @@ setTimeout(()=>{
     ev('closeModal(); openGamePicker("sirene")');
     const pickedKeys2 = [...d.querySelectorAll('.game-choice:not(.surprise)')].map(b=>b.dataset.game);
     check('choix du jeu : toujours 3 défis au tirage suivant', pickedKeys2.length===3);
+    ev('closeModal()');
+
+    // ---- Compteur de défis joués, et variété forcée ----
+    ev('state.gameCounts = {}; state.gameCounts["memory"]=1; state.gameCounts["count"]=1; state.gameCounts["diff"]=1; state.gameCounts["puzzle"]=1; state.gameCounts["sequence"]=1; state.gameCounts["simon"]=1; state.gameCounts["math"]=1; state.gameCounts["reading"]=1; state.gameCounts["determinants"]=1; state.gameCounts["volume"]=1; state.gameCounts["compare"]=0; state.gameCounts["money"]=0; openGamePicker("sirene")');
+    const leastPlayed = [...d.querySelectorAll('.game-choice:not(.surprise)')].map(b=>b.dataset.game);
+    check('variété : les 2 jeux jamais essayés remontent en priorité', leastPlayed.includes('compare') && leastPlayed.includes('money'));
+    ev('closeModal()');
+    ev('playGame("count")');
+    check('compteur : incrémenté après avoir joué', ev('gameCount("count")')===2);
+    ev('closeModal(); state.gameCounts = {}; renderLagon()');
+
+    // ---- Défis adaptés à l\'âge (programme maternelle 3-6 ans) ----
+    check('âge 3 ans : seulement mémoire/compter/intrus', ev('gameTypesForAge(3)').join()==='memory,count,diff');
+    check('âge 4 ans : encore limité aux jeux visuels', ev('gameTypesForAge(4)').join()==='memory,count,diff');
+    check('âge 5 ans : un peu plus de jeux (volume, suite, simon)', ev('gameTypesForAge(5)').includes('volume') && !ev('gameTypesForAge(5)').includes('math'));
+    check('âge 6 ans : tous les jeux (CP)', ev('gameTypesForAge(6)').length===ev('GAME_TYPES').length);
+    check('âge non renseigné : tous les jeux (comportement inchangé)', ev('gameTypesForAge(null)').length===ev('GAME_TYPES').length);
     check('aucune erreur JS', errs.length===0);
     if(errs.length) console.log(errs);
     console.log(failed ? `\n${failed} test(s) en échec` : '\nTous les tests passent');

@@ -461,3 +461,24 @@ Avec 12 mini-jeux, le sélecteur « Choisis ton jeu » montrait toute la liste �
 - `openGamePicker()` tire désormais **3 défis au hasard** (`GAME_PICKER_SIZE = 3`) parmi les 12 disponibles, plus le bouton 🎲 Surprise (qui lui tire parmi tous les types).
 - Un nouveau tirage de 3 défis différents est proposé à chaque fois qu'on rouvre le sélecteur.
 - Le bouton 🎲 Surprise reste disponible pour piocher dans toute la liste sans repasser par le sélecteur.
+
+---
+
+# v22 — Variété forcée des défis + adaptation à l'âge (3-6 ans)
+
+## ⚠️ Correctif important au passage
+`startMinigame()` (le bouton 🎲 Surprise) ne connaissait que les 6 premiers types de jeux : depuis la v15, les 6 nouveaux mini-jeux (Opérations, Lecture, Petits mots, Volumes, Comparer, Monnaie) retombaient tous silencieusement sur le puzzle des nombres au lieu d'être réellement lancés. Corrigé avec une fonction `gameRenderer(key)` résolue à l'appel (et non au chargement des scripts).
+
+## 1. Un compteur de défis joués, par joueur
+- `state.gameCounts` (nouveau champ de sauvegarde, `SAVE_VERSION` passé à 2 avec migration automatique) compte, **pour chaque joueur séparément**, combien de fois il a fait chaque type de mini-jeu.
+- Le sélecteur « Choisis ton jeu 🎮 » ne propose plus que **3 défis tirés au sort** (plus Surprise) — et parmi tous les jeux possibles, il **favorise toujours les moins essayés** : les jeux jamais faits remontent systématiquement en tête de liste. Une fois tous les jeux testés au moins une fois, le tirage redevient équilibré.
+- Le compteur est incrémenté à chaque lancement effectif d'un jeu, que ce soit via le sélecteur ou via Surprise.
+
+## 2. Adaptation à l'âge (programme de maternelle, cycle 1, 3-6 ans)
+> Pas d'accès internet dans l'environnement : repères issus du programme officiel de l'école maternelle que je connais (domaine « construire les premiers outils pour structurer sa pensée » et « mobiliser le langage »). À vérifier sur eduscol.education.fr si besoin de la source exacte.
+
+- **3-4 ans (petite section)** : dénombrement très simple, reconnaissance visuelle uniquement → Mémoire, Compter, L'intrus.
+- **5 ans (moyenne/grande section)** : + comparaison de grandeurs, suites simples, répétition de couleurs → Mémoire, Compter, L'intrus, Volumes (version « contenances »), La suite, Les couleurs.
+- **6 ans et plus (CP)** : tout l'éventail du jeu, comme avant (12 mini-jeux) — ni lecture, ni déterminants, ni calcul formel, ni comparaison symbolique avant cet âge.
+- Un joueur sans âge renseigné garde accès à tous les jeux (comportement inchangé).
+- S'applique partout : tirage Surprise, sélecteur manuel, **et mode course** (chaque coureur reçoit des défis adaptés à son propre âge, pas seulement une difficulté chiffrée).

@@ -1,4 +1,15 @@
 /* ---------- Utilitaires ---------- */
+
+// Compteur de défis joués, par joueur (stocké dans sa sauvegarde) : permet
+// de proposer en priorité les types de mini-jeux les moins essayés, pour
+// que chaque joueur finisse par toutes les découvrir.
+function gameCount(key){ return (state.gameCounts && state.gameCounts[key]) || 0; }
+function trackGamePlayed(key){
+  if(!state.gameCounts) state.gameCounts = {};
+  state.gameCounts[key] = gameCount(key) + 1;
+  save();
+}
+
 function addItem(key, qty=1){ state.inventory[key] = (state.inventory[key]||0) + qty; save(); }
 function removeItem(key, qty=1){ state.inventory[key] = Math.max(0, (state.inventory[key]||0) - qty); save(); }
 function countItem(key){ return state.inventory[key] || 0; }

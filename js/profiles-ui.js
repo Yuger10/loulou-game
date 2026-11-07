@@ -256,10 +256,25 @@ function openPlayerSettings(id){
 // pour garder la surprise et faire tourner tous les jeux.
 const GAME_PICKER_SIZE = 3;
 
+// Choisit les défis à proposer :
+// 1) on ne garde que les types adaptés à l'âge du joueur (programme
+//    de maternelle pour les 3-5 ans, tout l'éventail dès 6 ans/CP) ;
+// 2) parmi eux, on favorise ceux que CE joueur a le moins essayés (son
+//    compteur personnel `state.gameCounts`) : les jeux jamais faits
+//    remontent toujours en premier, pour forcer la variété (égalités
+//    départagées au hasard).
+function pickPickerChoices(n){
+  const allowed = new Set(gameTypesForAge(typeof currentPlayerAge==='function' ? currentPlayerAge() : null));
+  const pool = GAME_LIST.filter(g=>allowed.has(g.key));
+  const withCount = shuffle(pool.length ? pool : GAME_LIST).map(g=>({ g, c: gameCount(g.key) }));
+  withCount.sort((a,b)=>a.c-b.c);
+  return withCount.slice(0, n).map(x=>x.g);
+}
+
 function openGamePicker(charId){
   if(charId) currentChar = charId;
   const who = party.active ? (partyCurrent() || currentProfile()) : currentProfile();
-  const choices = shuffle(GAME_LIST).slice(0, Math.min(GAME_PICKER_SIZE, GAME_LIST.length));
+  const choices = pickPickerChoices(Math.min(GAME_PICKER_SIZE, GAME_LIST.length));
   openModal(`
     ${gameHeader('🎮 Choisis ton jeu', party.active ? `${who.avatar} ${who.name || 'À toi'} choisit !` : 'À quoi veux-tu jouer ?')}
     <div class="game-picker">
@@ -277,7 +292,7 @@ function openGamePicker(charId){
       playSound('tap');
       const k = b.dataset.game;
       if(k==='random') startMinigame();
-      else (GAME_LIST.find(g=>g.key===k) || GAME_LIST[0]).fn();
+      else playGame(k);
     };
   });
 }

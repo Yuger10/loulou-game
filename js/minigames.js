@@ -96,16 +96,42 @@ function stepOk(el){
 }
 
 let lastGame = null;
+// Fonction de rendu pour un type de jeu donné (doit couvrir GAME_TYPES).
+// Résolu au moment de l'appel (et non au chargement) : les mini-jeux les
+// plus récents sont définis dans des fichiers chargés après celui-ci.
+function gameRenderer(key){
+  switch(key){
+    case 'memory': return renderMemory;
+    case 'count': return renderCount;
+    case 'diff': return renderDiff;
+    case 'puzzle': return renderPuzzle;
+    case 'sequence': return renderSequence;
+    case 'simon': return renderSimon;
+    case 'math': return renderMath;
+    case 'reading': return renderReading;
+    case 'determinants': return renderDeterminants;
+    case 'volume': return renderVolume;
+    case 'compare': return renderCompare;
+    case 'money': return renderMoney;
+    default: return renderMemory;
+  }
+}
+
+// Lance un type de jeu précis, en comptant le coup pour ce joueur
+// (utilisé pour proposer en priorité les jeux les moins essayés).
+function playGame(key){
+  trackGamePlayed(key);
+  lastGame = key;
+  gameRenderer(key)();
+}
+
 function startMinigame(){
-  // évite de tomber deux fois de suite sur le même jeu
-  const type = pickRandom(GAME_TYPES.filter(t=>t!==lastGame));
-  lastGame = type;
-  if(type==='memory') renderMemory();
-  else if(type==='count') renderCount();
-  else if(type==='diff') renderDiff();
-  else if(type==='sequence') renderSequence();
-  else if(type==='simon') renderSimon();
-  else renderPuzzle();
+  // ne propose que des défis adaptés à l'âge du joueur, et évite de
+  // tomber deux fois de suite sur le même jeu
+  const allowed = gameTypesForAge(typeof currentPlayerAge==='function' ? currentPlayerAge() : null);
+  const pool = allowed.filter(t=>t!==lastGame);
+  const type = pickRandom(pool.length ? pool : allowed);
+  playGame(type);
 }
 
 // En-tête d'une fenêtre de jeu : titre, consigne et bouton pour l'écouter.
