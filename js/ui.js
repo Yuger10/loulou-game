@@ -272,10 +272,13 @@ function gameDiff(){
   if(typeof currentProfile==='function' && typeof ageToDiff==='function'){
     const p = currentProfile();
     const d = p && ageToDiff(p.age);
-    if(d) return Math.min(d, island);
+    if(d) return adaptedDiff(Math.min(d, island));
   }
-  return island;
+  return adaptedDiff(island);
 }
+// Phase 3 : chaque mini-jeu a son propre niveau par enfant (js/adaptive.js) ;
+// on ne joue jamais au-dessus de ce qui est acquis dans CE jeu.
+function adaptedDiff(base){ return typeof adaptTier==='function' ? adaptTier(base) : base; }
 // prochaine île à débloquer, et progression vers celle-ci
 function nextLockedWorld(){
   return WORLD_ORDER.find(id=>!worldUnlocked(id));

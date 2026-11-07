@@ -246,7 +246,8 @@ function startMinigame(){
   // tomber deux fois de suite sur le même jeu
   const allowed = gameTypesForAge(typeof currentPlayerAge==='function' ? currentPlayerAge() : null);
   const pool = allowed.filter(t=>t!==lastGame);
-  const type = pickRandom(pool.length ? pool : allowed);
+  const practice = typeof pickPracticeGame==='function' ? pickPracticeGame(allowed) : null;
+  const type = practice || pickRandom(pool.length ? pool : allowed);
   playGame(type);
 }
 
@@ -347,7 +348,8 @@ function onMissionWin(){
     `Trop ${ac('malin','maligne')} ! 💪`,
   ]);
   const fact = missionFact; missionFact = null;
-  setTimeout(()=> speak(`${levelUp ? `Niveau ${level()} ! ` : ''}${praise} ${fact ? fact + ' ' : ''}${c.name} t'offre ${it.name}${bonus ? `, et une surprise : ${ITEMS[bonus].name}` : ''}.`), 300);
+  const cheer = typeof progressCheer==='function' ? progressCheer(typeof missionProgress!=='undefined' ? missionProgress : null) : null;
+  setTimeout(()=> speak(`${levelUp ? `Niveau ${level()} ! ` : ''}${praise} ${cheer ? cheer + ' ' : ''}${fact ? fact + ' ' : ''}${c.name} t'offre ${it.name}${bonus ? `, et une surprise : ${ITEMS[bonus].name}` : ''}.`), 300);
 
   openModal(`
     <div class="reward-box win-box">
@@ -355,6 +357,7 @@ function onMissionWin(){
       ${typeof buddySlot==='function' ? buddySlot('cheer','buddy-big win-emoji') : `<span class="big-emoji win-emoji">${levelUp ? '🌟' : '🎉'}</span>`}
       <span class="win-stamp">${levelUp ? '🌟' : '✅'}</span>
       <h2>${levelUp ? `Niveau ${level()} !` : praise}</h2>
+      ${cheer ? `<div class="speech progress-cheer"><span aria-hidden="true">📈</span> ${cheer}</div>` : ''}
       ${fact ? `<div class="speech fun-fact"><span aria-hidden="true">💡</span> ${fact}</div>` : ''}
       <div class="speech reward-item" style="display:flex; align-items:center; justify-content:center; gap:10px;">
         <span class="reward-emoji" data-gain-item style="font-size:2rem;">${it.emoji}</span>

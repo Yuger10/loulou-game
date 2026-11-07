@@ -42,22 +42,33 @@ function todayKey(d){
 
 /* ---- enregistrer ce qui se passe en jeu ---- */
 let missionErrors = 0;
+let missionProgress = null;   // progrès de la dernière mission, pour l'écran de victoire
 function noteAnswerError(){ missionErrors++; }
 function recordMission(ok){
   const key = typeof lastGame!=='undefined' ? lastGame : null;
   // à plusieurs (chacun son tour, course), une erreur passe la main au
   // suivant : la mission n'est ni gagnée ni ratée, on ne compte rien.
-  if(!key || (typeof party!=='undefined' && party.active)){ missionErrors = 0; return; }
+  missionProgress = null;
+  if(!key || (typeof party!=='undefined' && party.active)){ missionErrors = 0; return null; }
   if(!state.skills) state.skills = {};
   const s = state.skills[key] || (state.skills[key] = { wins:0, fails:0, errors:0, last:null, recent:[] });
-  const t = typeof gameDiff==='function' ? gameDiff() : 1;
+  const t = typeof gameDiff==='function' ? gameDiff() : 1;   // niveau joué (île, âge et niveau du jeu)
+  const e = missionErrors;
+  const before = skillStatus(s, key);
   if(ok) s.wins++; else s.fails++;
-  s.errors += missionErrors;
+  s.errors += e;
   s.last = todayKey();
-  s.recent.push({ t, e: missionErrors, ok: !!ok });
+  s.recent.push({ t, e, ok: !!ok });
   if(s.recent.length > 10) s.recent = s.recent.slice(-10);
   missionErrors = 0;
+  // Phase 3 : le niveau du jeu monte ou redescend (js/adaptive.js)
+  const step = typeof adaptAfterMission==='function' ? adaptAfterMission(key, s, t, !!ok, e) : null;
+  // le compagnon félicitera si le jeu a progressé : niveau gagné, ou plus « à travailler »
+  if(ok && ((step && step.type==='up') || (before==='difficile' && skillStatus(s, key)!=='difficile'))){
+    missionProgress = { key, lvl: s.lvl, up: !!(step && step.type==='up') };
+  }
   save();
+  return step;
 }
 function skillStatus(s, key){
   if(!s || !(s.wins + s.fails)) return 'jamais';
@@ -198,8 +209,8 @@ function skillsHTML(st, age){
     const rows = gr.games.filter(k=>allowed.has(k)).map(k=>{
       const s = sk[k], status = skillStatus(s, k), info = SKILL_STATUS[status];
       if(status==='aise' || status==='difficile') summary[status].push(gameName(k));
-      const lastTier = s && s.recent.length ? s.recent[s.recent.length-1].t : null;
-      const detail = s ? `${s.wins} réussie${s.wins>1?'s':''}${s.fails?` · ${s.fails} ratée${s.fails>1?'s':''}`:''} · ${(s.wins+s.fails) ? (s.errors/(s.wins+s.fails)).toFixed(1).replace('.',',') : '0'} erreur par mission${lastTier ? ` · niveau ${'⭐'.repeat(Math.min(lastTier,6))}`:''}` : '';
+      const lastTier = s ? (s.lvl || (s.recent.length ? s.recent[s.recent.length-1].t : null)) : null;
+      const detail = s ? `${s.wins} réussie${s.wins>1?'s':''}${s.fails?` · ${s.fails} ratée${s.fails>1?'s':''}`:''} · ${(s.wins+s.fails) ? (s.errors/(s.wins+s.fails)).toFixed(1).replace('.',',') : '0'} erreur par mission${lastTier ? ` · niveau ${'⭐'.repeat(Math.min(lastTier,6))}`:''}${s.support ? ' (redescendu d\'un cran pour s\'entraîner)' : ''}` : '';
       return `<li class="sk-row"><span class="sk-name">${gameName(k)}</span><span class="sk-pill ${info.cls}">${info.label}</span>${detail ? `<span class="sk-detail">${detail}</span>` : ''}</li>`;
     }).join('');
     return rows ? `<div class="sk-group"><h4>${gr.emoji} ${gr.name}</h4><ul>${rows}</ul></div>` : '';
@@ -227,7 +238,8 @@ function openParentSpace(selectedId){
       </div>
     </section>
     <section class="bk-card"><h3>📈 Progrès par compétence</h3>${skillsHTML(st, p.age)}
-      <p class="bk-help">« À l'aise » : réussi sans erreur ou presque ces dernières fois. « À travailler » : souvent raté ou beaucoup d'erreurs. Le niveau suit l'île jouée et l'âge de l'enfant.</p></section>
+      <p class="bk-help">« À l'aise » : réussi sans erreur ou presque ces dernières fois. « À travailler » : souvent raté ou beaucoup d'erreurs.</p>
+      <p class="bk-help">Chaque jeu a son propre niveau : il monte d'un cran après 2 réussites d'affilée presque sans erreur, redescend d'un cran après 2 missions ratées, et ne dépasse jamais celui de l'île ni l'âge de l'enfant. Les jeux à travailler reviennent plus souvent.</p></section>
     <section class="bk-card"><h3>⚙️ Réglages</h3>
       <div class="ps-actions">
         <button class="btn-small" id="ps-backup">💾 Sauvegarde</button>
