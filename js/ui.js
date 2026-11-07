@@ -232,10 +232,14 @@ function setSacTab(tab){
   document.querySelectorAll('[data-sactab]').forEach(b=>b.classList.toggle('active', b.dataset.sactab===tab));
   const sac = document.getElementById('sac-content');
   const alb = document.getElementById('album-content');
+  const look = document.getElementById('look-content');
   if(!sac || !alb) return;
   sac.hidden = tab!=='sac';
   alb.hidden = tab!=='album';
-  if(tab==='sac') renderSac(); else renderAlbum();
+  if(look) look.hidden = tab!=='look';
+  if(tab==='sac') renderSac();
+  else if(tab==='album') renderAlbum();
+  else if(typeof renderLook==='function'){ lookTry = null; renderLook(); }
 }
 function renderBadge(){
   const b = document.getElementById('sac-badge');
@@ -483,6 +487,7 @@ function contextualLine(charId){
     }
   }
   if(state.decos.length===0 && state.coins>=8) lines.push(`Avec tes ${state.coins} pièces, tu pourrais décorer ${WORLDS[currentWorld].name} 🌴 !`);
+  if(typeof WARDROBE!=='undefined' && !Object.values(state.look||{}).some(Boolean) && state.coins >= 8) lines.push(`Avec tes pièces, tu peux habiller ton avatar : regarde dans ton sac, « Mon look » 🎩 !`);
   if(state.decos.length>=3) lines.push(`C'est magnifique ici${who?', '+who:''} ! ${state.decos.length} décorations déjà ✨`);
   if(level()>=3) lines.push(`Niveau ${level()} déjà ! Tu es un${ac('','e')} vrai${ac('','e')} ${ac('explorateur','exploratrice')}.`);
   if(level()===2 && levelProgress()>=0.6) lines.push(`Encore quelques missions et la forêt enchantée s'ouvrira 🌲 !`);

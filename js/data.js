@@ -676,9 +676,13 @@ const MISSIONS_PER_LEVEL = 5;
 const ALBUM_REWARD = 100;
 const SAVE_KEY = 'lagon-magique-save';
 
+// « 👧‍🦱 » et « 👦‍🦱 » ne sont pas des emoji standard : beaucoup d'appareils
+// les affichent en deux morceaux. On les remplace par leur équivalent standard.
+const AVATAR_FIX = { '👧‍🦱':'👩‍🦱', '👦‍🦱':'👨‍🦱' };
+function fixAvatar(av){ return AVATAR_FIX[av] || av; }
 const AVATARS = [
-  '👧','👦','🧒','👩‍🦰','👨‍🦰','👧‍🦱','👦‍🦱',
-  'art:zap','🦸‍♀️','🦸‍♂️','🧚‍♀️','🧙‍♂️','👸','🤴','🧜‍♀️','🧜‍♂️',
+  '👧','👦','🧒','👩‍🦰','👨‍🦰','👩‍🦱','👨‍🦱',
+  'art:zap','art:perle','art:rose','art:lili','art:tom','art:leo','art:sam','🦸‍♀️','🦸‍♂️','🧚‍♀️','🧙‍♂️','👸','🤴','🧜‍♀️','🧜‍♂️',
   '🏴‍☠️','🥷','🤖','🚀','🐉','🦖','🦁','🐱','🦄','⚽',
 ];
 

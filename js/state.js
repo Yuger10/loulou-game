@@ -20,6 +20,8 @@ const DEFAULT_STATE = {
   skills: {},         // réussites et erreurs par mini-jeu (espace parents)
   playTime: {},       // secondes de jeu actif, par jour (espace parents)
   pauseExtra: null,   // minutes ajoutées aujourd'hui par un adulte { date, min }
+  wardrobe: [],       // objets de la garde-robe achetés (js/wardrobe.js)
+  look: { tete:null, visage:null, tenue:null, cape:null },   // ce que porte l'avatar
 };
 // copie profonde : sinon inventory/seen/decos seraient partagés avec DEFAULT_STATE
 function freshState(extra){
@@ -45,6 +47,8 @@ let state = {
   skills: {},
   playTime: {},
   pauseExtra: null,
+  wardrobe: [],
+  look: { tete:null, visage:null, tenue:null, cape:null },
 };
 
 function save(){
@@ -89,6 +93,7 @@ function load(){
       if((saved[k] !== undefined && saved[k] !== null) || k==='quests') clean[k] = saved[k];
     });
     state = freshState(clean);
+    if(typeof fixAvatar==='function') state.avatar = fixAvatar(state.avatar);
     save();
   }catch(e){
     console.warn('Sauvegarde illisible, on repart à zéro', e);
@@ -105,7 +110,7 @@ function resetState(){
 /* ---------- Profil (prénom + avatar) ---------- */
 function hello(){ return state.name ? state.name : ''; }
 function renderProfile(){
-  document.querySelector('#avatar-pill .av').innerHTML = avatarHTML(state.avatar);
+  document.querySelector('#avatar-pill .av').innerHTML = avatarHTML(state.avatar, state.look);
   if(typeof renderBackupReminder==='function') renderBackupReminder();
   document.getElementById('player-name').textContent = state.name || 'Toi';
 }

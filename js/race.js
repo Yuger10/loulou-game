@@ -83,13 +83,13 @@ function raceWin(p){
       <span class="big-emoji">🏁</span>
       <h2>${p.name || 'Joueur'} gagne la course !</h2>
       <div class="speech" style="display:flex; align-items:center; justify-content:center; gap:10px;">
-        <span style="font-size:2.2rem;">${avatarHTML(p.avatar)}</span>
+        <span style="font-size:2.2rem;">${avatarHTML(p.avatar, p.look)}</span>
         <span><strong>+${RACE_PRIZE} pièces</strong> <span data-gain-coins>🪙</span></span>
       </div>
       <div class="race-results">
         ${classement.map((r,i)=>`<div class="race-result">
           <span class="medal">${['🥇','🥈','🥉'][i]||'🏅'}</span>
-          <span class="av">${avatarHTML(r.p.avatar)}</span>
+          <span class="av">${avatarHTML(r.p.avatar, r.p.look)}</span>
           <span class="nm">${r.p.name || 'Joueur'}</span>
           <span class="sc">${r.n}/${race.goal}</span>
         </div>`).join('')}
@@ -127,7 +127,7 @@ function renderRaceTrack(){
       const n = race.pos[id]||0;
       const here = cur && cur.id===id;
       return `<div class="race-lane ${here?'active':''}">
-        <span class="lane-av">${avatarHTML(p.avatar)}</span>
+        <span class="lane-av">${avatarHTML(p.avatar, p.look)}</span>
         <span class="lane-name">${p.name || 'Joueur'}<small>${ageLabel(p.age)} · ${'⭐'.repeat(ageToDiff(p.age)||1)}</small></span>
         <span class="lane-track">
           ${Array.from({length:race.goal},(_,i)=>`<i class="${i<n?'on':''}"></i>`).join('')}
@@ -136,7 +136,7 @@ function renderRaceTrack(){
         <span class="lane-score">${n}/${race.goal}</span>
       </div>`;
     }).join('')}
-    ${cur ? `<div class="race-turn">👉 Au tour de <b>${avatarHTML(cur.avatar)} ${cur.name || 'Joueur'}</b> — niveau ${'⭐'.repeat(ageToDiff(cur.age)||gameDiffIsland())}</div>` : ''}
+    ${cur ? `<div class="race-turn">👉 Au tour de <b>${avatarHTML(cur.avatar, cur.look)} ${cur.name || 'Joueur'}</b> — niveau ${'⭐'.repeat(ageToDiff(cur.age)||gameDiffIsland())}</div>` : ''}
   `;
   const stop = document.getElementById('race-stop');
   if(stop) stop.onclick = ()=>{ playSound('tap'); stopRace(); renderLagon(); };

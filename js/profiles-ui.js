@@ -29,7 +29,7 @@ function openPlayers(){
       <div id="players-list">
         ${profiles.list.map(p=>`
           <div class="market-row player-row ${p.id===profiles.current?'current':''}">
-            <span class="emoji">${avatarHTML(p.avatar)}<span class="row-buddy">${companionSVG(companionOf(p),'happy')}</span></span>
+            <span class="emoji">${avatarHTML(p.avatar, p.look)}<span class="row-buddy">${companionSVG(companionOf(p),'happy')}</span></span>
             <div class="info">
               <div class="name">${p.name || 'Sans nom'} ${p.id===profiles.current?'<small>(en cours)</small>':''}</div>
               <div class="sub">${p.age?`🎂 ${p.age} ans · `:''}${playerSummary(p.id)}</div>

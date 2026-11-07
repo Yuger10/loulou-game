@@ -53,7 +53,7 @@ function renderMap(){
         <span class="isle-label"><b>${i+1}. ${w.short}</b><i>${locked?`niv. ${w.level}`:'⭐'.repeat(w.diff)}</i></span>
       </button>`;
     }).join('')}
-    <span class="boat" id="map-boat"><span class="boat-av">${avatarHTML(state.avatar)}</span>⛵</span>
+    <span class="boat" id="map-boat"><span class="boat-av">${avatarHTML(state.avatar, state.look)}</span>⛵</span>
   `;
 
   placeBoat(currentWorld, false);

@@ -228,7 +228,7 @@ function openParentSpace(selectedId){
   openModal(`
     ${gameHeader('👪 Espace parents', 'Le temps de jeu et les progrès de chaque enfant')}
     <div class="ps-tabs" role="tablist">
-      ${profiles.list.map(x=>`<button type="button" role="tab" class="ps-tab ${x.id===p.id?'on':''}" aria-selected="${x.id===p.id}" data-ps="${x.id}">${avatarHTML(x.avatar)} ${x.name || 'Sans nom'}</button>`).join('')}
+      ${profiles.list.map(x=>`<button type="button" role="tab" class="ps-tab ${x.id===p.id?'on':''}" aria-selected="${x.id===p.id}" data-ps="${x.id}">${avatarHTML(x.avatar, x.look)} ${x.name || 'Sans nom'}</button>`).join('')}
     </div>
     <section class="bk-card"><h3>⏱️ Temps de jeu</h3>${playTimeHTML(st)}<p class="bk-help">Seul le temps où l'enfant joue vraiment est compté (pas le jeu laissé ouvert).</p></section>
     <section class="bk-card"><h3>😴 Pause douce</h3>

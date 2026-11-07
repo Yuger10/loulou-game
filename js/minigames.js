@@ -348,8 +348,10 @@ function onMissionWin(){
     `Trop ${ac('malin','maligne')} ! 💪`,
   ]);
   const fact = missionFact; missionFact = null;
+  // garde-robe : un objet se gagne à certains nombres de missions (js/wardrobe.js)
+  const lookWon = typeof newlyUnlockedLookItems==='function' ? newlyUnlockedLookItems().map(k=>WARDROBE[k].name) : [];
   const cheer = typeof progressCheer==='function' ? progressCheer(typeof missionProgress!=='undefined' ? missionProgress : null) : null;
-  setTimeout(()=> speak(`${levelUp ? `Niveau ${level()} ! ` : ''}${praise} ${cheer ? cheer + ' ' : ''}${fact ? fact + ' ' : ''}${c.name} t'offre ${it.name}${bonus ? `, et une surprise : ${ITEMS[bonus].name}` : ''}.`), 300);
+  setTimeout(()=> speak(`${levelUp ? `Niveau ${level()} ! ` : ''}${praise} ${cheer ? cheer + ' ' : ''}${lookWon.length ? `Tu gagnes ${lookWon.join(' et ')} pour ton avatar ! ` : ''}${fact ? fact + ' ' : ''}${c.name} t'offre ${it.name}${bonus ? `, et une surprise : ${ITEMS[bonus].name}` : ''}.`), 300);
 
   openModal(`
     <div class="reward-box win-box">
@@ -357,6 +359,7 @@ function onMissionWin(){
       ${typeof buddySlot==='function' ? buddySlot('cheer','buddy-big win-emoji') : `<span class="big-emoji win-emoji">${levelUp ? '🌟' : '🎉'}</span>`}
       <span class="win-stamp">${levelUp ? '🌟' : '✅'}</span>
       <h2>${levelUp ? `Niveau ${level()} !` : praise}</h2>
+      ${lookWon.length ? `<div class="speech look-won"><span aria-hidden="true">🎁</span> Nouveau pour ton avatar : <strong>${lookWon.join(', ')}</strong> (sac → Mon look)</div>` : ''}
       ${cheer ? `<div class="speech progress-cheer"><span aria-hidden="true">📈</span> ${cheer}</div>` : ''}
       ${fact ? `<div class="speech fun-fact"><span aria-hidden="true">💡</span> ${fact}</div>` : ''}
       <div class="speech reward-item" style="display:flex; align-items:center; justify-content:center; gap:10px;">

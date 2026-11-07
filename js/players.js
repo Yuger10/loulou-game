@@ -20,6 +20,7 @@ function loadProfiles(){
     if(raw) profiles = JSON.parse(raw);
   }catch(e){}
   if(!profiles || !Array.isArray(profiles.list)) profiles = { list: [], current: null };
+  if(typeof fixAvatar==='function') profiles.list.forEach(p=>{ p.avatar = fixAvatar(p.avatar); });
 
   // migration : une ancienne partie unique devient le premier joueur
   if(!profiles.list.length){
@@ -44,6 +45,7 @@ function syncProfileFromState(){
   const p = currentProfile();
   if(!p) return;
   p.name = state.name; p.avatar = state.avatar;
+  p.look = state.look ? Object.assign({}, state.look) : null;   // pour dessiner son avatar habillé partout
   saveProfiles();
 }
 
@@ -163,7 +165,7 @@ function showTurnOverlay(p, reason){
   if(!el) return;
   el.innerHTML = `
     <div class="turn-card">
-      <span class="turn-av">${avatarHTML(p.avatar)}</span>
+      <span class="turn-av">${avatarHTML(p.avatar, p.look)}</span>
       <h2>${reason==='wrong' ? 'Oups ! On change' : 'Au tour de'}</h2>
       <p class="turn-name">${p.name || 'Joueur'}</p>
       <p class="turn-sub">${reason==='wrong' ? 'Ce n\'est pas grave, à toi de jouer !' : 'À toi !'}</p>
@@ -184,7 +186,7 @@ function renderTurnBar(){
   const isRace = party.mode==='race';
   bar.innerHTML = partyPlayers().map((p,i)=>`
     <span class="turn-chip ${i===party.turn?'on':''}">
-      <b>${avatarHTML(p.avatar)}</b> ${p.name || 'Joueur '+(i+1)}
+      <b>${avatarHTML(p.avatar, p.look)}</b> ${p.name || 'Joueur '+(i+1)}
       <i>${isRace ? ((race.pos[p.id]||0)+'/'+race.goal+' ⛵') : ((party.scores[p.id]||0)+' 🏅')}</i>
     </span>`).join('')
     + `<button class="turn-stop" id="turn-stop">✖️</button>`;

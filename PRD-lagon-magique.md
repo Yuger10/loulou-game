@@ -780,3 +780,20 @@ Avant, changer d'île suffisait à rendre tous les mini-jeux plus difficiles, m�
 - **Espace parents** : le niveau affiché est celui du jeu, avec « redescendu d'un cran pour s'entraîner » quand c'est le cas, et l'explication des règles.
 - Données dans la partie de l'enfant : `skills[jeu].lvl`, `atLvl` (3 dernières missions à ce niveau), `support`.
 - Cache `lagon-v42`.
+
+---
+
+# v43 — Habiller son avatar
+
+Sac → onglet **« 🎩 Mon look »** (`js/wardrobe.js`). Chaque enfant habille son avatar, et le retrouve habillé partout : en haut de l'écran, sur le bateau de la carte, dans la liste des joueurs, au passage de tour et dans la course.
+- **Tête** (10) : nœud, casquette, bonnet à pompon, oreilles de chat, couronne de fleurs, chapeau de magicien, chapeau de pirate, couronne dorée ; à gagner : antennes rigolotes (25 missions), couronne d'étoiles (60 missions).
+- **Visage** (6) : lunettes rondes, moustache rigolote, lunettes de soleil, lunettes cœurs, masque de héros ; à gagner : joues étoilées (10 missions).
+- **Tenue** (personnages dessinés) : rouge, verte, violette, rose, noire ; dorée à gagner (40 missions).
+- **Cape** (Zap) : rouge, verte, violette, rose, noire ; dorée à gagner (40 missions).
+- **Prix** : 8 à 30 pièces. On essaie avant d'acheter (aperçu en grand, nom et prix lus à voix haute) ; s'il manque des pièces, le jeu dit combien. Les objets à gagner arrivent tout seuls à la bonne mission, annoncés sur l'écran de victoire.
+- **Personnages dessinés comme avatars** : en plus de Zap, Perle, Rose, Lili, Tom, Léo et Sam. Un chapeau remplace leur couvre-chef d'origine (couronne, casque…) ; des lunettes remplacent le masque de Zap.
+- **Avatars emoji** : chapeaux et lunettes se posent sur les visages (enfants, lion, chat, robot). Les autres (fusée, drapeau, héros en pied…) gardent leur dessin ; « Mon look » propose alors de choisir un visage ou un personnage dessiné.
+- Le compagnon le suggère (« Avec tes pièces, tu peux habiller ton avatar… ») quand l'enfant a des pièces et ne porte encore rien.
+- **Correctif** : « 👧‍🦱 » et « 👦‍🦱 », qui ne sont pas des emoji standard et s'affichaient en deux morceaux sur beaucoup d'appareils, deviennent « 👩‍🦱 » et « 👨‍🦱 » (parties existantes mises à jour).
+- Données : `state.wardrobe` (objets achetés), `state.look` = { tete, visage, tenue, cape }, recopié dans le profil (`profile.look`).
+- Cache `lagon-v43`.
