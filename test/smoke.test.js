@@ -624,6 +624,17 @@ setTimeout(()=>{
     check('minuteur : aucune image de "bouton fautif" affichée', !d.querySelector('.num-btn.ko'));
     ev('closeModal(); currentWorld="lagon"');
 
+    // ---- Animations de gain (sans animation dans jsdom : tout est compté tout de suite) ----
+    ev('closeModal(); onMissionWin()');
+    check('gain : l\'objet gagné est repéré pour s\'envoler vers le sac', !!d.querySelector('#modal-body [data-gain-item]'));
+    ev('closeModal()');
+    check('gain : après la fenêtre, le compteur affiche le vrai total', d.getElementById('coin-count').textContent===String(ev('state.coins')));
+    ev('state.coins += 7; openModal("<div class=reward-box><span data-gain-coins>🪙</span></div>"); queueGain({coins:7})');
+    check('gain : le compteur attend les pièces tant que la fenêtre est ouverte', d.getElementById('coin-count').textContent===String(ev('state.coins')-7));
+    ev('closeModal()');
+    check('gain : les pièces arrivent à la fermeture', d.getElementById('coin-count').textContent===String(ev('state.coins')) && ev('coinsInFlight')===0);
+    ev('addCoins(3); gainCoins(3, null); addCoins(-2); spendCoins(2, null)');
+    check('gain : vente et achat gardent le compteur juste', d.getElementById('coin-count').textContent===String(ev('state.coins')) && ev('coinsInFlight')===0);
     check('aucune erreur JS', errs.length===0);
     if(errs.length) console.log(errs);
     console.log(failed ? `\n${failed} test(s) en échec` : '\nTous les tests passent');

@@ -271,14 +271,15 @@ function openChest(){
       <span class="big-emoji">🎁</span>
       <h2>Coffre du jour ouvert !</h2>
       <div class="speech" style="display:flex; align-items:center; justify-content:center; gap:10px;">
-        <span style="font-size:2rem;">🪙</span><span><strong>+${bonusCoins} pièces</strong></span>
+        <span data-gain-coins style="font-size:2rem;">🪙</span><span><strong>+${bonusCoins} pièces</strong></span>
       </div>
       <div class="speech" style="display:flex; align-items:center; justify-content:center; gap:10px; background:#FFF9E8;">
-        <span style="font-size:2rem;">${ITEMS[gift].emoji}</span><span><strong>${ITEMS[gift].name}</strong></span>
+        <span data-gain-item style="font-size:2rem;">${ITEMS[gift].emoji}</span><span><strong>${ITEMS[gift].name}</strong></span>
       </div>
     </div>
     <button class="btn-primary" id="btn-yay">Merci ! 🎉</button>
   `);
+  if(typeof queueGain==='function') queueGain({ items:[ITEMS[gift].emoji], coins:bonusCoins });
   document.getElementById('btn-yay').onclick = ()=>{ playSound('tap'); closeModal(); renderLagon(); };
   renderQuests();
 }
@@ -315,11 +316,12 @@ function checkAlbumComplete(){
       <h2>Album complet !</h2>
       <div class="speech">Tu as découvert les <strong>${total}</strong> objets et décorations du jeu${who?', '+who:''} ! 🌟</div>
       <div class="speech" style="display:flex; align-items:center; justify-content:center; gap:10px; background:#FFF9E8;">
-        <span style="font-size:2rem;">🪙</span><span><strong>+${ALBUM_REWARD} pièces</strong></span>
+        <span data-gain-coins style="font-size:2rem;">🪙</span><span><strong>+${ALBUM_REWARD} pièces</strong></span>
       </div>
     </div>
     <button class="btn-primary" id="btn-yay">Waouh ! 🎉</button>
   `);
+  if(typeof queueGain==='function') queueGain({ coins:ALBUM_REWARD });
   document.getElementById('btn-yay').onclick = ()=>{ playSound('tap'); closeModal(); };
 }
 function renderAlbum(){

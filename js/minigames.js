@@ -298,17 +298,19 @@ function onMissionWin(){
       <span class="win-stamp">${levelUp ? '🌟' : '✅'}</span>
       <h2>${levelUp ? `Niveau ${level()} !` : praise}</h2>
       <div class="speech reward-item" style="display:flex; align-items:center; justify-content:center; gap:10px;">
-        <span class="reward-emoji" style="font-size:2rem;">${it.emoji}</span>
+        <span class="reward-emoji" data-gain-item style="font-size:2rem;">${it.emoji}</span>
         <span>${c.name} t'offre : <strong>${it.name}</strong></span>
       </div>
       ${bonus ? `<div class="speech" style="display:flex; align-items:center; justify-content:center; gap:10px; background:#FFF9E8;">
-        <span style="font-size:2rem;">${ITEMS[bonus].emoji}</span>
+        <span data-gain-item style="font-size:2rem;">${ITEMS[bonus].emoji}</span>
         <span>Surprise ! <strong>${ITEMS[bonus].name}</strong> en plus ✨</span>
       </div>` : ''}
     </div>
     <button class="btn-primary" id="btn-yay">${(typeof party!=='undefined' && party.active) ? 'Au joueur suivant 👉' : 'Super !'}</button>
     ${(typeof party!=='undefined' && party.active) ? '' : '<button class="btn-ghost" id="btn-again">Encore une mission 🎮</button>'}
   `);
+  // l'objet gagné s'envolera jusqu'au sac quand la fenêtre se fermera
+  if(typeof queueGain==='function') queueGain({ items:[it.emoji, bonus ? ITEMS[bonus].emoji : null] });
   document.getElementById('btn-yay').onclick = ()=> {
     playSound('tap'); closeModal(); renderLagon();
     // multijoueur : la main passe au joueur suivant après une réussite

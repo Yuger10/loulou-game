@@ -528,3 +528,16 @@ nouveaux mondes). Résumé :
 - Téléphone à l'horizontale : barre du bas compacte, mini-jeux sans défilement.
 - PWA : l'orientation n'est plus bloquée en portrait (tablettes, Chromebooks).
 - Correctif : les rayons de victoire n'affichaient qu'un seul rayon.
+
+---
+
+# v29 — Animations de gain
+
+Ce que l'on gagne se voit arriver (`js/gains.js`) :
+- **Mission réussie** : quand on ferme la fenêtre de récompense, l'objet gagné (et la surprise) s'envole en arc jusqu'au sac ; le sac rebondit, son badge saute.
+- **Coffre du jour, album complet, course gagnée** : les pièces volent une à une jusqu'au compteur, qui monte au rythme de leur arrivée, avec un « +15 » qui s'envole ; l'objet du coffre file dans le sac.
+- **Marché** : vendre → les pièces partent de l'objet vers le compteur ; acheter → les pièces quittent le compteur (« −4 ») puis l'objet file dans le sac ; échanger et fusionner → le nouvel objet file dans le sac.
+- **Décoration achetée** : les pièces partent, la décoration s'envole vers la scène de l'île.
+- Sons dédiés (« tick » par pièce, « pop » à l'arrivée dans le sac), anneau doré à l'arrivée.
+- Le compteur affiché tient compte des pièces encore en vol (`coinsInFlight`) : il reste toujours juste. Sans animation possible ou avec « réduire les animations », tout se met à jour d'un coup.
+- Correctif : « Tu as N pièces » dans l'onglet Acheter était blanc sur blanc depuis la v24.

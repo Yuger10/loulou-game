@@ -60,8 +60,10 @@ function renderVendre(el){
   el.querySelectorAll('[data-sell]').forEach(btn=>{
     btn.onclick = ()=>{
       const k = btn.dataset.sell;
+      const rowEmoji = btn.closest('.market-row').querySelector('.emoji');
       removeItem(k,1);
       addCoins(ALL_ITEMS[k].price);
+      if(typeof gainCoins==='function') gainCoins(ALL_ITEMS[k].price, rowEmoji);
       questProgress('sell', null, 1);
       playSound('coin');
       showToast(`Vendu ! +${ALL_ITEMS[k].price} 🪙`);
@@ -91,6 +93,7 @@ function renderEchanger(el){
       const gained = pickRandom(others);
       removeItem(k,1);
       addItem(gained,1); markSeen(gained);
+      if(typeof gainItems==='function') gainItems([ITEMS[gained].emoji], btn.closest('.market-row').querySelector('.emoji'));
       questProgress('collect', gained, 1);
       playSound('good');
       showToast(`Échangé contre ${ITEMS[gained].emoji} ${ITEMS[gained].name} !`);
@@ -100,7 +103,7 @@ function renderEchanger(el){
 }
 
 function renderAcheter(el){
-  el.innerHTML = `<div class="puzzle-hint" style="color:var(--foam); opacity:1; text-shadow:0 1px 0 rgba(18,59,79,.25);">Tu as 🪙 ${state.coins} pièces</div>` +
+  el.innerHTML = `<div class="market-wallet">Tu as <span class="mw-coin">🪙</span> <strong>${state.coins}</strong> pièces</div>` +
   Object.entries(ITEMS).map(([k,it])=>{
     const cost = it.price * 2;
     const can = state.coins >= cost;
@@ -115,8 +118,11 @@ function renderAcheter(el){
       const k = btn.dataset.buy;
       const cost = ITEMS[k].price * 2;
       if(state.coins < cost) return;
+      const rowEmoji = btn.closest('.market-row').querySelector('.emoji');
       addCoins(-cost);
       addItem(k,1); markSeen(k);
+      // les pièces partent du compteur vers l'objet, puis l'objet file dans le sac
+      if(typeof spendCoins==='function'){ spendCoins(cost, rowEmoji); gainItems([ITEMS[k].emoji], rowEmoji, 520); }
       questProgress('collect', k, 1);
       playSound('coin');
       showToast(`${ITEMS[k].emoji} ${ITEMS[k].name} acheté !`);
@@ -147,6 +153,7 @@ function renderFusionner(el){
       const c = CRAFTED[key];
       Object.entries(c.recipe).forEach(([ik,qty])=> removeItem(ik,qty));
       addItem(key,1); markSeen(key);
+      if(typeof gainItems==='function') gainItems([c.emoji], btn.closest('.recipe-card').querySelector('.result .emoji'));
       questProgress('craft', key, 1);
       playSound('win');
       confetti();
