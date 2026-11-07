@@ -151,6 +151,13 @@ ART.singe=svg(
   `<ellipse cx="56" cy="70" rx="1.8" ry="1.4" fill="${AI}"/><ellipse cx="64" cy="70" rx="1.8" ry="1.4" fill="${AI}"/>`+
   cheeks(40,80,67)+smile(51,69,77,7));
 
+// Jago et Maïa : le museau clair recouvrait la bouche ; nez et bouche dessinés PAR-DESSUS
+ART.jaguar=ART.jaguar.replace('</svg>',
+  `<path d="M55 71 Q60 68 65 71 Q63 76 60 76 Q57 76 55 71Z" fill="#6B3A2A"/>`+
+  `<path d="M60 76 V79 M52 79 Q56 85 60 79 Q64 85 68 79" fill="none" stroke="${AM}" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>`);
+ART.biche=ART.biche.replace('</svg>',
+  `<path d="M60 79 V81 M54 81 Q60 87 66 81" fill="none" stroke="${AM}" stroke-width="2.6" stroke-linecap="round"/></svg>`);
+
 // Max le robot savant : tête en dôme et lunettes de labo (Bolt a une tête carrée et des chenilles)
 ART.robotsavant=svg(
   `<path d="M34 104 L14 96 L10 106 M86 104 L106 96 L110 106" fill="none" stroke="#C9D6DE" stroke-width="8" stroke-linecap="round"/>`+
