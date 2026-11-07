@@ -84,8 +84,10 @@ function placeBoat(id, animated){
   boat.style.transition = animated
     ? 'left .75s cubic-bezier(.45,0,.35,1), top .75s cubic-bezier(.45,0,.35,1)'
     : 'none';
-  boat.style.left = w.map.x + '%';
-  boat.style.top  = (w.map.y + 12) + '%';
+  // le bateau mouille à côté de l'île (jamais sur son étiquette)
+  const side = w.map.x < 50 ? 1 : -1;
+  boat.style.left = (w.map.x + side*15) + '%';
+  boat.style.top  = (w.map.y - 2) + '%';
 }
 
 // le bateau navigue d'île en île avant de débarquer

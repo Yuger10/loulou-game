@@ -528,9 +528,9 @@ setTimeout(()=>{
     check('course terminée : retour au solo', ev('party.active')===false);
     ev('closeModal(); stopRace(true)');
 
-    // choix du mini-jeu : seulement 3 défis tirés au sort + surprise (pas toute la liste)
+    // choix du mini-jeu : seulement 2 défis tirés au sort + surprise (pas toute la liste)
     ev('closeModal(); openGamePicker("sirene")');
-    check('choix du jeu : 3 défis + surprise proposés', d.querySelectorAll('.game-choice').length===4);
+    check('choix du jeu : 2 défis + surprise proposés', d.querySelectorAll('.game-choice').length===3);
     const pickedKeys = [...d.querySelectorAll('.game-choice:not(.surprise)')].map(b=>b.dataset.game);
     check('choix du jeu : tous les défis proposés existent bien', pickedKeys.every(k=>ev(`GAME_LIST.some(g=>g.key==="${k}")`)));
     check('choix du jeu : pas de doublon', new Set(pickedKeys).size===pickedKeys.length);
@@ -539,7 +539,7 @@ setTimeout(()=>{
     // un nouveau tirage propose en général une sélection différente
     ev('closeModal(); openGamePicker("sirene")');
     const pickedKeys2 = [...d.querySelectorAll('.game-choice:not(.surprise)')].map(b=>b.dataset.game);
-    check('choix du jeu : toujours 3 défis au tirage suivant', pickedKeys2.length===3);
+    check('choix du jeu : toujours 2 défis au tirage suivant', pickedKeys2.length===2);
     ev('closeModal()');
 
     // ---- Compteur de défis joués, et variété forcée ----

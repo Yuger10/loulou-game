@@ -3,7 +3,7 @@ function renderSac(){
   const owned = Object.keys(ALL_ITEMS).filter(k=>countItem(k)>0);
   const el = document.getElementById('sac-content');
   if(owned.length===0){
-    el.innerHTML = `<div class="empty-state">Ton sac est vide !<br>Va aider Marina, Étincelle ou Luna pour gagner des objets ✨</div>`;
+    el.innerHTML = `<div class="empty-state"><span class="es-art">🎒</span>Ton sac est vide !<br>Va aider Marina, Étincelle ou Luna pour gagner des objets ✨</div>`;
     return;
   }
   el.innerHTML = `<div class="sac-grid">
@@ -46,7 +46,7 @@ function renderMarche(){
 function renderVendre(el){
   const owned = Object.keys(ALL_ITEMS).filter(k=>countItem(k)>0);
   if(owned.length===0){
-    el.innerHTML = `<div class="empty-state">Tu n'as rien à vendre pour l'instant.<br>Va gagner des objets dans le lagon !</div>`;
+    el.innerHTML = `<div class="empty-state"><span class="es-art">🏪</span>Tu n'as rien à vendre pour l'instant.<br>Va gagner des objets dans le lagon !</div>`;
     return;
   }
   el.innerHTML = owned.map(k=>{
@@ -73,7 +73,7 @@ function renderVendre(el){
 function renderEchanger(el){
   const owned = Object.keys(ITEMS).filter(k=>countItem(k)>0);
   if(owned.length===0){
-    el.innerHTML = `<div class="empty-state">Tu n'as pas encore d'objet à échanger.</div>`;
+    el.innerHTML = `<div class="empty-state"><span class="es-art">🔄</span>Tu n'as pas encore d'objet à échanger.</div>`;
     return;
   }
   el.innerHTML = owned.map(k=>{

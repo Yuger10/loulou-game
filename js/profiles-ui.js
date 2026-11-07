@@ -254,7 +254,7 @@ function openPlayerSettings(id){
 // Nombre de défis proposés à chaque fois (+ le bouton Surprise).
 // On ne montre jamais toute la liste : un petit choix à chaque tour,
 // pour garder la surprise et faire tourner tous les jeux.
-const GAME_PICKER_SIZE = 3;
+const GAME_PICKER_SIZE = 2;
 
 // Choisit les défis à proposer :
 // 1) on ne garde que les types adaptés à l'âge du joueur (programme

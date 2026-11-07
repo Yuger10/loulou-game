@@ -338,8 +338,8 @@ function renderLagon(){
   const el = document.getElementById('islands');
   el.innerHTML = charsOf(currentWorld).map(([id,c])=>`
     <button class="island" data-char="${id}">
-      <span class="emoji">${c.emoji}</span>
-      <span class="name">${c.name}<br>${c.title}</span>
+      <span class="halo"><span class="emoji">${c.emoji}</span></span>
+      <span class="name">${c.name}<small>${c.title}</small></span>
       <span class="loot">${c.loot.map(k=>ITEMS[k].emoji).join(' ')}</span>
     </button>`).join('');
   el.querySelectorAll('.island').forEach(btn=>{

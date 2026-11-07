@@ -482,3 +482,15 @@ Avec 12 mini-jeux, le sélecteur « Choisis ton jeu » montrait toute la liste �
 - **6 ans et plus (CP)** : tout l'éventail du jeu, comme avant (12 mini-jeux) — ni lecture, ni déterminants, ni calcul formel, ni comparaison symbolique avant cet âge.
 - Un joueur sans âge renseigné garde accès à tous les jeux (comportement inchangé).
 - S'applique partout : tirage Surprise, sélecteur manuel, **et mode course** (chaque coureur reçoit des défis adaptés à son propre âge, pas seulement une difficulté chiffrée).
+
+---
+
+# v23 → v25 — Refonte graphique + 2 défis au choix
+
+## Refonte graphique (design system « Le Lagon Magique »)
+- Jetons de couleur, rayons et ombres partagés ; un thème de couleur par île (la Jungle a enfin le sien).
+- Boutons « bonbons » plus contrastés, cartes personnages teintées avec halo, scène décorée en aquarium, carte des îles recadrée.
+- Mini-jeux : consigne dans une bulle, plateau commun, réponses à tranche colorée, cartes mémoire décorées, vraies touches de couleur pour Simon, mauvaise réponse marquée d'un ✖ rouge bien visible.
+
+## 2 défis au lieu de 3
+- `GAME_PICKER_SIZE` passe à **2** : le sélecteur propose 2 grands défis (toujours les moins essayés en priorité) + 🎲 Surprise. Moins de choix, plus facile à lire pour une enfant de 6 ans.
