@@ -53,10 +53,13 @@ function renderCapacityCompare(dd){
   `);
   bindQuit();
   startTimerIfNeeded('volume');
+  // seulement 2-3 contenants : sans ça, une mauvaise réponse laisserait
+  // deviner la bonne par élimination. Une erreur relance une NOUVELLE
+  // comparaison (nouveaux contenants), jamais la même à éliminer.
   document.querySelectorAll('.vol-container-btn').forEach(btn=>{
     btn.onclick = ()=>{
       if(btn.dataset.v===answer){ clearActiveTimer(); stepOk(btn); flashModal('ok'); setTimeout(onMissionWin, 350); }
-      else loseLife(btn);
+      else loseLife(btn, { onRetry: ()=> renderCapacityCompare(dd) });
     };
   });
 }
@@ -82,7 +85,7 @@ function renderSolidShape(dd){
   document.querySelectorAll('.vol-opt-btn').forEach(btn=>{
     btn.onclick = ()=>{
       if(btn.dataset.v===solid.name){ clearActiveTimer(); stepOk(btn); flashModal('ok'); setTimeout(onMissionWin, 350); }
-      else loseLife(btn);
+      else loseLife(btn, { onRetry: ()=> renderSolidShape(dd) });
     };
   });
 }

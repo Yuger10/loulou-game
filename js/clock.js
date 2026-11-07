@@ -63,7 +63,7 @@ function renderClock(){
   document.querySelectorAll('.clock-opt-btn').forEach(btn=>{
     btn.onclick = ()=>{
       if(btn.dataset.v===answer){ clearActiveTimer(); stepOk(btn); flashModal('ok'); setTimeout(onMissionWin, 350); }
-      else loseLife(btn);
+      else loseLife(btn, { onRetry: renderClock });
     };
   });
 }

@@ -37,6 +37,36 @@ function renderLives(){
 }
 
 // Une erreur : la proposition fautive est neutralisée et un essai est perdu.
+// Petits encouragements parlés à chaque erreur : avant ce correctif,
+// seul un son « faux » jouait — aucune voix pendant le jeu lui-même
+// (juste au tout début, pour la consigne). Varié pour ne pas lasser.
+const WRONG_HINTS = [
+  'Pas tout à fait, regarde encore',
+  'Essaie encore, tu vas trouver',
+  'Presque ! Observe bien',
+  'Non, regarde une nouvelle fois',
+];
+function speakWrongHint(){
+  if(Math.random()<0.7) speak(pickRandom(WRONG_HINTS));
+}
+
+// La relance programmée par `onRetry` (ci-dessous) doit être annulée si
+// la fenêtre se ferme ou change avant d'avoir eu lieu — sinon une
+// question en retard pourrait réapparaître par-dessus un autre jeu déjà
+// lancé (même principe que `clearActiveTimer` pour le minuteur).
+let pendingRetryTimeout = null;
+function clearPendingRetry(){
+  if(pendingRetryTimeout){ clearTimeout(pendingRetryTimeout); pendingRetryTimeout = null; }
+}
+function scheduleRetry(fn){
+  clearPendingRetry();
+  pendingRetryTimeout = setTimeout(()=>{
+    pendingRetryTimeout = null;
+    bindQuit._last = null;
+    fn();
+  }, 900);
+}
+
 function loseLife(el, opts){
   opts = opts || {};
   if(typeof buddyReact==='function') buddyReact('oops', 1300);
@@ -45,6 +75,7 @@ function loseLife(el, opts){
 
   playSound('wrong');
   vibrate(90);
+  speakWrongHint();
   if(el){
     shakeEl(el);
     el.classList.add('ko-flash');
@@ -52,6 +83,13 @@ function loseLife(el, opts){
     setTimeout(()=> el.classList.remove('ko-flash'), 450);
   }
   if(lives === Infinity){
+    // Avec seulement 2-3 choix et des essais illimités, laisser le
+    // bouton fautif se réactiver permettrait de deviner la bonne
+    // réponse PAR ÉLIMINATION, sans aucune compréhension (observé en
+    // situation réelle sur « Volumes » et « Quelle saison ? »). Quand
+    // le jeu le permet (`opts.onRetry`), on propose une NOUVELLE
+    // question à la place — jamais la même à éliminer petit à petit.
+    if(opts.onRetry){ scheduleRetry(opts.onRetry); return false; }
     if(el && 'disabled' in el && opts.disable !== false){
       // île 1 : la mauvaise réponse se referme mais on peut continuer
       setTimeout(()=>{ el.disabled = false; el.classList.remove('ko'); }, 700);
@@ -63,6 +101,9 @@ function loseLife(el, opts){
   flashModal('ko');
   if(lives <= 0){ setTimeout(onMissionFail, 520); return true; }
   showToast(lives === 1 ? '⚠️ Dernier essai !' : `${lives} essais restants`);
+  // même logique à essais limités : une nouvelle question plutôt que
+  // de réduire le choix restant jusqu'à la seule bonne réponse.
+  if(opts.onRetry){ scheduleRetry(opts.onRetry); return false; }
   return false;
 }
 
@@ -408,7 +449,7 @@ function renderCount(){
   document.querySelectorAll('.num-btn').forEach(btn=>{
     btn.onclick = ()=>{
       if(Number(btn.dataset.v)===n){ clearActiveTimer(); stepOk(btn); flashModal('ok'); setTimeout(onMissionWin, 350); }
-      else loseLife(btn);
+      else loseLife(btn, { onRetry: renderCount });
     };
   });
 }
@@ -457,7 +498,7 @@ function renderDiff(){
   document.querySelectorAll('.diff-item').forEach(el=>{
     el.onclick = ()=>{
       if(el.dataset.odd==='true'){ clearActiveTimer(); stepOk(el); flashModal('ok'); setTimeout(onMissionWin, 350); }
-      else loseLife(el);
+      else loseLife(el, { onRetry: renderDiff });
     };
   });
 }
@@ -587,7 +628,7 @@ function renderSequence(){
         q.textContent = answer; q.style.border='none'; q.classList.add('filled');
         stepOk(btn); flashModal('ok');
         setTimeout(onMissionWin, 420);
-      } else loseLife(btn);
+      } else loseLife(btn, { onRetry: renderSequence });
     };
   });
 }

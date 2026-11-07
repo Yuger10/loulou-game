@@ -282,7 +282,7 @@ let isleResizeObs = null;
 function renderLiveIsland(sc){
   if(!sc) return;
   const w = WORLDS[currentWorld];
-  const chars = charsOf(currentWorld);
+  const chars = charsOfForPlayer(currentWorld, typeof playerGender==='function' ? playerGender() : '');
   const owned = decosOf(currentWorld).map(([k])=>k).filter(k=>state.decos.includes(k));
   const tod = isleTimeOfDay();
   const pos = decoPositions(owned);

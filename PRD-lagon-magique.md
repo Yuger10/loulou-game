@@ -605,3 +605,53 @@ La vue Île devient un paysage dessiné où vivent les personnages (`js/island.j
 - La carte trace un vrai sentier entre les 7 îles, dans l'ordre des paliers de difficulté : une bande claire, de gros pointillés blancs, **dorés jusqu'à la dernière île débloquée** (et non plus jusqu'à l'île où l'on se trouve), et un tronçon animé qui avance vers la prochaine île à débloquer.
 - Correctif : la partie dorée était découpée de gauche à droite (`clip-path`), ce qui ne suivait plus le chemin depuis la carte en lacet ; elle est maintenant un morceau du même tracé.
 
+
+---
+
+# v33 — Adaptation 3-4 ans, personnages selon le genre, anti-devinette + audio
+
+## 1. Difficulté solo plafonnée par l'âge (correctif)
+`gameDiff()` ignorait complètement l'âge en mode solo (seul le multijoueur
+en tenait compte). Un enfant de 3-4 ans qui progressait jusqu'à l'île 2-3
+(ça arrive vite : 10-25 missions) recevait quand même la difficulté
+complète de cette île. Désormais, si l'âge est renseigné, il **plafonne**
+la difficulté (jamais l'inverse : un enfant plus âgé qu'une île facile
+n'est pas ralenti).
+
+## 2. Voix ajoutée au Marché et à la Carte
+Les écrans Sac/Vendre/Acheter/Échanger/Fusionner n'avaient **aucune voix** :
+noms d'objets et prix étaient du texte pur, illisible pour un enfant qui
+ne lit pas encore. Chaque ligne a maintenant un bouton d'écoute, et les
+actions (vendu, acheté, échangé, créé) sont annoncées à voix haute. La
+bannière « prochaine île » de la carte a aussi son bouton d'écoute.
+
+## 3. Personnages adaptés au genre du joueur
+Comme les compagnons, l'ordre d'affichage des 4 personnages de chaque île
+met désormais en avant ceux du même genre que le joueur (`charsOfForPlayer`)
+— sans jamais en retirer aucun : le butin et le contenu restent identiques,
+seul l'ordre de présentation change. Un joueur sans genre renseigné garde
+l'ordre d'origine.
+
+## 4. Anti-devinette + audio pendant les mini-jeux (correctif important)
+**Diagnostic en situation réelle** : avec seulement 2-3 choix et des essais
+illimités à l'île 1, une mauvaise réponse ne faisait que désactiver
+temporairement le bouton fautif puis le réactivait — l'enfant finissait
+par trouver la bonne réponse **par élimination**, sans comprendre ce
+qu'elle avait fait. Observé précisément sur « Grandeurs & volumes » et
+« Quelle saison ? ».
+
+- **Nouveau principe appliqué à tous les jeux à une seule étape** (compter,
+  intrus, suite, opérations, lecture, déterminants, comparer, monnaie,
+  heure, calcul mental, volumes, saisons) : une erreur relance désormais
+  une **nouvelle question**, jamais la même à éliminer petit à petit.
+- La relance est **annulable** (`clearPendingRetry`, même principe que le
+  minuteur) : si la fenêtre se ferme ou qu'un autre jeu démarre avant la
+  relance, elle ne réapparaît jamais par-dessus.
+- **Audio ajouté pendant le jeu**, pas seulement au début : un encouragement
+  parlé (« Regarde encore », « Essaie encore, tu vas trouver »…) à chaque
+  erreur, sur tous les jeux. Pour « Quelle saison ? », les 3 noms proposés
+  sont aussi annoncés à voix haute (sans révéler lequel est juste), pour
+  relier le mot entendu à l'image vue.
+- Les jeux à plusieurs étapes (mémoire, Simon, puzzle, ordre des jours)
+  restent inchangés : y régénérer la question effacerait une progression
+  déjà correcte, ce serait injuste.

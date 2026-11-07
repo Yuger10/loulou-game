@@ -272,7 +272,10 @@
     background:rgba(255,255,255,.92); border-radius:16px;
     padding:8px 12px; font-size:.78rem; font-weight:700;
     margin:0 0 10px; box-shadow:var(--shadow);
+    display:flex; align-items:center; flex-wrap:wrap; gap:8px;
   }
+  .map-next .quest-bar{width:100%;}
+  .map-next-speak{width:28px; height:28px; font-size:.85rem; flex-shrink:0;}
   .world-title{
     color:var(--foam); text-shadow:0 2px 0 rgba(18,59,79,.25);
     margin:0 0 10px; font-size:1.05rem;
@@ -525,6 +528,7 @@
   }
   .item-card{
     background:var(--foam);
+    border:none; width:100%; font-family:inherit;
     border-radius:20px;
     padding:12px 6px;
     text-align:center;
@@ -578,6 +582,9 @@
     gap:12px;
     margin-bottom:10px;
     box-shadow:var(--shadow);
+  }
+  .market-row .emoji, .recipe-card .result .emoji, .item-card .emoji{
+    border:none; background:none; font-family:inherit; padding:0;
   }
   .market-row .emoji{font-size:1.8rem;}
   .market-row .info{flex:1;}
