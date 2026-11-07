@@ -728,3 +728,16 @@ Un quiz illustré sur le Soleil, la Lune, la Terre et les 8 planètes (`js/plane
 - Dessins pas à l'échelle : toutes les planètes ont le même diamètre à l'écran, pour qu'aucune image ne donne une fausse taille.
 - Après une bonne réponse, une phrase vraie à retenir est affichée et lue sur l'écran de victoire (`missionFact`).
 
+---
+
+# v39 — Ne rien perdre : sauvegarde, restauration, installation
+
+Toute la partie vit dans le stockage du navigateur. Safari peut l'effacer après 7 jours sans visite si le jeu n'est pas installé, et changer d'appareil faisait tout perdre (`js/backup.js`).
+- **Sauvegarde** : panneau des joueurs → 💾 *Sauvegarde* → un fichier `lagon-magique-sauvegarde-AAAA-MM-JJ.json` avec tous les joueurs et leur progression (feuille de partage sur téléphone : « Enregistrer dans Fichiers », message…, sinon téléchargement).
+- **Code de transfert** : un code à copier-coller pour passer sur un autre appareil, compressé quand le navigateur le permet (environ 800 caractères pour 2 joueurs).
+- **Restauration** : depuis un fichier ou un code ; vérification (bon jeu, données lisibles, aucune clé étrangère), aperçu des joueurs et de leurs missions, confirmation ; une copie de la partie remplacée est gardée et peut être rétablie.
+- **Stockage protégé** : demandé au navigateur au premier toucher (`navigator.storage.persist`).
+- **Installer le jeu** : petit message sur la carte (masquable) et explications dans la fenêtre Sauvegarde (étapes Safari sur iPhone/iPad, bouton « Installer » sur Android et ordinateur).
+- **Rappel** : un point doré sur le bouton du joueur et « Sauvegarde · à faire » quand la dernière sauvegarde a plus de 2 semaines (ou jamais, après 5 missions).
+- Limite : en `http://` (depuis le Mac par le Wi-Fi), le navigateur désactive hors-ligne et stockage protégé ; d'où la mise en ligne en `https://` prévue dans la feuille de route.
+

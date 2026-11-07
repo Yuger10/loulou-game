@@ -93,6 +93,7 @@ function resetState(){
 function hello(){ return state.name ? state.name : ''; }
 function renderProfile(){
   document.querySelector('#avatar-pill .av').innerHTML = avatarHTML(state.avatar);
+  if(typeof renderBackupReminder==='function') renderBackupReminder();
   document.getElementById('player-name').textContent = state.name || 'Toi';
 }
 let pendingAvatar = '👧';

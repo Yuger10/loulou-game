@@ -9,6 +9,8 @@ npm start            # http://localhost:8080/index.html
 Sur un téléphone du même Wi-Fi : `http://<ip-du-mac>:8080/`, puis « Ajouter à l'écran d'accueil » pour l'installer en plein écran (PWA, hors-ligne OK).
 
 Sauvegarde dans `localStorage` (versionnée, migration automatique).
+**Ne pas perdre la partie** : panneau des joueurs (bouton avec le prénom, en haut) → 💾 *Sauvegarde* : enregistrer un fichier, copier un code de transfert pour un autre appareil, restaurer. Installer le jeu sur l'écran d'accueil évite que Safari efface la partie après 7 jours sans visite.
+Pour le mode hors-ligne et le stockage protégé, le jeu doit être servi en `https://` (par exemple GitHub Pages) : en `http://` depuis le Mac, ces fonctions sont désactivées par le navigateur.
 
 ## Tester
 ```bash

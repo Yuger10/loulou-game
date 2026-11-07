@@ -37,6 +37,7 @@ function showSplash(){
   sp.classList.add('show');
 }
 function hideSplash(){
+  if(typeof requestPersistentStorage==='function') requestPersistentStorage();
   const sp = document.getElementById('splash');
   playSound('win');
   sp.classList.add('hiding');
@@ -95,3 +96,4 @@ if('serviceWorker' in navigator && location.protocol!=='file:'){
     location.reload();
   });
 }
+if(typeof initBackup==='function') initBackup();
