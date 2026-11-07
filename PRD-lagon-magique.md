@@ -664,7 +664,7 @@ qu'elle avait fait. Observé précisément sur « Grandeurs & volumes » et
 - Les 28 personnages des sept îles ont chacun une illustration SVG originale intégrée au code, sans police emoji ni ressource externe. Le dessin reste identique sur iOS, Android et ordinateur.
 - Silhouettes, accessoires et couleurs dominantes différencient les personnages : Tiago pirate, Marina sirène, Étincelle licorne, Luna danseuse ; Sylvie, Maïa, Hector et Balto ; Zéphyr, Ariane, Céleste et Bolt ; Aurore, Morgane, Tao et Comète ; Maya, Kiko, Iris et Jago ; Horace, Clio, Tic et Nocta ; Nova, Léa, Pyra et Max.
 - Les visages reprennent les yeux, joues, bouche et traits des six compagnons SVG. Les illustrations sont affichées sur la scène vivante, la carte, la fiche d'île, les dialogues et l'écran d'échec. Les emojis d'objets des cartes mémoire restent inchangés.
-- Nouveau module `js/characters-art.js` et feuille `characters.css`; cache PWA passé à `lagon-v34`.
+- Nouveau module `js/characters-art.js` et feuille `characters.css`; cache PWA passé à `lagon-v34` (puis `lagon-v35` pour la relecture).
 - Tests de garde : couverture des ids, viewBox, taille maximale, éléments et attributs interdits, rendu de la scène et repli emoji pour un id inconnu.
 - **Relecture et corrections** :
   - visages dégagés (les ailes de Sylvie, Zéphyr et Pyra passaient devant) ;
