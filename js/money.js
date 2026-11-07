@@ -52,7 +52,7 @@ function renderMoney(){
   document.querySelectorAll('.money-pile-btn').forEach(btn=>{
     btn.onclick = ()=>{
       if(Number(btn.dataset.v)===target){ clearActiveTimer(); stepOk(btn); flashModal('ok'); setTimeout(onMissionWin, 350); }
-      else loseLife(btn);
+      else loseLife(btn, { onRetry: renderMoney });
     };
   });
 }

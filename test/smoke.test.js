@@ -47,6 +47,18 @@ ev("switchView('ile')");
 
 check('4 personnages sur le lagon', d.querySelectorAll('.island').length===4);
 check('personnages mixtes sur le lagon', [...d.querySelectorAll('.island')].map(b=>b.dataset.char).join()==='sirene,licorne,danseuse,pirate');
+
+// Les personnages s'ordonnent selon le genre du joueur (comme les
+// compagnons) : ceux du même genre passent en premier, sans jamais
+// disparaître.
+check('tri par genre : fille → personnages féminins en tête', ev('charsOfForPlayer("lagon","f").map(c=>c[0]).join()')==='sirene,licorne,danseuse,pirate');
+check('tri par genre : garçon → pirate en tête, tous présents', ev('charsOfForPlayer("lagon","m").map(c=>c[0]).join()')==='pirate,sirene,licorne,danseuse');
+check('tri par genre : sans genre → ordre inchangé', ev('charsOfForPlayer("lagon","").map(c=>c[0]).join()')==='sirene,licorne,danseuse,pirate');
+ev('currentProfile().gender = "m"; renderLagon()');
+check("île : l'affichage suit le genre du joueur (garçon)", [...d.querySelectorAll('.island')].map(b=>b.dataset.char)[0]==='pirate');
+ev('currentProfile().gender = ""; renderLagon()');
+check("île : remis à l'ordre par défaut une fois le genre effacé", [...d.querySelectorAll('.island')].map(b=>b.dataset.char).join()==='sirene,licorne,danseuse,pirate');
+
 check('scène déco présente', !!d.getElementById('scene'));
 check('3 missions du jour', ev('state.quests.list.length')===3);
 
@@ -732,6 +744,39 @@ setTimeout(()=>{
       for(const ch of css){ if(ch==='{') depth++; else if(ch==='}') depth--; min = Math.min(min, depth); }
       check(`${f} : accolades équilibrées`, depth===0 && min===0);
     });
+
+    // ---- Anti-devinette : une erreur relance une NOUVELLE question, ----
+    // ---- jamais la même à éliminer peu à peu (ex. Volumes, Saisons) ----
+    ev('currentWorld="lagon"; renderVolume()');
+    const volBtns = [...d.querySelectorAll('.vol-container-btn')];
+    check('volumes : île 1, 2 contenants distincts', volBtns.length===2);
+    volBtns[0].click();   // une bonne ou une mauvaise réponse, peu importe ici
+    await wait(1050);     // laisse la relance (900ms) se déclencher si c'était faux
+    check('volumes : la fenêtre reste utilisable après une relance', !!d.querySelector('.vol-container-btn, .win-box, .fail-box'));
+    ev('closeModal()');
+
+    ev('currentWorld="lagon"; renderCalendar()');
+    if(d.querySelector('.season-btn')){
+      [...d.querySelectorAll('.season-btn')][0].click();
+      await wait(1050);
+      check('saisons : la fenêtre reste utilisable après une éventuelle relance', !!d.querySelector('.season-btn, .win-box, .fail-box'));
+    }
+    ev('closeModal()');
+
+    // la relance programmée doit être annulable : si on ferme la fenêtre
+    // (ou qu'on en ouvre une autre) avant qu'elle ne se déclenche, elle
+    // ne doit JAMAIS réapparaître par-dessus un autre jeu.
+    ev('currentWorld="lagon"; renderCount()');
+    const cntWrong = [...d.querySelectorAll('.num-btn')].find(b=>Number(b.dataset.v)!==Number(d.querySelectorAll('.count-row span').length));
+    cntWrong.click();                 // programme une relance dans 900ms…
+    ev('closeModal(); renderMemory()'); // …mais on quitte avant qu'elle n'ait eu lieu
+    await wait(1100);
+    check('anti-devinette : la relance annulée ne revient pas par-dessus un autre jeu', !!d.querySelector('.mcard'));
+    ev('closeModal()');
+
+    // un clic sur la mauvaise réponse déclenche un encouragement parlé
+    check("audio pendant le jeu : un indice parlé existe en cas d'erreur", ev('typeof speakWrongHint')==='function' && ev('WRONG_HINTS.length')>0);
+
     check('aucune erreur JS', errs.length===0);
     if(errs.length) console.log(errs);
     console.log(failed ? `\n${failed} test(s) en échec` : '\nTous les tests passent');

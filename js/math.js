@@ -72,7 +72,7 @@ function renderMath(){
         stepOk(btn); flashModal('ok');
         setTimeout(onMissionWin, 420);
       } else {
-        loseLife(btn);
+        loseLife(btn, { onRetry: renderMath });
       }
     };
   });

@@ -4,14 +4,19 @@ function renderSac(){
   const el = document.getElementById('sac-content');
   if(owned.length===0){
     el.innerHTML = `<div class="empty-state"><span class="es-art">🎒</span>Ton sac est vide !<br>Va aider Marina, Étincelle ou Luna pour gagner des objets ✨</div>`;
+    speak("Ton sac est vide. Va aider un personnage pour gagner des objets !");
     return;
   }
   el.innerHTML = `<div class="sac-grid">
     ${owned.map(k=>{
       const it = ALL_ITEMS[k];
-      return `<div class="item-card ${CRAFTED[k]?'crafted':''}"><span class="emoji">${it.emoji}</span><div class="name">${it.name}</div><div class="qty">x${countItem(k)}</div></div>`;
+      const say = `${it.name}, ${countItem(k)}`.replace(/"/g,'&quot;');
+      return `<button type="button" class="item-card ${CRAFTED[k]?'crafted':''}" data-say="${say}" aria-label="${it.name}, ${countItem(k)}">
+        <span class="emoji">${it.emoji}</span><div class="name">${it.name}</div><div class="qty">x${countItem(k)}</div>
+      </button>`;
     }).join('')}
   </div>`;
+  bindSpeakButtons();
 }
 document.getElementById('reset-btn').addEventListener('click', ()=>{
   playSound('tap');
@@ -51,12 +56,14 @@ function renderVendre(el){
   }
   el.innerHTML = owned.map(k=>{
     const it = ALL_ITEMS[k];
+    const say = `${it.name}, ${it.price} pièce${it.price>1?'s':''}`.replace(/"/g,'&quot;');
     return `<div class="market-row">
-      <span class="emoji">${it.emoji}</span>
+      <button type="button" class="emoji" data-say="${say}" aria-label="Écouter : ${it.name}">${it.emoji}</button>
       <div class="info"><div class="name">${it.name} x${countItem(k)}</div><div class="sub">🪙 ${it.price} pièce${it.price>1?'s':''}</div></div>
       <button class="btn-small" data-sell="${k}">Vendre</button>
     </div>`;
   }).join('');
+  bindSpeakButtons();
   el.querySelectorAll('[data-sell]').forEach(btn=>{
     btn.onclick = ()=>{
       const k = btn.dataset.sell;
@@ -67,6 +74,7 @@ function renderVendre(el){
       questProgress('sell', null, 1);
       playSound('coin');
       showToast(`Vendu ! +${ALL_ITEMS[k].price} 🪙`);
+      speak(`Vendu ! Tu gagnes ${ALL_ITEMS[k].price} pièces.`);
       renderVendre(el);
     };
   });
@@ -80,12 +88,14 @@ function renderEchanger(el){
   }
   el.innerHTML = owned.map(k=>{
     const it = ITEMS[k];
+    const say = `${it.name}, contre un objet surprise`.replace(/"/g,'&quot;');
     return `<div class="market-row">
-      <span class="emoji">${it.emoji}</span>
+      <button type="button" class="emoji" data-say="${say}" aria-label="Écouter : ${it.name}">${it.emoji}</button>
       <div class="info"><div class="name">${it.name} x${countItem(k)}</div><div class="sub">Contre un autre objet surprise 🎁</div></div>
       <button class="btn-small" data-trade="${k}">Échanger</button>
     </div>`;
   }).join('');
+  bindSpeakButtons();
   el.querySelectorAll('[data-trade]').forEach(btn=>{
     btn.onclick = ()=>{
       const k = btn.dataset.trade;
@@ -97,6 +107,7 @@ function renderEchanger(el){
       questProgress('collect', gained, 1);
       playSound('good');
       showToast(`Échangé contre ${ITEMS[gained].emoji} ${ITEMS[gained].name} !`);
+      speak(`Échangé contre ${ITEMS[gained].name} !`);
       renderEchanger(el);
     };
   });
@@ -107,12 +118,14 @@ function renderAcheter(el){
   Object.entries(ITEMS).map(([k,it])=>{
     const cost = it.price * 2;
     const can = state.coins >= cost;
+    const say = `${it.name}, ${cost} pièces`.replace(/"/g,'&quot;');
     return `<div class="market-row">
-      <span class="emoji">${it.emoji}</span>
+      <button type="button" class="emoji" data-say="${say}" aria-label="Écouter : ${it.name}">${it.emoji}</button>
       <div class="info"><div class="name">${it.name}</div><div class="sub">🪙 ${cost} pièces</div></div>
       <button class="btn-small" data-buy="${k}" ${can?'':'disabled'}>Acheter</button>
     </div>`;
   }).join('');
+  bindSpeakButtons();
   el.querySelectorAll('[data-buy]').forEach(btn=>{
     btn.onclick = ()=>{
       const k = btn.dataset.buy;
@@ -126,6 +139,7 @@ function renderAcheter(el){
       questProgress('collect', k, 1);
       playSound('coin');
       showToast(`${ITEMS[k].emoji} ${ITEMS[k].name} acheté !`);
+      speak(`${ITEMS[k].name} acheté !`);
       renderAcheter(el);
     };
   });
@@ -135,8 +149,12 @@ function renderFusionner(el){
   el.innerHTML = Object.entries(CRAFTED).map(([key,c])=>{
     const need = Object.entries(c.recipe);
     const canCraft = need.every(([ik,qty])=>countItem(ik)>=qty);
+    const say = `${c.name}, ${canCraft ? 'tu peux le créer' : 'il manque des objets'}`.replace(/"/g,'&quot;');
     return `<div class="recipe-card ${c.tier===2?'tier2':''}">
-      <div class="result"><span class="emoji">${c.emoji}</span><span>${c.name}</span><span class="price">🪙 ${c.price}</span></div>
+      <div class="result">
+        <button type="button" class="emoji" data-say="${say}" aria-label="Écouter : ${c.name}">${c.emoji}</button>
+        <span>${c.name}</span><span class="price">🪙 ${c.price}</span>
+      </div>
       <div class="recipe-ingredients">
         ${need.map(([ik,qty])=>{
           const has = countItem(ik);
@@ -147,6 +165,7 @@ function renderFusionner(el){
       <button class="btn-craft" data-craft="${key}" ${canCraft?'':'disabled'}>${canCraft?'Créer ✨':'Il manque des objets'}</button>
     </div>`;
   }).join('');
+  bindSpeakButtons();
   el.querySelectorAll('[data-craft]').forEach(btn=>{
     btn.onclick = ()=>{
       const key = btn.dataset.craft;
@@ -158,6 +177,7 @@ function renderFusionner(el){
       playSound('win');
       confetti();
       showToast(`${c.emoji} ${c.name} créé !`);
+      speak(`${c.name} créé !`);
       renderFusionner(el);
     };
   });
