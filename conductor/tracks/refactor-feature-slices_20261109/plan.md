@@ -58,12 +58,12 @@ Principe : **un déplacement ou un découpage = un commit avec `npm test` vert**
     - [x] Retirer les gardes des dépendances déclarées ; lister et commenter celles qui restent
 - [x] Task: Conductor - User Manual Verification 'Frontières' (Protocol in workflow.md)
 
-## Phase 6 : Documentation et livraison
+## Phase 6 : Documentation et livraison [checkpoint: 676a0ea]
 - [x] Task: ADR 0001 « Architecture en feature slices » (`docs/adr/`), ajouté à la demande en fin de track
 - [x] Task: Docs
     - [x] `README.md` (structure), `tech-stack.md` (architecture, règles), `workflow.md` ; `conductor/checklist-mini-jeu.md` et `conductor/checklist-ile.md`
     - [x] Adapter les chemins de fichiers cités dans les plans des tracks suivantes (squishies, saison 2, licornes)
 - [x] Task: Vérification complète
     - [x] `npm test` vert ; une vraie sauvegarde créée avec le code v50 (`origin/main`) se charge en v51 sans erreur ni perte (seul `seen` change, exactement comme en v50 au démarrage) ; parcours manuel : voir la vérification ci-dessous
-- [ ] Task: Conductor - User Manual Verification 'Documentation et livraison' (Protocol in workflow.md)
-- [ ] Task: `sw.js` (`lagon-v51`), PRD (v51), branche, PR sur `main`, merge
+- [x] Task: Conductor - User Manual Verification 'Documentation et livraison' (Protocol in workflow.md)
+- [x] Task: `sw.js` (`lagon-v51`), PRD (v51), branche, PR sur `main`, merge

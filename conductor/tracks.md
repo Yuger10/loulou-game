@@ -4,7 +4,7 @@ Registre des tracks Conductor, **dans l'ordre d'implémentation**. Feuille de ro
 
 ---
 
-- [~] **Track: Refactor en feature slices, scripts classiques (étape A, v51)** : sans changement visible
+- [x] **Track: Refactor en feature slices, scripts classiques (étape A, v51)** : sans changement visible
 *Link: [./tracks/refactor-feature-slices_20261109/](./tracks/refactor-feature-slices_20261109/)*
 
 ---
