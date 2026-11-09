@@ -18,6 +18,7 @@ const GAME_LIST = [
   { key:'calc',     emoji:'🌋', name:'Calcul mental', fn:()=>renderCalc() },
   { key:'shapes',   emoji:'🍡', name:'Formes et couleurs', fn:()=>renderShapes() },
   { key:'planets',  emoji:'🪐', name:'Les planètes', fn:()=>renderPlanets() },
+  { key:'jigsaw',   emoji:'🖼️', name:'Le puzzle', fn:()=>renderJigsaw() },
 ];
 
 /* --- Panneau des joueurs --- */
