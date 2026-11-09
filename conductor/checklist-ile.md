@@ -1,6 +1,6 @@
 # Checklist : ajouter une île (un monde)
 
-Architecture en feature slices (v51). Exemple de référence : le Pays Squishy (`squishy`).
+Architecture en feature slices (v51), en modules ES natifs (v54). Exemple de référence : le Pays Squishy (`squishy`).
 Remplacer `<ile>` par la clé de l'île (ex. `boites`).
 
 ## 1. Tests d'abord
@@ -15,12 +15,13 @@ Remplacer `<ile>` par la clé de l'île (ex. `boites`).
 ## 3. Features
 - [ ] `js/shared/styles/design-system-v21.css` (ou une feuille de la slice île) : le thème `body[data-world="<ile>"]{--world-sky:…; --world-sea:…}`.
 - [ ] `js/features/island/island.js` : son paysage dans `ISLE_SCENERY.<ile>`.
-- [ ] `js/features/story/story.js` : son chapitre `STORY.<ile>` (guide, 3 phrases d'intro, au moins 2 énigmes en emojis, succès, récompense).
+- [ ] `js/features/story/story.js` : son chapitre `STORY.<ile>` (guide, 3 phrases d'intro, au moins 2 énigmes en emojis avec un `tip`, succès, récompense).
+- [ ] `js/entities/squishy/squishies.js` : la série de squishies gagnée par son énigme, dans `SQUISHY_ISLAND_SERIES.<ile>` (et sa propre série dans `SQUISHY_SERIES` / `SQUISHIES` si le monde en a une, v53).
 - [ ] `js/features/story/episodes.js` : ses 3 épisodes `EPISODES.<ile>` (racontés par les autres habitants, jamais par le guide).
 - [ ] `js/features/music/music.js` : son thème `MUSIC_THEMES.<ile>`.
 - [ ] Ses mini-jeux éventuels : voir [checklist-mini-jeu.md](./checklist-mini-jeu.md).
 
 ## 4. Brancher et vérifier
-- [ ] `npm run sync` si des fichiers ont été ajoutés, `npm run api` si un nom est exposé.
+- [ ] `npm run sync` si des fichiers ont été ajoutés ; un nom exposé s'ajoute à l'`index.js` de sa slice.
 - [ ] `npm test` vert.
 - [ ] Cache `sw.js` incrémenté, PRD et TODO à jour.

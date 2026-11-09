@@ -1,6 +1,6 @@
 # ADR 0001 : Organiser le code en « feature slices », en deux étapes (scripts classiques, puis modules ES)
 
-- **Statut :** acceptée, étape A livrée en v51 ; étape B prévue en v54
+- **Statut :** acceptée, étape A livrée en v51 ; **complétée par l'[ADR 0002](./0002-modules-es-natifs.md)** (étape B, modules ES natifs, livrée en v54)
 - **Date :** 2026-11-09
 - **Décideur :** le propriétaire du projet, sur proposition de Claude (track Conductor `refactor-feature-slices`)
 - **Specs liées :** [`refactor-feature-slices`](../../conductor/tracks/refactor-feature-slices_20261109/spec.md) (A), [`refactor-esm-modules`](../../conductor/tracks/refactor-esm-modules_20261109/spec.md) (B)
@@ -52,5 +52,5 @@ En v50, le jeu compte 37 scripts classiques à plat dans `js/`, plus un `styles.
 `test/slices.test.js` vérifie : cohérence entre le manifeste, les fichiers, `index.html` et `sw.js` ; unicité des noms ; couches ; API publiques. Il prouve aussi qu'il sait échouer, sur deux cas fabriqués. Une violation réelle (une slice `shared` qui lit `state`) a été vérifiée détectée pendant l'implémentation.
 
 ## À revoir
-- À l'étape B (v54) : écrire l'ADR 0002 (modules ES, harnais esbuild, bus d'événements) et passer celui-ci au statut « complété par 0002 ».
+- ~~À l'étape B (v54) : écrire l'ADR 0002 (modules ES, harnais esbuild, bus d'événements) et passer celui-ci au statut « complété par 0002 ».~~ Fait : [ADR 0002](./0002-modules-es-natifs.md).
 - Si le nombre de requêtes devient un problème mesuré sur un vrai appareil.

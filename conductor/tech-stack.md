@@ -1,21 +1,42 @@
 # Tech Stack
 
 ## Langages et runtime
-- **HTML5 / CSS3 / JavaScript (ES2020)** sans framework ni bundler. Les scripts sont chargés dans l'ordre par `index.html` et partagent la portée globale (fonctions et constantes globales, `typeof fn==='function'` pour les dépendances optionnelles).
+- **HTML5 / CSS3 / JavaScript en modules ES natifs** (v54), sans framework, sans bundler et sans build pour le jeu.
+  - `index.html` charge un seul `<script type="module" src="js/app/main.js">`.
+  - Chaque fichier importe ce qu'il utilise ; aucune variable globale.
+  - `js/package.json` déclare `"type": "module"` (pour Node).
+- **Servir en `http://localhost` ou `https://`** : ouvert depuis le disque (`file://`), le jeu ne charge pas ses modules, car les navigateurs l'interdisent. En local : `npm start`.
 - **Aucune dépendance d'exécution.** Les dessins sont en SVG et en emojis, les sons en Web Audio, la voix passe par `speechSynthesis`.
 
-## Architecture : feature slices (v51)
-> Décision et options écartées : [ADR 0001](../docs/adr/0001-architecture-feature-slices.md).
+## Architecture : feature slices (v51) en modules ES (v54)
+> Décisions et options écartées : [ADR 0001](../docs/adr/0001-architecture-feature-slices.md) (slices) et [ADR 0002](../docs/adr/0002-modules-es-natifs.md) (modules ES, couches sans cycle).
 
 - **4 couches**, de la plus haute à la plus basse : `app` → `features` → `entities` → `shared`, dans `js/<couche>/<slice>/`. Le CSS d'une slice est rangé à côté de son JS.
-- **Manifeste `js/slices.cjs`** : couche, fichiers JS et CSS dans l'ordre de chargement, et **API publique** de chaque slice. `CSS_ORDER` fixe l'ordre global de la cascade. `index.html` et `sw.js` en sont générés (`npm run sync`).
-- **Règles vérifiées par `test/slices.test.js`** : une couche n'utilise que sa couche ou les couches inférieures ; entre slices, seulement l'API publique ; une seule définition par nom global ; manifeste, fichiers, `index.html` et `sw.js` cohérents.
-- **Dépendances vers le haut interdites, remplacées par des points d'accroche** fournis par la couche basse : `registerGame` (moteur de mini-jeux), `registerView`, `onModalOpen` / `onModalClose`, `onWrongFeedback`, `onProfileRefresh`, `setAudioPrefsSource`, `setCompanionDressing`.
+- **Manifeste `js/slices.cjs`**, lu par les outils seulement (d'où le `.cjs`). Il donne :
+  - la couche de chaque slice et ses fichiers JS et CSS ;
+  - **l'ordre des slices, de bas en haut** : une slice n'importe que celles placées avant elle ;
+  - `CSS_ORDER`, l'ordre global de la cascade.
+
+  `index.html` et la liste `FILES` de `sw.js` en sont générés (`npm run sync`, ou `npm run sw`).
+- **API publique = l'`index.js` de chaque slice**, qui réexporte ce que les autres slices ont le droit d'importer.
+- **Règles vérifiées par `test/slices.test.js`, sur les `import`** :
+  - entre slices, seulement l'`index.js` ;
+  - une couche n'importe que sa couche ou les couches inférieures, et seulement des slices placées avant elle ;
+  - aucun cycle d'import entre slices (graphe d'esbuild) ;
+  - aucun nom utilisé sans import ;
+  - aucune écriture sur `window` / `globalThis` / `self` ;
+  - un seul fichier définit chaque nom ;
+  - manifeste, fichiers, `index.html` et `sw.js` cohérents.
+- **Dépendances vers le haut interdites.** Deux moyens les remplacent :
+  - **des points d'accroche** fournis par la couche basse : `registerGame`, `registerView`, `onModalOpen` / `onModalClose`, `onWrongFeedback`, `onProfileRefresh`, `setAudioPrefsSource`, `setCompanionDressing`, `setSaveSlot`, `setCompanionPlayerSource`, `setHintCountable` ;
+  - **un petit bus d'événements** (`js/shared/lib/events.js` : `on`, `off`, `emit`) : `ui:…` pour redessiner, `nav:…` pour ouvrir un écran, et des événements de domaine (`world:changed`, `lagon:rendered`…).
+- **Une variable n'est réaffectée que par son fichier** ; les autres passent par une fonction (`setCurrentWorld`, `replaceState`…).
 - **Pas de garde `typeof fn==='function'`** pour une fonction du jeu (tout est toujours chargé). Seules les capacités du navigateur sont testées ainsi.
-- Toujours des **scripts classiques**, en portée globale. L'étape B (v54) passera aux modules ES natifs.
 
 ## Plateforme
-- **PWA :** `manifest.json` et `sw.js`, avec un cache versionné `lagon-vNN`. La liste `FILES` est générée depuis le manifeste (`npm run sync`), et le cache doit être incrémenté à chaque version.
+- **PWA :** `manifest.json` et `sw.js`, avec un cache versionné `lagon-vNN`.
+  - La liste `FILES` (tous les modules, leurs `index.js`, `main.js` et les feuilles de style, précachés pour le hors-ligne) est générée depuis le manifeste (`npm run sw`), et `test/slices.test.js` la vérifie.
+  - Le cache doit être incrémenté à chaque version.
 - Servi en local (`npm start` → `python3 -m http.server 8080`). En ligne sur GitHub Pages en `https://` (https://yuger10.github.io/loulou-game/), déployé depuis `main`.
 
 ## Données
@@ -25,8 +46,9 @@
 - **Contenu de jeu** déclaratif dans les entités (`js/entities/item/items.js`, `character/characters.js`, `world/worlds.js`, `squishy/squishies.js`) et dans `js/features/story/` (`STORY`, `EPISODES`).
 
 ## Tests
-- **`npm test`** → `test/slices.test.js` (architecture et frontières), `test/smoke.test.js` (test de fumée jsdom : parcours, sauvegarde, anti-devinette, CSS équilibré, aucune erreur JS) `test/games.test.js` (chaque mini-jeu joué jusqu'à la victoire) `test/squishies.test.js` (v53 : collection, tirage, chambre, rangement, marché) et `test/companions.test.js` (v52 : indices de chaque mini-jeu, équipe, spécialités). Les pages de test sont construites depuis le manifeste (`test/tools/page.js`).
-- Dépendances de développement : `jsdom` (exécuter le jeu), `acorn` et `acorn-walk` (analyser le code : inventaire des noms globaux et test de frontières des slices, v51). Aucune n'est chargée par le jeu.
+- **`npm test`** → `test/slices.test.js` (architecture et imports), `test/modules.test.js` (v54 : les vrais modules ES chargés dans Node, dans l'ordre du navigateur et en mode strict), `test/smoke.test.js` (test de fumée jsdom : parcours, sauvegarde, anti-devinette, CSS équilibré, aucune erreur JS) `test/games.test.js` (chaque mini-jeu joué jusqu'à la victoire) `test/squishies.test.js` (v53 : collection, tirage, chambre, rangement, marché) et `test/companions.test.js` (v52 : indices de chaque mini-jeu, équipe, spécialités). La page de test est construite par `test/tools/page.js` : esbuild regroupe `js/app/main.js` en un script (mode strict, sans *tree shaking*), que jsdom exécute. Les tests lisent ainsi l'état du jeu par son nom (`state`, `playGame(…)`).
+  - *Note du 2026-11-09 (v54) :* ajout d'`esbuild` (dépendance de développement, jamais chargée par le jeu) pour les tests, comme prévu par la track `refactor-esm-modules`. Ce regroupement change `const`/`let` en `var` : `test/modules.test.js` couvre donc l'ordre d'initialisation réel. Tests sous Node 22.
+- Dépendances de développement : `jsdom` (exécuter le jeu), `esbuild` (regrouper les modules pour les tests, v54), `acorn` et `acorn-walk` (analyser le code : imports, inventaire, test de frontières). Aucune n'est chargée par le jeu.
   - *Note du 2026-11-09 :* ajout d'`acorn` pour la track `refactor-feature-slices` : un analyseur sans dépendance, plus fiable que des expressions régulières pour distinguer le code des textes.
 
 ## Outillage
