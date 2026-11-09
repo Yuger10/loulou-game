@@ -38,6 +38,7 @@ function renderCompare(){
   `);
   bindQuit();
   startTimerIfNeeded('compare');
+  setSolution([solSel('.cmp-btn','v',answer)]);
   document.querySelectorAll('.cmp-btn').forEach(btn=>{
     btn.onclick = ()=>{
       if(btn.dataset.v===answer){

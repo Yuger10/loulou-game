@@ -47,6 +47,7 @@ function renderDeterminants(){
   `);
   bindQuit();
   startTimerIfNeeded('determinants');
+  setSolution([solSel('.det-btn','v',answer)]);
   document.querySelectorAll('.det-btn').forEach(btn=>{
     btn.onclick = ()=>{
       if(btn.dataset.v===answer){ clearActiveTimer(); stepOk(btn); flashModal('ok'); setTimeout(onMissionWin, 350); }

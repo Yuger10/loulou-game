@@ -53,6 +53,7 @@ function renderCapacityCompare(dd){
   `);
   bindQuit();
   startTimerIfNeeded('volume');
+  setSolution([solSel('.vol-container-btn','v',answer)]);
   // seulement 2-3 contenants : sans ça, une mauvaise réponse laisserait
   // deviner la bonne par élimination. Une erreur relance une NOUVELLE
   // comparaison (nouveaux contenants), jamais la même à éliminer.
@@ -82,6 +83,7 @@ function renderSolidShape(dd){
   `);
   bindQuit();
   startTimerIfNeeded('volume');
+  setSolution([solSel('.vol-opt-btn','v',solid.name)]);
   document.querySelectorAll('.vol-opt-btn').forEach(btn=>{
     btn.onclick = ()=>{
       if(btn.dataset.v===solid.name){ clearActiveTimer(); stepOk(btn); flashModal('ok'); setTimeout(onMissionWin, 350); }

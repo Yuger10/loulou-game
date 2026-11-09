@@ -92,6 +92,8 @@ function renderJigsaw(){
     </div>
   `);
   bindQuit();
+  // tests : toucher chaque morceau, puis sa case
+  setSolution(Array.from({length:n}, (_,i)=>[solSel('.jg-piece','p',i), solSel('.jg-slot','s',i)]).flat());
 
   let placed = 0, selected = null, justDragged = false;
   const clearSel = ()=>{ if(selected) selected.classList.remove('sel'); selected = null; };

@@ -201,6 +201,12 @@ function stepOk(el){
 }
 
 let lastGame = null;
+/* Pour les tests automatiques : chaque mini-jeu note ce qu'il faut toucher
+   pour réussir — des sélecteurs CSS, dans l'ordre (test/games.test.js joue
+   ainsi chaque jeu jusqu'à la victoire). Rien n'est montré à l'enfant. */
+let gameSolution = null;
+function setSolution(steps){ gameSolution = steps; }
+function solSel(base, attr, v){ return `${base}[data-${attr}=${JSON.stringify(String(v))}]`; }
 // Phrase à retenir (vraie et vérifiée) qu'un jeu peut faire afficher et dire
 // sur l'écran de victoire, ex. le quiz des planètes. Utilisée une seule fois.
 let missionFact = null;
@@ -239,6 +245,7 @@ function playGame(key){
   if(typeof missionErrors!=='undefined') missionErrors = 0;
   trackGamePlayed(key);
   lastGame = key;
+  gameSolution = null;
   gameRenderer(key)();
 }
 
@@ -401,6 +408,8 @@ function renderMemory(){
   const cards = shuffle([...pool, ...pool]).map((e,i)=>({id:i, emoji:e, flipped:false, matched:false}));
   let first=null, lock=false;
   const cols3 = pairs===3;
+  // tests : les paires, deux cartes à la fois
+  { const by = {}; cards.forEach(c=> (by[c.emoji] = by[c.emoji] || []).push(c.id)); setSolution(Object.values(by).flat().map(id=>solSel('.mcard','id',id))); }
 
   function render(){
     openModal(`
@@ -471,6 +480,7 @@ function renderCount(){
   `);
   bindQuit();
   startTimerIfNeeded('count');
+  setSolution([solSel('.num-btn','v',n)]);
   document.querySelectorAll('.num-btn').forEach(btn=>{
     btn.onclick = ()=>{
       if(Number(btn.dataset.v)===n){ clearActiveTimer(); stepOk(btn); flashModal('ok'); setTimeout(onMissionWin, 350); }
@@ -520,6 +530,7 @@ function renderDiff(){
   `);
   bindQuit();
   startTimerIfNeeded('diff');
+  setSolution(['.diff-item[data-odd="true"]']);
   document.querySelectorAll('.diff-item').forEach(el=>{
     el.onclick = ()=>{
       if(el.dataset.odd==='true'){ clearActiveTimer(); stepOk(el); flashModal('ok'); setTimeout(onMissionWin, 350); }
@@ -576,6 +587,7 @@ function renderSimon(){
     }, 600 + i*650);
   }
   seq.forEach(flash);
+  setSolution(seq.map(p=>solSel('.simon-pad','k',p.k)));   // après « À toi ! »
   setTimeout(()=>{
     playing = false;
     const s = document.getElementById('simon-state');
@@ -645,6 +657,7 @@ function renderSequence(){
   `);
   bindQuit();
   startTimerIfNeeded('sequence');
+  setSolution([solSel('.seq-btn','v',answer)]);
   document.querySelectorAll('.seq-btn').forEach(btn=>{
     btn.onclick = ()=>{
       if(btn.dataset.v===answer){
@@ -701,6 +714,7 @@ function renderPuzzle(){
     </div>
   `);
   bindQuit();
+  setSolution(seq.map(n=>solSel('.puzzle-btn','n',n)));
   document.querySelectorAll('.puzzle-btn').forEach(btn=>{
     btn.onclick = ()=>{
       const n = Number(btn.dataset.n);

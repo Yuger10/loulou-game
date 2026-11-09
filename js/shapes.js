@@ -136,6 +136,7 @@ function renderShapes(){
     </div>
   `);
   bindQuit();
+  setSolution(r.items.map((it,i)=> it.ok ? solSel('.sq-item','i',i) : null).filter(Boolean));
   document.querySelectorAll('.sq-item').forEach(btn=>{
     btn.onclick = ()=>{
       const it = r.items[Number(btn.dataset.i)];

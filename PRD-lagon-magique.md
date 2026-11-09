@@ -888,3 +888,19 @@ Les poissons nageaient de gauche à droite alors que les emoji 🐠 🐟 🐢 re
 ## Divers
 - Écran de victoire : espace insécable avant « ! » (il ne part plus seul à la ligne).
 - Cache `lagon-v49`.
+
+---
+
+# v50 — Chaque mini-jeu joué jusqu'à la victoire (tests) ; mémoire plus juste
+
+## Tests (`test/games.test.js`, lancé par `npm test`)
+- **Les 18 mini-jeux, à chaque palier** (1 à 5, jusqu'à 6 pour le calcul mental, les formes et les planètes), trois tirages chacun : 259 parties jouées en touchant les bons boutons, jusqu'à l'écran de victoire. Le temps du jeu est accéléré ×10 dans le test (l'ordre des événements ne change pas) : une vingtaine de secondes en tout.
+- Chaque mini-jeu note ce qu'il faut toucher pour réussir (`setSolution`, des sélecteurs dans l'ordre ; jamais montré à l'enfant). Pour les jeux dont la réponse se lit à l'écran, le test **vérifie aussi, sans la solution**, qu'elle correspond à ce qui est affiché : nombre d'objets à compter, opération et illustration, calcul mental, comparaison, pile de pièces, intrus, suite logique, ordre des nombres et des jours.
+- **Mémoire jouée « de mémoire »** jusqu'au bout, aux paliers 1, 2 et 5 : le test ne connaît que les cartes qu'il a déjà retournées, comme un enfant.
+- **Une mauvaise réponse ne fait jamais gagner** (8 jeux) et compte une erreur.
+- **Bouton son** : le tour des 4 états, aucun bruitage en silence, voix coupée = rien n'est dit, voix allumée = la phrase est dite.
+
+## Correctif trouvé par ces tests : la mémoire
+Au palier 5 (7 paires), il n'y avait que 3 essais. Or, même en se souvenant de tout ce qu'on a vu, on se trompe en moyenne environ 4 fois en découvrant les cartes (jusqu'à 7) : un enfant qui n'avait rien oublié perdait presque à coup sûr. **Les essais suivent maintenant le nombre de paires : paires + 2** (6 au palier 2, 9 au palier 5). Bien retenir fait toujours gagner ; toucher au hasard fait toujours perdre.
+
+- Cache `lagon-v50`.

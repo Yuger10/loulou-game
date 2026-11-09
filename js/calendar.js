@@ -44,6 +44,7 @@ function renderSeasonGuess(){
   bindQuit();
   // annonce les 3 mots proposés (vocabulaire), un peu après la consigne
   setTimeout(()=> speak(shown.map(o=>o.name).join(', ')), 1600);
+  setSolution([solSel('.season-btn','v',correct.name)]);
   document.querySelectorAll('.season-btn').forEach(btn=>{
     btn.onclick = ()=>{
       if(btn.dataset.v===correct.name){ stepOk(btn); flashModal('ok'); setTimeout(onMissionWin, 350); }
@@ -70,6 +71,7 @@ function renderWeekdayOrder(dd){
     </div>
   `);
   bindQuit();
+  setSolution(seq.map(w=>solSel('.weekday-btn','w',w)));
   document.querySelectorAll('.weekday-btn').forEach(btn=>{
     btn.onclick = ()=>{
       const w = btn.dataset.w;

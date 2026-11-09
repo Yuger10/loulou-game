@@ -295,7 +295,7 @@ function moneyPileSize(dd){
    un enfant qui progresse normalement dans une tâche longue.
    --------------------------------------------------------------------- */
 const LIVES_TABLE = {
-  memory:       {2:5, 3:4, 4:4, 5:3},
+  // mémoire : voir livesFor — les essais suivent le nombre de paires
   jigsaw:       {2:5, 3:4, 4:4, 5:3},   // puzzle : beaucoup de morceaux, on essaie
   simon:        {2:3, 3:3, 4:2, 5:2},
   default:      {2:3, 3:2, 4:2, 5:1},          // jeux « une seule bonne réponse »
@@ -306,6 +306,14 @@ const LIVES_TABLE = {
 function livesFor(kind, dd){
   const d = Math.max(1, Math.min(5, Number(dd) || 1));
   if(d <= 1) return Infinity;                  // île 1 : on apprend sans pression
+  // MÉMOIRE : retourner deux cartes différentes fait partie du jeu. Avec n
+  // paires, même un enfant qui se souvient de TOUT ce qu'il a vu se trompe
+  // jusqu'à n fois en découvrant les cartes (≈ 0,6 n en moyenne). Avant, 3
+  // essais pour 7 paires (palier 5) faisaient perdre presque à coup sûr un
+  // enfant qui n'avait rien oublié (constaté par test/games.test.js). Les
+  // essais suivent donc le nombre de paires : n + 2. Bien retenir fait
+  // toujours gagner ; toucher au hasard fait toujours perdre.
+  if(kind === 'memory') return memoryPairs(d) + 2;
   const GENEROUS_KINDS = ['math','reading','determinants','volume','compare','money','clock','calendar','calc','shapes','planets'];
   const table = LIVES_TABLE[kind] || (GENEROUS_KINDS.includes(kind) ? LIVES_TABLE.generous : LIVES_TABLE.default);
   // le calcul mental (palier 6, Volcan) emprunte le barème d'essais du
