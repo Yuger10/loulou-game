@@ -161,6 +161,9 @@ function load(){
   }
 }
 
+// Remplacer toute la partie (nouveau joueur) : seul ce fichier réaffecte `state`
+function replaceState(next){ state = next; }
+
 function resetState(){
   state = freshState({
     sound: state.sound, voice: state.voice,

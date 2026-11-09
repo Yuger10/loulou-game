@@ -264,7 +264,7 @@ function openPlayerSettings(id){
       if(!confirm(`Tout recommencer à zéro pour ${p.name || 'ce joueur'} ?\n(pièces, objets, îles et niveau seront perdus)`)) return;
       if(id === profiles.current){
         resetState();
-        currentWorld = 'lagon';
+        setCurrentWorld('lagon');
         refreshAll();
       } else {
         try{ localStorage.removeItem(profileSaveKey(id)); }catch(e){}
@@ -321,7 +321,7 @@ function pickPickerChoices(n){
 }
 
 function openGamePicker(charId){
-  if(charId) currentChar = charId;
+  if(charId) setCurrentChar(charId);
   const who = party.active ? (partyCurrent() || currentProfile()) : currentProfile();
   const choices = pickPickerChoices(Math.min(GAME_PICKER_SIZE, GAME_LIST.length));
   openModal(`

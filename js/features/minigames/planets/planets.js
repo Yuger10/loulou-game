@@ -240,7 +240,7 @@ function renderPlanetOrder(q){
 
 // la bonne réponse : on montre et on dit une phrase vraie, puis la victoire
 function planetWin(q){
-  missionFact = q.fact;
+  setMissionFact(q.fact);
   setTimeout(onMissionWin, 450);
 }
 

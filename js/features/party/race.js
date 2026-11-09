@@ -4,10 +4,10 @@ const RACE_PRIZE = 50;       // pièces pour le vainqueur
 
 function startRace(ids){
   if(ids.length < 2) return false;
-  race = { active:true, players:ids.slice(), pos:{}, turn:0, goal:RACE_STEPS, winner:null, rounds:0 };
+  setRace({ active:true, players:ids.slice(), pos:{}, turn:0, goal:RACE_STEPS, winner:null, rounds:0 });
   ids.forEach(id=> race.pos[id] = 0);
   // la course réutilise la mécanique de tour par tour
-  party = { active:true, mode:'race', players:ids.slice(), turn:0, scores:{}, lastWinner:null };
+  setParty({ active:true, mode:'race', players:ids.slice(), turn:0, scores:{}, lastWinner:null });
   ids.forEach(id=> party.scores[id] = 0);
   switchProfile(ids[0], true);
   renderTurnBar();

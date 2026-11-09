@@ -210,6 +210,7 @@ function refreshLookEverywhere(){
 
 /* ---- l'onglet « Mon look » du sac ---- */
 let lookTry = null;   // objet essayé, pas encore acheté : { slot, id }
+function clearLookTry(){ lookTry = null; }
 let lookSlot = 'tete';
 function lookStatusText(id){
   const it = WARDROBE[id];

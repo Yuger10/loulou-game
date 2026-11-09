@@ -22,6 +22,10 @@ function currentPlayerAge(){
 
 const RACE_STEPS = 6;        // cases à parcourir pour gagner
 
+// démarrer ou arrêter une partie à plusieurs : seul ce fichier réaffecte `party` et `race`
+function setParty(p){ party = p; }
+function setRace(r){ race = r; }
+
 let race = { active:false, players:[], pos:{}, turn:0, goal:RACE_STEPS, winner:null, rounds:0 };
 
 function raceCurrent(){ return profiles.list.find(p=>p.id===race.players[race.turn]); }

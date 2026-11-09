@@ -49,6 +49,9 @@ const WORLD_ORDER = Object.keys(WORLDS);
 
 /* ---------- Carte des îles ---------- */
 let currentWorld = 'lagon';
+// Changer d'île courante : seul ce fichier écrit `currentWorld` (un module ne
+// peut pas réaffecter la variable d'un autre, v54).
+function setCurrentWorld(id){ currentWorld = id; }
 
 function worldUnlocked(id){ return level() >= WORLDS[id].level; }
 

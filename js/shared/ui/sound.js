@@ -20,10 +20,16 @@ function tone(freq, start, dur, type='sine', vol=.18){
   o.stop(audioCtx.currentTime + start + dur + .05);
 }
 
+// le contexte audio, créé au premier son (après un geste de l'enfant)
+function ensureAudioCtx(){
+  if(!audioCtx) audioCtx = new (window.AudioContext||window.webkitAudioContext)();
+  return audioCtx;
+}
+
 function playSound(kind){
   if(!audioPrefs().sound) return;
   try{
-    if(!audioCtx) audioCtx = new (window.AudioContext||window.webkitAudioContext)();
+    ensureAudioCtx();
     if(audioCtx.state==='suspended') audioCtx.resume();
     if(kind==='tap') tone(660, 0, .08, 'triangle', .1);
     else if(kind==='good') { tone(523, 0, .12); tone(784, .1, .16); }

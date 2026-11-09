@@ -2,7 +2,7 @@
 
 function startParty(ids){
   if(ids.length < 2) return false;
-  party = { active:true, mode:'turns', players:ids.slice(), turn:0, scores:{}, lastWinner:null };
+  setParty({ active:true, mode:'turns', players:ids.slice(), turn:0, scores:{}, lastWinner:null });
   ids.forEach(id=> party.scores[id] = 0);
   switchProfile(ids[0], true);
   renderTurnBar();

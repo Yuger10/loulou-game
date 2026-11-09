@@ -46,6 +46,7 @@ function todayKey(d){
 
 /* ---- enregistrer ce qui se passe en jeu ---- */
 let missionErrors = 0;
+function resetMissionErrors(){ missionErrors = 0; }
 let missionProgress = null;   // progrès de la dernière mission, pour l'écran de victoire
 function noteAnswerError(){ missionErrors++; }
 function recordMission(ok){

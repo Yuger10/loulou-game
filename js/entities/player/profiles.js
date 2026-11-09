@@ -57,7 +57,7 @@ function switchProfile(id, silent){
   save();                       // sauvegarde le joueur courant
   profiles.current = id; saveProfiles();
   load();                       // charge le nouveau
-  currentWorld = worldUnlocked(currentWorld) ? currentWorld : 'lagon';
+  setCurrentWorld(worldUnlocked(currentWorld) ? currentWorld : 'lagon');
   refreshAll();
   if(!silent){
     playSound('good');
@@ -72,9 +72,9 @@ function addProfile(name, avatar, age, gender, companion){
   profiles.list.push({ id, name: name||'', avatar: avatar||'👧', age: age||null, gender: gender||'',
     companion: companion || defaultCompanionFor(gender||'') });
   profiles.current = id; saveProfiles();
-  state = freshState({ name: name||'', avatar: avatar||'👧', visited:['lagon'] });
+  replaceState(freshState({ name: name||'', avatar: avatar||'👧', visited:['lagon'] }));
   save();
-  currentWorld = 'lagon';
+  setCurrentWorld('lagon');
   refreshAll();
   return id;
 }
@@ -87,7 +87,7 @@ function deleteProfile(id){
   if(profiles.current === id){
     profiles.current = profiles.list[0].id;
     load();
-    currentWorld = 'lagon';
+    setCurrentWorld('lagon');
   }
   saveProfiles();
   refreshAll();

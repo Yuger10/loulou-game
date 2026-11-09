@@ -78,7 +78,7 @@ function applyBackup(backup){
   // recharge les joueurs et la partie sans recharger la page
   if(party.active) stopParty();
   loadProfiles(); load();
-  currentWorld = 'lagon';
+  setCurrentWorld('lagon');
   refreshAll();
   renderMap();
   renderBackupReminder();

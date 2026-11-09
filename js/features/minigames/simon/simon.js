@@ -30,7 +30,7 @@ function renderSimon(){
   function padTone(p, dur=.3, vol=.16){
     if(!state.sound) return;
     try{
-      if(!audioCtx) audioCtx = new (window.AudioContext||window.webkitAudioContext)();
+      ensureAudioCtx();
       if(audioCtx.state==='suspended') audioCtx.resume();
       tone(p.freq, 0, dur, 'sine', vol);
       tone(p.freq*2, 0, dur*.5, 'triangle', vol*.35); // harmonique : timbre plus doux

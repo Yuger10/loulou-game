@@ -7,6 +7,7 @@ function addCoins(n){
 
 // pièces comptées mais encore en vol (voir gains.js) : l'affichage les attend
 var coinsInFlight = 0;
+function addCoinsInFlight(n){ coinsInFlight += n; }
 
 function renderCoins(){ document.getElementById('coin-count').textContent = state.coins - (coinsInFlight || 0); }
 

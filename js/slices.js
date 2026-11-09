@@ -19,10 +19,10 @@ const SLICES = [
   { id:'shared-styles',  layer:'shared',   files:[], css:['js/shared/styles/base.css','js/shared/styles/interface-v12.css','js/shared/styles/pointer-v13.css','js/shared/styles/responsive-v14.css','js/shared/styles/design-system-v21.css','js/shared/styles/devices.css'], public:[] },
   { id:'shared-ui',      layer:'shared',   files:['js/shared/ui/icons.js','js/shared/ui/sound.js','js/shared/ui/voice.js',
                                                 'js/shared/ui/feedback.js','js/shared/ui/modal.js','js/shared/ui/views.js'], css:['js/shared/ui/views.css','js/shared/ui/modal.css','js/shared/ui/feedback.css','js/shared/ui/icons.css'], public:[
-      'audioCtx', 'bindSpeakButtons', 'closeModal', 'confetti', 'emojiWord', 'onModalChange', 
-      'onModalClose', 'onModalOpen', 'onWrongFeedback', 'openModal', 'playSound', 'registerView', 
-      'setAudioPrefsSource', 'shakeEl', 'showToast', 'soundModeLabel', 'speak', 'speechBubble', 
-      'switchView', 'tone', 'uiIcon', 'vibrate', 'wrongFeedback'] },
+      'audioCtx', 'bindSpeakButtons', 'closeModal', 'confetti', 'emojiWord', 'ensureAudioCtx', 
+      'onModalChange', 'onModalClose', 'onModalOpen', 'onWrongFeedback', 'openModal', 'playSound', 
+      'registerView', 'setAudioPrefsSource', 'shakeEl', 'showToast', 'soundModeLabel', 'speak', 
+      'speechBubble', 'switchView', 'tone', 'uiIcon', 'vibrate', 'wrongFeedback'] },
   { id:'words',          layer:'entities', files:['js/entities/words/words.js'], css:[], public:[
       'WORDS_CP'] },
   { id:'item',           layer:'entities', files:['js/entities/item/items.js'], css:[], public:[
@@ -30,7 +30,7 @@ const SLICES = [
       'removeItem'] },
   { id:'world',          layer:'entities', files:['js/entities/world/worlds.js','js/entities/world/availability.js'], css:['js/entities/world/world-themes.css'], public:[
       'availableChars', 'availableCrafted', 'availableItems', 'currentWorld', 'nextLockedWorld', 
-      'WORLD_ORDER', 'WORLDS', 'worldUnlocked'] },
+      'setCurrentWorld', 'WORLD_ORDER', 'WORLDS', 'worldUnlocked'] },
   { id:'character',      layer:'entities', files:['js/entities/character/characters.js','js/entities/character/characters-art.js'],
                                            css:['js/entities/character/characters.css'], public:[
       'CHARACTERS', 'charFace', 'charsOf', 'charsOfForPlayer'] },
@@ -50,14 +50,14 @@ const SLICES = [
       'SQUISHY_SERIES_ORDER'] },
   { id:'game-state',     layer:'entities', files:['js/entities/game-state/state.js'], css:[], public:[
       'freshState', 'gameCount', 'hello', 'level', 'levelProgress', 'load', 'MISSIONS_PER_LEVEL', 
-      'resetState', 'save', 'squishyFreshState', 'state', 'trackGamePlayed'] },
+      'replaceState', 'resetState', 'save', 'squishyFreshState', 'state', 'trackGamePlayed'] },
   { id:'player',         layer:'entities', files:['js/entities/player/avatars.js','js/entities/player/profiles.js',
                                                 'js/entities/player/party-state.js'], css:[], public:[
       'ac', 'addProfile', 'AVATARS', 'currentPlayer', 'currentPlayerAge', 'currentProfile', 
       'currentSaveKey', 'deleteProfile', 'fixAvatar', 'LEGACY_SAVE_KEY', 'loadProfiles', 
       'onProfileRefresh', 'party', 'partyCurrent', 'partyPlayers', 'playerGender', 'profiles', 
       'PROFILES_KEY', 'profileSaveKey', 'race', 'RACE_STEPS', 'raceCurrent', 'refreshAll', 
-      'saveProfiles', 'switchProfile', 'syncProfileFromState'] },
+      'saveProfiles', 'setParty', 'setRace', 'switchProfile', 'syncProfileFromState'] },
   { id:'companion',      layer:'entities', files:['js/entities/companion/companions.js'], css:['js/entities/companion/companions.css'], public:[
       'avatarHTML', 'avatarText', 'bindCompanionSelector', 'buddyReact', 'buddySlot', 
       'COMPANION_ORDER', 'companionOf', 'COMPANIONS', 'companionSelector', 'companionsFor', 
@@ -70,7 +70,7 @@ const SLICES = [
   { id:'quests', layer:'features', files:['js/features/quests/quests.js'], css:['js/features/quests/quests.css'], public:[
       'ensureQuests', 'openQuestsModal', 'questProgress', 'renderQuests'] },
   { id:'wallet', layer:'features', files:['js/features/wallet/wallet.js'], css:[], public:[
-      'addCoins', 'coinsInFlight', 'renderCoins'] },
+      'addCoins', 'addCoinsInFlight', 'renderCoins'] },
   { id:'adaptive', layer:'features', files:['js/features/adaptive/game-diff.js','js/features/adaptive/adaptive.js'], css:['js/features/adaptive/adaptive.css'], public:[
       'adaptAfterMission', 'gameDiff', 'gameDiffIsland', 'needsPractice', 'pickPracticeGame', 
       'progressCheer'] },
@@ -78,7 +78,8 @@ const SLICES = [
       'checkAlbumComplete', 'markSeen', 'renderBadge', 'setSacTab'] },
   { id:'island', layer:'features', files:['js/features/island/island-view.js','js/features/island/island.js'], css:['js/features/island/island.css','js/features/island/island-view.css'], public:[
       'checkNewIsland', 'currentChar', 'ISLE_SCENERY', 'isleGenericScenery', 'markHelped', 
-      'openDialogue', 'renderIslandCard', 'renderLagon', 'renderLevelPill', 'renderScene', 'setWorld'] },
+      'openDialogue', 'renderIslandCard', 'renderLagon', 'renderLevelPill', 'renderScene', 
+      'setCurrentChar', 'setWorld'] },
   { id:'music', layer:'features', files:['js/features/music/music.js'], css:[], public:[
       'updateMusic'] },
   { id:'gains', layer:'features', files:['js/features/gains/gains.js'], css:['js/features/gains/gains.css'], public:[
@@ -88,10 +89,10 @@ const SLICES = [
   { id:'minigame-engine', layer:'features', files:['js/features/minigame-engine/engine.js','js/features/minigame-engine/hints.js'], css:['js/features/minigame-engine/engine.css','js/features/minigame-engine/deck-v13.css','js/features/minigame-engine/outcome-v14.css','js/features/minigame-engine/board-v21.css','js/features/minigame-engine/timer.css','js/features/minigame-engine/hints.css'], public:[
       'bindQuit', 'bonusChallenge', 'clearActiveTimer', 'flashModal', 'gameHeader', 'hintLevel', 
       'hintNudge', 'hintOrderStep', 'hintShowFirst', 'hintSyllablesFirst', 'hintSyllablesHTML', 
-      'inBonusChallenge', 'lastGame', 'livesBar', 'loseLife', 'missionFact', 'onMissionWin', 
-      'playGame', 'progressDots', 'registerGame', 'registerHints', 'setHintPolicy', 'setHintQuestion', 
-      'setSolution', 'setupLives', 'solSel', 'speakWrongHint', 'startBonusChallenge', 'startMinigame', 
-      'startTimerIfNeeded', 'stepOk'] },
+      'inBonusChallenge', 'lastGame', 'livesBar', 'loseLife', 'onMissionWin', 'playGame', 
+      'progressDots', 'registerGame', 'registerHints', 'setHintPolicy', 'setHintQuestion', 
+      'setMissionFact', 'setSolution', 'setupLives', 'solSel', 'speakWrongHint', 'startBonusChallenge', 
+      'startMinigame', 'startTimerIfNeeded', 'stepOk'] },
   { id:'minigame-memory', layer:'features', files:['js/features/minigames/memory/memory.js'], css:[], public:[] },
   { id:'minigame-count', layer:'features', files:['js/features/minigames/count/count.js'], css:[], public:[] },
   { id:'minigame-intruder', layer:'features', files:['js/features/minigames/intruder/intruder.js'], css:[], public:[] },
@@ -127,12 +128,12 @@ const SLICES = [
   { id:'backup', layer:'features', files:['js/features/backup/backup.js'], css:['js/features/backup/backup.css'], public:[
       'backupDue', 'initBackup', 'openBackup', 'renderBackupReminder', 'requestPersistentStorage'] },
   { id:'parents', layer:'features', files:['js/features/parents/parents.js'], css:['js/features/parents/parents.css'], public:[
-      'missionErrors', 'missionProgress', 'noteAnswerError', 'openParents', 'pauseDue', 
-      'recordMission', 'showPauseScreen', 'SKILL_ERR_TOLERANCE', 'skillStatus', 'startPlayTimeTracker', 
-      'todayKey'] },
+      'missionProgress', 'noteAnswerError', 'openParents', 'pauseDue', 'recordMission', 
+      'resetMissionErrors', 'showPauseScreen', 'SKILL_ERR_TOLERANCE', 'skillStatus', 
+      'startPlayTimeTracker', 'todayKey'] },
   { id:'wardrobe', layer:'features', files:['js/features/wardrobe/wardrobe.js'], css:['js/features/wardrobe/wardrobe.css'], public:[
-      'currentLook', 'lookTry', 'newlyUnlockedLookItems', 'ownsLookItem', 'renderLook', 'WARDROBE', 
-      'wearLook'] },
+      'clearLookTry', 'currentLook', 'newlyUnlockedLookItems', 'ownsLookItem', 'renderLook', 
+      'WARDROBE', 'wearLook'] },
   { id:'seasons', layer:'features', files:['js/features/seasons/seasons.js'], css:['js/features/seasons/seasons.css'], public:[
       'applySeason', 'currentSeason', 'FETES', 'initSeasons', 'maybeSeasonGift', 'seasonPreview', 
       'seasonSceneSVG', 'setSeasonPreview'] },

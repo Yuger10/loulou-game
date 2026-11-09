@@ -9,7 +9,7 @@ function setWorld(id, silent){
     return false;
   }
   const changed = currentWorld !== id;
-  currentWorld = id;
+  setCurrentWorld(id);
   document.body.dataset.world = id;
   renderLagon();
   if(changed && !silent){
@@ -82,7 +82,7 @@ function renderIslandCard(){
 
 function renderLagon(){
   // si le monde courant n'est plus accessible, on revient au lagon
-  if(!worldUnlocked(currentWorld)) currentWorld = 'lagon';
+  if(!worldUnlocked(currentWorld)) setCurrentWorld('lagon');
   document.body.dataset.world = currentWorld;
   const w = WORLDS[currentWorld];
   const intro = document.getElementById('lagon-intro-text');
@@ -148,6 +148,7 @@ function openDecoShop(){
 
 /* ---------- Personnages / dialogue ---------- */
 let currentChar = null;
+function setCurrentChar(id){ currentChar = id; }
 
 /* Phrases qui dépendent de la partie en cours */
 function contextualLine(charId){

@@ -116,7 +116,7 @@ function musicTick(){
 function startMusic(){
   if(music.on) return;
   try{
-    if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    ensureAudioCtx();
     if(audioCtx.state === 'suspended' && audioCtx.resume) audioCtx.resume();
     music.master = audioCtx.createGain();
     music.master.gain.setValueAtTime(0, audioCtx.currentTime);

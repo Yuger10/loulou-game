@@ -212,6 +212,7 @@ function solSel(base, attr, v){ return `${base}[data-${attr}=${JSON.stringify(St
 // Phrase à retenir (vraie et vérifiée) qu'un jeu peut faire afficher et dire
 // sur l'écran de victoire, ex. le quiz des planètes. Utilisée une seule fois.
 let missionFact = null;
+function setMissionFact(f){ missionFact = f; }
 // Registre des mini-jeux : chaque jeu s'inscrit avec registerGame(clé, rendu)
 // (js/features/minigames/<jeu>/). Le moteur ne connaît pas la liste des jeux.
 // Résolu au moment de l'appel : tous les jeux sont inscrits avant le premier.
@@ -237,7 +238,7 @@ function playGame(key){
   if(pauseDue()){ showPauseScreen(); return; }
   if(bonusChallenge){ if(bonusChallenge.fresh) bonusChallenge.fresh = false; else bonusChallenge = null; }
   if(hintPolicy.onMission) hintPolicy.onMission(key);
-  missionErrors = 0;
+  resetMissionErrors();
   trackGamePlayed(key);
   lastGame = key;
   gameSolution = null;

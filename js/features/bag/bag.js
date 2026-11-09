@@ -13,7 +13,7 @@ function setSacTab(tab){
   if(look) look.hidden = tab!=='look';
   if(tab==='sac') renderSac();
   else if(tab==='album') renderAlbum();
-  else { lookTry = null; renderLook(); }
+  else { clearLookTry(); renderLook(); }
   roseTip(tab);   // Rose (collection) : ce qui manque, et où le trouver
 }
 
