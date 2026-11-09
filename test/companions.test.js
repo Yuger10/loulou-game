@@ -32,6 +32,8 @@ let failed = 0, passed = 0;
 function check(name, cond){ if(cond){ passed++; console.log('✅ ' + name); } else { failed++; console.log('❌ ' + name); } }
 function section(name){ console.log('— ' + name); }
 const lastSaid = ()=> spoken[spoken.length - 1] || '';
+// une fenêtre fermée garde son contenu : on regarde aussi si elle est affichée
+const shown = (sel)=> d.getElementById('overlay').classList.contains('show') && !!d.querySelector(sel);
 
 const ISLAND_FOR_TIER = { 1:'lagon', 2:'foret', 3:'montagne', 4:'chateau', 5:'jungle', 6:'volcan' };
 // un jeu au palier voulu (comme test/games.test.js), en solo
@@ -200,6 +202,90 @@ const wrongOf = (sel)=>{ const good = d.querySelector(ev('gameSolution')[0]); re
     check('énigme : après une erreur, le bouton brille', hintBtn().classList.contains('nudge'));
     ev('closeModal()');
   }
+
+  /* ================= Phase 3 : l'équipe ================= */
+  section('Ouverture de l\'équipe au niveau 10');
+  ev('closeModal(); currentProfile().companion = "perle"; state.team = { open:false, met:[], mates:[], day:null }; state.missions = 44; state.visited = WORLD_ORDER.slice(); save(); refreshAll()');
+  check('niveau 9 : l\'équipe est fermée', ev('level()') === 9 && !ev('teamIsOpen()'));
+  check('avant le niveau 10 : seul le principal est dans l\'en-tête', d.querySelectorAll('#team-btn .th-head').length === 1 && !!d.querySelector('#team-btn svg[data-buddy="perle"]'));
+  d.getElementById('team-btn').click();
+  check('« Mon équipe » avant le niveau 10 : le principal et l\'annonce du niveau 10', !!d.querySelector('.tw-card.main') && /niveau 10/.test(d.getElementById('modal-body').textContent));
+  startGame('count', 1, { missions:44 });
+  d.querySelector(ev('gameSolution')[0]).click();
+  await waitFor(()=> !!d.querySelector('.win-box'));
+  check('la mission fait passer au niveau 10', ev('level()') === 10);
+  d.getElementById('btn-yay').click();
+  check('écran « Ton équipe s\'agrandit ! » après la victoire', await waitFor(()=> !!d.querySelector('.team-open'), 1500));
+  check('le principal annonce que des amis attendent sur les îles', /amis t'attendent sur les îles/.test(d.querySelector('.team-open').textContent));
+  check('l\'équipe est ouverte et sauvegardée', ev('teamIsOpen()') && ev(`JSON.parse(localStorage.getItem(currentSaveKey())).team.open`) === true);
+  d.getElementById('team-open-ok').click();
+  startGame('count', 1, { missions:46 });
+  d.querySelector(ev('gameSolution')[0]).click();
+  await waitFor(()=> !!d.querySelector('.win-box'));
+  d.getElementById('btn-yay').click();
+  await wait(80);
+  check('une seule fois : pas d\'écran d\'équipe à la victoire suivante', !shown('.team-open'));
+
+  section('Partie migrée');
+  ev(`closeModal(); localStorage.setItem(currentSaveKey(), JSON.stringify({ v:3, coins:9, missions:60, inventory:{ coquillage:2 }, name:'Lou', avatar:'🦄', visited:WORLD_ORDER.slice(),
+      skills:{ count:{ wins:3, fails:0, errors:1, last:null, recent:[] } } })); load()`);
+  check('migration v3 → v4 sans perte (pièces, missions, objets, progrès)', ev('state.v') === 4 && ev('state.coins') === 9 && ev('state.missions') === 60 && ev('state.inventory.coquillage') === 2 && ev('state.skills.count.wins') === 3);
+  check('migration : équipe fermée, compteur d\'indices à 0', ev('teamIsOpen()') === false && ev('state.skills.count.hints') === 0 && Array.isArray(ev('state.team.mates')));
+  ev('teamOnSessionStart()');
+  check('partie déjà au niveau 10 ou plus : l\'écran d\'équipe au chargement', !!d.querySelector('.team-open'));
+  ev('closeModal()');
+
+  section('Rencontres sur les îles');
+  ev('closeModal(); currentProfile().companion = "perle"; state.team = { open:true, met:[], mates:[], day:null }; state.missions = 200; state.visited = WORLD_ORDER.slice(); currentWorld = "lagon"; save()');
+  check('chaque compagnon a son île', ev('[TEAM_ROLES.perle.home, TEAM_ROLES.leo.home, TEAM_ROLES.sam.home, TEAM_ROLES.zap.home, TEAM_ROLES.tom.home, TEAM_ROLES.rose.home].join()') === 'lagon,chateau,jungle,cite,volcan,squishy');
+  check('Lili et Grisou absents tant que leurs îles (saison 2) ne sont pas livrées', ev('teamHomeOf("lili")') === null && ev('teamEncounterOn("boites")') === null && !ev('teamKnownIds().includes("grisou")'));
+  ev('teamNewVisit(); maybeTeamEncounter("lagon")');
+  check('le principal (Perle) est sauté : pas de rencontre au Lagon', !shown('.team-meet'));
+  spoken.length = 0;
+  ev('closeModal(); setWorld("chateau")');
+  check('Léo le chevalier apparaît en arrivant au Château', await waitFor(()=> shown('.team-meet .tm-stage svg[data-buddy="leo"]'), 1500));
+  check('la scène : le compagnon en grand, son rôle, une démonstration', !!d.querySelector('.tm-role') && d.querySelectorAll('.tm-demo .tm-chip').length >= 1);
+  check('il se présente en 2 phrases, lues à voix haute', ev('TEAM_ROLES.leo.say.length') === 2 && spoken.some(x=> /tuteur/.test(x)));
+  d.getElementById('tm-later').click();
+  check('« Plus tard » : il ne rejoint pas l\'équipe', !ev('teamHasMet("leo")') && !shown('.team-meet'));
+  ev('maybeTeamEncounter("chateau")');
+  check('« Plus tard » : pas reproposé pendant la même visite', !shown('.team-meet'));
+  ev('setWorld("lagon"); setWorld("chateau")');
+  check('« Plus tard » : reproposé à la visite suivante', await waitFor(()=> shown('.team-meet .tm-stage svg[data-buddy="leo"]'), 1500));
+  d.getElementById('tm-yes').click();
+  check('« Dans mon équipe ! » : Léo rencontré et équipier', ev('teamHasMet("leo")') && ev('teamMates().join()') === 'leo');
+  ev('closeModal(); setWorld("lagon"); setWorld("chateau")');
+  await wait(250);
+  check('une seule rencontre par compagnon', !shown('.team-meet'));
+  ev('closeModal(); currentProfile().companion = "tom"; teamNewVisit(); maybeTeamEncounter("lagon")');
+  check('avec Tom en principal, Perle se rencontre au Lagon', shown('.team-meet .tm-stage svg[data-buddy="perle"]'));
+  ev('closeModal(); teamNewVisit(); maybeTeamEncounter("volcan")');
+  check('… et Tom, le principal, n\'a pas de rencontre au Volcan', !shown('.team-meet'));
+  ev('closeModal(); currentProfile().companion = "perle"; party.active = true; teamNewVisit(); maybeTeamEncounter("jungle"); party.active = false');
+  check('pas de rencontre en partie à plusieurs', !shown('.team-meet'));
+
+  section('Mon équipe');
+  ev('closeModal(); currentProfile().companion = "perle"; state.team = { open:true, met:["leo","sam","zap"], mates:["leo","sam"], day:null }; save(); refreshAll()');
+  d.getElementById('team-btn').click();
+  check('« Mon équipe » s\'ouvre en touchant les compagnons de l\'en-tête', !!d.querySelector('.tw-card.main svg[data-buddy="perle"]') && d.querySelectorAll('.tw-card.mate').length === 2);
+  check('les rencontrés non actifs restent visibles (au repos), les autres « à rencontrer »', !!d.querySelector('.tw-card.rest svg[data-buddy="zap"]') && d.querySelectorAll('.tw-unmet .tw-one').length >= 2);
+  check('2 équipiers au maximum : pas de 3ᵉ', ev('teamAddMate("zap")') === false && d.querySelector('[data-team-add="zap"]').disabled);
+  d.querySelector('[data-team-rest="sam"]').click();
+  check('un équipier peut se reposer', ev('teamMates().join()') === 'leo');
+  d.querySelector('[data-team-add="zap"]').click();
+  check('changer d\'équipier', ev('teamMates().join()') === 'leo,zap');
+  d.querySelector('[data-team-main="leo"]').click();
+  check('changer de principal : Léo principal, Perle prend sa place', ev('currentCompanion()') === 'leo' && ev('teamMates().join()') === 'perle,zap');
+  ev('closeModal(); save(); load(); refreshAll()');
+  check('l\'équipe est conservée après rechargement', ev('currentCompanion()') === 'leo' && ev('teamMates().join()') === 'perle,zap');
+  check('en-tête : 3 têtes au maximum, le principal en premier', d.querySelectorAll('#team-btn .th-head').length === 3 && d.querySelector('#team-btn .th-head.main svg').dataset.buddy === 'leo');
+  ev("switchView('ile')");
+  check('île : les 3 têtes de l\'équipe', d.querySelectorAll('#view-ile .team-chip .th-head').length === 3);
+  ev("switchView('carte')");
+  check('carte : les 3 têtes sur le bateau', d.querySelectorAll('#map-boat .th-head').length === 3);
+  ev('state.team.mates = ["perle","zap","sam"]; renderTeamHeads()');
+  check('jamais plus de 3 têtes, même avec un état abîmé', d.querySelectorAll('#team-btn .th-head').length === 3);
+  ev('currentProfile().companion = "perle"; state.team = { open:false, met:[], mates:[], day:null }; save(); refreshAll()');
 
   check('aucune erreur JS', errs.length === 0);
   if(errs.length) console.log(errs.slice(0, 5));

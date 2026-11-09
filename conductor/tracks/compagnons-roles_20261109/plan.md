@@ -30,14 +30,14 @@ Nouvelle slice : `features/companion-team/`. Contrat d'indices dans `features/mi
 - [ ] Task: Conductor - User Manual Verification 'Indices de chaque mini-jeu' (Protocol in workflow.md)
 
 ## Phase 3 : L'équipe
-- [ ] Task: Ouverture au niveau 10
-    - [ ] Tests : écran « Ton équipe s'agrandit ! » une seule fois ; partie déjà au niveau 10 ou plus migrée : écran au chargement
-    - [ ] État `team` et migration
-- [ ] Task: Rencontres sur les îles
-    - [ ] Tests : bonne île pour chaque compagnon ; principal sauté ; une seule fois ; à la prochaine visite pour une île déjà connue ; « Plus tard » la repropose à la visite suivante ; Lili et Grisou absents tant que leurs tracks ne sont pas livrées
-    - [ ] Scène de rencontre (compagnon en grand, 2 phrases, démonstration du rôle)
-- [ ] Task: Fenêtre « Mon équipe »
-    - [ ] Tests : 2 équipiers au maximum ; changer d'équipier et de principal ; conservé ; 3 têtes au maximum affichées (en-tête, île, bateau)
+- [x] Task: Ouverture au niveau 10
+    - [x] Tests : écran « Ton équipe s'agrandit ! » une seule fois ; partie déjà au niveau 10 ou plus migrée : écran au chargement
+    - [x] État `team` et migration (`SAVE_VERSION` 4)
+- [x] Task: Rencontres sur les îles
+    - [x] Tests : bonne île pour chaque compagnon ; principal sauté ; une seule fois ; à la prochaine visite pour une île déjà connue ; « Plus tard » la repropose à la visite suivante ; Lili et Grisou absents tant que leurs tracks ne sont pas livrées
+    - [x] Scène de rencontre (compagnon en grand, 2 phrases, démonstration du rôle)
+- [x] Task: Fenêtre « Mon équipe »
+    - [x] Tests : 2 équipiers au maximum ; changer d'équipier et de principal ; conservé ; 3 têtes au maximum affichées (en-tête, île, bateau)
 - [ ] Task: Conductor - User Manual Verification "L'équipe" (Protocol in workflow.md)
 
 ## Phase 4 : Les spécialités

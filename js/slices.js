@@ -123,6 +123,8 @@ const SLICES = [
   { id:'seasons', layer:'features', files:['js/features/seasons/seasons.js'], css:['js/features/seasons/seasons.css'], public:[
       'applySeason', 'currentSeason', 'FETES', 'initSeasons', 'maybeSeasonGift', 'seasonPreview', 
       'seasonSceneSVG', 'setSeasonPreview'] },
+  { id:'companion-team', layer:'features', files:['js/features/companion-team/team.js'], css:['js/features/companion-team/team.css'], public:[
+      'maybeTeamOpening', 'renderTeamHeads', 'teamHeadsHTML', 'teamOnSessionStart', 'teamOnTravel'] },
   { id:'app', layer:'app', files:['js/app/init.js'], css:[], public:[] },
 ];
 
@@ -179,6 +181,7 @@ const CSS_ORDER = [
   'js/features/gifts/gifts.css',
   'js/features/story/episodes.css',
   'js/features/minigame-engine/hints.css',
+  'js/features/companion-team/team.css',
   'js/features/island/island.css',
   'js/entities/character/characters.css',
 ];

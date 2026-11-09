@@ -62,6 +62,7 @@
 <link rel="stylesheet" href="js/features/gifts/gifts.css">
 <link rel="stylesheet" href="js/features/story/episodes.css">
 <link rel="stylesheet" href="js/features/minigame-engine/hints.css">
+<link rel="stylesheet" href="js/features/companion-team/team.css">
 <link rel="stylesheet" href="js/features/island/island.css">
 <link rel="stylesheet" href="js/entities/character/characters.css">
 </head>
@@ -74,6 +75,7 @@
 
   <header class="topbar">
     <button class="avatar-pill" id="avatar-pill" aria-label="Les joueurs"><span class="av">👧</span><span id="player-name">Toi</span></button>
+    <button class="icon-btn team-btn" id="team-btn" data-team-slot aria-label="Mon équipe"></button>
     <button class="icon-btn" id="quests-btn" aria-label="Mes missions du jour"><span data-ui-icon="missions">📜</span><span class="badge" id="quest-badge" hidden></span></button>
     <button class="icon-btn" id="story-btn" aria-label="Mon histoire"><span data-ui-icon="histoire">📖</span></button>
     <button class="icon-btn" id="sound-btn" aria-label="Son">🔊</button>
@@ -107,6 +109,7 @@
     <section id="view-ile" class="view">
       <div class="view-head">
         <h2 id="world-title">🌊 Le Lagon</h2>
+        <button class="team-chip" data-team-slot aria-label="Mon équipe"></button>
         <button class="chip-btn" id="btn-back-map">🗺️ Carte</button>
       </div>
       <p class="view-hint" id="lagon-intro-text">Touche un personnage pour l'aider ✨</p>
@@ -251,6 +254,7 @@
 <script src="js/features/parents/parents.js"></script>
 <script src="js/features/wardrobe/wardrobe.js"></script>
 <script src="js/features/seasons/seasons.js"></script>
+<script src="js/features/companion-team/team.js"></script>
 <script src="js/app/init.js"></script>
 </body>
 </html>

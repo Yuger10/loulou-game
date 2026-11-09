@@ -372,8 +372,9 @@ function onMissionWin(){
     playSound('tap'); closeModal(); renderLagon();
     // multijoueur : la main passe au joueur suivant après une réussite
     if(party.active){ passTurn('next'); return; }
-    // nouvelle île débloquée ? sinon, peut-être un épisode de l'histoire
-    setTimeout(()=>{ if(!checkNewIsland()) maybeStoryEpisode(); }, 250);
+    // nouvelle île débloquée ? sinon l'équipe qui s'ouvre (niveau 10), sinon
+    // peut-être un épisode de l'histoire
+    setTimeout(()=>{ if(!checkNewIsland() && !maybeTeamOpening()) maybeStoryEpisode(); }, 250);
   };
   const againBtn = document.getElementById('btn-again');
   if(againBtn) againBtn.onclick = ()=> { playSound('tap'); renderLagon(); startMinigame(); };
