@@ -1,11 +1,6 @@
 /* ---------- Mode course de navigation (compétition équitable) ---------- */
 
-const RACE_STEPS = 6;        // cases à parcourir pour gagner
 const RACE_PRIZE = 50;       // pièces pour le vainqueur
-
-let race = { active:false, players:[], pos:{}, turn:0, goal:RACE_STEPS, winner:null, rounds:0 };
-
-function raceCurrent(){ return profiles.list.find(p=>p.id===race.players[race.turn]); }
 
 function startRace(ids){
   if(ids.length < 2) return false;

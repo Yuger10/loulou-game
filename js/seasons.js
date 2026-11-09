@@ -206,3 +206,6 @@ try{
   if(q && (FETES[q] || q === SEASON_NONE)) sessionStorage.setItem(SEASON_PREVIEW_KEY, q);
 }catch(e){}
 function initSeasons(){ applySeason(true); }
+
+// chapeau de fête des compagnons (js/entities/companion)
+setCompanionDressing({ seasonHat });

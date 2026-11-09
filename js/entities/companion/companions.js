@@ -7,6 +7,12 @@
    princesse, fée ; garçon : pirate, chevalier, explorateur), mais l'enfant
    peut toujours choisir n'importe lequel. */
 
+// La garde-robe (« Mon look ») et les fêtes de saison habillent compagnons et
+// avatars. Ce sont des features : elles fournissent leurs fonctions ici avec
+// setCompanionDressing, l'entité ne les appelle jamais directement.
+const companionDressing = { seasonHat:null, lookColors:null, lookAccessoriesSVG:null, lookFits:null };
+function setCompanionDressing(part){ Object.assign(companionDressing, part); }
+
 const COMPANIONS = {
   perle:  { name:'Perle',  title:'la sirène',      group:'f', skin:'#FFD9C2', hair:'#FF7FAE', hairDark:'#D9578A', outfit:'#3CC9B5', outfitDark:'#24A493', style:'mermaid' },
   rose:   { name:'Rose',   title:'la princesse',   group:'f', skin:'#FFE0CC', hair:'#F7C04A', hairDark:'#D99A22', outfit:'#FF8FB8', outfitDark:'#E2679A', style:'princess' },
@@ -193,13 +199,13 @@ function buddyParts(c, o){
 function companionSVG(id, mood, opts){
   let look = (opts && opts.look) || null;
   // saison (js/seasons.js) : bonnet de Noël, chapeau de sorcière ou de fête
-  const sHat = (!look || !look.tete) && typeof seasonHat==='function' ? seasonHat() : null;
+  const sHat = (!look || !look.tete) && companionDressing.seasonHat ? companionDressing.seasonHat() : null;
   if(sHat) look = Object.assign({}, look || {}, { tete: sHat });
   const base = COMPANIONS[id] || COMPANIONS.perle;
-  const c = look && typeof lookColors==='function' ? Object.assign({}, base, lookColors(look)) : base;
+  const c = look && companionDressing.lookColors ? Object.assign({}, base, companionDressing.lookColors(look)) : base;
   const m = BUDDY_MOODS.includes(mood) ? mood : 'happy';
   const p = buddyParts(c, { noHat: !!(look && look.tete), noMask: !!(look && look.visage) });
-  const extra = look && typeof lookAccessoriesSVG==='function' ? lookAccessoriesSVG(look) : '';
+  const extra = look && companionDressing.lookAccessoriesSVG ? companionDressing.lookAccessoriesSVG(look) : '';
   const label = (opts && opts.label) || `${c.name} ${c.title}`;
   return `<svg class="buddy buddy--${m}" data-buddy="${id}" viewBox="0 0 120 130" role="img" aria-label="${label}">
     <g class="b-body">
@@ -296,8 +302,8 @@ function avatarHTML(av, look){
   const hasLook = look && (look.tete || look.visage || look.tenue);
   if(!isArtAvatar(av)){
     const emo = av || '👧';
-    if(!hasLook || typeof lookAccessoriesSVG!=='function' || (typeof lookFits==='function' && !lookFits(emo))) return emo;
-    const acc = lookAccessoriesSVG(look);
+    if(!hasLook || !companionDressing.lookAccessoriesSVG || (companionDressing.lookFits && !companionDressing.lookFits(emo))) return emo;
+    const acc = companionDressing.lookAccessoriesSVG(look);
     return `<span class="av-look">${emo}${acc ? `<svg class="look-ov" viewBox="-30 -70 160 200" aria-hidden="true">${acc}</svg>` : ''}</span>`;
   }
   const id = av.slice(4), c = COMPANIONS[id];

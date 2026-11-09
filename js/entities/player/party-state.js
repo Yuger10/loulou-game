@@ -19,3 +19,9 @@ function currentPlayerAge(){
   const p = currentPlayer();
   return p && Number(p.age) || null;
 }
+
+const RACE_STEPS = 6;        // cases à parcourir pour gagner
+
+let race = { active:false, players:[], pos:{}, turn:0, goal:RACE_STEPS, winner:null, rounds:0 };
+
+function raceCurrent(){ return profiles.list.find(p=>p.id===race.players[race.turn]); }

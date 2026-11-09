@@ -310,3 +310,6 @@ function renderLook(){
     renderLook();
   };
 }
+
+// habille compagnons et avatars (js/entities/companion)
+setCompanionDressing({ lookColors, lookAccessoriesSVG, lookFits });
