@@ -296,6 +296,7 @@ function moneyPileSize(dd){
    --------------------------------------------------------------------- */
 const LIVES_TABLE = {
   memory:       {2:5, 3:4, 4:4, 5:3},
+  jigsaw:       {2:5, 3:4, 4:4, 5:3},   // puzzle : beaucoup de morceaux, on essaie
   simon:        {2:3, 3:3, 4:2, 5:2},
   default:      {2:3, 3:2, 4:2, 5:1},          // jeux « une seule bonne réponse »
   // les jeux plus récents (calcul, lecture…) demandent un temps de
@@ -342,7 +343,7 @@ const TIMER_SECONDS = {
   calc:         {3:28, 4:24, 5:22, 6:20},   // calcul abstrait : le plus généreux de tous
 };
 // jeux à plusieurs étapes : jamais de minuteur, quelle que soit la difficulté
-const NO_TIMER_KINDS = ['memory','simon','puzzle','calendar','shapes','planets'];
+const NO_TIMER_KINDS = ['memory','simon','puzzle','calendar','shapes','planets','jigsaw'];
 function timerFor(kind, dd){
   if(NO_TIMER_KINDS.includes(kind)) return null;
   const table = TIMER_SECONDS[kind];
@@ -457,3 +458,23 @@ function shapesRound(dd){
    La banque de questions et les règles d'exactitude sont dans js/planets.js. */
 function planetsTier(dd){ return Math.max(1, Math.min(6, Number(dd) || 1)); }
 
+/* ---------------------------------------------------------------------
+   ASSEMBLER L'IMAGE — vrai puzzle (« Se repérer dans l'espace », cycle 1 :
+   reconstituer une image de 2 puis 4 morceaux en petite et moyenne section,
+   davantage en grande section et au CP).
+     palier 1   2×2, l'image en transparence dans le cadre (guide fort)
+     palier 2   2×2, transparence légère
+     palier 3   3×3, transparence légère
+     palier 4   3×3, plus de transparence : un petit modèle à côté
+     palier 5   4×3 (12 morceaux), modèle à côté
+   Pas de minuteur (tâche à plusieurs étapes) ; essais généreux.
+   --------------------------------------------------------------------- */
+function jigsawRound(dd){
+  return tierValue({
+    1:{cols:2, rows:2, ghost:.45},
+    2:{cols:2, rows:2, ghost:.2},
+    3:{cols:3, rows:3, ghost:.22},
+    4:{cols:3, rows:3, ghost:0},
+    5:{cols:4, rows:3, ghost:0},
+  }, dd);
+}

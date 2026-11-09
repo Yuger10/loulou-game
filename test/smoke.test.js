@@ -659,7 +659,7 @@ setTimeout(()=>{
     ev('closeModal()');
 
     // ---- Compteur de défis joués, et variété forcée ----
-    ev('state.gameCounts = {}; state.gameCounts["memory"]=1; state.gameCounts["count"]=1; state.gameCounts["diff"]=1; state.gameCounts["puzzle"]=1; state.gameCounts["sequence"]=1; state.gameCounts["simon"]=1; state.gameCounts["math"]=1; state.gameCounts["reading"]=1; state.gameCounts["determinants"]=1; state.gameCounts["volume"]=1; state.gameCounts["clock"]=1; state.gameCounts["calendar"]=1; state.gameCounts["calc"]=1; state.gameCounts["compare"]=0; state.gameCounts["shapes"]=1; state.gameCounts["planets"]=1; state.gameCounts["money"]=0; openGamePicker("sirene")');
+    ev('state.gameCounts = {}; state.gameCounts["memory"]=1; state.gameCounts["count"]=1; state.gameCounts["diff"]=1; state.gameCounts["puzzle"]=1; state.gameCounts["sequence"]=1; state.gameCounts["simon"]=1; state.gameCounts["math"]=1; state.gameCounts["reading"]=1; state.gameCounts["determinants"]=1; state.gameCounts["volume"]=1; state.gameCounts["clock"]=1; state.gameCounts["calendar"]=1; state.gameCounts["calc"]=1; state.gameCounts["compare"]=0; state.gameCounts["shapes"]=1; state.gameCounts["planets"]=1; state.gameCounts["jigsaw"]=1; state.gameCounts["money"]=0; openGamePicker("sirene")');
     const leastPlayed = [...d.querySelectorAll('.game-choice:not(.surprise)')].map(b=>b.dataset.game);
     check('variété : les 2 jeux jamais essayés remontent en priorité', leastPlayed.includes('compare') && leastPlayed.includes('money'));
     ev('closeModal()');
@@ -668,8 +668,8 @@ setTimeout(()=>{
     ev('closeModal(); state.gameCounts = {}; renderLagon()');
 
     // ---- Défis adaptés à l\'âge (programme maternelle 3-6 ans) ----
-    check('âge 3 ans : mémoire/compter/intrus + saisons + formes (sans lecture)', ev('gameTypesForAge(3)').join()==='memory,count,diff,calendar,shapes');
-    check('âge 4 ans : encore limité aux jeux visuels', ev('gameTypesForAge(4)').join()==='memory,count,diff,calendar,shapes');
+    check('âge 3 ans : mémoire/compter/intrus + saisons + formes + puzzle (sans lecture)', ev('gameTypesForAge(3)').join()==='memory,count,diff,calendar,shapes,jigsaw');
+    check('âge 4 ans : encore limité aux jeux visuels', ev('gameTypesForAge(4)').join()==='memory,count,diff,calendar,shapes,jigsaw');
     check('âge 5 ans : un peu plus de jeux (volume, suite, simon, heure)', ev('gameTypesForAge(5)').includes('volume') && ev('gameTypesForAge(5)').includes('clock') && !ev('gameTypesForAge(5)').includes('math'));
     check('âge 5 ans : pas encore de calcul mental abstrait', !ev('gameTypesForAge(5)').includes('calc'));
     check('âge 6 ans : tous les jeux (CP)', ev('gameTypesForAge(6)').length===ev('GAME_TYPES').length);
@@ -1006,6 +1006,29 @@ setTimeout(()=>{
       check('anniversaire : on peut mettre son chapeau tout de suite', ev('state.look.tete')==='fete');
       check('anniversaire : un seul cadeau par an', ev('maybeSeasonGift()')===false);
       ev('currentProfile().birthday = ""; saveProfiles(); state.seasonGifts = {}; state.look = {tete:null, visage:null, tenue:null, cape:null}; state.wardrobe = []; save(); setSeasonPreview("aucune"); switchView("carte")');
+    }
+    // ---- Assembler l'image (vrai puzzle) ----
+    {
+      ev('closeModal(); party.active = false; state.skills = {}; currentProfile().age = 0; currentWorld = "lagon"; playGame("jigsaw")');
+      check('puzzle : 2×2 au Lagon, avec l\'image en transparence', d.querySelectorAll('.jg-slot').length===4 && d.querySelectorAll('.jg-piece').length===4 && !!d.querySelector('.jg-ghost'));
+      check('puzzle : l\'image est dessinée une fois (symbole), chaque morceau en montre une partie', d.querySelectorAll('#jg-art').length===1 && d.querySelectorAll('.jg-piece use').length===4);
+      check('puzzle : les morceaux ne sont jamais déjà en ordre', ev('jigsawState.order.some((p,i)=>p!==i)'));
+      // une erreur : le morceau revient, rien n'est posé
+      const wrong = [...d.querySelectorAll('.jg-piece')].find(p=>p.dataset.p!=='0');
+      wrong.click(); d.querySelector('.jg-slot[data-s="0"]').click();
+      check('puzzle : un morceau mal placé revient dans la réserve', !d.querySelector('.jg-slot.filled') && !wrong.classList.contains('used') && ev('missionErrors')===1);
+      // tout bien placer (toucher le morceau, puis sa case)
+      for(let i=0;i<4;i++){ d.querySelector(`.jg-piece[data-p="${i}"]`).click(); d.querySelector(`.jg-slot[data-s="${i}"]`).click(); }
+      check('puzzle : chaque morceau bien placé reste dans le cadre', d.querySelectorAll('.jg-slot.filled').length===4);
+      await wait(800);
+      check('puzzle : image complète → mission réussie', !!d.querySelector('.win-box') && ev('state.skills.jigsaw.wins')===1);
+      ev('closeModal()');
+      check('puzzle : de plus en plus de morceaux (2×2, 3×3, 4×3)', ev('[1,2,3,4,5].map(t=>jigsawRound(t).cols*jigsawRound(t).rows).join()')==='4,4,9,9,12');
+      check('puzzle : plus de transparence aux paliers 4-5, un modèle à la place', ev('jigsawRound(4).ghost')===0 && ev('jigsawRound(3).ghost')>0);
+      ev('state.skills.jigsaw = {wins:3, fails:0, errors:0, last:null, recent:[], lvl:5}; currentWorld = "chateau"; playGame("jigsaw")');
+      check('puzzle : 3×3 avec un modèle sur l\'île 4', d.querySelectorAll('.jg-slot').length===9 && !!d.querySelector('.jg-model') && !d.querySelector('.jg-ghost'));
+      check('puzzle : pas de minuteur', !d.getElementById('challenge-timer'));
+      ev('closeModal(); state.skills = {}; currentWorld = "lagon"; save()');
     }
     // ---- Chaque nouveau monde : couleurs propres et place sur la carte ----
     {

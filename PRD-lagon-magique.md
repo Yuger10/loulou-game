@@ -822,3 +822,15 @@ Le jeu se met tout seul aux couleurs du moment (`js/seasons.js`) :
 - **Espace parents → Fêtes et saisons** : explications et **aperçu** de chaque fête (jusqu'à la fermeture du jeu, sans cadeau) ; aussi avec `?saison=noel` dans l'adresse.
 - Données : `state.seasonGifts` (ex. `noel-2026`), `profile.birthday` (« MM-JJ »). Les tests forcent « pas de saison » pour rester identiques toute l'année.
 - Cache `lagon-v45`.
+
+---
+
+# v46 — Mini-jeu « Le puzzle » (assembler l'image)
+
+Un vrai puzzle (`js/jigsaw.js`), proposé dès 3 ans, rangé dans la compétence « Formes et espace ».
+- **L'image** : le paysage dessiné d'une île déjà découverte, avec un compagnon en grand au premier plan (7 compagnons × 8 îles), plus de petits détails (oiseaux, papillon, fleurs, champignon, buisson) placés pour que **chaque morceau soit différent**, quelle que soit la découpe. Dessinée une seule fois (un symbole SVG), chaque morceau en montre une partie : identique sur tous les appareils, rien à télécharger.
+- **Jouer** : glisser un morceau du doigt (ou à la souris) jusqu'à sa case, ou toucher le morceau puis la case (plus facile pour les petits). Un morceau mal placé revient dans la réserve. Les morceaux ne sont jamais déjà dans l'ordre.
+- **Paliers** (`jigsawRound`) : 1) 2×2 avec l'image en transparence ; 2) 2×2, transparence légère ; 3) 3×3, transparence légère ; 4) 3×3 avec un petit modèle à côté ; 5) 4×3 (12 morceaux) avec le modèle. Suit le niveau propre au jeu (v42), plafonné par l'île et l'âge.
+- **Essais** généreux (comme le mémo) à partir de l'île 2 ; pas de minuteur.
+- **Mise en page** : le cadre s'ajuste à la hauteur de l'écran et la réserve tient sur une ou deux rangées, pour que cadre et morceaux soient visibles ensemble (glisser sans faire défiler) ; vérifié sur iPhone et iPad, glisser compris.
+- Cache `lagon-v46`.

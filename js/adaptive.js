@@ -49,6 +49,7 @@ const PROGRESS_CHEERS = {
   simon:        'Tu retiens des suites de plus en plus longues !',
   diff:         'Tu repères les intrus de mieux en mieux !',
   sequence:     'Tu trouves les suites de mieux en mieux !',
+  jigsaw:       'Tu assembles les images de mieux en mieux !',
 };
 
 function gameMaxTier(key){ return GAME_TIER_MAX[key] || 5; }

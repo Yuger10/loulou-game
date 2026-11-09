@@ -226,6 +226,7 @@ function gameRenderer(key){
     case 'calc': return renderCalc;
     case 'shapes': return renderShapes;
     case 'planets': return renderPlanets;
+    case 'jigsaw': return renderJigsaw;
     default: return renderMemory;
   }
 }
