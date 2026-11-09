@@ -113,3 +113,6 @@ function openChest(){
   document.getElementById('btn-yay').onclick = ()=>{ playSound('tap'); closeModal(); renderLagon(); };
   renderQuests();
 }
+
+// changement de joueur : ses missions du jour
+onProfileRefresh(ensureQuests);

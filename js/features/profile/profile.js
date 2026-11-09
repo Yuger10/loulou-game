@@ -70,3 +70,5 @@ function closeWelcome(){
   }
 }
 
+// changement de joueur : en-tête à jour (js/entities/player/profiles.js)
+onProfileRefresh(renderProfile);

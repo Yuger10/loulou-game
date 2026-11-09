@@ -9,3 +9,6 @@ function addCoins(n){
 var coinsInFlight = 0;
 
 function renderCoins(){ document.getElementById('coin-count').textContent = state.coins - (coinsInFlight || 0); }
+
+// changement de joueur : ses pièces
+onProfileRefresh(renderCoins);

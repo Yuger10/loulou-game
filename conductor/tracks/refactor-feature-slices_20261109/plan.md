@@ -26,14 +26,15 @@ Principe : **un déplacement ou un découpage = un commit avec `npm test` vert**
 - [x] Task: Conductor - User Manual Verification 'Couches basses' (Protocol in workflow.md)
 
 ## Phase 3 : Features et app
-- [ ] Task: Moteur et mini-jeux
-    - [ ] `minigames.js` : le cadre commun (essais, `scheduleRetry`, minuteur, choix du jeu) vers `features/minigame-engine/` ; chaque jeu historique vers `features/minigames/<jeu>/`
-    - [ ] Déplacer math, reading, grammar, volume, compare, money, clock, calendar, calc, shapes et planets vers `features/minigames/<jeu>/`
-- [ ] Task: Autres features
-    - [ ] story (avec episodes), map, island, market et bag (séparer sac et album de `market.js`), quests, gains, players (profiles-ui et race), backup, adaptive, gifts, wardrobe, parents, seasons
-    - [ ] `jigsaw.js` vers `features/minigames/jigsaw/` ; `music.js` vers `shared/audio/` ; `icons.js` vers `shared/ui/`
-- [ ] Task: `app/`
-    - [ ] `init.js` et la liaison des boutons d'en-tête vers `app/` ; les vues restantes de `ui.js` (`renderLagon`, `checkNewIsland`, navigation) vers leur feature
+> Fait : 46 slices ; registre `registerGame` (le moteur ne connaît plus la liste des jeux) ; point d'accroche `onProfileRefresh` (changement de joueur) ; `GAME_LIST.fn`, inutilisé, retiré ; chemins des commentaires mis à jour. **Plus aucune dépendance vers le haut dans tout le code** : la liste d'exceptions prévue n'est pas nécessaire.
+- [x] Task: Moteur et mini-jeux
+    - [x] `minigames.js` : le cadre commun (essais, `scheduleRetry`, minuteur, choix du jeu) vers `features/minigame-engine/` ; chaque jeu historique vers `features/minigames/<jeu>/`
+    - [x] Déplacer math, reading, grammar, volume, compare, money, clock, calendar, calc, shapes et planets vers `features/minigames/<jeu>/`
+- [x] Task: Autres features
+    - [x] story (avec episodes), map, island, market et bag (séparer sac et album de `market.js`), quests, gains, players (profiles-ui et race), backup, adaptive, gifts, wardrobe, parents, seasons
+    - [x] `jigsaw.js` vers `features/minigames/jigsaw/` ; `music.js` vers `shared/audio/` ; `icons.js` vers `shared/ui/`
+- [x] Task: `app/`
+    - [x] `init.js` et la liaison des boutons d'en-tête vers `app/` ; les vues restantes de `ui.js` (`renderLagon`, `checkNewIsland`, navigation) vers leur feature
 - [ ] Task: Conductor - User Manual Verification 'Features et app' (Protocol in workflow.md)
 
 ## Phase 4 : CSS par slice

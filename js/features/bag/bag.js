@@ -132,3 +132,6 @@ registerView('sac', ({ sacTab })=>{
   state.newItems = 0; save(); renderBadge();
   setSacTab(sacTab || currentSacTab);
 });
+
+// changement de joueur : pastille des nouveaux objets
+onProfileRefresh(renderBadge);

@@ -20,5 +20,4 @@ function renderSoundBtn(){
   if(typeof updateMusic==='function') updateMusic();
 }
 
-
-
+onProfileRefresh(renderSoundBtn);

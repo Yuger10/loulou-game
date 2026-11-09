@@ -206,3 +206,6 @@ function openDialogue(charId){
 }
 
 registerView('ile', ()=> renderLagon());
+
+// changement de joueur : son île (en dernier : elle s'appuie sur le reste)
+onProfileRefresh(()=> renderLagon());

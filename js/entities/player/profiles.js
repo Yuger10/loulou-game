@@ -94,10 +94,12 @@ function deleteProfile(id){
   return true;
 }
 
-function refreshAll(){
-  renderCoins(); renderSoundBtn(); renderBadge(); renderProfile();
-  ensureQuests(); renderLagon();
-}
+// Après un changement de joueur (ou une restauration), tout ce qui affiche
+// ses données doit se redessiner. Les features concernées s'inscrivent avec
+// onProfileRefresh : l'entité ne les connaît pas.
+const profileRefreshHooks = [];
+function onProfileRefresh(fn){ profileRefreshHooks.push(fn); }
+function refreshAll(){ profileRefreshHooks.forEach(fn=> fn()); }
 
 /* ---------- Accords féminin / masculin / neutre ---------- */
 // 'f' = féminin, 'm' = masculin, '' = neutre (formulations sans accord)
