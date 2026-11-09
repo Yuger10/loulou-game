@@ -1,4 +1,4 @@
-# Plan : Collection de squishies (v53)
+# Plan : Collection de squishies (v55)
 
 > **Architecture (v51) :** chaque nouveau fichier JS ou CSS va dans sa slice et est déclaré dans `js/slices.js` (puis `npm run sync`) ; voir `conductor/checklist-mini-jeu.md` et `conductor/checklist-ile.md`.
 
@@ -61,11 +61,11 @@ Tests : un nouveau `test/squishies.test.js`, enchaîné par `npm test` après le
     - [ ] `js/features/market/market.js`
 - [ ] Task: Conductor - User Manual Verification 'Rangement à consigne et marché' (Protocol in workflow.md)
 
-## Phase 5 : Livraison v53
+## Phase 5 : Livraison v55
 - [ ] Task: Intégration PWA et docs
-    - [ ] `sw.js` : `lagon-v53`, nouveaux fichiers dans `FILES` ; `index.html` : les scripts
-    - [ ] `PRD-lagon-magique.md` (section v53, idée de la joueuse), `TODO.md`, `README.md` (structure)
+    - [ ] `sw.js` : `lagon-v55`, nouveaux fichiers dans `FILES` ; `index.html` : les scripts
+    - [ ] `PRD-lagon-magique.md` (section v55, idée de la joueuse), `TODO.md`, `README.md` (structure)
 - [ ] Task: Vérification complète
     - [ ] `npm test` vert ; parcours manuel à 360 px (ouvrir, presser, étagère, ranger, échanger, sauvegarder puis restaurer)
-- [ ] Task: Conductor - User Manual Verification 'Livraison v53' (Protocol in workflow.md)
+- [ ] Task: Conductor - User Manual Verification 'Livraison v55' (Protocol in workflow.md)
 - [ ] Task: Branche, PR sur `main`, merge

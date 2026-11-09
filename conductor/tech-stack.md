@@ -12,7 +12,7 @@
 - **Règles vérifiées par `test/slices.test.js`** : une couche n'utilise que sa couche ou les couches inférieures ; entre slices, seulement l'API publique ; une seule définition par nom global ; manifeste, fichiers, `index.html` et `sw.js` cohérents.
 - **Dépendances vers le haut interdites, remplacées par des points d'accroche** fournis par la couche basse : `registerGame` (moteur de mini-jeux), `registerView`, `onModalOpen` / `onModalClose`, `onWrongFeedback`, `onProfileRefresh`, `setAudioPrefsSource`, `setCompanionDressing`.
 - **Pas de garde `typeof fn==='function'`** pour une fonction du jeu (tout est toujours chargé). Seules les capacités du navigateur sont testées ainsi.
-- Toujours des **scripts classiques**, en portée globale. L'étape B (v54) passera aux modules ES natifs.
+- Toujours des **scripts classiques**, en portée globale. L'étape B (v56) passera aux modules ES natifs.
 
 ## Plateforme
 - **PWA :** `manifest.json` et `sw.js`, avec un cache versionné `lagon-vNN`. La liste `FILES` est générée depuis le manifeste (`npm run sync`), et le cache doit être incrémenté à chaque version.

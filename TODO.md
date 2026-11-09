@@ -59,7 +59,7 @@ Chaque mini-jeu a maintenant son propre niveau pour chaque enfant (`js/adaptive.
 ### Technique 🔧 (au fil de l'eau)
 - [x] Étendre les tests (`test/games.test.js`) : les 18 mini-jeux joués jusqu'à la victoire à chaque palier (259 parties), la mémoire jouée « de mémoire » jusqu'au bout, une mauvaise réponse ne fait jamais gagner, bouton son et voix — v50
 - [x] Ranger le code en feature slices : manifeste, API publiques, test de frontières, CSS découpé par slice — v51
-- [ ] Passer aux modules ES natifs (étape B, track `refactor-esm-modules`) — v54
+- [ ] Passer aux modules ES natifs (étape B, track `refactor-esm-modules`) — v56
 - [ ] Faire tourner les tests automatiquement à chaque PR (GitHub Actions)
 - [ ] Tester sur de vrais appareils (iPhone, iPad, Android, ordinateur) à chaque grosse version
 - [ ] Garder le design system à jour (https://claude.ai/artifact/C55xYvvT7iYZo6KcSphBbu)

@@ -1,9 +1,9 @@
-# Plan : Le Monde des Licornes et la fin de la saison 2 (v56)
+# Plan : Le Monde des Licornes et la fin de la saison 2 (v58)
 
 > **Architecture (v51) :** chaque nouveau fichier JS ou CSS va dans sa slice et est déclaré dans `js/slices.js` (puis `npm run sync`) ; voir `conductor/checklist-mini-jeu.md` et `conductor/checklist-ile.md`.
 
 Spec : [spec.md](./spec.md). Workflow : [workflow.md](../../workflow.md).
-**Prérequis :** v53 (`squishy-collection`) et v55 (`saison2-monde-boites`) livrées.
+**Prérequis :** v55 (`squishy-collection`) et v57 (`saison2-monde-boites`) livrées.
 Nouveaux fichiers prévus : `js/features/minigames/potions/potions.js` (Les potions de couleurs), `js/features/minigames/mirror/mirror.js` (Le miroir magique), `js/features/story/finale.js` (grand final de la saison 2).
 
 ## Phase 1 : L'île du Royaume Arc-en-ciel
@@ -47,10 +47,10 @@ Nouveaux fichiers prévus : `js/features/minigames/potions/potions.js` (Les poti
     - [ ] Tests : ✨ Grisou arc-en-ciel n'est jamais tiré d'une boîte (tirages simulés)
 - [ ] Task: Conductor - User Manual Verification 'Chapitre et grand final' (Protocol in workflow.md)
 
-## Phase 5 : Livraison v56
+## Phase 5 : Livraison v58
 - [ ] Task: Intégration PWA et docs
-    - [ ] `sw.js` : `lagon-v56` et nouveaux fichiers ; `index.html` ; PRD (v56, idée de la joueuse), TODO (idées bonus : licorne volante, grand décor arc-en-ciel, saison 3), README
+    - [ ] `sw.js` : `lagon-v58` et nouveaux fichiers ; `index.html` ; PRD (v58, idée de la joueuse), TODO (idées bonus : licorne volante, grand décor arc-en-ciel, saison 3), README
 - [ ] Task: Vérification complète
     - [ ] `npm test` vert ; parcours manuel à 360 px (niveau 12 → 13, Royaume, deux mini-jeux, énigme, final, choix de Grisou comme compagnon, Trésors)
-- [ ] Task: Conductor - User Manual Verification 'Livraison v56' (Protocol in workflow.md)
+- [ ] Task: Conductor - User Manual Verification 'Livraison v58' (Protocol in workflow.md)
 - [ ] Task: Branche, PR sur `main`, merge

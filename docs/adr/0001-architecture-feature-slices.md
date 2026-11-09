@@ -1,6 +1,6 @@
 # ADR 0001 : Organiser le code en « feature slices », en deux étapes (scripts classiques, puis modules ES)
 
-- **Statut :** acceptée, étape A livrée en v51 ; étape B prévue en v54
+- **Statut :** acceptée, étape A livrée en v51 ; étape B prévue en v56
 - **Date :** 2026-11-09
 - **Décideur :** le propriétaire du projet, sur proposition de Claude (track Conductor `refactor-feature-slices`)
 - **Specs liées :** [`refactor-feature-slices`](../../conductor/tracks/refactor-feature-slices_20261109/spec.md) (A), [`refactor-esm-modules`](../../conductor/tracks/refactor-esm-modules_20261109/spec.md) (B)
@@ -23,7 +23,7 @@ En v50, le jeu compte 37 scripts classiques à plat dans `js/`, plus un `styles.
 5. **Points d'accroche plutôt que dépendances vers le haut :** la couche basse expose un registre (`registerGame`, `registerView`, `onModalOpen` / `onModalClose`, `onWrongFeedback`, `onProfileRefresh`, `setAudioPrefsSource`, `setCompanionDressing`) et la feature s'y inscrit.
 6. **Feuille de route en deux étapes :**
    - **A (v51) :** slices en **scripts classiques**, sans changer le mode de chargement ;
-   - **B (v54) :** **modules ES natifs**, sans bundler (esbuild seulement pour les tests), avec un bus d'événements si des cycles apparaissent.
+   - **B (v56) :** **modules ES natifs**, sans bundler (esbuild seulement pour les tests), avec un bus d'événements si des cycles apparaissent.
 
 ## Options envisagées
 | Option | Pour | Contre | Verdict |
@@ -52,5 +52,5 @@ En v50, le jeu compte 37 scripts classiques à plat dans `js/`, plus un `styles.
 `test/slices.test.js` vérifie : cohérence entre le manifeste, les fichiers, `index.html` et `sw.js` ; unicité des noms ; couches ; API publiques. Il prouve aussi qu'il sait échouer, sur deux cas fabriqués. Une violation réelle (une slice `shared` qui lit `state`) a été vérifiée détectée pendant l'implémentation.
 
 ## À revoir
-- À l'étape B (v54) : écrire l'ADR 0002 (modules ES, harnais esbuild, bus d'événements) et passer celui-ci au statut « complété par 0002 ».
+- À l'étape B (v56) : écrire l'ADR 0002 (modules ES, harnais esbuild, bus d'événements) et passer celui-ci au statut « complété par 0002 ».
 - Si le nombre de requêtes devient un problème mesuré sur un vrai appareil.

@@ -39,4 +39,5 @@ Donner envie d'apprendre (lecture, nombres, calcul, heure, formes, planètes…)
 ## Prochaines grandes étapes
 - Collection de squishies (boîtes surprises, séries, rangement).
 - Saison 2 : une deuxième carte, un nouveau fil d'histoire, le Monde des Boîtes et le Monde des Licornes (idées de la joueuse).
-- Une architecture en feature slices, puis en modules ES, pour accueillir tout ça.
+- Des formulaires et une navigation plus simples (Réglages regroupés, actions sensibles protégées).
+- Le passage aux modules ES (étape B de l'architecture en feature slices, livrée en v51).

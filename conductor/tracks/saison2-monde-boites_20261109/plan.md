@@ -1,9 +1,9 @@
-# Plan : Saison 2 « Le Ciel des Rêves » et le Monde des Boîtes (v55)
+# Plan : Saison 2 « Le Ciel des Rêves » et le Monde des Boîtes (v57)
 
 > **Architecture (v51) :** chaque nouveau fichier JS ou CSS va dans sa slice et est déclaré dans `js/slices.js` (puis `npm run sync`) ; voir `conductor/checklist-mini-jeu.md` et `conductor/checklist-ile.md`.
 
 Spec : [spec.md](./spec.md). Workflow : [workflow.md](../../workflow.md).
-**Prérequis :** la track `squishy-collection_20261109` (v53) est livrée.
+**Prérequis :** la track `squishy-collection_20261109` (v55) est livrée.
 Nouveaux fichiers prévus : `js/features/minigames/nesting/nesting.js` (Les boîtes gigognes), `js/features/minigames/cubes/cubes.js` (Combien de cubes ?). La saison 2 de l'histoire va dans `js/features/story/story.js`.
 
 ## Phase 1 : Deux archipels
@@ -14,7 +14,7 @@ Nouveaux fichiers prévus : `js/features/minigames/nesting/nesting.js` (Les boî
     - [ ] Tests : onglets présents ; Ciel verrouillé sous le niveau 8 (cadenas, « Niveau 8 ») ; îles du Ciel dans le cadre, sans chevauchement ; montgolfière dans le Ciel ; trajet seulement à l'intérieur d'un archipel
     - [ ] `js/features/map/map.js` (`renderMap(saison)`, `sailTo`), CSS du fond du Ciel
 - [ ] Task: Ouverture du Ciel et migration
-    - [ ] Tests : au passage au niveau 8, l'écran d'ouverture s'affiche une seule fois, puis le prologue ; une partie déjà au niveau 8 ou plus le voit au chargement ; une partie v53 migrée sans perte
+    - [ ] Tests : au passage au niveau 8, l'écran d'ouverture s'affiche une seule fois, puis le prologue ; une partie déjà au niveau 8 ou plus le voit au chargement ; une partie v55 migrée sans perte
     - [ ] `SAVE_VERSION` +1, `skyIntroSeen`, `migrate()`
 - [ ] Task: Conductor - User Manual Verification 'Deux archipels' (Protocol in workflow.md)
 
@@ -56,10 +56,10 @@ Nouveaux fichiers prévus : `js/features/minigames/nesting/nesting.js` (Les boî
     - [ ] Tests : le journal 📖 affiche « Saison 1 » et « Le Ciel des Rêves » ; chapitres verrouillés et résolus corrects dans chaque partie
 - [ ] Task: Conductor - User Manual Verification 'Histoire de la saison 2' (Protocol in workflow.md)
 
-## Phase 5 : Livraison v55
+## Phase 5 : Livraison v57
 - [ ] Task: Intégration PWA et docs
-    - [ ] `sw.js` : `lagon-v55` et nouveaux fichiers ; `index.html` : les scripts ; PRD (v55, idée de la joueuse), TODO, README
+    - [ ] `sw.js` : `lagon-v57` et nouveaux fichiers ; `index.html` : les scripts ; PRD (v57, idée de la joueuse), TODO, README
 - [ ] Task: Vérification complète
     - [ ] `npm test` vert ; parcours manuel à 360 px (niveau 7 → 8, ouverture du Ciel, Boîtes, deux mini-jeux, énigme, boîte surprise)
-- [ ] Task: Conductor - User Manual Verification 'Livraison v55' (Protocol in workflow.md)
+- [ ] Task: Conductor - User Manual Verification 'Livraison v57' (Protocol in workflow.md)
 - [ ] Task: Branche, PR sur `main`, merge

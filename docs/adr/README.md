@@ -5,4 +5,4 @@ Format : contexte, décision, options envisagées, conséquences, validation.
 
 | N° | Décision | Statut |
 |---|---|---|
-| [0001](./0001-architecture-feature-slices.md) | Organiser le code en feature slices, en deux étapes (scripts classiques, puis modules ES) | Acceptée (A livrée en v51, B prévue en v54) |
+| [0001](./0001-architecture-feature-slices.md) | Organiser le code en feature slices, en deux étapes (scripts classiques, puis modules ES) | Acceptée (A livrée en v51, B prévue en v56) |

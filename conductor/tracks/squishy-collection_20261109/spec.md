@@ -1,4 +1,4 @@
-# Spec : Collection de squishies (v53)
+# Spec : Collection de squishies (v55)
 
 > Idée de la joueuse principale : « un système de squishies qu'on range dans des boîtes ».
 > Inspiré du phénomène réel des squishies (taba squishies, blind box, séries, raretés) : voir [`conductor/research-squishies.md`](../../research-squishies.md).

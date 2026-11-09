@@ -1,7 +1,7 @@
-# Spec : Le Monde des Licornes et la fin de la saison 2 (v56)
+# Spec : Le Monde des Licornes et la fin de la saison 2 (v58)
 
 > Idée de la joueuse principale : « le monde des licornes ».
-> **Dépend de** `squishy-collection_20261109` (v53) et de `saison2-monde-boites_20261109` (v55).
+> **Dépend de** `squishy-collection_20261109` (v55) et de `saison2-monde-boites_20261109` (v57).
 
 ## 1. Vue d'ensemble
 La **2ᵉ et dernière île du Ciel des Rêves** est le **Royaume Arc-en-ciel**, ouvert au **niveau 13**. Grisou a privé la Reine Arc-en-ciel de ses couleurs. En aidant les licornes, l'enfant rend ses couleurs au ciel. Le chapitre est le **grand final de la saison 2** : Grisou devient tout coloré, s'excuse et devient l'ami de tous, avec une fête dans le ciel.
@@ -74,7 +74,7 @@ Il apporte 4 personnages, 2 nouveaux mini-jeux (**Les potions de couleurs** et *
 6. Après le final : Grisou est sélectionnable comme compagnon, et ✨ Grisou arc-en-ciel est dans la case Trésors, jamais tiré d'une boîte.
 7. Revoir le final depuis le journal ne redonne pas les récompenses.
 8. Le journal affiche « Le Ciel des Rêves ✅ » ; le Royaume a ses 3 épisodes, sa musique, et 2 objets préférés par personnage.
-9. Une partie v55 migrée garde tout.
+9. Une partie v57 migrée garde tout.
 10. `npm test` passe, sans aucune erreur JS.
 
 ## 5. Hors périmètre

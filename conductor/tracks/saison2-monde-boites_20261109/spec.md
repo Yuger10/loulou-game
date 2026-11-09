@@ -1,7 +1,7 @@
-# Spec : Saison 2 « Le Ciel des Rêves » et le Monde des Boîtes (v55)
+# Spec : Saison 2 « Le Ciel des Rêves » et le Monde des Boîtes (v57)
 
 > Idée de la joueuse principale : « le monde des boîtes ».
-> **Dépend de** la track `squishy-collection_20261109` (v53) : les rêves libérés sont des squishies, et le Monde des Boîtes apporte sa série.
+> **Dépend de** la track `squishy-collection_20261109` (v55) : les rêves libérés sont des squishies, et le Monde des Boîtes apporte sa série.
 
 ## 1. Vue d'ensemble
 Un **deuxième archipel**, **« Le Ciel des Rêves »**, s'ouvre **au niveau 8**, **en parallèle** de la saison 1. Il a sa propre carte, ses couleurs et son fil d'histoire : **« Les Rêves dans les boîtes »**. Grisou, un petit nuage triste, a rangé tous les rêves colorés du ciel dans des boîtes, parce qu'il avait peur de les perdre. Chaque île en libère quelques-uns, et à la fin Grisou devient l'ami de tous.
@@ -66,7 +66,7 @@ Sa première île est le **Monde des Boîtes** (« La Fabrique de boîtes »), a
 - Mobile 360 px, voix, pas de texte à lire (voir `product-guidelines.md`).
 
 ## 4. Critères d'acceptation
-1. En dessous du niveau 8, l'onglet Ciel est verrouillé (cadenas, « Niveau 8 »). La carte de la saison 1 est identique à la v53.
+1. En dessous du niveau 8, l'onglet Ciel est verrouillé (cadenas, « Niveau 8 »). La carte de la saison 1 est identique à la v55.
 2. En atteignant le niveau 8 (ou en ouvrant une partie déjà au niveau 8 ou plus), l'écran d'ouverture s'affiche une seule fois, suivi du prologue, puis du chapitre des Boîtes.
 3. La carte du Ciel affiche ses îles dans le cadre, sans chevauchement, avec la montgolfière.
 4. Le Monde des Boîtes affiche ses 4 personnages, leurs butins, sa scène et son thème. Les missions donnent ses objets.
@@ -74,7 +74,7 @@ Sa première île est le **Monde des Boîtes** (« La Fabrique de boîtes »), a
 6. Gigognes : l'ordre est vérifié, l'ordre inverse est présent au palier haut, la relance a lieu après 2 erreurs, le nombre de boîtes suit l'âge et le palier.
 7. Cubes : le nombre affiché correspond au nombre de cubes de la pile, y compris ceux cachés. Une autre pile est proposée après une erreur. La taille suit le palier.
 8. Le journal 📖 sépare Saison 1 et Saison 2 ; l'île des Boîtes a ses 3 épisodes, sa musique, et 2 objets préférés par personnage.
-9. Une partie v54 migrée garde toute sa progression.
+9. Une partie v56 migrée garde toute sa progression.
 10. `npm test` passe, sans aucune erreur JS.
 
 ## 5. Hors périmètre
