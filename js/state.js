@@ -22,6 +22,7 @@ const DEFAULT_STATE = {
   pauseExtra: null,   // minutes ajoutées aujourd'hui par un adulte { date, min }
   wardrobe: [],       // objets de la garde-robe achetés (js/wardrobe.js)
   look: { tete:null, visage:null, tenue:null, cape:null },   // ce que porte l'avatar
+  seasonGifts: {},    // cadeaux de saison reçus, ex. { 'noel-2026': true } (js/seasons.js)
 };
 // copie profonde : sinon inventory/seen/decos seraient partagés avec DEFAULT_STATE
 function freshState(extra){
@@ -49,6 +50,7 @@ let state = {
   pauseExtra: null,
   wardrobe: [],
   look: { tete:null, visage:null, tenue:null, cape:null },
+  seasonGifts: {},
 };
 
 function save(){
@@ -112,6 +114,7 @@ function hello(){ return state.name ? state.name : ''; }
 function renderProfile(){
   document.querySelector('#avatar-pill .av').innerHTML = avatarHTML(state.avatar, state.look);
   if(typeof renderBackupReminder==='function') renderBackupReminder();
+  if(typeof applySeason==='function') applySeason();   // anniversaire : propre à chaque joueur
   document.getElementById('player-name').textContent = state.name || 'Toi';
 }
 let pendingAvatar = '👧';

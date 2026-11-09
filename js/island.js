@@ -233,6 +233,7 @@ function landscapeSVG(worldId){
     </linearGradient></defs>
     ${isleSky()}
     ${draw(w)}
+    ${typeof seasonSceneSVG==='function' ? seasonSceneSVG(currentSeason()) : ''}
   </svg>`;
 }
 

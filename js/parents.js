@@ -240,6 +240,14 @@ function openParentSpace(selectedId){
     <section class="bk-card"><h3>📈 Progrès par compétence</h3>${skillsHTML(st, p.age)}
       <p class="bk-help">« À l'aise » : réussi sans erreur ou presque ces dernières fois. « À travailler » : souvent raté ou beaucoup d'erreurs.</p>
       <p class="bk-help">Chaque jeu a son propre niveau : il monte d'un cran après 2 réussites d'affilée presque sans erreur, redescend d'un cran après 2 missions ratées, et ne dépasse jamais celui de l'île ni l'âge de l'enfant. Les jeux à travailler reviennent plus souvent.</p></section>
+    <section class="bk-card"><h3>🎉 Fêtes et saisons</h3>
+      <p>Le jeu se décore tout seul : Halloween (20 oct. – 2 nov.), Noël (1er déc. – 6 janv.) et le jour de l'anniversaire de l'enfant (à régler dans ses réglages). Chaque fois, un petit cadeau : un chapeau pour son avatar et quelques pièces.</p>
+      <p class="bk-help">Aperçu (sans cadeau, jusqu'à la fermeture du jeu) :</p>
+      <div class="ps-chips" role="group" aria-label="Aperçu des saisons">
+        ${typeof FETES!=='undefined' ? Object.keys(FETES).map(k=>`<button type="button" class="ps-chip ${seasonPreview()===k?'on':''}" data-season-preview="${k}">${FETES[k].emoji} ${FETES[k].name}</button>`).join('') : ''}
+        <button type="button" class="ps-chip ${!seasonPreview()?'on':''}" data-season-preview="">Selon la date</button>
+      </div>
+    </section>
     <section class="bk-card"><h3>⚙️ Réglages</h3>
       <div class="ps-actions">
         <button class="btn-small" id="ps-backup">💾 Sauvegarde</button>
@@ -253,6 +261,12 @@ function openParentSpace(selectedId){
     playSound('tap'); p.pauseMin = Number(b.dataset.pause); saveProfiles();
     document.querySelectorAll('[data-pause]').forEach(x=>x.classList.toggle('on', x===b));
     showToast(p.pauseMin ? `😴 Pause après ${p.pauseMin} min` : 'Pas de pause');
+  });
+  document.querySelectorAll('[data-season-preview]').forEach(b=> b.onclick = ()=>{
+    playSound('tap'); setSeasonPreview(b.dataset.seasonPreview || null);
+    document.querySelectorAll('[data-season-preview]').forEach(x=>x.classList.toggle('on', x===b));
+    const s = currentSeason();
+    showToast(s ? `${FETES[s].emoji} Aperçu : ${FETES[s].name}` : 'Pas de fête aujourd\'hui');
   });
   document.getElementById('ps-backup').onclick = ()=>{ playSound('tap'); openBackup(); };
   document.getElementById('ps-player').onclick = ()=>{ playSound('tap'); openPlayerSettings(p.id); };

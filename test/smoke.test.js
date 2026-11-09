@@ -19,6 +19,9 @@ w.addEventListener('error', e=>errs.push(e.message));
 const ev = (code)=> w.eval(code);
 let failed = 0;
 function check(name, cond){ console.log((cond?'✅':'❌')+' '+name); if(!cond) failed++; }
+// tests reproductibles toute l'année : pas de décor de saison (Noël, Halloween…)
+// sauf dans le bloc qui les teste
+ev('setSeasonPreview("aucune")');
 
 // Écran titre
 check('écran titre affiché au lancement', d.getElementById('splash').classList.contains('show'));
@@ -916,7 +919,7 @@ setTimeout(()=>{
       ev('closeModal(); party.active = false');
       const ids = ev('Object.keys(WARDROBE)');
       check('garde-robe : chaque objet a un dessin ou des couleurs', ids.every(k=>ev(`!!(LOOK_ART[${JSON.stringify(k)}] || WARDROBE[${JSON.stringify(k)}].colors)`)));
-      check('garde-robe : chaque objet a un prix ou se gagne avec des missions', ids.every(k=>ev(`!!(WARDROBE[${JSON.stringify(k)}].price || WARDROBE[${JSON.stringify(k)}].unlock)`)));
+      check('garde-robe : chaque objet a un prix, se gagne avec des missions ou s\'offre à une fête', ids.every(k=>ev(`!!(WARDROBE[${JSON.stringify(k)}].price || WARDROBE[${JSON.stringify(k)}].unlock || WARDROBE[${JSON.stringify(k)}].season)`)));
       check('garde-robe : chaque dessin est un SVG valide', ids.filter(k=>ev(`!!LOOK_ART[${JSON.stringify(k)}]`)).every(k=>{
         const svg = ev(`'<svg xmlns="http://www.w3.org/2000/svg">' + LOOK_ART[${JSON.stringify(k)}]() + '</svg>'`);
         const doc = new w.DOMParser().parseFromString(svg, 'image/svg+xml');
@@ -968,6 +971,41 @@ setTimeout(()=>{
         const doc = new w.DOMParser().parseFromString(ev(`uiIcon(${JSON.stringify(k)})`).replace('<svg ', '<svg xmlns="http://www.w3.org/2000/svg" '), 'image/svg+xml');
         return !doc.querySelector('parsererror');
       }));
+    }
+    // ---- Fêtes et saisons (Halloween, Noël, anniversaire) ----
+    {
+      ev('closeModal(); party.active = false; sessionStorage.removeItem(SEASON_PREVIEW_KEY); currentProfile().birthday = ""');
+      check('saisons : Noël le 24 décembre et le 3 janvier', ev('currentSeason(new Date(2026,11,24))')==='noel' && ev('currentSeason(new Date(2027,0,3))')==='noel');
+      check('saisons : rien le 10 janvier ni le 9 novembre', ev('currentSeason(new Date(2027,0,10))')===null && ev('currentSeason(new Date(2026,10,9))')===null);
+      check('saisons : Halloween le 31 octobre', ev('currentSeason(new Date(2026,9,31))')==='halloween');
+      check('saisons : l\'anniversaire passe avant Noël', ev('(currentProfile().birthday = "12-25", currentSeason(new Date(2026,11,25)))')==='anniversaire' && ev('currentSeason(new Date(2026,11,24))')==='noel');
+      ev('currentProfile().birthday = ""');
+      check('saisons : chaque fête a son chapeau dessiné dans la garde-robe', ev('Object.values(FETES).every(f=>WARDROBE[f.hat] && LOOK_ART[f.hat])')===true);
+      // aperçu de Noël (espace parents)
+      ev('switchView("ile"); setSeasonPreview("noel")');
+      check('saisons : aperçu de Noël — la neige tombe', d.body.dataset.season==='noel' && d.querySelectorAll('#season-fx .sfx-neige').length>5);
+      check('saisons : aperçu de Noël — sapin et bonhomme de neige sur l\'île', !!d.querySelector('#view-ile .ss-noel'));
+      check('saisons : les compagnons portent le bonnet de Noël', ev('companionSVG("perle","happy")').includes('M-2 12 C2 -12 24 -34'));
+      check('saisons : un avatar qui a déjà un chapeau le garde', !ev('avatarHTML("art:zap", {tete:"couronne"})').includes('M-2 12 C2 -12 24 -34'));
+      check('saisons : pas de cadeau pendant un aperçu', ev('seasonGiftDue()')===null);
+      ev('openParentSpace()');
+      check('saisons : l\'espace parents propose l\'aperçu des fêtes', !!d.querySelector('[data-season-preview="noel"]') && d.querySelector('[data-season-preview="noel"]').classList.contains('on'));
+      ev('closeModal(); setSeasonPreview(null)');
+      check('saisons : hors saison, ni neige ni décor', !d.body.dataset.season && !d.querySelector('#season-fx .sfx') && !d.querySelector('#view-ile .ss'));
+      // anniversaire réglé dans les réglages du joueur, puis fêté
+      ev('openPlayerSettings(profiles.current)');
+      d.getElementById('pe-bday-d').value = String(new Date().getDate());
+      d.getElementById('pe-bday-m').value = String(new Date().getMonth()+1);
+      d.getElementById('pe-save').click();
+      check('anniversaire : réglé dans les réglages du joueur', ev('currentProfile().birthday')===ev('seasonMMDD(new Date())'));
+      check('anniversaire : le jour J, c\'est la fête', ev('currentSeason()')==='anniversaire' && ev('seasonGiftDue()')==='anniversaire');
+      const coins = ev('state.coins');
+      ev('closeModal(); state.wardrobe = state.wardrobe.filter(k=>k!=="fete"); maybeSeasonGift()');
+      check('anniversaire : un cadeau — chapeau de fête et 20 pièces', !!d.querySelector('.season-gift') && ev('state.coins')===coins+20 && ev('ownsLookItem("fete")')===true);
+      d.getElementById('sg-wear').click();
+      check('anniversaire : on peut mettre son chapeau tout de suite', ev('state.look.tete')==='fete');
+      check('anniversaire : un seul cadeau par an', ev('maybeSeasonGift()')===false);
+      ev('currentProfile().birthday = ""; saveProfiles(); state.seasonGifts = {}; state.look = {tete:null, visage:null, tenue:null, cape:null}; state.wardrobe = []; save(); setSeasonPreview("aucune"); switchView("carte")');
     }
     // ---- Chaque nouveau monde : couleurs propres et place sur la carte ----
     {

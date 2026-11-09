@@ -24,8 +24,10 @@ switchView('carte');
 /* Écran titre : sert aussi à débloquer le son et la voix (geste utilisateur requis sur iOS) */
 function showSplash(){
   const sp = document.getElementById('splash');
-  document.getElementById('splash-hello').textContent =
-    state.name ? `Coucou ${state.name} ${avatarText(state.avatar)} !` : "En route pour l'aventure ?";
+  const season = typeof currentSeason==='function' ? currentSeason() : null;
+  document.getElementById('splash-hello').textContent = season
+    ? `${FETES[season].greet(state.name)} ${FETES[season].emoji}`
+    : state.name ? `Coucou ${state.name} ${avatarText(state.avatar)} !` : "En route pour l'aventure ?";
   // joueur connu : son compagnon l'accueille ; sinon la troupe des personnages
   const bud = document.getElementById('splash-buddy');
   const cast = sp.querySelector('.cast');
@@ -44,8 +46,11 @@ function hideSplash(){
   setTimeout(()=>{ sp.classList.remove('show','hiding'); }, 450);
   if(!state.name) openWelcome();
   else {
-    speak(`Coucou ${state.name} ! L'aventure t'attend.`);
+    const season = typeof currentSeason==='function' ? currentSeason() : null;
+    speak(season ? `${FETES[season].greet(state.name)} L'aventure t'attend.` : `Coucou ${state.name} ! L'aventure t'attend.`);
     switchView('carte');
+    // une fois par saison : un cadeau (chapeau pour l'avatar + pièces)
+    if(typeof maybeSeasonGift==='function') setTimeout(maybeSeasonGift, 700);
   }
 }
 // navigation secondaire
@@ -98,4 +103,5 @@ if('serviceWorker' in navigator && location.protocol!=='file:'){
   });
 }
 if(typeof initBackup==='function') initBackup();
+if(typeof initSeasons==='function') initSeasons();
 if(typeof startPlayTimeTracker==='function') startPlayTimeTracker();

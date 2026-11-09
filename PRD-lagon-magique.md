@@ -807,3 +807,18 @@ Retour du test sur tablette : la barre du bas ne ressemblait pas aux captures, s
 - **Barre du bas flottante partout** : sur grand écran et tablette à l'horizontale, elle garde ses coins arrondis comme sur téléphone.
 - Dans le contenu du jeu (objets, personnages emoji…), les emoji restent ceux de l'appareil.
 - Cache `lagon-v44`.
+
+---
+
+# v45 — Fêtes et saisons : Halloween, Noël, anniversaire
+
+Le jeu se met tout seul aux couleurs du moment (`js/seasons.js`) :
+- **Halloween** du 20 octobre au 2 novembre, **Noël** du 1er décembre au 6 janvier, et **l'anniversaire** de l'enfant (jour et mois facultatifs dans ses réglages ; ce jour-là, il passe avant les autres fêtes).
+- **Sur l'île** : sapin décoré, cadeaux, bonhomme de neige et neige au sol ; citrouilles souriantes et chauves-souris ; guirlande de fanions, ballons et gâteau aux bougies. Placés au centre du paysage, visibles aussi sur un téléphone en portrait.
+- **À l'écran** : de la neige, des feuilles d'automne ou de petits ballons passent doucement, sous les fenêtres (jamais pendant un mini-jeu) et jamais si l'appareil demande moins d'animations.
+- **Les compagnons** portent le chapeau de la fête : bonnet de Noël, chapeau de sorcière, chapeau de fête (sauf si l'avatar porte déjà un chapeau de sa garde-robe).
+- **L'écran titre** souhaite la fête (« Joyeux Noël Adam ! ») et la voix le dit.
+- **Un cadeau par fête et par enfant** : le chapeau de la fête pour son avatar (gardé dans « Mon look ») et 10 pièces (20 pour l'anniversaire), avec « Le mettre tout de suite ».
+- **Espace parents → Fêtes et saisons** : explications et **aperçu** de chaque fête (jusqu'à la fermeture du jeu, sans cadeau) ; aussi avec `?saison=noel` dans l'adresse.
+- Données : `state.seasonGifts` (ex. `noel-2026`), `profile.birthday` (« MM-JJ »). Les tests forcent « pas de saison » pour rester identiques toute l'année.
+- Cache `lagon-v45`.

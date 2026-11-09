@@ -200,7 +200,10 @@ function openPlayerSettings(id){
   let age = p.age || null;
   let gen = p.gender || '';
   let comp = companionOf(p), allBuddies = !companionsFor(gen).includes(comp);
+  let bday = p.birthday || '';   // « MM-JJ » : le jeu fête l'anniversaire ce jour-là (js/seasons.js)
+  const MONTHS = ['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
   const render = ()=>{
+    const [bm, bd] = bday ? bday.split('-').map(Number) : [0, 0];
     openModal(`
       ${gameHeader(`⚙️ ${p.name || 'Joueur'}`, 'Modifier, réinitialiser ou supprimer')}
       <input id="pe-name" class="name-input-modal" type="text" maxlength="12" value="${(p.name||'').replace(/"/g,'&quot;')}" placeholder="Prénom">
@@ -210,6 +213,11 @@ function openPlayerSettings(id){
       ${genderSelector(gen)}
       ${companionSelector(comp, gen, allBuddies)}
       ${ageSelector(age)}
+      <label class="mini-label">🎂 Son anniversaire (facultatif)</label>
+      <div class="bday-row">
+        <select id="pe-bday-d" aria-label="Jour de l'anniversaire"><option value="0">Jour</option>${Array.from({length:31},(_,i)=>`<option value="${i+1}" ${bd===i+1?'selected':''}>${i+1}</option>`).join('')}</select>
+        <select id="pe-bday-m" aria-label="Mois de l'anniversaire"><option value="0">Mois</option>${MONTHS.map((m,i)=>`<option value="${i+1}" ${bm===i+1?'selected':''}>${m}</option>`).join('')}</select>
+      </div>
       <div class="speech" style="font-size:.82rem;">${playerSummary(id)}</div>
       <button class="btn-primary" id="pe-save">Enregistrer ✅</button>
       <button class="btn-craft danger" id="pe-reset">🔄 Recommencer à zéro</button>
@@ -229,7 +237,14 @@ function openPlayerSettings(id){
       b.onclick = ()=>{ gen = b.dataset.gender; playSound('tap'); redraw(); };
     });
     bindCompanionSelector(document, k=>{ comp = k; redraw(); }, ()=>{ allBuddies = true; redraw(); });
+    const readBday = ()=>{
+      const d = Number(document.getElementById('pe-bday-d').value), m = Number(document.getElementById('pe-bday-m').value);
+      bday = d && m ? `${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}` : '';
+    };
+    ['pe-bday-d','pe-bday-m'].forEach(k=> document.getElementById(k).onchange = readBday);
     document.getElementById('pe-save').onclick = ()=>{
+      readBday();
+      p.birthday = bday;
       p.name = (document.getElementById('pe-name').value||'').trim().slice(0,12);
       p.avatar = av;
       p.age = age;
