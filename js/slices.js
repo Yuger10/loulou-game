@@ -14,8 +14,10 @@
    Ce fichier n'est pas chargé par le jeu : seuls les outils et les tests le
    lisent (`require`). */
 const SLICES = [
+  { id:'shared-lib',     layer:'shared',   files:['js/shared/lib/random.js'], css:[], public:null },
+  { id:'shared-ui',      layer:'shared',   files:['js/shared/ui/icons.js','js/shared/ui/sound.js','js/shared/ui/voice.js',
+                                                'js/shared/ui/feedback.js','js/shared/ui/modal.js','js/shared/ui/views.js'], css:[], public:null },
   { id:'data',           layer:'entities', files:['js/data.js'],           css:[], public:null },
-  { id:'icons',          layer:'shared',   files:['js/icons.js'],          css:[], public:null },
   { id:'difficulty',     layer:'entities', files:['js/difficulty.js'],     css:[], public:null },
   { id:'players',        layer:'entities', files:['js/players.js'],        css:[], public:null },
   { id:'companions',     layer:'entities', files:['js/companions.js'],     css:[], public:null },

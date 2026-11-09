@@ -392,3 +392,6 @@ function renderAlbum(){
     </div>`;
 }
 
+
+// le son et la voix (js/shared/ui) lisent les réglages du joueur courant
+setAudioPrefsSource(()=> state);

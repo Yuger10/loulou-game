@@ -213,3 +213,8 @@ function partyAfterWin(){
   }
   return false;
 }
+
+// mode chacun son tour : une erreur passe la main au joueur suivant
+onWrongFeedback(()=>{
+  if(party.active) setTimeout(()=> passTurn('wrong'), 420);
+});

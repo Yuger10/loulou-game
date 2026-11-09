@@ -198,3 +198,6 @@ function flushPendingGain(){
   // positions mesurées MAINTENANT, avant que la fenêtre ne se ferme
   g.items.forEach((e, i)=> gainItems([e], gainCenter(itemEls[i] || fallback), i * 220 + (g.coins ? 250 : 0)));
 }
+
+// gains d'une fenêtre précédente : ils partent avant que son contenu ne disparaisse
+onModalChange(flushPendingGain);

@@ -298,3 +298,8 @@ function openStoryJournal(){
     };
   });
 }
+
+// relance programmée après une mauvaise réponse à une énigme : annulée dès
+// qu'une fenêtre s'ouvre ou se ferme (même précaution anti-fantôme que les
+// mini-jeux)
+onModalChange(storyClearPendingRetry);

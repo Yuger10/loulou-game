@@ -5,7 +5,8 @@
     "start": "python3 -m http.server 8080",
     "test": "node test/slices.test.js && node test/smoke.test.js && node test/games.test.js",
     "test:jeux": "node test/games.test.js",
-    "inventaire": "node test/tools/globals.js $(node -e \"console.log(require('./js/slices.js').SLICES.flatMap(s=>s.files).join(' '))\")"
+    "inventaire": "node test/tools/globals.js $(node -e \"console.log(require('./js/slices.js').SLICES.flatMap(s=>s.files).join(' '))\")",
+    "sync": "node test/tools/sync.js"
   },
   "devDependencies": {
     "acorn": "^8.19.0",

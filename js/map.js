@@ -130,3 +130,5 @@ function sailTo(id){
     setTimeout(hop, 620);
   })();
 }
+
+registerView('carte', ()=>{ renderMap(); renderIslandCard(); renderLevelPill(); });

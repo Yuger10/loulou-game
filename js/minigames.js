@@ -732,3 +732,10 @@ function renderPuzzle(){
   });
 }
 
+
+// tout nouveau contenu (ou la fermeture) invalide un éventuel minuteur de
+// défi en cours — jamais de décompte qui tourne « dans le vide » — et une
+// relance de question programmée après une erreur (anti-devinette) : sans
+// ça, l'ancienne question pourrait réapparaître par-dessus un autre jeu.
+onModalChange(()=>{ clearActiveTimer(); clearPendingRetry(); });
+onModalClose(()=>{ bindQuit._last = null; });

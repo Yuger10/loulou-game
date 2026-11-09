@@ -183,3 +183,5 @@ function renderFusionner(el){
   });
 }
 
+
+registerView('marche', ()=> renderMarche());
