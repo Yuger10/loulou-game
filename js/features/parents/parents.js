@@ -59,6 +59,9 @@ function recordMission(ok){
   if(ok) s.wins++; else s.fails++;
   s.errors += e;
   s.last = todayKey();
+  // défi bonus de Zap (v52) : joué un cran au-dessus, il ne fait ni monter ni
+  // descendre le niveau du jeu, ni changer son état « à l'aise / à travailler »
+  if(inBonusChallenge()){ missionErrors = 0; save(); return null; }
   s.recent.push({ t, e, ok: !!ok });
   if(s.recent.length > 10) s.recent = s.recent.slice(-10);
   missionErrors = 0;
@@ -126,11 +129,16 @@ function showPauseScreen(){
   const c = comp && COMPANIONS[comp];
   const cName = c ? c.name : 'Ton compagnon';
   const tired = c && c.group==='f' ? 'fatiguée' : 'fatigué';
+  // Grisou (câlins, v52) annonce la pause en respirant tout doucement, à la
+  // place du compagnon qui s'endort ; la durée reste le réglage des parents
+  const hug = pauseAnnouncer();
   // espaces insécables avant « ! ? : » (typographie française, pas de retour à la ligne)
-  const msg = `Tu as bien joué aujourd'hui${p && p.name ? ', ' + p.name : ''}\u00a0! ${cName} est ${tired}\u00a0: on fait une pause et on revient demain\u00a0?`;
+  const msg = hug
+    ? `Tu as bien joué aujourd'hui${p && p.name ? ', ' + p.name : ''}\u00a0! Viens, on respire tout doucement, comme un petit nuage\u00a0: on fait une pause et on revient demain\u00a0?`
+    : `Tu as bien joué aujourd'hui${p && p.name ? ', ' + p.name : ''}\u00a0! ${cName} est ${tired}\u00a0: on fait une pause et on revient demain\u00a0?`;
   openModal(`
-    <div class="reward-box pause-box">
-      ${buddySlot('sleepy','buddy-big')}
+    <div class="reward-box pause-box ${hug ? 'pause-hug' : ''}">
+      ${hug ? `<span class="buddy-slot buddy-big breathe" aria-hidden="true">${companionSVG(hug, 'happy')}</span>` : buddySlot('sleepy','buddy-big')}
       <h2>C'est l'heure de la pause</h2>
       <div class="speech">${msg}</div>
       <p class="pause-note">Tu peux encore regarder ton île, ton sac et ton album.</p>
@@ -138,7 +146,7 @@ function showPauseScreen(){
     <button class="btn-primary" id="pause-ok">D'accord 😴</button>
     <button class="btn-ghost" id="pause-more">Un adulte peut ajouter 10 minutes</button>
   `);
-  speak(msg);
+  speak(hug ? `${COMPANIONS[hug].name} : ${msg}` : msg);
   document.getElementById('pause-ok').onclick = ()=>{ playSound('tap'); closeModal(); };
   document.getElementById('pause-more').onclick = ()=>{
     playSound('tap');

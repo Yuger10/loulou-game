@@ -20,7 +20,7 @@ const FILES = [
   './js/features/minigames/math/math.js','./js/features/minigames/reading/reading.js','./js/features/minigames/grammar/grammar.js','./js/features/minigames/volume/volume.js','./js/features/minigames/compare/compare.js','./js/features/minigames/money/money.js',
   './js/features/minigames/clock/clock.js','./js/features/minigames/calendar/calendar.js','./js/features/minigames/calc/calc.js','./js/features/minigames/shapes/shapes.js','./js/features/minigames/planets/planets.js','./js/features/minigames/jigsaw/jigsaw.js',
   './js/features/story/story.js','./js/features/story/episodes.js','./js/features/market/market.js','./js/features/gifts/gifts.js','./js/features/players/profiles-ui.js','./js/features/backup/backup.js',
-  './js/features/parents/parents.js','./js/features/wardrobe/wardrobe.js','./js/features/seasons/seasons.js','./js/features/companion-team/team.js','./js/app/init.js'
+  './js/features/parents/parents.js','./js/features/wardrobe/wardrobe.js','./js/features/seasons/seasons.js','./js/features/companion-team/team.js','./js/features/companion-team/specialties.js','./js/app/init.js'
 ];
 self.addEventListener('install', e=>{
   e.waitUntil(caches.open(CACHE).then(c=>c.addAll(FILES)).then(()=>self.skipWaiting()));

@@ -96,6 +96,7 @@ function renderLagon(){
   renderScene();
   renderRaceTrack();
   renderTeamHeads();
+  renderTeamHelpers();   // Sam le guide et le défi de Zap
 }
 
 /* ---------- Décorations ---------- */

@@ -58,13 +58,14 @@ function pickVoice(){
   return chosenVoice;
 }
 
-function speak(text){
+// opts.rate : plus lent pour relire (Perle la conteuse, v52)
+function speak(text, opts){
   if(!audioPrefs().voice || !('speechSynthesis' in window)) return;
   try{
     window.speechSynthesis.cancel();
     const u = new SpeechSynthesisUtterance(toSpoken(text));
     u.lang = 'fr-FR';
-    u.rate = .92;
+    u.rate = (opts && opts.rate) || .92;
     u.pitch = 1.0;
     const v = chosenVoice || pickVoice();
     if(v) u.voice = v;

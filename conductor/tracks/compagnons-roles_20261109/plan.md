@@ -41,16 +41,16 @@ Nouvelle slice : `features/companion-team/`. Contrat d'indices dans `features/mi
 - [ ] Task: Conductor - User Manual Verification "L'équipe" (Protocol in workflow.md)
 
 ## Phase 4 : Les spécialités
-- [ ] Task: Infrastructure
-    - [ ] Tests : une spécialité est active si son compagnon est équipier actif, ou principal avec l'équipe ouverte ; file de parole (une à la fois, priorité aux indices) ; inactive en course
-- [ ] Task: Lili (indices magiques), Perle (conteuse), Grisou (câlins)
-    - [ ] Tests : 5 s au lieu de 10, paillettes, énigmes ; bouton « 🔁 Relire » et syllabes ; consolation après 2 erreurs ; Grisou annonce la pause douce des parents (v41) sans minuteur à lui
-- [ ] Task: Léo (tuteur)
-    - [ ] Tests : Léo annonce un jeu « à travailler » ou en soutien choisi par `js/features/adaptive/adaptive.js` ; il dit la phrase de progrès existante ; indice 1 avant la première question d'un jeu en soutien ; 1 annonce par session
-- [ ] Task: Sam (guide), Rose (collection)
-    - [ ] Tests : priorité des destinations de Sam et toucher pour y aller ; Rose indique ce qui manque et sa provenance (Sac, Album, chambre si v53)
-- [ ] Task: Zap (défis), Tom (trésors)
-    - [ ] Tests : défi bonus 1 par jour et par île, un cran au-dessus du niveau adaptatif (plafond d'âge respecté), sans effet sur le niveau, récompense doublée, refusable ; trésor 1 par jour, boîte surprise comptée dans la limite si v53
+- [x] Task: Infrastructure
+    - [x] Tests : une spécialité est active si son compagnon est équipier actif, ou principal avec l'équipe ouverte ; file de parole (une à la fois, priorité aux indices) ; inactive en course
+- [x] Task: Lili (indices magiques), Perle (conteuse), Grisou (câlins)
+    - [x] Tests : 5 s au lieu de 10, paillettes, énigmes ; bouton « 🔁 Relire » et syllabes ; consolation après 2 erreurs ; Grisou annonce la pause douce des parents (v41) sans minuteur à lui
+- [x] Task: Léo (tuteur)
+    - [x] Tests : Léo annonce un jeu « à travailler » ou en soutien choisi par `js/features/adaptive/adaptive.js` ; il dit la phrase de progrès existante ; indice 1 avant la première question d'un jeu en soutien ; 1 annonce par session
+- [x] Task: Sam (guide), Rose (collection)
+    - [x] Tests : priorité des destinations de Sam et toucher pour y aller ; Rose indique ce qui manque et sa provenance (Sac, Album, chambre si v53)
+- [x] Task: Zap (défis), Tom (trésors)
+    - [x] Tests : défi bonus 1 par jour et par île, un cran au-dessus du niveau adaptatif (plafond d'âge respecté), sans effet sur le niveau, récompense doublée, refusable ; trésor 1 par jour, boîte surprise comptée dans la limite si v53
 - [ ] Task: Conductor - User Manual Verification 'Les spécialités' (Protocol in workflow.md)
 
 ## Phase 5 : Livraison v52

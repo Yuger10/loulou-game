@@ -57,6 +57,7 @@ function renderMap(){
   `;
 
   placeBoat(currentWorld, false);
+  renderSamGuide();   // Sam le guide (js/features/companion-team)
 
   el.querySelectorAll('.map-island').forEach(b=>{
     b.onclick = ()=>{

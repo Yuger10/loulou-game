@@ -14,6 +14,7 @@ function setSacTab(tab){
   if(tab==='sac') renderSac();
   else if(tab==='album') renderAlbum();
   else { lookTry = null; renderLook(); }
+  roseTip(tab);   // Rose (collection) : ce qui manque, et où le trouver
 }
 
 function renderBadge(){

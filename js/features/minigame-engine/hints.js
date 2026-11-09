@@ -69,6 +69,9 @@ const hintPolicy = {
   syllablesFirst: ()=> false,   // Perle la conteuse : les syllabes dès l'indice 1
   onUse: null,      // (kind, level) après chaque indice
   onShow: null,     // (kind) quand une question avec indices s'affiche
+  onError: null,    // (kind) à chaque erreur (Grisou console après 2 d'affilée)
+  onGood: null,     // une bonne étape
+  onMission: null,  // (kind) une nouvelle mission commence
 };
 function setHintPolicy(part){ Object.assign(hintPolicy, part); }
 
@@ -109,7 +112,7 @@ function renderHintButton(){
     head.classList.add('has-hint');
   }
   const done = hint.level >= HINT_LEVELS;
-  const who = hintPolicy.giver(hint.kind);
+  const who = hintPolicy.giver(hint.kind, 0);
   const mood = done ? 'cheer' : hint.nudged ? 'think' : 'happy';
   b.innerHTML = `<span class="hint-face" aria-hidden="true">${companionSVG(who, mood)}</span>`
     + `<span class="hint-ico" aria-hidden="true">${done ? '💪' : '💡'}</span>`
@@ -128,7 +131,7 @@ function armHintIdle(){
 }
 // fromError : la relance qui suit gardera le bouton brillant
 function hintNudge(fromError){
-  if(fromError) hint.carry = true;
+  if(fromError){ hint.carry = true; if(hintPolicy.onError) hintPolicy.onError(hint.kind); }
   if(!hint.on || hint.level >= HINT_LEVELS || hint.nudged) return;
   hint.nudged = true;
   renderHintButton();
@@ -162,8 +165,21 @@ function useHint(){
   return h;
 }
 
+// Montre l'indice 1 de lui-même (Léo, avant un jeu en soutien) : pas compté.
+function hintShowFirst(giver){
+  if(!hint.on || hint.level > 0) return false;
+  const h = hintsFor(hint.kind, hint.q)[0];
+  if(!h) return false;
+  hint.level = 1; hint.nudged = false;
+  showHint(h, 1, giver);
+  renderHintButton();
+  armHintIdle();
+  if(hintPolicy.onUse) hintPolicy.onUse(hint.kind, 1);
+  return true;
+}
+
 // la bulle de l'indice sous la consigne, et l'effet visuel
-function showHint(h, level){
+function showHint(h, level, giverOverride){
   const body = document.getElementById('modal-body');
   if(!body) return;
   let bub = body.querySelector('.hint-bubble');
@@ -174,7 +190,7 @@ function showHint(h, level){
     const anchor = body.querySelector('#challenge-timer') || body.querySelector('.puzzle-hint') || body.querySelector('.game-head');
     if(anchor) anchor.insertAdjacentElement('afterend', bub); else body.prepend(bub);
   }
-  const who = hintPolicy.giver(hint.kind);
+  const who = giverOverride || hintPolicy.giver(hint.kind, level);
   bub.dataset.level = level;
   // espaces insécables avant « : ! ? » (typographie française, pas de « : » seul en début de ligne)
   const text = h.say.replace(/ ([:;!?»])/g, '\u00a0$1').replace(/« /g, '«\u00a0');
@@ -195,7 +211,6 @@ function applyHintFx(fx, level){
   const sparkle = level === HINT_LEVELS && hintPolicy.sparkle(hint.kind);
   all(fx.glow).forEach(el=>{
     el.classList.remove('hint-glow'); void el.offsetWidth; el.classList.add('hint-glow');
-    if(sparkle) el.classList.add('hint-sparkle');
   });
   (fx.marks || []).forEach(m=> all(m.sel).forEach(el=>{
     const old = el.querySelector(':scope > .hint-mark');
@@ -204,6 +219,15 @@ function applyHintFx(fx, level){
   }));
   all(fx.strike).forEach(el=> el.classList.add('hint-strike'));
   if(fx.run) fx.run(root);
+  // les paillettes de Lili : sur l'élément clé (ce qui brille, sinon ce qui est
+  // numéroté ou barré, sinon la bulle de l'indice)
+  if(sparkle){
+    let keys = all(fx.glow);
+    if(!keys.length) keys = (fx.marks || []).flatMap(m=> all(m.sel)).slice(0, 3);
+    if(!keys.length) keys = all(fx.strike).slice(0, 3);
+    if(!keys.length) keys = all('.hint-bubble');
+    keys.forEach(el=> el.classList.add('hint-sparkle'));
+  }
   if(fx.dim) hintEliminate(fx.dim, level);
 }
 // écarte UNE mauvaise réponse, seulement si la règle anti-devinette le permet

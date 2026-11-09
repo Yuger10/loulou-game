@@ -70,3 +70,74 @@
     .team-btn .th-head.mate{width:18px; height:18px; margin-left:-9px;}
     .team-btn .th-head.mate svg{width:21px; height:23px;}
   }
+
+  /* =====================================================================
+     Les spécialités v52
+     ===================================================================== */
+  /* la bulle d'un compagnon qui parle (une seule à la fois) */
+  .team-say{
+    position:fixed; left:50%; bottom:calc(96px + env(safe-area-inset-bottom)); z-index:60;
+    transform:translate(-50%, 30px); opacity:0; pointer-events:none;
+    display:flex; align-items:center; gap:10px; width:max-content; max-width:min(92vw, 520px); padding:8px 14px 8px 8px;
+    border:none; border-radius:var(--radius-lg); background:#fff; color:var(--ink); text-align:left;
+    font:inherit; font-weight:700; font-size:.95rem; box-shadow:var(--shadow-candy); cursor:pointer;
+    transition:transform .3s cubic-bezier(.2,1.4,.4,1), opacity .25s ease;
+  }
+  .team-say.show{transform:translate(-50%, 0); opacity:1; pointer-events:auto;}
+  .team-say .ts-face, .sg-face, .cheer-face{display:block; width:44px; height:44px; border-radius:50%; overflow:hidden; background:var(--lagoon-tint); flex-shrink:0;}
+  .team-say .ts-face svg, .sg-face svg, .cheer-face svg{width:48px; height:52px; margin-left:-2px; display:block;}
+  .team-say b, .sam-guide b, .zap-offer b, .rose-tip b, .team-extra b, .progress-cheer b{color:var(--lagoon-ink); margin-right:4px;}
+
+  /* Sam, Zap (île et carte) et Rose (sac) */
+  .team-helps{display:flex; flex-direction:column; gap:8px; margin:0 0 10px;}
+  .team-helps:not(:has(> :not([hidden]))){display:none;}
+  .sam-guide, .zap-offer, .rose-tip{
+    display:flex; align-items:center; gap:10px; width:100%; padding:8px 12px 8px 8px;
+    border:2px solid #FFE08A; border-radius:var(--radius-md); background:var(--tint-sun);
+    color:var(--ink); font:inherit; font-weight:700; font-size:.92rem; text-align:left; box-shadow:var(--shadow-candy-sm);
+  }
+  .sam-guide{cursor:pointer;}
+  .sam-guide .sg-arrow{margin-left:auto; font-size:1.2rem; white-space:nowrap; animation:samPoint 1.2s ease-in-out infinite;}
+  @keyframes samPoint{0%,100%{transform:translateX(0);} 50%{transform:translateX(5px);}}
+  .sg-txt{flex:1; min-width:0; text-wrap:balance;}
+  .zap-offer{flex-wrap:wrap; background:#E8F0FF; border-color:#B9CCF5;}
+  .zap-offer .sg-txt{flex-basis:calc(100% - 64px);}
+  .zo-btns{display:flex; gap:6px; margin-left:auto;}
+  .zo-btns .btn-small{min-height:38px; padding:6px 12px;}
+  .rose-tip{background:#FFEAF3; border-color:#FFC2DB; margin-bottom:10px;}
+  .rose-tip .btn-speak{flex-shrink:0;}
+
+  /* Léo : sa tête sur le jeu « à travailler » du choix des jeux */
+  .game-choice{position:relative;}
+  .leo-badge{position:absolute; top:-8px; right:-8px; width:34px; height:34px; border-radius:50%; overflow:hidden; background:#fff; box-shadow:0 0 0 2px #FFD54A;}
+  .leo-badge svg{width:38px; height:41px; margin-left:-2px; display:block;}
+
+  /* écran de victoire : Léo, Zap et Tom parlent avec leur tête */
+  .progress-cheer, .team-extra{display:flex; align-items:center; justify-content:center; gap:8px; text-align:left;}
+  .progress-cheer .cheer-face, .team-extra .cheer-face{width:40px; height:40px;}
+  .progress-cheer .cheer-face svg, .team-extra .cheer-face svg{width:44px; height:48px;}
+  .team-extra{background:#E8F0FF;}
+  .team-extra[data-by="tom"]{background:var(--tint-sun);}
+  .boost{display:inline-block; padding:0 8px; border-radius:999px; background:#3A7BD5; color:#fff; font-weight:800;}
+
+  /* Perle : « 🔁 Relire », plus lentement */
+  .btn-reread{
+    display:inline-flex; align-items:center; gap:2px; flex-shrink:0; border:none; cursor:pointer;
+    height:34px; padding:0 8px 0 2px; border-radius:999px; background:#E0F7F4; font-size:.95rem;
+    box-shadow:0 2px 0 rgba(18,59,79,.14);
+  }
+  .btn-reread .rr-face{display:block; width:28px; height:28px; border-radius:50%; overflow:hidden; background:#fff;}
+  .btn-reread .rr-face svg{width:31px; height:34px; margin-left:-1.5px; display:block;}
+
+  /* Grisou : la pause, en respirant tout doucement */
+  .buddy-slot.breathe{animation:grisouBreathe 4s ease-in-out infinite;}
+  @keyframes grisouBreathe{0%,100%{transform:scale(1);} 50%{transform:scale(1.1);}}
+
+  /* ordinateur : la bulle de Sam et l'offre de Zap sous l'en-tête de la vue */
+  @media (min-width:1024px){
+    #view-ile.active{grid-template-areas:"head head" "hint hint" "help help" "chars scene" "chars quests"; grid-template-rows:auto auto auto auto 1fr;}
+    #view-ile .team-helps{grid-area:help;}
+    #view-carte.active{grid-template-areas:"head head" "help help" "map card" "next card";}
+    #view-carte .team-helps{grid-area:help;}
+  }
+  @media (prefers-reduced-motion: reduce){ .sam-guide .sg-arrow, .buddy-slot.breathe{animation:none;} }

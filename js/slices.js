@@ -20,7 +20,7 @@ const SLICES = [
   { id:'shared-ui',      layer:'shared',   files:['js/shared/ui/icons.js','js/shared/ui/sound.js','js/shared/ui/voice.js',
                                                 'js/shared/ui/feedback.js','js/shared/ui/modal.js','js/shared/ui/views.js'], css:['js/shared/ui/views.css','js/shared/ui/modal.css','js/shared/ui/feedback.css','js/shared/ui/icons.css'], public:[
       'audioCtx', 'bindSpeakButtons', 'closeModal', 'confetti', 'emojiWord', 'onModalChange', 
-      'onModalClose', 'onWrongFeedback', 'openModal', 'playSound', 'registerView', 
+      'onModalClose', 'onModalOpen', 'onWrongFeedback', 'openModal', 'playSound', 'registerView', 
       'setAudioPrefsSource', 'shakeEl', 'showToast', 'soundModeLabel', 'speak', 'speechBubble', 
       'switchView', 'tone', 'uiIcon', 'vibrate', 'wrongFeedback'] },
   { id:'words',          layer:'entities', files:['js/entities/words/words.js'], css:[], public:[
@@ -69,7 +69,8 @@ const SLICES = [
   { id:'wallet', layer:'features', files:['js/features/wallet/wallet.js'], css:[], public:[
       'addCoins', 'coinsInFlight', 'renderCoins'] },
   { id:'adaptive', layer:'features', files:['js/features/adaptive/game-diff.js','js/features/adaptive/adaptive.js'], css:['js/features/adaptive/adaptive.css'], public:[
-      'adaptAfterMission', 'gameDiff', 'gameDiffIsland', 'pickPracticeGame', 'progressCheer'] },
+      'adaptAfterMission', 'gameDiff', 'gameDiffIsland', 'needsPractice', 'pickPracticeGame', 
+      'progressCheer'] },
   { id:'bag', layer:'features', files:['js/features/bag/bag.js'], css:['js/features/bag/bag.css'], public:[
       'checkAlbumComplete', 'markSeen', 'renderBadge', 'setSacTab'] },
   { id:'island', layer:'features', files:['js/features/island/island-view.js','js/features/island/island.js'], css:['js/features/island/island.css','js/features/island/island-view.css'], public:[
@@ -82,11 +83,12 @@ const SLICES = [
   { id:'map', layer:'features', files:['js/features/map/map.js'], css:['js/features/map/map.css'], public:[
       'renderMap'] },
   { id:'minigame-engine', layer:'features', files:['js/features/minigame-engine/engine.js','js/features/minigame-engine/hints.js'], css:['js/features/minigame-engine/engine.css','js/features/minigame-engine/deck-v13.css','js/features/minigame-engine/outcome-v14.css','js/features/minigame-engine/board-v21.css','js/features/minigame-engine/timer.css','js/features/minigame-engine/hints.css'], public:[
-      'bindQuit', 'clearActiveTimer', 'flashModal', 'gameHeader', 'hintNudge', 'hintOrderStep', 
-      'hintSyllablesFirst', 'hintSyllablesHTML', 'lastGame', 'livesBar', 'loseLife', 'missionFact', 
-      'onMissionWin', 'playGame', 'progressDots', 'registerGame', 'registerHints', 'setHintQuestion', 
-      'setSolution', 'setupLives', 'solSel', 'speakWrongHint', 'startMinigame', 'startTimerIfNeeded', 
-      'stepOk'] },
+      'bindQuit', 'bonusChallenge', 'clearActiveTimer', 'flashModal', 'gameHeader', 'hintLevel', 
+      'hintNudge', 'hintOrderStep', 'hintShowFirst', 'hintSyllablesFirst', 'hintSyllablesHTML', 
+      'inBonusChallenge', 'lastGame', 'livesBar', 'loseLife', 'missionFact', 'onMissionWin', 
+      'playGame', 'progressDots', 'registerGame', 'registerHints', 'setHintPolicy', 'setHintQuestion', 
+      'setSolution', 'setupLives', 'solSel', 'speakWrongHint', 'startBonusChallenge', 'startMinigame', 
+      'startTimerIfNeeded', 'stepOk'] },
   { id:'minigame-memory', layer:'features', files:['js/features/minigames/memory/memory.js'], css:[], public:[] },
   { id:'minigame-count', layer:'features', files:['js/features/minigames/count/count.js'], css:[], public:[] },
   { id:'minigame-intruder', layer:'features', files:['js/features/minigames/intruder/intruder.js'], css:[], public:[] },
@@ -117,14 +119,18 @@ const SLICES = [
       'backupDue', 'initBackup', 'openBackup', 'renderBackupReminder', 'requestPersistentStorage'] },
   { id:'parents', layer:'features', files:['js/features/parents/parents.js'], css:['js/features/parents/parents.css'], public:[
       'missionErrors', 'missionProgress', 'noteAnswerError', 'openParents', 'pauseDue', 
-      'recordMission', 'showPauseScreen', 'SKILL_ERR_TOLERANCE', 'skillStatus', 'startPlayTimeTracker'] },
+      'recordMission', 'showPauseScreen', 'SKILL_ERR_TOLERANCE', 'skillStatus', 'startPlayTimeTracker', 
+      'todayKey'] },
   { id:'wardrobe', layer:'features', files:['js/features/wardrobe/wardrobe.js'], css:['js/features/wardrobe/wardrobe.css'], public:[
-      'currentLook', 'lookTry', 'newlyUnlockedLookItems', 'renderLook', 'WARDROBE', 'wearLook'] },
+      'currentLook', 'lookTry', 'newlyUnlockedLookItems', 'ownsLookItem', 'renderLook', 'WARDROBE', 
+      'wearLook'] },
   { id:'seasons', layer:'features', files:['js/features/seasons/seasons.js'], css:['js/features/seasons/seasons.css'], public:[
       'applySeason', 'currentSeason', 'FETES', 'initSeasons', 'maybeSeasonGift', 'seasonPreview', 
       'seasonSceneSVG', 'setSeasonPreview'] },
-  { id:'companion-team', layer:'features', files:['js/features/companion-team/team.js'], css:['js/features/companion-team/team.css'], public:[
-      'maybeTeamOpening', 'renderTeamHeads', 'teamHeadsHTML', 'teamOnSessionStart', 'teamOnTravel'] },
+  { id:'companion-team', layer:'features', files:['js/features/companion-team/team.js','js/features/companion-team/specialties.js'], css:['js/features/companion-team/team.css'], public:[
+      'maybeTeamOpening', 'pauseAnnouncer', 'renderSamGuide', 'renderTeamHeads', 'renderTeamHelpers', 
+      'roseTip', 'teamCheerBy', 'teamHeadsHTML', 'teamOnGamePicker', 'teamOnSessionStart', 
+      'teamOnTravel', 'teamWinExtras'] },
   { id:'app', layer:'app', files:['js/app/init.js'], css:[], public:[] },
 ];
 
