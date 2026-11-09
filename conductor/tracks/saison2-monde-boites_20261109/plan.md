@@ -1,7 +1,7 @@
-# Plan : Saison 2 « Le Ciel des Rêves » et le Monde des Boîtes (v54)
+# Plan : Saison 2 « Le Ciel des Rêves » et le Monde des Boîtes (v55)
 
 Spec : [spec.md](./spec.md). Workflow : [workflow.md](../../workflow.md).
-**Prérequis :** la track `squishy-collection_20261109` (v52) est livrée.
+**Prérequis :** la track `squishy-collection_20261109` (v53) est livrée.
 Nouveaux fichiers prévus : `js/nesting.js` (Les boîtes gigognes), `js/cubes.js` (Combien de cubes ?). La saison 2 de l'histoire va dans `js/story.js`.
 
 ## Phase 1 : Deux archipels
@@ -12,7 +12,7 @@ Nouveaux fichiers prévus : `js/nesting.js` (Les boîtes gigognes), `js/cubes.js
     - [ ] Tests : onglets présents ; Ciel verrouillé sous le niveau 8 (cadenas, « Niveau 8 ») ; îles du Ciel dans le cadre, sans chevauchement ; montgolfière dans le Ciel ; trajet seulement à l'intérieur d'un archipel
     - [ ] `js/map.js` (`renderMap(saison)`, `sailTo`), CSS du fond du Ciel
 - [ ] Task: Ouverture du Ciel et migration
-    - [ ] Tests : au passage au niveau 8, l'écran d'ouverture s'affiche une seule fois, puis le prologue ; une partie déjà au niveau 8 ou plus le voit au chargement ; une partie v52 migrée sans perte
+    - [ ] Tests : au passage au niveau 8, l'écran d'ouverture s'affiche une seule fois, puis le prologue ; une partie déjà au niveau 8 ou plus le voit au chargement ; une partie v53 migrée sans perte
     - [ ] `SAVE_VERSION` +1, `skyIntroSeen`, `migrate()`
 - [ ] Task: Conductor - User Manual Verification 'Deux archipels' (Protocol in workflow.md)
 
@@ -33,7 +33,7 @@ Nouveaux fichiers prévus : `js/nesting.js` (Les boîtes gigognes), `js/cubes.js
 ## Phase 3 : Les deux mini-jeux
 - [ ] Task: Les boîtes gigognes (`js/nesting.js`)
     - [ ] Tests : bon ordre validé ; erreur avec tremblement et indice parlé ; relance après 2 erreurs (annulable) ; 3, 4 puis 5 boîtes selon le palier et l'âge ; ordre inverse au palier haut
-    - [ ] Implémentation, inscription dans les types de mini-jeux et `gameTypesForAge`, paramètres dans `js/difficulty.js`, niveau adaptatif (`js/adaptive.js`), compétence de l'espace parents, indices (contrat v51)
+    - [ ] Implémentation, inscription dans les types de mini-jeux et `gameTypesForAge`, paramètres dans `js/difficulty.js`, niveau adaptatif (`js/adaptive.js`), compétence de l'espace parents, indices (contrat v52)
 - [ ] Task: Combien de cubes ? (`js/cubes.js`)
     - [ ] Tests : le compte de la pile générée (cubes cachés compris) correspond à la bonne réponse ; 3 réponses distinctes ; autre pile après une erreur ; taille selon le palier ; seules les piles physiquement possibles (chaque cube du dessus repose sur un cube)
     - [ ] Générateur de piles, rendu SVG isométrique, inscription, paramètres de difficulté
@@ -54,10 +54,10 @@ Nouveaux fichiers prévus : `js/nesting.js` (Les boîtes gigognes), `js/cubes.js
     - [ ] Tests : le journal 📖 affiche « Saison 1 » et « Le Ciel des Rêves » ; chapitres verrouillés et résolus corrects dans chaque partie
 - [ ] Task: Conductor - User Manual Verification 'Histoire de la saison 2' (Protocol in workflow.md)
 
-## Phase 5 : Livraison v54
+## Phase 5 : Livraison v55
 - [ ] Task: Intégration PWA et docs
-    - [ ] `sw.js` : `lagon-v54` et nouveaux fichiers ; `index.html` : les scripts ; PRD (v54, idée de la joueuse), TODO, README
+    - [ ] `sw.js` : `lagon-v55` et nouveaux fichiers ; `index.html` : les scripts ; PRD (v55, idée de la joueuse), TODO, README
 - [ ] Task: Vérification complète
     - [ ] `npm test` vert ; parcours manuel à 360 px (niveau 7 → 8, ouverture du Ciel, Boîtes, deux mini-jeux, énigme, boîte surprise)
-- [ ] Task: Conductor - User Manual Verification 'Livraison v54' (Protocol in workflow.md)
+- [ ] Task: Conductor - User Manual Verification 'Livraison v55' (Protocol in workflow.md)
 - [ ] Task: Branche, PR sur `main`, merge

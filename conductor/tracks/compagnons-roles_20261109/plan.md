@@ -1,7 +1,7 @@
-# Plan : Les compagnons et leurs rôles (indices et équipe) (v51)
+# Plan : Les compagnons et leurs rôles (indices et équipe) (v52)
 
 Spec : [spec.md](./spec.md). Workflow : [workflow.md](../../workflow.md).
-**Prérequis :** `refactor-feature-slices` (étape A) livrée. Les spécialités Tom (boîtes) et Rose (squishies) s'appuient sur la v52 si elle est livrée, et se dégradent proprement sinon. Lili (Monde des Boîtes) et Grisou (fin de saison 2) ne sont rencontrables qu'une fois leurs tracks livrées.
+**Prérequis :** `refactor-feature-slices` (étape A) livrée. Les spécialités Tom (boîtes) et Rose (squishies) s'appuient sur la v53 si elle est livrée, et se dégradent proprement sinon. Lili (Monde des Boîtes) et Grisou (fin de saison 2) ne sont rencontrables qu'une fois leurs tracks livrées.
 Nouvelle slice : `features/companion-team/`. Contrat d'indices dans `features/minigame-engine/`.
 
 ## Phase 1 : Le contrat d'indices et le bouton 💡
@@ -22,7 +22,7 @@ Nouvelle slice : `features/companion-team/`. Contrat d'indices dans `features/mi
     - [ ] Tests et indices : reading, grammar
 - [ ] Task: Jeux d'observation et de monde
     - [ ] Tests et indices : memory, intruder, volume, clock, calendar, shapes, planets
-- [ ] Task: Énigmes d'histoire (et rangement des squishies si la v52 est livrée)
+- [ ] Task: Énigmes d'histoire (et rangement des squishies si la v53 est livrée)
 - [ ] Task: Test de couverture des indices
     - [ ] Un test parcourt **chaque** type de mini-jeu inscrit et échoue s'il n'a pas d'indices ; ajouter l'étape « indices » à `conductor/checklist-mini-jeu.md`
 - [ ] Task: Conductor - User Manual Verification 'Indices de chaque mini-jeu' (Protocol in workflow.md)
@@ -46,14 +46,14 @@ Nouvelle slice : `features/companion-team/`. Contrat d'indices dans `features/mi
 - [ ] Task: Léo (tuteur)
     - [ ] Tests : Léo annonce un jeu « à travailler » ou en soutien choisi par `js/adaptive.js` ; il dit la phrase de progrès existante ; indice 1 avant la première question d'un jeu en soutien ; 1 annonce par session
 - [ ] Task: Sam (guide), Rose (collection)
-    - [ ] Tests : priorité des destinations de Sam et toucher pour y aller ; Rose indique ce qui manque et sa provenance (Sac, Album, chambre si v52)
+    - [ ] Tests : priorité des destinations de Sam et toucher pour y aller ; Rose indique ce qui manque et sa provenance (Sac, Album, chambre si v53)
 - [ ] Task: Zap (défis), Tom (trésors)
-    - [ ] Tests : défi bonus 1 par jour et par île, un cran au-dessus du niveau adaptatif (plafond d'âge respecté), sans effet sur le niveau, récompense doublée, refusable ; trésor 1 par jour, boîte surprise comptée dans la limite si v52
+    - [ ] Tests : défi bonus 1 par jour et par île, un cran au-dessus du niveau adaptatif (plafond d'âge respecté), sans effet sur le niveau, récompense doublée, refusable ; trésor 1 par jour, boîte surprise comptée dans la limite si v53
 - [ ] Task: Conductor - User Manual Verification 'Les spécialités' (Protocol in workflow.md)
 
-## Phase 5 : Livraison v51
+## Phase 5 : Livraison v52
 - [ ] Task: Intégration et docs
-    - [ ] `sw.js` (`lagon-v51`, nouveaux fichiers), PRD (v51, demande du parent), TODO (amitié qui grandit, espace parents qui lit `stats`), README
+    - [ ] `sw.js` (`lagon-v52`, nouveaux fichiers), PRD (v52, demande du parent), TODO (amitié qui grandit, espace parents qui lit `stats`), README
 - [ ] Task: Vérification complète
     - [ ] `npm test` vert ; parcours manuel à 360 px (indices dans 3 mini-jeux, niveau 9 → 10, une rencontre, Mon équipe, chaque spécialité au moins une fois, mode course sans indices)
 - [ ] Task: Conductor - User Manual Verification 'Livraison' (Protocol in workflow.md)

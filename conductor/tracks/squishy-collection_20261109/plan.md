@@ -1,4 +1,4 @@
-# Plan : Collection de squishies (v52)
+# Plan : Collection de squishies (v53)
 
 Spec : [spec.md](./spec.md). Workflow : [workflow.md](../../workflow.md).
 Nouveaux fichiers prévus : `js/squishies.js` (données et logique pure), `js/squishy-room.js` (chambre, ouverture, rangement : interface).
@@ -59,11 +59,11 @@ Tests : un nouveau `test/squishies.test.js`, enchaîné par `npm test` après le
     - [ ] `js/market.js`
 - [ ] Task: Conductor - User Manual Verification 'Rangement à consigne et marché' (Protocol in workflow.md)
 
-## Phase 5 : Livraison v52
+## Phase 5 : Livraison v53
 - [ ] Task: Intégration PWA et docs
-    - [ ] `sw.js` : `lagon-v52`, nouveaux fichiers dans `FILES` ; `index.html` : les scripts
-    - [ ] `PRD-lagon-magique.md` (section v52, idée de la joueuse), `TODO.md`, `README.md` (structure)
+    - [ ] `sw.js` : `lagon-v53`, nouveaux fichiers dans `FILES` ; `index.html` : les scripts
+    - [ ] `PRD-lagon-magique.md` (section v53, idée de la joueuse), `TODO.md`, `README.md` (structure)
 - [ ] Task: Vérification complète
     - [ ] `npm test` vert ; parcours manuel à 360 px (ouvrir, presser, étagère, ranger, échanger, sauvegarder puis restaurer)
-- [ ] Task: Conductor - User Manual Verification 'Livraison v52' (Protocol in workflow.md)
+- [ ] Task: Conductor - User Manual Verification 'Livraison v53' (Protocol in workflow.md)
 - [ ] Task: Branche, PR sur `main`, merge

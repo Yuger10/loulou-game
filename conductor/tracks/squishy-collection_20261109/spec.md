@@ -1,4 +1,4 @@
-# Spec : Collection de squishies (v52)
+# Spec : Collection de squishies (v53)
 
 > Idée de la joueuse principale : « un système de squishies qu'on range dans des boîtes ».
 > Inspiré du phénomène réel des squishies (taba squishies, blind box, séries, raretés) : voir [`conductor/research-squishies.md`](../../research-squishies.md).
@@ -61,7 +61,7 @@ Objectifs : donner envie de revenir chaque jour (motivation), donner un vrai usa
 
 ## 3. Exigences non fonctionnelles
 - **Enfant d'abord** (`product-guidelines.md`) : aucun texte nécessaire à lire, tout est lu à voix haute, gros boutons, aucune perte.
-- **Sauvegarde :** `SAVE_VERSION` +1 (5 si la v51 des compagnons est passée à 4). Il y a un nouvel état `squishies` (squishies possédés et compteurs, boîtes non ouvertes avec leur série, étagère, compteur du filet de sécurité, achats et rangements du jour) et une étape de migration qui crée les boîtes de rattrapage. La sauvegarde et le code de transfert (`js/backup.js`) emportent tout.
+- **Sauvegarde :** `SAVE_VERSION` +1 (5 si la v52 des compagnons est passée à 4). Il y a un nouvel état `squishies` (squishies possédés et compteurs, boîtes non ouvertes avec leur série, étagère, compteur du filet de sécurité, achats et rangements du jour) et une étape de migration qui crée les boîtes de rattrapage. La sauvegarde et le code de transfert (`js/backup.js`) emportent tout.
 - **Multijoueur :** la collection est **par profil**.
 - **Mobile :** la chambre tient dans la fenêtre modale existante, défile verticalement, et ne déborde pas à 360 px de large.
 - **Performance :** 18 dessins SVG légers, aucune image externe. Les nouveaux fichiers JS sont ajoutés au cache `sw.js`.

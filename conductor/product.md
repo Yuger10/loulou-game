@@ -20,13 +20,14 @@ Donner envie d'apprendre (lecture, nombres, calcul, heure, formes, planètes…)
 5. Les niveaux débloquent de nouvelles îles, chacune avec un chapitre d'histoire et une énigme.
 6. Les missions du jour et l'album donnent une raison de revenir chaque jour.
 
-## État actuel (v49)
+## État actuel (v50)
 - 8 îles : Lagon, Forêt, Montagne, Château, Jungle, Cité du Temps, Volcan, Pays Squishy. Il y a 6 paliers de difficulté, de la GS au CE2, et **chaque mini-jeu a son propre niveau** pour chaque enfant (v42 : il monte, redescend en « soutien », et ce qui est à travailler revient plus souvent).
 - 15 mini-jeux (mémoire, compter, intruse, suites, puzzle, lecture, grammaire, volumes, comparer, monnaie, heure, calendrier, calcul, formes, planètes), plus « assembler l'image » (v46).
 - Profils multijoueurs, 7 compagnons dessinés (visuels uniquement pour l'instant), avatars habillables (« Mon look », v43).
 - L'histoire du Lagon Magique : un chapitre et une énigme par île, plus **3 épisodes par île** qui avancent à chaque mission (v49). Elle se termine avec le trésor au Pays Squishy.
 - Offrir un objet à un personnage, avec des cœurs d'amitié (v47) ; fêtes et saisons (v45) ; une musique d'ambiance par île (v48).
 - **Espace parents** (v41) : progrès par compétence (`state.skills`), temps de jeu, pause douce réglable.
+- Tests jsdom qui jouent chaque mini-jeu jusqu'à la victoire (v50).
 - Sauvegarde versionnée avec migrations, fichier et code de transfert, PWA hors-ligne, **en ligne sur https://yuger10.github.io/loulou-game/**.
 
 ## Objectifs produit

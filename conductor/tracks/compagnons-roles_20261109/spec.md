@@ -1,4 +1,4 @@
-# Spec : Les compagnons et leurs rôles (indices et équipe) (v51)
+# Spec : Les compagnons et leurs rôles (indices et équipe) (v52)
 
 > Demande : mettre en avant les compagnons et ce qu'ils apportent au jeu, avec des **rôles différents** (un tuteur, un qui donne des indices quand on en a besoin…).
 > Aujourd'hui (v49), les 7 compagnons sont **surtout visuels** : ils ont 6 humeurs, se choisissent sur le profil, servent d'avatar habillable (v43), et disent déjà une phrase d'encouragement quand un mini-jeu monte de niveau (v42).
@@ -54,7 +54,7 @@ Chaque spécialité est active quand le compagnon est équipier actif, ou quand 
   - au maximum 1 annonce par session, pour ne pas lasser.
 - **Sam, Guide :** sur l'île et la carte, une bulle avec une flèche indique la prochaine chose utile, par ordre de priorité : une mission du jour à finir, une nouvelle île à visiter, un chapitre d'histoire pas résolu, un personnage jamais aidé. On la touche pour y aller.
 - **Zap, Défis :** une fois par jour et par île, il propose un **défi bonus** : le mini-jeu **un cran au-dessus de son niveau adaptatif** (v42), sans dépasser le plafond de l'âge, avec le minuteur si l'âge le permet, et une récompense doublée. Le défi ne fait **ni monter ni descendre** le niveau du jeu. Il est toujours facultatif et refusable sans conséquence.
-- **Tom, Trésors :** une fois par jour, après une mission réussie, il « trouve » un trésor : des pièces en bonus ou un objet de l'île. Avec la collection de squishies (v52), il trouve parfois une boîte surprise à la place (comptée dans la limite du jour).
+- **Tom, Trésors :** une fois par jour, après une mission réussie, il « trouve » un trésor : des pièces en bonus ou un objet de l'île. Avec la collection de squishies (v53), il trouve parfois une boîte surprise à la place (comptée dans la limite du jour).
 - **Perle, Conteuse :** un bouton « 🔁 Relire » sur les dialogues, consignes et chapitres. Elle lit plus lentement. Dans les mini-jeux de lecture, elle découpe le mot en syllabes au niveau 1 de l'indice.
 - **Rose, Collection :** dans le Sac, l'Album, « Mon look » et la chambre à squishies, elle montre ce qui manque et où l'obtenir (« Il te manque le capy dodo : ouvre des boîtes ! », « La plume vient de la Forêt »).
 - **Grisou, Câlins :** après 2 erreurs d'affilée, il console (« Ce n'est pas grave, on réessaie ensemble ☁️ »). Quand la **pause douce réglée par les parents** (v41) arrive, c'est Grisou qui l'annonce, avec une petite animation de respiration, à la place du compagnon qui s'endort. Il n'ajoute **aucun minuteur à lui** : la durée reste le réglage des parents.

@@ -1,9 +1,9 @@
-# Spec : Refactor en « feature slices », scripts classiques (étape A, v50)
+# Spec : Refactor en « feature slices », scripts classiques (étape A, v51)
 
 > Track technique, **sans aucun changement visible pour l'enfant**. C'est l'étape A de la feuille de route A → B :
 > **A** : feature slices en scripts classiques (cette track) ;
 > **B** : modules ES natifs (`refactor-esm-modules_20261109`).
-> À faire **en premier** (v50), avant `compagnons-roles` (v51) et `squishy-collection` (v52), pour que les nouvelles fonctionnalités naissent directement dans la nouvelle structure.
+> À faire **en premier** (v51), avant `compagnons-roles` (v52) et `squishy-collection` (v53), pour que les nouvelles fonctionnalités naissent directement dans la nouvelle structure.
 
 ## 1. Pourquoi
 - Les fichiers « fourre-tout » grossissent à chaque version : `minigames.js` (720 lignes), `data.js` (690), `ui.js` (537), `difficulty.js` (480), `styles.css` (2 800) ; 37 fichiers JS à plat dans `js/`. Trouver où ajouter un monde, un mini-jeu ou un compagnon demande de connaître tout le code.

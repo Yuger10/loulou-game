@@ -1,7 +1,7 @@
-# Spec : Le Monde des Licornes et la fin de la saison 2 (v55)
+# Spec : Le Monde des Licornes et la fin de la saison 2 (v56)
 
 > Idée de la joueuse principale : « le monde des licornes ».
-> **Dépend de** `squishy-collection_20261109` (v52) et de `saison2-monde-boites_20261109` (v54).
+> **Dépend de** `squishy-collection_20261109` (v53) et de `saison2-monde-boites_20261109` (v55).
 
 ## 1. Vue d'ensemble
 La **2ᵉ et dernière île du Ciel des Rêves** est le **Royaume Arc-en-ciel**, ouvert au **niveau 13**. Grisou a privé la Reine Arc-en-ciel de ses couleurs. En aidant les licornes, l'enfant rend ses couleurs au ciel. Le chapitre est le **grand final de la saison 2** : Grisou devient tout coloré, s'excuse et devient l'ami de tous, avec une fête dans le ciel.
@@ -56,8 +56,8 @@ Il apporte 4 personnages, 2 nouveaux mini-jeux (**Les potions de couleurs** et *
 - **Épisodes (v49) :** le Royaume a ses **3 épisodes**, racontés par Étincelle, Biscotte, Félix ou Mira, jamais par la Reine. Ils préparent le final (les couleurs reviennent une à une, Grisou hésite à rendre le dernier rêve).
 - **Cadeaux (v47) :** au moins 3 objets de l'île ne sont donnés par personne, pour que chaque personnage ait 2 objets préférés.
 - **Musique (v48) :** un thème `MUSIC_THEMES.licornes` (harpe, clochettes), et une variante joyeuse pour le final.
-- **Jeu adaptatif (v42) :** potions (« sciences » ou « formes et espace » selon l'exercice, à trancher dans le plan) et miroir (« formes et espace ») ont un niveau propre à chaque enfant ; ils fournissent leurs indices (v51).
-- **Compagnons (v51) :** Grisou compagnon reçoit la spécialité **Câlins** définie par la track compagnons.
+- **Jeu adaptatif (v42) :** potions (« sciences » ou « formes et espace » selon l'exercice, à trancher dans le plan) et miroir (« formes et espace ») ont un niveau propre à chaque enfant ; ils fournissent leurs indices (v52).
+- **Compagnons (v52) :** Grisou compagnon reçoit la spécialité **Câlins** définie par la track compagnons.
 
 ## 3. Exigences non fonctionnelles
 - **Sauvegarde :** `SAVE_VERSION` augmente. Il y a un état `season2Done`, et le compagnon Grisou débloqué apparaît dans la liste des compagnons du profil. La migration se fait sans perte.
@@ -74,7 +74,7 @@ Il apporte 4 personnages, 2 nouveaux mini-jeux (**Les potions de couleurs** et *
 6. Après le final : Grisou est sélectionnable comme compagnon, et ✨ Grisou arc-en-ciel est dans la case Trésors, jamais tiré d'une boîte.
 7. Revoir le final depuis le journal ne redonne pas les récompenses.
 8. Le journal affiche « Le Ciel des Rêves ✅ » ; le Royaume a ses 3 épisodes, sa musique, et 2 objets préférés par personnage.
-9. Une partie v54 migrée garde tout.
+9. Une partie v55 migrée garde tout.
 10. `npm test` passe, sans aucune erreur JS.
 
 ## 5. Hors périmètre

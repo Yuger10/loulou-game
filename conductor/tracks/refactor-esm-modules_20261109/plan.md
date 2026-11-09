@@ -1,4 +1,4 @@
-# Plan : Passage aux modules ES natifs (étape B) (v53)
+# Plan : Passage aux modules ES natifs (étape B) (v54)
 
 Spec : [spec.md](./spec.md). Workflow : [workflow.md](../../workflow.md).
 **Prérequis :** `refactor-feature-slices_20261109` livrée.

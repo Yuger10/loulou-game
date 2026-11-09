@@ -1,4 +1,4 @@
-# Plan : Refactor en feature slices, scripts classiques (étape A), v50
+# Plan : Refactor en feature slices, scripts classiques (étape A), v51
 
 Spec : [spec.md](./spec.md). Workflow : [workflow.md](../../workflow.md).
 Principe : **un déplacement ou un découpage = un commit avec `npm test` vert**. On ne change aucune logique.
@@ -59,4 +59,4 @@ Principe : **un déplacement ou un découpage = un commit avec `npm test` vert**
 - [ ] Task: Vérification complète
     - [ ] `npm test` vert ; parcours manuel identique à la v49 ; une sauvegarde v49 se charge
 - [ ] Task: Conductor - User Manual Verification 'Documentation et livraison' (Protocol in workflow.md)
-- [ ] Task: `sw.js` (`lagon-v50`), PRD (v50), branche, PR sur `main`, merge
+- [ ] Task: `sw.js` (`lagon-v51`), PRD (v51), branche, PR sur `main`, merge

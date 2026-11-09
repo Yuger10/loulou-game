@@ -1,8 +1,8 @@
-# Spec : Passage aux modules ES natifs (étape B) (v53)
+# Spec : Passage aux modules ES natifs (étape B) (v54)
 
 > Track technique, **sans aucun changement visible pour l'enfant**. C'est l'étape B de la feuille de route A → B.
 > **Dépend de** `refactor-feature-slices_20261109` (étape A) : les slices, leurs API publiques et le manifeste existent déjà.
-> Prévue en v53, entre les squishies (v52) et la saison 2 (v54) ; elle ne bloque pas les tracks de jeu.
+> Prévue en v54, entre les squishies (v53) et la saison 2 (v55) ; elle ne bloque pas les tracks de jeu.
 
 ## 1. Pourquoi
 L'étape A donne la structure, mais ses frontières ne tiennent que par un test. Avec des **modules ES natifs**, les frontières deviennent **réelles** : un fichier ne voit que ce qu'il importe. Les dépendances sont explicites, les cycles deviennent visibles, et il n'y a plus de portée globale partagée. Le tout se fait **sans build** : les navigateurs et la PWA chargent les modules directement.
