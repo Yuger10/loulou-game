@@ -14,7 +14,7 @@ Principe : **un déplacement ou un découpage = un commit avec `npm test` vert**
     - [x] Tests : `index.html` et `sw.js` (`FILES`) correspondent au manifeste (liste et ordre) ; une seule définition par nom global
 - [x] Task: Conductor - User Manual Verification 'Inventaire et outillage' (Protocol in workflow.md)
 
-## Phase 2 : Couches basses (shared, entities)
+## Phase 2 : Couches basses (shared, entities) [checkpoint: 5607574]
 > Fait : points d'accroche `onModalOpen/onModalClose`, `registerView`, `onWrongFeedback`, `setAudioPrefsSource`, `setCompanionDressing` ; outils `test/tools/move.js` (déplacement de déclarations) et `npm run sync` (index.html et sw.js depuis le manifeste). Les entités n'ont plus aucune dépendance vers le haut. Ce qui reste de `state.js` (en-tête, accueil, quêtes, album) et de `ui.js` (vue Île, porte-monnaie, difficulté adaptée) part en features à la phase 3.
 - [x] Task: `shared/`
     - [x] Extraire de `ui.js` la modale, le toast, les sons, la voix, les confettis, la vibration et les en-têtes de jeu vers `shared/ui/` ; les utilitaires purs vers `shared/lib/`
@@ -23,7 +23,7 @@ Principe : **un déplacement ou un découpage = un commit avec `npm test` vert**
     - [x] Séparer `state.js` : l'état, la sauvegarde et les migrations vers `entities/game-state/` ; les quêtes du jour vers `features/quests/` (phase 3)
     - [x] `players.js` : les profils et le stockage vers `entities/player/`
 - [x] Task: Mettre à jour le manifeste, `index.html` et `sw.js` à chaque déplacement (tests de cohérence verts)
-- [ ] Task: Conductor - User Manual Verification 'Couches basses' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Couches basses' (Protocol in workflow.md)
 
 ## Phase 3 : Features et app
 - [ ] Task: Moteur et mini-jeux
