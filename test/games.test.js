@@ -7,12 +7,8 @@ const fs = require('fs');
 const path = require('path');
 
 const root = path.join(__dirname, '..');
-let html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
-for(const css of ['styles.css','island.css','characters.css']){
-  html = html.replace(`<link rel="stylesheet" href="${css}">`, '<style>' + fs.readFileSync(path.join(root, css), 'utf8') + '</style>');
-}
-html = html.replace(/<script src="(js\/[^"]+)"><\/script>/g,
-  (_, src)=> '<script>' + fs.readFileSync(path.join(root, src), 'utf8') + '</script>');
+// CSS et JS inlinés dans l'ordre du manifeste des slices (js/slices.js)
+const html = require('./tools/page.js').buildHtml();
 
 const SPEED = 0.1;   // minuteries du jeu 10 fois plus courtes
 const spoken = [];

@@ -4,14 +4,14 @@ Spec : [spec.md](./spec.md). Workflow : [workflow.md](../../workflow.md).
 Principe : **un déplacement ou un découpage = un commit avec `npm test` vert**. On ne change aucune logique.
 
 ## Phase 1 : Inventaire et outillage
-- [ ] Task: Inventaire des noms globaux
-    - [ ] Script `test/tools/globals.js` : pour chaque fichier JS, liste de ses définitions de haut niveau (`function`, `const`, `let`) et des noms d'autres fichiers qu'il référence
-    - [ ] Tableau de correspondance fichier/fonction → slice cible, dans `conductor/tracks/refactor-feature-slices_20261109/inventory.md`, avec l'API publique pressentie de chaque slice
-- [ ] Task: Manifeste et harnais de test
-    - [ ] Tests : le harnais charge les scripts et les CSS **depuis le manifeste** ; le jeu tourne à l'identique
-    - [ ] `js/slices.js` (au départ : une slice par fichier actuel, dans l'ordre actuel) ; `test/smoke.test.js` lit le manifeste
-- [ ] Task: Tests de cohérence
-    - [ ] Tests : `index.html` et `sw.js` (`FILES`) correspondent au manifeste (liste et ordre) ; une seule définition par nom global
+- [x] Task: Inventaire des noms globaux
+    - [x] Script `test/tools/globals.js` : pour chaque fichier JS, liste de ses définitions de haut niveau (`function`, `const`, `let`) et des noms d'autres fichiers qu'il référence
+    - [x] Tableau de correspondance fichier/fonction → slice cible, dans `conductor/tracks/refactor-feature-slices_20261109/inventory.md`, avec l'API publique pressentie de chaque slice
+- [x] Task: Manifeste et harnais de test
+    - [x] Tests : le harnais charge les scripts et les CSS **depuis le manifeste** ; le jeu tourne à l'identique
+    - [x] `js/slices.js` (au départ : une slice par fichier actuel, dans l'ordre actuel) ; `test/smoke.test.js` lit le manifeste
+- [x] Task: Tests de cohérence
+    - [x] Tests : `index.html` et `sw.js` (`FILES`) correspondent au manifeste (liste et ordre) ; une seule définition par nom global
 - [ ] Task: Conductor - User Manual Verification 'Inventaire et outillage' (Protocol in workflow.md)
 
 ## Phase 2 : Couches basses (shared, entities)
@@ -43,6 +43,7 @@ Principe : **un déplacement ou un découpage = un commit avec `npm test` vert**
 - [ ] Task: Conductor - User Manual Verification 'CSS par slice' (Protocol in workflow.md)
 
 ## Phase 5 : Frontières
+> **Écart noté en phase 1 :** les dépendances vers le haut trop imbriquées pour être corrigées sans bus d'événements vont dans une liste `LAYER_EXCEPTIONS` documentée du test de frontières. L'étape B (v54) doit la vider. Voir [inventory.md](./inventory.md).
 - [ ] Task: API publiques
     - [ ] Renseigner l'API publique de chaque slice dans `js/slices.js` à partir de l'inventaire
 - [ ] Task: Test de frontières

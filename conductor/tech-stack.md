@@ -16,7 +16,8 @@
 
 ## Tests
 - **`npm test`** → `test/smoke.test.js` : un test de fumée jsdom qui charge le jeu complet et vérifie les parcours (cartes, mini-jeux, sauvegarde, anti-devinette, CSS équilibré, aucune erreur JS).
-- La seule dépendance de développement est `jsdom`.
+- Dépendances de développement : `jsdom` (exécuter le jeu), `acorn` et `acorn-walk` (analyser le code : inventaire des noms globaux et test de frontières des slices, v51). Aucune n'est chargée par le jeu.
+  - *Note du 2026-11-09 :* ajout d'`acorn` pour la track `refactor-feature-slices` : un analyseur sans dépendance, plus fiable que des expressions régulières pour distinguer le code des textes.
 
 ## Outillage
 - Git et GitHub (`gh`) : une branche par version, une PR, un merge sur `main`.

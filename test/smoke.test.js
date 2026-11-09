@@ -4,12 +4,9 @@ const fs = require('fs');
 const path = require('path');
 
 const root = path.join(__dirname, '..');
-// Le jeu est découpé en plusieurs fichiers : on inline CSS et JS pour jsdom
-let html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
-html = html.replace(/<link rel="stylesheet" href="styles\.css">/,
-  '<style>' + fs.readFileSync(path.join(root, 'styles.css'), 'utf8') + '</style>');
-html = html.replace(/<script src="(js\/[^"]+)"><\/script>/g,
-  (_, src)=> '<script>' + fs.readFileSync(path.join(root, src), 'utf8') + '</script>');
+// Le jeu est découpé en plusieurs fichiers : on inline CSS et JS pour jsdom,
+// dans l'ordre du manifeste des slices (js/slices.js)
+const html = require('./tools/page.js').buildHtml();
 
 const dom = new JSDOM(html, { runScripts:'dangerously', pretendToBeVisual:true, url:'http://localhost/' });
 const w = dom.window, d = w.document;
