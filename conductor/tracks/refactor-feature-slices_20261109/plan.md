@@ -37,13 +37,13 @@ Principe : **un déplacement ou un découpage = un commit avec `npm test` vert**
     - [x] `init.js` et la liaison des boutons d'en-tête vers `app/` ; les vues restantes de `ui.js` (`renderLagon`, `checkNewIsland`, navigation) vers leur feature
 - [x] Task: Conductor - User Manual Verification 'Features et app' (Protocol in workflow.md)
 
-## Phase 4 : CSS par slice
+## Phase 4 : CSS par slice [checkpoint: 8ca4861]
 > Fait : `styles.css` découpé en 48 fichiers rangés dans leur slice (`shared/styles/` pour la base, le design system v21 et le responsive). `CSS_ORDER` reprend l'ordre exact : la concaténation est identique octet pour octet à l'ancien fichier, et chaque fichier a ses accolades équilibrées (test de fumée).
 - [x] Task: Découper `styles.css`
     - [x] Base, variables, design system v21 et responsive vers `shared/styles/` ; chaque section de feature (minuteur, compagnons, gains, horloge, calendrier, histoire, calcul, formes, planètes, sauvegarde, parents, garde-robe, cadeaux, saisons, puzzle…) vers sa slice
     - [x] Tests : l'ordre de cascade final est identique (concaténation dans l'ordre du manifeste = ancien `styles.css`, à la mise en forme près) ; accolades équilibrées pour chaque fichier
     - [x] `island.css` et `characters.css` rejoignent `features/island/` et `entities/character/`
-- [ ] Task: Conductor - User Manual Verification 'CSS par slice' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'CSS par slice' (Protocol in workflow.md)
 
 ## Phase 5 : Frontières
 > **Écart noté en phase 1 :** les dépendances vers le haut trop imbriquées pour être corrigées sans bus d'événements vont dans une liste `LAYER_EXCEPTIONS` documentée du test de frontières. L'étape B (v54) doit la vider. Voir [inventory.md](./inventory.md).
