@@ -7,14 +7,14 @@ Spec : [spec.md](./spec.md). Workflow : [workflow.md](../../workflow.md).
 Nouvelle slice : `features/companion-team/`. Contrat d'indices dans `features/minigame-engine/`.
 
 ## Phase 1 : Le contrat d'indices et le bouton 💡
-- [ ] Task: Contrat d'indices du moteur
-    - [ ] Tests : `hintsFor(type, question)` renvoie 2 niveaux (texte parlé et effet visuel) ; pas de 3ᵉ ; règle d'élimination (aucune sous 4 choix, au maximum 1 au niveau 2, et toujours au moins 3 choix restants) ; une relance remet à zéro
-    - [ ] API dans `features/minigame-engine/`
-- [ ] Task: Bouton 💡 et proposition douce
-    - [ ] Tests : bouton présent dans chaque mini-jeu avec la tête du principal ; il brille après une erreur ou 10 s sans toucher ; masqué en mode course ; récompense identique avec ou sans indice
-    - [ ] Interface, humeurs du compagnon (« réfléchit », « fête »), voix
-- [ ] Task: Compter les indices
-    - [ ] Tests : `skills[jeu].hints` incrémenté ; un indice ne compte pas comme une erreur pour `js/features/adaptive/adaptive.js` ; visible dans l'espace parents (`js/features/parents/parents.js`) ; inclus dans la sauvegarde
+- [x] Task: Contrat d'indices du moteur
+    - [x] Tests : `hintsFor(type, question)` renvoie 2 niveaux (texte parlé et effet visuel) ; pas de 3ᵉ ; règle d'élimination (aucune sous 4 choix, au maximum 1 au niveau 2, et toujours au moins 3 choix restants) ; une relance remet à zéro
+    - [x] API dans `features/minigame-engine/` (`js/features/minigame-engine/hints.js` : `registerHints`, `hintsFor`, `setHintQuestion`, `hintMayEliminate`, `setHintPolicy`)
+- [x] Task: Bouton 💡 et proposition douce
+    - [x] Tests : bouton présent dans chaque mini-jeu avec la tête du principal ; il brille après une erreur ou 10 s sans toucher ; masqué en mode course ; récompense identique avec ou sans indice
+    - [x] Interface, humeurs du compagnon (« réfléchit », « fête »), voix
+- [x] Task: Compter les indices
+    - [x] Tests : `skills[jeu].hints` incrémenté ; un indice ne compte pas comme une erreur pour `js/features/adaptive/adaptive.js` ; visible dans l'espace parents (`js/features/parents/parents.js`) ; inclus dans la sauvegarde
 - [ ] Task: Conductor - User Manual Verification 'Contrat d'indices et bouton' (Protocol in workflow.md)
 
 ## Phase 2 : Les indices de chaque mini-jeu

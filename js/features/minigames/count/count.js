@@ -20,6 +20,7 @@ function renderCount(){
   bindQuit();
   startTimerIfNeeded('count');
   setSolution([solSel('.num-btn','v',n)]);
+  setHintQuestion('count', { n, emoji }, { choices:'.num-btn' });
   document.querySelectorAll('.num-btn').forEach(btn=>{
     btn.onclick = ()=>{
       if(Number(btn.dataset.v)===n){ clearActiveTimer(); stepOk(btn); flashModal('ok'); setTimeout(onMissionWin, 350); }
@@ -28,5 +29,18 @@ function renderCount(){
   });
 }
 
+// Indices (v52) : 1. compter un par un avec le doigt ; 2. les premiers
+// objets numérotés (jamais jusqu'au dernier : la réponse reste à trouver).
+function countHints(q){
+  const k = Math.min(3, q.n - 1);
+  const what = emojiWord(q.emoji) || 'image';
+  return [
+    { say:`Touche chaque ${what} avec ton doigt, une seule fois, en comptant.`, fx:{ glow:'.count-row' } },
+    { say: k > 0 ? `Je commence avec toi : ${Array.from({length:k}, (_,i)=> i + 1).join(', ')}… Continue à compter !` : 'Compte doucement avec ton doigt.',
+      fx:{ marks: Array.from({length:k}, (_,i)=> ({ sel:`.count-row span:nth-child(${i+1})`, text:String(i + 1) })) } },
+  ];
+}
+
 // inscription auprès du moteur de mini-jeux (js/features/minigame-engine)
 registerGame('count', renderCount);
+registerHints('count', countHints);

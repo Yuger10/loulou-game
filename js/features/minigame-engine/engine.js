@@ -70,6 +70,7 @@ function scheduleRetry(fn){
 function loseLife(el, opts){
   opts = opts || {};
   buddyReact('oops', 1300);
+  hintNudge(true);     // le bouton 💡 se propose (js/features/minigame-engine/hints.js)
   // multijoueur : la règle reste « une erreur = on passe la main »
   if(party.active){ wrongFeedback(el); return false; }
   noteAnswerError();   // pour l'espace parents

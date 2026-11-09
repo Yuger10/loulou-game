@@ -84,10 +84,11 @@ const SLICES = [
       'flyEmoji', 'gainCenter', 'gainCoins', 'gainItems', 'gainLand', 'queueGain', 'spendCoins'] },
   { id:'map', layer:'features', files:['js/features/map/map.js'], css:['js/features/map/map.css'], public:[
       'renderMap'] },
-  { id:'minigame-engine', layer:'features', files:['js/features/minigame-engine/engine.js'], css:['js/features/minigame-engine/engine.css','js/features/minigame-engine/deck-v13.css','js/features/minigame-engine/outcome-v14.css','js/features/minigame-engine/board-v21.css','js/features/minigame-engine/timer.css'], public:[
+  { id:'minigame-engine', layer:'features', files:['js/features/minigame-engine/engine.js','js/features/minigame-engine/hints.js'], css:['js/features/minigame-engine/engine.css','js/features/minigame-engine/deck-v13.css','js/features/minigame-engine/outcome-v14.css','js/features/minigame-engine/board-v21.css','js/features/minigame-engine/timer.css','js/features/minigame-engine/hints.css'], public:[
       'bindQuit', 'clearActiveTimer', 'flashModal', 'gameHeader', 'lastGame', 'livesBar', 'loseLife', 
-      'missionFact', 'onMissionWin', 'playGame', 'progressDots', 'registerGame', 'setSolution', 
-      'setupLives', 'solSel', 'speakWrongHint', 'startMinigame', 'startTimerIfNeeded', 'stepOk'] },
+      'missionFact', 'onMissionWin', 'playGame', 'progressDots', 'registerGame', 'registerHints', 
+      'setHintQuestion', 'setSolution', 'setupLives', 'solSel', 'speakWrongHint', 'startMinigame', 
+      'startTimerIfNeeded', 'stepOk'] },
   { id:'minigame-memory', layer:'features', files:['js/features/minigames/memory/memory.js'], css:[], public:[] },
   { id:'minigame-count', layer:'features', files:['js/features/minigames/count/count.js'], css:[], public:[] },
   { id:'minigame-intruder', layer:'features', files:['js/features/minigames/intruder/intruder.js'], css:[], public:[] },
@@ -176,6 +177,7 @@ const CSS_ORDER = [
   'js/features/minigames/jigsaw/jigsaw.css',
   'js/features/gifts/gifts.css',
   'js/features/story/episodes.css',
+  'js/features/minigame-engine/hints.css',
   'js/features/island/island.css',
   'js/entities/character/characters.css',
 ];
