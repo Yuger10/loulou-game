@@ -98,6 +98,7 @@ Chaque mini-jeu a maintenant son propre niveau pour chaque enfant (`js/adaptive.
 | v41 | Espace parents : accès adulte, progrès par compétence, temps de jeu, pause douce |
 | v42 | Un jeu qui s'adapte : un niveau par mini-jeu et par enfant, ce qui est raté revient plus souvent, le compagnon encourage les progrès |
 | v43 | Habiller son avatar : garde-robe « Mon look », 7 personnages dessinés comme avatars, capes de Zap |
+| v44 | Icônes dessinées pour les barres du haut et du bas (identiques sur tous les appareils), barre du bas flottante aussi sur grand écran |
 
 ---
 

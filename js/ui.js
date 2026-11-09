@@ -91,7 +91,11 @@ document.getElementById('sound-btn').addEventListener('click', ()=>{
   showToast(state.sound ? (state.voice ? '🗣️ Sons + voix' : '🔊 Sons seulement') : '🔇 Silence');
 });
 function renderSoundBtn(){
-  document.getElementById('sound-btn').textContent = state.sound ? (state.voice ? '🗣️' : '🔊') : '🔇';
+  const k = state.sound ? (state.voice ? 'voix' : 'son') : 'muet';
+  const b = document.getElementById('sound-btn');
+  if(typeof uiIcon==='function') b.innerHTML = uiIcon(k);
+  else b.textContent = state.sound ? (state.voice ? '🗣️' : '🔊') : '🔇';
+  b.setAttribute('aria-label', state.sound ? (state.voice ? 'Sons et voix' : 'Sons seulement') : 'Silence');
 }
 
 /* ---------- Voix (Web Speech) ---------- */
