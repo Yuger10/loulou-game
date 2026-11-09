@@ -9,7 +9,7 @@ Registre des tracks Conductor, **dans l'ordre d'implémentation**. Feuille de ro
 
 ---
 
-- [ ] **Track: Les compagnons et leurs rôles : indices dès le départ, équipe au niveau 10 (v52)**
+- [x] **Track: Les compagnons et leurs rôles : indices dès le départ, équipe au niveau 10 (v52)**
 *Link: [./tracks/compagnons-roles_20261109/](./tracks/compagnons-roles_20261109/)*
 
 ---

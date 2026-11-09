@@ -53,6 +53,8 @@ Chaque mini-jeu a maintenant son propre niveau pour chaque enfant (`js/adaptive.
 - [x] Musique d'ambiance douce, activable : une ambiance par île, inventée en direct, qui baisse quand la voix parle ; bouton son (🎵) ou espace parents — v48
 - [x] Décorations de saison : Halloween, Noël, anniversaire — île décorée, neige / feuilles / ballons, chapeaux de fête pour les compagnons, un cadeau par saison ; aperçu dans l'espace parents — v45
 - [x] Mini-jeu « Assembler l'image » (« Le puzzle ») : 2×2 avec l'image en transparence, puis 3×3, puis 4×3 avec un modèle ; glisser du doigt ou toucher morceau puis case — v46
+- [x] Les compagnons et leurs rôles : le compagnon donne des indices 💡 dans tous les mini-jeux et les énigmes (2 niveaux, jamais la réponse, sans pénalité) ; au niveau 10, l'équipe s'ouvre : rencontres sur les îles, 2 équipiers, une spécialité chacun (conteuse, tuteur, guide, défis, trésors, collection) — v52
+- [ ] À observer : les enfants trouvent-ils le bouton 💡 ? En abusent-ils ? Les rencontres et les bulles des compagnons sont-elles trop nombreuses ? (espace parents : indices par jeu)
 
 ### Technique 🔧 (au fil de l'eau)
 - [x] Étendre les tests (`test/games.test.js`) : les 18 mini-jeux joués jusqu'à la victoire à chaque palier (259 parties), la mémoire jouée « de mémoire » jusqu'au bout, une mauvaise réponse ne fait jamais gagner, bouton son et voix — v50
@@ -107,6 +109,8 @@ Chaque mini-jeu a maintenant son propre niveau pour chaque enfant (`js/adaptive.
 | v48 | Musique d'ambiance douce, une par île (Web Audio, sans fichier), coupée par défaut |
 | v49 | L'histoire avance à chaque mission (24 épisodes) ; poissons de l'écran d'accueil qui nagent tête en avant |
 | v50 | Tests : chaque mini-jeu joué jusqu'à la victoire à chaque palier ; mémoire : les essais suivent le nombre de paires |
+| v51 | Code rangé en feature slices (aucun changement pour l'enfant) |
+| v52 | Les compagnons et leurs rôles : indices 💡 dans tous les mini-jeux, équipe au niveau 10, 8 spécialités |
 
 ---
 
@@ -115,6 +119,8 @@ Chaque mini-jeu a maintenant son propre niveau pour chaque enfant (`js/adaptive.
 - Le compagnon grandit ou gagne des accessoires avec la progression
 - Nouveaux mondes : banquise, village des lutins, fond des océans
 - Un « livre des découvertes » qui garde les phrases à retenir des planètes et des autres jeux
+- L'amitié avec les compagnons qui grandit (cœurs, souvenirs), comme avec les personnages des îles (hors périmètre de la v52)
+- Espace parents : lire plus finement les statistiques (indices par jeu et par semaine, jeux réussis grâce à un indice)
 
 ---
 

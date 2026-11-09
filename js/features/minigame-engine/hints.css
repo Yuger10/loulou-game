@@ -28,7 +28,7 @@
   @keyframes hintGlow{0%,100%{opacity:.45; transform:scale(.9);} 50%{opacity:1; transform:scale(1.12);}}
   .hint-btn.done{border-color:#7FD8A6; background:var(--tint-mint); box-shadow:0 4px 0 #4FB57F;}
   .hint-btn .hint-cando{
-    position:absolute; top:100%; left:50%; transform:translateX(-50%); margin-top:6px;
+    position:absolute; bottom:100%; left:50%; transform:translateX(-30%); margin-bottom:4px;
     white-space:nowrap; font-size:.72rem; font-weight:800; color:#2F7D52; background:#fff;
     border-radius:999px; padding:2px 8px; box-shadow:0 2px 0 rgba(18,59,79,.12); pointer-events:none;
   }

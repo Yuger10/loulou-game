@@ -25,7 +25,7 @@
 - **Contenu de jeu** déclaratif dans les entités (`js/entities/item/items.js`, `character/characters.js`, `world/worlds.js`) et dans `js/features/story/` (`STORY`, `EPISODES`).
 
 ## Tests
-- **`npm test`** → `test/slices.test.js` (architecture et frontières), `test/smoke.test.js` (test de fumée jsdom : parcours, sauvegarde, anti-devinette, CSS équilibré, aucune erreur JS) et `test/games.test.js` (chaque mini-jeu joué jusqu'à la victoire). Les pages de test sont construites depuis le manifeste (`test/tools/page.js`).
+- **`npm test`** → `test/slices.test.js` (architecture et frontières), `test/smoke.test.js` (test de fumée jsdom : parcours, sauvegarde, anti-devinette, CSS équilibré, aucune erreur JS) `test/games.test.js` (chaque mini-jeu joué jusqu'à la victoire) et `test/companions.test.js` (v52 : indices de chaque mini-jeu, équipe, spécialités). Les pages de test sont construites depuis le manifeste (`test/tools/page.js`).
 - Dépendances de développement : `jsdom` (exécuter le jeu), `acorn` et `acorn-walk` (analyser le code : inventaire des noms globaux et test de frontières des slices, v51). Aucune n'est chargée par le jeu.
   - *Note du 2026-11-09 :* ajout d'`acorn` pour la track `refactor-feature-slices` : un analyseur sans dépendance, plus fiable que des expressions régulières pour distinguer le code des textes.
 

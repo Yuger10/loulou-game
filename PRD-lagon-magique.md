@@ -928,3 +928,42 @@ Track Conductor `refactor-feature-slices` (étape A de la feuille de route A →
 - Nettoyage : `GAME_LIST.fn`, inutilisé, retiré.
 
 - Cache `lagon-v51`.
+
+---
+
+# v52 — Les compagnons et leurs rôles : indices dès le départ, équipe au niveau 10
+
+> **Demande du parent :** mettre en avant les compagnons et ce qu'ils apportent au jeu, avec des **rôles différents** (un tuteur, un qui donne des indices quand on en a besoin…). Jusqu'ici, les 7 compagnons étaient surtout visuels.
+
+Track Conductor `compagnons-roles` ([spec](conductor/tracks/compagnons-roles_20261109/spec.md), [plan](conductor/tracks/compagnons-roles_20261109/plan.md)). Nouvelle slice `js/features/companion-team/` ; contrat d'indices dans `js/features/minigame-engine/hints.js`.
+
+## Les indices du compagnon (dès le niveau 1)
+- **Bouton 💡** dans l'en-tête de chaque mini-jeu et de chaque énigme d'histoire, avec la tête du compagnon principal. Toujours utilisable, pour tous les âges.
+- **Proposition douce :** après une erreur, ou 10 secondes sans toucher l'écran, le bouton brille et se balance, et le compagnon « réfléchit ». Il ne parle pas de lui-même.
+- **Deux niveaux par question :** la piste (la méthode : « Touche chaque étoile avec ton doigt… ») puis le coup de pouce (le début du raisonnement : les 3 premiers objets numérotés, les nombres autour de l'horloge, le mot découpé en syllabes, « 24 + 40 = 64, puis ajoute les unités »…). **Jamais de 3ᵉ indice, jamais la réponse** : le bouton dit alors « Tu peux le faire ! ».
+- **Anti-devinette :** une réponse n'est écartée qu'au niveau 2, avec 4 choix ou plus, une seule fois, et il en reste toujours au moins 3 (règle vérifiée par le moteur). Une relance remet les indices à zéro.
+- **Aucune pénalité :** mêmes pièces, mêmes objets, même niveau adaptatif ; un indice n'est pas une erreur. Les indices sont comptés (`state.skills[jeu].hints`) et montrés dans l'espace parents, sans reproche.
+- Chaque mini-jeu fournit ses indices (`registerHints`) : les 18 jeux et les 16 énigmes (`tip`, une devinette plus simple). Un test échoue si un jeu inscrit n'en a pas (étape ajoutée à la checklist « ajouter un mini-jeu »).
+
+## L'équipe (à partir du niveau 10)
+- Écran **« Ton équipe s'agrandit ! »**, une seule fois (au chargement pour une partie déjà au niveau 10 ou plus).
+- **Rencontres en voyageant**, une par compagnon et par profil : Perle au Lagon, Léo au Château, Sam dans la Jungle, Zap à la Cité du Temps, Tom au Volcan, Rose au Pays Squishy (Lili et Grisou arriveront avec la saison 2). Le principal est sauté. Scène : le compagnon en grand, 2 phrases lues à voix haute, une démonstration en image ; « Dans mon équipe ! » ou « Plus tard » (reproposé à la visite suivante).
+- **« Mon équipe »** (toucher les compagnons de l'en-tête) : le principal et **2 équipiers** au maximum, les autres au repos ou « à rencontrer » ; on peut aussi changer de principal.
+- Les têtes de l'équipe (3 au maximum) dans l'en-tête, sur l'île et sur le bateau de la carte. Sur petit téléphone, le prénom de l'en-tête leur laisse la place.
+
+## Les spécialités
+Actives quand le compagnon est équipier, ou principal une fois l'équipe ouverte ; jamais en course. Le compagnon apparaît et parle quand sa spécialité agit ; **une seule bulle à la fois**, et les indices passent avant.
+- **Lili, indices magiques :** le 💡 se propose après 5 s, paillettes à l'indice 2, c'est elle qui aide aux énigmes.
+- **Perle, conteuse :** « 🔁 Relire », plus lentement, sur les dialogues, consignes et chapitres ; en lecture, les syllabes dès l'indice 1.
+- **Léo, tuteur :** il incarne le jeu adaptatif (v42) : il annonce un jeu « à travailler » (1 fois par session), dit la phrase de progrès, rappelle la méthode avant un jeu en soutien.
+- **Sam, guide :** une bulle avec une flèche vers la prochaine chose utile (mission du jour, nouvelle île, énigme pas résolue, ami jamais aidé) ; on la touche pour y aller.
+- **Zap, défis :** 1 fois par jour et par île, un défi bonus un cran au-dessus du niveau du jeu (plafond de l'âge respecté), récompense doublée, sans effet sur le niveau ; toujours refusable.
+- **Tom, trésors :** 1 fois par jour, après une mission réussie, des pièces ou un objet de l'île.
+- **Rose, collection :** dans le Sac, l'Album et « Mon look », ce qui manque et où le trouver.
+- **Grisou, câlins** (track Licornes) : il console après 2 erreurs d'affilée et annonce la pause douce des parents, sans minuteur à lui.
+
+## Données et tests
+- `SAVE_VERSION` 4 : `state.team = { open, met, mates, day }`, `state.charsHelped`, `skills[jeu].hints` ; migration sans perte.
+- `test/companions.test.js` (127 vérifications, branché sur `npm test`) : contrat d'indices, bouton, anti-devinette et réponse jamais donnée **sur chaque mini-jeu et chaque palier** (186 parties, gagnables après les indices), énigmes, équipe, migration, rencontres, « Mon équipe », chaque spécialité, mode course.
+- Cache `lagon-v52`.
+

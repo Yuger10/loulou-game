@@ -3,10 +3,12 @@
 > **Architecture (v51) :** chaque nouveau fichier JS ou CSS va dans sa slice et est déclaré dans `js/slices.js` (puis `npm run sync`) ; voir `conductor/checklist-mini-jeu.md` et `conductor/checklist-ile.md`.
 
 Spec : [spec.md](./spec.md). Workflow : [workflow.md](../../workflow.md).
+
+> **Vérification manuelle des phases :** faite par captures d'écran (Playwright, 360 et 390 px) à la fin de chaque phase ; la validation du propriétaire du projet est demandée sur l'ensemble, avant la PR.
 **Prérequis :** `refactor-feature-slices` (étape A) livrée. Les spécialités Tom (boîtes) et Rose (squishies) s'appuient sur la v53 si elle est livrée, et se dégradent proprement sinon. Lili (Monde des Boîtes) et Grisou (fin de saison 2) ne sont rencontrables qu'une fois leurs tracks livrées.
 Nouvelle slice : `features/companion-team/`. Contrat d'indices dans `features/minigame-engine/`.
 
-## Phase 1 : Le contrat d'indices et le bouton 💡
+## Phase 1 : Le contrat d'indices et le bouton 💡 [checkpoint: 134ecf2]
 - [x] Task: Contrat d'indices du moteur
     - [x] Tests : `hintsFor(type, question)` renvoie 2 niveaux (texte parlé et effet visuel) ; pas de 3ᵉ ; règle d'élimination (aucune sous 4 choix, au maximum 1 au niveau 2, et toujours au moins 3 choix restants) ; une relance remet à zéro
     - [x] API dans `features/minigame-engine/` (`js/features/minigame-engine/hints.js` : `registerHints`, `hintsFor`, `setHintQuestion`, `hintMayEliminate`, `setHintPolicy`)
@@ -17,7 +19,7 @@ Nouvelle slice : `features/companion-team/`. Contrat d'indices dans `features/mi
     - [x] Tests : `skills[jeu].hints` incrémenté ; un indice ne compte pas comme une erreur pour `js/features/adaptive/adaptive.js` ; visible dans l'espace parents (`js/features/parents/parents.js`) ; inclus dans la sauvegarde
 - [ ] Task: Conductor - User Manual Verification 'Contrat d'indices et bouton' (Protocol in workflow.md)
 
-## Phase 2 : Les indices de chaque mini-jeu
+## Phase 2 : Les indices de chaque mini-jeu [checkpoint: 1c425af]
 - [x] Task: Jeux de nombres
     - [x] Tests et indices : compter, math, compare, money, calc, puzzle, sequence, assembler l'image (jigsaw)
 - [x] Task: Jeux de langue
@@ -29,7 +31,7 @@ Nouvelle slice : `features/companion-team/`. Contrat d'indices dans `features/mi
     - [x] Un test parcourt **chaque** type de mini-jeu inscrit et échoue s'il n'a pas d'indices ; ajouter l'étape « indices » à `conductor/checklist-mini-jeu.md`
 - [ ] Task: Conductor - User Manual Verification 'Indices de chaque mini-jeu' (Protocol in workflow.md)
 
-## Phase 3 : L'équipe
+## Phase 3 : L'équipe [checkpoint: 2fd55ca]
 - [x] Task: Ouverture au niveau 10
     - [x] Tests : écran « Ton équipe s'agrandit ! » une seule fois ; partie déjà au niveau 10 ou plus migrée : écran au chargement
     - [x] État `team` et migration (`SAVE_VERSION` 4)
@@ -40,7 +42,7 @@ Nouvelle slice : `features/companion-team/`. Contrat d'indices dans `features/mi
     - [x] Tests : 2 équipiers au maximum ; changer d'équipier et de principal ; conservé ; 3 têtes au maximum affichées (en-tête, île, bateau)
 - [ ] Task: Conductor - User Manual Verification "L'équipe" (Protocol in workflow.md)
 
-## Phase 4 : Les spécialités
+## Phase 4 : Les spécialités [checkpoint: e1cc6b6]
 - [x] Task: Infrastructure
     - [x] Tests : une spécialité est active si son compagnon est équipier actif, ou principal avec l'équipe ouverte ; file de parole (une à la fois, priorité aux indices) ; inactive en course
 - [x] Task: Lili (indices magiques), Perle (conteuse), Grisou (câlins)
@@ -54,9 +56,9 @@ Nouvelle slice : `features/companion-team/`. Contrat d'indices dans `features/mi
 - [ ] Task: Conductor - User Manual Verification 'Les spécialités' (Protocol in workflow.md)
 
 ## Phase 5 : Livraison v52
-- [ ] Task: Intégration et docs
-    - [ ] `sw.js` (`lagon-v52`, nouveaux fichiers), PRD (v52, demande du parent), TODO (amitié qui grandit, espace parents qui lit `stats`), README
-- [ ] Task: Vérification complète
-    - [ ] `npm test` vert ; parcours manuel à 360 px (indices dans 3 mini-jeux, niveau 9 → 10, une rencontre, Mon équipe, chaque spécialité au moins une fois, mode course sans indices)
+- [x] Task: Intégration et docs
+    - [x] `sw.js` (`lagon-v52`, nouveaux fichiers), PRD (v52, demande du parent), TODO (amitié qui grandit, espace parents qui lit `stats`), README
+- [x] Task: Vérification complète
+    - [x] `npm test` vert ; parcours manuel à 360 px (indices dans 3 mini-jeux, niveau 9 → 10, une rencontre, Mon équipe, chaque spécialité au moins une fois, mode course sans indices)
 - [ ] Task: Conductor - User Manual Verification 'Livraison' (Protocol in workflow.md)
 - [ ] Task: Branche, PR sur `main`, merge
