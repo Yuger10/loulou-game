@@ -2,7 +2,7 @@
    « Touche tous les… » : l'enfant trie des squishies (formes moelleuses
    avec un petit visage) en touchant TOUS ceux qui répondent à la
    consigne. Le critère dépend du palier (voir `shapesRound` dans
-   js/difficulty.js) : couleur, forme, forme + couleur, taille + forme,
+   js/entities/difficulty/difficulty.js) : couleur, forme, forme + couleur, taille + forme,
    nombre de côtés, nombre de sommets.
    Dessin en SVG, sans image : chaque squishy tient dans un carré 100×100. */
 

@@ -1,5 +1,5 @@
 /* Jeu 4 : puzzle des nombres (remettre une suite dans l'ordre). Pas de
-   minuteur : tâche à plusieurs clics successifs (voir js/difficulty.js
+   minuteur : tâche à plusieurs clics successifs (voir js/entities/difficulty/difficulty.js
    § « MINUTEUR »). Longueur et variantes dans § puzzleCount/Variants —
    corrige un bug où la variante « start » était comptée deux fois dans
    la liste de tirage (probabilité doublée par erreur). */

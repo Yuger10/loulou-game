@@ -1,4 +1,4 @@
-/* Jeu 2 : compter (dénombrement — voir js/difficulty.js § countRange) */
+/* Jeu 2 : compter (dénombrement — voir js/entities/difficulty/difficulty.js § countRange) */
 function renderCount(){
   setupLives('count');
   const emoji = pickRandom(['⭐','🐚','🌸','🦪','🐠','🦋']);

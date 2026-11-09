@@ -61,7 +61,7 @@ function recordMission(ok){
   s.recent.push({ t, e, ok: !!ok });
   if(s.recent.length > 10) s.recent = s.recent.slice(-10);
   missionErrors = 0;
-  // Phase 3 : le niveau du jeu monte ou redescend (js/adaptive.js)
+  // Phase 3 : le niveau du jeu monte ou redescend (js/features/adaptive/adaptive.js)
   const step = typeof adaptAfterMission==='function' ? adaptAfterMission(key, s, t, !!ok, e) : null;
   // le compagnon félicitera si le jeu a progressé : niveau gagné, ou plus « à travailler »
   if(ok && ((step && step.type==='up') || (before==='difficile' && skillStatus(s, key)!=='difficile'))){

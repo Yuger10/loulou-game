@@ -4,7 +4,7 @@
    à sa place :
    - en le faisant glisser du doigt jusqu'à sa case ;
    - ou en touchant le morceau, puis la case (plus facile pour les petits).
-   Selon le palier (voir `jigsawRound` dans js/difficulty.js) : 2×2 avec
+   Selon le palier (voir `jigsawRound` dans js/entities/difficulty/difficulty.js) : 2×2 avec
    l'image en transparence dans le cadre, puis 3×3, puis 4×3 avec seulement
    un petit modèle à côté. Un morceau posé au mauvais endroit revient dans
    la réserve (et coûte un essai à partir de l'île 2).
@@ -15,7 +15,7 @@
 
 const JIGSAW_W = 480, JIGSAW_H = 360;
 
-// L'image : ciel, paysage de l'île (js/island.js), et un compagnon en grand.
+// L'image : ciel, paysage de l'île (js/features/island/island.js), et un compagnon en grand.
 function jigsawPicture(worldId, compId){
   const w = WORLDS[worldId] || WORLDS.lagon;
   const draw = (typeof ISLE_SCENERY!=='undefined' && (ISLE_SCENERY[w.shape] || ISLE_SCENERY[worldId]))

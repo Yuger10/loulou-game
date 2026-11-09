@@ -201,7 +201,7 @@ function openPlayerSettings(id){
   let age = p.age || null;
   let gen = p.gender || '';
   let comp = companionOf(p), allBuddies = !companionsFor(gen).includes(comp);
-  let bday = p.birthday || '';   // « MM-JJ » : le jeu fête l'anniversaire ce jour-là (js/seasons.js)
+  let bday = p.birthday || '';   // « MM-JJ » : le jeu fête l'anniversaire ce jour-là (js/features/seasons/seasons.js)
   const MONTHS = ['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
   const render = ()=>{
     const [bm, bd] = bday ? bday.split('-').map(Number) : [0, 0];
@@ -311,7 +311,7 @@ function pickPickerChoices(n){
   const own = typeof currentWorld!=='undefined' && WORLDS[currentWorld] && WORLDS[currentWorld].game;
   const ownGame = own && pool.find(g=>g.key===own);
   if(ownGame && !choices.includes(ownGame)) choices[0] = ownGame;
-  // Phase 3 : un jeu à travailler revient plus souvent (js/adaptive.js)
+  // Phase 3 : un jeu à travailler revient plus souvent (js/features/adaptive/adaptive.js)
   const practice = typeof pickPracticeGame==='function' ? pickPracticeGame(pool.map(g=>g.key)) : null;
   if(practice && !choices.some(g=>g.key===practice)){
     const slot = choices.length > 1 && choices[choices.length-1]!==ownGame ? choices.length-1 : (choices[0]===ownGame ? -1 : 0);

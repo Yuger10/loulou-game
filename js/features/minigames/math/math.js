@@ -2,7 +2,7 @@
    Additions et soustractions illustrées avec des emojis, pour
    apprendre le calcul sans se noyer dans les chiffres.
    Les bornes (mathBounds) sont centralisées et documentées dans
-   js/difficulty.js — voir aussi ANALYSE-DIFFICULTE.md. */
+   js/entities/difficulty/difficulty.js — voir aussi ANALYSE-DIFFICULTE.md. */
 
 const MATH_EMOJIS = ['⭐','🐚','🌸','🦪','🐠','🦋','🍎','🎈'];
 

@@ -1,7 +1,7 @@
 /* ---------- Mini-jeu : Comparer les nombres (CP-CE2) ----------
    Choisir le bon signe < / > / = entre deux nombres. Programme CP :
    comparaison et rangement des nombres, introduction des symboles
-   mathématiques. Bornes dans js/difficulty.js (compareRange).
+   mathématiques. Bornes dans js/entities/difficulty/difficulty.js (compareRange).
    Correctif pédagogique : à partir du palier 3, une partie des manches
    force des nombres PROCHES (compareCloseChance) — sinon l'exercice
    peut rester trivial même au palier maximal (comparer 3 et 97 ne

@@ -2,7 +2,7 @@
    Association image <-> mot écrit, pour s'entraîner à lire des mots
    simples. Plus le palier est élevé, plus on retire les indices
    visuels (ça force à vraiment lire, pas juste reconnaître l'image).
-   Seuils centralisés dans js/difficulty.js (readingWordOnly/Options). */
+   Seuils centralisés dans js/entities/difficulty/difficulty.js (readingWordOnly/Options). */
 
 function pickDistractors(pool, correct, count){
   const others = pool.filter(w=>w.word!==correct.word);

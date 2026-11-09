@@ -1,7 +1,7 @@
 /* Jeu 6 : mémoire de séquence (Simon). Pas de minuteur : la tâche est
    déjà chronométrée par nature (on répète une séquence qui vient de
    s'afficher) — un décompte en plus ferait double pression, voir
-   js/difficulty.js § « MINUTEUR ». Longueur dans § simonLength. */
+   js/entities/difficulty/difficulty.js § « MINUTEUR ». Longueur dans § simonLength. */
 function renderSimon(){
   setupLives('simon');
   const PADS = [

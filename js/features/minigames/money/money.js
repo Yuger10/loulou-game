@@ -2,7 +2,7 @@
    Composer une somme avec des pièces de différentes valeurs : retrouver
    la pile de pièces qui vaut exactement le prix demandé. Prépare au
    calcul de la monnaie (compter, additionner des valeurs différentes).
-   Valeurs et nombre de pièces centralisés dans js/difficulty.js
+   Valeurs et nombre de pièces centralisés dans js/entities/difficulty/difficulty.js
    (moneyDenoms / moneyPileSize) : plus de pièces = plus de termes à
    additionner mentalement, indépendamment des valeurs elles-mêmes. */
 

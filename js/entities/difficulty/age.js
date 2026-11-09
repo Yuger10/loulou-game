@@ -1,6 +1,6 @@
 /* ---------- Difficulté selon l'âge (mode course, chacun son tour) ---------- */
 // Difficulté adaptée à l'âge : chacun joue à son niveau, la course reste juste.
-// Bornes alignées sur les 5 paliers de js/difficulty.js (repères scolaires
+// Bornes alignées sur les 5 paliers de js/entities/difficulty/difficulty.js (repères scolaires
 // GS/CP/CE1/CE2) : voir ANALYSE-DIFFICULTE.md pour le détail académique.
 const AGE_DIFF = [
   { max:5,  diff:1, label:'4-5 ans' },

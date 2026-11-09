@@ -3,11 +3,11 @@
    un ami raconte un petit bout d'histoire (texte très court, lu à voix
    haute, jamais indispensable à lire) puis pose une énigme en images —
    les réponses sont des emojis, jamais un mot à lire. La résoudre offre
-   des pièces EN PLUS du coffre du jour (js/state.js § quêtes), une seule
+   des pièces EN PLUS du coffre du jour (js/entities/game-state/state.js § quêtes), une seule
    fois par île. On peut toujours relire un chapitre déjà vu depuis
    « 📖 Mon histoire » (bouton de l'en-tête).
 
-   Anti-devinette (même principe que js/minigames.js) : avec seulement
+   Anti-devinette (même principe que js/features/minigame-engine/engine.js) : avec seulement
    2-3 choix et aucune limite de tentative, laisser le bouton fautif se
    réactiver permettrait de deviner PAR ÉLIMINATION. Une mauvaise réponse
    relance donc une AUTRE énigme de la même île (`riddles[]`, au moins 2
@@ -160,7 +160,7 @@ function storyChaptersCount(){ return Object.keys(STORY).length; }
 function storySolvedCount(){ return Object.keys(STORY).filter(storySolved).length; }
 
 // Relance programmée après une mauvaise réponse à une énigme : annulable
-// (mêmes raisons que `scheduleRetry` dans js/minigames.js et
+// (mêmes raisons que `scheduleRetry` dans js/features/minigame-engine/engine.js et
 // `clearActiveTimer` pour le minuteur) — sinon une énigme en retard
 // pourrait réapparaître par-dessus une autre fenêtre déjà ouverte.
 let storyPendingRetry = null;
@@ -175,7 +175,7 @@ function storyScheduleRetry(fn){
 // Ouvre le chapitre d'une île : récit (une ligne à la fois), puis l'énigme
 // si elle n'a jamais été résolue. `onDone` est appelée une fois le
 // chapitre terminé (lu ou résolu) — utilisée pour enchaîner avec l'écran
-// habituel de nouvelle île (js/ui.js `checkNewIsland`).
+// habituel de nouvelle île (js/shared/ui.js `checkNewIsland`).
 function openStoryChapter(world, onDone){
   if(!STORY[world]){ if(onDone) onDone(); return; }
   renderStoryIntro(world, 0, onDone);

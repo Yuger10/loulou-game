@@ -1,5 +1,5 @@
 /* Jeu 3 : trouver l'intrus (discrimination visuelle — voir
-   js/difficulty.js § diffTotal / diffMirrorChance) */
+   js/entities/difficulty/difficulty.js § diffTotal / diffMirrorChance) */
 function renderDiff(){
   setupLives('diff');
   const dd = gameDiff();

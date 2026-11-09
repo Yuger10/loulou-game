@@ -301,7 +301,7 @@ function charsOf(world){
   return Object.entries(CHARACTERS).filter(([,c])=>(c.world||'lagon')===world);
 }
 
-// Comme les compagnons (js/companions.js), les personnages d'une île sont
+// Comme les compagnons (js/entities/companion/companions.js), les personnages d'une île sont
 // présentés dans un ordre qui met en avant ceux du même genre que le
 // joueur — sans jamais en retirer : chaque île garde ses 4 personnages
 // et leur butin, seul l'ORDRE d'affichage change. Un joueur sans genre

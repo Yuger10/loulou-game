@@ -69,7 +69,7 @@ function adaptTier(base, key){
   return Math.max(1, Math.min(base, lvl, gameMaxTier(key)));
 }
 
-// Après une mission enregistrée (js/parents.js, recordMission) : fait
+// Après une mission enregistrée (js/features/parents/parents.js, recordMission) : fait
 // monter ou redescendre le niveau du jeu. Renvoie {type:'up'|'down', lvl}
 // ou null.
 function adaptAfterMission(key, s, tier, ok, errors){

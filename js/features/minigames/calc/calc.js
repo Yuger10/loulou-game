@@ -2,7 +2,7 @@
    Seul jeu du Lagon Magique à aller jusqu'au palier 6. Calcul SANS
    AUCUN support imagé (à la différence du jeu « Opérations ») : addition,
    soustraction, et à partir du palier 5, multiplication (tables de 2, 5,
-   10) et expressions à 3 termes. Bornes dans js/difficulty.js (calcBounds). */
+   10) et expressions à 3 termes. Bornes dans js/entities/difficulty/difficulty.js (calcBounds). */
 
 function makeCalcProblem(dd){
   const { max, terms, allowMinus, allowMulti } = calcBounds(dd);

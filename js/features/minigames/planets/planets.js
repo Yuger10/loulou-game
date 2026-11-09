@@ -20,7 +20,7 @@
      dessinées avec le même diamètre (PLANET_DRAW_R), pour que la réponse
      vienne du savoir et qu'aucune image ne donne une fausse taille.
 
-   ADAPTATION À L'ÂGE (paliers, voir `planetsTier` dans js/difficulty.js) :
+   ADAPTATION À L'ÂGE (paliers, voir `planetsTier` dans js/entities/difficulty/difficulty.js) :
      1 GS/CP   reconnaître le Soleil, la Lune, la Terre ; le jour et la nuit
      2 CP      le Soleil est une étoile qui produit sa lumière ; la Lune
                tourne autour de la Terre ; on habite sur la Terre

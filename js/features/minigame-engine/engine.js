@@ -3,7 +3,7 @@
 /* Essais autorisés : à partir de l'île 2, les erreurs comptent.
    On évite ainsi de cliquer au hasard jusqu'à tomber juste.
    Le barème complet (par type de jeu et par palier) est centralisé et
-   documenté dans js/difficulty.js (fonction `livesFor`) — voir aussi
+   documenté dans js/entities/difficulty/difficulty.js (fonction `livesFor`) — voir aussi
    ANALYSE-DIFFICULTE.md pour le détail académique. */
 let lives = Infinity, maxLives = Infinity, currentGameKind = null;
 
@@ -110,7 +110,7 @@ function loseLife(el, opts){
 
 /* =====================================================================
    MINUTEUR DE RÉPONSE — fluence, à partir du palier 3 (voir
-   js/difficulty.js pour la table des durées et le détail académique).
+   js/entities/difficulty/difficulty.js pour la table des durées et le détail académique).
    Principes :
    - jamais pour un enfant de moins de 6 ans (currentPlayerAge) ;
    - jamais pour les jeux à plusieurs étapes (mémoire, Simon, puzzle) ;
@@ -118,7 +118,7 @@ function loseLife(el, opts){
      cœurs ❤️ que les autres erreurs), jamais comme un échec immédiat ;
    - toujours annulé dès qu'une nouvelle fenêtre s'ouvre ou se ferme
      (voir les appels à `clearActiveTimer()` dans openModal/closeModal,
-     js/ui.js) : aucun minuteur ne continue à tourner « dans le vide ».
+     js/shared/ui.js) : aucun minuteur ne continue à tourner « dans le vide ».
    ===================================================================== */
 let activeTimerInterval = null;
 
@@ -309,7 +309,7 @@ function onMissionWin(){
   const prevLevel = level();
   state.missions += 1;
   const solo = !(typeof party!=='undefined' && party.active);
-  if(solo && typeof noteStoryMission==='function') noteStoryMission(currentWorld);   // l'histoire avance (js/episodes.js)
+  if(solo && typeof noteStoryMission==='function') noteStoryMission(currentWorld);   // l'histoire avance (js/features/story/episodes.js)
   const key = pickRandom(c.loot);
   // bonus : de temps en temps un objet rare en plus
   const bonus = Math.random() < 0.2 ? pickRandom(availableItems()) : null;
@@ -338,7 +338,7 @@ function onMissionWin(){
     `Trop ${ac('malin','maligne')} ! 💪`,
   ]).replace(/ ([!?])/g, '\u00a0$1');   // espace insécable : le « ! » ne part pas seul à la ligne
   const fact = missionFact; missionFact = null;
-  // garde-robe : un objet se gagne à certains nombres de missions (js/wardrobe.js)
+  // garde-robe : un objet se gagne à certains nombres de missions (js/features/wardrobe/wardrobe.js)
   const lookWon = typeof newlyUnlockedLookItems==='function' ? newlyUnlockedLookItems().map(k=>WARDROBE[k].name) : [];
   const cheer = typeof progressCheer==='function' ? progressCheer(typeof missionProgress!=='undefined' ? missionProgress : null) : null;
   setTimeout(()=> speak(`${levelUp ? `Niveau ${level()} ! ` : ''}${praise} ${cheer ? cheer + ' ' : ''}${lookWon.length ? `Tu gagnes ${lookWon.join(' et ')} pour ton avatar ! ` : ''}${fact ? fact + ' ' : ''}${c.name} t'offre ${it.name}${bonus ? `, et une surprise : ${ITEMS[bonus].name}` : ''}.`), 300);

@@ -26,3 +26,8 @@ function switchView(name){
 
   (viewRenderers[name] || []).forEach(fn=> fn({ sacTab }));
 }
+
+/* ---------- Navigation ---------- */
+document.querySelectorAll('.navbtn').forEach(btn=>{
+  btn.addEventListener('click', ()=> { playSound('tap'); switchView(btn.dataset.view); });
+});

@@ -1,5 +1,5 @@
 /* =====================================================================
-   L'île vivante (v31) — voir js/island.js
+   L'île vivante (v31) — voir js/features/island/island.js
    Feuille séparée de styles.css : le paysage, les personnages qui y
    vivent, les décorations qu'on déplace du doigt, le ciel selon l'heure.
    Les sélecteurs partent de #scene.live-isle pour l'emporter sur les

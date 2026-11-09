@@ -1,5 +1,5 @@
 /* ---------- L'histoire avance à chaque mission (Phase 4) ----------
-   Entre deux chapitres (un par île, js/story.js), il se passait 10 à 20
+   Entre deux chapitres (un par île, js/features/story/story.js), il se passait 10 à 20
    missions sans rien de nouveau. Chaque île a maintenant 3 ÉPISODES : de
    petites scènes racontées par les autres habitants de l'île, qui suivent
    le fil de la chasse au trésor (une bouteille à la mer, une petite clé

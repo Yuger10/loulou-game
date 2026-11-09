@@ -4,7 +4,7 @@
      une compétence de cycle 1 (grande section) ;
    - paliers 3-5 : reconnaître les solides du quotidien (cube, boule,
      cylindre, cône, pavé), une compétence qui se construit en CP-CE1.
-   Seuils et tailles centralisés dans js/difficulty.js
+   Seuils et tailles centralisés dans js/entities/difficulty/difficulty.js
    (volumeUsesCapacityCompare / ContainerCount / AskLessChance / solidOptions). */
 
 const CONTAINER_PAIRS = [

@@ -84,3 +84,8 @@ function speechBubble(text, extraStyle=''){
     <button class="btn-speak" data-say="${text.replace(/"/g,'&quot;').replace(/<[^>]+>/g,'')}" aria-label="Écouter">🔈</button>
   </div>`;
 }
+
+if('speechSynthesis' in window){
+  pickVoice();
+  window.speechSynthesis.onvoiceschanged = pickVoice;
+}

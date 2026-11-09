@@ -60,7 +60,7 @@
      du tri par couleur (petite section) aux polygones et à leurs sommets
      (CE2) ; sur cette île il propose donc le plus difficile.
 
-   Niveau propre à chaque jeu (v42, js/adaptive.js) : en solo, le palier
+   Niveau propre à chaque jeu (v42, js/features/adaptive/adaptive.js) : en solo, le palier
    joué est aussi limité par ce que l'enfant a ACQUIS dans ce jeu. Changer
    d'île ne suffit plus : on monte d'un cran après 2 réussites d'affilée
    presque sans erreur, on redescend d'un cran après 2 missions ratées.
@@ -68,7 +68,7 @@
    Un joueur sans âge renseigné n'est jamais concerné par le minuteur
    (voir `timerFor`) ; un enfant de moins de 6 ans ne voit jamais les
    paliers 3 et plus, quelle que soit l'île (voir `gameTypesForAge` dans
-   js/data.js) : la pression temporelle n'a pas sa place avant le CP.
+   js/entities (item, character, world)) : la pression temporelle n'a pas sa place avant le CP.
    ===================================================================== */
 
 // Les paliers eux-mêmes (texte + repère scolaire), utilisés pour l'affichage
@@ -463,7 +463,7 @@ function shapesRound(dd){
    le plafonne en solo) : du Soleil, de la Lune et de la Terre (GS/CP)
    jusqu'à l'ordre des planètes et aux planètes rocheuses ou géantes.
    Pas de minuteur : on lit la question, ou on l'écoute, à son rythme.
-   La banque de questions et les règles d'exactitude sont dans js/planets.js. */
+   La banque de questions et les règles d'exactitude sont dans js/features/minigames/planets/planets.js. */
 function planetsTier(dd){ return Math.max(1, Math.min(6, Number(dd) || 1)); }
 
 /* ---------------------------------------------------------------------

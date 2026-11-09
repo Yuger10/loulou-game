@@ -1,99 +1,4 @@
-/* ---------- Utilitaires ---------- */
-
-function addCoins(n){
-  state.coins += n; save(); renderCoins();
-  const pill = document.getElementById('coin-pill');
-  pill.classList.remove('bump'); void pill.offsetWidth; pill.classList.add('bump');
-}
-// pièces comptées mais encore en vol (voir gains.js) : l'affichage les attend
-var coinsInFlight = 0;
-function renderCoins(){ document.getElementById('coin-count').textContent = state.coins - (coinsInFlight || 0); }
-
-document.getElementById('sound-btn').addEventListener('click', ()=>{
-  // cycle : musique (+ sons + voix) → sons + voix → sons seuls → silence → musique…
-  if(state.sound && state.voice && state.music){ state.music=false; }
-  else if(state.sound && state.voice){ state.voice=false; }
-  else if(state.sound){ state.sound=false; }
-  else { state.sound=true; state.voice=true; state.music=true; }
-  save(); renderSoundBtn();
-  if(!state.voice && window.speechSynthesis) speechSynthesis.cancel();
-  if(state.sound) playSound('tap');
-  showToast(soundModeLabel());
-});
-function renderSoundBtn(){
-  const k = state.sound ? (state.music && state.voice ? 'musique' : state.voice ? 'voix' : 'son') : 'muet';
-  const b = document.getElementById('sound-btn');
-  if(typeof uiIcon==='function') b.innerHTML = uiIcon(k);
-  else b.textContent = state.sound ? (state.voice ? '🗣️' : '🔊') : '🔇';
-  b.setAttribute('aria-label', soundModeLabel().replace(/^\S+\s/, ''));
-  if(typeof updateMusic==='function') updateMusic();
-}
-
-if('speechSynthesis' in window){
-  pickVoice();
-  window.speechSynthesis.onvoiceschanged = pickVoice;
-}
-
-/* ---------- Navigation ---------- */
-document.querySelectorAll('.navbtn').forEach(btn=>{
-  btn.addEventListener('click', ()=> { playSound('tap'); switchView(btn.dataset.view); });
-});
-
-// onglets du sac : objets / album
-let currentSacTab = 'sac';
-function setSacTab(tab){
-  currentSacTab = tab;
-  document.querySelectorAll('[data-sactab]').forEach(b=>b.classList.toggle('active', b.dataset.sactab===tab));
-  const sac = document.getElementById('sac-content');
-  const alb = document.getElementById('album-content');
-  const look = document.getElementById('look-content');
-  if(!sac || !alb) return;
-  sac.hidden = tab!=='sac';
-  alb.hidden = tab!=='album';
-  if(look) look.hidden = tab!=='look';
-  if(tab==='sac') renderSac();
-  else if(tab==='album') renderAlbum();
-  else if(typeof renderLook==='function'){ lookTry = null; renderLook(); }
-}
-function renderBadge(){
-  const b = document.getElementById('sac-badge');
-  b.hidden = state.newItems===0;
-  b.textContent = state.newItems;
-}
-
-function gameDiffIsland(){ return WORLDS[currentWorld] ? WORLDS[currentWorld].diff : 1; }
-// La difficulté suit l'île… mais jamais au-delà de ce que l'âge du
-// joueur permet, y compris en solo. Avant ce correctif, un enfant de
-// 3-4 ans qui avait progressé jusqu'à l'île 2-3 (ce qui arrive vite,
-// seulement 10-25 missions) recevait quand même la difficulté complète
-// de cette île : seul le TYPE de jeu était filtré par âge
-// (`gameTypesForAge`), jamais ses PARAMÈTRES numériques. Résultat : des
-// exercices trop abstraits pour son âge (ex. la variante miroir de
-// « Trouve l'intrus »), que l'enfant ne peut résoudre qu'au hasard.
-function gameDiff(){
-  const island = gameDiffIsland();
-  // multijoueur (chacun son tour / course) : l'âge prime totalement,
-  // sans plafond lié à l'île — c'est le mécanisme d'équité déjà en
-  // place (chacun joue à son niveau, peu importe où se déroule la partie).
-  if(typeof party!=='undefined' && party.active && typeof ageToDiff==='function'){
-    const p = (typeof partyCurrent==='function' && partyCurrent()) || (typeof currentProfile==='function' && currentProfile());
-    const d = p && ageToDiff(p.age);
-    if(d) return d;
-  }
-  // solo : l'âge, s'il est renseigné, plafonne la difficulté de l'île —
-  // jamais l'inverse (un enfant plus âgé qu'une île facile n'est pas
-  // artificiellement ralenti, seul le cas « trop dur pour son âge »
-  // est corrigé).
-  if(typeof currentProfile==='function' && typeof ageToDiff==='function'){
-    const p = currentProfile();
-    const d = p && ageToDiff(p.age);
-    if(d) return adaptedDiff(Math.min(d, island));
-  }
-  return adaptedDiff(island);
-}
-// Phase 3 : chaque mini-jeu a son propre niveau par enfant (js/adaptive.js) ;
-// on ne joue jamais au-dessus de ce qui est acquis dans CE jeu.
-function adaptedDiff(base){ return typeof adaptTier==='function' ? adaptTier(base) : base; }
+/* ---------- Vue Île : changer d'île, nouvelle île, personnages, dialogues, boutique de décorations ---------- */
 function setWorld(id, silent){
   const w = WORLDS[id];
   if(!worldUnlocked(id)){
@@ -113,6 +18,7 @@ function setWorld(id, silent){
   }
   return true;
 }
+
 // signale et ouvre une île fraîchement débloquée
 function checkNewIsland(){
   const newly = WORLD_ORDER.filter(id=>worldUnlocked(id) && !(state.visited||[]).includes(id));
@@ -143,7 +49,7 @@ function checkNewIsland(){
     document.getElementById('btn-go').onclick = ()=>{ playSound('tap'); closeModal(); setWorld(id); };
     document.getElementById('btn-stay').onclick = ()=>{ playSound('tap'); closeModal(); renderLagon(); };
   };
-  // le fil de l'histoire (js/story.js) précède l'écran habituel : une
+  // le fil de l'histoire (js/features/story/story.js) précède l'écran habituel : une
   // nouvelle île est d'abord racontée, avec son énigme à résoudre.
   if(typeof openStoryChapter==='function' && typeof STORY!=='undefined' && STORY[id] && typeof storySolved==='function' && !storySolved(id)){
     openStoryChapter(id, showUnlockModal);
@@ -152,6 +58,7 @@ function checkNewIsland(){
   }
   return true;
 }
+
 function renderLevelPill(){
   const lp = document.getElementById('level-pill');
   if(lp) lp.innerHTML = `⭐ Niv. ${level()} <span class="level-bar"><i style="width:${levelProgress()*100}%"></i></span>`;
@@ -182,7 +89,7 @@ function renderLagon(){
   const ttl = document.getElementById('world-title');
   if(ttl) ttl.innerHTML = `${w.emoji} ${w.name}`;
   renderLevelPill();
-  // les personnages vivent maintenant dans le paysage de l'île (js/island.js)
+  // les personnages vivent maintenant dans le paysage de l'île (js/features/island/island.js)
   document.getElementById('islands').innerHTML = '';
   renderQuests();
   renderScene();
@@ -190,7 +97,7 @@ function renderLagon(){
 }
 
 /* ---------- Décorations ---------- */
-// l'île vivante : paysage, personnages et décorations (js/island.js)
+// l'île vivante : paysage, personnages et décorations (js/features/island/island.js)
 function renderScene(){
   renderLiveIsland(document.getElementById('scene'));
 }
@@ -299,7 +206,3 @@ function openDialogue(charId){
 }
 
 registerView('ile', ()=> renderLagon());
-registerView('sac', ({ sacTab })=>{
-  state.newItems = 0; save(); renderBadge();
-  setSacTab(sacTab || currentSacTab);
-});

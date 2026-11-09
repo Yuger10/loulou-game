@@ -2110,7 +2110,7 @@
   .game-choice.surprise{min-height:64px;}
 
   /* =====================================================================
-     Minuteur de défi (v27) — voir js/difficulty.js § « MINUTEUR »
+     Minuteur de défi (v27) — voir js/entities/difficulty/difficulty.js § « MINUTEUR »
      Barre calme qui se vide doucement ; devient orange/rouge et pulse
      dans les 5 dernières secondes, sans jamais être alarmante.
      ===================================================================== */
@@ -2619,7 +2619,7 @@
   /* =====================================================================
      Garde-robe : habiller son avatar (v43)
      ===================================================================== */
-  /* accessoires posés sur un avatar emoji (repère « tête » 0-100, voir js/wardrobe.js) */
+  /* accessoires posés sur un avatar emoji (repère « tête » 0-100, voir js/features/wardrobe/wardrobe.js) */
   .av-look{position:relative; display:inline-block; line-height:1;}
   .av-look .look-ov{position:absolute; width:1.6em; height:2em; left:50%; top:-.62em; transform:translateX(-50%); pointer-events:none; overflow:visible;}
   .look-stage{display:flex; align-items:center; gap:16px; padding:14px 16px; margin:0 0 10px; background:var(--foam);

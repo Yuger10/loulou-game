@@ -1,5 +1,5 @@
 /* Jeu 5 : suite logique (notion de « suite organisée », cycle 1 puis
-   algorithme simple en cycle 2 — voir js/difficulty.js § sequence*) */
+   algorithme simple en cycle 2 — voir js/entities/difficulty/difficulty.js § sequence*) */
 function renderSequence(){
   setupLives('sequence');
   const symbols = shuffle(['🐚','⭐','🌸','🎀','💎','🦋','🐠']).slice(0,3);

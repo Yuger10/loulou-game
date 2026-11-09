@@ -1,6 +1,6 @@
 /* ---------- Mini-jeu : Quelle heure est-il ? (grandeurs & mesures, CP-CE1) ----------
    Lire l'heure sur une horloge à aiguilles. Granularité centralisée
-   dans js/difficulty.js (clockGranularity) : heures pleines d'abord,
+   dans js/entities/difficulty/difficulty.js (clockGranularity) : heures pleines d'abord,
    puis demi-heures, puis quarts d'heure. Horloge dessinée en CSS pur
    (pas d'image), les aiguilles sont deux barres tournées en degrés. */
 

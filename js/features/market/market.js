@@ -1,34 +1,3 @@
-/* ---------- Sac ---------- */
-function renderSac(){
-  const owned = Object.keys(ALL_ITEMS).filter(k=>countItem(k)>0);
-  const el = document.getElementById('sac-content');
-  if(owned.length===0){
-    el.innerHTML = `<div class="empty-state"><span class="es-art">🎒</span>Ton sac est vide !<br>Va aider Marina, Étincelle ou Luna pour gagner des objets ✨</div>`;
-    speak("Ton sac est vide. Va aider un personnage pour gagner des objets !");
-    return;
-  }
-  el.innerHTML = `<div class="sac-grid">
-    ${owned.map(k=>{
-      const it = ALL_ITEMS[k];
-      const say = `${it.name}, ${countItem(k)}`.replace(/"/g,'&quot;');
-      return `<button type="button" class="item-card ${CRAFTED[k]?'crafted':''}" data-say="${say}" aria-label="${it.name}, ${countItem(k)}">
-        <span class="emoji">${it.emoji}</span><div class="name">${it.name}</div><div class="qty">x${countItem(k)}</div>
-      </button>`;
-    }).join('')}
-  </div>`;
-  bindSpeakButtons();
-}
-document.getElementById('reset-btn').addEventListener('click', ()=>{
-  playSound('tap');
-  // ouvre les réglages du joueur courant : renommer, recommencer, supprimer
-  if(typeof openPlayerSettings==='function'){ openPlayerSettings(profiles.current); return; }
-  if(confirm('Tout recommencer à zéro ? (pièces, objets et niveau seront perdus)')){
-    resetState();
-    renderCoins(); renderBadge(); renderSac(); renderScene(); renderQuests();
-    showToast('Nouvelle aventure ! 🌊');
-  }
-});
-
 /* ---------- Marché ---------- */
 let currentTab = 'vendre';
 document.querySelectorAll('.tab-btn').forEach(btn=>{
@@ -182,6 +151,5 @@ function renderFusionner(el){
     };
   });
 }
-
 
 registerView('marche', ()=> renderMarche());

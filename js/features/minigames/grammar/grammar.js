@@ -5,7 +5,7 @@
    - article indéfini : un (masc. sing.) / une (fém. sing.) / des (pluriel)
    Plus le palier est élevé, moins il y a d'indice image, et plus le
    pluriel (plus difficile à repérer) apparaît souvent — voir
-   js/difficulty.js (determinantsImageShown/PluralChance/ExtraDistractor). */
+   js/entities/difficulty/difficulty.js (determinantsImageShown/PluralChance/ExtraDistractor). */
 
 const DET_FAMILIES = {
   defini:   { m:'le',  f:'la',  p:'les' },

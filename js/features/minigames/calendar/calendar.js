@@ -1,5 +1,5 @@
 /* ---------- Mini-jeu : Jours, mois, saisons (« explorer le monde ») ----------
-   Deux familles d'exercices, voir js/difficulty.js (calendarUsesWeekdayOrder) :
+   Deux familles d'exercices, voir js/entities/difficulty/difficulty.js (calendarUsesWeekdayOrder) :
    - reconnaître une saison à partir d'une petite scène (dès la petite
      section, aucune lecture nécessaire) ;
    - remettre les jours de la semaine dans l'ordre (demande de lire des

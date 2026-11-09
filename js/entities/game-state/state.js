@@ -22,17 +22,17 @@ const DEFAULT_STATE = {
   albumReward: false,
   visited: [],
   gameCounts: {},     // nombre de fois jouées, par type de mini-jeu (pour forcer la variété)
-  storySolved: {},     // énigmes d'histoire déjà résolues, par île (js/story.js)
+  storySolved: {},     // énigmes d'histoire déjà résolues, par île (js/features/story/story.js)
   skills: {},         // réussites et erreurs par mini-jeu (espace parents)
   playTime: {},       // secondes de jeu actif, par jour (espace parents)
   pauseExtra: null,   // minutes ajoutées aujourd'hui par un adulte { date, min }
-  wardrobe: [],       // objets de la garde-robe achetés (js/wardrobe.js)
+  wardrobe: [],       // objets de la garde-robe achetés (js/features/wardrobe/wardrobe.js)
   look: { tete:null, visage:null, tenue:null, cape:null },   // ce que porte l'avatar
-  seasonGifts: {},    // cadeaux de saison reçus, ex. { 'noel-2026': true } (js/seasons.js)
-  music: false,       // musique d'ambiance (js/music.js), coupée par défaut
-  storyMissions: {},  // missions réussies par île, pour les épisodes (js/episodes.js)
+  seasonGifts: {},    // cadeaux de saison reçus, ex. { 'noel-2026': true } (js/features/seasons/seasons.js)
+  music: false,       // musique d'ambiance (js/features/music/music.js), coupée par défaut
+  storyMissions: {},  // missions réussies par île, pour les épisodes (js/features/story/episodes.js)
   storyEpisodes: {},  // épisodes déjà vus, par île
-  friends: {},        // points d'amitié par personnage (cadeaux, js/gifts.js)
+  friends: {},        // points d'amitié par personnage (cadeaux, js/features/gifts/gifts.js)
   friendRewards: {},  // surprise de « meilleur ami » déjà donnée, par personnage
 };
 
@@ -147,3 +147,6 @@ function levelProgress(){ return (state.missions % MISSIONS_PER_LEVEL) / MISSION
 
 // le son et la voix (js/shared/ui) lisent les réglages du joueur courant
 setAudioPrefsSource(()=> state);
+
+/* ---------- Profil (prénom + avatar) ---------- */
+function hello(){ return state.name ? state.name : ''; }

@@ -1,5 +1,5 @@
 /* Jeu 1 : mémoire (pas de minuteur : tâche à plusieurs étapes, voir
-   js/difficulty.js § « MINUTEUR » pour la justification). */
+   js/entities/difficulty/difficulty.js § « MINUTEUR » pour la justification). */
 function renderMemory(){
   setupLives('memory');
   const dd = gameDiff();

@@ -38,7 +38,7 @@ const WARDROBE = {
   couronne:   { slot:'tete',   name:'Couronne dorée',     price:30 },
   antennes:   { slot:'tete',   name:'Antennes rigolotes', unlock:25 },
   etoiles:    { slot:'tete',   name:"Couronne d'étoiles", unlock:60 },
-  // offerts une fois par saison (js/seasons.js), puis gardés
+  // offerts une fois par saison (js/features/seasons/seasons.js), puis gardés
   bonnet_noel:{ slot:'tete',   name:'Bonnet de Noël',     season:'noel' },
   sorciere:   { slot:'tete',   name:'Chapeau de sorcière', season:'halloween' },
   fete:       { slot:'tete',   name:'Chapeau de fête',    season:'anniversaire' },
