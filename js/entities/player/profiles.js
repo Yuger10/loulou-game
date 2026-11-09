@@ -52,6 +52,9 @@ function syncProfileFromState(){
   saveProfiles();
 }
 
+// la partie de chaque joueur est sauvegardée sous sa propre clé
+setSaveSlot({ key: currentSaveKey, afterSave: syncProfileFromState, afterLoad: (st)=>{ st.avatar = fixAvatar(st.avatar); } });
+
 function switchProfile(id, silent){
   if(id === profiles.current) return;
   save();                       // sauvegarde le joueur courant

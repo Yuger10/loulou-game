@@ -232,10 +232,13 @@ function companionOf(profile){
   if(!profile) return defaultCompanionFor('');
   return COMPANIONS[profile.companion] ? profile.companion : defaultCompanionFor(profile.gender);
 }
-// le compagnon du joueur dont c'est le tour (solo, chacun son tour ou course)
+// le compagnon du joueur dont c'est le tour (solo, chacun son tour ou course).
+// Le joueur courant vient d'entities/player (une couche au-dessus), qui
+// branche sa fonction ici (v54).
+let companionPlayerSource = ()=> null;
+function setCompanionPlayerSource(fn){ companionPlayerSource = fn; }
 function currentCompanion(){
-  const p = currentPlayer() || currentProfile();
-  return companionOf(p);
+  return companionOf(companionPlayerSource());
 }
 // compagnons proposés en premier selon le profil ; '' = tous
 function companionsFor(gender){

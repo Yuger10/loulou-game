@@ -113,7 +113,7 @@ function openChest(){
     <button class="btn-primary" id="btn-yay">Merci ! 🎉</button>
   `);
   queueGain({ items:[ITEMS[gift].emoji], coins:bonusCoins });
-  document.getElementById('btn-yay').onclick = ()=>{ playSound('tap'); closeModal(); renderLagon(); };
+  document.getElementById('btn-yay').onclick = ()=>{ playSound('tap'); closeModal(); emit('ui:lagon'); };
   renderQuests();
 }
 

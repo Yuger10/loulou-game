@@ -142,6 +142,6 @@ function openEpisode(world, k, line, fresh){
     playSound('tap');
     if(!last){ openEpisode(world, k, line + 1, fresh); return; }
     closeModal();
-    renderLagon();
+    emit('ui:lagon');
   };
 }

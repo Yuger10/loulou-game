@@ -293,3 +293,6 @@ function initBackup(){
   renderInstallHint();
   renderBackupReminder();
 }
+
+// l'en-tête du joueur redemande le rappel de sauvegarde (js/features/profile)
+on('ui:backup-reminder', renderBackupReminder);

@@ -242,8 +242,12 @@ function hintEliminate(sel, level){
 }
 
 // compté pour l'espace parents, jamais comme une erreur (niveau adaptatif inchangé)
+// Quels indices compter : ceux des mini-jeux inscrits au moteur (qui le dit
+// avec setHintCountable, v54 : les indices sont une couche sous le moteur)
+let hintCountable = ()=> false;
+function setHintCountable(fn){ hintCountable = fn; }
 function countHint(kind){
-  if(hint.noCount || party.active || !GAME_RENDERERS[kind]) return;
+  if(hint.noCount || party.active || !hintCountable(kind)) return;
   if(!state.skills) state.skills = {};
   const s = state.skills[kind] || (state.skills[kind] = { wins:0, fails:0, errors:0, last:null, recent:[], hints:0 });
   s.hints = (s.hints || 0) + 1;

@@ -15,6 +15,9 @@ function currentPlayer(){
   return (party.active && partyCurrent()) || currentProfile();
 }
 
+// le compagnon affiché est celui du joueur dont c'est le tour
+setCompanionPlayerSource(()=> currentPlayer() || currentProfile());
+
 function currentPlayerAge(){
   const p = currentPlayer();
   return p && Number(p.age) || null;

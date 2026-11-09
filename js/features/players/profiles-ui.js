@@ -1,26 +1,5 @@
 /* ---------- Écran des joueurs, modes de jeu, choix du mini-jeu ---------- */
 
-const GAME_LIST = [
-  { key:'memory',   emoji:'🧠', name:'Mémoire' },
-  { key:'count',    emoji:'🔢', name:'Compter' },
-  { key:'diff',     emoji:'🔍', name:"L'intrus" },
-  { key:'puzzle',   emoji:'🧩', name:'Les nombres' },
-  { key:'sequence', emoji:'🔮', name:'La suite' },
-  { key:'simon',    emoji:'🎵', name:'Les couleurs' },
-  { key:'math',     emoji:'➕', name:'Opérations' },
-  { key:'reading',  emoji:'📖', name:'Lecture' },
-  { key:'determinants', emoji:'🔤', name:'Petits mots' },
-  { key:'volume',   emoji:'🧪', name:'Volumes' },
-  { key:'compare',  emoji:'⚖️', name:'Comparer' },
-  { key:'money',    emoji:'💰', name:'La monnaie' },
-  { key:'clock',    emoji:'🕐', name:"L'heure" },
-  { key:'calendar', emoji:'📅', name:'Calendrier' },
-  { key:'calc',     emoji:'🌋', name:'Calcul mental' },
-  { key:'shapes',   emoji:'🍡', name:'Formes et couleurs' },
-  { key:'planets',  emoji:'🪐', name:'Les planètes' },
-  { key:'jigsaw',   emoji:'🖼️', name:'Le puzzle' },
-];
-
 /* --- Panneau des joueurs --- */
 function openPlayers(){
   const sel = new Set(party.active ? party.players : [profiles.current]);
@@ -67,7 +46,7 @@ function openPlayers(){
     });
     document.getElementById('btn-add-player').onclick = ()=>{ playSound('tap'); openNewPlayer(); };
     document.getElementById('btn-backup').onclick = ()=>{ playSound('tap'); openBackup(); };
-    document.getElementById('btn-parents').onclick = ()=>{ playSound('tap'); openParents(); };
+    document.getElementById('btn-parents').onclick = ()=>{ playSound('tap'); emit('nav:parents'); };
     document.getElementById('btn-solo').onclick = ()=>{
       playSound('tap');
       const id = [...sel][0] || profiles.current;
@@ -122,19 +101,6 @@ function playerSummary(id){
     const lvl = 1 + Math.floor((s.missions||0)/MISSIONS_PER_LEVEL);
     return `⭐ niveau ${lvl} · 🪙 ${s.coins||0} · 🎮 ${s.missions||0} missions`;
   }catch(e){ return ''; }
-}
-
-function genderSelector(sel){
-  const opts = [
-    { v:'f', emoji:'👧', label:'Fille' },
-    { v:'m', emoji:'👦', label:'Garçon' },
-    { v:'',  emoji:'🧒', label:'Peu importe' },
-  ];
-  return `<label class="mini-label">Comment on te parle ?</label>
-    <div class="gender-row">
-      ${opts.map(o=>`<button class="gender-opt ${String(sel||'')===o.v?'sel':''}" data-gender="${o.v}">
-        <span class="ge">${o.emoji}</span><span class="gl">${o.label}</span></button>`).join('')}
-    </div>`;
 }
 
 function ageSelector(sel){
@@ -346,3 +312,8 @@ function openGamePicker(charId){
     };
   });
 }
+
+// ouvrir le choix des jeux ou les réglages d'un joueur, à la demande de l'île,
+// des cadeaux ou du Sac (couches plus basses)
+on('nav:game-picker', openGamePicker);
+on('nav:player-settings', openPlayerSettings);

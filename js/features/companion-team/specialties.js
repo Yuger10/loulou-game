@@ -201,7 +201,7 @@ function renderZapOffer(){
 function zapStart(key){
   teamDay().zap[currentWorld] = true; save();
   renderZapOffer();
-  startBonusChallenge(key || zapGameFor());
+  emit('game:bonus', key || zapGameFor());   // le moteur lance le défi
 }
 
 /* ---- Tom (trésor du jour) et Zap (défi réussi) sur l'écran de victoire ---- */
@@ -260,3 +260,6 @@ function roseTip(tab){
 // l'île et la carte : la bulle de Sam et l'offre de Zap
 function renderTeamHelpers(){ renderSamGuide(); renderZapOffer(); }
 onProfileRefresh(()=>{ teamSayClear(); renderTeamHelpers(); });
+
+// Rose : dans le Sac, l'Album et « Mon look » (événement du Sac)
+on('bag:tab', roseTip);

@@ -392,3 +392,6 @@ setInterval(()=>{
   const sc = document.getElementById('scene');
   if(sc && sc.classList.contains('live-isle') && !sc.classList.contains('tod-' + isleTimeOfDay())) renderLiveIsland(sc);
 }, 60000);
+
+// revenir au dialogue d'un personnage (après un cadeau, js/features/gifts)
+on('nav:dialogue', openDialogue);

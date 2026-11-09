@@ -15,7 +15,7 @@ function setWorld(id, silent){
   if(changed && !silent){
     playSound('good');
     speak(`${w.name} ! ${w.subtitle}.`);
-    teamOnTravel(id);   // un compagnon à rencontrer sur cette île ? (js/features/companion-team)
+    emit('world:changed', id);   // un compagnon à rencontrer sur cette île ? (js/features/companion-team)
   }
   return true;
 }
@@ -95,9 +95,10 @@ function renderLagon(){
   renderQuests();
   renderScene();
   renderRaceTrack();
-  renderTeamHeads();
-  renderTeamHelpers();   // Sam le guide et le défi de Zap
+  emit('lagon:rendered');   // l'équipe : ses têtes, Sam le guide et le défi de Zap (js/features/companion-team)
 }
+// l'île se redessine à la demande des features (histoire, fêtes, quêtes…)
+on('ui:lagon', ()=> renderLagon());
 
 /* ---------- Décorations ---------- */
 // l'île vivante : paysage, personnages et décorations (js/features/island/island.js)
@@ -201,9 +202,9 @@ function openDialogue(charId){
   `);
   bindSpeakButtons();
   speak(`${c.name} ${c.title} : ${text}`);
-  document.getElementById('btn-play').onclick = ()=> { playSound('tap'); openGamePicker(charId); };
+  document.getElementById('btn-play').onclick = ()=> { playSound('tap'); emit('nav:game-picker', charId); };
   const pickBtn = document.getElementById('btn-random');
-  if(pickBtn) pickBtn.onclick = ()=> { playSound('tap'); startMinigame(); };
+  if(pickBtn) pickBtn.onclick = ()=> { playSound('tap'); emit('game:start'); };
   const giftBtn = document.getElementById('btn-gift');
   if(giftBtn) giftBtn.onclick = ()=> { playSound('tap'); openGiftPicker(charId); };
   document.getElementById('btn-close').onclick = ()=>{ window.speechSynthesis && speechSynthesis.cancel(); closeModal(); };

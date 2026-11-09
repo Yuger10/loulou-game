@@ -92,10 +92,17 @@ let state = {
   squishies: squishyFreshState(),
 };
 
+/* L'emplacement de sauvegarde : le joueur courant (entities/player, une couche
+   au-dessus) y branche sa clé, et ce qu'il faut faire après chaque
+   sauvegarde (recopier prénom et avatar dans sa fiche) et chaque chargement
+   (corriger un ancien avatar). Sans joueur : l'ancienne clé unique. */
+const saveSlot = { key: ()=> SAVE_KEY, afterSave: ()=>{}, afterLoad: ()=>{} };
+function setSaveSlot(slot){ Object.assign(saveSlot, slot); }
+
 function save(){
   try{
-    localStorage.setItem(currentSaveKey(), JSON.stringify(state));
-    syncProfileFromState();
+    localStorage.setItem(saveSlot.key(), JSON.stringify(state));
+    saveSlot.afterSave();
   }catch(e){}
 }
 
@@ -142,7 +149,7 @@ function migrate(saved){
 
 function load(){
   try{
-    const key = currentSaveKey();
+    const key = saveSlot.key();
     const raw = localStorage.getItem(key);
     if(!raw){ state = freshState(); return; }
     const saved = migrate(JSON.parse(raw));
@@ -154,7 +161,7 @@ function load(){
       if((saved[k] !== undefined && saved[k] !== null) || k==='quests') clean[k] = saved[k];
     });
     state = freshState(clean);
-    state.avatar = fixAvatar(state.avatar);
+    saveSlot.afterLoad(state);
     save();
   }catch(e){
     console.warn('Sauvegarde illisible, on repart à zéro', e);

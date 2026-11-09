@@ -60,7 +60,7 @@ function renderPuzzle(){
   });
 }
 
-// Indices (v52) : voir hintOrderStep (js/features/minigame-engine/hints.js).
+// Indices (v52) : voir hintOrderStep (js/features/hints/hints.js).
 function puzzleHints(q){
   const done = q.seq.slice(0, q.idx), last = done[done.length - 1];
   const desc = q.variant === 'desc', step2 = q.variant === 'step2';

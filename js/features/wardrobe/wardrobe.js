@@ -204,8 +204,8 @@ function newlyUnlockedLookItems(){
 }
 function refreshLookEverywhere(){
   syncProfileFromState();
-  renderProfile();
-  if(document.getElementById('island-map')) { try{ renderMap(); }catch(e){} }
+  emit('ui:profile');
+  if(document.getElementById('island-map')) emit('ui:map');
 }
 
 /* ---- l'onglet « Mon look » du sac ---- */

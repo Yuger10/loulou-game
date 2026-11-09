@@ -133,3 +133,6 @@ function sailTo(id){
 }
 
 registerView('carte', ()=>{ renderMap(); renderIslandCard(); renderLevelPill(); });
+
+// la garde-robe redemande la carte (le bateau porte la tenue)
+on('ui:map', renderMap);

@@ -1,6 +1,6 @@
 /* ---------- L'équipe des compagnons (v52) ----------
    Dès le départ, le compagnon choisi est le compagnon PRINCIPAL : il donne
-   les indices 💡 (js/features/minigame-engine/hints.js).
+   les indices 💡 (js/features/hints/hints.js).
    Au niveau 10, l'équipe s'ouvre :
    - un écran « Ton équipe s'agrandit ! », une seule fois (une partie déjà au
      niveau 10 ou plus le voit au chargement) ;
@@ -284,3 +284,7 @@ function teamOnTravel(world){
   setTimeout(()=> maybeTeamEncounter(world), 1400);   // après l'annonce de l'île
 }
 onProfileRefresh(renderTeamHeads);
+
+// l'île prévient : on arrive sur une île, ou elle vient d'être redessinée
+on('world:changed', teamOnTravel);
+on('lagon:rendered', ()=>{ renderTeamHeads(); renderTeamHelpers(); });

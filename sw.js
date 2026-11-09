@@ -9,19 +9,20 @@ const FILES = [
   './js/features/minigame-engine/timer.css','./js/entities/companion/companions.css','./js/shared/styles/devices.css','./js/features/gains/gains.css','./js/features/minigames/clock/clock.css','./js/features/minigames/calendar/calendar.css',
   './js/features/story/story.css','./js/features/minigames/calc/calc.css','./js/features/minigames/shapes/shapes.css','./js/features/minigames/planets/planets.css','./js/features/backup/backup.css','./js/features/parents/parents.css',
   './js/features/adaptive/adaptive.css','./js/features/wardrobe/wardrobe.css','./js/shared/ui/icons.css','./js/features/seasons/seasons.css','./js/features/minigames/jigsaw/jigsaw.css','./js/features/gifts/gifts.css',
-  './js/features/story/episodes.css','./js/features/minigame-engine/hints.css','./js/features/companion-team/team.css','./js/features/squishies/squishies.css','./js/features/island/island.css','./js/entities/character/characters.css',
-  './js/shared/lib/random.js','./js/shared/ui/icons.js','./js/shared/ui/sound.js','./js/shared/ui/voice.js','./js/shared/ui/feedback.js','./js/shared/ui/modal.js',
-  './js/shared/ui/views.js','./js/entities/words/words.js','./js/entities/item/items.js','./js/entities/world/worlds.js','./js/entities/world/availability.js','./js/entities/character/characters.js',
-  './js/entities/character/characters-art.js','./js/entities/difficulty/difficulty.js','./js/entities/difficulty/game-types.js','./js/entities/difficulty/age.js','./js/entities/squishy/squishies.js','./js/entities/game-state/state.js',
-  './js/entities/player/avatars.js','./js/entities/player/profiles.js','./js/entities/player/party-state.js','./js/entities/companion/companions.js','./js/features/party/party.js','./js/features/party/race.js',
-  './js/features/profile/profile.js','./js/features/profile/topbar.js','./js/features/quests/quests.js','./js/features/wallet/wallet.js','./js/features/adaptive/game-diff.js','./js/features/adaptive/adaptive.js',
-  './js/features/bag/bag.js','./js/features/island/island-view.js','./js/features/island/island.js','./js/features/music/music.js','./js/features/gains/gains.js','./js/features/map/map.js',
-  './js/features/minigame-engine/engine.js','./js/features/minigame-engine/hints.js','./js/features/minigames/memory/memory.js','./js/features/minigames/count/count.js','./js/features/minigames/intruder/intruder.js','./js/features/minigames/simon/simon.js',
-  './js/features/minigames/sequence/sequence.js','./js/features/minigames/puzzle/puzzle.js','./js/features/minigames/math/math.js','./js/features/minigames/reading/reading.js','./js/features/minigames/grammar/grammar.js','./js/features/minigames/volume/volume.js',
-  './js/features/minigames/compare/compare.js','./js/features/minigames/money/money.js','./js/features/minigames/clock/clock.js','./js/features/minigames/calendar/calendar.js','./js/features/minigames/calc/calc.js','./js/features/minigames/shapes/shapes.js',
-  './js/features/minigames/planets/planets.js','./js/features/minigames/jigsaw/jigsaw.js','./js/features/story/story.js','./js/features/story/episodes.js','./js/features/squishies/squishies.js','./js/features/squishies/squishy-room.js',
-  './js/features/market/market.js','./js/features/gifts/gifts.js','./js/features/players/profiles-ui.js','./js/features/backup/backup.js','./js/features/parents/parents.js','./js/features/wardrobe/wardrobe.js',
-  './js/features/seasons/seasons.js','./js/features/companion-team/team.js','./js/features/companion-team/specialties.js','./js/app/init.js'
+  './js/features/story/episodes.css','./js/features/hints/hints.css','./js/features/companion-team/team.css','./js/features/squishies/squishies.css','./js/features/island/island.css','./js/entities/character/characters.css',
+  './js/shared/lib/random.js','./js/shared/lib/events.js','./js/shared/ui/icons.js','./js/shared/ui/sound.js','./js/shared/ui/voice.js','./js/shared/ui/feedback.js',
+  './js/shared/ui/modal.js','./js/shared/ui/views.js','./js/entities/words/words.js','./js/entities/squishy/squishies.js','./js/entities/game-state/state.js','./js/entities/item/items.js',
+  './js/entities/character/characters.js','./js/entities/character/characters-art.js','./js/entities/world/worlds.js','./js/entities/world/availability.js','./js/entities/difficulty/difficulty.js','./js/entities/difficulty/game-types.js',
+  './js/entities/difficulty/age.js','./js/entities/companion/companions.js','./js/entities/player/avatars.js','./js/entities/player/profiles.js','./js/entities/player/party-state.js','./js/entities/season/season.js',
+  './js/features/wallet/wallet.js','./js/features/gains/gains.js','./js/features/screen/screen.js','./js/features/hints/hints.js','./js/features/adaptive/session.js','./js/features/adaptive/skills.js',
+  './js/features/adaptive/game-diff.js','./js/features/adaptive/adaptive.js','./js/features/music/music.js','./js/features/party/party.js','./js/features/party/race.js','./js/features/squishies/squishies.js',
+  './js/features/squishies/squishy-room.js','./js/features/story/story.js','./js/features/story/episodes.js','./js/features/wardrobe/wardrobe.js','./js/features/bag/bag.js','./js/features/quests/quests.js',
+  './js/features/seasons/seasons.js','./js/features/profile/profile.js','./js/features/profile/topbar.js','./js/features/gifts/gifts.js','./js/features/island/island-view.js','./js/features/island/island.js',
+  './js/features/companion-team/team.js','./js/features/companion-team/specialties.js','./js/features/map/map.js','./js/features/minigame-engine/engine.js','./js/features/minigames/memory/memory.js','./js/features/minigames/count/count.js',
+  './js/features/minigames/intruder/intruder.js','./js/features/minigames/simon/simon.js','./js/features/minigames/sequence/sequence.js','./js/features/minigames/puzzle/puzzle.js','./js/features/minigames/math/math.js','./js/features/minigames/reading/reading.js',
+  './js/features/minigames/grammar/grammar.js','./js/features/minigames/volume/volume.js','./js/features/minigames/compare/compare.js','./js/features/minigames/money/money.js','./js/features/minigames/clock/clock.js','./js/features/minigames/calendar/calendar.js',
+  './js/features/minigames/calc/calc.js','./js/features/minigames/shapes/shapes.js','./js/features/minigames/planets/planets.js','./js/features/minigames/jigsaw/jigsaw.js','./js/features/market/market.js','./js/features/backup/backup.js',
+  './js/features/players/profiles-ui.js','./js/features/parents/parents.js','./js/app/init.js'
 ];
 self.addEventListener('install', e=>{
   e.waitUntil(caches.open(CACHE).then(c=>c.addAll(FILES)).then(()=>self.skipWaiting()));

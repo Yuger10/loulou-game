@@ -77,7 +77,7 @@ function raceWin(p){
     playSound('tap'); closeModal(); startRace(race.players);
   };
   document.getElementById('race-done').onclick = ()=>{
-    playSound('tap'); closeModal(); stopRace(true); renderLagon();
+    playSound('tap'); closeModal(); stopRace(true); emit('ui:lagon');
   };
   party.active = false; party.mode = null;
   renderTurnBar();
@@ -113,5 +113,5 @@ function renderRaceTrack(){
     ${cur ? `<div class="race-turn">👉 Au tour de <b>${avatarHTML(cur.avatar, cur.look)} ${cur.name || 'Joueur'}</b> — niveau ${'⭐'.repeat(ageToDiff(cur.age)||gameDiffIsland())}</div>` : ''}
   `;
   const stop = document.getElementById('race-stop');
-  if(stop) stop.onclick = ()=>{ playSound('tap'); stopRace(); renderLagon(); };
+  if(stop) stop.onclick = ()=>{ playSound('tap'); stopRace(); emit('ui:lagon'); };
 }

@@ -76,7 +76,7 @@ function openGiftPicker(charId){
     <button class="btn-ghost" id="gift-back">Retour</button>
   `);
   speak(keys.length ? `Que veux-tu offrir à ${c.name} ? ${c.name} adore ${favs.map(k=>ITEMS[k].name).join(' et ')}.` : `Ton sac est vide.`);
-  document.getElementById('gift-back').onclick = ()=>{ playSound('tap'); openDialogue(charId); };
+  document.getElementById('gift-back').onclick = ()=>{ playSound('tap'); emit('nav:dialogue', charId); };
   document.querySelectorAll('[data-gift]').forEach(b=> b.onclick = ()=>{
     const key = b.dataset.gift;
     const from = b.querySelector('.gi-emoji').getBoundingClientRect();
@@ -136,5 +136,5 @@ function showGiftThanks(charId, key, res, fromRect){
   }
   const more = document.getElementById('gift-more');
   if(more) more.onclick = ()=>{ playSound('tap'); openGiftPicker(charId); };
-  document.getElementById('gift-play').onclick = ()=>{ playSound('tap'); openGamePicker(charId); };
+  document.getElementById('gift-play').onclick = ()=>{ playSound('tap'); emit('nav:game-picker', charId); };
 }

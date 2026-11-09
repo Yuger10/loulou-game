@@ -14,7 +14,7 @@ function setSacTab(tab){
   if(tab==='sac') renderSac();
   else if(tab==='album') renderAlbum();
   else { clearLookTry(); renderLook(); }
-  roseTip(tab);   // Rose (collection) : ce qui manque, et où le trouver
+  emit('bag:tab', tab);   // Rose (collection) : ce qui manque, et où le trouver (js/features/companion-team)
 }
 
 function renderBadge(){
@@ -121,12 +121,7 @@ function renderAlbum(){
 document.getElementById('reset-btn').addEventListener('click', ()=>{
   playSound('tap');
   // ouvre les réglages du joueur courant : renommer, recommencer, supprimer
-  { openPlayerSettings(profiles.current); return; }
-  if(confirm('Tout recommencer à zéro ? (pièces, objets et niveau seront perdus)')){
-    resetState();
-    renderCoins(); renderBadge(); renderSac(); renderScene(); renderQuests();
-    showToast('Nouvelle aventure ! 🌊');
-  }
+  emit('nav:player-settings', profiles.current);
 });
 
 registerView('sac', ({ sacTab })=>{

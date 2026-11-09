@@ -36,20 +36,6 @@ function renderLives(){
   });
 }
 
-// Une erreur : la proposition fautive est neutralisée et un essai est perdu.
-// Petits encouragements parlés à chaque erreur : avant ce correctif,
-// seul un son « faux » jouait — aucune voix pendant le jeu lui-même
-// (juste au tout début, pour la consigne). Varié pour ne pas lasser.
-const WRONG_HINTS = [
-  'Pas tout à fait, regarde encore',
-  'Essaie encore, tu vas trouver',
-  'Presque ! Observe bien',
-  'Non, regarde une nouvelle fois',
-];
-function speakWrongHint(){
-  if(Math.random()<0.7) speak(pickRandom(WRONG_HINTS));
-}
-
 // La relance programmée par `onRetry` (ci-dessous) doit être annulée si
 // la fenêtre se ferme ou change avant d'avoir eu lieu — sinon une
 // question en retard pourrait réapparaître par-dessus un autre jeu déjà
@@ -70,7 +56,7 @@ function scheduleRetry(fn){
 function loseLife(el, opts){
   opts = opts || {};
   buddyReact('oops', 1300);
-  hintNudge(true);     // le bouton 💡 se propose (js/features/minigame-engine/hints.js)
+  hintNudge(true);     // le bouton 💡 se propose (js/features/hints/hints.js)
   // multijoueur : la règle reste « une erreur = on passe la main »
   if(party.active){ wrongFeedback(el); return false; }
   noteAnswerError();   // pour l'espace parents
@@ -202,7 +188,6 @@ function stepOk(el){
   setTimeout(()=> spark.remove(), 800);
 }
 
-let lastGame = null;
 /* Pour les tests automatiques : chaque mini-jeu note ce qu'il faut toucher
    pour réussir — des sélecteurs CSS, dans l'ordre (test/games.test.js joue
    ainsi chaque jeu jusqu'à la victoire). Rien n'est montré à l'enfant. */
@@ -218,29 +203,29 @@ function setMissionFact(f){ missionFact = f; }
 // Résolu au moment de l'appel : tous les jeux sont inscrits avant le premier.
 const GAME_RENDERERS = {};
 function registerGame(key, render){ GAME_RENDERERS[key] = render; }
+// les indices (js/features/hints) ne comptent que ceux des mini-jeux inscrits
+setHintCountable((key)=> !!GAME_RENDERERS[key]);
 function gameRenderer(key){ return GAME_RENDERERS[key] || GAME_RENDERERS.memory; }
 
-/* Défi bonus de Zap (js/features/companion-team) : le jeu est joué un cran
-   au-dessus de son niveau (js/features/adaptive/game-diff.js), la récompense
-   est doublée, et le niveau du jeu ne bouge pas (js/features/parents). Il ne
-   vaut que pour la partie lancée par startBonusChallenge. */
-let bonusChallenge = null;
+// lancer un jeu à la demande d'une feature : l'île (« Surprise »), Zap (défi)
+on('game:start', ()=> startMinigame());
+on('game:bonus', (key)=> startBonusChallenge(key));
 function startBonusChallenge(key){
-  bonusChallenge = { key, fresh:true, won:false };
+  beginBonusChallenge(key);
   playGame(key);
 }
-function inBonusChallenge(){ return !!bonusChallenge && bonusChallenge.key === lastGame; }
 
 // Lance un type de jeu précis, en comptant le coup pour ce joueur
 // (utilisé pour proposer en priorité les jeux les moins essayés).
 function playGame(key){
   // pause douce réglée par les parents : plus de nouveau défi aujourd'hui
-  if(pauseDue()){ showPauseScreen(); return; }
-  if(bonusChallenge){ if(bonusChallenge.fresh) bonusChallenge.fresh = false; else bonusChallenge = null; }
+  // (l'espace parents répond true et montre l'écran de pause)
+  if(emit('game:before', key).some(Boolean)) return;
+  bonusOnNewGame();
   if(hintPolicy.onMission) hintPolicy.onMission(key);
   resetMissionErrors();
   trackGamePlayed(key);
-  lastGame = key;
+  setLastGame(key);
   gameSolution = null;
   gameRenderer(key)();
 }
@@ -255,26 +240,6 @@ function startMinigame(){
   playGame(type);
 }
 
-// En-tête d'une fenêtre de jeu : titre, consigne et bouton pour l'écouter.
-// La fermeture est assurée par la croix de la fenêtre (#modal-close).
-function gameHeader(title, hint, spoken){
-  const say = (spoken || hint).replace(/"/g,'&quot;');
-  return `
-    <div class="game-head"><h2>${title}</h2></div>
-    <p class="puzzle-hint has-buddy">
-      <span class="hint-txt">${hint}</span>
-      ${buddySlot('think')}
-      <button class="btn-speak" data-say="${say}" aria-label="Écouter la consigne">🔈</button>
-    </p>
-  `;
-}
-// branche les boutons « écouter » et lit la consigne à voix haute
-function bindQuit(){
-  bindSpeakButtons();
-  // lit la consigne une seule fois par mini-jeu (le mémo se re-rend à chaque clic)
-  const hint = document.querySelector('.puzzle-hint [data-say]');
-  if(hint && hint.dataset.say !== bindQuit._last){ bindQuit._last = hint.dataset.say; speak(hint.dataset.say); }
-}
 function progressDots(done, total){
   return `<div class="game-progress">${Array.from({length:total},(_,i)=>`<i class="${i<done?'on':''}"></i>`).join('')}</div>`;
 }
@@ -282,7 +247,7 @@ function progressDots(done, total){
 /* Mission ratée : on encourage, on ne punit pas — mais pas de récompense. */
 function onMissionFail(){
   recordMission(false);
-  bonusChallenge = null;
+  endBonusChallenge();
   missionFact = null;
   bindQuit._last = null;
   lives = 0;
@@ -365,7 +330,7 @@ function onMissionWin(){
   // progrès ; Zap fête le défi bonus ; Tom rapporte le trésor du jour
   const cheerBy = cheer ? teamCheerBy() : null;
   const extras = teamWinExtras();
-  bonusChallenge = null;
+  endBonusChallenge();
   setTimeout(()=> speak(`${levelUp ? `Niveau ${level()} ! ` : ''}${praise} ${cheer ? (cheerBy ? COMPANIONS[cheerBy].name + ' : ' : '') + cheer + ' ' : ''}${extras.map(x=> `${COMPANIONS[x.by].name} : ${x.text} `).join('')}${lookWon.length ? `Tu gagnes ${lookWon.join(' et ')} pour ton avatar ! ` : ''}${fact ? fact + ' ' : ''}${c.name} t'offre ${it.name}${bonus ? `, et une surprise : ${ITEMS[bonus].name}` : ''}.`), 300);
 
   openModal(`
