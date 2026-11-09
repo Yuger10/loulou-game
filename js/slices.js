@@ -62,9 +62,6 @@ const SLICES = [
   { id:'party', layer:'features', files:['js/features/party/party.js','js/features/party/race.js'], css:['js/features/party/party.css','js/features/party/race.css'], public:[
       'partyAfterWin', 'partyScore', 'passTurn', 'renderRaceTrack', 'renderTurnBar', 'startParty', 
       'startRace', 'stopParty'] },
-  { id:'story', layer:'features', files:['js/features/story/story.js','js/features/story/episodes.js'], css:['js/features/story/story.css','js/features/story/episodes.css'], public:[
-      'maybeStoryEpisode', 'noteStoryMission', 'openStoryChapter', 'openStoryJournal', 'STORY', 
-      'storyProgressHTML', 'storySolved'] },
   { id:'profile', layer:'features', files:['js/features/profile/profile.js','js/features/profile/topbar.js'], css:['js/features/profile/welcome.css'], public:[
       'closeWelcome', 'openWelcome', 'renderProfile', 'renderSoundBtn'] },
   { id:'quests', layer:'features', files:['js/features/quests/quests.js'], css:['js/features/quests/quests.css'], public:[
@@ -85,10 +82,11 @@ const SLICES = [
   { id:'map', layer:'features', files:['js/features/map/map.js'], css:['js/features/map/map.css'], public:[
       'renderMap'] },
   { id:'minigame-engine', layer:'features', files:['js/features/minigame-engine/engine.js','js/features/minigame-engine/hints.js'], css:['js/features/minigame-engine/engine.css','js/features/minigame-engine/deck-v13.css','js/features/minigame-engine/outcome-v14.css','js/features/minigame-engine/board-v21.css','js/features/minigame-engine/timer.css','js/features/minigame-engine/hints.css'], public:[
-      'bindQuit', 'clearActiveTimer', 'flashModal', 'gameHeader', 'lastGame', 'livesBar', 'loseLife', 
-      'missionFact', 'onMissionWin', 'playGame', 'progressDots', 'registerGame', 'registerHints', 
-      'setHintQuestion', 'setSolution', 'setupLives', 'solSel', 'speakWrongHint', 'startMinigame', 
-      'startTimerIfNeeded', 'stepOk'] },
+      'bindQuit', 'clearActiveTimer', 'flashModal', 'gameHeader', 'hintNudge', 'hintOrderStep', 
+      'hintSyllablesFirst', 'hintSyllablesHTML', 'lastGame', 'livesBar', 'loseLife', 'missionFact', 
+      'onMissionWin', 'playGame', 'progressDots', 'registerGame', 'registerHints', 'setHintQuestion', 
+      'setSolution', 'setupLives', 'solSel', 'speakWrongHint', 'startMinigame', 'startTimerIfNeeded', 
+      'stepOk'] },
   { id:'minigame-memory', layer:'features', files:['js/features/minigames/memory/memory.js'], css:[], public:[] },
   { id:'minigame-count', layer:'features', files:['js/features/minigames/count/count.js'], css:[], public:[] },
   { id:'minigame-intruder', layer:'features', files:['js/features/minigames/intruder/intruder.js'], css:[], public:[] },
@@ -107,6 +105,9 @@ const SLICES = [
   { id:'minigame-shapes', layer:'features', files:['js/features/minigames/shapes/shapes.js'], css:['js/features/minigames/shapes/shapes.css'], public:[] },
   { id:'minigame-planets', layer:'features', files:['js/features/minigames/planets/planets.js'], css:['js/features/minigames/planets/planets.css'], public:[] },
   { id:'minigame-jigsaw', layer:'features', files:['js/features/minigames/jigsaw/jigsaw.js'], css:['js/features/minigames/jigsaw/jigsaw.css'], public:[] },
+  { id:'story', layer:'features', files:['js/features/story/story.js','js/features/story/episodes.js'], css:['js/features/story/story.css','js/features/story/episodes.css'], public:[
+      'maybeStoryEpisode', 'noteStoryMission', 'openStoryChapter', 'openStoryJournal', 'STORY', 
+      'storyProgressHTML', 'storySolved'] },
   { id:'market', layer:'features', files:['js/features/market/market.js'], css:['js/features/market/market.css'], public:[] },
   { id:'gifts', layer:'features', files:['js/features/gifts/gifts.js'], css:['js/features/gifts/gifts.css'], public:[
       'favoritesOf', 'friendHearts', 'friendPoints', 'openGiftPicker'] },

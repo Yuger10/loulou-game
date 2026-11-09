@@ -25,7 +25,8 @@
      fx.marks     [{ sel, text }] : petites étiquettes (ex. numéros 1, 2, 3)
      fx.strike    sélecteur des éléments à barrer (ex. ceux qu'on enlève)
      fx.dim       sélecteur d'UNE mauvaise réponse à écarter (niveau 2)
-     fx.html      un petit dessin dans la bulle (ex. le mot en syllabes) */
+     fx.html      un petit dessin dans la bulle (ex. le mot en syllabes)
+     fx.run       un effet propre au jeu, fn(racine de la fenêtre) */
 
 const HINT_IDLE_MS = 10000;     // sans toucher l'écran, le bouton se propose
 const HINT_LEVELS = 2;
@@ -47,6 +48,15 @@ function hintMayEliminate(level, nChoices){
   return level === HINT_LEVELS && nChoices >= HINT_MIN_CHOICES && nChoices - 1 >= HINT_MIN_LEFT;
 }
 
+/* Indices d'une suite à toucher dans l'ordre (puzzle des nombres, jours de la
+   semaine, planètes) : 1. la méthode ; 2. le chemin déjà fait, avec un « ? »
+   pour le suivant. Rien n'est écarté : chaque choix servira plus tard. */
+function hintOrderStep(done, say, label){
+  return { say, fx:{
+    html:`<span class="hint-strip">${done.slice(-3).map(x=> `<i>${label ? label(x) : x}</i>`).join('')}<i class="q">?</i></span>`,
+  } };
+}
+
 /* Qui donne l'indice, au bout de combien de temps il se propose, les
    paillettes… : réglé par l'équipe des compagnons (js/features/companion-team),
    qui s'inscrit ici avec setHintPolicy. Par défaut : le compagnon du joueur,
@@ -56,6 +66,7 @@ const hintPolicy = {
   idleMs: ()=> HINT_IDLE_MS,
   sparkle: ()=> false,
   enabled: ()=> !race.active,
+  syllablesFirst: ()=> false,   // Perle la conteuse : les syllabes dès l'indice 1
   onUse: null,      // (kind, level) après chaque indice
   onShow: null,     // (kind) quand une question avec indices s'affiche
 };
@@ -80,6 +91,9 @@ function setHintQuestion(kind, q, opts){
   if(hint.on && hintPolicy.onShow) hintPolicy.onShow(kind);
 }
 function hintActive(){ return hint.on; }
+function hintSyllablesFirst(){ return !!hintPolicy.syllablesFirst(); }
+// un mot écrit découpé en syllabes colorées (lecture)
+function hintSyllablesHTML(syl){ return syl.map(x=> `<span class="hint-syl">${x}</span>`).join(''); }
 function hintLevel(){ return hint.on ? hint.level : 0; }
 
 function renderHintButton(){
@@ -162,8 +176,10 @@ function showHint(h, level){
   }
   const who = hintPolicy.giver(hint.kind);
   bub.dataset.level = level;
+  // espaces insécables avant « : ! ? » (typographie française, pas de « : » seul en début de ligne)
+  const text = h.say.replace(/ ([:;!?»])/g, '\u00a0$1').replace(/« /g, '«\u00a0');
   bub.innerHTML = `<span class="hint-bface" aria-hidden="true">${companionSVG(who, 'think')}</span>
-    <span class="hint-btext"><b class="hint-n">💡 ${level}</b> ${h.say}${h.fx.html ? `<span class="hint-extra">${h.fx.html}</span>` : ''}</span>`;
+    <span class="hint-btext"><b class="hint-n">💡 ${level}</b> ${text}${h.fx.html ? `<span class="hint-extra">${h.fx.html}</span>` : ''}</span>`;
   bub.classList.remove('pop'); void bub.offsetWidth; bub.classList.add('pop');
   applyHintFx(h.fx, level);
   speak(h.say);
@@ -187,6 +203,7 @@ function applyHintFx(fx, level){
     else el.insertAdjacentHTML('beforeend', `<span class="hint-mark" aria-hidden="true">${m.text}</span>`);
   }));
   all(fx.strike).forEach(el=> el.classList.add('hint-strike'));
+  if(fx.run) fx.run(root);
   if(fx.dim) hintEliminate(fx.dim, level);
 }
 // écarte UNE mauvaise réponse, seulement si la règle anti-devinette le permet

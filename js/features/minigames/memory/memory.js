@@ -8,6 +8,7 @@ function renderMemory(){
   const cards = shuffle([...pool, ...pool]).map((e,i)=>({id:i, emoji:e, flipped:false, matched:false}));
   let first=null, lock=false;
   const cols3 = pairs===3;
+  const q = { cards };   // la question, pour les indices
   // tests : les paires, deux cartes à la fois
   { const by = {}; cards.forEach(c=> (by[c.emoji] = by[c.emoji] || []).push(c.id)); setSolution(Object.values(by).flat().map(id=>solSel('.mcard','id',id))); }
 
@@ -21,6 +22,7 @@ function renderMemory(){
       </div>
     `);
     bindQuit();
+    setHintQuestion('memory', q);   // même question à chaque nouveau dessin : les indices restent
     document.querySelectorAll('.mcard').forEach(el=>{
       el.onclick = ()=>{
         const id = Number(el.dataset.id);
@@ -59,5 +61,35 @@ function renderMemory(){
   render();
 }
 
+/* Indices (v52) : 1. retourner une carte et chercher sa jumelle, en
+   retenant les places ; 2. si une carte est retournée : sa jumelle est parmi
+   3 cartes qui brillent ; sinon, une carte se montre un instant (à retenir). */
+function memoryHints(q){
+  const hidden = q.cards.filter(c=> !c.matched && !c.flipped);
+  const up = q.cards.filter(c=> c.flipped && !c.matched);
+  const first = up.length === 1 ? up[0] : null;   // une carte retournée, en attente de sa jumelle
+  let two;
+  if(first){
+    const twin = q.cards.find(c=> c !== first && c.emoji === first.emoji);
+    const i = hidden.indexOf(twin);
+    const start = Math.max(0, Math.min(i - Math.floor(Math.random() * 3), hidden.length - 3));
+    const group = hidden.slice(start, start + 3);
+    two = { say:'Sa jumelle se cache parmi les cartes qui brillent !', fx:{ glow: group.map(c=> solSel('.mcard', 'id', c.id)).join(', ') } };
+  } else {
+    const peek = pickRandom(hidden);
+    two = { say:'Je te montre une carte un petit instant : retiens-la bien !', fx:{ run(root){
+      const el = peek && root.querySelector(solSel('.mcard', 'id', peek.id));
+      if(!el) return;
+      el.textContent = peek.emoji; el.classList.add('flipped', 'hint-glow');
+      setTimeout(()=>{ if(el.isConnected && !peek.flipped && !peek.matched){ el.textContent = ''; el.classList.remove('flipped', 'hint-glow'); } }, 1400);
+    } } };
+  }
+  return [
+    { say:'Retourne une carte, puis cherche sa jumelle. Retiens bien où sont les images déjà vues !', fx:{ glow:'.memory-grid' } },
+    two,
+  ];
+}
+
 // inscription auprès du moteur de mini-jeux (js/features/minigame-engine)
 registerGame('memory', renderMemory);
+registerHints('memory', memoryHints);

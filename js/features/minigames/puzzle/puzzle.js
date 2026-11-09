@@ -31,7 +31,7 @@ function renderPuzzle(){
   }
 
   const nums = shuffle(seq.slice());
-  let idx = 0;
+  const q = { seq, idx:0, variant };   // q.idx : où en est l'enfant (pour les indices)
   openModal(`
     ${gameHeader('🧩 Petit puzzle', hint)}
     ${livesBar()}
@@ -42,16 +42,17 @@ function renderPuzzle(){
   `);
   bindQuit();
   setSolution(seq.map(n=>solSel('.puzzle-btn','n',n)));
+  setHintQuestion('puzzle', q, { choices:'.puzzle-btn' });
   document.querySelectorAll('.puzzle-btn').forEach(btn=>{
     btn.onclick = ()=>{
       const n = Number(btn.dataset.n);
       if(btn.classList.contains('done')) return;
-      if(n===seq[idx]){
+      if(n===seq[q.idx]){
         btn.classList.add('done');
         stepOk(btn);
-        idx++;
-        document.querySelectorAll('.game-progress i').forEach((d,i)=>d.classList.toggle('on', i<idx));
-        if(idx===seq.length){ flashModal('ok'); setTimeout(onMissionWin, 350); }
+        q.idx++;
+        document.querySelectorAll('.game-progress i').forEach((d,i)=>d.classList.toggle('on', i<q.idx));
+        if(q.idx===seq.length){ flashModal('ok'); setTimeout(onMissionWin, 350); }
       } else {
         loseLife(btn, {disable:false});   // le bon nombre reste cliquable ensuite
       }
@@ -59,5 +60,20 @@ function renderPuzzle(){
   });
 }
 
+// Indices (v52) : voir hintOrderStep (js/features/minigame-engine/hints.js).
+function puzzleHints(q){
+  const done = q.seq.slice(0, q.idx), last = done[done.length - 1];
+  const desc = q.variant === 'desc', step2 = q.variant === 'step2';
+  let say1;
+  if(!done.length) say1 = desc ? 'Cherche d\'abord le plus grand nombre.' : 'Cherche d\'abord le plus petit nombre.';
+  else if(step2) say1 = `On compte de 2 en 2 : après ${last}, saute un nombre.`;
+  else say1 = desc ? `Quel nombre vient juste avant ${last} quand on compte ?` : `Quel nombre vient juste après ${last} quand on compte ?`;
+  return [
+    { say:say1, fx:{ glow:'.puzzle-row' } },
+    hintOrderStep(done, done.length ? 'Voici le chemin déjà fait. Récite la suite dans ta tête : quel nombre vient ensuite ?' : 'Compare les nombres deux par deux, et garde à chaque fois le ' + (desc ? 'plus grand.' : 'plus petit.')),
+  ];
+}
+
 // inscription auprès du moteur de mini-jeux (js/features/minigame-engine)
 registerGame('puzzle', renderPuzzle);
+registerHints('puzzle', puzzleHints);

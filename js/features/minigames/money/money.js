@@ -50,6 +50,7 @@ function renderMoney(){
   bindQuit();
   startTimerIfNeeded('money');
   setSolution([solSel('.money-pile-btn','v',target)]);
+  setHintQuestion('money', { target, piles: shuffled }, { choices:'.money-pile-btn' });
   document.querySelectorAll('.money-pile-btn').forEach(btn=>{
     btn.onclick = ()=>{
       if(Number(btn.dataset.v)===target){ clearActiveTimer(); stepOk(btn); flashModal('ok'); setTimeout(onMissionWin, 350); }
@@ -58,5 +59,17 @@ function renderMoney(){
   });
 }
 
+// Indices (v52) : 1. additionner les pièces de chaque pile ; 2. le début de
+// chaque addition est écrit (jamais le total d'une pile).
+function moneyHints(q){
+  const start = (pile)=> pile.length >= 3 ? `${pile[0]}+${pile[1]}=${pile[0] + pile[1]}…` : pile.length === 2 ? `${pile[0]}+…` : '';
+  return [
+    { say:`Additionne les pièces de chaque pile, une par une, et compare avec le prix : ${q.target}.`, fx:{ glow:'.money-price' } },
+    { say:'Je commence les additions de chaque pile. À toi de les finir !',
+      fx:{ marks: q.piles.map((o, i)=> ({ sel:`.money-options .money-pile-btn:nth-child(${i+1})`, text:start(o.pile) })).filter(m=> m.text) } },
+  ];
+}
+
 // inscription auprès du moteur de mini-jeux (js/features/minigame-engine)
 registerGame('money', renderMoney);
+registerHints('money', moneyHints);

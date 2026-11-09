@@ -18,15 +18,15 @@ Nouvelle slice : `features/companion-team/`. Contrat d'indices dans `features/mi
 - [ ] Task: Conductor - User Manual Verification 'Contrat d'indices et bouton' (Protocol in workflow.md)
 
 ## Phase 2 : Les indices de chaque mini-jeu
-- [ ] Task: Jeux de nombres
-    - [ ] Tests et indices : compter, math, compare, money, calc, puzzle, sequence, assembler l'image (jigsaw)
-- [ ] Task: Jeux de langue
-    - [ ] Tests et indices : reading, grammar
-- [ ] Task: Jeux d'observation et de monde
-    - [ ] Tests et indices : memory, intruder, volume, clock, calendar, shapes, planets
-- [ ] Task: Énigmes d'histoire (et rangement des squishies si la v53 est livrée)
-- [ ] Task: Test de couverture des indices
-    - [ ] Un test parcourt **chaque** type de mini-jeu inscrit et échoue s'il n'a pas d'indices ; ajouter l'étape « indices » à `conductor/checklist-mini-jeu.md`
+- [x] Task: Jeux de nombres
+    - [x] Tests et indices : compter, math, compare, money, calc, puzzle, sequence, assembler l'image (jigsaw)
+- [x] Task: Jeux de langue
+    - [x] Tests et indices : reading, grammar
+- [x] Task: Jeux d'observation et de monde
+    - [x] Tests et indices : memory, intruder, volume, clock, calendar, shapes, planets (et simon, absent de la liste d'origine)
+- [x] Task: Énigmes d'histoire (et rangement des squishies si la v53 est livrée) : énigmes faites (`tip` par énigme) ; rangement à faire avec la v53
+- [x] Task: Test de couverture des indices
+    - [x] Un test parcourt **chaque** type de mini-jeu inscrit et échoue s'il n'a pas d'indices ; ajouter l'étape « indices » à `conductor/checklist-mini-jeu.md`
 - [ ] Task: Conductor - User Manual Verification 'Indices de chaque mini-jeu' (Protocol in workflow.md)
 
 ## Phase 3 : L'équipe

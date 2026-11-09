@@ -94,6 +94,7 @@ function renderJigsaw(){
   bindQuit();
   // tests : toucher chaque morceau, puis sa case
   setSolution(Array.from({length:n}, (_,i)=>[solSel('.jg-piece','p',i), solSel('.jg-slot','s',i)]).flat());
+  setHintQuestion('jigsaw', { cols:r.cols, rows:r.rows, ghost:!!r.ghost });
 
   let placed = 0, selected = null, justDragged = false;
   const clearSel = ()=>{ if(selected) selected.classList.remove('sel'); selected = null; };
@@ -175,5 +176,19 @@ function renderJigsaw(){
   });
 }
 
+// Indices (v52) : 1. commencer par les coins et regarder les bords ; 2. une
+// case vide à remplir en premier (la case, jamais le morceau).
+function jigsawHints(q){
+  const empty = document.querySelector('.jg-slot:not(.filled)');
+  const s = empty ? Number(empty.dataset.s) : 0;
+  const corner = s === 0 ? 'en haut à gauche' : `ligne ${Math.floor(s / q.cols) + 1}, colonne ${s % q.cols + 1}`;
+  return [
+    { say: q.ghost ? 'Regarde l\'image en transparence, puis commence par les coins.' : 'Regarde le modèle, puis commence par les coins : ils ont deux bords droits.',
+      fx:{ glow: q.ghost ? '.jg-board' : '.jg-model' } },
+    { say:`Commence par cette case, ${corner}. Quel morceau a le même dessin ?`, fx:{ glow: empty ? solSel('.jg-slot', 's', s) : null } },
+  ];
+}
+
 // inscription auprès du moteur de mini-jeux (js/features/minigame-engine)
 registerGame('jigsaw', renderJigsaw);
+registerHints('jigsaw', jigsawHints);

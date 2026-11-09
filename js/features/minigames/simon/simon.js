@@ -47,6 +47,17 @@ function renderSimon(){
   }
   seq.forEach(flash);
   setSolution(seq.map(p=>solSel('.simon-pad','k',p.k)));   // après « À toi ! »
+  // indices (v52) : revoir la suite, plus lentement, depuis le début
+  const q = { len, replay(){
+    if(playing) return;
+    playing = true; pos = 0;
+    document.querySelectorAll('.game-progress i').forEach(dd=>dd.classList.remove('on'));
+    const s = document.getElementById('simon-state');
+    if(s) s.textContent = '👀 Regarde encore…';
+    seq.forEach((p, i)=> flash(p, i * 1.6));   // 1,6 fois plus lent
+    setTimeout(()=>{ playing = false; const s2 = document.getElementById('simon-state'); if(s2) s2.textContent = '👆 À toi !'; }, 600 + seq.length*1040);
+  } };
+  setHintQuestion('simon', q);
   setTimeout(()=>{
     playing = false;
     const s = document.getElementById('simon-state');
@@ -82,5 +93,15 @@ function renderSimon(){
   });
 }
 
+// Indices (v52) : 1. dire le nom des couleurs dans sa tête pendant qu'elles
+// s'allument ; 2. la suite rejouée plus lentement, depuis le début.
+function simonHints(q){
+  return [
+    { say:'Pendant que les couleurs s\'allument, dis leur nom dans ta tête : ça aide à retenir !', fx:{ glow:'.simon-grid' } },
+    { say:'Regarde encore une fois, plus lentement. Puis recommence depuis le début.', fx:{ run(){ q.replay(); } } },
+  ];
+}
+
 // inscription auprès du moteur de mini-jeux (js/features/minigame-engine)
 registerGame('simon', renderSimon);
+registerHints('simon', simonHints);

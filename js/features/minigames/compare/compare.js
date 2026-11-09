@@ -39,6 +39,7 @@ function renderCompare(){
   bindQuit();
   startTimerIfNeeded('compare');
   setSolution([solSel('.cmp-btn','v',answer)]);
+  setHintQuestion('compare', { a, b, answer }, { choices:'.cmp-btn' });
   document.querySelectorAll('.cmp-btn').forEach(btn=>{
     btn.onclick = ()=>{
       if(btn.dataset.v===answer){
@@ -54,5 +55,21 @@ function renderCompare(){
   });
 }
 
+// Indices (v52) : 1. le sens du signe (la bouche vers le plus grand) ;
+// 2. comparer d'abord les dizaines, puis les unités.
+function compareHints(q){
+  const ta = Math.floor(q.a / 10), tb = Math.floor(q.b / 10);
+  const plural = (n, w)=> `${n} ${w}${n > 1 ? 's' : ''}`;
+  let say2;
+  if(q.a < 10 && q.b < 10) say2 = `Compte dans ta tête : 1, 2, 3… Lequel arrive en dernier, ${q.a} ou ${q.b} ? Ou bien sont-ils pareils ?`;
+  else if(ta !== tb) say2 = `Regarde d'abord les dizaines : ${q.a} a ${plural(ta, 'dizaine')}, ${q.b} a ${plural(tb, 'dizaine')}.`;
+  else say2 = `Les dizaines sont pareilles. Regarde les unités : ${q.a % 10} et ${q.b % 10}.`;
+  return [
+    { say:'Le signe ouvre sa grande bouche vers le plus grand nombre, et sa pointe montre le plus petit. Si les deux sont pareils, c\'est le signe égal.', fx:{ glow:'.cmp-options' } },
+    { say:say2, fx:{ glow:'.cmp-num' } },
+  ];
+}
+
 // inscription auprès du moteur de mini-jeux (js/features/minigame-engine)
 registerGame('compare', renderCompare);
+registerHints('compare', compareHints);

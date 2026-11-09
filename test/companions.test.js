@@ -129,6 +129,78 @@ const wrongOf = (sel)=>{ const good = d.querySelector(ev('gameSolution')[0]); re
   check('en course : pas de bouton 💡', !hintBtn());
   ev('race.active = false; closeModal()');
 
+  /* ================= Phase 2 : les indices de chaque mini-jeu ================= */
+  section('Indices de chaque mini-jeu');
+  {
+    const games = ev('GAME_TYPES');
+    const maxTier = { calc:6, shapes:6, planets:6 };
+    const missing = games.filter(k=> !ev(`hasHints(${JSON.stringify(k)})`));
+    check(`chaque type de mini-jeu inscrit a ses indices (${games.length} jeux)`, missing.length === 0);
+    if(missing.length) console.log('   sans indices :', missing.join(', '));
+    const problems = [];
+    let rounds = 0;
+    for(const key of games){
+      for(let tier = 1; tier <= (maxTier[key] || 5); tier++){
+        for(let r = 0; r < 2; r++){
+          rounds++;
+          startGame(key, tier);
+          const where = `${key} palier ${tier}`;
+          if(!hintBtn()){ problems.push(`${where} : pas de bouton 💡`); continue; }
+          if(!hintBtn().querySelector(`svg[data-buddy="${ev('currentCompanion()')}"]`)) problems.push(`${where} : pas la tête du principal`);
+          const lv = ev('hintsFor(hint.kind, hint.q)');
+          if(lv.length !== 2 || !lv.every(h=> h.say.length > 8) || lv[0].say === lv[1].say) problems.push(`${where} : 2 indices distincts attendus`);
+          if(lv[0].fx.dim) problems.push(`${where} : l'indice 1 ne doit rien écarter`);
+          const sol = ev('gameSolution') || [];
+          const solEls = sol.map(x=> d.querySelector(x));
+          const choicesSel = ev('hint.choices');
+          const nChoices = choicesSel ? ev('hintChoicesLeft()') : 0;
+          // le texte ne donne jamais la réponse (jeux à une seule réponse chiffrée ou à signe)
+          if(sol.length === 1 && solEls[0]){
+            const ans = solEls[0].dataset.v;
+            // jamais « = réponse », ni une comptine qui arrive jusqu'à la réponse (« 4, 5, 6… »)
+            const says = (re)=> lv.some(h=> re.test(h.say));
+            if(['math','calc'].includes(key) && (says(new RegExp(`= ${ans}(?![0-9])`)) || says(new RegExp(`(^|[^0-9])${ans}…`)))) problems.push(`${where} : un indice dit la réponse (${ans})`);
+            if(key === 'count' && lv.some(h=> (h.say.match(/[0-9]+/g) || []).some(x=> Number(x) >= Number(ans)))) problems.push(`${where} : on compte jusqu'à la réponse (${ans})`);
+            if(key === 'compare' && lv.some(h=> /[<>=]/.test(h.say))) problems.push(`${where} : un indice montre un signe`);
+            if(key === 'clock' && lv.some(h=> h.say.includes(ans))) problems.push(`${where} : un indice dit l'heure`);
+          }
+          hintBtn().click(); hintBtn().click();
+          const dims = d.querySelectorAll('#modal-body .hint-dim');
+          if(dims.length > 1) problems.push(`${where} : plus d'une réponse écartée`);
+          if(dims.length && nChoices < 4) problems.push(`${where} : élimination avec moins de 4 choix`);
+          if(dims.length && ev('hintChoicesLeft()') < 3) problems.push(`${where} : moins de 3 choix restants`);
+          if([...dims].some(el=> solEls.includes(el))) problems.push(`${where} : une bonne réponse a été écartée !`);
+          if(!d.querySelector('.hint-bubble[data-level="2"]')) problems.push(`${where} : pas de bulle pour l'indice 2`);
+          // le jeu reste gagnable après les indices
+          if(key === 'simon') await waitFor(()=> (d.getElementById('simon-state') || {}).textContent === '👆 À toi !', 3000);
+          for(const x of sol){ const el = d.querySelector(x); if(el) el.click(); await wait(key === 'memory' ? 45 : 5); }
+          if(!(await waitFor(()=> !!d.querySelector('.win-box'), 2000))) problems.push(`${where} : plus gagnable après les indices`);
+        }
+      }
+    }
+    check(`2 niveaux, anti-devinette, réponse jamais donnée, jeu gagnable (${rounds} parties)`, problems.length === 0);
+    if(problems.length) console.log('   ' + problems.slice(0, 12).join('\n   '));
+  }
+
+  section('Indices des énigmes d\'histoire');
+  {
+    const worlds = ev('Object.keys(STORY)');
+    const noTip = worlds.flatMap(wd=> ev(`STORY[${JSON.stringify(wd)}].riddles.filter(r=> !r.tip).length`) ? [wd] : []);
+    check('chaque énigme a son coup de pouce (tip)', noTip.length === 0);
+    ev('closeModal(); renderStoryRiddle("foret", 0)');
+    check('énigme : le bouton 💡 avec la tête du principal', !!hintBtn() && !!hintBtn().querySelector(`svg[data-buddy="${ev('currentCompanion()')}"]`));
+    const hintsBefore = JSON.stringify(ev('state.skills'));
+    hintBtn().click(); hintBtn().click();
+    check('énigme : 2 indices, sans écarter de réponse (3 choix)', d.querySelector('.hint-bubble').dataset.level === '2' && !d.querySelector('.hint-dim'));
+    check('énigme : la réponse n\'est jamais nommée', !/🧚|🍄/.test(d.querySelector('.hint-bubble').textContent));
+    check('énigme : pas comptée dans les progrès des mini-jeux', JSON.stringify(ev('state.skills')) === hintsBefore);
+    ev('closeModal(); renderStoryRiddle("foret", 0)');
+    const bad = [...d.querySelectorAll('.story-opt')].find(b=> !['🧚‍♀️','🍄'].includes(b.textContent.trim()));
+    bad.click();
+    check('énigme : après une erreur, le bouton brille', hintBtn().classList.contains('nudge'));
+    ev('closeModal()');
+  }
+
   check('aucune erreur JS', errs.length === 0);
   if(errs.length) console.log(errs.slice(0, 5));
   console.log(failed ? `\n${failed} test(s) en échec sur ${passed + failed}` : `\nTous les tests des compagnons passent (${passed})`);

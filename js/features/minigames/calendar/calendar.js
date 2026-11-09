@@ -6,11 +6,12 @@
      mots, réservé à partir du CP confirmé).
    Pas de minuteur sur ce jeu (voir NO_TIMER_KINDS dans difficulty.js). */
 
+// tip : ce que montre la scène, sans dire la saison (indice 2, v52)
 const SEASONS = [
-  { name:'printemps', scene:'🌷🐣🌦️' },
-  { name:'été',       scene:'☀️🏖️🍉' },
-  { name:'automne',   scene:'🍂🎃🌧️' },
-  { name:'hiver',     scene:'⛄❄️🧣' },
+  { name:'printemps', scene:'🌷🐣🌦️', tip:'Les fleurs poussent et les petits animaux naissent.' },
+  { name:'été',       scene:'☀️🏖️🍉', tip:'Il fait très chaud, on va à la plage et on mange des fruits bien frais.' },
+  { name:'automne',   scene:'🍂🎃🌧️', tip:'Les feuilles tombent des arbres, et il pleut souvent.' },
+  { name:'hiver',     scene:'⛄❄️🧣', tip:'Il fait très froid, il peut neiger : on met une écharpe.' },
 ];
 const WEEKDAYS = ['lundi','mardi','mercredi','jeudi','vendredi','samedi','dimanche'];
 
@@ -45,6 +46,7 @@ function renderSeasonGuess(){
   // annonce les 3 mots proposés (vocabulaire), un peu après la consigne
   setTimeout(()=> speak(shown.map(o=>o.name).join(', ')), 1600);
   setSolution([solSel('.season-btn','v',correct.name)]);
+  setHintQuestion('calendar', { kind:'season', correct }, { choices:'.season-btn' });
   document.querySelectorAll('.season-btn').forEach(btn=>{
     btn.onclick = ()=>{
       if(btn.dataset.v===correct.name){ stepOk(btn); flashModal('ok'); setTimeout(onMissionWin, 350); }
@@ -60,7 +62,7 @@ function renderWeekdayOrder(dd){
   const startIdx = Math.floor(Math.random()*(7-count+1));
   const seq = WEEKDAYS.slice(startIdx, startIdx+count);
   const nums = shuffle(seq.slice());
-  let idx = 0;
+  const q = { kind:'week', seq, idx:0 };   // q.idx : où en est l'enfant (pour les indices)
 
   openModal(`
     ${gameHeader('📅 Les jours de la semaine', `Touche les jours dans l'ordre : ${seq[0]} → ${seq[seq.length-1]}`)}
@@ -72,16 +74,17 @@ function renderWeekdayOrder(dd){
   `);
   bindQuit();
   setSolution(seq.map(w=>solSel('.weekday-btn','w',w)));
+  setHintQuestion('calendar', q, { choices:'.weekday-btn' });
   document.querySelectorAll('.weekday-btn').forEach(btn=>{
     btn.onclick = ()=>{
       const w = btn.dataset.w;
       if(btn.classList.contains('done')) return;
-      if(w===seq[idx]){
+      if(w===seq[q.idx]){
         btn.classList.add('done');
         stepOk(btn);
-        idx++;
-        document.querySelectorAll('.game-progress i').forEach((d,i)=>d.classList.toggle('on', i<idx));
-        if(idx===seq.length){ flashModal('ok'); setTimeout(onMissionWin, 350); }
+        q.idx++;
+        document.querySelectorAll('.game-progress i').forEach((d,i)=>d.classList.toggle('on', i<q.idx));
+        if(q.idx===seq.length){ flashModal('ok'); setTimeout(onMissionWin, 350); }
       } else {
         loseLife(btn, {disable:false});
       }
@@ -89,5 +92,21 @@ function renderWeekdayOrder(dd){
   });
 }
 
+// Indices (v52). Saisons : 1. chaud ou froid ? que font les plantes ? ;
+// 2. ce que montre la scène. Jours : 1. réciter la comptine des jours ;
+// 2. le chemin déjà fait, avec un « ? » pour le jour suivant.
+function calendarHints(q){
+  if(q.kind === 'season') return [
+    { say:'Regarde les images : fait-il chaud ou froid ? Que font les plantes et les animaux ?', fx:{ glow:'.season-scene' } },
+    { say:q.correct.tip, fx:{ glow:'.season-scene' } },
+  ];
+  const done = q.seq.slice(0, q.idx);
+  return [
+    { say: done.length ? `Récite les jours dans ta tête : quel jour vient après ${done[done.length - 1]} ?` : 'Récite la comptine des jours dans ta tête, depuis lundi : lequel arrive en premier ?', fx:{ glow:'.weekday-row' } },
+    hintOrderStep(done, 'Voici le chemin déjà fait. Quel jour vient ensuite ?'),
+  ];
+}
+
 // inscription auprès du moteur de mini-jeux (js/features/minigame-engine)
 registerGame('calendar', renderCalendar);
+registerHints('calendar', calendarHints);
