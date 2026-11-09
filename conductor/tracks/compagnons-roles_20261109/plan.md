@@ -1,5 +1,7 @@
 # Plan : Les compagnons et leurs rôles (indices et équipe) (v52)
 
+> **Architecture (v51) :** chaque nouveau fichier JS ou CSS va dans sa slice et est déclaré dans `js/slices.js` (puis `npm run sync`) ; voir `conductor/checklist-mini-jeu.md` et `conductor/checklist-ile.md`.
+
 Spec : [spec.md](./spec.md). Workflow : [workflow.md](../../workflow.md).
 **Prérequis :** `refactor-feature-slices` (étape A) livrée. Les spécialités Tom (boîtes) et Rose (squishies) s'appuient sur la v53 si elle est livrée, et se dégradent proprement sinon. Lili (Monde des Boîtes) et Grisou (fin de saison 2) ne sont rencontrables qu'une fois leurs tracks livrées.
 Nouvelle slice : `features/companion-team/`. Contrat d'indices dans `features/minigame-engine/`.
@@ -12,7 +14,7 @@ Nouvelle slice : `features/companion-team/`. Contrat d'indices dans `features/mi
     - [ ] Tests : bouton présent dans chaque mini-jeu avec la tête du principal ; il brille après une erreur ou 10 s sans toucher ; masqué en mode course ; récompense identique avec ou sans indice
     - [ ] Interface, humeurs du compagnon (« réfléchit », « fête »), voix
 - [ ] Task: Compter les indices
-    - [ ] Tests : `skills[jeu].hints` incrémenté ; un indice ne compte pas comme une erreur pour `js/adaptive.js` ; visible dans l'espace parents (`js/parents.js`) ; inclus dans la sauvegarde
+    - [ ] Tests : `skills[jeu].hints` incrémenté ; un indice ne compte pas comme une erreur pour `js/features/adaptive/adaptive.js` ; visible dans l'espace parents (`js/features/parents/parents.js`) ; inclus dans la sauvegarde
 - [ ] Task: Conductor - User Manual Verification 'Contrat d'indices et bouton' (Protocol in workflow.md)
 
 ## Phase 2 : Les indices de chaque mini-jeu
@@ -44,7 +46,7 @@ Nouvelle slice : `features/companion-team/`. Contrat d'indices dans `features/mi
 - [ ] Task: Lili (indices magiques), Perle (conteuse), Grisou (câlins)
     - [ ] Tests : 5 s au lieu de 10, paillettes, énigmes ; bouton « 🔁 Relire » et syllabes ; consolation après 2 erreurs ; Grisou annonce la pause douce des parents (v41) sans minuteur à lui
 - [ ] Task: Léo (tuteur)
-    - [ ] Tests : Léo annonce un jeu « à travailler » ou en soutien choisi par `js/adaptive.js` ; il dit la phrase de progrès existante ; indice 1 avant la première question d'un jeu en soutien ; 1 annonce par session
+    - [ ] Tests : Léo annonce un jeu « à travailler » ou en soutien choisi par `js/features/adaptive/adaptive.js` ; il dit la phrase de progrès existante ; indice 1 avant la première question d'un jeu en soutien ; 1 annonce par session
 - [ ] Task: Sam (guide), Rose (collection)
     - [ ] Tests : priorité des destinations de Sam et toucher pour y aller ; Rose indique ce qui manque et sa provenance (Sac, Album, chambre si v53)
 - [ ] Task: Zap (défis), Tom (trésors)

@@ -19,7 +19,7 @@ Sa première île est le **Monde des Boîtes** (« La Fabrique de boîtes »), a
 - **Parties existantes :** une joueuse déjà au niveau 8 ou plus voit le Ciel s'ouvrir à la première ouverture après la mise à jour, avec le même écran.
 
 ### 2.2 Histoire de la saison 2 : « Les Rêves dans les boîtes »
-- Elle suit le même format que `js/story.js` : un chapitre par île (guide, titre, 3 phrases d'intro lues à voix haute, au moins 2 énigmes en images, un succès, une récompense).
+- Elle suit le même format que `js/features/story/story.js` : un chapitre par île (guide, titre, 3 phrases d'intro lues à voix haute, au moins 2 énigmes en images, un succès, une récompense).
 - Le **journal 📖** affiche deux parties, Saison 1 et Saison 2. Les chapitres de la saison 2 sont regroupés sous « Le Ciel des Rêves ».
 - **Prologue** (à l'ouverture du Ciel, lu par Capucine) : Grisou, le petit nuage, a eu peur de perdre les rêves colorés et les a tous enfermés dans des boîtes. Le ciel est devenu gris. « Aide-nous à les libérer ! »
 - **Chapitre Monde des Boîtes :** les rêves sont cachés dans les boîtes de la Fabrique. Résoudre l'énigme en libère les premiers. Récompense : des pièces, plus **une boîte surprise de la série Boîtes** (mécanique de la track 1).
@@ -27,7 +27,7 @@ Sa première île est le **Monde des Boîtes** (« La Fabrique de boîtes »), a
 - **Fin de saison :** elle est prévue mais **hors de cette track**. Elle arrivera avec la dernière île de la saison 2.
 
 ### 2.3 Le Monde des Boîtes (« La Fabrique de boîtes »)
-- **L'île :** `boites`, emoji 📦, avec sa forme d'île propre (des boîtes empilées) et un thème de couleurs (`--world-*`) kraft et pastel. Sa décoration de scène est en SVG et CSS, dans le style de `js/island.js`.
+- **L'île :** `boites`, emoji 📦, avec sa forme d'île propre (des boîtes empilées) et un thème de couleurs (`--world-*`) kraft et pastel. Sa décoration de scène est en SVG et CSS, dans le style de `js/features/island/island.js`.
 - **Les personnages** (4, avec chacun leur butin et 3 répliques) :
   - 🦫 **Capucine**, la capybara directrice de la Fabrique, guide du chapitre
   - 🐱 **Kiki**, le chat-dans-la-boîte, mascotte qui dort dans toutes les boîtes

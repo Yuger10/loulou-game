@@ -59,9 +59,10 @@ Principe : **un déplacement ou un découpage = un commit avec `npm test` vert**
 - [x] Task: Conductor - User Manual Verification 'Frontières' (Protocol in workflow.md)
 
 ## Phase 6 : Documentation et livraison
-- [ ] Task: Docs
-    - [ ] `README.md` (structure), `tech-stack.md` (architecture, règles), `workflow.md` ; `conductor/checklist-mini-jeu.md` et `conductor/checklist-ile.md`
-    - [ ] Adapter les chemins de fichiers cités dans les plans des tracks suivantes (squishies, saison 2, licornes)
+- [x] Task: ADR 0001 « Architecture en feature slices » (`docs/adr/`), ajouté à la demande en fin de track
+- [x] Task: Docs
+    - [x] `README.md` (structure), `tech-stack.md` (architecture, règles), `workflow.md` ; `conductor/checklist-mini-jeu.md` et `conductor/checklist-ile.md`
+    - [x] Adapter les chemins de fichiers cités dans les plans des tracks suivantes (squishies, saison 2, licornes)
 - [ ] Task: Vérification complète
     - [ ] `npm test` vert ; parcours manuel identique à la v49 ; une sauvegarde v49 se charge
 - [ ] Task: Conductor - User Manual Verification 'Documentation et livraison' (Protocol in workflow.md)

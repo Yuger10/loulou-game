@@ -904,3 +904,27 @@ Les poissons nageaient de gauche à droite alors que les emoji 🐠 🐟 🐢 re
 Au palier 5 (7 paires), il n'y avait que 3 essais. Or, même en se souvenant de tout ce qu'on a vu, on se trompe en moyenne environ 4 fois en découvrant les cartes (jusqu'à 7) : un enfant qui n'avait rien oublié perdait presque à coup sûr. **Les essais suivent maintenant le nombre de paires : paires + 2** (6 au palier 2, 9 au palier 5). Bien retenir fait toujours gagner ; toucher au hasard fait toujours perdre.
 
 - Cache `lagon-v50`.
+
+---
+
+# v51 — Le code rangé en « feature slices » (aucun changement pour l'enfant)
+
+Track Conductor `refactor-feature-slices` (étape A de la feuille de route A → B). Décision documentée dans l'[ADR 0001](docs/adr/0001-architecture-feature-slices.md). Le jeu, les sauvegardes et les écrans sont **identiques** ; seule l'organisation du code change, pour accueillir les prochaines versions (compagnons, squishies, saison 2).
+
+## Organisation
+- 37 fichiers à plat deviennent **49 slices** sur 4 couches : `js/app/`, `js/features/` (un dossier par fonctionnalité, et un par mini-jeu dans `features/minigames/`), `js/entities/` (objets, mondes, personnages, difficulté, état et sauvegarde, joueurs, compagnons), `js/shared/` (modale, vues, son, voix, retours, icônes, styles communs).
+- Les fichiers fourre-tout sont découpés : `ui.js`, `state.js`, `data.js`, `players.js`, `minigames.js` (moteur d'un côté, un dossier par jeu de l'autre) et **`styles.css` (2 800 lignes) en 48 feuilles** rangées dans leur slice. La cascade CSS est identique octet pour octet.
+- **Manifeste `js/slices.js`** : couche, fichiers JS et CSS dans l'ordre de chargement, API publique de chaque slice. `index.html` et `sw.js` en sont générés (`npm run sync`).
+
+## Règles, vérifiées par `npm test` (`test/slices.test.js`)
+- Une couche n'utilise que sa couche ou les couches inférieures ; entre slices, seulement l'**API publique**. Le test sait échouer (cas fabriqués et violation réelle vérifiés).
+- Les dépendances « vers le haut » sont remplacées par des **points d'accroche** : `registerGame` (le moteur ne connaît plus la liste des jeux), `registerView`, `onModalOpen` / `onModalClose`, `onWrongFeedback`, `onProfileRefresh`, `setAudioPrefsSource`, `setCompanionDressing`. Aucune exception n'a été nécessaire.
+- **203 gardes `typeof fn==='function'` retirées** (tout est toujours chargé) ; seules restent celles qui testent le navigateur.
+
+## Outils de développement
+- `npm run inventaire` (qui définit et utilise quoi, analyse `acorn`), `npm run sync`, `npm run api`, `test/tools/move.js` (déplacer des déclarations telles quelles), `test/tools/unguard.js`.
+- Checklists `conductor/checklist-mini-jeu.md` et `conductor/checklist-ile.md`.
+- Dépendances de développement ajoutées : `acorn`, `acorn-walk` (jamais chargées par le jeu).
+- Nettoyage : `GAME_LIST.fn`, inutilisé, retiré.
+
+- Cache `lagon-v51`.
