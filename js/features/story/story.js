@@ -18,6 +18,19 @@
    Indices (v52) : le bouton 💡 marche aussi pour les énigmes, avec les mêmes
    règles. 1. réécouter la devinette, indice par indice ; 2. `tip`, une
    devinette plus simple qui ne nomme jamais la réponse. */
+import { charFace } from '../../entities/character/index.js';
+import { save, state } from '../../entities/game-state/index.js';
+import { WORLD_ORDER, worldUnlocked } from '../../entities/world/index.js';
+import { shuffle } from '../../shared/lib/index.js';
+import {
+  bindSpeakButtons, closeModal, confetti, onModalChange, openModal, playSound, shakeEl, speak,
+  speechBubble, vibrate
+} from '../../shared/ui/index.js';
+import { hintNudge, registerHints, setHintQuestion } from '../hints/index.js';
+import { bindQuit, gameHeader, speakWrongHint } from '../screen/index.js';
+import { addStorySquishyBox, squishyBoxRewardHTML } from '../squishies/index.js';
+import { addCoins } from '../wallet/index.js';
+import { EPISODES, episodesSeen, openEpisode } from './episodes.js';
 
 const STORY = {
   lagon: {
@@ -336,3 +349,5 @@ function openStoryJournal(){
 // qu'une fenêtre s'ouvre ou se ferme (même précaution anti-fantôme que les
 // mini-jeux)
 onModalChange(storyClearPendingRetry);
+
+export { openStoryChapter, openStoryJournal, STORY, storySolved };

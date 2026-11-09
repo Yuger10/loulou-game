@@ -1,10 +1,38 @@
 /* ---------- Moteur des mini-jeux : essais, relance anti-devinette, minuteur, victoire ---------- */
+import { CHARACTERS, charFace } from '../../entities/character/index.js';
+import { buddyReact, buddySlot, COMPANIONS, companionSVG } from '../../entities/companion/index.js';
+import { gameTypesForAge, livesFor, timerFor } from '../../entities/difficulty/index.js';
+import { hello, level, save, state, trackGamePlayed } from '../../entities/game-state/index.js';
+import { addItem, ITEMS } from '../../entities/item/index.js';
+import { ac, currentPlayerAge, party, race } from '../../entities/player/index.js';
+import { availableItems, currentWorld } from '../../entities/world/index.js';
+import { emit, on, pickRandom } from '../../shared/lib/index.js';
+import {
+  closeModal, confetti, onModalChange, onModalClose, openModal, playSound, shakeEl, showToast, speak,
+  vibrate, wrongFeedback
+} from '../../shared/ui/index.js';
+import {
+  beginBonusChallenge, bonusChallenge, bonusOnNewGame, endBonusChallenge, gameDiff, inBonusChallenge,
+  lastGame, missionProgress, noteAnswerError, pickPracticeGame, progressCheer, recordMission,
+  resetMissionErrors, setLastGame
+} from '../adaptive/index.js';
+import { markSeen, renderBadge } from '../bag/index.js';
+import { maybeTeamOpening, teamCheerBy, teamWinExtras } from '../companion-team/index.js';
+import { queueGain } from '../gains/index.js';
+import { hintNudge, hintPolicy, setHintCountable } from '../hints/index.js';
+import { checkNewIsland, currentChar, markHelped, renderLagon } from '../island/index.js';
+import { partyAfterWin, partyScore, passTurn } from '../party/index.js';
+import { questProgress } from '../quests/index.js';
+import { bindQuit, speakWrongHint } from '../screen/index.js';
+import { maybeStoryEpisode, noteStoryMission, storyProgressHTML } from '../story/index.js';
+import { newlyUnlockedLookItems, WARDROBE } from '../wardrobe/index.js';
 
 /* Essais autorisés : à partir de l'île 2, les erreurs comptent.
    On évite ainsi de cliquer au hasard jusqu'à tomber juste.
    Le barème complet (par type de jeu et par palier) est centralisé et
    documenté dans js/entities/difficulty/difficulty.js (fonction `livesFor`) — voir aussi
    ANALYSE-DIFFICULTE.md pour le détail académique. */
+
 let lives = Infinity, maxLives = Infinity, currentGameKind = null;
 
 function triesFor(kind){
@@ -376,3 +404,8 @@ function onMissionWin(){
 // ça, l'ancienne question pourrait réapparaître par-dessus un autre jeu.
 onModalChange(()=>{ clearActiveTimer(); clearPendingRetry(); });
 onModalClose(()=>{ bindQuit._last = null; });
+
+export {
+  clearActiveTimer, flashModal, livesBar, loseLife, onMissionWin, playGame, progressDots, registerGame,
+  setMissionFact, setSolution, setupLives, solSel, startMinigame, startTimerIfNeeded, stepOk
+};

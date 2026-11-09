@@ -1,4 +1,16 @@
 // onglets du sac : objets / album
+import { hello, save, state } from '../../entities/game-state/index.js';
+import { ALBUM_REWARD, ALL_ITEMS, countItem, CRAFTED, DECOS } from '../../entities/item/index.js';
+import { onProfileRefresh, profiles } from '../../entities/player/index.js';
+import { WORLDS } from '../../entities/world/index.js';
+import { emit } from '../../shared/lib/index.js';
+import {
+  bindSpeakButtons, closeModal, confetti, openModal, playSound, registerView, speak, vibrate
+} from '../../shared/ui/index.js';
+import { queueGain } from '../gains/index.js';
+import { addCoins } from '../wallet/index.js';
+import { clearLookTry, renderLook } from '../wardrobe/index.js';
+
 let currentSacTab = 'sac';
 
 function setSacTab(tab){
@@ -131,3 +143,5 @@ registerView('sac', ({ sacTab })=>{
 
 // changement de joueur : pastille des nouveaux objets
 onProfileRefresh(renderBadge);
+
+export { checkAlbumComplete, markSeen, renderBadge, setSacTab };

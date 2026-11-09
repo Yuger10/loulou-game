@@ -1,6 +1,8 @@
 /* ---------- Navigation par vues ----------
    Chaque feature inscrit le rendu de sa vue avec registerView(nom, rendu) ;
    switchView affiche la section puis appelle ces rendus. */
+import { playSound } from './sound.js';
+
 const viewRenderers = {};
 function registerView(name, fn){ (viewRenderers[name] = viewRenderers[name] || []).push(fn); }
 
@@ -31,3 +33,5 @@ function switchView(name){
 document.querySelectorAll('.navbtn').forEach(btn=>{
   btn.addEventListener('click', ()=> { playSound('tap'); switchView(btn.dataset.view); });
 });
+
+export { registerView, switchView };

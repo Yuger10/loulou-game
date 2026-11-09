@@ -8,7 +8,10 @@
    tel quel, caractère pour caractère. Une instruction qui définit plusieurs
    noms est déplacée dès qu'un de ses noms est demandé (signalé).
 
-   Outil de développement uniquement (refactor en feature slices, v51). */
+   Outil de développement uniquement (refactor en feature slices, v51).
+   Depuis la v54 (modules ES) : après un déplacement, mettre à jour les
+   `export { … }` et les `import` des deux fichiers ; npm test indique ce qui
+   manque (« utilisé sans import », « n'est pas exporté »). */
 const fs = require('fs');
 const acorn = require('acorn');
 
@@ -37,7 +40,7 @@ function leadingStart(src, start, prevEnd, comments){
 function move(srcFile, destFile, names){
   const src = fs.readFileSync(srcFile, 'utf8');
   const comments = [];
-  const ast = acorn.parse(src, { ecmaVersion:'latest', sourceType:'script', onComment: comments });
+  const ast = acorn.parse(src, { ecmaVersion:'latest', sourceType:'module', onComment: comments });
   const want = new Set(names);
   const found = new Set();
   const chunks = [];

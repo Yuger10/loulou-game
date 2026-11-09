@@ -27,6 +27,11 @@
      fx.dim       sélecteur d'UNE mauvaise réponse à écarter (niveau 2)
      fx.html      un petit dessin dans la bulle (ex. le mot en syllabes)
      fx.run       un effet propre au jeu, fn(racine de la fenêtre) */
+import { buddyReact, COMPANIONS, companionSVG, currentCompanion } from '../../entities/companion/index.js';
+import { save, state } from '../../entities/game-state/index.js';
+import { party, race } from '../../entities/player/index.js';
+import { pickRandom } from '../../shared/lib/index.js';
+import { onModalChange, playSound, speak } from '../../shared/ui/index.js';
 
 const HINT_IDLE_MS = 10000;     // sans toucher l'écran, le bouton se propose
 const HINT_LEVELS = 2;
@@ -257,3 +262,8 @@ function countHint(kind){
 // toute nouvelle fenêtre (ou sa fermeture) met les indices en veille ;
 // le jeu les rallume avec setHintQuestion s'il s'agit d'une question.
 onModalChange(()=>{ hint.on = false; hint.nudged = false; clearTimeout(hint.idle); hint.idle = null; });
+
+export {
+  hintLevel, hintNudge, hintOrderStep, hintPolicy, hintShowFirst, hintSyllablesFirst,
+  hintSyllablesHTML, registerHints, setHintCountable, setHintPolicy, setHintQuestion
+};

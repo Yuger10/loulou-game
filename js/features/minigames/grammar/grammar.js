@@ -6,6 +6,19 @@
    Plus le palier est élevé, moins il y a d'indice image, et plus le
    pluriel (plus difficile à repérer) apparaît souvent — voir
    js/entities/difficulty/difficulty.js (determinantsImageShown/PluralChance/ExtraDistractor). */
+import {
+  determinantsExtraDistractor, determinantsImageShown, determinantsPluralChance
+} from '../../../entities/difficulty/index.js';
+import { WORDS_CP } from '../../../entities/words/index.js';
+import { pickRandom, shuffle } from '../../../shared/lib/index.js';
+import { openModal } from '../../../shared/ui/index.js';
+import { gameDiff } from '../../adaptive/index.js';
+import { registerHints, setHintQuestion } from '../../hints/index.js';
+import {
+  clearActiveTimer, flashModal, livesBar, loseLife, onMissionWin, registerGame, setSolution,
+  setupLives, solSel, startTimerIfNeeded, stepOk
+} from '../../minigame-engine/index.js';
+import { bindQuit, gameHeader } from '../../screen/index.js';
 
 const DET_FAMILIES = {
   defini:   { m:'le',  f:'la',  p:'les' },

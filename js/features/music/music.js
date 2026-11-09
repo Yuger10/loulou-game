@@ -10,6 +10,10 @@
    - à Noël, les clochettes ; à Halloween, une gamme mineure.
    Coupée par défaut. Le bouton son passe par 🎵 (musique + sons + voix) ;
    l'espace parents a aussi un interrupteur. Réglage : state.music. */
+import { state } from '../../entities/game-state/index.js';
+import { currentSeason } from '../../entities/season/index.js';
+import { currentWorld } from '../../entities/world/index.js';
+import { audioCtx, ensureAudioCtx } from '../../shared/ui/index.js';
 
 // root : note MIDI de départ ; scale : gamme (demi-tons) ; prog : accords (degrés en demi-tons)
 const MUSIC_THEMES = {
@@ -147,3 +151,5 @@ function stopMusic(){
 function updateMusic(){ if(musicWanted()) startMusic(); else stopMusic(); }
 
 if(typeof document!=='undefined') document.addEventListener('visibilitychange', updateMusic);
+
+export { updateMusic };

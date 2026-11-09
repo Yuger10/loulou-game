@@ -10,6 +10,8 @@
                                       gains partent quand on la ferme
    Sans animation possible (vieux navigateur, « réduire les animations »),
    tout se met à jour d'un coup. */
+import { onModalChange, playSound } from '../../shared/ui/index.js';
+import { addCoinsInFlight, renderCoins } from '../wallet/index.js';
 
 const GAIN_FLIGHT_MS = 720;
 
@@ -201,3 +203,5 @@ function flushPendingGain(){
 
 // gains d'une fenêtre précédente : ils partent avant que son contenu ne disparaisse
 onModalChange(flushPendingGain);
+
+export { flyEmoji, gainCenter, gainCoins, gainItems, gainLand, queueGain, spendCoins };

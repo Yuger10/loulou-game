@@ -1,4 +1,26 @@
 /* ---------- Init ---------- */
+import { avatarText, companionSVG, currentCompanion } from '../entities/companion/index.js';
+import { load, save, state } from '../entities/game-state/index.js';
+import { loadProfiles } from '../entities/player/index.js';
+import { currentSeason, FETES } from '../entities/season/index.js';
+import { WORLD_ORDER, worldUnlocked } from '../entities/world/index.js';
+import { initBackup, requestPersistentStorage } from '../features/backup/index.js';
+import { markSeen, renderBadge, setSacTab } from '../features/bag/index.js';
+import { renderTeamHeads, teamOnSessionStart } from '../features/companion-team/index.js';
+import { renderIslandCard, renderLagon, renderLevelPill } from '../features/island/index.js';
+import { renderMap } from '../features/map/index.js';
+import { updateMusic } from '../features/music/index.js';
+import { startPlayTimeTracker } from '../features/parents/index.js';
+import { renderRaceTrack, renderTurnBar } from '../features/party/index.js';
+import { openPlayers } from '../features/players/index.js';
+import { closeWelcome, openWelcome, renderProfile, renderSoundBtn } from '../features/profile/index.js';
+import { ensureQuests, openQuestsModal } from '../features/quests/index.js';
+import { initSeasons, maybeSeasonGift } from '../features/seasons/index.js';
+import { renderSquishyBadge, squishySessionHello } from '../features/squishies/index.js';
+import { openStoryJournal } from '../features/story/index.js';
+import { renderCoins } from '../features/wallet/index.js';
+import { closeModal, playSound, speak, switchView } from '../shared/ui/index.js';
+
 loadProfiles();
 load();
 // marque comme déjà vus les objets déjà possédés (anciennes sauvegardes)

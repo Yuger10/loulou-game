@@ -3,6 +3,16 @@
    dans js/entities/difficulty/difficulty.js (clockGranularity) : heures pleines d'abord,
    puis demi-heures, puis quarts d'heure. Horloge dessinée en CSS pur
    (pas d'image), les aiguilles sont deux barres tournées en degrés. */
+import { clockGranularity, clockOptions } from '../../../entities/difficulty/index.js';
+import { pickRandom, shuffle } from '../../../shared/lib/index.js';
+import { openModal } from '../../../shared/ui/index.js';
+import { gameDiff } from '../../adaptive/index.js';
+import { registerHints, setHintQuestion } from '../../hints/index.js';
+import {
+  clearActiveTimer, flashModal, livesBar, loseLife, onMissionWin, registerGame, setSolution,
+  setupLives, solSel, startTimerIfNeeded, stepOk
+} from '../../minigame-engine/index.js';
+import { bindQuit, gameHeader } from '../../screen/index.js';
 
 function clockAngles(hour, minute){
   // aiguille des heures : 30° par heure + un peu selon les minutes

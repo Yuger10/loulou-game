@@ -1,4 +1,25 @@
 /* ---------- Écran des joueurs, modes de jeu, choix du mini-jeu ---------- */
+import {
+  avatarHTML, avatarText, bindCompanionSelector, companionOf, companionSelector, companionsFor,
+  companionSVG, defaultCompanionFor
+} from '../../entities/companion/index.js';
+import { ageToDiff, GAME_LIST, gameTypesForAge } from '../../entities/difficulty/index.js';
+import { gameCount, MISSIONS_PER_LEVEL, resetState, save, state } from '../../entities/game-state/index.js';
+import {
+  addProfile, AVATARS, currentPlayerAge, currentProfile, deleteProfile, party, partyCurrent, profiles,
+  profileSaveKey, refreshAll, saveProfiles, switchProfile
+} from '../../entities/player/index.js';
+import { currentWorld, setCurrentWorld, WORLDS } from '../../entities/world/index.js';
+import { emit, on, pickRandom, shuffle } from '../../shared/lib/index.js';
+import { closeModal, confetti, openModal, playSound, showToast, speak } from '../../shared/ui/index.js';
+import { pickPracticeGame } from '../adaptive/index.js';
+import { backupDue, openBackup } from '../backup/index.js';
+import { teamOnGamePicker } from '../companion-team/index.js';
+import { renderLagon, setCurrentChar } from '../island/index.js';
+import { playGame, startMinigame } from '../minigame-engine/index.js';
+import { startParty, startRace, stopParty } from '../party/index.js';
+import { genderSelector, renderProfile } from '../profile/index.js';
+import { bindQuit, gameHeader } from '../screen/index.js';
 
 /* --- Panneau des joueurs --- */
 function openPlayers(){
@@ -317,3 +338,5 @@ function openGamePicker(charId){
 // des cadeaux ou du Sac (couches plus basses)
 on('nav:game-picker', openGamePicker);
 on('nav:player-settings', openPlayerSettings);
+
+export { openPlayers, openPlayerSettings };

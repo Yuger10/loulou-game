@@ -3,13 +3,14 @@
   "private": true,
   "scripts": {
     "start": "python3 -m http.server 8080",
-    "test": "node test/slices.test.js && node test/smoke.test.js && node test/squishies.test.js && node test/games.test.js && node test/companions.test.js",
+    "test": "node test/slices.test.js && node test/modules.test.js && node test/smoke.test.js && node test/squishies.test.js && node test/games.test.js && node test/companions.test.js",
+    "test:modules": "node test/modules.test.js",
+    "test:squishies": "node test/squishies.test.js",
     "test:compagnons": "node test/companions.test.js",
     "test:jeux": "node test/games.test.js",
-    "inventaire": "node test/tools/globals.js $(node -e \"console.log(require('./js/slices.js').SLICES.flatMap(s=>s.files).join(' '))\")",
+    "inventaire": "node test/tools/globals.js $(node -e \"console.log(require('./js/slices.cjs').SLICES.flatMap(s=>s.files).join(' '))\")",
     "sync": "node test/tools/sync.js",
-    "api": "node test/tools/boundaries.js --write",
-    "test:squishies": "node test/squishies.test.js"
+    "sw": "node test/tools/sync.js"
   },
   "devDependencies": {
     "acorn": "^8.19.0",

@@ -29,3 +29,5 @@ function closeModal(){
   document.body.classList.remove('modal-open');
   if(window.speechSynthesis) speechSynthesis.cancel();
 }
+
+export { closeModal, onModalChange, onModalClose, onModalOpen, openModal };

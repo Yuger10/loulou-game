@@ -1,4 +1,7 @@
 /* ---------- État de la partie du joueur courant : sauvegarde, migrations, niveau ---------- */
+import { setAudioPrefsSource } from '../../shared/ui/index.js';
+import { SQUISHY_ISLAND_SERIES } from '../squishy/index.js';
+
 const MISSIONS_PER_LEVEL = 5;
 
 const SAVE_KEY = 'lagon-magique-save';
@@ -199,3 +202,8 @@ setAudioPrefsSource(()=> state);
 
 /* ---------- Profil (prénom + avatar) ---------- */
 function hello(){ return state.name ? state.name : ''; }
+
+export {
+  freshState, gameCount, hello, level, levelProgress, load, MISSIONS_PER_LEVEL, replaceState,
+  resetState, save, setSaveSlot, squishyFreshState, state, trackGamePlayed
+};

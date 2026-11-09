@@ -6,6 +6,8 @@
    sessionStorage. Ce fichier ne contient que les données et le calcul de la
    saison : le décor, les chapeaux et le cadeau sont dans js/features/seasons/.
    Il sert aussi à la musique, à la garde-robe et à l'île. */
+import { currentProfile } from '../player/index.js';
+
 const FETES = {
   halloween:    { name:'Halloween',    emoji:'🎃', from:[10,20], to:[11,2], hat:'sorciere',    gift:10, fx:'feuilles', hatGift:'un chapeau de sorcière',
                   greet:(who)=>`Joyeux Halloween${who ? ' ' + who : ''} !` },
@@ -44,3 +46,5 @@ function currentSeason(date){
 
 // Le chapeau de saison des compagnons (utilisé par companionSVG)
 function seasonHat(){ const s = currentSeason(); return s ? FETES[s].hat : null; }
+
+export { currentSeason, FETES, SEASON_NONE, SEASON_PREVIEW_KEY, seasonHat, seasonPreview };

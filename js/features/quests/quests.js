@@ -1,4 +1,19 @@
 /* ---------- Missions du jour et coffre ---------- */
+import { CHARACTERS } from '../../entities/character/index.js';
+import { hello, save, state } from '../../entities/game-state/index.js';
+import { addItem, CRAFTED, ITEMS } from '../../entities/item/index.js';
+import { onProfileRefresh } from '../../entities/player/index.js';
+import { availableChars, availableCrafted, availableItems } from '../../entities/world/index.js';
+import { emit, pickRandom, shuffle } from '../../shared/lib/index.js';
+import {
+  closeModal, confetti, openModal, playSound, showToast, speak, vibrate
+} from '../../shared/ui/index.js';
+import { markSeen, renderBadge } from '../bag/index.js';
+import { queueGain } from '../gains/index.js';
+import { bindQuit, gameHeader } from '../screen/index.js';
+import { addSquishyBox, squishyBoxRewardHTML } from '../squishies/index.js';
+import { addCoins } from '../wallet/index.js';
+
 const QUEST_TEMPLATES = [
   ()=>{ const k = pickRandom(availableItems()); const goal = 2 + Math.floor(Math.random()*2);
         return {type:'collect', target:k, goal, n:0, label:`Gagne ${goal} ${ITEMS[k].name.toLowerCase()}${goal>1?'s':''} ${ITEMS[k].emoji}`}; },
@@ -119,3 +134,5 @@ function openChest(){
 
 // changement de joueur : ses missions du jour
 onProfileRefresh(ensureQuests);
+
+export { ensureQuests, openQuestsModal, questProgress, renderQuests };

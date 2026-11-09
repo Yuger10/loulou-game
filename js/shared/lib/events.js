@@ -32,3 +32,5 @@ function emit(name, ...args){
     catch(e){ setTimeout(()=>{ throw e; }); return undefined; }
   });
 }
+
+export { emit, on };

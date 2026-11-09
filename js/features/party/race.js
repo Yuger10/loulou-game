@@ -1,4 +1,17 @@
 /* ---------- Mode course de navigation (compétition équitable) ---------- */
+import { avatarHTML } from '../../entities/companion/index.js';
+import { ageLabel, ageToDiff } from '../../entities/difficulty/index.js';
+import {
+  party, profiles, race, RACE_STEPS, raceCurrent, setParty, setRace, switchProfile
+} from '../../entities/player/index.js';
+import { emit } from '../../shared/lib/index.js';
+import {
+  closeModal, confetti, openModal, playSound, showToast, speak, vibrate
+} from '../../shared/ui/index.js';
+import { gameDiffIsland } from '../adaptive/index.js';
+import { queueGain } from '../gains/index.js';
+import { addCoins } from '../wallet/index.js';
+import { renderTurnBar } from './party.js';
 
 const RACE_PRIZE = 50;       // pièces pour le vainqueur
 
@@ -115,3 +128,5 @@ function renderRaceTrack(){
   const stop = document.getElementById('race-stop');
   if(stop) stop.onclick = ()=>{ playSound('tap'); stopRace(); emit('ui:lagon'); };
 }
+
+export { raceAdvance, renderRaceTrack, startRace, stopRace };

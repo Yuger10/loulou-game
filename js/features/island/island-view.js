@@ -1,4 +1,28 @@
 /* ---------- Vue Île : changer d'île, nouvelle île, personnages, dialogues, boutique de décorations ---------- */
+import { CHARACTERS, charFace, charsOf, charsOfForPlayer } from '../../entities/character/index.js';
+import {
+  hello, level, levelProgress, MISSIONS_PER_LEVEL, save, state
+} from '../../entities/game-state/index.js';
+import { ALL_ITEMS, countItem, CRAFTED, DECOS, decosOf, ITEMS } from '../../entities/item/index.js';
+import { ac, onProfileRefresh, playerGender } from '../../entities/player/index.js';
+import {
+  currentWorld, setCurrentWorld, WORLD_ORDER, WORLDS, worldUnlocked
+} from '../../entities/world/index.js';
+import { emit, on, pickRandom } from '../../shared/lib/index.js';
+import {
+  bindSpeakButtons, closeModal, confetti, openModal, playSound, registerView, showToast, speak,
+  speechBubble, switchView, vibrate
+} from '../../shared/ui/index.js';
+import { checkAlbumComplete } from '../bag/index.js';
+import { flyEmoji, gainCenter, gainLand, spendCoins } from '../gains/index.js';
+import { favoritesOf, friendHearts, friendPoints, openGiftPicker } from '../gifts/index.js';
+import { renderRaceTrack } from '../party/index.js';
+import { ensureQuests, renderQuests } from '../quests/index.js';
+import { bindQuit, gameHeader } from '../screen/index.js';
+import { openStoryChapter, STORY, storySolved } from '../story/index.js';
+import { addCoins } from '../wallet/index.js';
+import { renderLiveIsland } from './island.js';
+
 function setWorld(id, silent){
   const w = WORLDS[id];
   if(!worldUnlocked(id)){
@@ -214,3 +238,8 @@ registerView('ile', ()=> renderLagon());
 
 // changement de joueur : son île (en dernier : elle s'appuie sur le reste)
 onProfileRefresh(()=> renderLagon());
+
+export {
+  checkNewIsland, currentChar, openDecoShop, openDialogue, renderIslandCard, renderLagon,
+  renderLevelPill, setCurrentChar, setWorld
+};

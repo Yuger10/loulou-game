@@ -11,6 +11,17 @@
    - Offrir compte pour la mission du jour « Offre 2 objets à tes amis ».
    Données : state.friends[perso] = points d'amitié ;
              state.friendRewards[perso] = true une fois la surprise donnée. */
+import { CHARACTERS, charFace } from '../../entities/character/index.js';
+import { hello, save, state } from '../../entities/game-state/index.js';
+import { ALL_ITEMS, countItem, ITEMS, removeItem } from '../../entities/item/index.js';
+import { ac } from '../../entities/player/index.js';
+import { emit, pickRandom } from '../../shared/lib/index.js';
+import {
+  bindSpeakButtons, confetti, openModal, playSound, speak, speechBubble
+} from '../../shared/ui/index.js';
+import { gainCoins } from '../gains/index.js';
+import { questProgress } from '../quests/index.js';
+import { addCoins } from '../wallet/index.js';
 
 const FRIEND_MAX = 5;          // cœurs affichés ; « meilleurs amis » à partir de là
 const FRIEND_REWARD = 10;      // pièces offertes par un meilleur ami (une fois)
@@ -138,3 +149,5 @@ function showGiftThanks(charId, key, res, fromRect){
   if(more) more.onclick = ()=>{ playSound('tap'); openGiftPicker(charId); };
   document.getElementById('gift-play').onclick = ()=>{ playSound('tap'); emit('nav:game-picker', charId); };
 }
+
+export { favoritesOf, friendHearts, friendPoints, openGiftPicker };

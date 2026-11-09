@@ -1,7 +1,18 @@
 /* ---------- Carte des îles (mer animée, route, bateau) ---------- */
+import { charFace, charsOf } from '../../entities/character/index.js';
+import { avatarHTML } from '../../entities/companion/index.js';
+import { MISSIONS_PER_LEVEL, state } from '../../entities/game-state/index.js';
+import {
+  currentWorld, nextLockedWorld, WORLD_ORDER, WORLDS, worldUnlocked
+} from '../../entities/world/index.js';
+import { on } from '../../shared/lib/index.js';
+import { bindSpeakButtons, playSound, registerView, switchView } from '../../shared/ui/index.js';
+import { renderSamGuide, teamHeadsHTML } from '../companion-team/index.js';
+import { renderIslandCard, renderLevelPill, setWorld } from '../island/index.js';
 
 // courbe douce passant par les îles (toutes, ou de l'île `from` à l'île `to`) ;
 // un morceau suit exactement le tracé complet, pour s'y superposer
+
 function mapRoutePath(from, to){
   const all = WORLD_ORDER.map(id=>WORLDS[id].map);
   const pts = all.slice(from || 0, (to == null ? all.length - 1 : to) + 1);
@@ -136,3 +147,5 @@ registerView('carte', ()=>{ renderMap(); renderIslandCard(); renderLevelPill(); 
 
 // la garde-robe redemande la carte (le bateau porte la tenue)
 on('ui:map', renderMap);
+
+export { renderMap };

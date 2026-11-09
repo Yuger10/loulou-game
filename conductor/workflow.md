@@ -19,7 +19,7 @@
 ## Où ajouter quoi (feature slices, v51)
 - Toute décision structurante (architecture, stockage, chaîne de build) s'écrit d'abord dans un ADR numéroté (`docs/adr/`), avant le code.
 - Un mini-jeu : [checklist-mini-jeu.md](./checklist-mini-jeu.md). Une île : [checklist-ile.md](./checklist-ile.md).
-- Une nouvelle fonctionnalité : une slice `js/features/<nom>/` (JS et CSS), déclarée dans `js/slices.js`, puis `npm run sync`. Les données de base vont dans `js/entities/`, les outils sans lien avec le jeu dans `js/shared/`.
+- Une nouvelle fonctionnalité : une slice `js/features/<nom>/` (JS et CSS), déclarée dans `js/slices.cjs`, puis `npm run sync`. Les données de base vont dans `js/entities/`, les outils sans lien avec le jeu dans `js/shared/`.
 - Besoin d'appeler une couche supérieure ? Ne pas le faire : ajouter un point d'accroche dans la couche basse et inscrire la feature dessus.
 - Exposer un nom à d'autres slices : l'utiliser, puis `npm run api` (l'ajout apparaît dans le diff du manifeste, à relire).
 - Déplacer du code : `node test/tools/move.js <source> <destination> nom…` (déplace des déclarations telles quelles, commentaires compris).

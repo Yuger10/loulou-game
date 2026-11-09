@@ -6,10 +6,12 @@
    Par défaut on propose ceux qui correspondent au profil (fille : sirène,
    princesse, fée ; garçon : pirate, chevalier, explorateur), mais l'enfant
    peut toujours choisir n'importe lequel. */
+import { playSound } from '../../shared/ui/index.js';
 
 // La garde-robe (« Mon look ») et les fêtes de saison habillent compagnons et
 // avatars. Ce sont des features : elles fournissent leurs fonctions ici avec
 // setCompanionDressing, l'entité ne les appelle jamais directement.
+
 const companionDressing = { seasonHat:null, lookColors:null, lookAccessoriesSVG:null, lookFits:null };
 function setCompanionDressing(part){ Object.assign(companionDressing, part); }
 
@@ -317,3 +319,8 @@ function avatarText(av){
   return AVATAR_ART_EMOJI[av.slice(4)] || '🙂';
 }
 
+export {
+  avatarHTML, avatarText, bindCompanionSelector, buddyReact, buddySlot, COMPANION_ORDER, companionOf,
+  COMPANIONS, companionSelector, companionsFor, companionSVG, currentCompanion, defaultCompanionFor,
+  isArtAvatar, setCompanionDressing, setCompanionPlayerSource
+};

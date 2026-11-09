@@ -18,6 +18,16 @@
    (menton), les yeux en (30, 55) et (70, 55). companionSVG le place
    exactement sur les personnages dessinés ; pour un avatar emoji, il est
    superposé à l'emoji (js/features/wardrobe/wardrobe.css, .look-ov). */
+import {
+  avatarHTML, avatarText, COMPANIONS, isArtAvatar, setCompanionDressing
+} from '../../entities/companion/index.js';
+import { save, state } from '../../entities/game-state/index.js';
+import { AVATARS, syncProfileFromState } from '../../entities/player/index.js';
+import { FETES } from '../../entities/season/index.js';
+import { emit } from '../../shared/lib/index.js';
+import { confetti, playSound, showToast, speak } from '../../shared/ui/index.js';
+import { spendCoins } from '../gains/index.js';
+import { addCoins } from '../wallet/index.js';
 
 const LOOK_SLOTS = [
   { id:'tete',   emoji:'🎩', name:'Tête' },
@@ -314,3 +324,5 @@ function renderLook(){
 
 // habille compagnons et avatars (js/entities/companion)
 setCompanionDressing({ lookColors, lookAccessoriesSVG, lookFits });
+
+export { clearLookTry, currentLook, newlyUnlockedLookItems, ownsLookItem, renderLook, WARDROBE, wearLook };

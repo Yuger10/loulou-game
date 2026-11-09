@@ -2,6 +2,18 @@
    déjà chronométrée par nature (on répète une séquence qui vient de
    s'afficher) — un décompte en plus ferait double pression, voir
    js/entities/difficulty/difficulty.js § « MINUTEUR ». Longueur dans § simonLength. */
+import { simonLength } from '../../../entities/difficulty/index.js';
+import { state } from '../../../entities/game-state/index.js';
+import { pickRandom } from '../../../shared/lib/index.js';
+import { audioCtx, ensureAudioCtx, openModal, tone } from '../../../shared/ui/index.js';
+import { gameDiff } from '../../adaptive/index.js';
+import { registerHints, setHintQuestion } from '../../hints/index.js';
+import {
+  flashModal, livesBar, loseLife, onMissionWin, progressDots, registerGame, setSolution, setupLives,
+  solSel
+} from '../../minigame-engine/index.js';
+import { bindQuit, gameHeader } from '../../screen/index.js';
+
 function renderSimon(){
   setupLives('simon');
   const PADS = [

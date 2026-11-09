@@ -2,11 +2,15 @@
    Sortis du moteur des mini-jeux (v54) : l'histoire, les quêtes, la chambre à
    squishies, l'espace parents… les utilisent aussi, et ne doivent pas dépendre
    du moteur. */
+import { buddySlot } from '../../entities/companion/index.js';
+import { pickRandom } from '../../shared/lib/index.js';
+import { bindSpeakButtons, speak } from '../../shared/ui/index.js';
 
 // Une erreur : la proposition fautive est neutralisée et un essai est perdu.
 // Petits encouragements parlés à chaque erreur : avant ce correctif,
 // seul un son « faux » jouait — aucune voix pendant le jeu lui-même
 // (juste au tout début, pour la consigne). Varié pour ne pas lasser.
+
 const WRONG_HINTS = [
   'Pas tout à fait, regarde encore',
   'Essaie encore, tu vas trouver',
@@ -39,3 +43,5 @@ function bindQuit(){
   const hint = document.querySelector('.puzzle-hint [data-say]');
   if(hint && hint.dataset.say !== bindQuit._last){ bindQuit._last = hint.dataset.say; speak(hint.dataset.say); }
 }
+
+export { bindQuit, gameHeader, speakWrongHint };

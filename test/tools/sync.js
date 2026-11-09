@@ -1,9 +1,9 @@
 /* ---------- Aligner index.html et sw.js sur le manifeste des slices ----------
    node test/tools/sync.js   (ou npm run sync)
 
-   Réécrit les balises <script src="js/…"> et <link rel="stylesheet"> locales
-   d'index.html, et la liste des scripts et feuilles de style de sw.js
-   (FILES), dans l'ordre de js/slices.js. Le reste des fichiers est conservé
+   Réécrit les <link rel="stylesheet"> locales d'index.html (dans l'ordre de
+   CSS_ORDER) et sa balise de script (un seul module, js/app/main.js, v54), et
+   la liste des modules et feuilles de style mis en cache par sw.js (FILES). Le reste des fichiers est conservé
    tel quel. test/slices.test.js vérifie ensuite que tout correspond. */
 const fs = require('fs');
 const path = require('path');
@@ -20,10 +20,11 @@ html = html.replace(/<link rel="stylesheet" href="(?!https?:)[^"]+\.css">\n?/g, 
   if(done) return ''; done = true;
   return css.map(f=> `<link rel="stylesheet" href="${f}">`).join('\n') + '\n';
 });
+// v54 : un seul script, le point d'entrée des modules ES
 done = false;
-html = html.replace(/<script src="js\/[^"]+"><\/script>\n?/g, ()=>{
+html = html.replace(/<script(?: type="module")? src="js\/[^"]+"><\/script>\n?/g, ()=>{
   if(done) return ''; done = true;
-  return scripts.map(f=> `<script src="${f}"></script>`).join('\n') + '\n';
+  return `<script type="module" src="${page.ENTRY}"></script>\n`;
 });
 fs.writeFileSync(file('index.html'), html);
 
@@ -37,4 +38,4 @@ sw = sw.replace(/const FILES = \[[\s\S]*?\];/, (block)=>{
   return 'const FILES = [\n' + lines.join(',\n') + '\n];';
 });
 fs.writeFileSync(file('sw.js'), sw);
-console.log(`index.html et sw.js alignés : ${scripts.length} scripts, ${css.length} feuilles de style`);
+console.log(`index.html et sw.js alignés : ${scripts.length} modules, ${css.length} feuilles de style`);

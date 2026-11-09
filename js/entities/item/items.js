@@ -1,4 +1,6 @@
 /* ---------- Données ---------- */
+import { save, state } from '../game-state/index.js';
+
 const ITEMS = {
   coquillage:{emoji:'🐚', name:'Coquillage', price:2},
   perle:{emoji:'🦪', name:'Perle', price:3},
@@ -248,3 +250,5 @@ function addItem(key, qty=1){ state.inventory[key] = (state.inventory[key]||0) +
 function removeItem(key, qty=1){ state.inventory[key] = Math.max(0, (state.inventory[key]||0) - qty); save(); }
 
 function countItem(key){ return state.inventory[key] || 0; }
+
+export { addItem, ALBUM_REWARD, ALL_ITEMS, countItem, CRAFTED, DECOS, decosOf, ITEMS, removeItem };

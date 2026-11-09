@@ -1,4 +1,7 @@
 /* ---------- Porte-monnaie : pièces du joueur et leur affichage ---------- */
+import { save, state } from '../../entities/game-state/index.js';
+import { onProfileRefresh } from '../../entities/player/index.js';
+
 function addCoins(n){
   state.coins += n; save(); renderCoins();
   const pill = document.getElementById('coin-pill');
@@ -13,3 +16,5 @@ function renderCoins(){ document.getElementById('coin-count').textContent = stat
 
 // changement de joueur : ses pièces
 onProfileRefresh(renderCoins);
+
+export { addCoins, addCoinsInFlight, renderCoins };

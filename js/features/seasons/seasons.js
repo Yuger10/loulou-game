@@ -15,6 +15,18 @@
      saison pour son avatar (gardé ensuite) et quelques pièces.
    Aperçu pour les adultes (espace parents, ou ?saison=noel dans l'adresse) :
    il dure jusqu'à la fermeture du jeu et ne donne aucun cadeau. */
+import {
+  avatarHTML, buddySlot, COMPANIONS, currentCompanion, setCompanionDressing
+} from '../../entities/companion/index.js';
+import { save, state } from '../../entities/game-state/index.js';
+import { party } from '../../entities/player/index.js';
+import {
+  currentSeason, FETES, SEASON_NONE, SEASON_PREVIEW_KEY, seasonHat, seasonPreview
+} from '../../entities/season/index.js';
+import { emit } from '../../shared/lib/index.js';
+import { closeModal, confetti, openModal, playSound, showToast, speak } from '../../shared/ui/index.js';
+import { addCoins } from '../wallet/index.js';
+import { currentLook, WARDROBE, wearLook } from '../wardrobe/index.js';
 
 function setSeasonPreview(id){
   try{ if(id) sessionStorage.setItem(SEASON_PREVIEW_KEY, id); else sessionStorage.removeItem(SEASON_PREVIEW_KEY); }catch(e){}
@@ -178,3 +190,5 @@ function initSeasons(){ applySeason(true); }
 
 // chapeau de fête des compagnons (js/entities/companion)
 setCompanionDressing({ seasonHat });
+
+export { applySeason, initSeasons, maybeSeasonGift, seasonSceneSVG, setSeasonPreview };

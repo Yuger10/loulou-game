@@ -1,5 +1,16 @@
 /* Jeu 5 : suite logique (notion de « suite organisée », cycle 1 puis
    algorithme simple en cycle 2 — voir js/entities/difficulty/difficulty.js § sequence*) */
+import { sequencePatternLength } from '../../../entities/difficulty/index.js';
+import { pickRandom, shuffle } from '../../../shared/lib/index.js';
+import { openModal } from '../../../shared/ui/index.js';
+import { gameDiff } from '../../adaptive/index.js';
+import { registerHints, setHintQuestion } from '../../hints/index.js';
+import {
+  clearActiveTimer, flashModal, livesBar, loseLife, onMissionWin, registerGame, setSolution,
+  setupLives, solSel, startTimerIfNeeded, stepOk
+} from '../../minigame-engine/index.js';
+import { bindQuit, gameHeader } from '../../screen/index.js';
+
 function renderSequence(){
   setupLives('sequence');
   const symbols = shuffle(['🐚','⭐','🌸','🎀','💎','🦋','🐠']).slice(0,3);

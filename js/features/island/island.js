@@ -15,10 +15,22 @@
 
    Le dessin (viewBox 480×360, cadré par le bas) garde toujours le sol
    dans la moitié basse de la scène, quel que soit le format d'écran. */
+import { charFace, charsOfForPlayer } from '../../entities/character/index.js';
+import { save, state } from '../../entities/game-state/index.js';
+import { DECOS, decosOf } from '../../entities/item/index.js';
+import { playerGender } from '../../entities/player/index.js';
+import { currentSeason } from '../../entities/season/index.js';
+import { currentWorld, WORLDS } from '../../entities/world/index.js';
+import { on } from '../../shared/lib/index.js';
+import { playSound, speak } from '../../shared/ui/index.js';
+import { ensureQuests } from '../quests/index.js';
+import { seasonSceneSVG } from '../seasons/index.js';
+import { openDecoShop, openDialogue } from './island-view.js';
 
 // Places en coordonnées du DESSIN (viewBox 480×360), converties à l'affichage
 // selon la taille réelle de la scène : un personnage reste sur la plage et
 // un dauphin dans l'eau, quel que soit le format d'écran.
+
 const ISLE_W = 480, ISLE_H = 360;
 const ISLE_CHAR_SLOTS = [
   {x:126, y:250}, {x:354, y:248}, {x:198, y:340}, {x:284, y:342}, {x:96, y:330}, {x:384, y:330},
@@ -395,3 +407,5 @@ setInterval(()=>{
 
 // revenir au dialogue d'un personnage (après un cadeau, js/features/gifts)
 on('nav:dialogue', openDialogue);
+
+export { ISLE_SCENERY, isleGenericScenery, markHelped, renderLiveIsland };

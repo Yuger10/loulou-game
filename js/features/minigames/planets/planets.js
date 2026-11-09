@@ -31,6 +31,16 @@
    Le système solaire est surtout au programme du cycle 3 (CM1) : les
    paliers 4 à 6 sont donc des défis pour les plus grands, et le jeu n'est
    proposé qu'à partir de 5 ans (paliers 1-2 seulement à cet âge). */
+import { planetsTier } from '../../../entities/difficulty/index.js';
+import { shuffle } from '../../../shared/lib/index.js';
+import { openModal } from '../../../shared/ui/index.js';
+import { gameDiff } from '../../adaptive/index.js';
+import { hintOrderStep, registerHints, setHintQuestion } from '../../hints/index.js';
+import {
+  flashModal, livesBar, loseLife, onMissionWin, progressDots, registerGame, setMissionFact,
+  setSolution, setupLives, solSel, stepOk
+} from '../../minigame-engine/index.js';
+import { bindQuit, gameHeader } from '../../screen/index.js';
 
 const SOLAR_DATA = {
   // order : rang depuis le Soleil ; diameter : km ; temp : température moyenne (°C)

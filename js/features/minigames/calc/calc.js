@@ -3,6 +3,16 @@
    AUCUN support imagé (à la différence du jeu « Opérations ») : addition,
    soustraction, et à partir du palier 5, multiplication (tables de 2, 5,
    10) et expressions à 3 termes. Bornes dans js/entities/difficulty/difficulty.js (calcBounds). */
+import { CALC_MULT_TABLES, calcBounds } from '../../../entities/difficulty/index.js';
+import { pickRandom, shuffle } from '../../../shared/lib/index.js';
+import { openModal } from '../../../shared/ui/index.js';
+import { gameDiff } from '../../adaptive/index.js';
+import { registerHints, setHintQuestion } from '../../hints/index.js';
+import {
+  clearActiveTimer, flashModal, livesBar, loseLife, onMissionWin, registerGame, setSolution,
+  setupLives, solSel, startTimerIfNeeded, stepOk
+} from '../../minigame-engine/index.js';
+import { bindQuit, gameHeader } from '../../screen/index.js';
 
 function makeCalcProblem(dd){
   const { max, terms, allowMinus, allowMulti } = calcBounds(dd);

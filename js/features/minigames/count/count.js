@@ -1,4 +1,15 @@
 /* Jeu 2 : compter (dénombrement — voir js/entities/difficulty/difficulty.js § countRange) */
+import { countRange } from '../../../entities/difficulty/index.js';
+import { pickRandom, shuffle } from '../../../shared/lib/index.js';
+import { emojiWord, openModal } from '../../../shared/ui/index.js';
+import { gameDiff } from '../../adaptive/index.js';
+import { registerHints, setHintQuestion } from '../../hints/index.js';
+import {
+  clearActiveTimer, flashModal, livesBar, loseLife, onMissionWin, registerGame, setSolution,
+  setupLives, solSel, startTimerIfNeeded, stepOk
+} from '../../minigame-engine/index.js';
+import { bindQuit, gameHeader } from '../../screen/index.js';
+
 function renderCount(){
   setupLives('count');
   const emoji = pickRandom(['⭐','🐚','🌸','🦪','🐠','🦋']);

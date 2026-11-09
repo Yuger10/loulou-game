@@ -1,4 +1,11 @@
 /* ---------- Joueurs : profils et leur stockage ---------- */
+import { playSound, showToast, speak } from '../../shared/ui/index.js';
+import { avatarText, defaultCompanionFor } from '../companion/index.js';
+import { freshState, load, replaceState, save, setSaveSlot, state } from '../game-state/index.js';
+import { currentWorld, setCurrentWorld, worldUnlocked } from '../world/index.js';
+import { fixAvatar } from './avatars.js';
+import { party } from './party-state.js';
+
 const PROFILES_KEY = 'lagon-magique-profiles';
 
 const LEGACY_SAVE_KEY = 'lagon-magique-save';
@@ -117,3 +124,9 @@ function ac(masc, fem){
   if(g==='f') return fem || (masc + 'e');
   return masc;
 }
+
+export {
+  ac, addProfile, currentProfile, deleteProfile, LEGACY_SAVE_KEY, loadProfiles, onProfileRefresh,
+  playerGender, profiles, PROFILES_KEY, profileSaveKey, refreshAll, saveProfiles, switchProfile,
+  syncProfileFromState
+};

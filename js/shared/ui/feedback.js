@@ -1,3 +1,6 @@
+import { pickRandom } from '../lib/index.js';
+import { playSound } from './sound.js';
+
 function showToast(msg){
   const t = document.getElementById('toast');
   t.textContent = msg;
@@ -43,3 +46,5 @@ function confetti(){
     setTimeout(()=>p.remove(), 3200);
   }
 }
+
+export { confetti, onWrongFeedback, shakeEl, showToast, vibrate, wrongFeedback };

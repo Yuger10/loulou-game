@@ -1,4 +1,6 @@
 /* ---------- Voix (Web Speech) ---------- */
+import { audioPrefs } from './sound.js';
+
 // Mots prononcés pour chaque emoji (singulier, pluriel)
 const EMOJI_WORDS = {
   '🐚':['coquillage','coquillages'], '🦪':['perle','perles'], '🎀':['ruban','rubans'],
@@ -90,3 +92,5 @@ if('speechSynthesis' in window){
   pickVoice();
   window.speechSynthesis.onvoiceschanged = pickVoice;
 }
+
+export { bindSpeakButtons, emojiWord, speak, speechBubble };

@@ -22,7 +22,7 @@ Le mode hors-ligne et le stockage protégé demandent `https://` : c'est le cas 
 ```bash
 npm install
 npm test             # architecture (slices, frontières) + test de fumée + chaque mini-jeu joué jusqu'à la victoire
-npm run sync         # après avoir ajouté/déplacé un fichier : index.html et sw.js depuis js/slices.js
+npm run sync         # après avoir ajouté/déplacé un fichier : index.html et sw.js depuis js/slices.cjs
 npm run api          # recalcule l'API publique des slices (quand on expose volontairement un nom)
 npm run inventaire   # qui définit quoi, qui utilise quoi (analyse du code)
 ```
@@ -30,7 +30,7 @@ npm run inventaire   # qui définit quoi, qui utilise quoi (analyse du code)
 ## Structure : feature slices (v51)
 Le code est rangé en **slices** sur 4 couches. Un fichier n'utilise que sa couche ou les couches inférieures, et seulement l'**API publique** des autres slices. `npm test` le vérifie.
 ```
-js/slices.js         manifeste : couche, fichiers JS et CSS (ordre de chargement), API publique de chaque slice
+js/slices.cjs         manifeste : couche, fichiers JS et CSS (ordre de chargement), API publique de chaque slice
 js/app/              démarrage (init.js)
 js/features/         ce que l'enfant fait : minigame-engine/ (moteur) et minigames/<jeu>/, island/, map/,
                      story/, bag/ (sac, album), market/, quests/, profile/ (en-tête, accueil), wallet/,

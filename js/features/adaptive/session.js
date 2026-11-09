@@ -20,3 +20,8 @@ function bonusOnNewGame(){
   if(bonusChallenge){ if(bonusChallenge.fresh) bonusChallenge.fresh = false; else bonusChallenge = null; }
 }
 function endBonusChallenge(){ bonusChallenge = null; }
+
+export {
+  beginBonusChallenge, bonusChallenge, bonusOnNewGame, endBonusChallenge, inBonusChallenge, lastGame,
+  setLastGame
+};

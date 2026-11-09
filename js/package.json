@@ -1,0 +1,4 @@
+{
+  "//": "Tout le code du jeu (js/) est en modules ES natifs (v54). Seul le manifeste des slices, lu par les outils de développement, est en CommonJS : js/slices.cjs.",
+  "type": "module"
+}

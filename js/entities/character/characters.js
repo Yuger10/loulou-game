@@ -313,3 +313,5 @@ function charsOfForPlayer(world, gender){
   const other = list.filter(([,c])=>c.gender!==gender);
   return [...same, ...other];
 }
+
+export { CHARACTERS, charsOf, charsOfForPlayer };

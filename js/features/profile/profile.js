@@ -1,4 +1,15 @@
 /* ---------- En-tête du joueur et écran de bienvenue ---------- */
+import {
+  avatarHTML, avatarText, bindCompanionSelector, COMPANIONS, companionSelector, companionsFor,
+  defaultCompanionFor
+} from '../../entities/companion/index.js';
+import { save, state } from '../../entities/game-state/index.js';
+import { AVATARS, currentProfile, onProfileRefresh, saveProfiles } from '../../entities/player/index.js';
+import { emit, on } from '../../shared/lib/index.js';
+import { playSound, showToast, speak } from '../../shared/ui/index.js';
+import { applySeason } from '../seasons/index.js';
+import { openStoryChapter, storySolved } from '../story/index.js';
+
 function renderProfile(){
   document.querySelector('#avatar-pill .av').innerHTML = avatarHTML(state.avatar, state.look);
   emit('ui:backup-reminder');
@@ -88,3 +99,5 @@ function genderSelector(sel){
         <span class="ge">${o.emoji}</span><span class="gl">${o.label}</span></button>`).join('')}
     </div>`;
 }
+
+export { closeWelcome, genderSelector, openWelcome, renderProfile };

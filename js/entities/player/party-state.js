@@ -1,4 +1,7 @@
 /* ---------- Mode chacun son tour ---------- */
+import { setCompanionPlayerSource } from '../companion/index.js';
+import { currentProfile, profiles } from './profiles.js';
+
 let party = { active:false, mode:null, players:[], turn:0, scores:{}, lastWinner:null };
 
 function partyPlayers(){ return party.players.map(id=>profiles.list.find(p=>p.id===id)).filter(Boolean); }
@@ -32,3 +35,8 @@ function setRace(r){ race = r; }
 let race = { active:false, players:[], pos:{}, turn:0, goal:RACE_STEPS, winner:null, rounds:0 };
 
 function raceCurrent(){ return profiles.list.find(p=>p.id===race.players[race.turn]); }
+
+export {
+  currentPlayerAge, party, partyCurrent, partyPlayers, race, RACE_STEPS, raceCurrent, setParty,
+  setRace
+};

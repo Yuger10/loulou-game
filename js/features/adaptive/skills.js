@@ -3,6 +3,11 @@
    lu par l'espace parents, le niveau adaptatif et les compagnons.
      state.skills[jeu]  = { wins, fails, errors, last, recent:[{t, e, ok}…10], hints }
                           (hints : indices demandés au compagnon, v52) */
+import { save, state } from '../../entities/game-state/index.js';
+import { party } from '../../entities/player/index.js';
+import { adaptAfterMission } from './adaptive.js';
+import { gameDiff } from './game-diff.js';
+import { inBonusChallenge, lastGame } from './session.js';
 
 const SKILL_STATUS = {
   aise:      { label:"À l'aise",                cls:'ok' },
@@ -71,3 +76,8 @@ function skillStatus(s, key){
   if(last.length >= 3 && avgErr <= 0.5 && fails === 0) return 'aise';
   return 'encours';
 }
+
+export {
+  missionProgress, noteAnswerError, recordMission, resetMissionErrors, SKILL_ERR_TOLERANCE,
+  SKILL_STATUS, skillStatus, todayKey
+};

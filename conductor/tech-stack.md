@@ -8,7 +8,7 @@
 > Décision et options écartées : [ADR 0001](../docs/adr/0001-architecture-feature-slices.md).
 
 - **4 couches**, de la plus haute à la plus basse : `app` → `features` → `entities` → `shared`, dans `js/<couche>/<slice>/`. Le CSS d'une slice est rangé à côté de son JS.
-- **Manifeste `js/slices.js`** : couche, fichiers JS et CSS dans l'ordre de chargement, et **API publique** de chaque slice. `CSS_ORDER` fixe l'ordre global de la cascade. `index.html` et `sw.js` en sont générés (`npm run sync`).
+- **Manifeste `js/slices.cjs`** : couche, fichiers JS et CSS dans l'ordre de chargement, et **API publique** de chaque slice. `CSS_ORDER` fixe l'ordre global de la cascade. `index.html` et `sw.js` en sont générés (`npm run sync`).
 - **Règles vérifiées par `test/slices.test.js`** : une couche n'utilise que sa couche ou les couches inférieures ; entre slices, seulement l'API publique ; une seule définition par nom global ; manifeste, fichiers, `index.html` et `sw.js` cohérents.
 - **Dépendances vers le haut interdites, remplacées par des points d'accroche** fournis par la couche basse : `registerGame` (moteur de mini-jeux), `registerView`, `onModalOpen` / `onModalClose`, `onWrongFeedback`, `onProfileRefresh`, `setAudioPrefsSource`, `setCompanionDressing`.
 - **Pas de garde `typeof fn==='function'`** pour une fonction du jeu (tout est toujours chargé). Seules les capacités du navigateur sont testées ainsi.

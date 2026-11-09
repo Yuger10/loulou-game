@@ -1,4 +1,9 @@
 /* ---------- Quêtes du jour ---------- */
+import { CHARACTERS } from '../character/index.js';
+import { level } from '../game-state/index.js';
+import { CRAFTED, ITEMS } from '../item/index.js';
+import { WORLDS } from './worlds.js';
+
 // objets et personnages accessibles selon les mondes débloqués
 function availableItems(){
   return Object.keys(ITEMS).filter(k=>{
@@ -20,3 +25,5 @@ function availableCrafted(){
     return level() >= WORLDS[w].level;
   });
 }
+
+export { availableChars, availableCrafted, availableItems };

@@ -5,6 +5,17 @@
    js/entities/difficulty/difficulty.js) : couleur, forme, forme + couleur, taille + forme,
    nombre de côtés, nombre de sommets.
    Dessin en SVG, sans image : chaque squishy tient dans un carré 100×100. */
+import { shapesRound } from '../../../entities/difficulty/index.js';
+import { SQ_COLORS } from '../../../entities/squishy/index.js';
+import { pickRandom, shuffle } from '../../../shared/lib/index.js';
+import { openModal } from '../../../shared/ui/index.js';
+import { gameDiff } from '../../adaptive/index.js';
+import { registerHints, setHintQuestion } from '../../hints/index.js';
+import {
+  flashModal, livesBar, loseLife, onMissionWin, progressDots, registerGame, setSolution, setupLives,
+  solSel, stepOk
+} from '../../minigame-engine/index.js';
+import { bindQuit, gameHeader } from '../../screen/index.js';
 
 const SQ_SIZES = {
   grand: ['grand','grands','grande','grandes'],

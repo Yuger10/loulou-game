@@ -62,3 +62,5 @@ function soundModeLabel(){
   if(p.music && p.voice) return '🎵 Musique + sons + voix';
   return p.voice ? '🗣️ Sons + voix' : '🔊 Sons seulement';
 }
+
+export { audioCtx, audioPrefs, ensureAudioCtx, playSound, setAudioPrefsSource, soundModeLabel, tone };

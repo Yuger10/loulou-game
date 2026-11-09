@@ -12,6 +12,16 @@
    - « 📖 Mon histoire » permet de relire les épisodes déjà vus.
    Données : state.storyMissions[île] = missions réussies sur l'île ;
              state.storyEpisodes[île] = nombre d'épisodes déjà vus. */
+import { CHARACTERS, charFace } from '../../entities/character/index.js';
+import { save, state } from '../../entities/game-state/index.js';
+import { party } from '../../entities/player/index.js';
+import { currentWorld } from '../../entities/world/index.js';
+import { emit } from '../../shared/lib/index.js';
+import {
+  bindSpeakButtons, closeModal, openModal, playSound, speak, speechBubble
+} from '../../shared/ui/index.js';
+import { gainCoins } from '../gains/index.js';
+import { addCoins } from '../wallet/index.js';
 
 const EPISODE_AT = [2, 4, 7];     // missions réussies sur l'île pour chaque épisode
 const EPISODE_REWARD = 3;
@@ -145,3 +155,5 @@ function openEpisode(world, k, line, fresh){
     emit('ui:lagon');
   };
 }
+
+export { EPISODES, episodesSeen, maybeStoryEpisode, noteStoryMission, openEpisode, storyProgressHTML };

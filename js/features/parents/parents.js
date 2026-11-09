@@ -14,6 +14,24 @@
      state.playTime[jour] = secondes de jeu ACTIF ce jour-là (60 jours gardés)
      state.pauseExtra   = { date, min }  minutes ajoutées par un adulte aujourd'hui
    Réglage dans le profil : profile.pauseMin (0 = pas de pause). */
+import {
+  avatarHTML, buddySlot, COMPANIONS, companionSVG, currentCompanion
+} from '../../entities/companion/index.js';
+import { GAME_LIST, gameTypesForAge } from '../../entities/difficulty/index.js';
+import { save, state } from '../../entities/game-state/index.js';
+import {
+  currentProfile, party, profiles, profileSaveKey, saveProfiles
+} from '../../entities/player/index.js';
+import { currentSeason, FETES, seasonPreview } from '../../entities/season/index.js';
+import { on } from '../../shared/lib/index.js';
+import { closeModal, openModal, playSound, showToast, speak } from '../../shared/ui/index.js';
+import { SKILL_STATUS, skillStatus, todayKey } from '../adaptive/index.js';
+import { openBackup } from '../backup/index.js';
+import { pauseAnnouncer } from '../companion-team/index.js';
+import { openPlayers, openPlayerSettings } from '../players/index.js';
+import { renderSoundBtn } from '../profile/index.js';
+import { bindQuit, gameHeader } from '../screen/index.js';
+import { setSeasonPreview } from '../seasons/index.js';
 
 const SKILL_GROUPS = [
   { id:'lire',     emoji:'📖', name:'Lecture et langage',  games:['reading','determinants'] },
@@ -245,3 +263,5 @@ function openParents(){ openParentGate(()=> openParentSpace(), ()=> openPlayers(
 // pause douce peut l'empêcher (le moteur, plus bas, demande avec game:before)
 on('nav:parents', openParents);
 on('game:before', ()=>{ if(pauseDue()){ showPauseScreen(); return true; } return false; });
+
+export { startPlayTimeTracker };

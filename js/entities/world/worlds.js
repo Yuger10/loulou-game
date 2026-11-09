@@ -1,4 +1,6 @@
 /* ---------- Les îles (mondes), île courante, îles débloquées ---------- */
+import { level } from '../game-state/index.js';
+
 // Les îles, dans l'ordre du voyage. `diff` = difficulté des mini-jeux (1 à 4).
 const WORLDS = {
   lagon:{ name:'Le Lagon', emoji:'🌊', level:1, diff:1, short:'Lagon',
@@ -59,3 +61,5 @@ function worldUnlocked(id){ return level() >= WORLDS[id].level; }
 function nextLockedWorld(){
   return WORLD_ORDER.find(id=>!worldUnlocked(id));
 }
+
+export { currentWorld, nextLockedWorld, setCurrentWorld, WORLD_ORDER, WORLDS, worldUnlocked };

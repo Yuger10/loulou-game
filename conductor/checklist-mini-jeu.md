@@ -13,7 +13,7 @@ Remplacer `<cle>` par la clé du jeu (ex. `nesting`) et `<Jeu>` par son nom de f
 - [ ] `js/features/minigames/<cle>/<cle>.js` : la fonction `<Jeu>()`, qui utilise le moteur (`setupLives`, `gameHeader`, `livesBar`, `bindQuit`, `setSolution`, `stepOk`, `loseLife`, `onMissionWin`, `scheduleRetry`…).
 - [ ] À la fin du fichier : `registerGame('<cle>', <Jeu>);`. Le moteur ne connaît pas la liste des jeux.
 - [ ] `js/features/minigames/<cle>/<cle>.css` si besoin.
-- [ ] `js/slices.js` : une slice `minigame-<cle>` (couche `features`, `public:[]`) ; sa feuille de style dans `css` **et** dans `CSS_ORDER` (en fin de liste, avant `island.css`).
+- [ ] `js/slices.cjs` : une slice `minigame-<cle>` (couche `features`, `public:[]`) ; sa feuille de style dans `css` **et** dans `CSS_ORDER` (en fin de liste, avant `island.css`).
 
 ## 3. Les entités et features à compléter
 - [ ] `js/entities/difficulty/game-types.js` : la clé dans `GAME_TYPES`, et dans les tranches d'âge de `AGE_GAME_TYPES` où le jeu est proposé.

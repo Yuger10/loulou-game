@@ -56,3 +56,5 @@ const GAME_LIST = [
   { key:'planets',  emoji:'🪐', name:'Les planètes' },
   { key:'jigsaw',   emoji:'🖼️', name:'Le puzzle' },
 ];
+
+export { GAME_LIST, gameTypesForAge };

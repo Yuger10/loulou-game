@@ -1,0 +1,59 @@
+/* ---------- Point d'entrée du jeu (v54 : modules ES natifs) ----------
+   Le seul script chargé par index.html (`<script type="module">`). Il charge
+   chaque slice dans l'ordre du manifeste (js/slices.cjs), puis démarre le jeu.
+   Chaque fichier importe lui-même ce qu'il utilise : cet ordre ne sert qu'aux
+   slices qui s'inscrivent au chargement (mini-jeux, vues, points d'accroche). */
+import '../shared/lib/index.js';
+import '../shared/ui/index.js';
+import '../entities/words/index.js';
+import '../entities/squishy/index.js';
+import '../entities/game-state/index.js';
+import '../entities/item/index.js';
+import '../entities/character/index.js';
+import '../entities/world/index.js';
+import '../entities/difficulty/index.js';
+import '../entities/companion/index.js';
+import '../entities/player/index.js';
+import '../entities/season/index.js';
+import '../features/wallet/index.js';
+import '../features/gains/index.js';
+import '../features/screen/index.js';
+import '../features/hints/index.js';
+import '../features/adaptive/index.js';
+import '../features/music/index.js';
+import '../features/party/index.js';
+import '../features/squishies/index.js';
+import '../features/story/index.js';
+import '../features/wardrobe/index.js';
+import '../features/bag/index.js';
+import '../features/quests/index.js';
+import '../features/seasons/index.js';
+import '../features/profile/index.js';
+import '../features/gifts/index.js';
+import '../features/island/index.js';
+import '../features/companion-team/index.js';
+import '../features/map/index.js';
+import '../features/minigame-engine/index.js';
+import '../features/minigames/memory/index.js';
+import '../features/minigames/count/index.js';
+import '../features/minigames/intruder/index.js';
+import '../features/minigames/simon/index.js';
+import '../features/minigames/sequence/index.js';
+import '../features/minigames/puzzle/index.js';
+import '../features/minigames/math/index.js';
+import '../features/minigames/reading/index.js';
+import '../features/minigames/grammar/index.js';
+import '../features/minigames/volume/index.js';
+import '../features/minigames/compare/index.js';
+import '../features/minigames/money/index.js';
+import '../features/minigames/clock/index.js';
+import '../features/minigames/calendar/index.js';
+import '../features/minigames/calc/index.js';
+import '../features/minigames/shapes/index.js';
+import '../features/minigames/planets/index.js';
+import '../features/minigames/jigsaw/index.js';
+import '../features/market/index.js';
+import '../features/backup/index.js';
+import '../features/players/index.js';
+import '../features/parents/index.js';
+import './init.js';

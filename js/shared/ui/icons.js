@@ -25,3 +25,5 @@ function fillUiIcons(root){
   (root || document).querySelectorAll('[data-ui-icon]').forEach(el=>{ el.innerHTML = uiIcon(el.dataset.uiIcon); });
 }
 fillUiIcons();
+
+export { uiIcon };
