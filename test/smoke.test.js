@@ -1095,6 +1095,35 @@ setTimeout(()=>{
       check('musique : interrupteur dans l\'espace parents', !!d.querySelector('[data-music="1"]') && d.querySelector('[data-music="0"]').classList.contains('on'));
       ev('closeModal()');
     }
+    // ---- L'histoire avance à chaque mission : épisodes ----
+    {
+      ev('closeModal(); party.active = false; state.storyMissions = {}; state.storyEpisodes = {}; currentWorld = "lagon"; save()');
+      check('épisodes : 3 épisodes pour chaque île', ev('WORLD_ORDER.every(id=>EPISODES[id] && EPISODES[id].length===3)'));
+      check('épisodes : racontés par les habitants de l\'île (pas le guide du chapitre)', ev('WORLD_ORDER.every(id=>EPISODES[id].every(ep=>CHARACTERS[ep.by] && (CHARACTERS[ep.by].world||"lagon")===id && ep.by!==STORY[id].guide && ep.lines.length>=2))'));
+      check('épisodes : pas d\'épisode avant 2 missions', ev('episodeDue("lagon")')===-1 && ev('maybeStoryEpisode()')===false);
+      // une vraie mission réussie : l'histoire avance sur l'écran de victoire
+      ev('state.visited = WORLD_ORDER.filter(worldUnlocked); state.storyMissions = { lagon: 1 }; save(); playGame("count"); onMissionWin()');
+      check('épisodes : la victoire compte pour l\'histoire de l\'île', ev('storyMissionsOn("lagon")')===2);
+      check('épisodes : l\'écran de victoire montre que l\'histoire avance', !!d.querySelector('.win-box .story-progress'));
+      const coins = ev('state.coins');
+      d.getElementById('btn-yay').click();
+      await wait(400);
+      check('épisodes : après « Super ! », l\'épisode 1 arrive', !!d.querySelector('.ep-num') && d.querySelector('.char-header').textContent.includes('La bouteille à la mer'));
+      d.getElementById('ep-next').click();
+      check('épisodes : à la fin, un indice et 3 pièces', !!d.querySelector('.ep-find') && ev('state.coins')===coins+3 && ev('episodesSeen("lagon")')===1);
+      d.getElementById('ep-next').click();
+      check('épisodes : pas deux fois le même', ev('maybeStoryEpisode()')===false);
+      ev('state.storyMissions.lagon = 4'); check('épisodes : le 2e après 4 missions', ev('episodeDue("lagon")')===1);
+      ev('state.storyMissions.lagon = 6; state.storyEpisodes.lagon = 2'); check('épisodes : le 3e après 7 missions seulement', ev('episodeDue("lagon")')===-1 && ev('(state.storyMissions.lagon = 7, episodeDue("lagon"))')===2);
+      check('épisodes : en mode à plusieurs, pas d\'interruption', ev('(party.active = true, maybeStoryEpisode())')===false && ev('(party.active = false, true)'));
+      // « Mon histoire » : relire les épisodes vus, sans regagner de pièces
+      ev('state.storyEpisodes = { lagon: 1 }; save(); openStoryJournal()');
+      check('épisodes : relire les épisodes vus dans « Mon histoire »', d.querySelectorAll('.story-ep[data-ep]').length===1 && d.querySelectorAll('.story-ep.locked').length>=2);
+      const c2 = ev('state.coins');
+      d.querySelector('[data-ep="lagon:0"]').click(); d.getElementById('ep-next').click();
+      check('épisodes : relire ne redonne pas de pièces', !!d.querySelector('.ep-find') && ev('state.coins')===c2);
+      ev('closeModal(); state.storyMissions = {}; state.storyEpisodes = {}; save()');
+    }
     // ---- Chaque nouveau monde : couleurs propres et place sur la carte ----
     {
       const css = fs.readFileSync(path.join(__dirname, '..', 'styles.css'), 'utf8');
