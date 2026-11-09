@@ -46,14 +46,16 @@ Principe : **un déplacement ou un découpage = un commit avec `npm test` vert**
 - [x] Task: Conductor - User Manual Verification 'CSS par slice' (Protocol in workflow.md)
 
 ## Phase 5 : Frontières
-> **Écart noté en phase 1 :** les dépendances vers le haut trop imbriquées pour être corrigées sans bus d'événements vont dans une liste `LAYER_EXCEPTIONS` documentée du test de frontières. L'étape B (v54) doit la vider. Voir [inventory.md](./inventory.md).
-- [ ] Task: API publiques
-    - [ ] Renseigner l'API publique de chaque slice dans `js/slices.js` à partir de l'inventaire
-- [ ] Task: Test de frontières
-    - [ ] Tests : règle des couches ; seule l'API publique d'une autre slice est référencée ; cas fautif volontaire qui doit échouer
-    - [ ] Corriger les violations (déplacer une fonction, l'exposer, ou la descendre dans `shared`)
-- [ ] Task: Gardes `typeof`
-    - [ ] Retirer les gardes des dépendances déclarées ; lister et commenter celles qui restent
+> Fait : API publique de chaque slice générée dans `js/slices.js` (`npm run api` pour la recalculer quand on expose volontairement un nom) ; test de frontières (couches et API publiques) avec deux cas fautifs fabriqués et une violation réelle vérifiée ; 203 gardes `typeof` retirées par `test/tools/unguard.js`. Les seules gardes restantes portent sur le navigateur (`window`, `document`, `TextEncoder`…) et sont légitimes. **Aucune exception** n'a été nécessaire : la liste `LAYER_EXCEPTIONS` n'existe pas.
+>
+> **Écart noté en phase 1 (finalement sans objet) :** les dépendances vers le haut trop imbriquées pour être corrigées sans bus d'événements vont dans une liste `LAYER_EXCEPTIONS` documentée du test de frontières. L'étape B (v54) doit la vider. Voir [inventory.md](./inventory.md).
+- [x] Task: API publiques
+    - [x] Renseigner l'API publique de chaque slice dans `js/slices.js` à partir de l'inventaire
+- [x] Task: Test de frontières
+    - [x] Tests : règle des couches ; seule l'API publique d'une autre slice est référencée ; cas fautif volontaire qui doit échouer
+    - [x] Corriger les violations (déplacer une fonction, l'exposer, ou la descendre dans `shared`)
+- [x] Task: Gardes `typeof`
+    - [x] Retirer les gardes des dépendances déclarées ; lister et commenter celles qui restent
 - [ ] Task: Conductor - User Manual Verification 'Frontières' (Protocol in workflow.md)
 
 ## Phase 6 : Documentation et livraison

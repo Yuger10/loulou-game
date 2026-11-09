@@ -60,5 +60,27 @@ const dup = [...owners].filter(([, fs])=> fs.length > 1);
 check('chaque nom global n\'est défini qu\'une fois', dup.length === 0,
   dup.map(([n, fs])=> `${n} (${fs.join(', ')})`).join(' ; '));
 
+console.log('— Frontières entre slices');
+const { analyzeSlices, boundaryViolations } = require('./tools/boundaries.js');
+const files = analyzeSlices(SLICES, root);
+const violations = boundaryViolations(files);
+check('couches et API publiques respectées', violations.length === 0, violations.slice(0, 12).join('\n       '));
+// chaque nom d'une API publique est bien défini par sa slice
+const defined = new Map();
+files.forEach(f=> f.owner.forEach((s, n)=> defined.set(n, s.id)));
+const stale = SLICES.flatMap(s=> (s.public || []).filter(n=> defined.get(n) !== s.id).map(n=> `${s.id}.${n}`));
+check('les API publiques ne citent que des noms définis par leur slice', stale.length === 0, stale.join(', '));
+check('chaque slice déclare son API publique', SLICES.every(s=> Array.isArray(s.public)),
+  SLICES.filter(s=> !Array.isArray(s.public)).map(s=> s.id).join(', '));
+// le test sait-il échouer ? deux cas fautifs fabriqués
+{
+  const low = { id:'bas', layer:'entities', public:[] }, high = { id:'haut', layer:'features', public:['ok'] };
+  const owner = new Map([['secret', high], ['ok', high], ['interne', low]]);
+  const up = boundaryViolations([{ file:'bas.js', slice:low, refs:['ok'], owner }]);
+  const priv = boundaryViolations([{ file:'haut.js', slice:high, refs:['interne'], owner }]);
+  check('cas fautif détecté : une entité qui appelle une feature', up.length === 1 && /couche supérieure/.test(up[0]));
+  check('cas fautif détecté : un nom hors de l\'API publique', priv.length === 1 && /API publique/.test(priv[0]));
+}
+
 console.log(failed ? `\n${failed} test(s) d'architecture en échec` : '\nArchitecture cohérente');
 process.exit(failed ? 1 : 0);
