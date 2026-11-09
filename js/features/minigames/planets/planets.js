@@ -241,3 +241,6 @@ function planetWin(q){
   missionFact = q.fact;
   setTimeout(onMissionWin, 450);
 }
+
+// inscription auprès du moteur de mini-jeux (js/features/minigame-engine)
+registerGame('planets', renderPlanets);

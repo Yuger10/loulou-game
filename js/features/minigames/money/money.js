@@ -57,3 +57,6 @@ function renderMoney(){
     };
   });
 }
+
+// inscription auprès du moteur de mini-jeux (js/features/minigame-engine)
+registerGame('money', renderMoney);

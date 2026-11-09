@@ -6,9 +6,10 @@ const FILES = [
   './js/entities/item/items.js','./js/entities/world/worlds.js','./js/entities/character/characters.js','./js/entities/character/characters-art.js','./js/entities/difficulty/difficulty.js','./js/entities/difficulty/game-types.js',
   './js/entities/difficulty/age.js','./js/entities/game-state/state.js','./js/entities/player/avatars.js','./js/entities/player/profiles.js','./js/entities/player/party-state.js','./js/entities/companion/companions.js',
   './js/features/party/party.js','./js/story.js','./js/episodes.js','./js/state.js','./js/ui.js','./js/music.js',
-  './js/gains.js','./js/map.js','./js/island.js','./js/minigames.js','./js/math.js','./js/reading.js',
-  './js/grammar.js','./js/volume.js','./js/compare.js','./js/money.js','./js/clock.js','./js/calendar.js',
-  './js/calc.js','./js/shapes.js','./js/planets.js','./js/jigsaw.js','./js/market.js','./js/gifts.js',
+  './js/gains.js','./js/map.js','./js/island.js','./js/features/minigame-engine/engine.js','./js/features/minigames/memory/memory.js','./js/features/minigames/count/count.js',
+  './js/features/minigames/intruder/intruder.js','./js/features/minigames/simon/simon.js','./js/features/minigames/sequence/sequence.js','./js/features/minigames/puzzle/puzzle.js','./js/features/minigames/math/math.js','./js/features/minigames/reading/reading.js',
+  './js/features/minigames/grammar/grammar.js','./js/features/minigames/volume/volume.js','./js/features/minigames/compare/compare.js','./js/features/minigames/money/money.js','./js/features/minigames/clock/clock.js','./js/features/minigames/calendar/calendar.js',
+  './js/features/minigames/calc/calc.js','./js/features/minigames/shapes/shapes.js','./js/features/minigames/planets/planets.js','./js/features/minigames/jigsaw/jigsaw.js','./js/market.js','./js/gifts.js',
   './js/race.js','./js/profiles-ui.js','./js/backup.js','./js/parents.js','./js/adaptive.js','./js/wardrobe.js',
   './js/seasons.js','./js/init.js'
 ];

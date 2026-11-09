@@ -68,3 +68,6 @@ function renderClock(){
     };
   });
 }
+
+// inscription auprès du moteur de mini-jeux (js/features/minigame-engine)
+registerGame('clock', renderClock);

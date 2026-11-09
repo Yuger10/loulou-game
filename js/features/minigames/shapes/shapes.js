@@ -154,3 +154,6 @@ function renderShapes(){
     };
   });
 }
+
+// inscription auprès du moteur de mini-jeux (js/features/minigame-engine)
+registerGame('shapes', renderShapes);

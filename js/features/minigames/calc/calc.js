@@ -76,3 +76,6 @@ function renderCalc(){
     };
   });
 }
+
+// inscription auprès du moteur de mini-jeux (js/features/minigame-engine)
+registerGame('calc', renderCalc);

@@ -88,3 +88,6 @@ function renderWeekdayOrder(dd){
     };
   });
 }
+
+// inscription auprès du moteur de mini-jeux (js/features/minigame-engine)
+registerGame('calendar', renderCalendar);
