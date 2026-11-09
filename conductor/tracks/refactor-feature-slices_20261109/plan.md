@@ -25,7 +25,7 @@ Principe : **un déplacement ou un découpage = un commit avec `npm test` vert**
 - [x] Task: Mettre à jour le manifeste, `index.html` et `sw.js` à chaque déplacement (tests de cohérence verts)
 - [x] Task: Conductor - User Manual Verification 'Couches basses' (Protocol in workflow.md)
 
-## Phase 3 : Features et app
+## Phase 3 : Features et app [checkpoint: 8903c86]
 > Fait : 46 slices ; registre `registerGame` (le moteur ne connaît plus la liste des jeux) ; point d'accroche `onProfileRefresh` (changement de joueur) ; `GAME_LIST.fn`, inutilisé, retiré ; chemins des commentaires mis à jour. **Plus aucune dépendance vers le haut dans tout le code** : la liste d'exceptions prévue n'est pas nécessaire.
 - [x] Task: Moteur et mini-jeux
     - [x] `minigames.js` : le cadre commun (essais, `scheduleRetry`, minuteur, choix du jeu) vers `features/minigame-engine/` ; chaque jeu historique vers `features/minigames/<jeu>/`
@@ -35,7 +35,7 @@ Principe : **un déplacement ou un découpage = un commit avec `npm test` vert**
     - [x] `jigsaw.js` vers `features/minigames/jigsaw/` ; `music.js` vers `shared/audio/` ; `icons.js` vers `shared/ui/`
 - [x] Task: `app/`
     - [x] `init.js` et la liaison des boutons d'en-tête vers `app/` ; les vues restantes de `ui.js` (`renderLagon`, `checkNewIsland`, navigation) vers leur feature
-- [ ] Task: Conductor - User Manual Verification 'Features et app' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Features et app' (Protocol in workflow.md)
 
 ## Phase 4 : CSS par slice
 - [ ] Task: Découper `styles.css`
