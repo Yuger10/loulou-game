@@ -1,12 +1,12 @@
-/* ---------- Analyse des noms globaux (outil de développement) ----------
-   Le jeu est fait de scripts classiques qui partagent la portée globale :
-   un fichier appelle directement les fonctions d'un autre. Cet outil lit
-   chaque fichier avec acorn et donne, pour chacun :
-     - defs : les noms qu'il définit au niveau global (function, const, let,
-              var, class) ;
-     - refs : les noms LIBRES qu'il utilise (ni déclarés localement, ni
-              paramètres), c'est-à-dire ce qu'il attend des autres fichiers
-              ou du navigateur.
+/* ---------- Analyse des noms d'un fichier (outil de développement) ----------
+   Depuis la v54, le jeu est fait de modules ES : un fichier importe ce qu'il
+   utilise. Cet outil lit chaque fichier avec acorn et donne, pour chacun :
+     - defs    : les noms qu'il définit à son niveau le plus haut (function,
+                 const, let, var, class, exportés ou non) ;
+     - refs    : les noms LIBRES qu'il utilise (ni déclarés, ni importés, ni
+                 paramètres) : ce qu'il attend du navigateur. Un nom libre
+                 défini par un autre fichier du jeu est un import oublié ;
+     - imports : [{ source, names }] et exports : noms exportés.
    Il sert à l'inventaire du refactor en feature slices (v51) et au test de
    frontières (test/slices.test.js). Une vraie analyse de portée évite les
    faux positifs : un paramètre `state` ou un mot dans un texte ne compte pas. */
@@ -14,7 +14,7 @@ const fs = require('fs');
 const acorn = require('acorn');
 
 function parse(src, file){
-  try{ return acorn.parse(src, { ecmaVersion:'latest', sourceType:'script', allowHashBang:true }); }
+  try{ return acorn.parse(src, { ecmaVersion:'latest', sourceType:'module', allowHashBang:true }); }
   catch(e){ throw new Error(`${file} : ${e.message}`); }
 }
 
@@ -51,7 +51,9 @@ function hoisted(body, out = new Set()){
 // déclarations lexicales directes d'un bloc (let, const, class, function)
 function lexical(stmts){
   const out = new Set();
-  for(const s of stmts){
+  for(let s of stmts){
+    if(s.type==='ImportDeclaration'){ s.specifiers.forEach(sp=> out.add(sp.local.name)); continue; }
+    if((s.type==='ExportNamedDeclaration' || s.type==='ExportDefaultDeclaration') && s.declaration) s = s.declaration;
     if(s.type==='VariableDeclaration' && s.kind!=='var') s.declarations.forEach(d=> patternNames(d.id).forEach(x=>out.add(x)));
     if(s.type==='ClassDeclaration' && s.id) out.add(s.id.name);
     if(s.type==='FunctionDeclaration' && s.id) out.add(s.id.name);
@@ -62,7 +64,17 @@ function lexical(stmts){
 function analyze(src, file){
   const ast = parse(src, file);
   const defs = new Set();
-  for(const s of ast.body){
+  const imports = [], exported = new Set();
+  for(let s of ast.body){
+    if(s.type==='ImportDeclaration'){ imports.push({ source: s.source.value, names: s.specifiers.map(sp=> sp.imported ? sp.imported.name : (sp.type==='ImportDefaultSpecifier' ? 'default' : '*')) }); continue; }
+    if(s.type==='ExportNamedDeclaration' && s.source){ imports.push({ source: s.source.value, names: s.specifiers.map(sp=> sp.local.name), reexport:true }); s.specifiers.forEach(sp=> exported.add(sp.exported.name)); continue; }
+    if(s.type==='ExportAllDeclaration'){ imports.push({ source: s.source.value, names:['*'], reexport:true }); continue; }
+    if(s.type==='ExportNamedDeclaration' && !s.declaration){ s.specifiers.forEach(sp=> exported.add(sp.exported.name)); continue; }
+    if((s.type==='ExportNamedDeclaration' || s.type==='ExportDefaultDeclaration') && s.declaration){
+      s = s.declaration;
+      if(s.id) exported.add(s.id.name);
+      if(s.type==='VariableDeclaration') s.declarations.forEach(d=> patternNames(d.id).forEach(x=> exported.add(x)));
+    }
     if(s.type==='FunctionDeclaration') defs.add(s.id.name);
     else if(s.type==='ClassDeclaration') defs.add(s.id.name);
     else if(s.type==='VariableDeclaration') s.declarations.forEach(d=> patternNames(d.id).forEach(x=>defs.add(x)));
@@ -102,6 +114,12 @@ function analyze(src, file){
     if(!n || typeof n.type !== 'string') return;
     switch(n.type){
       case 'Identifier': use(n.name); return;
+      case 'ImportDeclaration': case 'ExportAllDeclaration': return;
+      case 'ExportNamedDeclaration':
+        if(n.declaration) walk(n.declaration);
+        else if(!n.source) n.specifiers.forEach(sp=> use(sp.local.name));
+        return;
+      case 'ExportDefaultDeclaration': walk(n.declaration); return;
       case 'FunctionDeclaration': case 'FunctionExpression': case 'ArrowFunctionExpression': fn(n); return;
       case 'BlockStatement': block(n.body); return;
       case 'Program': block(n.body); return;
@@ -135,7 +153,7 @@ function analyze(src, file){
   walk(ast);
   // les noms définis par le fichier lui-même ne sont pas des dépendances
   for(const d of defs) refs.delete(d);
-  return { defs:[...defs], refs };
+  return { defs:[...defs], refs, imports, exports:[...exported] };
 }
 
 function analyzeFiles(files){
@@ -145,14 +163,14 @@ function analyzeFiles(files){
 module.exports = { analyze, analyzeFiles };
 
 // en ligne de commande : node test/tools/globals.js js/a.js js/b.js …
+// (npm run inventaire) : ce que chaque fichier définit, exporte et importe
 if(require.main === module){
   const res = analyzeFiles(process.argv.slice(2));
-  const owner = new Map();
-  res.forEach(r=> r.defs.forEach(d=> owner.set(d, r.file)));
   for(const r of res){
-    const deps = {};
-    for(const [name] of r.refs){ const o = owner.get(name); if(o) (deps[o] = deps[o] || []).push(name); }
     console.log(`\n## ${r.file}\ndéfinit (${r.defs.length}) : ${r.defs.join(', ')}`);
-    for(const [o, names] of Object.entries(deps)) console.log(`  utilise ${o} : ${names.join(', ')}`);
+    if(r.exports.length) console.log(`  exporte : ${r.exports.join(', ')}`);
+    for(const i of r.imports) console.log(`  importe ${i.source} : ${i.names.join(', ')}`);
+    const free = [...r.refs.keys()];
+    if(free.length) console.log(`  navigateur : ${free.join(', ')}`);
   }
 }

@@ -1,4 +1,7 @@
 /* ---------- État de la partie du joueur courant : sauvegarde, migrations, niveau ---------- */
+import { setAudioPrefsSource } from '../../shared/ui/index.js';
+import { SQUISHY_ISLAND_SERIES } from '../squishy/index.js';
+
 const MISSIONS_PER_LEVEL = 5;
 
 const SAVE_KEY = 'lagon-magique-save';
@@ -92,10 +95,17 @@ let state = {
   squishies: squishyFreshState(),
 };
 
+/* L'emplacement de sauvegarde : le joueur courant (entities/player, une couche
+   au-dessus) y branche sa clé, et ce qu'il faut faire après chaque
+   sauvegarde (recopier prénom et avatar dans sa fiche) et chaque chargement
+   (corriger un ancien avatar). Sans joueur : l'ancienne clé unique. */
+const saveSlot = { key: ()=> SAVE_KEY, afterSave: ()=>{}, afterLoad: ()=>{} };
+function setSaveSlot(slot){ Object.assign(saveSlot, slot); }
+
 function save(){
   try{
-    localStorage.setItem(currentSaveKey(), JSON.stringify(state));
-    syncProfileFromState();
+    localStorage.setItem(saveSlot.key(), JSON.stringify(state));
+    saveSlot.afterSave();
   }catch(e){}
 }
 
@@ -142,7 +152,7 @@ function migrate(saved){
 
 function load(){
   try{
-    const key = currentSaveKey();
+    const key = saveSlot.key();
     const raw = localStorage.getItem(key);
     if(!raw){ state = freshState(); return; }
     const saved = migrate(JSON.parse(raw));
@@ -154,12 +164,15 @@ function load(){
       if((saved[k] !== undefined && saved[k] !== null) || k==='quests') clean[k] = saved[k];
     });
     state = freshState(clean);
-    state.avatar = fixAvatar(state.avatar);
+    saveSlot.afterLoad(state);
     save();
   }catch(e){
     console.warn('Sauvegarde illisible, on repart à zéro', e);
   }
 }
+
+// Remplacer toute la partie (nouveau joueur) : seul ce fichier réaffecte `state`
+function replaceState(next){ state = next; }
 
 function resetState(){
   state = freshState({
@@ -189,3 +202,8 @@ setAudioPrefsSource(()=> state);
 
 /* ---------- Profil (prénom + avatar) ---------- */
 function hello(){ return state.name ? state.name : ''; }
+
+export {
+  freshState, gameCount, hello, level, levelProgress, load, MISSIONS_PER_LEVEL, replaceState,
+  resetState, save, setSaveSlot, squishyFreshState, state, trackGamePlayed
+};

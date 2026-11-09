@@ -6,10 +6,12 @@
    Par défaut on propose ceux qui correspondent au profil (fille : sirène,
    princesse, fée ; garçon : pirate, chevalier, explorateur), mais l'enfant
    peut toujours choisir n'importe lequel. */
+import { playSound } from '../../shared/ui/index.js';
 
 // La garde-robe (« Mon look ») et les fêtes de saison habillent compagnons et
 // avatars. Ce sont des features : elles fournissent leurs fonctions ici avec
 // setCompanionDressing, l'entité ne les appelle jamais directement.
+
 const companionDressing = { seasonHat:null, lookColors:null, lookAccessoriesSVG:null, lookFits:null };
 function setCompanionDressing(part){ Object.assign(companionDressing, part); }
 
@@ -232,10 +234,13 @@ function companionOf(profile){
   if(!profile) return defaultCompanionFor('');
   return COMPANIONS[profile.companion] ? profile.companion : defaultCompanionFor(profile.gender);
 }
-// le compagnon du joueur dont c'est le tour (solo, chacun son tour ou course)
+// le compagnon du joueur dont c'est le tour (solo, chacun son tour ou course).
+// Le joueur courant vient d'entities/player (une couche au-dessus), qui
+// branche sa fonction ici (v54).
+let companionPlayerSource = ()=> null;
+function setCompanionPlayerSource(fn){ companionPlayerSource = fn; }
 function currentCompanion(){
-  const p = currentPlayer() || currentProfile();
-  return companionOf(p);
+  return companionOf(companionPlayerSource());
 }
 // compagnons proposés en premier selon le profil ; '' = tous
 function companionsFor(gender){
@@ -314,3 +319,8 @@ function avatarText(av){
   return AVATAR_ART_EMOJI[av.slice(4)] || '🙂';
 }
 
+export {
+  avatarHTML, avatarText, bindCompanionSelector, buddyReact, buddySlot, COMPANION_ORDER, companionOf,
+  COMPANIONS, companionSelector, companionsFor, companionSVG, currentCompanion, defaultCompanionFor,
+  isArtAvatar, setCompanionDressing, setCompanionPlayerSource
+};

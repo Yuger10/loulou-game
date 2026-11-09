@@ -1,5 +1,17 @@
 /* Jeu 1 : mémoire (pas de minuteur : tâche à plusieurs étapes, voir
    js/entities/difficulty/difficulty.js § « MINUTEUR » pour la justification). */
+import { memoryPairs } from '../../../entities/difficulty/index.js';
+import { ALL_ITEMS } from '../../../entities/item/index.js';
+import { pickRandom, shuffle } from '../../../shared/lib/index.js';
+import { openModal, playSound } from '../../../shared/ui/index.js';
+import { gameDiff } from '../../adaptive/index.js';
+import { registerHints, setHintQuestion } from '../../hints/index.js';
+import {
+  flashModal, livesBar, loseLife, onMissionWin, progressDots, registerGame, setSolution, setupLives,
+  solSel
+} from '../../minigame-engine/index.js';
+import { bindQuit, gameHeader } from '../../screen/index.js';
+
 function renderMemory(){
   setupLives('memory');
   const dd = gameDiff();

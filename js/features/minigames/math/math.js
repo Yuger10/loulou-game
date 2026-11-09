@@ -3,6 +3,16 @@
    apprendre le calcul sans se noyer dans les chiffres.
    Les bornes (mathBounds) sont centralisées et documentées dans
    js/entities/difficulty/difficulty.js — voir aussi ANALYSE-DIFFICULTE.md. */
+import { mathBounds } from '../../../entities/difficulty/index.js';
+import { pickRandom, shuffle } from '../../../shared/lib/index.js';
+import { emojiWord, openModal } from '../../../shared/ui/index.js';
+import { gameDiff } from '../../adaptive/index.js';
+import { registerHints, setHintQuestion } from '../../hints/index.js';
+import {
+  clearActiveTimer, flashModal, livesBar, loseLife, onMissionWin, registerGame, setSolution,
+  setupLives, solSel, startTimerIfNeeded, stepOk
+} from '../../minigame-engine/index.js';
+import { bindQuit, gameHeader } from '../../screen/index.js';
 
 const MATH_EMOJIS = ['⭐','🐚','🌸','🦪','🐠','🦋','🍎','🎈'];
 

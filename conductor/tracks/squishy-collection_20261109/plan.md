@@ -76,4 +76,4 @@ Tests : un nouveau `test/squishies.test.js`, enchaîné par `npm test` après le
 - [x] Task: Vérification complète
     - [x] `npm test` vert ; parcours manuel à 360 px (ouvrir, presser, étagère, ranger, échanger, sauvegarder puis restaurer)
 - [x] Task: Conductor - User Manual Verification 'Livraison v53' (Protocol in workflow.md)
-- [ ] Task: Branche, PR sur `main`, merge
+- [x] Task: Branche, PR sur `main`, merge (Yuger10/loulou-game#26)

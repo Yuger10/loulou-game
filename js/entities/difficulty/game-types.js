@@ -35,3 +35,26 @@ function gameTypesForAge(age){
   const tier = AGE_GAME_TYPES.find(r=>a<=r.max);
   return tier ? tier.types : GAME_TYPES;
 }
+
+const GAME_LIST = [
+  { key:'memory',   emoji:'🧠', name:'Mémoire' },
+  { key:'count',    emoji:'🔢', name:'Compter' },
+  { key:'diff',     emoji:'🔍', name:"L'intrus" },
+  { key:'puzzle',   emoji:'🧩', name:'Les nombres' },
+  { key:'sequence', emoji:'🔮', name:'La suite' },
+  { key:'simon',    emoji:'🎵', name:'Les couleurs' },
+  { key:'math',     emoji:'➕', name:'Opérations' },
+  { key:'reading',  emoji:'📖', name:'Lecture' },
+  { key:'determinants', emoji:'🔤', name:'Petits mots' },
+  { key:'volume',   emoji:'🧪', name:'Volumes' },
+  { key:'compare',  emoji:'⚖️', name:'Comparer' },
+  { key:'money',    emoji:'💰', name:'La monnaie' },
+  { key:'clock',    emoji:'🕐', name:"L'heure" },
+  { key:'calendar', emoji:'📅', name:'Calendrier' },
+  { key:'calc',     emoji:'🌋', name:'Calcul mental' },
+  { key:'shapes',   emoji:'🍡', name:'Formes et couleurs' },
+  { key:'planets',  emoji:'🪐', name:'Les planètes' },
+  { key:'jigsaw',   emoji:'🖼️', name:'Le puzzle' },
+];
+
+export { GAME_LIST, gameTypesForAge };

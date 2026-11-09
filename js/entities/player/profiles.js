@@ -1,4 +1,11 @@
 /* ---------- Joueurs : profils et leur stockage ---------- */
+import { playSound, showToast, speak } from '../../shared/ui/index.js';
+import { avatarText, defaultCompanionFor } from '../companion/index.js';
+import { freshState, load, replaceState, save, setSaveSlot, state } from '../game-state/index.js';
+import { currentWorld, setCurrentWorld, worldUnlocked } from '../world/index.js';
+import { fixAvatar } from './avatars.js';
+import { party } from './party-state.js';
+
 const PROFILES_KEY = 'lagon-magique-profiles';
 
 const LEGACY_SAVE_KEY = 'lagon-magique-save';
@@ -52,12 +59,15 @@ function syncProfileFromState(){
   saveProfiles();
 }
 
+// la partie de chaque joueur est sauvegardée sous sa propre clé
+setSaveSlot({ key: currentSaveKey, afterSave: syncProfileFromState, afterLoad: (st)=>{ st.avatar = fixAvatar(st.avatar); } });
+
 function switchProfile(id, silent){
   if(id === profiles.current) return;
   save();                       // sauvegarde le joueur courant
   profiles.current = id; saveProfiles();
   load();                       // charge le nouveau
-  currentWorld = worldUnlocked(currentWorld) ? currentWorld : 'lagon';
+  setCurrentWorld(worldUnlocked(currentWorld) ? currentWorld : 'lagon');
   refreshAll();
   if(!silent){
     playSound('good');
@@ -72,9 +82,9 @@ function addProfile(name, avatar, age, gender, companion){
   profiles.list.push({ id, name: name||'', avatar: avatar||'👧', age: age||null, gender: gender||'',
     companion: companion || defaultCompanionFor(gender||'') });
   profiles.current = id; saveProfiles();
-  state = freshState({ name: name||'', avatar: avatar||'👧', visited:['lagon'] });
+  replaceState(freshState({ name: name||'', avatar: avatar||'👧', visited:['lagon'] }));
   save();
-  currentWorld = 'lagon';
+  setCurrentWorld('lagon');
   refreshAll();
   return id;
 }
@@ -87,7 +97,7 @@ function deleteProfile(id){
   if(profiles.current === id){
     profiles.current = profiles.list[0].id;
     load();
-    currentWorld = 'lagon';
+    setCurrentWorld('lagon');
   }
   saveProfiles();
   refreshAll();
@@ -114,3 +124,9 @@ function ac(masc, fem){
   if(g==='f') return fem || (masc + 'e');
   return masc;
 }
+
+export {
+  ac, addProfile, currentProfile, deleteProfile, LEGACY_SAVE_KEY, loadProfiles, onProfileRefresh,
+  playerGender, profiles, PROFILES_KEY, profileSaveKey, refreshAll, saveProfiles, switchProfile,
+  syncProfileFromState
+};

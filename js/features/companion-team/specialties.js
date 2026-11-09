@@ -23,6 +23,26 @@
    - Rose, collection : dans le Sac, l'Album et « Mon look », ce qui manque et
      où le trouver.
    Compteurs du jour : state.team.day = { date, zap:{ île:true }, tom:bool }. */
+import { CHARACTERS, charsOf } from '../../entities/character/index.js';
+import { COMPANIONS, companionSVG, currentCompanion } from '../../entities/companion/index.js';
+import { GAME_LIST, gameTypesForAge } from '../../entities/difficulty/index.js';
+import { save, state } from '../../entities/game-state/index.js';
+import { addItem, ITEMS } from '../../entities/item/index.js';
+import { ac, currentPlayerAge, onProfileRefresh, party, race } from '../../entities/player/index.js';
+import {
+  availableItems, currentWorld, WORLD_ORDER, WORLDS, worldUnlocked
+} from '../../entities/world/index.js';
+import { emit, on, pickRandom } from '../../shared/lib/index.js';
+import { bindSpeakButtons, onModalOpen, playSound, speak, switchView } from '../../shared/ui/index.js';
+import { bonusChallenge, needsPractice, todayKey } from '../adaptive/index.js';
+import { markSeen } from '../bag/index.js';
+import { hintLevel, hintShowFirst, setHintPolicy } from '../hints/index.js';
+import { openDialogue, setWorld } from '../island/index.js';
+import { ensureQuests, openQuestsModal } from '../quests/index.js';
+import { openStoryChapter, STORY, storySolved } from '../story/index.js';
+import { addCoins } from '../wallet/index.js';
+import { ownsLookItem, WARDROBE } from '../wardrobe/index.js';
+import { teamIsOpen, teamMates, teamPrincipal, teamState } from './team.js';
 
 function specialtyOn(id){
   if(race.active || !COMPANIONS[id]) return false;
@@ -201,7 +221,7 @@ function renderZapOffer(){
 function zapStart(key){
   teamDay().zap[currentWorld] = true; save();
   renderZapOffer();
-  startBonusChallenge(key || zapGameFor());
+  emit('game:bonus', key || zapGameFor());   // le moteur lance le défi
 }
 
 /* ---- Tom (trésor du jour) et Zap (défi réussi) sur l'écran de victoire ---- */
@@ -260,3 +280,8 @@ function roseTip(tab){
 // l'île et la carte : la bulle de Sam et l'offre de Zap
 function renderTeamHelpers(){ renderSamGuide(); renderZapOffer(); }
 onProfileRefresh(()=>{ teamSayClear(); renderTeamHelpers(); });
+
+// Rose : dans le Sac, l'Album et « Mon look » (événement du Sac)
+on('bag:tab', roseTip);
+
+export { pauseAnnouncer, renderSamGuide, renderTeamHelpers, teamCheerBy, teamOnGamePicker, teamWinExtras };

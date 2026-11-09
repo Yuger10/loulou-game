@@ -5,6 +5,16 @@
    - remettre les jours de la semaine dans l'ordre (demande de lire des
      mots, réservé à partir du CP confirmé).
    Pas de minuteur sur ce jeu (voir NO_TIMER_KINDS dans difficulty.js). */
+import { calendarUsesWeekdayOrder, calendarWeekdayCount } from '../../../entities/difficulty/index.js';
+import { pickRandom, shuffle } from '../../../shared/lib/index.js';
+import { openModal, speak } from '../../../shared/ui/index.js';
+import { gameDiff } from '../../adaptive/index.js';
+import { hintOrderStep, registerHints, setHintQuestion } from '../../hints/index.js';
+import {
+  flashModal, livesBar, loseLife, onMissionWin, progressDots, registerGame, setSolution, setupLives,
+  solSel, stepOk
+} from '../../minigame-engine/index.js';
+import { bindQuit, gameHeader } from '../../screen/index.js';
 
 // tip : ce que montre la scène, sans dire la saison (indice 2, v52)
 const SEASONS = [

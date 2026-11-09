@@ -1,8 +1,14 @@
 /* ---------- Mode chacun son tour : passer la main, scores ---------- */
+import { avatarHTML, avatarText } from '../../entities/companion/index.js';
+import {
+  party, partyCurrent, partyPlayers, race, setParty, switchProfile
+} from '../../entities/player/index.js';
+import { onWrongFeedback, playSound, showToast, speak, vibrate } from '../../shared/ui/index.js';
+import { raceAdvance, stopRace } from './race.js';
 
 function startParty(ids){
   if(ids.length < 2) return false;
-  party = { active:true, mode:'turns', players:ids.slice(), turn:0, scores:{}, lastWinner:null };
+  setParty({ active:true, mode:'turns', players:ids.slice(), turn:0, scores:{}, lastWinner:null });
   ids.forEach(id=> party.scores[id] = 0);
   switchProfile(ids[0], true);
   renderTurnBar();
@@ -89,3 +95,5 @@ function partyAfterWin(){
 onWrongFeedback(()=>{
   if(party.active) setTimeout(()=> passTurn('wrong'), 420);
 });
+
+export { partyAfterWin, partyScore, passTurn, renderTurnBar, startParty, stopParty };

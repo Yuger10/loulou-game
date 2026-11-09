@@ -1,25 +1,25 @@
 /* ---------- Écran des joueurs, modes de jeu, choix du mini-jeu ---------- */
-
-const GAME_LIST = [
-  { key:'memory',   emoji:'🧠', name:'Mémoire' },
-  { key:'count',    emoji:'🔢', name:'Compter' },
-  { key:'diff',     emoji:'🔍', name:"L'intrus" },
-  { key:'puzzle',   emoji:'🧩', name:'Les nombres' },
-  { key:'sequence', emoji:'🔮', name:'La suite' },
-  { key:'simon',    emoji:'🎵', name:'Les couleurs' },
-  { key:'math',     emoji:'➕', name:'Opérations' },
-  { key:'reading',  emoji:'📖', name:'Lecture' },
-  { key:'determinants', emoji:'🔤', name:'Petits mots' },
-  { key:'volume',   emoji:'🧪', name:'Volumes' },
-  { key:'compare',  emoji:'⚖️', name:'Comparer' },
-  { key:'money',    emoji:'💰', name:'La monnaie' },
-  { key:'clock',    emoji:'🕐', name:"L'heure" },
-  { key:'calendar', emoji:'📅', name:'Calendrier' },
-  { key:'calc',     emoji:'🌋', name:'Calcul mental' },
-  { key:'shapes',   emoji:'🍡', name:'Formes et couleurs' },
-  { key:'planets',  emoji:'🪐', name:'Les planètes' },
-  { key:'jigsaw',   emoji:'🖼️', name:'Le puzzle' },
-];
+import {
+  avatarHTML, avatarText, bindCompanionSelector, companionOf, companionSelector, companionsFor,
+  companionSVG, defaultCompanionFor
+} from '../../entities/companion/index.js';
+import { ageToDiff, GAME_LIST, gameTypesForAge } from '../../entities/difficulty/index.js';
+import { gameCount, MISSIONS_PER_LEVEL, resetState, save, state } from '../../entities/game-state/index.js';
+import {
+  addProfile, AVATARS, currentPlayerAge, currentProfile, deleteProfile, party, partyCurrent, profiles,
+  profileSaveKey, refreshAll, saveProfiles, switchProfile
+} from '../../entities/player/index.js';
+import { currentWorld, setCurrentWorld, WORLDS } from '../../entities/world/index.js';
+import { emit, on, pickRandom, shuffle } from '../../shared/lib/index.js';
+import { closeModal, confetti, openModal, playSound, showToast, speak } from '../../shared/ui/index.js';
+import { pickPracticeGame } from '../adaptive/index.js';
+import { backupDue, openBackup } from '../backup/index.js';
+import { teamOnGamePicker } from '../companion-team/index.js';
+import { renderLagon, setCurrentChar } from '../island/index.js';
+import { playGame, startMinigame } from '../minigame-engine/index.js';
+import { startParty, startRace, stopParty } from '../party/index.js';
+import { genderSelector, renderProfile } from '../profile/index.js';
+import { bindQuit, gameHeader } from '../screen/index.js';
 
 /* --- Panneau des joueurs --- */
 function openPlayers(){
@@ -67,7 +67,7 @@ function openPlayers(){
     });
     document.getElementById('btn-add-player').onclick = ()=>{ playSound('tap'); openNewPlayer(); };
     document.getElementById('btn-backup').onclick = ()=>{ playSound('tap'); openBackup(); };
-    document.getElementById('btn-parents').onclick = ()=>{ playSound('tap'); openParents(); };
+    document.getElementById('btn-parents').onclick = ()=>{ playSound('tap'); emit('nav:parents'); };
     document.getElementById('btn-solo').onclick = ()=>{
       playSound('tap');
       const id = [...sel][0] || profiles.current;
@@ -122,19 +122,6 @@ function playerSummary(id){
     const lvl = 1 + Math.floor((s.missions||0)/MISSIONS_PER_LEVEL);
     return `⭐ niveau ${lvl} · 🪙 ${s.coins||0} · 🎮 ${s.missions||0} missions`;
   }catch(e){ return ''; }
-}
-
-function genderSelector(sel){
-  const opts = [
-    { v:'f', emoji:'👧', label:'Fille' },
-    { v:'m', emoji:'👦', label:'Garçon' },
-    { v:'',  emoji:'🧒', label:'Peu importe' },
-  ];
-  return `<label class="mini-label">Comment on te parle ?</label>
-    <div class="gender-row">
-      ${opts.map(o=>`<button class="gender-opt ${String(sel||'')===o.v?'sel':''}" data-gender="${o.v}">
-        <span class="ge">${o.emoji}</span><span class="gl">${o.label}</span></button>`).join('')}
-    </div>`;
 }
 
 function ageSelector(sel){
@@ -264,7 +251,7 @@ function openPlayerSettings(id){
       if(!confirm(`Tout recommencer à zéro pour ${p.name || 'ce joueur'} ?\n(pièces, objets, îles et niveau seront perdus)`)) return;
       if(id === profiles.current){
         resetState();
-        currentWorld = 'lagon';
+        setCurrentWorld('lagon');
         refreshAll();
       } else {
         try{ localStorage.removeItem(profileSaveKey(id)); }catch(e){}
@@ -321,7 +308,7 @@ function pickPickerChoices(n){
 }
 
 function openGamePicker(charId){
-  if(charId) currentChar = charId;
+  if(charId) setCurrentChar(charId);
   const who = party.active ? (partyCurrent() || currentProfile()) : currentProfile();
   const choices = pickPickerChoices(Math.min(GAME_PICKER_SIZE, GAME_LIST.length));
   openModal(`
@@ -346,3 +333,10 @@ function openGamePicker(charId){
     };
   });
 }
+
+// ouvrir le choix des jeux ou les réglages d'un joueur, à la demande de l'île,
+// des cadeaux ou du Sac (couches plus basses)
+on('nav:game-picker', openGamePicker);
+on('nav:player-settings', openPlayerSettings);
+
+export { openPlayers, openPlayerSettings };

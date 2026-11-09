@@ -11,6 +11,13 @@
    - une énigme d'histoire résolue : 1 boîte de la série de l'île, une
      seule fois par île (SQUISHY_ISLAND_SERIES) ;
    - la boutique du marché : 15 pièces, 3 par jour au plus. */
+import { save, squishyFreshState, state } from '../../entities/game-state/index.js';
+import {
+  SQ_COLORS, SQUISHIES, squishiesOf, SQUISHY_ISLAND_SERIES, SQUISHY_RARITY, SQUISHY_SERIES,
+  SQUISHY_SERIES_ORDER
+} from '../../entities/squishy/index.js';
+import { todayKey } from '../adaptive/index.js';
+import { addCoins } from '../wallet/index.js';
 
 const SQ_BOX_PRICE = 15;        // pièces, à la boutique du marché
 const SQ_BUY_MAX = 3;           // achats par jour et par joueur
@@ -345,3 +352,12 @@ function sortingDone(errors, level, age){
   return paid ? SQ_SORT_REWARD : 0;
 }
 function sortingPaidLeft(){ return Math.max(0, SQ_SORT_PAID_MAX - sqDay().sorted); }
+
+export {
+  addSquishyBox, addStorySquishyBox, buySquishyBox, makeSortingTask, onSquishyChange, openSquishyBox,
+  recordSorting, shelfPlace, shelfRemove, sortingDone, sortingPaidLeft, sortMatches, sortSay,
+  sortWrongHint, SQ_BOX_PRICE, SQ_SERIES_BONUS, SQ_SORT_MAX_ERRORS, SQ_SORT_MIN_MODELS, SQ_SORT_REWARD,
+  SQ_SORT_SHAPES, SQ_SORT_SIZES, SQ_SORT_SLOTS, SQ_TRADE_COST, sqState, squishyBoxCount, squishyCount,
+  squishyDuplicates, squishyMissing, squishyOwnedIds, squishySeriesProgress, squishyShelfCount,
+  squishyShopState, tradeDuplicatesFor
+};

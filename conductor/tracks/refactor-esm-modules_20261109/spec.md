@@ -20,7 +20,7 @@ L'étape A donne la structure, mais ses frontières ne tiennent que par un test.
 
 ## 3. Exigences
 - **Aucun changement fonctionnel** ; mêmes sauvegardes ; `npm test` vert à chaque étape.
-- À la fin : **aucune variable globale applicative** (à part ce qu'exige le navigateur), aucune garde `typeof fn==='function'` pour une dépendance, `js/slices.js` remplacé par les `index.js` (ou réduit à la liste servant au service worker).
+- À la fin : **aucune variable globale applicative** (à part ce qu'exige le navigateur), aucune garde `typeof fn==='function'` pour une dépendance, `js/slices.cjs` remplacé par les `index.js` (ou réduit à la liste servant au service worker).
 - **Test de frontières réécrit** sur les `import` : on n'importe que des `index.js` d'autres slices ; la règle des couches est respectée ; aucun cycle d'import entre slices (détecté par le graphe d'esbuild, avec `metafile`).
 - PWA et hors-ligne fonctionnent comme avant (les modules sont précachés).
 - Docs : `tech-stack.md` (modules, esbuild en développement, `file://` interdit), `README.md`, `workflow.md` et checklists « ajouter un mini-jeu » et « ajouter une île » mises à jour.

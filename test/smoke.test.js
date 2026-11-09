@@ -5,7 +5,7 @@ const path = require('path');
 
 const root = path.join(__dirname, '..');
 // Le jeu est découpé en plusieurs fichiers : on inline CSS et JS pour jsdom,
-// dans l'ordre du manifeste des slices (js/slices.js)
+// dans l'ordre du manifeste des slices (js/slices.cjs)
 const page = require('./tools/page.js');
 const html = page.buildHtml();
 

@@ -1,5 +1,16 @@
 /* Jeu 3 : trouver l'intrus (discrimination visuelle — voir
    js/entities/difficulty/difficulty.js § diffTotal / diffMirrorChance) */
+import { diffMirrorChance, diffTotal } from '../../../entities/difficulty/index.js';
+import { pickRandom } from '../../../shared/lib/index.js';
+import { openModal } from '../../../shared/ui/index.js';
+import { gameDiff } from '../../adaptive/index.js';
+import { registerHints, setHintQuestion } from '../../hints/index.js';
+import {
+  clearActiveTimer, flashModal, livesBar, loseLife, onMissionWin, registerGame, setSolution,
+  setupLives, startTimerIfNeeded, stepOk
+} from '../../minigame-engine/index.js';
+import { bindQuit, gameHeader } from '../../screen/index.js';
+
 function renderDiff(){
   setupLives('diff');
   const dd = gameDiff();

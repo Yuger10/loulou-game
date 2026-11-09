@@ -6,6 +6,18 @@
      cylindre, cône, pavé), une compétence qui se construit en CP-CE1.
    Seuils et tailles centralisés dans js/entities/difficulty/difficulty.js
    (volumeUsesCapacityCompare / ContainerCount / AskLessChance / solidOptions). */
+import {
+  solidOptions, volumeAskLessChance, volumeContainerCount, volumeUsesCapacityCompare
+} from '../../../entities/difficulty/index.js';
+import { pickRandom, shuffle } from '../../../shared/lib/index.js';
+import { openModal } from '../../../shared/ui/index.js';
+import { gameDiff } from '../../adaptive/index.js';
+import { registerHints, setHintQuestion } from '../../hints/index.js';
+import {
+  clearActiveTimer, flashModal, livesBar, loseLife, onMissionWin, registerGame, setSolution,
+  setupLives, solSel, startTimerIfNeeded, stepOk
+} from '../../minigame-engine/index.js';
+import { bindQuit, gameHeader } from '../../screen/index.js';
 
 const CONTAINER_PAIRS = [
   ['🥤','🪣'], ['☕','🛁'], ['🍶','🏊'], ['🥛','🛢️'],

@@ -3,6 +3,17 @@
    § « MINUTEUR »). Longueur et variantes dans § puzzleCount/Variants —
    corrige un bug où la variante « start » était comptée deux fois dans
    la liste de tirage (probabilité doublée par erreur). */
+import { puzzleCount, puzzleStartMax, puzzleVariants } from '../../../entities/difficulty/index.js';
+import { pickRandom, shuffle } from '../../../shared/lib/index.js';
+import { openModal } from '../../../shared/ui/index.js';
+import { gameDiff } from '../../adaptive/index.js';
+import { hintOrderStep, registerHints, setHintQuestion } from '../../hints/index.js';
+import {
+  flashModal, livesBar, loseLife, onMissionWin, progressDots, registerGame, setSolution, setupLives,
+  solSel, stepOk
+} from '../../minigame-engine/index.js';
+import { bindQuit, gameHeader } from '../../screen/index.js';
+
 function renderPuzzle(){
   setupLives('puzzle');
   const dd = gameDiff();
@@ -60,7 +71,7 @@ function renderPuzzle(){
   });
 }
 
-// Indices (v52) : voir hintOrderStep (js/features/minigame-engine/hints.js).
+// Indices (v52) : voir hintOrderStep (js/features/hints/hints.js).
 function puzzleHints(q){
   const done = q.seq.slice(0, q.idx), last = done[done.length - 1];
   const desc = q.variant === 'desc', step2 = q.variant === 'step2';

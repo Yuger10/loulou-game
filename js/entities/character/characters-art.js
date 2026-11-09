@@ -2,6 +2,8 @@
    Tout le dessin est enfermé dans une fonction : seuls CHAR_ART, charArtSVG
    et charFace sont globaux (le jeu n'a pas de modules, des noms comme
    « face » ou « robot » entreraient vite en collision). */
+import { CHARACTERS } from './characters.js';
+
 const CHAR_ART = (function(){
 const AI='#2B2140', AM='#8C2F3F';
 function features(){return '<ellipse cx="47" cy="61" rx="5.4" ry="7" fill="'+AI+'"/><circle cx="49" cy="57" r="2.2" fill="#fff"/><ellipse cx="73" cy="61" rx="5.4" ry="7" fill="'+AI+'"/><circle cx="75" cy="57" r="2.2" fill="#fff"/><ellipse cx="38.5" cy="72" rx="6" ry="3.6" fill="#FF8FA3" opacity=".55"/><ellipse cx="81.5" cy="72" rx="6" ry="3.6" fill="#FF8FA3" opacity=".55"/><path d="M51 75 Q60 85 69 75" fill="none" stroke="'+AM+'" stroke-width="3" stroke-linecap="round"/>'}
@@ -241,3 +243,5 @@ return ART;
 })();
 function charArtSVG(id){return CHAR_ART[id]||''}
 function charFace(id,cls){const c=CHARACTERS[id],svg=charArtSVG(id);return svg?'<span class="char-art '+(cls||'')+'" role="img" aria-label="'+c.name+' '+c.title+'">'+svg+'</span>':'<span class="'+(cls||'')+'">'+(c?c.emoji:'❔')+'</span>'}
+
+export { charFace };

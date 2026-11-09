@@ -3,6 +3,17 @@
    simples. Plus le palier est élevé, plus on retire les indices
    visuels (ça force à vraiment lire, pas juste reconnaître l'image).
    Seuils centralisés dans js/entities/difficulty/difficulty.js (readingWordOnly/Options). */
+import { readingOptions, readingWordOnly } from '../../../entities/difficulty/index.js';
+import { WORDS_CP } from '../../../entities/words/index.js';
+import { pickRandom, shuffle } from '../../../shared/lib/index.js';
+import { openModal } from '../../../shared/ui/index.js';
+import { gameDiff } from '../../adaptive/index.js';
+import { hintSyllablesFirst, hintSyllablesHTML, registerHints, setHintQuestion } from '../../hints/index.js';
+import {
+  clearActiveTimer, flashModal, livesBar, loseLife, onMissionWin, registerGame, setSolution,
+  setupLives, solSel, startTimerIfNeeded, stepOk
+} from '../../minigame-engine/index.js';
+import { bindQuit, gameHeader } from '../../screen/index.js';
 
 function pickDistractors(pool, correct, count){
   const others = pool.filter(w=>w.word!==correct.word);

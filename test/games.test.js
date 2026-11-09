@@ -7,7 +7,7 @@ const fs = require('fs');
 const path = require('path');
 
 const root = path.join(__dirname, '..');
-// CSS et JS inlinés dans l'ordre du manifeste des slices (js/slices.js)
+// CSS et JS inlinés dans l'ordre du manifeste des slices (js/slices.cjs)
 const html = require('./tools/page.js').buildHtml();
 
 const SPEED = 0.1;   // minuteries du jeu 10 fois plus courtes

@@ -1,7 +1,18 @@
 /* ---------- En-tête du joueur et écran de bienvenue ---------- */
+import {
+  avatarHTML, avatarText, bindCompanionSelector, COMPANIONS, companionSelector, companionsFor,
+  defaultCompanionFor
+} from '../../entities/companion/index.js';
+import { save, state } from '../../entities/game-state/index.js';
+import { AVATARS, currentProfile, onProfileRefresh, saveProfiles } from '../../entities/player/index.js';
+import { emit, on } from '../../shared/lib/index.js';
+import { playSound, showToast, speak } from '../../shared/ui/index.js';
+import { applySeason } from '../seasons/index.js';
+import { openStoryChapter, storySolved } from '../story/index.js';
+
 function renderProfile(){
   document.querySelector('#avatar-pill .av').innerHTML = avatarHTML(state.avatar, state.look);
-  renderBackupReminder();
+  emit('ui:backup-reminder');
   applySeason();   // anniversaire : propre à chaque joueur
   document.getElementById('player-name').textContent = state.name || 'Toi';
 }
@@ -62,7 +73,7 @@ function closeWelcome(){
   const who = name ? name : 'toi';
   speak(`Bonjour ${who} ! Bienvenue dans le lagon magique.`);
   showToast(name ? `Bonjour ${name} ! ✨` : 'Bonne aventure ! ✨');
-  renderLagon();
+  emit('ui:lagon');
   // premier lancement : le fil de l'histoire commence par le chapitre du
   // Lagon (jamais répété une fois résolu — voir js/features/story/story.js)
   if(!storySolved('lagon')){
@@ -72,3 +83,21 @@ function closeWelcome(){
 
 // changement de joueur : en-tête à jour (js/entities/player/profiles.js)
 onProfileRefresh(renderProfile);
+
+// une fête, une tenue… : l'en-tête se redessine à la demande
+on('ui:profile', renderProfile);
+
+function genderSelector(sel){
+  const opts = [
+    { v:'f', emoji:'👧', label:'Fille' },
+    { v:'m', emoji:'👦', label:'Garçon' },
+    { v:'',  emoji:'🧒', label:'Peu importe' },
+  ];
+  return `<label class="mini-label">Comment on te parle ?</label>
+    <div class="gender-row">
+      ${opts.map(o=>`<button class="gender-opt ${String(sel||'')===o.v?'sel':''}" data-gender="${o.v}">
+        <span class="ge">${o.emoji}</span><span class="gl">${o.label}</span></button>`).join('')}
+    </div>`;
+}
+
+export { closeWelcome, genderSelector, openWelcome, renderProfile };

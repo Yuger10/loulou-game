@@ -1015,3 +1015,53 @@ Track Conductor `squishy-collection` ([spec](conductor/tracks/squishy-collection
 - Sons « pouic » et « clochettes » ajoutés au son du jeu (Web Audio, sans fichier).
 - `test/squishies.test.js` (123 vérifications, branché sur `npm test`) : catalogue, migration, sauvegarde et restauration, boîtes (coffre, énigmes, boutique et sa limite), raretés et filet de sécurité (hasard injecté), bonus de série, échange, dessins, chambre, ouverture animée, presser, étagère et rechargement, consignes réalisables sur 300 collections au hasard selon l'âge, partie de rangement complète (relance, pièces, limite du jour), marché.
 - Cache `lagon-v53`.
+
+---
+
+# v54 — Le jeu en modules ES natifs (étape B), sans changement visible
+
+> Track technique Conductor `refactor-esm-modules` ([spec](conductor/tracks/refactor-esm-modules_20261109/spec.md), [plan](conductor/tracks/refactor-esm-modules_20261109/plan.md)). Décision : [ADR 0002](docs/adr/0002-modules-es-natifs.md), qui complète l'ADR 0001. Rien ne change pour l'enfant, et les sauvegardes restent les mêmes (version 5).
+
+## Ce qui change dans le code
+- **Un seul script :** `index.html` charge `<script type="module" src="js/app/main.js">`. Il n'y a plus aucun build pour le jeu, et aucune variable du jeu n'est globale.
+- **Des imports explicites :** chaque fichier importe ce qu'il utilise. Chaque slice a un `index.js`, son API publique, que les autres slices sont seules à importer.
+- **Des couches sans cycle :** les slices sont rangées de bas en haut dans le manifeste (`js/slices.cjs`), et une slice n'importe que celles placées avant elle.
+  - Au départ, 5 entités et 19 features formaient des boucles de dépendances.
+  - Pour remonter d'une couche, la v54 utilise un petit bus d'événements (`js/shared/lib/events.js`) :
+    - `ui:lagon`, `ui:profile`, `ui:map`, `ui:backup-reminder` pour redessiner ;
+    - `nav:game-picker`, `nav:player-settings`, `nav:dialogue`, `nav:parents` pour ouvrir un écran ;
+    - `game:start`, `game:bonus`, `game:before` (pause douce) pour solliciter le moteur ;
+    - `world:changed`, `lagon:rendered`, `bag:tab` pour ce qui vient de se passer.
+  - Elle ajoute aussi trois points d'accroche : `setSaveSlot`, `setCompanionPlayerSource`, `setHintCountable`.
+- **Du code rangé à la bonne hauteur :**
+  - nouvelles slices `screen` (en-tête des fenêtres) et `hints` (indices 💡) ;
+  - `adaptive` accueille le jeu en cours, le défi bonus et l'enregistrement des progrès ;
+  - nouvelle entité `season` (les fêtes) ;
+  - `SQ_COLORS` va dans l'entité `squishy`, `GAME_LIST` dans `difficulty`.
+- **Une variable n'est réaffectée que par son fichier :** `setCurrentWorld`, `replaceState`, `setParty`, `setRace`, `ensureAudioCtx`… remplacent 12 écritures croisées.
+
+## Tests et outils
+- **La page de test** regroupe les modules avec **esbuild** (dépendance de développement seulement, en mode strict). Les ~560 vérifications existantes passent sans modification.
+- **Nouveau `test/modules.test.js` :** il charge les **vrais** modules dans Node (jsdom pour la page), avec le même ordre d'initialisation que le navigateur et le mode strict. Une erreur d'ordre d'initialisation provoquée exprès est attrapée.
+- **`test/slices.test.js`, réécrit sur les `import`,** vérifie :
+  - seulement les `index.js` entre slices ;
+  - les couches et l'ordre du manifeste ;
+  - aucun cycle (graphe d'esbuild) ;
+  - aucun nom utilisé sans import ;
+  - aucune écriture sur `window` / `globalThis` / `self`, et aucune garde `typeof` ;
+  - `index.html` (un seul module) et `sw.js` conformes.
+
+  Six cas fautifs fabriqués prouvent qu'il sait échouer.
+- **Commandes :**
+  - `npm run sw` (comme `npm run sync`) régénère la liste du cache hors-ligne ;
+  - `npm run api` disparaît : exposer un nom, c'est l'ajouter à l'`index.js` ;
+  - `npm run inventaire` montre les imports et exports.
+- **`file://` ne marche plus** (les modules l'interdisent) : passer par `npm start` ou l'adresse en ligne.
+
+## Vérification
+- `npm test` passe : architecture, vrais modules, fumée, 123 squishies, 284 jeux, 127 compagnons.
+- Chromium :
+  - parcours au doigt complet sur les vrais modules, sans erreur JS, aussi en émulation Pixel 7 et iPhone 13 ;
+  - hors-ligne : 192 fichiers précachés, le jeu démarre sans réseau.
+- **À faire sur les vrais appareils :** Safari iPhone ou iPad, et Chrome Android (voir la note du TODO).
+- Cache `lagon-v54`.

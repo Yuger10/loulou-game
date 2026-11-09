@@ -41,3 +41,5 @@ const WORDS_CP = [
   { word:'banane',   plural:'bananes',   emoji:'🍌', gender:'f', syl:['ba','na','ne'] },
   { word:'glace',    plural:'glaces',    emoji:'🍦', gender:'f', syl:['gla','ce'] },
 ];
+
+export { WORDS_CP };

@@ -1,4 +1,21 @@
 /* ---------- Marché ---------- */
+import { state } from '../../entities/game-state/index.js';
+import { addItem, ALL_ITEMS, countItem, CRAFTED, ITEMS, removeItem } from '../../entities/item/index.js';
+import { SQUISHIES, SQUISHY_SERIES } from '../../entities/squishy/index.js';
+import { pickRandom } from '../../shared/lib/index.js';
+import {
+  bindSpeakButtons, confetti, playSound, registerView, showToast, speak, vibrate
+} from '../../shared/ui/index.js';
+import { markSeen } from '../bag/index.js';
+import { gainCoins, gainItems, spendCoins } from '../gains/index.js';
+import { questProgress } from '../quests/index.js';
+import {
+  buySquishyBox, openSquishyRoom, SQ_BOX_PRICE, SQ_SERIES_BONUS, SQ_TRADE_COST, squishyArtSVG,
+  squishyBoxCount, squishyBoxSVG, squishyDuplicates, squishyMissing, squishyShopState,
+  tradeDuplicatesFor
+} from '../squishies/index.js';
+import { addCoins } from '../wallet/index.js';
+
 let currentTab = 'vendre';
 document.querySelectorAll('.tab-btn').forEach(btn=>{
   btn.addEventListener('click', ()=>{

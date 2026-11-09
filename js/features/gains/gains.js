@@ -10,6 +10,8 @@
                                       gains partent quand on la ferme
    Sans animation possible (vieux navigateur, « réduire les animations »),
    tout se met à jour d'un coup. */
+import { onModalChange, playSound } from '../../shared/ui/index.js';
+import { addCoinsInFlight, renderCoins } from '../wallet/index.js';
 
 const GAIN_FLIGHT_MS = 720;
 
@@ -132,12 +134,12 @@ function gainCoins(amount, fromEl){
   const pill = document.getElementById('coin-pill');
   const n = coinSprites(amount);
   const shares = splitAmount(amount, n);
-  coinsInFlight += amount; renderCoins();
+  addCoinsInFlight(amount); renderCoins();
   let left = amount;
   const land = (share)=>{
     if(left <= 0) return;
     const s = Math.min(share, left);
-    left -= s; coinsInFlight -= s; renderCoins();
+    left -= s; addCoinsInFlight(-s); renderCoins();
     playSound('tick');
     gainLand(pill, false);
   };
@@ -155,12 +157,12 @@ function spendCoins(amount, toEl){
   const n = coinSprites(amount);
   const shares = splitAmount(amount, n);
   if(!gainsCanAnimate()){ return; }   // l'affichage est déjà à jour
-  coinsInFlight -= amount; renderCoins();
+  addCoinsInFlight(-amount); renderCoins();
   let left = amount;
   const leave = (share)=>{
     if(left <= 0) return;
     const s = Math.min(share, left);
-    left -= s; coinsInFlight += s; renderCoins();
+    left -= s; addCoinsInFlight(s); renderCoins();
   };
   const from = gainCenter(coinTarget()), to = gainCenter(toEl);
   gainLabel(`−${amount}`, pill, true);
@@ -181,7 +183,7 @@ let pendingGain = null;
 function queueGain(g){
   pendingGain = { items: (g.items || []).filter(Boolean), coins: g.coins || 0 };
   // le compteur garde l'ancienne valeur tant que les pièces ne sont pas arrivées
-  if(pendingGain.coins){ coinsInFlight += pendingGain.coins; renderCoins(); }
+  if(pendingGain.coins){ addCoinsInFlight(pendingGain.coins); renderCoins(); }
 }
 function flushPendingGain(){
   const g = pendingGain;
@@ -192,7 +194,7 @@ function flushPendingGain(){
   const coinEl = body.querySelector('[data-gain-coins]') || body.querySelector('.reward-box');
   const fallback = body.querySelector('.reward-box');
   if(g.coins){
-    coinsInFlight -= g.coins;          // gainCoins le remet en vol
+    addCoinsInFlight(-g.coins);          // gainCoins le remet en vol
     gainCoins(g.coins, coinEl);
   }
   // positions mesurées MAINTENANT, avant que la fenêtre ne se ferme
@@ -201,3 +203,5 @@ function flushPendingGain(){
 
 // gains d'une fenêtre précédente : ils partent avant que son contenu ne disparaisse
 onModalChange(flushPendingGain);
+
+export { flyEmoji, gainCenter, gainCoins, gainItems, gainLand, queueGain, spendCoins };

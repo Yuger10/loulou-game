@@ -60,6 +60,9 @@ Chaque mini-jeu a maintenant son propre niveau pour chaque enfant (`js/adaptive.
 
 ### Technique 🔧 (au fil de l'eau)
 - [x] Étendre les tests (`test/games.test.js`) : les 18 mini-jeux joués jusqu'à la victoire à chaque palier (259 parties), la mémoire jouée « de mémoire » jusqu'au bout, une mauvaise réponse ne fait jamais gagner, bouton son et voix — v50
+- [x] Modules ES natifs (étape B de l'ADR 0001) : un seul `<script type="module">`, imports explicites, `index.js` comme API publique, couches sans cycle grâce à un petit bus d'événements, aucune variable globale ; tests regroupés par esbuild et test des vrais modules — v54
+- [ ] À vérifier sur les vrais appareils après la v54 : Safari iPhone ou iPad (installé sur l'écran d'accueil) et Chrome Android. Jouer une partie, couper le réseau et relancer (hors-ligne), sauvegarder puis restaurer.
+- [ ] À observer : la v54 charge 129 petits fichiers. Si le premier chargement est lent sur téléphone, on pourra les regrouper (voir l'ADR 0002).
 - [x] Ranger le code en feature slices : manifeste, API publiques, test de frontières, CSS découpé par slice — v51
 - [ ] Passer aux modules ES natifs (étape B, track `refactor-esm-modules`) — v54
 - [ ] Faire tourner les tests automatiquement à chaque PR (GitHub Actions)
@@ -114,6 +117,7 @@ Chaque mini-jeu a maintenant son propre niveau pour chaque enfant (`js/adaptive.
 | v51 | Code rangé en feature slices (aucun changement pour l'enfant) |
 | v52 | Les compagnons et leurs rôles : indices 💡 dans tous les mini-jeux, équipe au niveau 10, 8 spécialités |
 | v53 | Collection de squishies : boîtes surprises, 3 séries, chambre à squishies (étagère, presser), boîtes de rangement à consigne, échange des doubles |
+| v54 | Code en modules ES natifs, couches sans cycle, aucune variable globale (aucun changement pour l'enfant) |
 
 ---
 

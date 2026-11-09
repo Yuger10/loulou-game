@@ -21,3 +21,5 @@ function ageLabel(age){
   if(!a) return 'âge non précisé';
   return `${a} ans`;
 }
+
+export { ageLabel, ageToDiff };

@@ -19,7 +19,7 @@ Registre des tracks Conductor, **dans l'ordre d'implémentation**. Feuille de ro
 
 ---
 
-- [ ] **Track: Passage aux modules ES natifs (étape B, v54)** : sans changement visible
+- [x] **Track: Passage aux modules ES natifs (étape B, v54)** : sans changement visible
 *Link: [./tracks/refactor-esm-modules_20261109/](./tracks/refactor-esm-modules_20261109/)*
 
 ---

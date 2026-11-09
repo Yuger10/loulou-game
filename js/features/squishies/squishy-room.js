@@ -11,12 +11,30 @@
    Presser : toucher un squishy l'écrase puis le fait remonter lentement,
    avec un « pouic » et une petite vibration. Rien ne change dans la partie.
    Tout est dit à voix haute : aucun texte n'est nécessaire pour jouer. */
+import { save } from '../../entities/game-state/index.js';
+import { currentPlayerAge, onProfileRefresh } from '../../entities/player/index.js';
+import {
+  SQ_COLORS, SQUISHIES, squishiesOf, SQUISHY_SERIES, SQUISHY_SERIES_ORDER
+} from '../../entities/squishy/index.js';
+import {
+  confetti, onModalChange, openModal, playSound, showToast, speak, vibrate
+} from '../../shared/ui/index.js';
+import { gainCoins } from '../gains/index.js';
+import { hintNudge, registerHints, setHintQuestion } from '../hints/index.js';
+import { bindQuit, gameHeader } from '../screen/index.js';
+import {
+  makeSortingTask, onSquishyChange, openSquishyBox, recordSorting, shelfPlace, shelfRemove,
+  sortingDone, sortingPaidLeft, sortMatches, sortSay, sortWrongHint, SQ_SERIES_BONUS,
+  SQ_SORT_MAX_ERRORS, SQ_SORT_MIN_MODELS, SQ_SORT_REWARD, SQ_SORT_SHAPES, SQ_SORT_SIZES, SQ_SORT_SLOTS,
+  sqState, squishyBoxCount, squishyCount, squishyOwnedIds, squishySeriesProgress, squishyShelfCount
+} from './squishies.js';
 
 /* ---------- Les dessins (SVG, aucune image) ----------
    Dans le style des squishies du mini-jeu Formes (squishySVG) : un corps
    doux à la forme du modèle (rond, ovale, carré arrondi), un reflet, un
    petit visage, et un détail propre au modèle. Un petit squishy est dessiné
    plus petit, posé au même endroit. */
+
 const SQ_BODIES = {
   rond:      { el:'<circle cx="50" cy="58" r="38"/>',                         face:[50,62] },
   'ovale-h': { el:'<ellipse cx="50" cy="67" rx="45" ry="28"/>',               face:[50,66] },
@@ -553,3 +571,8 @@ registerHints('rangement', sortingHints);
   const b = document.getElementById(elId);
   if(b) b.addEventListener('click', ()=>{ playSound('tap'); openSquishyRoom('collection'); });
 });
+
+export {
+  openSquishyRoom, renderSquishyBadge, squishyArtSVG, squishyBoxRewardHTML, squishyBoxSVG,
+  squishySessionHello
+};

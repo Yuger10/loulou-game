@@ -1,13 +1,26 @@
 /* ---------- Mode course de navigation (compétition équitable) ---------- */
+import { avatarHTML } from '../../entities/companion/index.js';
+import { ageLabel, ageToDiff } from '../../entities/difficulty/index.js';
+import {
+  party, profiles, race, RACE_STEPS, raceCurrent, setParty, setRace, switchProfile
+} from '../../entities/player/index.js';
+import { emit } from '../../shared/lib/index.js';
+import {
+  closeModal, confetti, openModal, playSound, showToast, speak, vibrate
+} from '../../shared/ui/index.js';
+import { gameDiffIsland } from '../adaptive/index.js';
+import { queueGain } from '../gains/index.js';
+import { addCoins } from '../wallet/index.js';
+import { renderTurnBar } from './party.js';
 
 const RACE_PRIZE = 50;       // pièces pour le vainqueur
 
 function startRace(ids){
   if(ids.length < 2) return false;
-  race = { active:true, players:ids.slice(), pos:{}, turn:0, goal:RACE_STEPS, winner:null, rounds:0 };
+  setRace({ active:true, players:ids.slice(), pos:{}, turn:0, goal:RACE_STEPS, winner:null, rounds:0 });
   ids.forEach(id=> race.pos[id] = 0);
   // la course réutilise la mécanique de tour par tour
-  party = { active:true, mode:'race', players:ids.slice(), turn:0, scores:{}, lastWinner:null };
+  setParty({ active:true, mode:'race', players:ids.slice(), turn:0, scores:{}, lastWinner:null });
   ids.forEach(id=> party.scores[id] = 0);
   switchProfile(ids[0], true);
   renderTurnBar();
@@ -77,7 +90,7 @@ function raceWin(p){
     playSound('tap'); closeModal(); startRace(race.players);
   };
   document.getElementById('race-done').onclick = ()=>{
-    playSound('tap'); closeModal(); stopRace(true); renderLagon();
+    playSound('tap'); closeModal(); stopRace(true); emit('ui:lagon');
   };
   party.active = false; party.mode = null;
   renderTurnBar();
@@ -113,5 +126,7 @@ function renderRaceTrack(){
     ${cur ? `<div class="race-turn">👉 Au tour de <b>${avatarHTML(cur.avatar, cur.look)} ${cur.name || 'Joueur'}</b> — niveau ${'⭐'.repeat(ageToDiff(cur.age)||gameDiffIsland())}</div>` : ''}
   `;
   const stop = document.getElementById('race-stop');
-  if(stop) stop.onclick = ()=>{ playSound('tap'); stopRace(); renderLagon(); };
+  if(stop) stop.onclick = ()=>{ playSound('tap'); stopRace(); emit('ui:lagon'); };
 }
+
+export { raceAdvance, renderRaceTrack, startRace, stopRace };

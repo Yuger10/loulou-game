@@ -1,4 +1,8 @@
 /* ---------- Bouton son de l'en-tête ---------- */
+import { save, state } from '../../entities/game-state/index.js';
+import { onProfileRefresh } from '../../entities/player/index.js';
+import { playSound, showToast, soundModeLabel, uiIcon } from '../../shared/ui/index.js';
+import { updateMusic } from '../music/index.js';
 
 document.getElementById('sound-btn').addEventListener('click', ()=>{
   // cycle : musique (+ sons + voix) → sons + voix → sons seuls → silence → musique…
@@ -20,3 +24,5 @@ function renderSoundBtn(){
 }
 
 onProfileRefresh(renderSoundBtn);
+
+export { renderSoundBtn };

@@ -9,6 +9,18 @@
    - invite à installer le jeu sur l'écran d'accueil (Safari efface les
      données d'un site non installé après 7 jours sans visite) ;
    - rappelle de sauvegarder quand la dernière sauvegarde a plus de 2 semaines. */
+import { avatarHTML } from '../../entities/companion/index.js';
+import { load, save, state } from '../../entities/game-state/index.js';
+import {
+  LEGACY_SAVE_KEY, loadProfiles, party, profiles, PROFILES_KEY, profileSaveKey, refreshAll,
+  saveProfiles
+} from '../../entities/player/index.js';
+import { setCurrentWorld } from '../../entities/world/index.js';
+import { on } from '../../shared/lib/index.js';
+import { closeModal, openModal, playSound, showToast } from '../../shared/ui/index.js';
+import { renderMap } from '../map/index.js';
+import { stopParty } from '../party/index.js';
+import { bindQuit, gameHeader } from '../screen/index.js';
 
 const BACKUP_PREFIX = 'lagon-magique';
 const BACKUP_META_KEY = 'lagon-magique-meta';
@@ -78,7 +90,7 @@ function applyBackup(backup){
   // recharge les joueurs et la partie sans recharger la page
   if(party.active) stopParty();
   loadProfiles(); load();
-  currentWorld = 'lagon';
+  setCurrentWorld('lagon');
   refreshAll();
   renderMap();
   renderBackupReminder();
@@ -293,3 +305,8 @@ function initBackup(){
   renderInstallHint();
   renderBackupReminder();
 }
+
+// l'en-tête du joueur redemande le rappel de sauvegarde (js/features/profile)
+on('ui:backup-reminder', renderBackupReminder);
+
+export { backupDue, initBackup, openBackup, requestPersistentStorage };

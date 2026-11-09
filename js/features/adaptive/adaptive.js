@@ -23,6 +23,11 @@
      prend l'une des deux places du choix des jeux (et de la Surprise) ;
    - quand un jeu progresse, le compagnon le dit sur l'écran de victoire
      (« Tu lis de mieux en mieux ! »). */
+import { state } from '../../entities/game-state/index.js';
+import { party } from '../../entities/player/index.js';
+import { pickRandom } from '../../shared/lib/index.js';
+import { lastGame } from './session.js';
+import { SKILL_ERR_TOLERANCE, skillStatus } from './skills.js';
 
 const GAME_TIER_MAX = { calc:6, shapes:6, planets:6 };
 const ADAPT_UP_STREAK = 2;      // réussites d'affilée pour monter d'un cran
@@ -109,3 +114,5 @@ function progressCheer(p){
   if(!p) return null;
   return PROGRESS_CHEERS[p.key] || 'Tu progresses, bravo !';
 }
+
+export { adaptAfterMission, adaptTier, gameMaxTier, needsPractice, pickPracticeGame, progressCheer };

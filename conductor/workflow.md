@@ -16,13 +16,23 @@
 6. Si l'implémentation s'écarte de `tech-stack.md` : s'arrêter, mettre le document à jour avec une note datée, puis reprendre.
 7. Passer la tâche à `[x]` dans `plan.md`, en ajoutant le SHA court du commit si la tâche a été commitée seule.
 
-## Où ajouter quoi (feature slices, v51)
+## Où ajouter quoi (feature slices v51, modules ES v54)
 - Toute décision structurante (architecture, stockage, chaîne de build) s'écrit d'abord dans un ADR numéroté (`docs/adr/`), avant le code.
 - Un mini-jeu : [checklist-mini-jeu.md](./checklist-mini-jeu.md). Une île : [checklist-ile.md](./checklist-ile.md).
-- Une nouvelle fonctionnalité : une slice `js/features/<nom>/` (JS et CSS), déclarée dans `js/slices.js`, puis `npm run sync`. Les données de base vont dans `js/entities/`, les outils sans lien avec le jeu dans `js/shared/`.
-- Besoin d'appeler une couche supérieure ? Ne pas le faire : ajouter un point d'accroche dans la couche basse et inscrire la feature dessus.
-- Exposer un nom à d'autres slices : l'utiliser, puis `npm run api` (l'ajout apparaît dans le diff du manifeste, à relire).
-- Déplacer du code : `node test/tools/move.js <source> <destination> nom…` (déplace des déclarations telles quelles, commentaires compris).
+- Une nouvelle fonctionnalité, en trois étapes :
+  1. Créer la slice `js/features/<nom>/` : ses modules JS, son CSS et son `index.js`, qui réexporte son API publique.
+  2. La déclarer dans `js/slices.cjs`, **à sa place dans l'ordre**, après les slices qu'elle importe.
+  3. Lancer `npm run sync`.
+
+  Les données de base vont dans `js/entities/`, les outils sans lien avec le jeu dans `js/shared/`.
+- Chaque fichier **importe** ce qu'il utilise. Depuis une autre slice, on importe seulement son `index.js` ; dans sa slice, le fichier voulu. Il n'y a jamais de variable globale.
+- Besoin d'appeler une slice placée **plus haut** ? Ne pas l'importer, ce qui créerait un cycle, interdit par le test. Deux solutions :
+  - émettre un événement (`emit('ui:lagon')`, `emit('nav:parents')`…, voir `js/shared/lib/events.js`) que la slice du haut écoute (`on(…)`) ;
+  - ou ajouter un point d'accroche dans la couche basse.
+- Exposer un nom à d'autres slices : l'exporter de son fichier, puis l'ajouter à l'`index.js` de la slice. Le test signale tout nom importé mais non exporté.
+- Réaffecter une variable d'un autre fichier est impossible en modules : passer par une fonction de ce fichier (`setCurrentWorld(…)`).
+- Déplacer du code : `node test/tools/move.js <source> <destination> nom…` (déplace des déclarations telles quelles, commentaires compris), puis mettre à jour les `import` et `export`.
+- Le jeu se teste dans un navigateur via `npm start` (`http://localhost:8080`) : ouvert depuis le disque (`file://`), il ne charge pas ses modules.
 
 ## Commits
 - **Un commit par phase** (au minimum), avec un message en français dans le style du dépôt : `vNN : <résumé>` pour la version finale, `conductor(plan): …` pour les mises à jour de plan.
@@ -40,7 +50,7 @@
 6. Commit de checkpoint, puis noter `[checkpoint: <sha>]` sur le titre de la phase dans `plan.md`.
 
 ## Fin de track : livraison
-- Incrémenter le cache `sw.js` (`lagon-vNN`) ; `npm run sync` pour `FILES` et `index.html`.
+- Incrémenter le cache `sw.js` (`lagon-vNN`) ; `npm run sync` (ou `npm run sw`) pour `FILES` et `index.html`.
 - Si l'état change : incrémenter `SAVE_VERSION` et ajouter l'étape `migrate()`.
 - Mettre à jour `PRD-lagon-magique.md` (section de la version), `TODO.md` et `README.md` (structure).
 - Branche, puis PR sur `main`, `npm test` vert, puis merge.

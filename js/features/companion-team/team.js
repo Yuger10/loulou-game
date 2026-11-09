@@ -1,6 +1,6 @@
 /* ---------- L'équipe des compagnons (v52) ----------
    Dès le départ, le compagnon choisi est le compagnon PRINCIPAL : il donne
-   les indices 💡 (js/features/minigame-engine/hints.js).
+   les indices 💡 (js/features/hints/hints.js).
    Au niveau 10, l'équipe s'ouvre :
    - un écran « Ton équipe s'agrandit ! », une seule fois (une partie déjà au
      niveau 10 ou plus le voit au chargement) ;
@@ -16,6 +16,18 @@
    Chaque compagnon a une spécialité (js/features/companion-team/specialties.js).
    Données (par profil) : state.team = { open, met:[…], mates:[…], day } ;
    le principal est profile.companion. */
+import { COMPANIONS, companionSVG, currentCompanion } from '../../entities/companion/index.js';
+import { level, save, state } from '../../entities/game-state/index.js';
+import {
+  currentProfile, onProfileRefresh, party, race, refreshAll, saveProfiles
+} from '../../entities/player/index.js';
+import { currentWorld, WORLDS } from '../../entities/world/index.js';
+import { on } from '../../shared/lib/index.js';
+import {
+  bindSpeakButtons, closeModal, confetti, openModal, playSound, showToast, speak, speechBubble
+} from '../../shared/ui/index.js';
+import { bindQuit, gameHeader } from '../screen/index.js';
+import { renderTeamHelpers } from './specialties.js';
 
 const TEAM_LEVEL = 10;
 const TEAM_MATES_MAX = 2;
@@ -284,3 +296,12 @@ function teamOnTravel(world){
   setTimeout(()=> maybeTeamEncounter(world), 1400);   // après l'annonce de l'île
 }
 onProfileRefresh(renderTeamHeads);
+
+// l'île prévient : on arrive sur une île, ou elle vient d'être redessinée
+on('world:changed', teamOnTravel);
+on('lagon:rendered', ()=>{ renderTeamHeads(); renderTeamHelpers(); });
+
+export {
+  maybeTeamOpening, renderTeamHeads, teamHeadsHTML, teamIsOpen, teamMates, teamOnSessionStart,
+  teamPrincipal, teamState
+};

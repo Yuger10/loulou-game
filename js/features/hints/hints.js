@@ -27,6 +27,11 @@
      fx.dim       sélecteur d'UNE mauvaise réponse à écarter (niveau 2)
      fx.html      un petit dessin dans la bulle (ex. le mot en syllabes)
      fx.run       un effet propre au jeu, fn(racine de la fenêtre) */
+import { buddyReact, COMPANIONS, companionSVG, currentCompanion } from '../../entities/companion/index.js';
+import { save, state } from '../../entities/game-state/index.js';
+import { party, race } from '../../entities/player/index.js';
+import { pickRandom } from '../../shared/lib/index.js';
+import { onModalChange, playSound, speak } from '../../shared/ui/index.js';
 
 const HINT_IDLE_MS = 10000;     // sans toucher l'écran, le bouton se propose
 const HINT_LEVELS = 2;
@@ -242,8 +247,12 @@ function hintEliminate(sel, level){
 }
 
 // compté pour l'espace parents, jamais comme une erreur (niveau adaptatif inchangé)
+// Quels indices compter : ceux des mini-jeux inscrits au moteur (qui le dit
+// avec setHintCountable, v54 : les indices sont une couche sous le moteur)
+let hintCountable = ()=> false;
+function setHintCountable(fn){ hintCountable = fn; }
 function countHint(kind){
-  if(hint.noCount || party.active || !GAME_RENDERERS[kind]) return;
+  if(hint.noCount || party.active || !hintCountable(kind)) return;
   if(!state.skills) state.skills = {};
   const s = state.skills[kind] || (state.skills[kind] = { wins:0, fails:0, errors:0, last:null, recent:[], hints:0 });
   s.hints = (s.hints || 0) + 1;
@@ -253,3 +262,8 @@ function countHint(kind){
 // toute nouvelle fenêtre (ou sa fermeture) met les indices en veille ;
 // le jeu les rallume avec setHintQuestion s'il s'agit d'une question.
 onModalChange(()=>{ hint.on = false; hint.nudged = false; clearTimeout(hint.idle); hint.idle = null; });
+
+export {
+  hintLevel, hintNudge, hintOrderStep, hintPolicy, hintShowFirst, hintSyllablesFirst,
+  hintSyllablesHTML, registerHints, setHintCountable, setHintPolicy, setHintQuestion
+};

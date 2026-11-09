@@ -5,6 +5,16 @@
    Valeurs et nombre de pièces centralisés dans js/entities/difficulty/difficulty.js
    (moneyDenoms / moneyPileSize) : plus de pièces = plus de termes à
    additionner mentalement, indépendamment des valeurs elles-mêmes. */
+import { moneyDenoms, moneyPileSize } from '../../../entities/difficulty/index.js';
+import { pickRandom, shuffle } from '../../../shared/lib/index.js';
+import { openModal } from '../../../shared/ui/index.js';
+import { gameDiff } from '../../adaptive/index.js';
+import { registerHints, setHintQuestion } from '../../hints/index.js';
+import {
+  clearActiveTimer, flashModal, livesBar, loseLife, onMissionWin, registerGame, setSolution,
+  setupLives, solSel, startTimerIfNeeded, stepOk
+} from '../../minigame-engine/index.js';
+import { bindQuit, gameHeader } from '../../screen/index.js';
 
 // construit une pile de pièces au hasard et renvoie sa valeur
 function randomPile(denoms, size){

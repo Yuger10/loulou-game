@@ -1,4 +1,28 @@
 /* ---------- Vue Île : changer d'île, nouvelle île, personnages, dialogues, boutique de décorations ---------- */
+import { CHARACTERS, charFace, charsOf, charsOfForPlayer } from '../../entities/character/index.js';
+import {
+  hello, level, levelProgress, MISSIONS_PER_LEVEL, save, state
+} from '../../entities/game-state/index.js';
+import { ALL_ITEMS, countItem, CRAFTED, DECOS, decosOf, ITEMS } from '../../entities/item/index.js';
+import { ac, onProfileRefresh, playerGender } from '../../entities/player/index.js';
+import {
+  currentWorld, setCurrentWorld, WORLD_ORDER, WORLDS, worldUnlocked
+} from '../../entities/world/index.js';
+import { emit, on, pickRandom } from '../../shared/lib/index.js';
+import {
+  bindSpeakButtons, closeModal, confetti, openModal, playSound, registerView, showToast, speak,
+  speechBubble, switchView, vibrate
+} from '../../shared/ui/index.js';
+import { checkAlbumComplete } from '../bag/index.js';
+import { flyEmoji, gainCenter, gainLand, spendCoins } from '../gains/index.js';
+import { favoritesOf, friendHearts, friendPoints, openGiftPicker } from '../gifts/index.js';
+import { renderRaceTrack } from '../party/index.js';
+import { ensureQuests, renderQuests } from '../quests/index.js';
+import { bindQuit, gameHeader } from '../screen/index.js';
+import { openStoryChapter, STORY, storySolved } from '../story/index.js';
+import { addCoins } from '../wallet/index.js';
+import { renderLiveIsland } from './island.js';
+
 function setWorld(id, silent){
   const w = WORLDS[id];
   if(!worldUnlocked(id)){
@@ -9,13 +33,13 @@ function setWorld(id, silent){
     return false;
   }
   const changed = currentWorld !== id;
-  currentWorld = id;
+  setCurrentWorld(id);
   document.body.dataset.world = id;
   renderLagon();
   if(changed && !silent){
     playSound('good');
     speak(`${w.name} ! ${w.subtitle}.`);
-    teamOnTravel(id);   // un compagnon à rencontrer sur cette île ? (js/features/companion-team)
+    emit('world:changed', id);   // un compagnon à rencontrer sur cette île ? (js/features/companion-team)
   }
   return true;
 }
@@ -82,7 +106,7 @@ function renderIslandCard(){
 
 function renderLagon(){
   // si le monde courant n'est plus accessible, on revient au lagon
-  if(!worldUnlocked(currentWorld)) currentWorld = 'lagon';
+  if(!worldUnlocked(currentWorld)) setCurrentWorld('lagon');
   document.body.dataset.world = currentWorld;
   const w = WORLDS[currentWorld];
   const intro = document.getElementById('lagon-intro-text');
@@ -95,9 +119,10 @@ function renderLagon(){
   renderQuests();
   renderScene();
   renderRaceTrack();
-  renderTeamHeads();
-  renderTeamHelpers();   // Sam le guide et le défi de Zap
+  emit('lagon:rendered');   // l'équipe : ses têtes, Sam le guide et le défi de Zap (js/features/companion-team)
 }
+// l'île se redessine à la demande des features (histoire, fêtes, quêtes…)
+on('ui:lagon', ()=> renderLagon());
 
 /* ---------- Décorations ---------- */
 // l'île vivante : paysage, personnages et décorations (js/features/island/island.js)
@@ -148,6 +173,7 @@ function openDecoShop(){
 
 /* ---------- Personnages / dialogue ---------- */
 let currentChar = null;
+function setCurrentChar(id){ currentChar = id; }
 
 /* Phrases qui dépendent de la partie en cours */
 function contextualLine(charId){
@@ -200,9 +226,9 @@ function openDialogue(charId){
   `);
   bindSpeakButtons();
   speak(`${c.name} ${c.title} : ${text}`);
-  document.getElementById('btn-play').onclick = ()=> { playSound('tap'); openGamePicker(charId); };
+  document.getElementById('btn-play').onclick = ()=> { playSound('tap'); emit('nav:game-picker', charId); };
   const pickBtn = document.getElementById('btn-random');
-  if(pickBtn) pickBtn.onclick = ()=> { playSound('tap'); startMinigame(); };
+  if(pickBtn) pickBtn.onclick = ()=> { playSound('tap'); emit('game:start'); };
   const giftBtn = document.getElementById('btn-gift');
   if(giftBtn) giftBtn.onclick = ()=> { playSound('tap'); openGiftPicker(charId); };
   document.getElementById('btn-close').onclick = ()=>{ window.speechSynthesis && speechSynthesis.cancel(); closeModal(); };
@@ -212,3 +238,8 @@ registerView('ile', ()=> renderLagon());
 
 // changement de joueur : son île (en dernier : elle s'appuie sur le reste)
 onProfileRefresh(()=> renderLagon());
+
+export {
+  checkNewIsland, currentChar, openDecoShop, openDialogue, renderIslandCard, renderLagon,
+  renderLevelPill, setCurrentChar, setWorld
+};

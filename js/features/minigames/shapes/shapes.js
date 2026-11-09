@@ -5,15 +5,18 @@
    js/entities/difficulty/difficulty.js) : couleur, forme, forme + couleur, taille + forme,
    nombre de côtés, nombre de sommets.
    Dessin en SVG, sans image : chaque squishy tient dans un carré 100×100. */
+import { shapesRound } from '../../../entities/difficulty/index.js';
+import { SQ_COLORS } from '../../../entities/squishy/index.js';
+import { pickRandom, shuffle } from '../../../shared/lib/index.js';
+import { openModal } from '../../../shared/ui/index.js';
+import { gameDiff } from '../../adaptive/index.js';
+import { registerHints, setHintQuestion } from '../../hints/index.js';
+import {
+  flashModal, livesBar, loseLife, onMissionWin, progressDots, registerGame, setSolution, setupLives,
+  solSel, stepOk
+} from '../../minigame-engine/index.js';
+import { bindQuit, gameHeader } from '../../screen/index.js';
 
-const SQ_COLORS = {
-  rose:   { fill:'#FF9CC8', edge:'#C9497F', adj:['rose','roses','rose','roses'] },
-  bleu:   { fill:'#6FB8F5', edge:'#2F7CC0', adj:['bleu','bleus','bleue','bleues'] },
-  jaune:  { fill:'#FFD95A', edge:'#B8901A', adj:['jaune','jaunes','jaune','jaunes'] },
-  vert:   { fill:'#6ED38C', edge:'#2F9551', adj:['vert','verts','verte','vertes'] },
-  violet: { fill:'#BFA3EC', edge:'#7B5CC0', adj:['violet','violets','violette','violettes'] },
-  orange: { fill:'#FFAE5C', edge:'#C8661A', adj:['orange','orange','orange','orange'] },
-};
 const SQ_SIZES = {
   grand: ['grand','grands','grande','grandes'],
   petit: ['petit','petits','petite','petites'],

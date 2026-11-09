@@ -6,6 +6,16 @@
    force des nombres PROCHES (compareCloseChance) — sinon l'exercice
    peut rester trivial même au palier maximal (comparer 3 et 97 ne
    demande aucune réflexion sur l'ordre de grandeur réel). */
+import { compareCloseChance, compareEqualChance, compareRange } from '../../../entities/difficulty/index.js';
+import { shuffle } from '../../../shared/lib/index.js';
+import { openModal } from '../../../shared/ui/index.js';
+import { gameDiff } from '../../adaptive/index.js';
+import { registerHints, setHintQuestion } from '../../hints/index.js';
+import {
+  clearActiveTimer, flashModal, livesBar, loseLife, onMissionWin, registerGame, setSolution,
+  setupLives, solSel, startTimerIfNeeded, stepOk
+} from '../../minigame-engine/index.js';
+import { bindQuit, gameHeader } from '../../screen/index.js';
 
 function renderCompare(){
   setupLives('compare');

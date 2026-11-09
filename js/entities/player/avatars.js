@@ -10,3 +10,5 @@ const AVATARS = [
   'art:zap','art:perle','art:rose','art:lili','art:tom','art:leo','art:sam','🦸‍♀️','🦸‍♂️','🧚‍♀️','🧙‍♂️','👸','🤴','🧜‍♀️','🧜‍♂️',
   '🏴‍☠️','🥷','🤖','🚀','🐉','🦖','🦁','🐱','🦄','⚽',
 ];
+
+export { AVATARS, fixAvatar };

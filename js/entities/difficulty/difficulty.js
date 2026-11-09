@@ -486,3 +486,13 @@ function jigsawRound(dd){
     5:{cols:4, rows:3, ghost:0},
   }, dd);
 }
+
+export {
+  CALC_MULT_TABLES, calcBounds, calendarUsesWeekdayOrder, calendarWeekdayCount, clockGranularity,
+  clockOptions, compareCloseChance, compareEqualChance, compareRange, countRange,
+  determinantsExtraDistractor, determinantsImageShown, determinantsPluralChance, diffMirrorChance,
+  diffTotal, jigsawRound, livesFor, mathBounds, memoryPairs, moneyDenoms, moneyPileSize, planetsTier,
+  puzzleCount, puzzleStartMax, puzzleVariants, readingOptions, readingWordOnly, sequencePatternLength,
+  shapesRound, simonLength, solidOptions, timerFor, volumeAskLessChance, volumeContainerCount,
+  volumeUsesCapacityCompare
+};

@@ -12,6 +12,19 @@
    L'image est dessinée une seule fois (un <symbol>), chaque morceau en
    montre une partie : pas d'image à télécharger, rien qui change d'un
    appareil à l'autre. */
+import { COMPANION_ORDER, companionSVG } from '../../../entities/companion/index.js';
+import { jigsawRound } from '../../../entities/difficulty/index.js';
+import { WORLD_ORDER, WORLDS, worldUnlocked } from '../../../entities/world/index.js';
+import { pickRandom, shuffle } from '../../../shared/lib/index.js';
+import { openModal, playSound, showToast } from '../../../shared/ui/index.js';
+import { gameDiff } from '../../adaptive/index.js';
+import { registerHints, setHintQuestion } from '../../hints/index.js';
+import { ISLE_SCENERY, isleGenericScenery } from '../../island/index.js';
+import {
+  flashModal, livesBar, loseLife, onMissionWin, progressDots, registerGame, setSolution, setupLives,
+  solSel, stepOk
+} from '../../minigame-engine/index.js';
+import { bindQuit, gameHeader } from '../../screen/index.js';
 
 const JIGSAW_W = 480, JIGSAW_H = 360;
 

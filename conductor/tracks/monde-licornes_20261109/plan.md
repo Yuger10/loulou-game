@@ -1,6 +1,6 @@
 # Plan : Le Monde des Licornes et la fin de la saison 2 (v56)
 
-> **Architecture (v51) :** chaque nouveau fichier JS ou CSS va dans sa slice et est déclaré dans `js/slices.js` (puis `npm run sync`) ; voir `conductor/checklist-mini-jeu.md` et `conductor/checklist-ile.md`.
+> **Architecture (v51) :** chaque nouveau fichier JS ou CSS va dans sa slice et est déclaré dans `js/slices.cjs` (puis `npm run sync`) ; voir `conductor/checklist-mini-jeu.md` et `conductor/checklist-ile.md`.
 
 Spec : [spec.md](./spec.md). Workflow : [workflow.md](../../workflow.md).
 **Prérequis :** v53 (`squishy-collection`) et v55 (`saison2-monde-boites`) livrées.

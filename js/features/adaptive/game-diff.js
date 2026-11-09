@@ -1,4 +1,10 @@
 /* ---------- Difficulté jouée : île, âge, et niveau adaptatif de chaque mini-jeu ---------- */
+import { ageToDiff } from '../../entities/difficulty/index.js';
+import { currentProfile, party, partyCurrent } from '../../entities/player/index.js';
+import { currentWorld, WORLDS } from '../../entities/world/index.js';
+import { adaptTier, gameMaxTier } from './adaptive.js';
+import { inBonusChallenge, lastGame } from './session.js';
+
 function gameDiffIsland(){ return WORLDS[currentWorld] ? WORLDS[currentWorld].diff : 1; }
 
 // La difficulté suit l'île… mais jamais au-delà de ce que l'âge du
@@ -42,3 +48,5 @@ function adaptedDiff(base){
   const ageCap = (p && ageToDiff(p.age)) || 6;
   return Math.max(t, Math.min(t + 1, ageCap, gameMaxTier(lastGame)));
 }
+
+export { gameDiff, gameDiffIsland };

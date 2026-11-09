@@ -64,3 +64,17 @@ const SQUISHY_ISLAND_SERIES = {
 };
 
 function squishiesOf(series){ return Object.keys(SQUISHIES).filter(id=> SQUISHIES[id].series === series); }
+
+const SQ_COLORS = {
+  rose:   { fill:'#FF9CC8', edge:'#C9497F', adj:['rose','roses','rose','roses'] },
+  bleu:   { fill:'#6FB8F5', edge:'#2F7CC0', adj:['bleu','bleus','bleue','bleues'] },
+  jaune:  { fill:'#FFD95A', edge:'#B8901A', adj:['jaune','jaunes','jaune','jaunes'] },
+  vert:   { fill:'#6ED38C', edge:'#2F9551', adj:['vert','verts','verte','vertes'] },
+  violet: { fill:'#BFA3EC', edge:'#7B5CC0', adj:['violet','violets','violette','violettes'] },
+  orange: { fill:'#FFAE5C', edge:'#C8661A', adj:['orange','orange','orange','orange'] },
+};
+
+export {
+  SQ_COLORS, SQUISHIES, squishiesOf, SQUISHY_ISLAND_SERIES, SQUISHY_RARITY, SQUISHY_SERIES,
+  SQUISHY_SERIES_ORDER
+};

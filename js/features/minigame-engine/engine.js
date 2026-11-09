@@ -1,10 +1,38 @@
 /* ---------- Moteur des mini-jeux : essais, relance anti-devinette, minuteur, victoire ---------- */
+import { CHARACTERS, charFace } from '../../entities/character/index.js';
+import { buddyReact, buddySlot, COMPANIONS, companionSVG } from '../../entities/companion/index.js';
+import { gameTypesForAge, livesFor, timerFor } from '../../entities/difficulty/index.js';
+import { hello, level, save, state, trackGamePlayed } from '../../entities/game-state/index.js';
+import { addItem, ITEMS } from '../../entities/item/index.js';
+import { ac, currentPlayerAge, party, race } from '../../entities/player/index.js';
+import { availableItems, currentWorld } from '../../entities/world/index.js';
+import { emit, on, pickRandom } from '../../shared/lib/index.js';
+import {
+  closeModal, confetti, onModalChange, onModalClose, openModal, playSound, shakeEl, showToast, speak,
+  vibrate, wrongFeedback
+} from '../../shared/ui/index.js';
+import {
+  beginBonusChallenge, bonusChallenge, bonusOnNewGame, endBonusChallenge, gameDiff, inBonusChallenge,
+  lastGame, missionProgress, noteAnswerError, pickPracticeGame, progressCheer, recordMission,
+  resetMissionErrors, setLastGame
+} from '../adaptive/index.js';
+import { markSeen, renderBadge } from '../bag/index.js';
+import { maybeTeamOpening, teamCheerBy, teamWinExtras } from '../companion-team/index.js';
+import { queueGain } from '../gains/index.js';
+import { hintNudge, hintPolicy, setHintCountable } from '../hints/index.js';
+import { checkNewIsland, currentChar, markHelped, renderLagon } from '../island/index.js';
+import { partyAfterWin, partyScore, passTurn } from '../party/index.js';
+import { questProgress } from '../quests/index.js';
+import { bindQuit, speakWrongHint } from '../screen/index.js';
+import { maybeStoryEpisode, noteStoryMission, storyProgressHTML } from '../story/index.js';
+import { newlyUnlockedLookItems, WARDROBE } from '../wardrobe/index.js';
 
 /* Essais autorisés : à partir de l'île 2, les erreurs comptent.
    On évite ainsi de cliquer au hasard jusqu'à tomber juste.
    Le barème complet (par type de jeu et par palier) est centralisé et
    documenté dans js/entities/difficulty/difficulty.js (fonction `livesFor`) — voir aussi
    ANALYSE-DIFFICULTE.md pour le détail académique. */
+
 let lives = Infinity, maxLives = Infinity, currentGameKind = null;
 
 function triesFor(kind){
@@ -36,20 +64,6 @@ function renderLives(){
   });
 }
 
-// Une erreur : la proposition fautive est neutralisée et un essai est perdu.
-// Petits encouragements parlés à chaque erreur : avant ce correctif,
-// seul un son « faux » jouait — aucune voix pendant le jeu lui-même
-// (juste au tout début, pour la consigne). Varié pour ne pas lasser.
-const WRONG_HINTS = [
-  'Pas tout à fait, regarde encore',
-  'Essaie encore, tu vas trouver',
-  'Presque ! Observe bien',
-  'Non, regarde une nouvelle fois',
-];
-function speakWrongHint(){
-  if(Math.random()<0.7) speak(pickRandom(WRONG_HINTS));
-}
-
 // La relance programmée par `onRetry` (ci-dessous) doit être annulée si
 // la fenêtre se ferme ou change avant d'avoir eu lieu — sinon une
 // question en retard pourrait réapparaître par-dessus un autre jeu déjà
@@ -70,7 +84,7 @@ function scheduleRetry(fn){
 function loseLife(el, opts){
   opts = opts || {};
   buddyReact('oops', 1300);
-  hintNudge(true);     // le bouton 💡 se propose (js/features/minigame-engine/hints.js)
+  hintNudge(true);     // le bouton 💡 se propose (js/features/hints/hints.js)
   // multijoueur : la règle reste « une erreur = on passe la main »
   if(party.active){ wrongFeedback(el); return false; }
   noteAnswerError();   // pour l'espace parents
@@ -202,7 +216,6 @@ function stepOk(el){
   setTimeout(()=> spark.remove(), 800);
 }
 
-let lastGame = null;
 /* Pour les tests automatiques : chaque mini-jeu note ce qu'il faut toucher
    pour réussir — des sélecteurs CSS, dans l'ordre (test/games.test.js joue
    ainsi chaque jeu jusqu'à la victoire). Rien n'est montré à l'enfant. */
@@ -212,34 +225,35 @@ function solSel(base, attr, v){ return `${base}[data-${attr}=${JSON.stringify(St
 // Phrase à retenir (vraie et vérifiée) qu'un jeu peut faire afficher et dire
 // sur l'écran de victoire, ex. le quiz des planètes. Utilisée une seule fois.
 let missionFact = null;
+function setMissionFact(f){ missionFact = f; }
 // Registre des mini-jeux : chaque jeu s'inscrit avec registerGame(clé, rendu)
 // (js/features/minigames/<jeu>/). Le moteur ne connaît pas la liste des jeux.
 // Résolu au moment de l'appel : tous les jeux sont inscrits avant le premier.
 const GAME_RENDERERS = {};
 function registerGame(key, render){ GAME_RENDERERS[key] = render; }
+// les indices (js/features/hints) ne comptent que ceux des mini-jeux inscrits
+setHintCountable((key)=> !!GAME_RENDERERS[key]);
 function gameRenderer(key){ return GAME_RENDERERS[key] || GAME_RENDERERS.memory; }
 
-/* Défi bonus de Zap (js/features/companion-team) : le jeu est joué un cran
-   au-dessus de son niveau (js/features/adaptive/game-diff.js), la récompense
-   est doublée, et le niveau du jeu ne bouge pas (js/features/parents). Il ne
-   vaut que pour la partie lancée par startBonusChallenge. */
-let bonusChallenge = null;
+// lancer un jeu à la demande d'une feature : l'île (« Surprise »), Zap (défi)
+on('game:start', ()=> startMinigame());
+on('game:bonus', (key)=> startBonusChallenge(key));
 function startBonusChallenge(key){
-  bonusChallenge = { key, fresh:true, won:false };
+  beginBonusChallenge(key);
   playGame(key);
 }
-function inBonusChallenge(){ return !!bonusChallenge && bonusChallenge.key === lastGame; }
 
 // Lance un type de jeu précis, en comptant le coup pour ce joueur
 // (utilisé pour proposer en priorité les jeux les moins essayés).
 function playGame(key){
   // pause douce réglée par les parents : plus de nouveau défi aujourd'hui
-  if(pauseDue()){ showPauseScreen(); return; }
-  if(bonusChallenge){ if(bonusChallenge.fresh) bonusChallenge.fresh = false; else bonusChallenge = null; }
+  // (l'espace parents répond true et montre l'écran de pause)
+  if(emit('game:before', key).some(Boolean)) return;
+  bonusOnNewGame();
   if(hintPolicy.onMission) hintPolicy.onMission(key);
-  missionErrors = 0;
+  resetMissionErrors();
   trackGamePlayed(key);
-  lastGame = key;
+  setLastGame(key);
   gameSolution = null;
   gameRenderer(key)();
 }
@@ -254,26 +268,6 @@ function startMinigame(){
   playGame(type);
 }
 
-// En-tête d'une fenêtre de jeu : titre, consigne et bouton pour l'écouter.
-// La fermeture est assurée par la croix de la fenêtre (#modal-close).
-function gameHeader(title, hint, spoken){
-  const say = (spoken || hint).replace(/"/g,'&quot;');
-  return `
-    <div class="game-head"><h2>${title}</h2></div>
-    <p class="puzzle-hint has-buddy">
-      <span class="hint-txt">${hint}</span>
-      ${buddySlot('think')}
-      <button class="btn-speak" data-say="${say}" aria-label="Écouter la consigne">🔈</button>
-    </p>
-  `;
-}
-// branche les boutons « écouter » et lit la consigne à voix haute
-function bindQuit(){
-  bindSpeakButtons();
-  // lit la consigne une seule fois par mini-jeu (le mémo se re-rend à chaque clic)
-  const hint = document.querySelector('.puzzle-hint [data-say]');
-  if(hint && hint.dataset.say !== bindQuit._last){ bindQuit._last = hint.dataset.say; speak(hint.dataset.say); }
-}
 function progressDots(done, total){
   return `<div class="game-progress">${Array.from({length:total},(_,i)=>`<i class="${i<done?'on':''}"></i>`).join('')}</div>`;
 }
@@ -281,7 +275,7 @@ function progressDots(done, total){
 /* Mission ratée : on encourage, on ne punit pas — mais pas de récompense. */
 function onMissionFail(){
   recordMission(false);
-  bonusChallenge = null;
+  endBonusChallenge();
   missionFact = null;
   bindQuit._last = null;
   lives = 0;
@@ -364,7 +358,7 @@ function onMissionWin(){
   // progrès ; Zap fête le défi bonus ; Tom rapporte le trésor du jour
   const cheerBy = cheer ? teamCheerBy() : null;
   const extras = teamWinExtras();
-  bonusChallenge = null;
+  endBonusChallenge();
   setTimeout(()=> speak(`${levelUp ? `Niveau ${level()} ! ` : ''}${praise} ${cheer ? (cheerBy ? COMPANIONS[cheerBy].name + ' : ' : '') + cheer + ' ' : ''}${extras.map(x=> `${COMPANIONS[x.by].name} : ${x.text} `).join('')}${lookWon.length ? `Tu gagnes ${lookWon.join(' et ')} pour ton avatar ! ` : ''}${fact ? fact + ' ' : ''}${c.name} t'offre ${it.name}${bonus ? `, et une surprise : ${ITEMS[bonus].name}` : ''}.`), 300);
 
   openModal(`
@@ -410,3 +404,8 @@ function onMissionWin(){
 // ça, l'ancienne question pourrait réapparaître par-dessus un autre jeu.
 onModalChange(()=>{ clearActiveTimer(); clearPendingRetry(); });
 onModalClose(()=>{ bindQuit._last = null; });
+
+export {
+  clearActiveTimer, flashModal, livesBar, loseLife, onMissionWin, playGame, progressDots, registerGame,
+  setMissionFact, setSolution, setupLives, solSel, startMinigame, startTimerIfNeeded, stepOk
+};
