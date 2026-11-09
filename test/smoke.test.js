@@ -1030,6 +1030,36 @@ setTimeout(()=>{
       check('puzzle : pas de minuteur', !d.getElementById('challenge-timer'));
       ev('closeModal(); state.skills = {}; currentWorld = "lagon"; save()');
     }
+    // ---- Offrir un objet à un personnage ----
+    {
+      ev('closeModal(); party.active = false; state.friends = {}; state.friendRewards = {}; state.inventory = {}; save()');
+      const chars = ev('Object.keys(CHARACTERS)');
+      check('cadeaux : chaque personnage a 2 objets préférés de son île, qu\'il ne donne pas lui-même', chars.every(c=>ev(`(function(){ const f = favoritesOf(${JSON.stringify(c)}), ch = CHARACTERS[${JSON.stringify(c)}]; return f.length===2 && f[0]!==f[1] && f.every(k=>ITEMS[k] && (ITEMS[k].world||'lagon')===(ch.world||'lagon') && !ch.loot.includes(k)); })()`)));
+      check('cadeaux : les préférés ne changent pas d\'une fois à l\'autre', ev('favoritesOf("sirene").join()===favoritesOf("sirene").join()'));
+      ev('openDialogue("sirene")');
+      check('cadeaux : bouton « Offrir un objet » dans le dialogue', !!d.getElementById('btn-gift'));
+      d.getElementById('btn-gift').click();
+      check('cadeaux : sac vide → message clair', !!d.querySelector('.empty-state') && !d.querySelector('.gift-item'));
+      const fav = ev('favoritesOf("sirene")[0]');
+      ev(`state.inventory = { ${JSON.stringify(fav)}: 2, coquillage: 1 }; state.quests = { date: today(), list: [{type:'gift', target:null, goal:2, n:0, label:'Offre 2 objets'}], claimed:false }; save(); openGiftPicker("sirene")`);
+      check('cadeaux : les objets du sac sont proposés, le préféré marqué 💖 en premier', d.querySelectorAll('.gift-item').length===2 && d.querySelector('.gift-item').dataset.gift===fav && d.querySelector('.gift-item').classList.contains('fav'));
+      d.querySelector(`.gift-item[data-gift="${fav}"]`).click();
+      check('cadeaux : l\'objet quitte le sac, le préféré vaut 2 cœurs', ev(`countItem(${JSON.stringify(fav)})`)===1 && ev('friendPoints("sirene")')===2);
+      check('cadeaux : le personnage remercie (cœurs, message)', !!d.querySelector('.gift-thanks') && d.querySelectorAll('.gt-hearts i').length>0 && d.querySelector('.gift-thanks').textContent.includes('préféré'));
+      check('cadeaux : compte pour la mission du jour', ev('state.quests.list[0].n')===1);
+      d.getElementById('gift-more').click();
+      d.querySelector('.gift-item[data-gift="coquillage"]').click();
+      check('cadeaux : un autre objet vaut 1 cœur', ev('friendPoints("sirene")')===3 && ev('state.quests.list[0].n')===2);
+      const coins = ev('state.coins');
+      ev(`state.inventory[${JSON.stringify(fav)}] = 1; giveGift("sirene", ${JSON.stringify(fav)})`);
+      check('cadeaux : à 5 cœurs, meilleurs amis et une surprise de 10 pièces', ev('friendPoints("sirene")')>=5 && ev('state.coins')===coins+10 && ev('state.friendRewards.sirene')===true);
+      ev('state.inventory.coquillage = 1; giveGift("sirene", "coquillage")');
+      check('cadeaux : la surprise n\'est donnée qu\'une fois', ev('state.coins')===coins+10);
+      check('cadeaux : impossible d\'offrir un objet qu\'on n\'a pas', ev('giveGift("sirene", "gemme")')===null);
+      ev('openDialogue("sirene")');
+      check('cadeaux : l\'amitié se voit en cœurs dans le dialogue', !!d.querySelector('.char-header .friend-hearts'));
+      ev('closeModal(); state.friends = {}; state.friendRewards = {}; state.inventory = {}; state.quests = null; save()');
+    }
     // ---- Chaque nouveau monde : couleurs propres et place sur la carte ----
     {
       const css = fs.readFileSync(path.join(__dirname, '..', 'styles.css'), 'utf8');

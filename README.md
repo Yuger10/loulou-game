@@ -2,15 +2,21 @@
 
 Jeu mobile-first en HTML/CSS/JS (sans dépendance) pour une enfant de 6 ans : aider une sirène, une licorne et une danseuse via 6 mini-jeux, gagner des objets, les vendre / échanger / fusionner au marché, décorer son lagon et compléter son album.
 
-## Lancer
+## Jouer
+**En ligne : https://yuger10.github.io/loulou-game/** (GitHub Pages, branche `main` : chaque merge est en ligne une minute après).
+Sur iPhone / iPad : ouvrir l'adresse dans Safari → Partager → « Sur l'écran d'accueil ». Le jeu marche alors hors ligne et la partie est protégée.
+
+Changer d'adresse (ex. du Mac vers GitHub Pages) ne transporte pas la partie : sur l'ancienne adresse, panneau des joueurs → 💾 *Sauvegarde* → copier le code de transfert ; sur la nouvelle, *Restaurer* → coller le code.
+
+## Lancer en local
 ```bash
 npm start            # http://localhost:8080/index.html
 ```
-Sur un téléphone du même Wi-Fi : `http://<ip-du-mac>:8080/`, puis « Ajouter à l'écran d'accueil » pour l'installer en plein écran (PWA, hors-ligne OK).
+Sur un téléphone du même Wi-Fi : `http://<ip-du-mac>:8080/` (en `http://`, pas de hors-ligne ni de stockage protégé : préférer l'adresse en ligne).
 
 Sauvegarde dans `localStorage` (versionnée, migration automatique).
 **Ne pas perdre la partie** : panneau des joueurs (bouton avec le prénom, en haut) → 💾 *Sauvegarde* : enregistrer un fichier, copier un code de transfert pour un autre appareil, restaurer. Installer le jeu sur l'écran d'accueil évite que Safari efface la partie après 7 jours sans visite.
-Pour le mode hors-ligne et le stockage protégé, le jeu doit être servi en `https://` (par exemple GitHub Pages) : en `http://` depuis le Mac, ces fonctions sont désactivées par le navigateur.
+Le mode hors-ligne et le stockage protégé demandent `https://` : c'est le cas sur l'adresse GitHub Pages.
 
 ## Tester
 ```bash

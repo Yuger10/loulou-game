@@ -23,6 +23,8 @@ const DEFAULT_STATE = {
   wardrobe: [],       // objets de la garde-robe achetés (js/wardrobe.js)
   look: { tete:null, visage:null, tenue:null, cape:null },   // ce que porte l'avatar
   seasonGifts: {},    // cadeaux de saison reçus, ex. { 'noel-2026': true } (js/seasons.js)
+  friends: {},        // points d'amitié par personnage (cadeaux, js/gifts.js)
+  friendRewards: {},  // surprise de « meilleur ami » déjà donnée, par personnage
 };
 // copie profonde : sinon inventory/seen/decos seraient partagés avec DEFAULT_STATE
 function freshState(extra){
@@ -51,6 +53,8 @@ let state = {
   wardrobe: [],
   look: { tete:null, visage:null, tenue:null, cape:null },
   seasonGifts: {},
+  friends: {},
+  friendRewards: {},
 };
 
 function save(){
@@ -212,6 +216,7 @@ const QUEST_TEMPLATES = [
   ()=>{ const k = pickRandom(availableCrafted().filter(k=>CRAFTED[k].tier!==2));
         return {type:'craft', target:k, goal:1, n:0, label:`Fabrique un ${CRAFTED[k].name.toLowerCase()} ${CRAFTED[k].emoji}`}; },
   ()=>{ const goal = 2; return {type:'sell', target:null, goal, n:0, label:`Vends ${goal} objets au marché 🏪`}; },
+  ()=>{ const goal = 2; return {type:'gift', target:null, goal, n:0, label:`Offre ${goal} objets à tes amis 🎁`}; },
 ];
 function today(){ const d = new Date(); return d.toISOString().slice(0,10); }
 function ensureQuests(){

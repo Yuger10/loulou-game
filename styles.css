@@ -2739,3 +2739,40 @@
   .jg-model span{font-size:.75rem; font-weight:800; color:var(--ink-soft);}
   .jg-buddy{overflow:visible;}
   @media (prefers-reduced-motion:reduce){ .jg-slot.filled{animation:none;} }
+
+  /* =====================================================================
+     Offrir un objet (v47) : choix du cadeau, merci, cœurs d'amitié
+     ===================================================================== */
+  .char-header .friend-hearts{display:block; font-size:1rem; letter-spacing:1px; margin-top:4px; white-space:nowrap;}
+  .friend-hearts i{font-style:normal; opacity:.55;}
+  .gift-open{margin-top:8px; background:#FFF3CF; color:var(--ink); box-shadow:0 5px 0 var(--sun-edge), inset 0 2px 0 rgba(255,255,255,.6);}
+  .gift-likes{margin:4px 0 12px; padding:8px 12px; background:#FFF0F6; border-radius:14px; text-align:center; font-weight:600; color:var(--ink);}
+  .gift-grid{display:grid; grid-template-columns:repeat(auto-fill, minmax(96px, 1fr)); gap:10px; margin-bottom:10px;}
+  .gift-item{position:relative; display:flex; flex-direction:column; align-items:center; gap:2px; min-height:96px; padding:10px 6px 8px;
+    border:2px solid transparent; border-radius:18px; background:#fff; box-shadow:var(--shadow-candy-sm); cursor:pointer; color:var(--ink);}
+  .gift-item:active{transform:translateY(2px);}
+  .gift-item.fav{border-color:#FF8FB8; background:#FFF6FA;}
+  .gi-emoji{font-size:2.2rem; line-height:1.1;}
+  .gi-name{font-size:.78rem; font-weight:700; text-align:center; line-height:1.15;}
+  .gi-count{font-size:.72rem; font-weight:800; color:var(--ink-soft);}
+  .gi-fav{position:absolute; top:4px; right:6px; font-size:.9rem;}
+  .gift-thanks{text-align:center;}
+  .gt-stage{position:relative; height:150px; display:grid; place-items:center; margin-bottom:4px;}
+  .gt-face{font-size:5rem; display:inline-block; animation:gtDance 1s ease-in-out 2;}
+  .gt-face svg, .gt-face .char-art{width:120px; height:120px;}
+  .gt-item{position:absolute; right:calc(50% - 92px); bottom:18px; font-size:2.2rem; animation:gtPop .5s ease-out .5s both;}
+  .gt-hearts{position:absolute; inset:0; pointer-events:none;}
+  .gt-hearts i{position:absolute; left:calc(50% - 10px); bottom:40%; font-style:normal; font-size:1.3rem; opacity:0;
+    animation:gtHeart 1.6s ease-out calc(.15s * var(--i) + .3s) both;}
+  .gt-hearts i:nth-child(odd){--dx:-1;} .gt-hearts i:nth-child(even){--dx:1;}
+  @keyframes gtHeart{
+    0%{opacity:0; transform:translate(0,0) scale(.5);}
+    20%{opacity:1;}
+    100%{opacity:0; transform:translate(calc(var(--dx) * (20px + var(--i) * 7px)), -90px) scale(1.15);}
+  }
+  @keyframes gtDance{ 0%,100%{transform:rotate(0) translateY(0);} 25%{transform:rotate(-6deg) translateY(-6px);} 75%{transform:rotate(6deg) translateY(-6px);} }
+  @keyframes gtPop{ 0%{transform:scale(0); opacity:0;} 70%{transform:scale(1.25); opacity:1;} 100%{transform:scale(1);} }
+  .gift-fly{position:fixed; z-index:60; font-size:2.2rem; line-height:1; pointer-events:none; transition:transform .65s cubic-bezier(.3,.7,.4,1), opacity .65s ease-in .25s;}
+  .gt-friend{margin:8px 0 0; font-weight:700; color:var(--ink);}
+  .gift-best{background:#FFF3CF !important; font-weight:800;}
+  @media (prefers-reduced-motion:reduce){ .gt-face, .gt-item, .gt-hearts i{animation:none;} .gt-hearts i{opacity:1;} }

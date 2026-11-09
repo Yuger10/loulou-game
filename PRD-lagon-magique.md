@@ -834,3 +834,16 @@ Un vrai puzzle (`js/jigsaw.js`), proposé dès 3 ans, rangé dans la compétence
 - **Essais** généreux (comme le mémo) à partir de l'île 2 ; pas de minuteur.
 - **Mise en page** : le cadre s'ajuste à la hauteur de l'écran et la réserve tient sur une ou deux rangées, pour que cadre et morceaux soient visibles ensemble (glisser sans faire défiler) ; vérifié sur iPhone et iPad, glisser compris.
 - Cache `lagon-v46`.
+
+---
+
+# v47 — Offrir un objet à un personnage
+
+Le sac sert à faire plaisir (`js/gifts.js`). Dans le dialogue d'un personnage : **« 🎁 Offrir un objet »**.
+- **Choisir** un objet du sac (nombre affiché). L'objet **s'envole** jusqu'au personnage, qui **danse**, fait jaillir des **cœurs** et remercie à voix haute.
+- **Objets préférés** : chaque personnage en a 2 (💖), pris parmi les objets de SON île qu'il ne donne pas lui-même : il faut jouer avec ses voisins pour les trouver. Il le dit parfois (« Mes cadeaux préférés ? Boussole 🧭 et Étoile ⭐ ! ») et l'écran du cadeau le rappelle. Un préféré vaut 2 cœurs, un autre objet 1.
+- **Amitié** : jusqu'à 5 cœurs, visibles sous son nom. À 5 cœurs, « Tu es mon meilleur ami / ma meilleure amie ! » et une surprise de 10 pièces (une seule fois par personnage) — pas plus qu'en vendant l'objet au marché, pour que ce soit un geste et pas une affaire.
+- **Mission du jour** possible : « Offre 2 objets à tes amis 🎁 ».
+- Données : `state.friends[perso]` (points), `state.friendRewards[perso]`.
+- **En ligne** : le jeu est publié sur https://yuger10.github.io/loulou-game/ (GitHub Pages), en `https://` : hors-ligne, installation et stockage protégé fonctionnent. Phase 1 terminée.
+- Cache `lagon-v47`.
