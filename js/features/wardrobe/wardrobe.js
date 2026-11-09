@@ -17,7 +17,7 @@
    gauche du visage) à 100 (bord droit), y de 0 (haut du front) à 100
    (menton), les yeux en (30, 55) et (70, 55). companionSVG le place
    exactement sur les personnages dessinés ; pour un avatar emoji, il est
-   superposé à l'emoji (styles.css, .look-ov). */
+   superposé à l'emoji (js/features/wardrobe/wardrobe.css, .look-ov). */
 
 const LOOK_SLOTS = [
   { id:'tete',   emoji:'🎩', name:'Tête' },

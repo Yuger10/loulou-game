@@ -1,0 +1,20 @@
+  /* --- Monde : Forêt enchantée --- */
+  body[data-world="foret"]{
+    background:linear-gradient(180deg,#CDEFC4 0%, #66BB6A 45%, #2E7D52 100%);
+  }
+  body[data-world="foret"] .bubble{background:rgba(255,255,255,.5); border-radius:50% 50% 50% 0;}
+  body[data-world="foret"] .scene{background:linear-gradient(180deg,#DFF3D2 0%, #F6EFD9 100%);}
+  body[data-world="foret"] .level-pill i{background:#F4B942;}
+
+  /* --- Monde : Montagne des Nuages --- */
+  body[data-world="montagne"]{
+    background:linear-gradient(180deg,#E8F4FF 0%, #9FC6E8 45%, #5B8FC7 100%);
+  }
+  body[data-world="montagne"] .scene{background:linear-gradient(180deg,#F2F8FF 0%, #DCE9F7 100%);}
+  /* --- Monde : Château des Étoiles --- */
+  body[data-world="chateau"]{
+    background:linear-gradient(180deg,#3B2E63 0%, #6A4C93 45%, #2A1F47 100%);
+  }
+  body[data-world="chateau"] .scene{background:linear-gradient(180deg,#4B3A7A 0%, #F6EFD9 100%);}
+  body[data-world="chateau"] .bubble{background:rgba(255,255,255,.55);}
+

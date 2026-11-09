@@ -1,0 +1,80 @@
+  /* Marché view */
+  .tabs{display:flex; gap:6px; margin-bottom:14px;}
+  .tab-btn{
+    flex:1;
+    border:none;
+    border-radius:16px;
+    padding:10px 2px;
+    background:rgba(255,255,255,.55);
+    color:var(--ocean-deep);
+    font-weight:700;
+    font-size:.78rem;
+    cursor:pointer;
+  }
+  .tab-btn.active{background:var(--foam); box-shadow:var(--shadow);}
+  .market-row{
+    background:var(--foam);
+    border-radius:18px;
+    padding:10px 14px;
+    display:flex;
+    align-items:center;
+    gap:12px;
+    margin-bottom:10px;
+    box-shadow:var(--shadow);
+  }
+  .market-row .emoji, .recipe-card .result .emoji, .item-card .emoji{
+    border:none; background:none; font-family:inherit; padding:0;
+  }
+  .market-row .emoji{font-size:1.8rem;}
+  .market-row .info{flex:1;}
+  .market-row .info .name{font-weight:700; font-size:.9rem;}
+  .market-row .info .sub{font-size:.75rem; color:var(--lagoon-dark); font-weight:600;}
+  .btn-small{
+    border:none;
+    border-radius:14px;
+    padding:8px 14px;
+    background:var(--coral);
+    color:white;
+    font-weight:700;
+    font-size:.82rem;
+    cursor:pointer;
+    white-space:nowrap;
+  }
+  .btn-small:active{transform:translateY(2px);}
+  .btn-small:disabled{background:#C9C9C9; cursor:not-allowed;}
+  .recipe-card{
+    background:var(--foam);
+    border-radius:20px;
+    padding:14px;
+    margin-bottom:12px;
+    box-shadow:var(--shadow);
+  }
+  .recipe-card.tier2{background:linear-gradient(160deg,#FFF9E8,#FFE7F3);}
+  .recipe-card .result{display:flex; align-items:center; gap:8px; font-weight:700; margin-bottom:8px;}
+  .recipe-card .result .emoji{font-size:1.7rem;}
+  .recipe-card .result .price{margin-left:auto; font-size:.8rem; color:var(--lagoon-dark);}
+  .recipe-ingredients{display:flex; gap:10px; margin-bottom:10px; flex-wrap:wrap;}
+  .ingredient-pill{
+    background:var(--sand);
+    border-radius:14px;
+    padding:5px 10px;
+    font-size:.8rem;
+    font-weight:700;
+    display:flex;
+    align-items:center;
+    gap:4px;
+  }
+  .ingredient-pill.ok{background:#DFF6DE; color:#1E7A34;}
+  .ingredient-pill.ko{background:#FFE2DC; color:#B4472F;}
+  .btn-craft{
+    width:100%;
+    border:none;
+    border-radius:14px;
+    padding:10px;
+    font-weight:700;
+    background:var(--lagoon-dark);
+    color:white;
+    cursor:pointer;
+  }
+  .btn-craft:disabled{background:#C9C9C9; cursor:not-allowed;}
+

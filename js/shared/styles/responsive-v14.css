@@ -1,0 +1,88 @@
+  /* ================= Responsive (v14) ================= */
+
+  /* Le contenu s'élargit avec l'écran au lieu de rester dans une colonne de 480 px */
+  :root{ --app-max: 480px; }
+  #app{ max-width:var(--app-max); }
+  main{ padding-inline:clamp(12px, 3vw, 28px); }
+  .topbar{ padding:clamp(12px,2.5vw,20px) clamp(14px,3vw,24px) 6px; }
+  .multi-strip{ padding-inline:clamp(12px,3vw,28px); }
+
+  /* Les grilles s'adaptent au lieu d'être figées */
+  .islands{ grid-template-columns:repeat(auto-fit, minmax(140px, 1fr)); }
+  .sac-grid{ grid-template-columns:repeat(auto-fill, minmax(96px, 1fr)); }
+  .album-grid{ grid-template-columns:repeat(auto-fill, minmax(76px, 1fr)); }
+  .avatar-grid{ grid-template-columns:repeat(auto-fill, minmax(52px, 1fr)); }
+  .age-grid{ grid-template-columns:repeat(auto-fill, minmax(52px, 1fr)); }
+  .island-map{ height:clamp(230px, 46vw, 330px); }
+  .memory-grid{ grid-template-columns:repeat(auto-fit, minmax(74px, 1fr)); }
+  .game-picker{ grid-template-columns:repeat(auto-fit, minmax(96px, 1fr)); }
+  .count-row span{ font-size:clamp(1.7rem, 5vw, 2.4rem); }
+  .diff-item{ font-size:clamp(2rem, 6vw, 2.8rem); }
+
+  /* Téléphone étroit : on resserre sans rien couper */
+  @media (max-width:360px){
+    .islands{grid-template-columns:1fr 1fr; gap:10px;}
+    .island .emoji{font-size:2.2rem;}
+    .island{min-height:100px; padding:12px 6px 10px;}
+    .tabs{gap:4px;}
+    .tab-btn{font-size:.7rem; padding:10px 2px;}
+    .turn-chip{font-size:.66rem; padding:4px 7px;}
+    .isle{width:62px; height:48px;}
+    .isle-label b{font-size:.64rem;}
+    .puzzle-btn{width:62px; height:62px; font-size:1.5rem;}
+  }
+
+  /* Téléphone à l'horizontale : la carte prend moins de hauteur */
+  @media (max-height:520px) and (orientation:landscape){
+    .island-map{height:180px;}
+    .view-head h2{font-size:1.05rem;}
+    .islands{grid-template-columns:repeat(4,1fr);}
+    .island{min-height:92px;}
+    .island .emoji{font-size:2rem;}
+    nav.bottomnav button{min-height:52px;}
+  }
+
+  /* Tablette */
+  @media (min-width:640px){
+    :root{ --app-max: 660px; }
+    .island-map{height:340px;}
+    .islands{grid-template-columns:repeat(4, 1fr);}
+    .sac-grid{grid-template-columns:repeat(auto-fill, minmax(112px, 1fr));}
+    .album-grid{grid-template-columns:repeat(auto-fill, minmax(92px, 1fr));}
+    .view-head h2{font-size:1.5rem;}
+    .island .emoji{font-size:3.1rem;}
+    .island .name{font-size:1rem;}
+    .market-row .info .name{font-size:1rem;}
+    .isle{width:88px; height:64px;}
+    .isle-icon{font-size:2.2rem;}
+    .isle-label b{font-size:.8rem;}
+  }
+
+  /* Grand écran / ordinateur : le jeu reste centré mais respire */
+  @media (min-width:1024px){
+    :root{ --app-max: 820px; }
+    body{align-items:flex-start;}
+    #app{
+      margin:clamp(12px, 2vh, 32px) auto;
+      min-height:calc(100vh - 2 * clamp(12px, 2vh, 32px));
+      border-radius:34px;
+      overflow:hidden;
+      box-shadow:0 24px 60px rgba(8,30,42,.28);
+      background:rgba(255,255,255,.06);
+    }
+    .island-map{height:380px;}
+    .islands{grid-template-columns:repeat(4, 1fr); gap:18px;}
+    .island{min-height:150px;}
+    .island .emoji{font-size:3.4rem;}
+    nav.bottomnav{border-radius:26px 26px 0 0;}
+    .sac-grid{grid-template-columns:repeat(auto-fill, minmax(124px, 1fr));}
+    .item-card .emoji{font-size:2.4rem;}
+    .item-card .name{font-size:.9rem;}
+  }
+
+  /* Très grand écran */
+  @media (min-width:1400px){
+    :root{ --app-max: 900px; }
+    .island-map{height:420px;}
+  }
+

@@ -1,0 +1,78 @@
+  /* ---------- Joueurs & mode chacun son tour ---------- */
+  .turn-bar{
+    display:flex; align-items:center; gap:6px;
+    background:rgba(255,255,255,.92);
+    border-radius:999px; padding:5px 6px; margin-bottom:10px;
+    box-shadow:var(--shadow); overflow-x:auto;
+  }
+  .turn-chip{
+    display:flex; align-items:center; gap:4px;
+    border-radius:999px; padding:4px 10px;
+    font-size:.74rem; font-weight:700; white-space:nowrap;
+    background:#EEF4F6; color:#7A8E97;
+  }
+  .turn-chip.on{
+    background:var(--sun); color:var(--ocean-deep);
+    box-shadow:0 0 0 2px rgba(255,203,76,.55);
+    animation:chipPulse 1.6s ease-in-out infinite;
+  }
+  @keyframes chipPulse{0%,100%{transform:scale(1);} 50%{transform:scale(1.05);}}
+  .turn-chip b{font-size:1rem;}
+  .turn-chip i{font-style:normal; font-size:.7rem; opacity:.85;}
+  .turn-stop{
+    margin-left:auto; border:none; background:none; cursor:pointer;
+    font-size:.85rem; opacity:.6; padding:4px 6px;
+  }
+
+  #turn-overlay{
+    position:fixed; inset:0; z-index:35;
+    display:none; align-items:center; justify-content:center;
+    background:rgba(18,59,79,.55);
+    pointer-events:none;
+  }
+  #turn-overlay.show{display:flex; animation:fadeIn .18s ease;}
+  @keyframes fadeIn{from{opacity:0;} to{opacity:1;}}
+  .turn-card{
+    background:var(--sand); border-radius:28px; padding:22px 28px;
+    text-align:center; box-shadow:0 10px 0 rgba(18,59,79,.25);
+    animation:pop .4s ease;
+  }
+  .turn-card .turn-av{font-size:3.4rem; display:block; margin-bottom:6px;}
+  .turn-card h2{margin:0; font-size:1.05rem; opacity:.8;}
+  .turn-card .turn-name{
+    font-family:'Baloo 2',sans-serif; font-size:1.7rem; font-weight:800;
+    margin:2px 0 4px; color:var(--coral);
+  }
+  .turn-card .turn-sub{margin:0; font-size:.85rem; font-weight:600; opacity:.75;}
+
+  .player-row.current{background:linear-gradient(160deg,#FFF9E8,#FFE7F3);}
+  .player-row .name small{font-weight:700; opacity:.6; font-size:.7rem;}
+  .pick-btn{
+    border:none; background:none; font-size:1.3rem; cursor:pointer; padding:2px 4px;
+  }
+  .btn-small.ghost{background:#E4EEF1; color:var(--ocean-deep);}
+  .mode-row{display:flex; gap:8px; margin-top:12px;}
+  .mode-row .btn-primary{font-size:.95rem; padding:12px 6px;}
+  .btn-primary.alt{background:var(--lagoon-dark); box-shadow:0 5px 0 #17797B;}
+  .btn-craft.danger{background:#E56B5A; margin-top:8px;}
+  .name-input-modal{
+    width:100%; border:3px solid var(--lagoon); border-radius:16px;
+    padding:12px 14px; font-size:1.05rem; font-family:'Baloo 2',sans-serif; font-weight:700;
+    text-align:center; color:var(--ocean-deep); background:var(--foam); margin-bottom:14px;
+  }
+
+  /* choix du mini-jeu */
+  .game-picker{
+    display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:6px;
+  }
+  .game-choice{
+    border:none; border-radius:20px; background:var(--foam);
+    box-shadow:var(--shadow); padding:12px 4px 10px; cursor:pointer;
+    display:flex; flex-direction:column; align-items:center; gap:4px;
+  }
+  .game-choice:active{transform:translateY(3px); box-shadow:none;}
+  .game-choice .emoji{font-size:1.9rem;}
+  .game-choice .nm{font-size:.7rem; font-weight:800;}
+  .game-choice.surprise{grid-column:1 / -1; background:linear-gradient(160deg,#FFF9E8,#FFE7F3);}
+  .game-choice.surprise .emoji{font-size:1.6rem;}
+

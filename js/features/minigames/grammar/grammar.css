@@ -1,0 +1,17 @@
+  /* ================= Petits mots magiques : déterminants (v16) ================= */
+  .det-box{gap:14px; flex-wrap:wrap;}
+  .det-emoji{font-size:clamp(2.6rem, 10vw, 3.4rem);}
+  .det-noun{
+    font-size:clamp(1.8rem, 8vw, 2.4rem); font-weight:800;
+    color:var(--ocean-deep);
+  }
+  .det-options{
+    display:flex; flex-wrap:wrap; justify-content:center;
+    gap:16px; max-width:420px; margin:0 auto 10px;
+  }
+  .det-btn{
+    border:none; background:var(--foam); box-shadow:var(--shadow);
+    border-radius:20px; min-width:96px; min-height:76px;
+    font-size:1.7rem; font-weight:900; color:var(--ocean-deep);
+  }
+

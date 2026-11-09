@@ -1,0 +1,115 @@
+  /* ================= Zones cliquables & pointeur (v13) ================= */
+
+  /* Tout ce qui se clique se comporte pareil : curseur, pression, focus clavier */
+  button,
+  [role="button"],
+  .island, .map-island, .mcard, .diff-item, .num-btn, .puzzle-btn,
+  .seq-btn, .simon-pad, .avatar-opt, .age-opt, .gender-opt,
+  .game-choice, .tab-btn, .navbtn, .item-card.clickable{
+    cursor:pointer;
+    touch-action:manipulation;      /* supprime le délai de 300 ms au doigt */
+    user-select:none;
+    -webkit-user-select:none;
+    transition:transform .12s ease, box-shadow .12s ease, filter .12s ease, background .12s ease;
+  }
+  button:disabled,
+  .mcard:disabled,
+  .btn-craft:disabled,
+  .btn-small:disabled{cursor:not-allowed; transition:none;}
+
+  /* Retour visuel à l'appui, partout */
+  button:not(:disabled):active,
+  .island:active, .map-island:active, .mcard:not(:disabled):active,
+  .diff-item:active, .game-choice:active{
+    filter:brightness(.96);
+  }
+
+  /* Survol à la souris (jamais au doigt) */
+  @media (hover:hover) and (pointer:fine){
+    button:not(:disabled):hover,
+    .island:hover, .game-choice:hover, .avatar-opt:hover,
+    .age-opt:hover, .gender-opt:hover, .tab-btn:hover{
+      filter:brightness(1.05);
+      transform:translateY(-2px);
+    }
+    .map-island:not(.locked):hover{filter:brightness(1.08) drop-shadow(0 0 6px rgba(255,255,255,.7));}
+    .map-island:not(.locked):hover .isle-label{background:var(--sun);}
+    .mcard:not(:disabled):not(.flipped):hover{background:#2AB7B9;}
+    .diff-item:hover{background:rgba(46,196,198,.15);}
+    .navbtn:hover{background:#F2FAFB;}
+    .market-row:hover{box-shadow:0 8px 0 rgba(18,59,79,.15);}
+    .item-card:hover{transform:translateY(-2px);}
+    .modal-close:hover{background:rgba(18,59,79,.18);}
+  }
+
+  /* Visible au clavier, invisible à la souris */
+  button:focus{outline:none;}
+  button:focus-visible,
+  [tabindex]:focus-visible{
+    outline:4px solid var(--sun);
+    outline-offset:3px;
+    border-radius:14px;
+  }
+
+  /* --- Cibles agrandies (minimum 48 px) --- */
+  .btn-small{min-height:48px; padding:12px 18px; font-size:.9rem;}
+  .btn-craft{min-height:52px; font-size:1rem;}
+  .btn-primary{min-height:56px;}
+  .btn-ghost{min-height:48px; font-size:.95rem;}
+  .tab-btn{min-height:50px;}
+  .navbtn{min-height:62px;}
+  .icon-btn, .sound-btn{width:48px; height:48px; font-size:1.3rem;}
+  .avatar-pill{min-height:44px; padding:6px 16px 6px 8px;}
+  .coin-pill{min-height:44px;}
+  .modal-close{width:46px; height:46px; font-size:1.15rem;}
+  .modal-handle{padding:10px 0 12px;}
+  .modal-handle span{width:56px; height:6px;}
+  .btn-speak{width:40px; height:40px; font-size:1.05rem;}
+  .pick-btn{min-width:48px; min-height:48px; font-size:1.5rem;}
+  .chip-btn{min-height:44px;}
+  .btn-deco{min-height:44px; padding:10px 16px; font-size:.85rem;}
+  .turn-stop, #race-stop{min-width:44px; min-height:44px; font-size:1rem;}
+  .reset-btn{min-height:46px; padding:12px 20px; font-size:.85rem;}
+
+  /* --- Mini-jeux : grandes cases, faciles à viser --- */
+  .mcard{
+    border:none; color:transparent;
+    min-height:70px; font-size:2.3rem;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .mcard.flipped, .mcard.matched{color:var(--ocean-deep);}
+  .mcard:disabled{opacity:.5;}
+  .diff-item{
+    border:none; background:var(--foam);
+    min-width:62px; min-height:62px;
+    font-size:2.3rem; line-height:1;
+    display:inline-flex; align-items:center; justify-content:center;
+  }
+  .diff-item.mirror{display:inline-flex;}
+  .diff-row{gap:8px; padding:14px 10px;}
+  .num-btn{min-height:64px;}
+  .puzzle-btn{width:72px; height:72px;}
+  .seq-btn{min-height:64px;}
+  .simon-pad{min-height:96px;}
+  .island{min-height:118px;}
+  .game-choice{min-height:88px;}
+  .avatar-opt{min-height:54px; font-size:1.8rem;}
+  .age-opt{min-height:50px;}
+  .gender-opt{min-height:64px;}
+
+  /* la carte : plus de place pour viser les îles */
+  .island-map{height:270px; padding:6px;}
+
+  /* rien de décoratif n'intercepte le pointeur */
+  .bubble, .sea, .sea *, .route, .route *, .boat, .boat *,
+  #confetti, #confetti *, #toast, .waves, .map-path{pointer-events:none;}
+
+  /* accessibilité : respecter la préférence « moins d'animations » */
+  @media (prefers-reduced-motion:reduce){
+    *, *::before, *::after{
+      animation-duration:.01ms !important;
+      animation-iteration-count:1 !important;
+      transition-duration:.01ms !important;
+    }
+  }
+

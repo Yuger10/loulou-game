@@ -1,0 +1,23 @@
+  /* =====================================================================
+     Minuteur de défi (v27) — voir js/entities/difficulty/difficulty.js § « MINUTEUR »
+     Barre calme qui se vide doucement ; devient orange/rouge et pulse
+     dans les 5 dernières secondes, sans jamais être alarmante.
+     ===================================================================== */
+  .challenge-timer{
+    max-width:320px; height:10px; margin:0 auto 12px;
+    background:rgba(18,59,79,.12); border-radius:999px; overflow:hidden;
+  }
+  .challenge-timer i{
+    display:block; height:100%; border-radius:999px;
+    background:linear-gradient(90deg, #5FCB7E, #3EC778);
+    transition:width 1s linear, background .3s;
+  }
+  .challenge-timer.urgent i{
+    background:linear-gradient(90deg, #F2A33E, #E8573A);
+    animation:timerPulse 1s ease-in-out infinite;
+  }
+  @keyframes timerPulse{0%,100%{opacity:1;} 50%{opacity:.6;}}
+  @media (prefers-reduced-motion:reduce){
+    .challenge-timer.urgent i{animation:none;}
+  }
+

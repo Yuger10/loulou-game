@@ -1,0 +1,17 @@
+  /* jeu suite logique */
+  .seq-row{
+    display:flex; justify-content:center; align-items:center; gap:6px;
+    background:var(--foam); border-radius:18px; padding:18px 8px; margin-bottom:16px; flex-wrap:wrap;
+  }
+  .seq-row span{font-size:2rem;}
+  .seq-row .q{
+    width:44px; height:44px; border-radius:12px; border:3px dashed var(--lagoon-dark);
+    display:flex; align-items:center; justify-content:center; font-weight:800; color:var(--lagoon-dark); font-size:1.4rem;
+  }
+  .seq-options{display:flex; gap:10px; justify-content:center;}
+  .seq-btn{
+    flex:1; max-width:90px; border:none; border-radius:16px; padding:12px 0; font-size:2rem;
+    background:var(--foam); box-shadow:var(--shadow); cursor:pointer;
+  }
+  .seq-btn:active{transform:translateY(4px); box-shadow:none;}
+

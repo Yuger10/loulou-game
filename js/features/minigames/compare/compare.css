@@ -1,0 +1,24 @@
+  /* ================= Comparer les nombres (v20) ================= */
+  .cmp-equation{
+    display:flex; align-items:center; justify-content:center;
+    gap:16px; margin:16px 0 20px;
+    font-size:clamp(2.2rem, 10vw, 3rem); font-weight:900;
+    color:var(--ocean-deep);
+  }
+  .cmp-q{
+    display:inline-flex; align-items:center; justify-content:center;
+    min-width:1.1em; min-height:1.1em;
+    background:var(--foam); border-radius:16px;
+    box-shadow:var(--shadow); font-size:.85em;
+  }
+  .cmp-q.filled{background:none; box-shadow:none; color:#3EC778;}
+  .cmp-options{
+    display:flex; justify-content:center; gap:16px;
+    max-width:400px; margin:0 auto 10px;
+  }
+  .cmp-btn{
+    border:none; background:var(--foam); box-shadow:var(--shadow);
+    border-radius:20px; min-width:84px; min-height:84px;
+    font-size:2.4rem; font-weight:900; color:var(--ocean-deep);
+  }
+

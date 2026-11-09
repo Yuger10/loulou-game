@@ -38,10 +38,11 @@ Principe : **un déplacement ou un découpage = un commit avec `npm test` vert**
 - [x] Task: Conductor - User Manual Verification 'Features et app' (Protocol in workflow.md)
 
 ## Phase 4 : CSS par slice
-- [ ] Task: Découper `styles.css`
-    - [ ] Base, variables, design system v21 et responsive vers `shared/styles/` ; chaque section de feature (minuteur, compagnons, gains, horloge, calendrier, histoire, calcul, formes, planètes, sauvegarde, parents, garde-robe, cadeaux, saisons, puzzle…) vers sa slice
-    - [ ] Tests : l'ordre de cascade final est identique (concaténation dans l'ordre du manifeste = ancien `styles.css`, à la mise en forme près) ; accolades équilibrées pour chaque fichier
-    - [ ] `island.css` et `characters.css` rejoignent `features/island/` et `entities/character/`
+> Fait : `styles.css` découpé en 48 fichiers rangés dans leur slice (`shared/styles/` pour la base, le design system v21 et le responsive). `CSS_ORDER` reprend l'ordre exact : la concaténation est identique octet pour octet à l'ancien fichier, et chaque fichier a ses accolades équilibrées (test de fumée).
+- [x] Task: Découper `styles.css`
+    - [x] Base, variables, design system v21 et responsive vers `shared/styles/` ; chaque section de feature (minuteur, compagnons, gains, horloge, calendrier, histoire, calcul, formes, planètes, sauvegarde, parents, garde-robe, cadeaux, saisons, puzzle…) vers sa slice
+    - [x] Tests : l'ordre de cascade final est identique (concaténation dans l'ordre du manifeste = ancien `styles.css`, à la mise en forme près) ; accolades équilibrées pour chaque fichier
+    - [x] `island.css` et `characters.css` rejoignent `features/island/` et `entities/character/`
 - [ ] Task: Conductor - User Manual Verification 'CSS par slice' (Protocol in workflow.md)
 
 ## Phase 5 : Frontières

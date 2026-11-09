@@ -1,0 +1,24 @@
+  /* ================= Lecture magique (v16) ================= */
+  .reading-image-box, .reading-word-box, .det-box, .vol-shape-box{
+    display:flex; align-items:center; justify-content:center;
+    padding:22px 12px; margin-bottom:6px;
+  }
+  .reading-image{font-size:clamp(3.2rem, 14vw, 4.6rem);}
+  .reading-word{
+    font-size:clamp(2rem, 9vw, 2.8rem); font-weight:800;
+    color:var(--ocean-deep); letter-spacing:.5px;
+  }
+  .reading-options{
+    display:flex; flex-wrap:wrap; justify-content:center;
+    gap:14px; max-width:480px; margin:0 auto 10px;
+  }
+  .reading-opt{
+    border:none; background:var(--foam); box-shadow:var(--shadow);
+    border-radius:20px; min-width:84px; min-height:84px;
+    font-size:2.6rem; display:flex; align-items:center; justify-content:center;
+  }
+  .reading-word-btn{
+    font-size:1.5rem; font-weight:800; color:var(--ocean-deep);
+    min-width:120px; padding:14px 18px;
+  }
+

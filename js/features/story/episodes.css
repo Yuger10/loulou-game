@@ -1,0 +1,14 @@
+  /* =====================================================================
+     L'histoire avance à chaque mission (v49) : épisodes
+     ===================================================================== */
+  .story-progress{margin:8px auto 0; padding:6px 12px; border-radius:999px; background:var(--tint-lilac); color:var(--ink);
+    font-weight:700; font-size:.88rem; display:table;}
+  .story-progress .sp-dots{letter-spacing:2px; color:#8B5CF6; margin-left:4px;}
+  .ep-num{display:block; font-size:.8rem; font-weight:800; color:var(--ink-soft); letter-spacing:.3px; text-transform:uppercase;}
+  .ep-find{display:flex; align-items:center; justify-content:center; gap:10px; background:#FFF9E8 !important;}
+  .ep-find-emoji{font-size:2.2rem; animation:gtPop .5s ease-out both;}
+  .story-eps{display:flex; flex-wrap:wrap; gap:6px; margin:-2px 0 10px 44px;}
+  .story-ep{display:inline-flex; align-items:center; gap:6px; min-height:40px; padding:4px 12px; border:2px solid var(--line, #D3E4E8);
+    border-radius:999px; background:#fff; color:var(--ink); font:700 .82rem 'Quicksand',sans-serif; cursor:pointer;}
+  .story-ep.locked{background:transparent; border-style:dashed; color:var(--ink-soft); cursor:default;}
+  @media (prefers-reduced-motion:reduce){ .ep-find-emoji{animation:none;} }
