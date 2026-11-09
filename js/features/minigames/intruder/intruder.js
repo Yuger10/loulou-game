@@ -40,6 +40,7 @@ function renderDiff(){
   bindQuit();
   startTimerIfNeeded('diff');
   setSolution(['.diff-item[data-odd="true"]']);
+  setHintQuestion('diff', { mirror:mirrorMode, total, oddPos: mirrorMode ? oddPos : items.indexOf(odd) }, { choices:'.diff-item' });
   document.querySelectorAll('.diff-item').forEach(el=>{
     el.onclick = ()=>{
       if(el.dataset.odd==='true'){ clearActiveTimer(); stepOk(el); flashModal('ok'); setTimeout(onMissionWin, 350); }
@@ -48,5 +49,18 @@ function renderDiff(){
   });
 }
 
+// Indices (v52) : 1. regarder chaque image, une par une (ou dans quel sens
+// elle regarde) ; 2. l'intrus est dans la moitié qui brille (au moins 3 images).
+function diffHints(q){
+  const half = Math.ceil(q.total / 2);
+  const inFirst = q.oddPos < half;
+  const ids = Array.from({length:q.total}, (_,i)=> i).filter(i=> inFirst ? i < half : i >= q.total - half);
+  return [
+    { say: q.mirror ? 'Regarde de quel côté chaque image est tournée, une par une.' : 'Regarde bien chaque image, une par une : une seule n\'est pas pareille.', fx:{ glow:'.diff-row' } },
+    { say:'L\'intrus se cache parmi celles qui brillent !', fx:{ glow: ids.map(i=> `.diff-row .diff-item:nth-child(${i+1})`).join(', ') } },
+  ];
+}
+
 // inscription auprès du moteur de mini-jeux (js/features/minigame-engine)
 registerGame('diff', renderDiff);
+registerHints('diff', diffHints);

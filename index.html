@@ -61,6 +61,8 @@
 <link rel="stylesheet" href="js/features/minigames/jigsaw/jigsaw.css">
 <link rel="stylesheet" href="js/features/gifts/gifts.css">
 <link rel="stylesheet" href="js/features/story/episodes.css">
+<link rel="stylesheet" href="js/features/minigame-engine/hints.css">
+<link rel="stylesheet" href="js/features/companion-team/team.css">
 <link rel="stylesheet" href="js/features/island/island.css">
 <link rel="stylesheet" href="js/entities/character/characters.css">
 </head>
@@ -73,6 +75,7 @@
 
   <header class="topbar">
     <button class="avatar-pill" id="avatar-pill" aria-label="Les joueurs"><span class="av">👧</span><span id="player-name">Toi</span></button>
+    <button class="icon-btn team-btn" id="team-btn" data-team-slot aria-label="Mon équipe"></button>
     <button class="icon-btn" id="quests-btn" aria-label="Mes missions du jour"><span data-ui-icon="missions">📜</span><span class="badge" id="quest-badge" hidden></span></button>
     <button class="icon-btn" id="story-btn" aria-label="Mon histoire"><span data-ui-icon="histoire">📖</span></button>
     <button class="icon-btn" id="sound-btn" aria-label="Son">🔊</button>
@@ -97,6 +100,7 @@
         <button type="button" class="chip-btn" data-install-how>Comment ?</button>
         <button type="button" class="ih-close" data-install-close aria-label="Masquer ce message">✕</button>
       </div>
+      <div class="team-helps"><div data-sam-guide hidden></div></div>
       <div class="island-map" id="island-map"></div>
       <div class="map-next" id="map-next" hidden></div>
       <div class="island-card" id="island-card"></div>
@@ -106,9 +110,11 @@
     <section id="view-ile" class="view">
       <div class="view-head">
         <h2 id="world-title">🌊 Le Lagon</h2>
+        <button class="team-chip" data-team-slot aria-label="Mon équipe"></button>
         <button class="chip-btn" id="btn-back-map">🗺️ Carte</button>
       </div>
       <p class="view-hint" id="lagon-intro-text">Touche un personnage pour l'aider ✨</p>
+      <div class="team-helps"><div data-sam-guide hidden></div><div data-zap-offer hidden></div></div>
       <div class="islands" id="islands"></div>
       <div class="scene" id="scene"></div>
       <div class="quests" id="quests"></div>
@@ -209,8 +215,6 @@
 <script src="js/entities/companion/companions.js"></script>
 <script src="js/features/party/party.js"></script>
 <script src="js/features/party/race.js"></script>
-<script src="js/features/story/story.js"></script>
-<script src="js/features/story/episodes.js"></script>
 <script src="js/features/profile/profile.js"></script>
 <script src="js/features/profile/topbar.js"></script>
 <script src="js/features/quests/quests.js"></script>
@@ -224,6 +228,7 @@
 <script src="js/features/gains/gains.js"></script>
 <script src="js/features/map/map.js"></script>
 <script src="js/features/minigame-engine/engine.js"></script>
+<script src="js/features/minigame-engine/hints.js"></script>
 <script src="js/features/minigames/memory/memory.js"></script>
 <script src="js/features/minigames/count/count.js"></script>
 <script src="js/features/minigames/intruder/intruder.js"></script>
@@ -242,6 +247,8 @@
 <script src="js/features/minigames/shapes/shapes.js"></script>
 <script src="js/features/minigames/planets/planets.js"></script>
 <script src="js/features/minigames/jigsaw/jigsaw.js"></script>
+<script src="js/features/story/story.js"></script>
+<script src="js/features/story/episodes.js"></script>
 <script src="js/features/market/market.js"></script>
 <script src="js/features/gifts/gifts.js"></script>
 <script src="js/features/players/profiles-ui.js"></script>
@@ -249,6 +256,8 @@
 <script src="js/features/parents/parents.js"></script>
 <script src="js/features/wardrobe/wardrobe.js"></script>
 <script src="js/features/seasons/seasons.js"></script>
+<script src="js/features/companion-team/team.js"></script>
+<script src="js/features/companion-team/specialties.js"></script>
 <script src="js/app/init.js"></script>
 </body>
 </html>

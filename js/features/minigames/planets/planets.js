@@ -200,6 +200,7 @@ function renderPlanets(){
   `);
   bindQuit();
   setSolution([solSel('.pl-opt','v',q.answer)]);
+  setHintQuestion('planets', q, { choices:'.pl-opt' });
   document.querySelectorAll('.pl-opt').forEach(btn=>{
     btn.onclick = ()=>{
       if(btn.dataset.v===q.answer){ stepOk(btn); flashModal('ok'); planetWin(q); }
@@ -212,7 +213,7 @@ function renderPlanets(){
 function renderPlanetOrder(q){
   const start = 1 + Math.floor(Math.random()*(PLANET_IDS.length-3));
   const seq = PLANET_IDS.filter(id=>SOLAR_DATA[id].order>=start && SOLAR_DATA[id].order<start+4);
-  let next = 0;
+  q.seq = seq; q.next = 0;   // q.next : où en est l'enfant (pour les indices)
   openModal(`
     ${gameHeader('🪐 Les planètes', q.say, q.say)}
     ${livesBar()}
@@ -223,14 +224,15 @@ function renderPlanetOrder(q){
   `);
   bindQuit();
   setSolution(seq.map(id=>solSel('.pl-opt','v',id)));
+  setHintQuestion('planets', q, { choices:'.pl-opt' });
   document.querySelectorAll('.pl-opt').forEach(btn=>{
     btn.onclick = ()=>{
-      if(btn.dataset.v===seq[next]){
-        next++; btn.disabled = true; btn.classList.add('done');
+      if(btn.dataset.v===seq[q.next]){
+        q.next++; btn.disabled = true; btn.classList.add('done');
         btn.insertAdjacentHTML('beforeend', `<span class="pl-rank">${SOLAR_DATA[btn.dataset.v].order}</span>`);
-        document.querySelectorAll('.game-progress i').forEach((d,i)=>d.classList.toggle('on', i<next));
+        document.querySelectorAll('.game-progress i').forEach((d,i)=>d.classList.toggle('on', i<q.next));
         stepOk(btn);
-        if(next>=seq.length){ flashModal('ok'); planetWin(q); }
+        if(q.next>=seq.length){ flashModal('ok'); planetWin(q); }
       } else loseLife(btn, { disable:false });
     };
   });
@@ -242,5 +244,56 @@ function planetWin(q){
   setTimeout(onMissionWin, 450);
 }
 
+/* Indices (v52) : 1. regarder chaque dessin (couleurs, anneaux, taches) ou
+   repenser à la question ; 2. une piste propre à chaque question
+   (PLANET_TIPS), vraie et vérifiée comme le reste du quiz, qui ne nomme
+   jamais la réponse. Pour l'ordre des planètes : le chemin déjà fait. */
+const PLANET_TIPS = {
+  'Touche le Soleil':'Il est jaune, avec des rayons tout autour.',
+  'Touche la Lune':'Elle est grise, avec des petits creux ronds : des cratères.',
+  'Touche la Terre, notre planète':'Notre planète est bleue et verte : de l\'eau et des terres.',
+  'Quand voit-on les étoiles dans le ciel ?':'Les étoiles brillent quand le ciel est tout noir.',
+  'Sur quelle planète habitons-nous ?':'Cherche la planète bleue, avec de l\'eau et des terres vertes.',
+  'Qui fabrique sa propre lumière ?':'Cherche celui qui brille tout seul, avec des rayons.',
+  'Qui tourne autour de la Terre ?':'C\'est celle qu\'on voit la nuit, grise et toute proche de nous.',
+  'Le Soleil, c\'est…':'Il brille tout seul, comme les points lumineux du ciel de la nuit, mais bien plus près de nous.',
+  'Quelle planète a de grands anneaux bien visibles ?':'Les anneaux, c\'est comme un grand cerceau tout autour de la planète.',
+  'Quelle est la planète rouge ?':'Cherche la planète couleur de rouille.',
+  'Quelle planète a une grande tache rouge ?':'Cherche une tache rouge sur des bandes de couleur.',
+  'Quelle planète est bleue, avec des océans et des nuages ?':'L\'eau est bleue, les nuages sont blancs.',
+  'Quelle planète est la plus proche du Soleil ?':'Pense à l\'ordre des planètes en partant du Soleil : quelle est la toute première ?',
+  'Quelle planète est la plus éloignée du Soleil ?':'Pense à la toute dernière planète, la plus loin dans le froid.',
+  'Quelle est la plus grande planète ?':'C\'est la plus grosse des planètes géantes.',
+  'Quelle est la plus petite planète ?':'Elle est rocheuse, et c\'est aussi la plus proche du Soleil.',
+  'Quelle planète vient juste après la Terre, en partant du Soleil ?':'Récite l\'ordre : Mercure, Vénus, la Terre… et après ?',
+  'Combien y a-t-il de planètes autour du Soleil ?':'Attention : Pluton n\'est plus une planète depuis 2006. Enlève-la de ta liste !',
+  'Combien de temps la Terre met-elle pour faire le tour du Soleil ?':'C\'est très long : on fête son anniversaire une fois à chaque tour !',
+  'Combien de temps la Terre met-elle pour tourner sur elle-même ?':'Pendant un tour sur elle-même, il fait jour une fois, puis nuit une fois.',
+  'Pourquoi y a-t-il le jour et la nuit ?':'C\'est la Terre qui bouge, comme une toupie.',
+  'Quelle est la planète la plus chaude ?':'Attention au piège : ce n\'est pas la plus proche du Soleil ! Son air très épais garde la chaleur.',
+  'La Lune, c\'est…':'La Lune tourne autour de la Terre.',
+  'Touche les planètes dans l\'ordre, en partant du Soleil':'Les petites planètes rocheuses sont près du Soleil, les géantes plus loin.',
+  'Quelle planète se trouve entre Mars et Saturne ?':'Entre les deux, il y a la plus grande de toutes.',
+  'Combien de planètes sont plus proches du Soleil que la Terre ?':'Compte celles qui viennent avant la Terre, en partant du Soleil.',
+  'Laquelle est une planète géante ?':'Les géantes sont très loin du Soleil, et faites surtout de gaz.',
+  'Laquelle est une planète rocheuse, comme la Terre ?':'Rocheuse, comme la Terre : on pourrait marcher dessus.',
+  'Quelle planète tourne couchée sur le côté ?':'Regarde ses anneaux : ils ne sont pas couchés comme les autres, ils sont debout !',
+};
+function planetsHints(q){
+  const tip = PLANET_TIPS[q.say] || 'Pense à ce que tu sais du ciel.';
+  if(q.type === 'order'){
+    const done = q.seq.slice(0, q.next);
+    return [
+      { say:'Le Soleil est à gauche : commence par la planète la plus proche de lui. ' + tip, fx:{ glow:'.pl-sun' } },
+      hintOrderStep(done, 'Voici le chemin déjà fait. Quelle planète vient ensuite ?', id=> SOLAR_DATA[id].name),
+    ];
+  }
+  return [
+    { say: q.type === 'pic' ? 'Regarde bien chaque dessin : la couleur, les anneaux, les taches…' : 'Écoute encore la question, et pense à ce que tu sais du ciel.', fx:{ glow:'.pl-options' } },
+    { say:tip, fx:{} },
+  ];
+}
+
 // inscription auprès du moteur de mini-jeux (js/features/minigame-engine)
 registerGame('planets', renderPlanets);
+registerHints('planets', planetsHints);

@@ -51,6 +51,7 @@ function markHelped(charId){
   const today = isleToday();
   if(!state.helped || state.helped.date !== today) state.helped = { date: today, ids: {} };
   state.helped.ids[charId] = (state.helped.ids[charId] || 0) + 1;
+  state.charsHelped = Object.assign({}, state.charsHelped || {}, { [charId]: true });   // pour Sam le guide
   save();
 }
 function helpedToday(charId){

@@ -33,6 +33,7 @@ function renderSequence(){
   bindQuit();
   startTimerIfNeeded('sequence');
   setSolution([solSel('.seq-btn','v',answer)]);
+  setHintQuestion('sequence', { pattern, shown }, { choices:'.seq-btn' });
   document.querySelectorAll('.seq-btn').forEach(btn=>{
     btn.onclick = ()=>{
       if(btn.dataset.v===answer){
@@ -46,5 +47,17 @@ function renderSequence(){
   });
 }
 
+// Indices (v52) : 1. trouver le petit groupe qui se répète ; 2. chaque image
+// numérotée selon sa place dans le motif (1, 2, 3, 1, 2, 3…).
+function sequenceHints(q){
+  const L = q.pattern.length;
+  return [
+    { say:'Cherche le petit groupe d\'images qui se répète, encore et encore.', fx:{ glow:'.seq-row' } },
+    { say:`Je numérote le motif : ${Array.from({length:L}, (_,i)=> i + 1).join(', ')}, puis ça recommence. Quel numéro vient après ?`,
+      fx:{ marks: Array.from({length:q.shown}, (_,i)=> ({ sel:`.seq-row span:nth-child(${i+1})`, text:String(i % L + 1) })) } },
+  ];
+}
+
 // inscription auprès du moteur de mini-jeux (js/features/minigame-engine)
 registerGame('sequence', renderSequence);
+registerHints('sequence', sequenceHints);

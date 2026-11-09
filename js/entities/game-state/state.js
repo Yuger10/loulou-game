@@ -4,7 +4,7 @@ const MISSIONS_PER_LEVEL = 5;
 const SAVE_KEY = 'lagon-magique-save';
 
 /* ---------- État ---------- */
-const SAVE_VERSION = 3;
+const SAVE_VERSION = 4;
 
 const DEFAULT_STATE = {
   v: SAVE_VERSION,
@@ -34,6 +34,8 @@ const DEFAULT_STATE = {
   storyEpisodes: {},  // épisodes déjà vus, par île
   friends: {},        // points d'amitié par personnage (cadeaux, js/features/gifts/gifts.js)
   friendRewards: {},  // surprise de « meilleur ami » déjà donnée, par personnage
+  team: { open:false, met:[], mates:[], day:null },   // l'équipe des compagnons (js/features/companion-team, v52)
+  charsHelped: {},    // personnages déjà aidés au moins une fois (Sam le guide, v52)
 };
 
 // copie profonde : sinon inventory/seen/decos seraient partagés avec DEFAULT_STATE
@@ -69,6 +71,8 @@ let state = {
   storyEpisodes: {},
   friends: {},
   friendRewards: {},
+  team: { open:false, met:[], mates:[], day:null },
+  charsHelped: {},
 };
 
 function save(){
@@ -96,6 +100,13 @@ function migrate(saved){
   }
   if(v < 3){
     saved.storySolved = saved.storySolved || {};
+  }
+  if(v < 4){
+    // v52 : l'équipe des compagnons (fermée : une partie déjà au niveau 10
+    // verra l'écran d'ouverture au chargement) et le compteur d'indices
+    saved.team = saved.team || { open:false, met:[], mates:[], day:null };
+    saved.charsHelped = saved.charsHelped || {};
+    Object.values(saved.skills || {}).forEach(sk=>{ if(sk && sk.hints == null) sk.hints = 0; });
   }
   saved.v = SAVE_VERSION;
   return saved;

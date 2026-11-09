@@ -61,6 +61,7 @@ function renderClock(){
   bindQuit();
   startTimerIfNeeded('clock');
   setSolution([solSel('.clock-opt-btn','v',answer)]);
+  setHintQuestion('clock', { hour, minute, answer, options:[...options] }, { choices:'.clock-opt-btn' });
   document.querySelectorAll('.clock-opt-btn').forEach(btn=>{
     btn.onclick = ()=>{
       if(btn.dataset.v===answer){ clearActiveTimer(); stepOk(btn); flashModal('ok'); setTimeout(onMissionWin, 350); }
@@ -69,5 +70,35 @@ function renderClock(){
   });
 }
 
+// Indices (v52) : 1. la petite aiguille montre l'heure, la grande les
+// minutes ; 2. les nombres apparaissent autour de l'horloge, la petite
+// aiguille brille ; « en bas sur le 6, c'est la demie »… Avec 4 choix, une
+// heure aux minutes impossibles est écartée.
+const CLOCK_MINUTE_TIPS = {
+  0:'La grande aiguille est tout en haut, sur le 12 : c\'est l\'heure pile.',
+  30:'La grande aiguille est tout en bas, sur le 6 : c\'est la demie, 30 minutes.',
+  15:'La grande aiguille est sur le 3 : c\'est le quart, 15 minutes.',
+  45:'La grande aiguille est sur le 9 : c\'est 45 minutes.',
+};
+function clockNumbersSVG(){
+  return `<svg class="clock-nums" viewBox="0 0 100 100" aria-hidden="true">${Array.from({length:12}, (_,i)=>{
+    const n = i + 1, a = (n * 30 - 90) * Math.PI / 180;
+    return `<text x="${(50 + 37 * Math.cos(a)).toFixed(1)}" y="${(50 + 37 * Math.sin(a) + 4).toFixed(1)}" text-anchor="middle">${n}</text>`;
+  }).join('')}</svg>`;
+}
+function clockHints(q){
+  const mins = (label)=> (label.match(/h (\d+)/) || [0, '0'])[1];
+  const wrong = q.options.find(o=> o !== q.answer && mins(o) !== mins(q.answer)) || q.options.find(o=> o !== q.answer);
+  return [
+    { say:'La petite aiguille montre l\'heure. La grande aiguille montre les minutes.', fx:{ glow:'.clock-hand-h' } },
+    { say:`J'écris les nombres autour de l'horloge. Sur quel nombre est la petite aiguille ? ${CLOCK_MINUTE_TIPS[q.minute] || ''}`,
+      fx:{ glow:'.clock-hand-h', dim: wrong ? solSel('.clock-opt-btn', 'v', wrong) : null, run(root){
+        const face = root.querySelector('.clock-face');
+        if(face && !face.querySelector('.clock-nums')) face.insertAdjacentHTML('beforeend', clockNumbersSVG());
+      } } },
+  ];
+}
+
 // inscription auprès du moteur de mini-jeux (js/features/minigame-engine)
 registerGame('clock', renderClock);
+registerHints('clock', clockHints);

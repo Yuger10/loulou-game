@@ -70,6 +70,7 @@ function scheduleRetry(fn){
 function loseLife(el, opts){
   opts = opts || {};
   buddyReact('oops', 1300);
+  hintNudge(true);     // le bouton 💡 se propose (js/features/minigame-engine/hints.js)
   // multijoueur : la règle reste « une erreur = on passe la main »
   if(party.active){ wrongFeedback(el); return false; }
   noteAnswerError();   // pour l'espace parents
@@ -189,6 +190,7 @@ function flashModal(kind){
 // bonne étape : pastille verte + petite étoile qui monte
 function stepOk(el){
   playSound('good');
+  if(hintPolicy.onGood) hintPolicy.onGood();
   buddyReact('wow', 900);
   if(!el) return;
   el.classList.add('ok-flash');
@@ -217,11 +219,24 @@ const GAME_RENDERERS = {};
 function registerGame(key, render){ GAME_RENDERERS[key] = render; }
 function gameRenderer(key){ return GAME_RENDERERS[key] || GAME_RENDERERS.memory; }
 
+/* Défi bonus de Zap (js/features/companion-team) : le jeu est joué un cran
+   au-dessus de son niveau (js/features/adaptive/game-diff.js), la récompense
+   est doublée, et le niveau du jeu ne bouge pas (js/features/parents). Il ne
+   vaut que pour la partie lancée par startBonusChallenge. */
+let bonusChallenge = null;
+function startBonusChallenge(key){
+  bonusChallenge = { key, fresh:true, won:false };
+  playGame(key);
+}
+function inBonusChallenge(){ return !!bonusChallenge && bonusChallenge.key === lastGame; }
+
 // Lance un type de jeu précis, en comptant le coup pour ce joueur
 // (utilisé pour proposer en priorité les jeux les moins essayés).
 function playGame(key){
   // pause douce réglée par les parents : plus de nouveau défi aujourd'hui
   if(pauseDue()){ showPauseScreen(); return; }
+  if(bonusChallenge){ if(bonusChallenge.fresh) bonusChallenge.fresh = false; else bonusChallenge = null; }
+  if(hintPolicy.onMission) hintPolicy.onMission(key);
   missionErrors = 0;
   trackGamePlayed(key);
   lastGame = key;
@@ -266,6 +281,7 @@ function progressDots(done, total){
 /* Mission ratée : on encourage, on ne punit pas — mais pas de récompense. */
 function onMissionFail(){
   recordMission(false);
+  bonusChallenge = null;
   missionFact = null;
   bindQuit._last = null;
   lives = 0;
@@ -313,7 +329,10 @@ function onMissionWin(){
   const key = pickRandom(c.loot);
   // bonus : de temps en temps un objet rare en plus
   const bonus = Math.random() < 0.2 ? pickRandom(availableItems()) : null;
-  addItem(key,1); markSeen(key);
+  // défi bonus de Zap réussi : la récompense est doublée
+  const boost = inBonusChallenge() ? 2 : 1;
+  if(boost > 1) bonusChallenge.won = true;
+  addItem(key,boost); markSeen(key);
   if(bonus){ addItem(bonus,1); markSeen(bonus); }
   state.newItems += bonus ? 2 : 1;
   save();
@@ -341,7 +360,12 @@ function onMissionWin(){
   // garde-robe : un objet se gagne à certains nombres de missions (js/features/wardrobe/wardrobe.js)
   const lookWon = newlyUnlockedLookItems().map(k=>WARDROBE[k].name);
   const cheer = progressCheer(missionProgress);
-  setTimeout(()=> speak(`${levelUp ? `Niveau ${level()} ! ` : ''}${praise} ${cheer ? cheer + ' ' : ''}${lookWon.length ? `Tu gagnes ${lookWon.join(' et ')} pour ton avatar ! ` : ''}${fact ? fact + ' ' : ''}${c.name} t'offre ${it.name}${bonus ? `, et une surprise : ${ITEMS[bonus].name}` : ''}.`), 300);
+  // l'équipe des compagnons (js/features/companion-team) : Léo dit la phrase de
+  // progrès ; Zap fête le défi bonus ; Tom rapporte le trésor du jour
+  const cheerBy = cheer ? teamCheerBy() : null;
+  const extras = teamWinExtras();
+  bonusChallenge = null;
+  setTimeout(()=> speak(`${levelUp ? `Niveau ${level()} ! ` : ''}${praise} ${cheer ? (cheerBy ? COMPANIONS[cheerBy].name + ' : ' : '') + cheer + ' ' : ''}${extras.map(x=> `${COMPANIONS[x.by].name} : ${x.text} `).join('')}${lookWon.length ? `Tu gagnes ${lookWon.join(' et ')} pour ton avatar ! ` : ''}${fact ? fact + ' ' : ''}${c.name} t'offre ${it.name}${bonus ? `, et une surprise : ${ITEMS[bonus].name}` : ''}.`), 300);
 
   openModal(`
     <div class="reward-box win-box">
@@ -350,11 +374,12 @@ function onMissionWin(){
       <span class="win-stamp">${levelUp ? '🌟' : '✅'}</span>
       <h2>${levelUp ? `Niveau ${level()} !` : praise}</h2>
       ${lookWon.length ? `<div class="speech look-won"><span aria-hidden="true">🎁</span> Nouveau pour ton avatar : <strong>${lookWon.join(', ')}</strong> (sac → Mon look)</div>` : ''}
-      ${cheer ? `<div class="speech progress-cheer"><span aria-hidden="true">📈</span> ${cheer}</div>` : ''}
+      ${cheer ? `<div class="speech progress-cheer">${cheerBy ? `<span class="cheer-face" aria-hidden="true">${companionSVG(cheerBy, 'cheer')}</span><b>${COMPANIONS[cheerBy].name}</b>` : '<span aria-hidden="true">📈</span>'} ${cheer}</div>` : ''}
+      ${extras.map(x=> `<div class="speech team-extra" data-by="${x.by}"><span class="cheer-face" aria-hidden="true">${companionSVG(x.by, 'cheer')}</span><span><b>${COMPANIONS[x.by].name}</b> ${x.text}</span></div>`).join('')}
       ${fact ? `<div class="speech fun-fact"><span aria-hidden="true">💡</span> ${fact}</div>` : ''}
       <div class="speech reward-item" style="display:flex; align-items:center; justify-content:center; gap:10px;">
         <span class="reward-emoji" data-gain-item style="font-size:2rem;">${it.emoji}</span>
-        <span>${c.name} t'offre : <strong>${it.name}</strong></span>
+        <span>${c.name} t'offre : <strong>${it.name}</strong>${boost > 1 ? ` <b class="boost">× ${boost}</b>` : ''}</span>
       </div>
       ${solo ? storyProgressHTML(currentWorld) : ''}
       ${bonus ? `<div class="speech" style="display:flex; align-items:center; justify-content:center; gap:10px; background:#FFF9E8;">
@@ -371,8 +396,9 @@ function onMissionWin(){
     playSound('tap'); closeModal(); renderLagon();
     // multijoueur : la main passe au joueur suivant après une réussite
     if(party.active){ passTurn('next'); return; }
-    // nouvelle île débloquée ? sinon, peut-être un épisode de l'histoire
-    setTimeout(()=>{ if(!checkNewIsland()) maybeStoryEpisode(); }, 250);
+    // nouvelle île débloquée ? sinon l'équipe qui s'ouvre (niveau 10), sinon
+    // peut-être un épisode de l'histoire
+    setTimeout(()=>{ if(!checkNewIsland() && !maybeTeamOpening()) maybeStoryEpisode(); }, 250);
   };
   const againBtn = document.getElementById('btn-again');
   if(againBtn) againBtn.onclick = ()=> { playSound('tap'); renderLagon(); startMinigame(); };

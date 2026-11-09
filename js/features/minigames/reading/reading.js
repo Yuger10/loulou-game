@@ -44,6 +44,7 @@ function renderReading(){
   bindQuit();
   startTimerIfNeeded('reading');
   setSolution([solSel('.reading-opt','w',correct.word)]);
+  setHintQuestion('reading', { correct, wordToImage, options }, { choices:'.reading-opt' });
   document.querySelectorAll('.reading-opt').forEach(btn=>{
     btn.onclick = ()=>{
       if(btn.dataset.w===correct.word){ clearActiveTimer(); stepOk(btn); flashModal('ok'); setTimeout(onMissionWin, 350); }
@@ -52,5 +53,44 @@ function renderReading(){
   });
 }
 
+/* Indices (v52). On ne lit jamais le mot à la place de l'enfant : la voix
+   explique la méthode, le découpage s'affiche seulement.
+   - mot → image : 1. lire son par son ; 2. le mot découpé en syllabes
+     (ou sa première lettre s'il n'a qu'une syllabe).
+   - image → mot : 1. dire le nom de l'image dans sa tête, écouter le premier
+     son ; 2. la première lettre du bon mot.
+   Avec Perle la conteuse, les syllabes arrivent dès l'indice 1. */
+function readingFirstLetter(w){ return `<span class="hint-syl"><b>${w[0]}</b>${w.slice(1)}</span>`; }
+function readingHints(q){
+  const w = q.correct.word, syl = q.correct.syl || [w];
+  // une mauvaise réponse à écarter (avec 4 choix ou plus), de préférence une
+  // qui ne commence pas par la même lettre
+  const wrong = q.options.filter(o=> o.word !== w).sort((a, b)=> (a.word[0] === w[0]) - (b.word[0] === w[0]))[0];
+  const dim = wrong ? solSel('.reading-opt', 'w', wrong.word) : null;
+  const cut = syl.length > 1
+    ? { say:'Je découpe le mot en morceaux. Lis chaque morceau, puis le mot entier !', fx:{ html:hintSyllablesHTML(syl), glow:'.reading-word-box' } }
+    : { say:'Regarde bien la première lettre, puis lis la suite.', fx:{ html:readingFirstLetter(w), glow:'.reading-word-box' } };
+  if(q.wordToImage){
+    const first = { say:'Lis le mot doucement, un son après l\'autre. Puis cherche son image.', fx:{ glow:'.reading-word-box' } };
+    return hintSyllablesFirst() ? [cut, { say:'Regarde la première lettre et lis encore une fois.', fx:{ html:readingFirstLetter(w), dim } }]
+                                : [first, Object.assign({}, cut, { fx:Object.assign({}, cut.fx, { dim }) })];
+  }
+  const last = { say:'Cherche le mot qui commence par cette lettre.', fx:{ html:`<span class="hint-syl"><b>${w[0]}</b>…</span>`, dim } };
+  if(hintSyllablesFirst()) return [
+    { say:'Je découpe chaque mot en syllabes : lis-les doucement.', fx:{ run(root){
+        root.querySelectorAll('.reading-word-btn').forEach(b=>{
+          const o = WORDS_CP.find(x=> x.word === b.dataset.w);
+          if(o && o.syl && !b.querySelector('.hint-syl')) b.innerHTML = hintSyllablesHTML(o.syl);
+        });
+      } } },
+    last,
+  ];
+  return [
+    { say:'Dis le nom de l\'image dans ta tête. Quel son entends-tu au début ?', fx:{ glow:'.reading-image-box' } },
+    last,
+  ];
+}
+
 // inscription auprès du moteur de mini-jeux (js/features/minigame-engine)
 registerGame('reading', renderReading);
+registerHints('reading', readingHints);

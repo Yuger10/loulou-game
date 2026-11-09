@@ -9,7 +9,8 @@
    - les réglages adultes : sauvegarde, réglages du joueur, remise à zéro.
 
    Données, dans la partie de chaque enfant (exportées par la sauvegarde) :
-     state.skills[jeu]  = { wins, fails, errors, last, recent:[{t, e, ok}…10] }
+     state.skills[jeu]  = { wins, fails, errors, last, recent:[{t, e, ok}…10], hints }
+                          (hints : indices demandés au compagnon, v52)
      state.playTime[jour] = secondes de jeu ACTIF ce jour-là (60 jours gardés)
      state.pauseExtra   = { date, min }  minutes ajoutées par un adulte aujourd'hui
    Réglage dans le profil : profile.pauseMin (0 = pas de pause). */
@@ -51,13 +52,16 @@ function recordMission(ok){
   missionProgress = null;
   if(!key || (party.active)){ missionErrors = 0; return null; }
   if(!state.skills) state.skills = {};
-  const s = state.skills[key] || (state.skills[key] = { wins:0, fails:0, errors:0, last:null, recent:[] });
+  const s = state.skills[key] || (state.skills[key] = { wins:0, fails:0, errors:0, last:null, recent:[], hints:0 });
   const t = gameDiff();   // niveau joué (île, âge et niveau du jeu)
   const e = missionErrors;
   const before = skillStatus(s, key);
   if(ok) s.wins++; else s.fails++;
   s.errors += e;
   s.last = todayKey();
+  // défi bonus de Zap (v52) : joué un cran au-dessus, il ne fait ni monter ni
+  // descendre le niveau du jeu, ni changer son état « à l'aise / à travailler »
+  if(inBonusChallenge()){ missionErrors = 0; save(); return null; }
   s.recent.push({ t, e, ok: !!ok });
   if(s.recent.length > 10) s.recent = s.recent.slice(-10);
   missionErrors = 0;
@@ -125,11 +129,16 @@ function showPauseScreen(){
   const c = comp && COMPANIONS[comp];
   const cName = c ? c.name : 'Ton compagnon';
   const tired = c && c.group==='f' ? 'fatiguée' : 'fatigué';
+  // Grisou (câlins, v52) annonce la pause en respirant tout doucement, à la
+  // place du compagnon qui s'endort ; la durée reste le réglage des parents
+  const hug = pauseAnnouncer();
   // espaces insécables avant « ! ? : » (typographie française, pas de retour à la ligne)
-  const msg = `Tu as bien joué aujourd'hui${p && p.name ? ', ' + p.name : ''}\u00a0! ${cName} est ${tired}\u00a0: on fait une pause et on revient demain\u00a0?`;
+  const msg = hug
+    ? `Tu as bien joué aujourd'hui${p && p.name ? ', ' + p.name : ''}\u00a0! Viens, on respire tout doucement, comme un petit nuage\u00a0: on fait une pause et on revient demain\u00a0?`
+    : `Tu as bien joué aujourd'hui${p && p.name ? ', ' + p.name : ''}\u00a0! ${cName} est ${tired}\u00a0: on fait une pause et on revient demain\u00a0?`;
   openModal(`
-    <div class="reward-box pause-box">
-      ${buddySlot('sleepy','buddy-big')}
+    <div class="reward-box pause-box ${hug ? 'pause-hug' : ''}">
+      ${hug ? `<span class="buddy-slot buddy-big breathe" aria-hidden="true">${companionSVG(hug, 'happy')}</span>` : buddySlot('sleepy','buddy-big')}
       <h2>C'est l'heure de la pause</h2>
       <div class="speech">${msg}</div>
       <p class="pause-note">Tu peux encore regarder ton île, ton sac et ton album.</p>
@@ -137,7 +146,7 @@ function showPauseScreen(){
     <button class="btn-primary" id="pause-ok">D'accord 😴</button>
     <button class="btn-ghost" id="pause-more">Un adulte peut ajouter 10 minutes</button>
   `);
-  speak(msg);
+  speak(hug ? `${COMPANIONS[hug].name} : ${msg}` : msg);
   document.getElementById('pause-ok').onclick = ()=>{ playSound('tap'); closeModal(); };
   document.getElementById('pause-more').onclick = ()=>{
     playSound('tap');
@@ -210,7 +219,9 @@ function skillsHTML(st, age){
       const s = sk[k], status = skillStatus(s, k), info = SKILL_STATUS[status];
       if(status==='aise' || status==='difficile') summary[status].push(gameName(k));
       const lastTier = s ? (s.lvl || (s.recent.length ? s.recent[s.recent.length-1].t : null)) : null;
-      const detail = s ? `${s.wins} réussie${s.wins>1?'s':''}${s.fails?` · ${s.fails} ratée${s.fails>1?'s':''}`:''} · ${(s.wins+s.fails) ? (s.errors/(s.wins+s.fails)).toFixed(1).replace('.',',') : '0'} erreur par mission${lastTier ? ` · niveau ${'⭐'.repeat(Math.min(lastTier,6))}`:''}${s.support ? ' (redescendu d\'un cran pour s\'entraîner)' : ''}` : '';
+      // les indices (v52) sont montrés à côté des erreurs, sans jugement
+      const hints = s && s.hints ? ` · ${s.hints} indice${s.hints>1?'s':''} demandé${s.hints>1?'s':''}` : '';
+      const detail = s ? `${s.wins} réussie${s.wins>1?'s':''}${s.fails?` · ${s.fails} ratée${s.fails>1?'s':''}`:''} · ${(s.wins+s.fails) ? (s.errors/(s.wins+s.fails)).toFixed(1).replace('.',',') : '0'} erreur par mission${hints}${lastTier ? ` · niveau ${'⭐'.repeat(Math.min(lastTier,6))}`:''}${s.support ? ' (redescendu d\'un cran pour s\'entraîner)' : ''}` : '';
       return `<li class="sk-row"><span class="sk-name">${gameName(k)}</span><span class="sk-pill ${info.cls}">${info.label}</span>${detail ? `<span class="sk-detail">${detail}</span>` : ''}</li>`;
     }).join('');
     return rows ? `<div class="sk-group"><h4>${gr.emoji} ${gr.name}</h4><ul>${rows}</ul></div>` : '';
@@ -239,6 +250,7 @@ function openParentSpace(selectedId){
     </section>
     <section class="bk-card"><h3>📈 Progrès par compétence</h3>${skillsHTML(st, p.age)}
       <p class="bk-help">« À l'aise » : réussi sans erreur ou presque ces dernières fois. « À travailler » : souvent raté ou beaucoup d'erreurs.</p>
+      <p class="bk-help">Les indices du compagnon (💡) sont comptés pour information : ils ne changent ni les récompenses ni le niveau du jeu.</p>
       <p class="bk-help">Chaque jeu a son propre niveau : il monte d'un cran après 2 réussites d'affilée presque sans erreur, redescend d'un cran après 2 missions ratées, et ne dépasse jamais celui de l'île ni l'âge de l'enfant. Les jeux à travailler reviennent plus souvent.</p></section>
     <section class="bk-card"><h3>🎉 Fêtes et saisons</h3>
       <p>Le jeu se décore tout seul : Halloween (20 oct. – 2 nov.), Noël (1er déc. – 6 janv.) et le jour de l'anniversaire de l'enfant (à régler dans ses réglages). Chaque fois, un petit cadeau : un chapeau pour son avatar et quelques pièces.</p>

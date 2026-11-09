@@ -7,6 +7,7 @@ renderCoins();
 renderSoundBtn();
 renderBadge();
 renderProfile();
+renderTeamHeads();
 ensureQuests();
 // à la première ouverture, les îles déjà accessibles sont considérées comme connues
 if(!state.visited || !state.visited.length){
@@ -49,8 +50,9 @@ function hideSplash(){
     const season = currentSeason();
     speak(season ? `${FETES[season].greet(state.name)} L'aventure t'attend.` : `Coucou ${state.name} ! L'aventure t'attend.`);
     switchView('carte');
-    // une fois par saison : un cadeau (chapeau pour l'avatar + pièces)
-    setTimeout(maybeSeasonGift, 700);
+    // une fois par saison : un cadeau (chapeau pour l'avatar + pièces) ;
+    // sinon l'équipe des compagnons : son ouverture (niveau 10) ou une rencontre
+    setTimeout(()=>{ if(!maybeSeasonGift()) teamOnSessionStart(); }, 700);
   }
 }
 // navigation secondaire

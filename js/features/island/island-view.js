@@ -15,6 +15,7 @@ function setWorld(id, silent){
   if(changed && !silent){
     playSound('good');
     speak(`${w.name} ! ${w.subtitle}.`);
+    teamOnTravel(id);   // un compagnon à rencontrer sur cette île ? (js/features/companion-team)
   }
   return true;
 }
@@ -94,6 +95,8 @@ function renderLagon(){
   renderQuests();
   renderScene();
   renderRaceTrack();
+  renderTeamHeads();
+  renderTeamHelpers();   // Sam le guide et le défi de Zap
 }
 
 /* ---------- Décorations ---------- */

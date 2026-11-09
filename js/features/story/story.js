@@ -13,7 +13,11 @@
    relance donc une AUTRE énigme de la même île (`riddles[]`, au moins 2
    variantes par île), jamais la même à éliminer. La relance est annulable
    (comme `scheduleRetry` / `clearActiveTimer`) pour éviter qu'elle ne
-   réapparaisse par-dessus une autre fenêtre déjà ouverte. */
+   réapparaisse par-dessus une autre fenêtre déjà ouverte.
+
+   Indices (v52) : le bouton 💡 marche aussi pour les énigmes, avec les mêmes
+   règles. 1. réécouter la devinette, indice par indice ; 2. `tip`, une
+   devinette plus simple qui ne nomme jamais la réponse. */
 
 const STORY = {
   lagon: {
@@ -26,8 +30,10 @@ const STORY = {
     ],
     riddles: [
       { q: "Je nage dans la mer et j'ai une queue de poisson, mais je parle comme toi. Qui suis-je ?",
+        tip: 'Cherche celle qui a une queue de poisson ET un visage comme le tien.',
         opts: [{ e:'🧜‍♀️', ok:true }, { e:'🐬' }, { e:'🦀' }] },
       { q: "Je vis dans la mer, j'ai huit bras et je sais me cacher partout. Qui suis-je ?",
+        tip: 'Compte les bras : huit, c\'est beaucoup de bras !',
         opts: [{ e:'🐙', ok:true }, { e:'🦞' }, { e:'🐟' }] },
     ],
     success: "Bravo ! Tu gardes précieusement le premier indice du trésor 🗺️",
@@ -43,8 +49,10 @@ const STORY = {
     ],
     riddles: [
       { q: "Je suis tout petit, j'ai des ailes et je fais de la magie dans la forêt. Qui suis-je ?",
+        tip: 'Cherche celle qui fait de la magie, avec des ailes toutes fines.',
         opts: [{ e:'🧚‍♀️', ok:true }, { e:'🦋' }, { e:'🐝' }] },
       { q: "Je pousse sous les arbres, j'ai un chapeau mais pas de tête. Qui suis-je ?",
+        tip: 'Le chapeau, c\'est le haut tout rond… et il pousse par terre, à l\'ombre.',
         opts: [{ e:'🍄', ok:true }, { e:'🌻' }, { e:'🌳' }] },
     ],
     success: "Bravo ! Un deuxième indice du trésor rejoint ta carte 🗺️",
@@ -60,8 +68,10 @@ const STORY = {
     ],
     riddles: [
       { q: "Je vole très haut dans le ciel, je crache du feu et j'ai des écailles. Qui suis-je ?",
+        tip: 'Qui peut cracher du feu ?',
         opts: [{ e:'🐉', ok:true }, { e:'🦅' }, { e:'☁️' }] },
       { q: "Je suis blanc et froid, je tombe doucement du ciel en hiver. Qui suis-je ?",
+        tip: 'Pense à ce qui tombe du ciel quand il fait très, très froid.',
         opts: [{ e:'❄️', ok:true }, { e:'☀️' }, { e:'🌧️' }] },
     ],
     success: "Bravo ! Le troisième indice brille entre tes mains ✨",
@@ -77,8 +87,10 @@ const STORY = {
     ],
     riddles: [
       { q: "Je porte une couronne et j'habite dans un château. Qui suis-je ?",
+        tip: 'Qui porte une couronne sur la tête ?',
         opts: [{ e:'👸', ok:true }, { e:'🧙‍♀️' }, { e:'🤖' }] },
       { q: "Je sers à ouvrir toutes les portes et tous les coffres. Qui suis-je ?",
+        tip: 'Qu\'est-ce qu\'on met dans une serrure ?',
         opts: [{ e:'🔑', ok:true }, { e:'🛡️' }, { e:'🕯️' }] },
     ],
     success: "Bravo ! Le quatrième indice rejoint ta carte au trésor 🗺️",
@@ -94,8 +106,10 @@ const STORY = {
     ],
     riddles: [
       { q: "Je grimpe aux arbres, je mange des bananes et je fais ouh ouh. Qui suis-je ?",
+        tip: 'Qui adore les bananes ?',
         opts: [{ e:'🐒', ok:true }, { e:'🐆' }, { e:'🦜' }] },
       { q: "J'ai de grandes plumes colorées et je sais répéter ce que tu dis. Qui suis-je ?",
+        tip: 'Quel oiseau sait parler ?',
         opts: [{ e:'🦜', ok:true }, { e:'🦚' }, { e:'🦋' }] },
     ],
     success: "Bravo ! Le cinquième indice est entre tes mains 🗺️",
@@ -111,8 +125,10 @@ const STORY = {
     ],
     riddles: [
       { q: "J'ai deux aiguilles et je tourne toute la journée sans jamais m'arrêter. Qui suis-je ?",
+        tip: 'Cherche celle qui a des aiguilles.',
         opts: [{ e:'🕰️', ok:true }, { e:'📅' }, { e:'🔔' }] },
       { q: "Le sable coule de haut en bas pour mesurer le temps qui passe. Qui suis-je ?",
+        tip: 'Cherche le sable qui coule.',
         opts: [{ e:'⏳', ok:true }, { e:'🕰️' }, { e:'🔔' }] },
     ],
     success: "Bravo ! Un sixième indice rejoint ta carte au trésor 🗺️",
@@ -128,8 +144,10 @@ const STORY = {
     ],
     riddles: [
       { q: "Je sors d'une lampe magique et je peux réaliser trois vœux. Qui suis-je ?",
+        tip: 'Qui sort d\'une lampe magique ?',
         opts: [{ e:'🧞‍♂️', ok:true }, { e:'🐉' }, { e:'🔥' }] },
       { q: "Je coule rouge et brûlant du sommet d'une montagne qui explose. Qui suis-je ?",
+        tip: 'C\'est une montagne… qui crache du feu.',
         opts: [{ e:'🌋', ok:true }, { e:'❄️' }, { e:'☁️' }] },
     ],
     success: "Bravo ! Le septième indice brûle de puissance ✨",
@@ -145,8 +163,10 @@ const STORY = {
     ],
     riddles: [
       { q: "Je n'ai aucun coin, je suis tout rond. Qui suis-je ?",
+        tip: 'Cherche la forme qui n\'a aucune pointe.',
         opts: [{ e:'⚪', ok:true }, { e:'🔺' }, { e:'🟥' }] },
       { q: "J'ai trois côtés et trois coins pointus. Qui suis-je ?",
+        tip: 'Compte les pointes : il en faut trois.',
         opts: [{ e:'🔺', ok:true }, { e:'🟦' }, { e:'⚪' }] },
     ],
     success: "BRAVO ! Tu as trouvé tous les indices… le trésor du Lagon Magique est à toi ! 🏆✨",
@@ -219,6 +239,7 @@ function renderStoryRiddle(world, idx, onDone){
     </div>
   `);
   bindQuit();
+  setHintQuestion('riddle', { r }, { choices:'.story-opt' });
   document.querySelectorAll('.story-opt').forEach((el, i)=>{
     el.onclick = ()=>{
       const o = opts[i];
@@ -226,6 +247,7 @@ function renderStoryRiddle(world, idx, onDone){
         storyWin(world, onDone);
       } else {
         playSound('wrong'); vibrate(90); speakWrongHint();
+        hintNudge(true);   // le bouton 💡 se propose
         shakeEl(el);
         el.classList.add('ko-flash');
         el.disabled = true;
@@ -260,6 +282,14 @@ function storyWin(world, onDone){
   `);
   document.getElementById('story-continue').onclick = ()=>{ playSound('tap'); closeModal(); if(onDone) onDone(); };
 }
+
+function riddleHints(q){
+  return [
+    { say:`Écoute encore la devinette, un indice après l'autre : ${q.r.q}`, fx:{ glow:'.puzzle-hint' } },
+    { say:q.r.tip, fx:{ glow:'.story-options' } },
+  ];
+}
+registerHints('riddle', riddleHints);
 
 // « 📖 Mon histoire » : relire n'importe quel chapitre déjà débloqué.
 function openStoryJournal(){

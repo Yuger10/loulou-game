@@ -1,0 +1,82 @@
+  /* =====================================================================
+     Indices du compagnon v52 — bouton 💡, bulle, effets sur le jeu
+     ===================================================================== */
+  .game-head{position:relative;}
+  .game-head.has-hint h2, #modal .game-head.has-hint h2{padding-left:60px;}
+  .hint-btn{
+    position:absolute; left:-2px; top:50%; transform:translateY(-50%);
+    width:54px; height:54px; border-radius:50%; padding:0; border:3px solid #FFD54A;
+    background:var(--tint-sun); box-shadow:var(--shadow-sun); cursor:pointer;
+    display:flex; align-items:center; justify-content:center; overflow:visible; z-index:2;
+  }
+  .hint-btn .hint-face{width:46px; height:46px; border-radius:50%; overflow:hidden; display:block;}
+  .hint-btn .hint-face svg{width:50px; height:54px; margin:0 0 0 -2px;}
+  .hint-btn .hint-ico{
+    position:absolute; right:-8px; bottom:-6px; width:26px; height:26px; border-radius:50%;
+    background:#fff; display:flex; align-items:center; justify-content:center; font-size:.95rem;
+    box-shadow:0 2px 0 rgba(18,59,79,.18);
+  }
+  .hint-btn:active{transform:translateY(-50%) scale(.92);}
+  /* il brille et se balance quand l'enfant semble bloqué(e) */
+  .hint-btn.nudge{animation:hintSway 1.3s ease-in-out infinite; border-color:#FFB020;}
+  .hint-btn.nudge::after{
+    content:''; position:absolute; inset:-9px; border-radius:50%; pointer-events:none;
+    background:radial-gradient(circle, rgba(255,213,74,.55) 0%, rgba(255,213,74,0) 70%);
+    animation:hintGlow 1.3s ease-in-out infinite;
+  }
+  @keyframes hintSway{0%,100%{transform:translateY(-50%) rotate(-9deg);} 50%{transform:translateY(-50%) rotate(9deg);}}
+  @keyframes hintGlow{0%,100%{opacity:.45; transform:scale(.9);} 50%{opacity:1; transform:scale(1.12);}}
+  .hint-btn.done{border-color:#7FD8A6; background:var(--tint-mint); box-shadow:0 4px 0 #4FB57F;}
+  .hint-btn .hint-cando{
+    position:absolute; bottom:100%; left:50%; transform:translateX(-30%); margin-bottom:4px;
+    white-space:nowrap; font-size:.72rem; font-weight:800; color:#2F7D52; background:#fff;
+    border-radius:999px; padding:2px 8px; box-shadow:0 2px 0 rgba(18,59,79,.12); pointer-events:none;
+  }
+
+  /* la bulle de l'indice, dite par le compagnon */
+  .hint-bubble{
+    position:relative;
+    display:flex; align-items:center; gap:10px; margin:4px auto 8px; padding:8px 12px 8px 8px;
+    background:var(--tint-sun); border:2px dashed #FFCB4C; border-radius:var(--radius-md);
+    color:var(--ink); font-weight:700; font-size:.95rem; text-align:left; max-width:560px;
+  }
+  .hint-bubble.pop{animation:hintPop .35s cubic-bezier(.2,1.4,.4,1);}
+  @keyframes hintPop{from{transform:scale(.85); opacity:0;} to{transform:scale(1); opacity:1;}}
+  .hint-bubble .hint-bface{width:40px; height:40px; border-radius:50%; overflow:hidden; flex-shrink:0; background:#fff;}
+  .hint-bubble .hint-bface svg{width:44px; height:48px; margin-left:-2px;}
+  .hint-bubble .hint-btext{flex:1; text-wrap:balance;}
+  .hint-bubble .hint-n{color:#B8780A; margin-right:2px; white-space:nowrap;}
+  .hint-extra{display:block; margin-top:6px; font-size:1.15rem; letter-spacing:.02em;}
+  .hint-syl{display:inline-block; padding:1px 6px; margin:0 2px; border-radius:8px; background:#fff; box-shadow:0 2px 0 rgba(18,59,79,.12);}
+  .hint-syl:nth-child(even){background:#E3F2FF;}
+  .hint-strip{display:inline-flex; gap:4px; flex-wrap:wrap; justify-content:center;}
+  .hint-strip i{font-style:normal; min-width:30px; padding:2px 6px; border-radius:8px; background:#fff; text-align:center; box-shadow:0 2px 0 rgba(18,59,79,.12);}
+  .hint-strip i.q{background:#FFE7A6;}
+
+  /* les effets sur le jeu */
+  .hint-glow{position:relative; animation:hintRing 1.1s ease-in-out 3; border-radius:14px;}
+  @keyframes hintRing{0%,100%{box-shadow:0 0 0 0 rgba(255,192,40,0);} 50%{box-shadow:0 0 0 6px rgba(255,192,40,.85);}}
+  .hint-mark{
+    position:absolute; top:-10px; right:-8px; min-width:20px; height:20px; padding:0 4px; border-radius:10px;
+    background:#FFB020; color:#fff; font-size:.75rem; font-weight:800; line-height:20px; text-align:center;
+    box-shadow:0 2px 0 rgba(18,59,79,.2); pointer-events:none; z-index:2; font-family:'Baloo 2', system-ui, sans-serif;
+  }
+  .count-row span, .math-group span, .money-pile-btn, .clock-face, .seq-row span, .reading-word-box, .det-box{position:relative;}
+  .hint-strike{opacity:.35; text-decoration:line-through; filter:grayscale(.6);}
+  .hint-strike::after{content:''; position:absolute; left:8%; right:8%; top:50%; height:3px; background:#E8573A; transform:rotate(-20deg); border-radius:2px;}
+  .hint-dim{opacity:.3 !important; filter:grayscale(1); transform:scale(.92);}
+  /* les paillettes de Lili (indice 2) */
+  .hint-sparkle::before{
+    content:'✨'; position:absolute; top:-14px; right:-10px; font-size:1.1rem; pointer-events:none;
+    animation:hintSparkle 1s ease-in-out infinite; z-index:3;
+  }
+  @keyframes hintSparkle{0%,100%{transform:scale(.7) rotate(0deg); opacity:.6;} 50%{transform:scale(1.25) rotate(20deg); opacity:1;}}
+
+  @media (prefers-reduced-motion: reduce){
+    .hint-btn.nudge, .hint-btn.nudge::after, .hint-glow, .hint-sparkle::before, .hint-bubble.pop{animation:none;}
+    .hint-glow{box-shadow:0 0 0 5px rgba(255,192,40,.85);}
+  }
+  /* les nombres autour de l'horloge (indice 2 de « Quelle heure est-il ? ») */
+  .clock-nums{position:absolute; inset:0; width:100%; height:100%; pointer-events:none; z-index:0;
+    font-family:'Baloo 2', system-ui, sans-serif; font-weight:800; font-size:9.5px; fill:var(--ink); animation:hintPop .35s ease;}
+  .mcard.hint-glow{z-index:1;}

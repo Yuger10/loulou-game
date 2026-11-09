@@ -336,6 +336,7 @@ function openGamePicker(charId){
     </div>
   `);
   bindQuit();
+  teamOnGamePicker(choices.map(g=>g.key));   // Léo le tuteur annonce un jeu à travailler
   document.querySelectorAll('[data-game]').forEach(b=>{
     b.onclick = ()=>{
       playSound('tap');

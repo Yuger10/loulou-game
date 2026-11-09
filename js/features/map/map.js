@@ -53,10 +53,11 @@ function renderMap(){
         <span class="isle-label"><b>${i+1}. ${w.short}</b><i>${locked?`niv. ${w.level}`:'⭐'.repeat(w.diff)}</i></span>
       </button>`;
     }).join('')}
-    <span class="boat" id="map-boat"><span class="boat-av">${avatarHTML(state.avatar, state.look)}</span>⛵</span>
+    <span class="boat" id="map-boat"><span class="boat-av">${avatarHTML(state.avatar, state.look)}</span>⛵<span class="boat-team" data-team-heads>${teamHeadsHTML()}</span></span>
   `;
 
   placeBoat(currentWorld, false);
+  renderSamGuide();   // Sam le guide (js/features/companion-team)
 
   el.querySelectorAll('.map-island').forEach(b=>{
     b.onclick = ()=>{

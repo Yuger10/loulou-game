@@ -123,7 +123,7 @@ function renderShapes(){
   setupLives('shapes');
   const dd = gameDiff();
   const r = shapesBuildRound(dd);
-  let found = 0;
+  const q = { r, found:0 };   // q.found : squishies déjà trouvés (pour les indices)
   const cols = r.items.length===8 ? 4 : 3;
   openModal(`
     ${gameHeader('🍡 Les squishies', `${r.icon}<span>${r.say} !</span>`, r.say)}
@@ -137,17 +137,18 @@ function renderShapes(){
   `);
   bindQuit();
   setSolution(r.items.map((it,i)=> it.ok ? solSel('.sq-item','i',i) : null).filter(Boolean));
+  setHintQuestion('shapes', q, { choices:'.sq-item' });
   document.querySelectorAll('.sq-item').forEach(btn=>{
     btn.onclick = ()=>{
       const it = r.items[Number(btn.dataset.i)];
       btn.classList.remove('squish'); void btn.offsetWidth; btn.classList.add('squish');
       if(it.ok){
         btn.disabled = true; btn.classList.add('found');
-        found++;
+        q.found++;
         const prog = document.querySelector('.sq-progress');
-        if(prog) prog.innerHTML = progressDots(found, r.targets);
+        if(prog) prog.innerHTML = progressDots(q.found, r.targets);
         stepOk(btn);
-        if(found >= r.targets){ flashModal('ok'); setTimeout(onMissionWin, 500); }
+        if(q.found >= r.targets){ flashModal('ok'); setTimeout(onMissionWin, 500); }
       } else {
         loseLife(btn);
       }
@@ -155,5 +156,33 @@ function renderShapes(){
   });
 }
 
+// Indices (v52) : 1. sur quoi porter son regard (la couleur, la forme, les
+// deux, compter les côtés…) ; 2. combien il en reste, et la partie du plateau
+// où se cache l'un d'eux (au moins 3 squishies qui brillent).
+const SHAPES_TIPS = {
+  color:'Regarde seulement la couleur, pas la forme.',
+  shape:'Regarde seulement la forme, pas la couleur.',
+  shapeColor:'Il faut les deux à la fois : la bonne forme ET la bonne couleur.',
+  sizeShape:'Il faut les deux à la fois : la bonne forme ET la bonne taille.',
+  sides:'Compte les côtés de chaque forme avec ton doigt : les bords tout droits.',
+  vertices:'Compte les sommets de chaque forme : les pointes, là où deux côtés se touchent.',
+};
+function shapesHints(q){
+  const items = [...document.querySelectorAll('.sq-board .sq-item')];
+  const left = items.filter(b=> !b.disabled && q.r.items[Number(b.dataset.i)].ok);
+  const n = Math.max(0, q.r.targets - q.found);
+  let group = [];
+  if(left.length){
+    const at = items.indexOf(pickRandom(left));
+    const start = Math.max(0, Math.min(at - 1, items.length - 3));
+    group = items.slice(start, start + 3);
+  }
+  return [
+    { say:SHAPES_TIPS[q.r.cfg.criterion] || 'Regarde bien la consigne, puis chaque squishy.', fx:{ glow:'.puzzle-hint' } },
+    { say:`Il en reste ${n} à trouver. Regarde bien ceux qui brillent : il y en a un !`, fx:{ glow: group.map(b=> solSel('.sq-item', 'i', b.dataset.i)).join(', ') } },
+  ];
+}
+
 // inscription auprès du moteur de mini-jeux (js/features/minigame-engine)
 registerGame('shapes', renderShapes);
+registerHints('shapes', shapesHints);

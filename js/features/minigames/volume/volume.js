@@ -15,12 +15,13 @@ const CONTAINER_PAIRS = [
 // à classer au lieu de 2 — davantage de comparaisons mentales à faire)
 const CONTAINER_MID = ['🧋','🫖','🪙','🧊','🍯','🧱','🚲','🛶'];
 
+// tip : une propriété du solide, sans le nommer (indice 2, v52) ; rolls : il roule
 const SOLIDS = [
-  { name:'cube',     items:['🎲','🧊','🗃️'] },
-  { name:'boule',    items:['⚽','🏀','🌍'] },
-  { name:'cylindre', items:['🥫','🕯️','🧻'] },
-  { name:'cône',     items:['🍦','🎉','🚧'] },
-  { name:'pavé',     items:['🎁','📦','🧱'] },
+  { name:'cube',     items:['🎲','🧊','🗃️'], rolls:false, tip:'Il a des coins, et toutes ses faces sont des carrés pareils.' },
+  { name:'boule',    items:['⚽','🏀','🌍'], rolls:true,  tip:'Il roule dans tous les sens, et il n\'a aucun coin.' },
+  { name:'cylindre', items:['🥫','🕯️','🧻'], rolls:true,  tip:'Il peut rouler, et il a deux faces rondes et plates, en haut et en bas.' },
+  { name:'cône',     items:['🍦','🎉','🚧'], rolls:true,  tip:'Il a un bout pointu, et une face ronde et plate de l\'autre côté.' },
+  { name:'pavé',     items:['🎁','📦','🧱'], rolls:false, tip:'Il a des coins, et ses faces sont des rectangles, comme une boîte.' },
 ];
 
 function renderVolume(){
@@ -54,6 +55,7 @@ function renderCapacityCompare(dd){
   bindQuit();
   startTimerIfNeeded('volume');
   setSolution([solSel('.vol-container-btn','v',answer)]);
+  setHintQuestion('volume', { kind:'capacity', askMore }, { choices:'.vol-container-btn' });
   // seulement 2-3 contenants : sans ça, une mauvaise réponse laisserait
   // deviner la bonne par élimination. Une erreur relance une NOUVELLE
   // comparaison (nouveaux contenants), jamais la même à éliminer.
@@ -84,6 +86,7 @@ function renderSolidShape(dd){
   bindQuit();
   startTimerIfNeeded('volume');
   setSolution([solSel('.vol-opt-btn','v',solid.name)]);
+  setHintQuestion('volume', { kind:'solid', solid, options }, { choices:'.vol-opt-btn' });
   document.querySelectorAll('.vol-opt-btn').forEach(btn=>{
     btn.onclick = ()=>{
       if(btn.dataset.v===solid.name){ clearActiveTimer(); stepOk(btn); flashModal('ok'); setTimeout(onMissionWin, 350); }
@@ -92,5 +95,22 @@ function renderSolidShape(dd){
   });
 }
 
+// Indices (v52). Contenances : 1. imaginer qu'on les remplit d'eau ;
+// 2. penser à ce qu'on verse dedans. Solides : 1. roule-t-il ? a-t-il des
+// coins ? ; 2. une propriété du bon solide, et (avec 4 choix ou plus) un
+// solide qui roule écarté s'il ne roule pas, ou l'inverse.
+function volumeHints(q){
+  if(q.kind === 'capacity') return [
+    { say:`Imagine qu'on les remplit d'eau : lequel en prend ${q.askMore ? 'le plus' : 'le moins'} ?`, fx:{ glow:'.vol-containers' } },
+    { say:'Pense à ce que tu verses dedans : un petit objet se remplit vite, un grand objet en prend beaucoup.', fx:{} },
+  ];
+  const wrong = q.options.find(o=> o.name !== q.solid.name && o.rolls !== q.solid.rolls) || q.options.find(o=> o.name !== q.solid.name);
+  return [
+    { say:'Regarde la forme de l\'objet : est-ce qu\'il peut rouler ? A-t-il des coins ?', fx:{ glow:'.vol-shape-box' } },
+    { say:q.solid.tip, fx:{ glow:'.vol-shape-box', dim: wrong ? solSel('.vol-opt-btn', 'v', wrong.name) : null } },
+  ];
+}
+
 // inscription auprès du moteur de mini-jeux (js/features/minigame-engine)
 registerGame('volume', renderVolume);
+registerHints('volume', volumeHints);

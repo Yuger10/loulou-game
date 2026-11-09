@@ -64,6 +64,7 @@ function renderMath(){
   bindQuit();
   startTimerIfNeeded('math');
   setSolution([solSel('.num-btn','v',result)]);
+  setHintQuestion('math', { a, b, op, result, emoji }, { choices:'.num-btn' });
   document.querySelectorAll('.num-btn').forEach(btn=>{
     btn.onclick = ()=>{
       if(Number(btn.dataset.v)===result){
@@ -79,5 +80,25 @@ function renderMath(){
   });
 }
 
+// Indices (v52). Addition : 1. tout compter ensemble ; 2. partir du premier
+// groupe et continuer (« il y en a déjà 4… 5… »). Soustraction : 1. barrer ceux
+// qui partent ; 2. ils sont barrés, il reste à compter. Jamais le résultat.
+function mathHints(q){
+  const word = emojiWord(q.emoji, true) || 'images';
+  const g1 = '.math-illustration .math-group:first-child', g2 = '.math-illustration .math-group:last-child';
+  if(q.op === '+') return [
+    { say:`Pour ajouter, on compte tous les ${word} ensemble, ceux des deux groupes.`, fx:{ glow:'.math-illustration' } },
+    { say: q.b > 1
+        ? `Il y en a déjà ${q.a} dans le premier groupe. Continue avec les autres : ${q.a + 1}…`
+        : `Il y en a déjà ${q.a} dans le premier groupe. Ajoute encore celui de l'autre groupe !`,
+      fx:{ marks:[{ sel:`${g1} span:last-child`, text:String(q.a) }].concat(q.b > 1 ? [{ sel:`${g2} span:first-child`, text:String(q.a + 1) }] : []), glow:g2 } },
+  ];
+  return [
+    { say:`Pour enlever, on barre les ${word} qui s'en vont, puis on compte ceux qui restent.`, fx:{ glow:g1 } },
+    { say:`Je barre ceux qui s'en vont. Compte ceux qui restent !`, fx:{ strike:`${g1} span:nth-last-child(-n+${q.b})` } },
+  ];
+}
+
 // inscription auprès du moteur de mini-jeux (js/features/minigame-engine)
 registerGame('math', renderMath);
+registerHints('math', mathHints);

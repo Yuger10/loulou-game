@@ -6,6 +6,7 @@ Remplacer `<cle>` par la clé du jeu (ex. `nesting`) et `<Jeu>` par son nom de f
 ## 1. Tests d'abord
 - [ ] `test/smoke.test.js` : le jeu s'ouvre, une bonne réponse avance, une mauvaise relance une **autre** question (anti-devinette), la difficulté suit le palier et l'âge.
 - [ ] `test/games.test.js` : le jeu est joué jusqu'à la victoire à chaque palier (ajouter son « solveur » s'il en faut un).
+- [ ] `test/companions.test.js` : ses indices sont vérifiés automatiquement (2 niveaux, anti-devinette, jeu gagnable après les indices).
 - [ ] `npm test` échoue pour la bonne raison.
 
 ## 2. La slice du jeu
@@ -20,7 +21,11 @@ Remplacer `<cle>` par la clé du jeu (ex. `nesting`) et `<Jeu>` par son nom de f
 - [ ] `js/features/adaptive/adaptive.js` : sa phrase de progrès dans `PROGRESS_CHEERS`, et `GAME_TIER_MAX` s'il va au-delà du palier 5.
 - [ ] `js/features/parents/parents.js` : le jeu dans un groupe de `SKILL_GROUPS` (compétence de l'espace parents).
 - [ ] `js/features/players/profiles-ui.js` : une entrée dans `GAME_LIST` (clé, emoji, nom) pour « choisir un jeu ».
-- [ ] À partir de la v52 (compagnons) : ses **deux niveaux d'indice** (contrat `hintsFor`).
+- [ ] **Ses deux niveaux d'indice** (v52, contrat de `js/features/minigame-engine/hints.js`) :
+  - à la fin du fichier, `registerHints('<cle>', question => [indice 1, indice 2])` : chaque niveau `{ say, fx }` (`fx.glow`, `fx.marks`, `fx.strike`, `fx.dim`, `fx.html`, `fx.run`) ;
+  - après chaque `openModal`, `setHintQuestion('<cle>', question, { choices:'.sélecteur-des-réponses' })` ; une relance passe une **nouvelle** question (indices remis à zéro) ;
+  - indice 1 = la méthode, indice 2 = le début du raisonnement ; **jamais la réponse** ; une seule réponse écartée au plus, au niveau 2 et avec 4 choix ou plus (le moteur le vérifie) ;
+  - `test/companions.test.js` parcourt chaque jeu inscrit : il échoue si le jeu n'a pas d'indices.
 
 ## 4. Brancher et vérifier
 - [ ] `npm run sync` : met à jour `index.html` et `sw.js` depuis le manifeste.
