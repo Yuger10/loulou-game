@@ -1,0 +1,14 @@
+  /* jeu Simon */
+  .simon-grid{
+    display:grid; grid-template-columns:1fr 1fr; gap:12px;
+    max-width:260px; margin:0 auto 12px;
+  }
+  .simon-pad{
+    aspect-ratio:1/1; border:none; border-radius:24px;
+    background:var(--foam); box-shadow:var(--shadow);
+    font-size:2.6rem; cursor:pointer; opacity:.55;
+    transition:opacity .12s, transform .12s;
+  }
+  .simon-pad.lit{opacity:1; transform:scale(1.08); box-shadow:0 0 0 6px rgba(255,203,76,.55), var(--shadow);}
+  .simon-pad:active{transform:scale(.96);}
+

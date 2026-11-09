@@ -1,0 +1,5 @@
+  /* =====================================================================
+     Un jeu qui s'adapte (v42) : le compagnon dit ce qui progresse
+     ===================================================================== */
+  .progress-cheer{background:var(--tint-mint) !important; color:#1B5E36; font-weight:800; display:flex; align-items:center; justify-content:center; gap:8px;}
+

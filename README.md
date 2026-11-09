@@ -21,26 +21,32 @@ Le mode hors-ligne et le stockage protégé demandent `https://` : c'est le cas 
 ## Tester
 ```bash
 npm install
-npm test             # test de fumée jsdom sur tout le cycle de jeu
+npm test             # architecture (slices, frontières) + test de fumée + chaque mini-jeu joué jusqu'à la victoire
+npm run sync         # après avoir ajouté/déplacé un fichier : index.html et sw.js depuis js/slices.js
+npm run api          # recalcule l'API publique des slices (quand on expose volontairement un nom)
+npm run inventaire   # qui définit quoi, qui utilise quoi (analyse du code)
 ```
 
-## Structure
+## Structure : feature slices (v51)
+Le code est rangé en **slices** sur 4 couches. Un fichier n'utilise que sa couche ou les couches inférieures, et seulement l'**API publique** des autres slices. `npm test` le vérifie.
 ```
-index.html           page du jeu (markup uniquement)
-styles.css           tout le style
-js/data.js           objets, recettes, décorations, personnages
-js/state.js          état, sauvegarde/migration, profil, quêtes du jour, album
-js/ui.js             utilitaires, sons, voix, confettis, navigation par vues, île, dialogues
-js/map.js            carte des îles, bateau, navigation entre mondes
-js/players.js        profils multijoueurs, mode chacun son tour
-js/race.js           mode course et difficulté adaptée à l'âge
-js/profiles-ui.js    écrans joueurs, modes de jeu, choix du mini-jeu
-js/minigames.js      les 6 mini-jeux
-js/market.js         sac + marché (vendre / échanger / acheter / fusionner)
-js/init.js           démarrage, écran titre, service worker
+js/slices.js         manifeste : couche, fichiers JS et CSS (ordre de chargement), API publique de chaque slice
+js/app/              démarrage (init.js)
+js/features/         ce que l'enfant fait : minigame-engine/ (moteur) et minigames/<jeu>/, island/, map/,
+                     story/, bag/ (sac, album), market/, quests/, profile/ (en-tête, accueil), wallet/,
+                     adaptive/, party/ (chacun son tour, course), players/, gains/, gifts/, wardrobe/,
+                     parents/, seasons/, backup/, music/
+js/entities/         les données du jeu : item/, world/, character/, difficulty/, words/, game-state/
+                     (état, sauvegarde, migrations), player/ (profils, partie en cours), companion/
+js/shared/           sans rien connaître du jeu : lib/ (hasard), ui/ (modale, vues, son, voix, retours, icônes),
+                     styles/ (variables, design system, responsive)
+index.html           page du jeu (markup) ; scripts et feuilles de style générés par `npm run sync`
 manifest.json, sw.js, icon*.png|svg    PWA
-test/smoke.test.js   test de fumée
+test/                slices.test.js (architecture), smoke.test.js, games.test.js, tools/ (analyse, déplacements)
+conductor/           specs, plans, checklists « ajouter un mini-jeu » et « ajouter une île »
+docs/adr/            décisions d'architecture (ADR)
 PRD-lagon-magique.md cadrage et historique des versions
 TODO.md              feuille de route
 lagon-magique.html   ancienne URL → redirige vers index.html
 ```
+Chaque feature dépend des couches basses par des **points d'accroche** plutôt que l'inverse : `registerGame`, `registerView`, `onModalOpen` / `onModalClose`, `onProfileRefresh`, `onWrongFeedback`, `setAudioPrefsSource`, `setCompanionDressing`.

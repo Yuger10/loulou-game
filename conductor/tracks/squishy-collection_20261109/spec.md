@@ -17,7 +17,7 @@ Objectifs : donner envie de revenir chaque jour (motivation), donner un vrai usa
   - **Animaux** 🐾 : chat, pingouin, lapin, panda… ; rare : grenouille ; ✨ : chat holographique
 - Chaque série a **4 communs, 1 rare et 1 ✨ pailleté**.
 - Chaque squishy a : un `id`, un nom court facile à dire, une série, une rareté, une **couleur dominante** (parmi les couleurs du mini-jeu Formes), une **forme** (rond, ovale, carré arrondi…) et une **taille** (petit ou grand). Ces trois attributs servent aux consignes de rangement.
-- Dessin en **SVG** dans le style de `squishySVG` (`js/shapes.js`) : une forme douce, un reflet, un petit visage, plus un détail propre au modèle (oreilles, fraise, cornet…). Le ✨ a un effet de paillettes animé.
+- Dessin en **SVG** dans le style de `squishySVG` (`js/features/minigames/shapes/shapes.js`) : une forme douce, un reflet, un petit visage, plus un détail propre au modèle (oreilles, fraise, cornet…). Le ✨ a un effet de paillettes animé.
 - **Extensible :** une série est une entrée de données. Les futurs mondes (Boîtes, Licornes) ajouteront chacun leur série sans toucher à la logique.
 
 ### 2.2 Gagner des boîtes surprises
@@ -61,7 +61,7 @@ Objectifs : donner envie de revenir chaque jour (motivation), donner un vrai usa
 
 ## 3. Exigences non fonctionnelles
 - **Enfant d'abord** (`product-guidelines.md`) : aucun texte nécessaire à lire, tout est lu à voix haute, gros boutons, aucune perte.
-- **Sauvegarde :** `SAVE_VERSION` +1 (5 si la v52 des compagnons est passée à 4). Il y a un nouvel état `squishies` (squishies possédés et compteurs, boîtes non ouvertes avec leur série, étagère, compteur du filet de sécurité, achats et rangements du jour) et une étape de migration qui crée les boîtes de rattrapage. La sauvegarde et le code de transfert (`js/backup.js`) emportent tout.
+- **Sauvegarde :** `SAVE_VERSION` +1 (5 si la v52 des compagnons est passée à 4). Il y a un nouvel état `squishies` (squishies possédés et compteurs, boîtes non ouvertes avec leur série, étagère, compteur du filet de sécurité, achats et rangements du jour) et une étape de migration qui crée les boîtes de rattrapage. La sauvegarde et le code de transfert (`js/features/backup/backup.js`) emportent tout.
 - **Multijoueur :** la collection est **par profil**.
 - **Mobile :** la chambre tient dans la fenêtre modale existante, défile verticalement, et ne déborde pas à 360 px de large.
 - **Performance :** 18 dessins SVG légers, aucune image externe. Les nouveaux fichiers JS sont ajoutés au cache `sw.js`.

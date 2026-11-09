@@ -1,0 +1,64 @@
+  /* =====================================================================
+     Compagnons v28 — le petit personnage qui accompagne chaque joueur
+     ===================================================================== */
+  .buddy{display:block; width:100%; height:100%; overflow:visible;}
+  .buddy .b-eyes{transform-box:fill-box; transform-origin:center; animation:buddyBlink 4.6s infinite;}
+  .buddy--cheer .b-eyes, .buddy--sleepy .b-eyes{animation:none;}
+  @keyframes buddyBlink{0%,93%,100%{transform:scaleY(1);} 95%{transform:scaleY(.12);}}
+  @keyframes buddyBob{0%,100%{transform:translateY(0);} 50%{transform:translateY(-3px);}}
+  @keyframes buddyHop{0%{transform:translateY(0) scale(1);} 35%{transform:translateY(-7px) scale(1.08);} 100%{transform:translateY(0) scale(1);}}
+  @keyframes buddyCheer{0%,100%{transform:translateY(0) rotate(-3deg);} 50%{transform:translateY(-8px) rotate(3deg);}}
+
+  /* la consigne est dite par le compagnon */
+  .puzzle-hint.has-buddy, #modal .puzzle-hint.has-buddy{justify-content:flex-start; text-align:left; padding:8px 10px 8px 8px; gap:12px;}
+  .puzzle-hint .hint-txt{flex:1; text-wrap:balance;}
+  .buddy-slot{display:inline-block; flex-shrink:0;}
+  .puzzle-hint .buddy-slot{
+    order:-1;
+    width:60px; height:60px; border-radius:50%; overflow:hidden;
+    background:var(--lagoon-tint); box-shadow:inset 0 -3px 0 rgba(18,59,79,.06);
+    animation:buddyBob 3s ease-in-out infinite;
+  }
+  .puzzle-hint .buddy-slot svg{width:66px; height:72px; margin:1px 0 0 -3px;}
+  .puzzle-hint .buddy-slot.react{animation:buddyHop .5s ease;}
+
+  /* grand compagnon sur les écrans de victoire / d'échec */
+  .buddy-slot.buddy-big{display:block; width:124px; height:134px; margin:0 auto 4px; position:relative; z-index:1;}
+  .buddy-slot.buddy-big.win-emoji{animation:winPop .7s cubic-bezier(.2,1.5,.4,1), buddyCheer 1.4s .7s ease-in-out infinite;}
+  .buddy-slot.buddy-big.fail-emoji{animation:failWobble .8s ease;}
+  .win-stamp{z-index:2;}
+
+  /* écran titre */
+  .splash-buddy{width:150px; height:162px; margin:4px 0 14px; animation:buddyCheer 1.8s ease-in-out infinite; filter:drop-shadow(0 6px 0 rgba(18,59,79,.18));}
+
+  /* choix du compagnon */
+  .buddy-grid{display:grid; grid-template-columns:repeat(3, 1fr); gap:10px; margin:0 0 6px;}
+  .buddy-opt{
+    border:3px solid transparent; border-radius:var(--radius-lg); background:var(--foam);
+    padding:6px 4px 10px; display:flex; flex-direction:column; align-items:center; gap:1px;
+    box-shadow:var(--shadow-candy-sm); cursor:pointer; min-height:120px;
+  }
+  .buddy-opt svg{width:76px; height:82px;}
+  .buddy-opt .bn{font-family:'Baloo 2',sans-serif; font-weight:800; font-size:1rem; line-height:1.05; color:var(--ink);}
+  .buddy-opt .bt{font-size:.75rem; font-weight:700; color:var(--lagoon-ink);}
+  .buddy-opt.sel{border-color:var(--coral-strong); background:var(--coral-tint); transform:translateY(-2px);}
+  .buddy-more{
+    display:block; margin:2px auto 12px; border:none; background:none; cursor:pointer;
+    color:var(--lagoon-ink); font-family:'Baloo 2',sans-serif; font-weight:800; font-size:.92rem;
+    min-height:44px; text-decoration:underline; text-underline-offset:3px;
+  }
+  .welcome-card .gender-row{margin-bottom:12px;}
+  .welcome-card .mini-label{text-align:left;}
+
+  /* petit badge du compagnon dans la liste des joueurs */
+  .player-row .emoji{position:relative;}
+  .row-buddy{
+    position:absolute; right:-12px; bottom:-8px; width:28px; height:28px; border-radius:50%;
+    overflow:hidden; background:var(--lagoon-tint); box-shadow:0 0 0 2px #fff;
+  }
+  .row-buddy svg{width:31px; height:34px; margin:0 0 0 -1.5px;}
+
+  @media (prefers-reduced-motion:reduce){
+    .buddy .b-eyes, .puzzle-hint .buddy-slot, .splash-buddy, .buddy-slot.buddy-big.win-emoji{animation:none;}
+  }
+

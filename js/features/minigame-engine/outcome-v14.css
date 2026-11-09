@@ -1,0 +1,124 @@
+  /* ================= Essais, réussite, échec (v14) ================= */
+
+  /* cœurs d'essais */
+  .lives{
+    display:flex; justify-content:center; gap:6px;
+    margin:0 0 10px;
+  }
+  .lives .life{font-size:1.4rem; transition:transform .2s, opacity .2s;}
+  .lives .life.off{opacity:.55; transform:scale(.88);}
+  .lives .life.breaking{animation:lifeBreak .6s ease;}
+  @keyframes lifeBreak{
+    0%{transform:scale(1) rotate(0);}
+    30%{transform:scale(1.5) rotate(-12deg);}
+    60%{transform:scale(1.2) rotate(10deg);}
+    100%{transform:scale(.88) rotate(0);}
+  }
+
+  /* étape réussie */
+  .ok-flash{
+    animation:okPop .6s ease;
+    box-shadow:0 0 0 4px rgba(62,199,120,.75), var(--shadow) !important;
+  }
+  @keyframes okPop{
+    0%{transform:scale(1);}
+    35%{transform:scale(1.16);}
+    100%{transform:scale(1);}
+  }
+  .step-spark{
+    position:absolute; left:50%; top:0;
+    transform:translateX(-50%);
+    font-size:1.2rem; pointer-events:none;
+    animation:sparkUp .8s ease-out forwards;
+  }
+  @keyframes sparkUp{
+    0%{opacity:0; transform:translate(-50%,0) scale(.6);}
+    30%{opacity:1;}
+    100%{opacity:0; transform:translate(-50%,-38px) scale(1.25);}
+  }
+  .num-btn, .puzzle-btn, .seq-btn, .diff-item, .simon-pad, .mcard{position:relative; overflow:visible;}
+
+  /* étape ratée */
+  .ko-flash{
+    animation:koShake .45s ease;
+    box-shadow:0 0 0 4px rgba(229,107,90,.8), var(--shadow) !important;
+  }
+  @keyframes koShake{
+    0%,100%{transform:translateX(0);}
+    20%{transform:translateX(-7px);}
+    50%{transform:translateX(7px);}
+    80%{transform:translateX(-4px);}
+  }
+  .ko{opacity:.45; filter:grayscale(.7);}
+  .ko::after{
+    content:'✖'; position:absolute; inset:0;
+    display:flex; align-items:center; justify-content:center;
+    color:#E56B5A; font-size:1.6rem; font-weight:900;
+    pointer-events:none;
+  }
+
+  /* flash du deck entier */
+  #modal.flash-ok{animation:deckOk .5s ease;}
+  #modal.flash-ko{animation:deckKo .5s ease;}
+  @keyframes deckOk{
+    0%,100%{box-shadow:0 24px 60px rgba(8,30,42,.55), 0 0 0 6px rgba(255,255,255,.14);}
+    40%{box-shadow:0 24px 60px rgba(8,30,42,.55), 0 0 0 10px rgba(62,199,120,.8);}
+  }
+  @keyframes deckKo{
+    0%,100%{box-shadow:0 24px 60px rgba(8,30,42,.55), 0 0 0 6px rgba(255,255,255,.14);}
+    40%{box-shadow:0 24px 60px rgba(8,30,42,.55), 0 0 0 10px rgba(229,107,90,.85);}
+  }
+  #modal.shake-hard{animation:hardShake .5s ease;}
+  @keyframes hardShake{
+    0%,100%{transform:translateX(0);}
+    15%{transform:translateX(-12px) rotate(-1deg);}
+    35%{transform:translateX(12px) rotate(1deg);}
+    55%{transform:translateX(-8px);}
+    75%{transform:translateX(8px);}
+  }
+
+  /* écran de victoire animé */
+  .win-box{position:relative;}
+  .win-rays{
+    position:absolute; left:50%; top:26px;
+    width:190px; height:190px; margin-left:-95px; margin-top:-70px;
+    background:conic-gradient(from 0deg,
+      rgba(255,203,76,.55) 0 8deg, transparent 8deg 30deg);
+    border-radius:50%;
+    animation:raysSpin 7s linear infinite;
+    pointer-events:none;
+  }
+  @keyframes raysSpin{to{transform:rotate(360deg);}}
+  .win-emoji{animation:winPop .7s cubic-bezier(.2,1.5,.4,1);}
+  @keyframes winPop{
+    0%{transform:scale(0) rotate(-25deg);}
+    60%{transform:scale(1.25) rotate(8deg);}
+    100%{transform:scale(1) rotate(0);}
+  }
+  .win-stamp{
+    position:absolute; right:14%; top:8px;
+    font-size:2rem;
+    animation:stampIn .5s .25s cubic-bezier(.2,1.6,.4,1) both;
+  }
+  @keyframes stampIn{
+    0%{transform:scale(2.4) rotate(-25deg); opacity:0;}
+    100%{transform:scale(1) rotate(-12deg); opacity:1;}
+  }
+  .reward-item{animation:slideInUp .45s .2s ease both;}
+  @keyframes slideInUp{
+    from{opacity:0; transform:translateY(16px);}
+    to{opacity:1; transform:translateY(0);}
+  }
+  .reward-emoji{display:inline-block; animation:rewardBob 1.6s ease-in-out .7s infinite;}
+  @keyframes rewardBob{0%,100%{transform:translateY(0) rotate(-4deg);} 50%{transform:translateY(-6px) rotate(4deg);}}
+
+  /* écran d'échec animé */
+  .fail-emoji{animation:failWobble .8s ease;}
+  @keyframes failWobble{
+    0%{transform:scale(0) rotate(0);}
+    45%{transform:scale(1.2) rotate(-10deg);}
+    65%{transform:scale(1) rotate(8deg);}
+    100%{transform:scale(1) rotate(0);}
+  }
+  .fail-box .speech{animation:slideInUp .4s .15s ease both;}
+

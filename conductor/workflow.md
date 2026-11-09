@@ -16,6 +16,14 @@
 6. Si l'implémentation s'écarte de `tech-stack.md` : s'arrêter, mettre le document à jour avec une note datée, puis reprendre.
 7. Passer la tâche à `[x]` dans `plan.md`, en ajoutant le SHA court du commit si la tâche a été commitée seule.
 
+## Où ajouter quoi (feature slices, v51)
+- Toute décision structurante (architecture, stockage, chaîne de build) s'écrit d'abord dans un ADR numéroté (`docs/adr/`), avant le code.
+- Un mini-jeu : [checklist-mini-jeu.md](./checklist-mini-jeu.md). Une île : [checklist-ile.md](./checklist-ile.md).
+- Une nouvelle fonctionnalité : une slice `js/features/<nom>/` (JS et CSS), déclarée dans `js/slices.js`, puis `npm run sync`. Les données de base vont dans `js/entities/`, les outils sans lien avec le jeu dans `js/shared/`.
+- Besoin d'appeler une couche supérieure ? Ne pas le faire : ajouter un point d'accroche dans la couche basse et inscrire la feature dessus.
+- Exposer un nom à d'autres slices : l'utiliser, puis `npm run api` (l'ajout apparaît dans le diff du manifeste, à relire).
+- Déplacer du code : `node test/tools/move.js <source> <destination> nom…` (déplace des déclarations telles quelles, commentaires compris).
+
 ## Commits
 - **Un commit par phase** (au minimum), avec un message en français dans le style du dépôt : `vNN : <résumé>` pour la version finale, `conductor(plan): …` pour les mises à jour de plan.
 - Pas de git notes : le résumé va dans le message de commit et dans le PRD.
@@ -32,7 +40,7 @@
 6. Commit de checkpoint, puis noter `[checkpoint: <sha>]` sur le titre de la phase dans `plan.md`.
 
 ## Fin de track : livraison
-- Incrémenter le cache `sw.js` (`lagon-vNN`) et ajouter les nouveaux fichiers JS à `FILES` et à `index.html`.
+- Incrémenter le cache `sw.js` (`lagon-vNN`) ; `npm run sync` pour `FILES` et `index.html`.
 - Si l'état change : incrémenter `SAVE_VERSION` et ajouter l'étape `migrate()`.
 - Mettre à jour `PRD-lagon-magique.md` (section de la version), `TODO.md` et `README.md` (structure).
 - Branche, puis PR sur `main`, `npm test` vert, puis merge.

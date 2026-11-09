@@ -1,0 +1,121 @@
+  /* =====================================================================
+     Tous les écrans — téléphone, tablette, ordinateur ; iOS et Android
+     ===================================================================== */
+  /* hauteur réelle de l'écran (barres du navigateur mobile comprises) */
+  @supports (height:100dvh){
+    body, #app{min-height:100dvh;}
+  }
+  /* iPhone : encoche, île dynamique et barre d'accueil (viewport-fit=cover) */
+  .topbar{
+    padding-top:max(clamp(12px,2.5vw,20px), env(safe-area-inset-top));
+    padding-left:max(clamp(14px,3vw,24px), env(safe-area-inset-left));
+    padding-right:max(clamp(14px,3vw,24px), env(safe-area-inset-right));
+  }
+  main{
+    padding-left:max(clamp(12px,3vw,28px), env(safe-area-inset-left));
+    padding-right:max(clamp(12px,3vw,28px), env(safe-area-inset-right));
+  }
+  #splash, #welcome{
+    padding-top:max(24px, env(safe-area-inset-top));
+    padding-left:max(20px, env(safe-area-inset-left));
+    padding-right:max(20px, env(safe-area-inset-right));
+  }
+  /* l'accueil défile si l'écran est petit (iPhone SE, téléphone à l'horizontale) */
+  #welcome{justify-content:safe center; overflow-y:auto; -webkit-overflow-scrolling:touch;}
+  #welcome .welcome-card{margin-bottom:12px;}
+  /* le titre d'un jeu ne passe plus sous la croix */
+  .game-head h2, #modal .game-head h2{padding-inline:44px; text-wrap:balance;}
+
+  /* tablette en portrait : un peu plus large */
+  @media (min-width:760px){
+    :root{ --app-max:740px; }
+  }
+
+  /* ordinateur et tablette à l'horizontale : deux colonnes, navigation toujours visible */
+  @media (min-width:1024px){
+    :root{ --app-max:1100px; }
+    /* overflow:clip (et non hidden) pour que la barre du bas reste collée en bas de l'écran */
+    #app{overflow:hidden; overflow:clip;}
+
+    #view-carte.active{
+      display:grid; column-gap:22px; align-items:start;
+      grid-template-columns:minmax(0, 1.65fr) minmax(300px, 1fr);
+      grid-template-areas:"head head" "map card" "next card";
+    }
+    #view-carte .view-head{grid-area:head;}
+    #view-carte .island-map{grid-area:map; height:clamp(320px, 52vh, 460px);}
+    #view-carte .map-next{grid-area:next; margin-top:12px;}
+    #view-carte .island-card{grid-area:card; position:sticky; top:16px;}
+    #view-carte .island-card .ic-chars{font-size:2.2rem; flex-wrap:wrap;}
+
+    #view-ile.active{
+      display:grid; column-gap:22px; align-items:start;
+      grid-template-columns:minmax(0, 1.4fr) minmax(300px, 1fr);
+      grid-template-areas:"head head" "hint hint" "chars scene" "chars quests";
+    }
+    #view-ile .view-head{grid-area:head;}
+    #view-ile .view-hint{grid-area:hint;}
+    #view-ile .islands{grid-area:chars; grid-template-columns:1fr 1fr; gap:18px;}
+    #view-ile .island{min-height:190px;}
+    #view-ile .island .halo{width:96px; height:96px;}
+    #view-ile .island .emoji{font-size:3.4rem;}
+    #view-ile .scene{grid-area:scene; margin:0 0 16px;}
+    #view-ile .quests{grid-area:quests;}
+    #view-ile .islands:empty{display:none;}
+  }
+  /* rayons de victoire : un vrai soleil (avant : un seul rayon, dégradé non répété) */
+  .win-rays{
+    top:70px; width:290px; height:290px; margin-left:-145px; margin-top:-145px;
+    background:repeating-conic-gradient(from 0deg, rgba(255,203,76,.5) 0 9deg, transparent 9deg 24deg);
+    -webkit-mask-image:radial-gradient(circle, #000 0 28%, transparent 68%);
+            mask-image:radial-gradient(circle, #000 0 28%, transparent 68%);
+  }
+  /* ordinateur, vue Île : le décor et les missions se suivent sans trou */
+  @media (min-width:1024px){
+    #view-ile.active{grid-template-rows:auto auto auto 1fr;}
+    #view-ile .quests{align-self:start;}
+  }
+  /* écran titre : la plage reste derrière les boutons */
+  #splash .waves{z-index:0;}
+  #splash > :not(.waves):not(.fish){z-index:1;}
+  /* petits écrans (iPhone SE, téléphone à l'horizontale) : tout tient sans défiler */
+  @media (max-height:700px){
+    .splash-buddy{width:108px; height:117px; margin:0 0 8px;}
+    #splash .title{font-size:2.1rem;}
+    #splash .stars{margin-bottom:6px;}
+    #splash .hello{margin-bottom:12px;}
+  }
+  @media (max-width:380px){
+    #modal .game-head h2{font-size:1.25rem; padding-inline:40px;}
+    .puzzle-hint .buddy-slot{width:50px; height:50px;}
+    .puzzle-hint .buddy-slot svg{width:56px; height:61px;}
+    .buddy-opt svg{width:64px; height:69px;}
+  }
+  /* téléphone tenu à l'horizontale : barre du bas compacte, mini-jeux sans défilement */
+  @media (max-height:520px) and (orientation:landscape){
+    nav.bottomnav{padding-top:4px; padding-bottom:max(4px, env(safe-area-inset-bottom));}
+    nav.bottomnav button{flex-direction:row; justify-content:center; gap:8px; min-height:46px; padding:4px 0; font-size:.8rem;}
+    nav.bottomnav button .icon{font-size:1.35rem;}
+    .navbtn{min-height:46px;}
+    .topbar{padding-bottom:2px;}
+    .view-head{margin-bottom:6px;}
+
+    #modal{max-height:100dvh; padding-top:2px; padding-bottom:max(10px, env(safe-area-inset-bottom));}
+    .modal-handle{padding:4px 0 6px;}
+    #modal .game-head h2{font-size:1.1rem;}
+    #modal .puzzle-hint{margin:2px auto 6px; padding:4px 8px 4px 6px; font-size:.92rem;}
+    .puzzle-hint .buddy-slot{width:40px; height:40px;}
+    .puzzle-hint .buddy-slot svg{width:44px; height:48px; margin-left:-2px;}
+    .lives{margin:0 0 4px;}
+    .game-progress{margin:0 0 6px;}
+    .count-row, .diff-row, .seq-row, .math-illustration, .reading-image-box, .reading-word-box,
+    .det-box, .vol-shape-box, .vol-containers, .cmp-equation, .money-target{padding:8px 10px; margin-bottom:8px;}
+    .count-row span, .seq-row span{font-size:1.5rem;}
+    .reading-image, .vol-shape-emoji{font-size:2.6rem;}
+    .num-btn, .seq-btn, .cmp-btn, .reading-opt, .det-btn, .vol-opt-btn{min-height:52px;}
+    .mcard{min-height:54px;}
+    .simon-grid{max-width:220px;}
+    .simon-pad{min-height:70px;}
+    .buddy-slot.buddy-big{width:84px; height:91px;}
+  }
+

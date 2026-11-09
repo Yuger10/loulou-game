@@ -1,8 +1,10 @@
 # Plan : Saison 2 « Le Ciel des Rêves » et le Monde des Boîtes (v55)
 
+> **Architecture (v51) :** chaque nouveau fichier JS ou CSS va dans sa slice et est déclaré dans `js/slices.js` (puis `npm run sync`) ; voir `conductor/checklist-mini-jeu.md` et `conductor/checklist-ile.md`.
+
 Spec : [spec.md](./spec.md). Workflow : [workflow.md](../../workflow.md).
 **Prérequis :** la track `squishy-collection_20261109` (v53) est livrée.
-Nouveaux fichiers prévus : `js/nesting.js` (Les boîtes gigognes), `js/cubes.js` (Combien de cubes ?). La saison 2 de l'histoire va dans `js/story.js`.
+Nouveaux fichiers prévus : `js/features/minigames/nesting/nesting.js` (Les boîtes gigognes), `js/features/minigames/cubes/cubes.js` (Combien de cubes ?). La saison 2 de l'histoire va dans `js/features/story/story.js`.
 
 ## Phase 1 : Deux archipels
 - [ ] Task: Modèle de données des archipels
@@ -10,7 +12,7 @@ Nouveaux fichiers prévus : `js/nesting.js` (Les boîtes gigognes), `js/cubes.js
     - [ ] `ARCHIPELAGOS` (nom, emoji, niveau d'ouverture, fond, véhicule) et `saison` dans `WORLDS` ; `WORLD_ORDER` reste l'ordre de la saison 1 ; la logique d'ouverture et `checkNewIsland` passent par archipel
 - [ ] Task: Carte à deux onglets
     - [ ] Tests : onglets présents ; Ciel verrouillé sous le niveau 8 (cadenas, « Niveau 8 ») ; îles du Ciel dans le cadre, sans chevauchement ; montgolfière dans le Ciel ; trajet seulement à l'intérieur d'un archipel
-    - [ ] `js/map.js` (`renderMap(saison)`, `sailTo`), CSS du fond du Ciel
+    - [ ] `js/features/map/map.js` (`renderMap(saison)`, `sailTo`), CSS du fond du Ciel
 - [ ] Task: Ouverture du Ciel et migration
     - [ ] Tests : au passage au niveau 8, l'écran d'ouverture s'affiche une seule fois, puis le prologue ; une partie déjà au niveau 8 ou plus le voit au chargement ; une partie v53 migrée sans perte
     - [ ] `SAVE_VERSION` +1, `skyIntroSeen`, `migrate()`
@@ -19,22 +21,22 @@ Nouveaux fichiers prévus : `js/nesting.js` (Les boîtes gigognes), `js/cubes.js
 ## Phase 2 : Le Monde des Boîtes
 - [ ] Task: L'île et son contenu
     - [ ] Tests : `WORLDS.boites` (saison 2, niveau 8, thème `--world-*`) ; 4 personnages avec butin et 3 répliques ; environ 6 objets, 2 recettes, 4 à 5 décorations
-    - [ ] `js/data.js` : Capucine, Kiki, Boulon, Lola, objets, recettes, décorations ; scène dans `js/island.js` ; avatars dans `js/characters-art.js` si nécessaire
+    - [ ] `js/entities/ (item, character, world)` : Capucine, Kiki, Boulon, Lola, objets, recettes, décorations ; scène dans `js/features/island/island.js` ; avatars dans `js/entities/character/characters-art.js` si nécessaire
 - [ ] Task: Musique, cadeaux, saisons
     - [ ] Tests : `MUSIC_THEMES.boites` ; chaque personnage a 2 objets préférés (`favoritesOf`) ; décorations de fête sur la carte du Ciel
 - [ ] Task: Série de squishies « Boîtes »
     - [ ] Tests : la série a 6 modèles (4 communs, 1 rare Pop, 1 ✨ boîte dorée) et apparaît dans la chambre
-    - [ ] Données et dessins SVG (`js/squishies.js`)
+    - [ ] Données et dessins SVG (`js/features/squishies/squishies.js`)
 - [ ] Task: Pop dans l'ouverture des boîtes
     - [ ] Tests (hasard injecté) : Pop apparaît 1 fois sur 5 sans changer le résultat du tirage
-    - [ ] Animation dans `js/squishy-room.js`
+    - [ ] Animation dans `js/features/squishies/squishy-room.js`
 - [ ] Task: Conductor - User Manual Verification 'Le Monde des Boîtes' (Protocol in workflow.md)
 
 ## Phase 3 : Les deux mini-jeux
-- [ ] Task: Les boîtes gigognes (`js/nesting.js`)
+- [ ] Task: Les boîtes gigognes (`js/features/minigames/nesting/nesting.js`)
     - [ ] Tests : bon ordre validé ; erreur avec tremblement et indice parlé ; relance après 2 erreurs (annulable) ; 3, 4 puis 5 boîtes selon le palier et l'âge ; ordre inverse au palier haut
-    - [ ] Implémentation, inscription dans les types de mini-jeux et `gameTypesForAge`, paramètres dans `js/difficulty.js`, niveau adaptatif (`js/adaptive.js`), compétence de l'espace parents, indices (contrat v52)
-- [ ] Task: Combien de cubes ? (`js/cubes.js`)
+    - [ ] Implémentation, inscription dans les types de mini-jeux et `gameTypesForAge`, paramètres dans `js/entities/difficulty/difficulty.js`, niveau adaptatif (`js/features/adaptive/adaptive.js`), compétence de l'espace parents, indices (contrat v52)
+- [ ] Task: Combien de cubes ? (`js/features/minigames/cubes/cubes.js`)
     - [ ] Tests : le compte de la pile générée (cubes cachés compris) correspond à la bonne réponse ; 3 réponses distinctes ; autre pile après une erreur ; taille selon le palier ; seules les piles physiquement possibles (chaque cube du dessus repose sur un cube)
     - [ ] Générateur de piles, rendu SVG isométrique, inscription, paramètres de difficulté
 - [ ] Task: Jeu favori de l'île

@@ -1,0 +1,37 @@
+  /* =====================================================================
+     Animations de gain v29 — objets vers le sac, pièces vers le compteur
+     ===================================================================== */
+  #gain-layer{position:fixed; inset:0; pointer-events:none; z-index:60; overflow:hidden;}
+  .gain-fly{
+    position:absolute; line-height:1; font-size:2.4rem; will-change:transform;
+    filter:drop-shadow(0 4px 2px rgba(18,59,79,.25));
+  }
+  .gain-fly.coin{filter:drop-shadow(0 2px 1px rgba(120,80,0,.35));}
+  .gain-ring{
+    position:absolute; width:20px; height:20px; margin:-10px 0 0 -10px; border-radius:50%;
+    border:3px solid var(--sun); animation:gainRing .55s ease-out forwards;
+  }
+  @keyframes gainRing{from{transform:scale(.6); opacity:1;} to{transform:scale(3.2); opacity:0;}}
+  .gain-label{
+    position:absolute; transform:translate(-50%,0);
+    font-family:'Baloo 2',sans-serif; font-weight:800; font-size:1.25rem; color:#1E9A55;
+    text-shadow:0 2px 0 #fff, 0 0 6px #fff; animation:gainLabel 1.1s ease-out forwards;
+  }
+  .gain-label.minus{color:var(--coral-strong);}
+  @keyframes gainLabel{0%{opacity:0; transform:translate(-50%,6px) scale(.7);} 20%{opacity:1; transform:translate(-50%,0) scale(1.15);} 100%{opacity:0; transform:translate(-50%,-26px) scale(1);}}
+  .gain-land{animation:gainLand .45s cubic-bezier(.3,1.6,.5,1);}
+  @keyframes gainLand{0%{transform:scale(1);} 40%{transform:scale(1.3);} 100%{transform:scale(1);}}
+  #sac-badge.pop{animation:gainLand .45s cubic-bezier(.3,1.6,.5,1);}
+  .scene.gain-land{animation:sceneGlow .5s ease;}
+  @keyframes sceneGlow{0%{box-shadow:var(--shadow-candy);} 40%{box-shadow:var(--shadow-candy), 0 0 0 6px rgba(255,203,76,.6);} 100%{box-shadow:var(--shadow-candy);}}
+  /* marché : « Tu as N pièces » (était blanc sur blanc depuis la bulle de consigne v24) */
+  .market-wallet{
+    display:table; margin:0 auto 12px; padding:6px 16px; border-radius:999px;
+    background:var(--foam); box-shadow:var(--shadow-candy-sm);
+    font-weight:700; color:var(--ink);
+  }
+  .market-wallet strong{font-family:'Baloo 2',sans-serif; font-size:1.15rem;}
+  @media (prefers-reduced-motion:reduce){
+    .gain-ring, .gain-label{display:none;}
+  }
+

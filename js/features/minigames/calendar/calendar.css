@@ -1,0 +1,30 @@
+  /* =====================================================================
+     Jours, mois, saisons (v30)
+     ===================================================================== */
+  .season-scene{
+    text-align:center; font-size:3.2rem; letter-spacing:6px;
+    padding:22px 12px; margin-bottom:12px;
+    background:var(--foam); border-radius:20px; box-shadow:var(--shadow);
+    max-width:420px; margin-inline:auto;
+  }
+  .season-options{
+    display:flex; flex-wrap:wrap; justify-content:center; gap:14px;
+    max-width:420px; margin:0 auto 10px;
+  }
+  .season-btn{
+    border:none; background:var(--foam); box-shadow:var(--shadow);
+    border-radius:18px; min-width:110px; min-height:56px;
+    font-size:1.1rem; font-weight:800; color:var(--ocean-deep, #123B4F);
+    padding:10px 16px; text-transform:capitalize;
+  }
+  .weekday-row{
+    display:flex; flex-wrap:wrap; justify-content:center; gap:12px;
+    max-width:460px; margin:0 auto 10px;
+  }
+  .weekday-btn{
+    border:none; background:var(--foam); box-shadow:var(--shadow);
+    border-radius:16px; min-width:100px; min-height:56px;
+    font-size:1rem; font-weight:800; color:var(--ocean-deep, #123B4F);
+    padding:10px 14px; text-transform:capitalize;
+  }
+

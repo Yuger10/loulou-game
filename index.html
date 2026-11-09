@@ -13,9 +13,56 @@
 <title>Le Lagon Magique</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css">
-<link rel="stylesheet" href="island.css">
-<link rel="stylesheet" href="characters.css">
+<link rel="stylesheet" href="js/shared/styles/base.css">
+<link rel="stylesheet" href="js/features/island/island-view.css">
+<link rel="stylesheet" href="js/entities/world/world-themes.css">
+<link rel="stylesheet" href="js/features/map/map.css">
+<link rel="stylesheet" href="js/features/minigames/simon/simon.css">
+<link rel="stylesheet" href="js/features/minigames/sequence/sequence.css">
+<link rel="stylesheet" href="js/features/profile/welcome.css">
+<link rel="stylesheet" href="js/features/quests/quests.css">
+<link rel="stylesheet" href="js/features/bag/bag.css">
+<link rel="stylesheet" href="js/features/market/market.css">
+<link rel="stylesheet" href="js/shared/ui/views.css">
+<link rel="stylesheet" href="js/shared/ui/modal.css">
+<link rel="stylesheet" href="js/features/minigame-engine/engine.css">
+<link rel="stylesheet" href="js/shared/ui/feedback.css">
+<link rel="stylesheet" href="js/features/party/party.css">
+<link rel="stylesheet" href="js/features/party/race.css">
+<link rel="stylesheet" href="js/shared/styles/interface-v12.css">
+<link rel="stylesheet" href="js/shared/styles/pointer-v13.css">
+<link rel="stylesheet" href="js/features/minigame-engine/deck-v13.css">
+<link rel="stylesheet" href="js/features/minigame-engine/outcome-v14.css">
+<link rel="stylesheet" href="js/shared/styles/responsive-v14.css">
+<link rel="stylesheet" href="js/features/minigames/math/math.css">
+<link rel="stylesheet" href="js/features/minigames/reading/reading.css">
+<link rel="stylesheet" href="js/features/minigames/grammar/grammar.css">
+<link rel="stylesheet" href="js/features/minigames/volume/volume.css">
+<link rel="stylesheet" href="js/features/minigames/compare/compare.css">
+<link rel="stylesheet" href="js/features/minigames/money/money.css">
+<link rel="stylesheet" href="js/shared/styles/design-system-v21.css">
+<link rel="stylesheet" href="js/features/minigame-engine/board-v21.css">
+<link rel="stylesheet" href="js/features/minigame-engine/timer.css">
+<link rel="stylesheet" href="js/entities/companion/companions.css">
+<link rel="stylesheet" href="js/shared/styles/devices.css">
+<link rel="stylesheet" href="js/features/gains/gains.css">
+<link rel="stylesheet" href="js/features/minigames/clock/clock.css">
+<link rel="stylesheet" href="js/features/minigames/calendar/calendar.css">
+<link rel="stylesheet" href="js/features/story/story.css">
+<link rel="stylesheet" href="js/features/minigames/calc/calc.css">
+<link rel="stylesheet" href="js/features/minigames/shapes/shapes.css">
+<link rel="stylesheet" href="js/features/minigames/planets/planets.css">
+<link rel="stylesheet" href="js/features/backup/backup.css">
+<link rel="stylesheet" href="js/features/parents/parents.css">
+<link rel="stylesheet" href="js/features/adaptive/adaptive.css">
+<link rel="stylesheet" href="js/features/wardrobe/wardrobe.css">
+<link rel="stylesheet" href="js/shared/ui/icons.css">
+<link rel="stylesheet" href="js/features/seasons/seasons.css">
+<link rel="stylesheet" href="js/features/minigames/jigsaw/jigsaw.css">
+<link rel="stylesheet" href="js/features/gifts/gifts.css">
+<link rel="stylesheet" href="js/features/story/episodes.css">
+<link rel="stylesheet" href="js/features/island/island.css">
+<link rel="stylesheet" href="js/entities/character/characters.css">
 </head>
 <body>
 
@@ -139,42 +186,69 @@
 <div id="toast"></div>
 
 
-<script src="js/data.js"></script>
-<script src="js/icons.js"></script>
-<script src="js/difficulty.js"></script>
-<script src="js/players.js"></script>
-<script src="js/companions.js"></script>
-<script src="js/characters-art.js"></script>
-<script src="js/story.js"></script>
-<script src="js/episodes.js"></script>
-<script src="js/state.js"></script>
-<script src="js/ui.js"></script>
-<script src="js/music.js"></script>
-<script src="js/gains.js"></script>
-<script src="js/map.js"></script>
-<script src="js/island.js"></script>
-<script src="js/minigames.js"></script>
-<script src="js/math.js"></script>
-<script src="js/reading.js"></script>
-<script src="js/grammar.js"></script>
-<script src="js/volume.js"></script>
-<script src="js/compare.js"></script>
-<script src="js/money.js"></script>
-<script src="js/clock.js"></script>
-<script src="js/calendar.js"></script>
-<script src="js/calc.js"></script>
-<script src="js/shapes.js"></script>
-<script src="js/planets.js"></script>
-<script src="js/jigsaw.js"></script>
-<script src="js/market.js"></script>
-<script src="js/gifts.js"></script>
-<script src="js/race.js"></script>
-<script src="js/profiles-ui.js"></script>
-<script src="js/backup.js"></script>
-<script src="js/parents.js"></script>
-<script src="js/adaptive.js"></script>
-<script src="js/wardrobe.js"></script>
-<script src="js/seasons.js"></script>
-<script src="js/init.js"></script>
+<script src="js/shared/lib/random.js"></script>
+<script src="js/shared/ui/icons.js"></script>
+<script src="js/shared/ui/sound.js"></script>
+<script src="js/shared/ui/voice.js"></script>
+<script src="js/shared/ui/feedback.js"></script>
+<script src="js/shared/ui/modal.js"></script>
+<script src="js/shared/ui/views.js"></script>
+<script src="js/entities/words/words.js"></script>
+<script src="js/entities/item/items.js"></script>
+<script src="js/entities/world/worlds.js"></script>
+<script src="js/entities/world/availability.js"></script>
+<script src="js/entities/character/characters.js"></script>
+<script src="js/entities/character/characters-art.js"></script>
+<script src="js/entities/difficulty/difficulty.js"></script>
+<script src="js/entities/difficulty/game-types.js"></script>
+<script src="js/entities/difficulty/age.js"></script>
+<script src="js/entities/game-state/state.js"></script>
+<script src="js/entities/player/avatars.js"></script>
+<script src="js/entities/player/profiles.js"></script>
+<script src="js/entities/player/party-state.js"></script>
+<script src="js/entities/companion/companions.js"></script>
+<script src="js/features/party/party.js"></script>
+<script src="js/features/party/race.js"></script>
+<script src="js/features/story/story.js"></script>
+<script src="js/features/story/episodes.js"></script>
+<script src="js/features/profile/profile.js"></script>
+<script src="js/features/profile/topbar.js"></script>
+<script src="js/features/quests/quests.js"></script>
+<script src="js/features/wallet/wallet.js"></script>
+<script src="js/features/adaptive/game-diff.js"></script>
+<script src="js/features/adaptive/adaptive.js"></script>
+<script src="js/features/bag/bag.js"></script>
+<script src="js/features/island/island-view.js"></script>
+<script src="js/features/island/island.js"></script>
+<script src="js/features/music/music.js"></script>
+<script src="js/features/gains/gains.js"></script>
+<script src="js/features/map/map.js"></script>
+<script src="js/features/minigame-engine/engine.js"></script>
+<script src="js/features/minigames/memory/memory.js"></script>
+<script src="js/features/minigames/count/count.js"></script>
+<script src="js/features/minigames/intruder/intruder.js"></script>
+<script src="js/features/minigames/simon/simon.js"></script>
+<script src="js/features/minigames/sequence/sequence.js"></script>
+<script src="js/features/minigames/puzzle/puzzle.js"></script>
+<script src="js/features/minigames/math/math.js"></script>
+<script src="js/features/minigames/reading/reading.js"></script>
+<script src="js/features/minigames/grammar/grammar.js"></script>
+<script src="js/features/minigames/volume/volume.js"></script>
+<script src="js/features/minigames/compare/compare.js"></script>
+<script src="js/features/minigames/money/money.js"></script>
+<script src="js/features/minigames/clock/clock.js"></script>
+<script src="js/features/minigames/calendar/calendar.js"></script>
+<script src="js/features/minigames/calc/calc.js"></script>
+<script src="js/features/minigames/shapes/shapes.js"></script>
+<script src="js/features/minigames/planets/planets.js"></script>
+<script src="js/features/minigames/jigsaw/jigsaw.js"></script>
+<script src="js/features/market/market.js"></script>
+<script src="js/features/gifts/gifts.js"></script>
+<script src="js/features/players/profiles-ui.js"></script>
+<script src="js/features/backup/backup.js"></script>
+<script src="js/features/parents/parents.js"></script>
+<script src="js/features/wardrobe/wardrobe.js"></script>
+<script src="js/features/seasons/seasons.js"></script>
+<script src="js/app/init.js"></script>
 </body>
 </html>

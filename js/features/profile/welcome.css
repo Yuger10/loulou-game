@@ -1,0 +1,76 @@
+  /* écran titre animé */
+  #splash{
+    position:fixed; inset:0; z-index:39;
+    background:linear-gradient(180deg,#BDEBEA 0%, var(--lagoon) 55%, var(--lagoon-dark) 100%);
+    display:none; flex-direction:column; align-items:center; justify-content:center;
+    text-align:center; padding:24px; overflow:hidden;
+  }
+  #splash.show{display:flex;}
+  #splash.hiding{animation:splashout .45s ease forwards;}
+  @keyframes splashout{to{opacity:0; transform:scale(1.06); visibility:hidden;}}
+  #splash .title{
+    font-family:'Baloo 2',sans-serif; font-size:2.1rem; font-weight:800; color:var(--foam);
+    text-shadow:0 4px 0 rgba(18,59,79,.28); margin:0 0 2px; line-height:1.15;
+  }
+  #splash .stars{font-size:1.4rem; letter-spacing:6px; margin-bottom:14px; animation:twinkle 2s ease-in-out infinite;}
+  @keyframes twinkle{0%,100%{opacity:.6;} 50%{opacity:1;}}
+  #splash .cast{display:flex; gap:6px; margin-bottom:20px;}
+  #splash .cast span{font-size:3rem; animation:sway 3s ease-in-out infinite;}
+  #splash .cast span:nth-child(2){animation-delay:.6s;}
+  #splash .cast span:nth-child(3){animation-delay:1.2s;}
+  #splash .hello{
+    background:rgba(255,255,255,.9); border-radius:999px; padding:8px 18px;
+    font-weight:700; margin-bottom:18px; box-shadow:var(--shadow);
+  }
+  #splash .btn-primary{max-width:280px; font-size:1.2rem; animation:beat 1.6s ease-in-out infinite;}
+  @keyframes beat{0%,100%{transform:scale(1);} 50%{transform:scale(1.05);}}
+  #splash .waves{
+    position:absolute; bottom:0; left:0; right:0; height:90px;
+    background:radial-gradient(ellipse at 50% 120%, rgba(255,255,255,.5), transparent 70%);
+    pointer-events:none;
+  }
+  #splash .fish{position:absolute; font-size:1.6rem; opacity:.7; animation:swim 9s linear infinite;}
+  @keyframes swim{from{transform:translateX(-60px);} to{transform:translateX(110vw);}}
+
+  /* accueil / prénom / avatar */
+  #welcome{
+    position:fixed; inset:0; z-index:40;
+    background:linear-gradient(180deg,#BDEBEA 0%, var(--lagoon) 50%, var(--lagoon-dark) 100%);
+    display:none;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    padding:24px 20px calc(24px + env(safe-area-inset-bottom));
+    text-align:center;
+  }
+  #welcome.show{display:flex;}
+  #welcome h1{
+    font-size:2rem; color:var(--foam); margin:0 0 4px;
+    text-shadow:0 3px 0 rgba(18,59,79,.25);
+  }
+  #welcome .sub{color:var(--foam); font-weight:600; margin-bottom:18px;}
+  .welcome-card{
+    background:var(--sand); border-radius:28px; padding:20px; width:100%; max-width:400px;
+    box-shadow:var(--shadow);
+  }
+  .welcome-card label{display:block; font-weight:700; margin-bottom:8px; font-size:.95rem;}
+  #name-input{
+    width:100%; border:3px solid var(--lagoon); border-radius:16px;
+    padding:12px 14px; font-size:1.1rem; font-family:'Baloo 2',sans-serif; font-weight:700;
+    text-align:center; color:var(--ocean-deep); background:var(--foam); margin-bottom:16px;
+  }
+  .avatar-grid{display:grid; grid-template-columns:repeat(5,1fr); gap:8px; margin-bottom:18px;}
+  .avatar-opt{
+    border:3px solid transparent; background:var(--foam); border-radius:18px;
+    font-size:1.7rem; padding:8px 0; cursor:pointer;
+  }
+  .avatar-opt.sel{border-color:var(--coral); background:#FFE7E0; transform:scale(1.06);}
+  .avatar-pill{
+    background:var(--foam); border-radius:999px; padding:4px 12px 4px 6px;
+    display:flex; align-items:center; gap:6px; font-weight:700; font-size:.9rem;
+    box-shadow:var(--shadow); border:none; cursor:pointer;
+    margin-right:auto; max-width:50%; overflow:hidden;
+  }
+  .avatar-pill .av{font-size:1.2rem;}
+  .avatar-pill span:last-child{white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+

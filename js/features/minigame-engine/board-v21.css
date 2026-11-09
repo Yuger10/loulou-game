@@ -1,0 +1,157 @@
+  /* =====================================================================
+     Mini-jeux v21 — plateau de jeu, réponses bonbons colorées,
+     cartes mémoire, pads Simon en vraies couleurs, choix du jeu teinté.
+     ===================================================================== */
+  :root{
+    --board:#E6F7F7; --board-edge:#BFE6E7;
+    --edge-coral:#F2A08A; --edge-lilac:#C3B1EC; --edge-sun:#E8C35A; --edge-mint:#95D3A9;
+  }
+
+  /* --- consigne : une bulle claire au lieu d'un texte délavé --- */
+  .puzzle-hint, #modal .puzzle-hint{
+    display:flex; align-items:center; justify-content:center; gap:10px;
+    max-width:440px; margin:6px auto 12px; padding:10px 12px 10px 16px;
+    background:var(--foam); border-radius:var(--radius-lg);
+    box-shadow:var(--shadow-candy-sm);
+    color:var(--ink); opacity:1; font-size:1rem; font-weight:700; line-height:1.35;
+  }
+  .game-head h2{font-weight:800; color:var(--ink);}
+
+  /* --- progression : des perles qui deviennent dorées --- */
+  .game-progress{gap:8px; margin:4px 0 12px;}
+  .game-progress i, #modal .game-progress i{width:14px; height:14px; background:rgba(18,59,79,.12); box-shadow:inset 0 2px 0 rgba(18,59,79,.08);}
+  .game-progress i.on{background:var(--sun); box-shadow:0 2px 0 var(--sun-edge), inset 0 2px 0 rgba(255,255,255,.6); transform:scale(1.15); transition:transform .2s, background .2s;}
+
+  /* --- plateau : la zone où l'on regarde --- */
+  .count-row, .diff-row, .seq-row, .math-illustration, .reading-image-box, .reading-word-box,
+  .det-box, .vol-shape-box, .vol-containers, .cmp-equation, .money-target{
+    background:
+      radial-gradient(circle at 12% 20%, rgba(255,255,255,.7) 0 5px, transparent 6px),
+      radial-gradient(circle at 88% 78%, rgba(255,255,255,.6) 0 7px, transparent 8px),
+      radial-gradient(circle at 80% 18%, rgba(255,255,255,.5) 0 3px, transparent 4px),
+      var(--board);
+    border:3px solid #fff;
+    border-radius:var(--radius-lg);
+    box-shadow:inset 0 3px 0 var(--board-edge), 0 4px 0 rgba(18,59,79,.06);
+    max-width:480px; margin-left:auto; margin-right:auto; margin-bottom:16px;
+  }
+  .cmp-equation, .money-target{padding:14px 12px;}
+  .math-illustration{padding:16px 12px; margin-bottom:10px;}
+  .vol-containers{padding:16px 12px;}
+
+  /* --- réponses : boutons bonbons blancs à tranche colorée --- */
+  .num-btn, .seq-btn, .puzzle-btn, .reading-opt, .det-btn, .cmp-btn,
+  .vol-container-btn, .vol-opt-btn, .money-pile-btn{
+    background:var(--foam); color:var(--ink);
+    font-family:'Baloo 2',sans-serif; font-weight:800;
+    border:2px solid rgba(18,59,79,.06);
+    border-radius:var(--radius-md);
+    box-shadow:0 6px 0 var(--edge, #C4D7DC), var(--card-shine);
+    transition:transform .1s, box-shadow .1s;
+  }
+  :is(.num-btn, .seq-btn, .puzzle-btn, .reading-opt, .det-btn, .cmp-btn, .vol-container-btn, .vol-opt-btn, .money-pile-btn):nth-child(4n+1){--edge:var(--edge-coral);}
+  :is(.num-btn, .seq-btn, .puzzle-btn, .reading-opt, .det-btn, .cmp-btn, .vol-container-btn, .vol-opt-btn, .money-pile-btn):nth-child(4n+2){--edge:var(--edge-lilac);}
+  :is(.num-btn, .seq-btn, .puzzle-btn, .reading-opt, .det-btn, .cmp-btn, .vol-container-btn, .vol-opt-btn, .money-pile-btn):nth-child(4n+3){--edge:var(--edge-sun);}
+  :is(.num-btn, .seq-btn, .puzzle-btn, .reading-opt, .det-btn, .cmp-btn, .vol-container-btn, .vol-opt-btn, .money-pile-btn):nth-child(4n+4){--edge:var(--edge-mint);}
+  :is(.num-btn, .seq-btn, .puzzle-btn, .reading-opt, .det-btn, .cmp-btn, .vol-container-btn, .vol-opt-btn, .money-pile-btn):not(:disabled):active{
+    transform:translateY(6px); box-shadow:0 0 0 var(--edge, #C4D7DC), var(--card-shine);
+  }
+  .puzzle-btn.done{background:var(--sun); border-color:transparent; box-shadow:inset 0 3px 0 rgba(255,255,255,.5); color:var(--ink);}
+
+  /* cases « ? » à remplir */
+  .seq-row .q, .eq-q, .cmp-q{
+    border:3px dashed var(--lagoon-ink); color:var(--lagoon-ink); background:rgba(255,255,255,.8);
+    box-shadow:none; border-radius:14px; animation:qPulse 1.6s ease-in-out infinite;
+  }
+  .eq-q.filled, .cmp-q.filled{border:none; animation:none; color:#1E9A55; background:none;}
+  @keyframes qPulse{0%,100%{transform:scale(1);} 50%{transform:scale(1.08);}}
+
+  /* l'intrus : chaque objet sur une bulle */
+  .diff-item{
+    background:var(--foam); border-radius:50%;
+    width:64px; height:64px; display:inline-flex; align-items:center; justify-content:center;
+    box-shadow:var(--shadow-candy-sm); padding:0;
+  }
+  .count-row span, .math-group span{filter:drop-shadow(0 2px 0 rgba(18,59,79,.12));}
+
+  /* --- mémoire : dos de carte décoré --- */
+  .mcard{
+    border:3px solid #fff;
+    background:
+      radial-gradient(circle at 50% 50%, rgba(255,255,255,.28) 0 22%, transparent 23%),
+      repeating-linear-gradient(45deg, rgba(255,255,255,.10) 0 8px, transparent 8px 16px),
+      linear-gradient(160deg, var(--lagoon) 0%, var(--lagoon-dark) 100%);
+    box-shadow:0 5px 0 #17797B, 0 10px 16px -10px rgba(18,59,79,.5);
+  }
+  .mcard::after{
+    content:'✦'; position:absolute; inset:0; display:grid; place-items:center;
+    color:#fff; font-size:1.3rem; opacity:.9; pointer-events:none;
+  }
+  .mcard.flipped, .mcard.matched{
+    background:var(--foam); border-color:var(--board-edge);
+    box-shadow:0 5px 0 var(--board-edge);
+  }
+  .mcard.flipped::after, .mcard.matched::after{content:none;}
+  .mcard.matched{background:var(--success-tint, #DFF6DE); border-color:#9BDDAE; box-shadow:0 3px 0 #9BDDAE; opacity:.85;}
+
+  /* --- Simon : de vraies touches de couleur --- */
+  .simon-pad{
+    opacity:.62; border:4px solid rgba(255,255,255,.7);
+    background:var(--pad); box-shadow:0 7px 0 var(--pad-edge), inset 0 4px 0 rgba(255,255,255,.35);
+    font-size:2rem; filter:saturate(.8);
+  }
+  .simon-pad[data-k="a"]{--pad:#FFD54A; --pad-edge:#D9A62A;}
+  .simon-pad[data-k="b"]{--pad:#5AB0F2; --pad-edge:#2F7CC0;}
+  .simon-pad[data-k="c"]{--pad:#5FCB7E; --pad-edge:#2F9551;}
+  .simon-pad[data-k="d"]{--pad:#F46B5D; --pad-edge:#BE4236;}
+  .simon-pad.lit{
+    opacity:1; filter:saturate(1.15) brightness(1.08); transform:scale(1.06);
+    box-shadow:0 7px 0 var(--pad-edge), 0 0 0 6px rgba(255,255,255,.9), 0 0 26px var(--pad);
+  }
+  .simon-pad:active{transform:translateY(5px); box-shadow:0 2px 0 var(--pad-edge);}
+
+  /* --- choix du jeu : tuiles teintées --- */
+  .game-picker{gap:12px;}
+  .game-choice{
+    border-radius:var(--radius-lg); gap:6px;
+    box-shadow:var(--shadow-candy), var(--card-shine);
+  }
+  .game-choice:nth-child(4n+1){background:var(--tint-coral);}
+  .game-choice:nth-child(4n+2){background:var(--tint-lilac);}
+  .game-choice:nth-child(4n+3){background:var(--tint-sun);}
+  .game-choice:nth-child(4n+4){background:var(--tint-mint);}
+  .game-choice .emoji{
+    width:54px; height:54px; border-radius:50%; display:grid; place-items:center;
+    background:#fff; box-shadow:0 3px 0 rgba(18,59,79,.07);
+  }
+  .game-choice .nm{font-family:'Baloo 2',sans-serif; font-size:.85rem; font-weight:800; color:var(--ink); line-height:1.1;}
+  .game-choice.surprise{
+    flex-direction:row; justify-content:center; gap:10px; min-height:64px;
+    background:linear-gradient(180deg, #FFE07A, var(--sun)); box-shadow:var(--shadow-sun);
+  }
+  .game-choice.surprise .emoji{width:42px; height:42px;}
+  .game-choice.surprise .nm{font-size:1.05rem;}
+
+  /* --- réussite / échec --- */
+  .reward-box .speech, .fail-box .speech{text-align:center;}
+  .win-stamp{text-shadow:0 2px 0 rgba(255,255,255,.8);}
+
+  @media (prefers-reduced-motion:reduce){
+    .seq-row .q, .eq-q, .cmp-q{animation:none;}
+  }
+
+  /* mauvaise réponse : un ✖ bien visible sur fond rosé, au lieu d'un bouton grisé */
+  :is(.num-btn, .seq-btn, .puzzle-btn, .reading-opt, .det-btn, .cmp-btn, .vol-container-btn, .vol-opt-btn, .money-pile-btn, .diff-item, .mcard).ko{
+    opacity:1; filter:none; background:#FFE2DC; color:rgba(18,59,79,.3);
+    border-color:#F4B7A9; box-shadow:0 2px 0 #F4B7A9; transform:translateY(4px);
+  }
+  .ko::after{color:#C9452C; font-size:2.2rem; text-shadow:0 2px 0 #fff;}
+  /* réponses en mots (formes, volumes) aussi grandes que les autres */
+  .vol-opt-btn{min-width:128px; min-height:68px; font-size:1.35rem;}
+  /* choix du jeu : 2 grands défis côte à côte + Surprise en dessous */
+  .game-picker, #modal .game-picker{grid-template-columns:repeat(2, 1fr); gap:12px;}
+  .game-choice{min-height:136px; padding:16px 6px 14px;}
+  .game-choice .emoji{width:68px; height:68px; font-size:2.5rem;}
+  .game-choice .nm{font-size:1.05rem;}
+  .game-choice.surprise{min-height:64px;}
+

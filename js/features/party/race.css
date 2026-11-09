@@ -1,0 +1,77 @@
+  /* ---------- Mode course ---------- */
+  .race-track{
+    background:rgba(255,255,255,.94);
+    border-radius:20px; padding:10px 12px; margin-bottom:10px;
+    box-shadow:var(--shadow);
+  }
+  .race-head{
+    display:flex; align-items:center;
+    font-family:'Baloo 2',sans-serif; font-weight:800; font-size:.85rem;
+    margin-bottom:8px;
+  }
+  .race-lane{
+    display:flex; align-items:center; gap:8px;
+    padding:5px 6px; border-radius:14px; margin-bottom:4px;
+  }
+  .race-lane.active{background:#FFF6DC; box-shadow:inset 0 0 0 2px var(--sun);}
+  .race-lane .lane-av{font-size:1.4rem;}
+  .race-lane .lane-name{
+    font-size:.75rem; font-weight:800; width:78px; line-height:1.1;
+    display:flex; flex-direction:column;
+  }
+  .race-lane .lane-name small{font-size:.58rem; font-weight:700; opacity:.6;}
+  .race-lane .lane-track{
+    position:relative; flex:1; height:18px;
+    display:flex; gap:3px; align-items:center;
+  }
+  .race-lane .lane-track i{
+    flex:1; height:8px; border-radius:999px; background:#E1EEF2; display:block;
+  }
+  .race-lane .lane-track i.on{background:var(--lagoon); box-shadow:0 0 0 1px rgba(255,255,255,.6) inset;}
+  .race-lane .lane-boat{
+    position:absolute; top:-4px; font-size:1.1rem;
+    transition:left .5s cubic-bezier(.4,0,.3,1);
+    filter:drop-shadow(0 1px 1px rgba(18,59,79,.3));
+  }
+  .race-lane .lane-score{font-size:.72rem; font-weight:800; color:var(--lagoon-dark); width:30px; text-align:right;}
+  .race-turn{
+    font-size:.78rem; font-weight:700; text-align:center;
+    margin-top:6px; padding-top:6px; border-top:2px dotted #E1EEF2;
+  }
+  .race-results{margin-top:10px;}
+  .race-result{
+    display:flex; align-items:center; gap:8px;
+    background:var(--foam); border-radius:14px; padding:7px 12px; margin-bottom:6px;
+    font-weight:700; font-size:.85rem;
+  }
+  .race-result .medal{font-size:1.2rem;}
+  .race-result .av{font-size:1.2rem;}
+  .race-result .nm{flex:1; text-align:left;}
+  .race-result .sc{color:var(--lagoon-dark); font-size:.8rem;}
+
+  .btn-primary.race{background:var(--sun); color:var(--ocean-deep); box-shadow:0 5px 0 #D9A62A;}
+  .mode-row .btn-primary{font-size:.82rem; line-height:1.1;}
+  .mode-hint{font-size:.72rem; font-weight:600; opacity:.75; text-align:center; margin:8px 0 0;}
+  .mini-label{display:block; font-weight:700; font-size:.9rem; margin:6px 0 6px;}
+  .age-grid{display:grid; grid-template-columns:repeat(5,1fr); gap:6px;}
+  .age-opt{
+    border:3px solid transparent; background:var(--foam); border-radius:14px;
+    font-family:'Baloo 2',sans-serif; font-weight:800; font-size:1rem;
+    padding:8px 0; cursor:pointer;
+  }
+  .age-opt.sel{border-color:var(--coral); background:#FFE7E0;}
+
+  /* choix fille / garçon / neutre */
+  .gender-row{display:flex; gap:8px; margin-bottom:10px;}
+  .gender-opt{
+    flex:1; border:3px solid transparent; background:var(--foam);
+    border-radius:16px; padding:8px 2px; cursor:pointer;
+    display:flex; flex-direction:column; align-items:center; gap:2px;
+  }
+  .gender-opt.sel{border-color:var(--coral); background:#FFE7E0;}
+  .gender-opt .ge{font-size:1.5rem;}
+  .gender-opt .gl{font-size:.68rem; font-weight:800;}
+
+  /* la grille d'avatars est plus fournie : on la rend défilante */
+  .avatar-grid{max-height:150px; overflow-y:auto;}
+

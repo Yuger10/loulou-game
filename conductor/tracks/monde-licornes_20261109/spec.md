@@ -11,7 +11,7 @@ Il apporte 4 personnages, 2 nouveaux mini-jeux (**Les potions de couleurs** et *
 ## 2. Exigences fonctionnelles
 
 ### 2.1 L'île
-- `licornes` : `saison:2`, niveau 13, emoji 🦄, forme d'île en nuages avec une cascade arc-en-ciel, thème `--world-*` pastel irisé, scène en SVG et CSS (`js/island.js`).
+- `licornes` : `saison:2`, niveau 13, emoji 🦄, forme d'île en nuages avec une cascade arc-en-ciel, thème `--world-*` pastel irisé, scène en SVG et CSS (`js/features/island/island.js`).
 - **Personnages :**
   - 👑 **Reine Arc-en-ciel**, guide du chapitre ; elle n'a pas de mission
   - 🦄 **Étincelle**, la licorne du Lagon rentrée chez elle. C'est un personnage distinct d'Étincelle au Lagon (id différent), avec un butin propre et des répliques qui font le lien (« Tu m'as aidée au Lagon, tu te souviens ? »)
@@ -47,7 +47,7 @@ Il apporte 4 personnages, 2 nouveaux mini-jeux (**Les potions de couleurs** et *
   1. Une scène plein écran : Grisou se colore entièrement, avec une animation arc-en-ciel et des confettis.
   2. 3 phrases lues à voix haute : Grisou s'excuse et explique qu'il avait peur de perdre les rêves, puis il comprend qu'un rêve partagé ne se perd pas. Il devient l'ami de tous.
   3. **Récompenses**, présentées l'une après l'autre :
-     - **Grisou devient un compagnon** que l'on peut choisir, comme Zap (`js/companions.js`). C'est un nuage arc-en-ciel avec ses propres encouragements.
+     - **Grisou devient un compagnon** que l'on peut choisir, comme Zap (`js/entities/companion/companions.js`). C'est un nuage arc-en-ciel avec ses propres encouragements.
      - Le squishy **✨ Grisou arc-en-ciel**, **unique** : il n'est jamais dans les boîtes et apparaît dans une case spéciale « Trésors » de la chambre à squishies.
   4. Le journal 📖 indique que la saison 2 est terminée (« Le Ciel des Rêves ✅ »).
 - Le final ne se joue **qu'une fois** par profil. On peut le **revoir** depuis le journal, sans recevoir les récompenses une seconde fois.

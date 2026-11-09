@@ -4,12 +4,10 @@ const fs = require('fs');
 const path = require('path');
 
 const root = path.join(__dirname, '..');
-// Le jeu est découpé en plusieurs fichiers : on inline CSS et JS pour jsdom
-let html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
-html = html.replace(/<link rel="stylesheet" href="styles\.css">/,
-  '<style>' + fs.readFileSync(path.join(root, 'styles.css'), 'utf8') + '</style>');
-html = html.replace(/<script src="(js\/[^"]+)"><\/script>/g,
-  (_, src)=> '<script>' + fs.readFileSync(path.join(root, src), 'utf8') + '</script>');
+// Le jeu est découpé en plusieurs fichiers : on inline CSS et JS pour jsdom,
+// dans l'ordre du manifeste des slices (js/slices.js)
+const page = require('./tools/page.js');
+const html = page.buildHtml();
 
 const dom = new JSDOM(html, { runScripts:'dangerously', pretendToBeVisual:true, url:'http://localhost/' });
 const w = dom.window, d = w.document;
@@ -1126,7 +1124,8 @@ setTimeout(()=>{
     }
     // ---- Chaque nouveau monde : couleurs propres et place sur la carte ----
     {
-      const css = fs.readFileSync(path.join(__dirname, '..', 'styles.css'), 'utf8');
+      // toutes les feuilles de style du manifeste : les thèmes peuvent vivre dans leur slice
+      const css = page.manifestCss().map(f=> page.read(f)).join('\n');
       const ids = ev('Object.keys(WORLDS)');
       const sansTheme = ids.filter(id=>id!=='lagon' && !css.includes(`body[data-world="${id}"]{--world-sky`));
       check('carte : chaque monde a son thème de couleurs (--world-*)', sansTheme.length===0);
@@ -1143,8 +1142,8 @@ setTimeout(()=>{
     }
     // ---- Feuilles de style : une accolade perdue (ex. lors d'une fusion) enferme
     //      silencieusement tout le reste dans une media query ----
-    ['styles.css','island.css','characters.css'].forEach(f=>{
-      const css = fs.readFileSync(path.join(__dirname, '..', f), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
+    page.manifestCss().forEach(f=>{
+      const css = page.read(f).replace(/\/\*[\s\S]*?\*\//g, '');
       let depth = 0, min = 0;
       for(const ch of css){ if(ch==='{') depth++; else if(ch==='}') depth--; min = Math.min(min, depth); }
       check(`${f} : accolades équilibrées`, depth===0 && min===0);

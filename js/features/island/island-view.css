@@ -1,0 +1,9 @@
+  /* Lagon view */
+  .lagon-intro{
+    text-align:center;
+    color:var(--foam);
+    margin:6px 0 14px;
+  }
+  .lagon-intro p{margin:4px 0 0; font-weight:600; opacity:.95;}
+
+  /* scène décorée */

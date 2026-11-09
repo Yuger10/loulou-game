@@ -1,0 +1,24 @@
+  /* quêtes du jour */
+  .quests{
+    background:rgba(255,255,255,.92);
+    border-radius:22px; padding:12px 14px; margin-bottom:14px;
+    box-shadow:var(--shadow);
+  }
+  .quests h3{margin:0 0 8px; font-size:.95rem; display:flex; align-items:center; gap:6px;}
+  .quests h3 .chest{margin-left:auto; font-size:1.3rem;}
+  .quest{
+    display:flex; align-items:center; gap:8px; padding:5px 0; font-size:.85rem; font-weight:600;
+  }
+  .quest .tick{font-size:1.1rem;}
+  .quest .txt{flex:1;}
+  .quest .cnt{font-weight:800; color:var(--lagoon-dark); font-size:.8rem;}
+  .quest.done .txt{text-decoration:line-through; opacity:.6;}
+  .quest-bar{height:7px; background:#E4EEF1; border-radius:999px; overflow:hidden; margin-top:6px;}
+  .quest-bar i{display:block; height:100%; background:var(--coral); border-radius:999px; transition:width .4s;}
+  .btn-chest{
+    width:100%; border:none; border-radius:14px; padding:10px; margin-top:10px;
+    font-weight:700; background:var(--sun); color:var(--ocean-deep); cursor:pointer;
+    box-shadow:0 4px 0 #D9A62A;
+  }
+  .btn-chest:active{transform:translateY(3px); box-shadow:none;}
+

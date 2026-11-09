@@ -1,0 +1,32 @@
+  /* =====================================================================
+     Sauvegarde, restauration, installation (v39)
+     ===================================================================== */
+  .install-hint{
+    display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin:0 0 12px; padding:8px 10px 8px 12px;
+    background:var(--foam); border-radius:var(--radius-lg, 24px); box-shadow:var(--shadow-candy-sm); color:var(--ink);
+    font-weight:700; font-size:.9rem;
+  }
+  .install-hint .ih-txt{flex:1 1 180px; min-width:0;}
+  .install-hint{position:relative; padding-right:46px;}
+  .install-hint .ih-close{position:absolute; top:4px; right:4px; border:none; background:none; color:var(--ink-soft); font-size:1rem; min-width:40px; min-height:40px; cursor:pointer;}
+  #avatar-pill{position:relative;}
+  #avatar-pill.backup-due::after{
+    content:''; position:absolute; top:2px; right:2px; width:12px; height:12px; border-radius:50%;
+    background:var(--sun); box-shadow:0 0 0 2px #fff;
+  }
+  .bk-open{display:block; margin:10px auto 0; min-height:44px;}
+  .bk-open.due{background:#FFF3CF; box-shadow:0 4px 0 var(--sun-edge);}
+  .bk-card{background:var(--foam); border-radius:var(--radius-lg, 24px); padding:14px 16px; margin:0 0 12px; box-shadow:var(--shadow-candy-sm); text-align:left;}
+  .bk-card h3{margin:0 0 6px; font-size:1.05rem;}
+  .bk-card p{margin:0 0 10px; color:var(--ink); line-height:1.4;}
+  .bk-card .btn-primary{margin-top:0;}
+  .bk-help{font-size:.85rem; color:var(--ink-soft) !important;}
+  .bk-code{width:100%; min-height:64px; margin:8px 0; padding:8px 10px; border:1.5px solid var(--line, #D3E4E8); border-radius:12px; font:600 .8rem/1.3 ui-monospace, Menlo, monospace; color:var(--ink); background:#F7FBFC; resize:vertical;}
+  .bk-file{display:inline-flex; align-items:center; cursor:pointer; margin-bottom:4px;}
+  .bk-steps{margin:0 0 6px; padding-left:22px; line-height:1.6;}
+  .bk-ok{color:#1E7A34 !important; font-weight:700;}
+  .bk-err{color:#B4472F !important; font-weight:700; margin-top:8px !important;}
+  .bk-confirm{margin-top:10px; padding:10px 12px; background:#FFF8E6; border-radius:14px;}
+  .bk-confirm ul{margin:4px 0 8px; padding-left:20px;}
+  .bk-confirm .av-art{width:1.2em; height:1.3em;}
+

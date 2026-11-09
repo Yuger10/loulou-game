@@ -4,6 +4,7 @@ Spec : [spec.md](./spec.md). Workflow : [workflow.md](../../workflow.md).
 **Prérequis :** `refactor-feature-slices_20261109` livrée.
 
 ## Phase 1 : Harnais de test et passerelle
+- [ ] Task: ADR 0002 « Modules ES natifs » (`docs/adr/`), avant tout code ; passer l'ADR 0001 à « complété par 0002 »
 - [ ] Task: Harnais esbuild
     - [ ] `esbuild` en `devDependencies` ; le harnais regroupe `js/app/main.js` en un script IIFE injecté dans jsdom ; `tech-stack.md` mis à jour **avant** (règle du workflow)
     - [ ] Tests : tout le test de fumée passe avec le nouveau harnais
