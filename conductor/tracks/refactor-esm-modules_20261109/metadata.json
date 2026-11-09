@@ -1,0 +1,8 @@
+{
+  "track_id": "refactor-esm-modules_20261109",
+  "type": "refactor",
+  "status": "new",
+  "created_at": "2026-11-09T00:00:00Z",
+  "updated_at": "2026-11-09T00:00:00Z",
+  "description": "Étape B : passer aux modules ES natifs sans build (esbuild seulement pour les tests), passerelle globalThis progressive, bus d'événements pour casser les cycles, FILES du service worker généré. Dépend de l'étape A."
+}
