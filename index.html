@@ -26,10 +26,10 @@
 
   <header class="topbar">
     <button class="avatar-pill" id="avatar-pill" aria-label="Les joueurs"><span class="av">👧</span><span id="player-name">Toi</span></button>
-    <button class="icon-btn" id="quests-btn" aria-label="Mes missions du jour">📜<span class="badge" id="quest-badge" hidden></span></button>
-    <button class="icon-btn" id="story-btn" aria-label="Mon histoire">📖</button>
+    <button class="icon-btn" id="quests-btn" aria-label="Mes missions du jour"><span data-ui-icon="missions">📜</span><span class="badge" id="quest-badge" hidden></span></button>
+    <button class="icon-btn" id="story-btn" aria-label="Mon histoire"><span data-ui-icon="histoire">📖</span></button>
     <button class="icon-btn" id="sound-btn" aria-label="Son">🔊</button>
-    <div class="coin-pill" id="coin-pill"><span class="icon">🪙</span><span id="coin-count">0</span></div>
+    <div class="coin-pill" id="coin-pill"><span class="icon" data-ui-icon="piece">🪙</span><span id="coin-count">0</span></div>
   </header>
 
   <div class="multi-strip" id="multi-strip">
@@ -95,10 +95,10 @@
   </main>
 
   <nav class="bottomnav">
-    <button class="navbtn active" data-view="carte"><span class="icon">🗺️</span>Carte</button>
-    <button class="navbtn" data-view="ile"><span class="icon">🏝️</span>Île</button>
-    <button class="navbtn" data-view="sac"><span class="icon">🎒</span>Sac<span class="badge" id="sac-badge" hidden></span></button>
-    <button class="navbtn" data-view="marche"><span class="icon">🏪</span>Marché</button>
+    <button class="navbtn active" data-view="carte"><span class="icon" data-ui-icon="carte">🗺️</span>Carte</button>
+    <button class="navbtn" data-view="ile"><span class="icon" data-ui-icon="ile">🏝️</span>Île</button>
+    <button class="navbtn" data-view="sac"><span class="icon" data-ui-icon="sac">🎒</span>Sac<span class="badge" id="sac-badge" hidden></span></button>
+    <button class="navbtn" data-view="marche"><span class="icon" data-ui-icon="marche">🏪</span>Marché</button>
   </nav>
 </div>
 
@@ -139,6 +139,7 @@
 
 
 <script src="js/data.js"></script>
+<script src="js/icons.js"></script>
 <script src="js/difficulty.js"></script>
 <script src="js/players.js"></script>
 <script src="js/companions.js"></script>

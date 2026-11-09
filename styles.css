@@ -1553,7 +1553,7 @@
     .islands{grid-template-columns:repeat(4, 1fr); gap:18px;}
     .island{min-height:150px;}
     .island .emoji{font-size:3.4rem;}
-    nav.bottomnav{border-radius:0;}
+    nav.bottomnav{border-radius:26px 26px 0 0;}
     .sac-grid{grid-template-columns:repeat(auto-fill, minmax(124px, 1fr));}
     .item-card .emoji{font-size:2.4rem;}
     .item-card .name{font-size:.9rem;}
@@ -2654,3 +2654,14 @@
   .look-tile.trying{border-color:var(--sun-edge); background:#FFF8E6;}
   .look-tile.locked .lt-av{opacity:.85;}
   .look-won{background:var(--tint-lilac) !important; font-weight:700;}
+
+  /* =====================================================================
+     Icônes dessinées de l'interface (v44) : identiques sur tous les appareils
+     ===================================================================== */
+  .ui-ic{display:block; width:1.25em; height:1.25em;}
+  nav.bottomnav button .icon{display:block; line-height:1;}
+  nav.bottomnav button .icon .ui-ic{width:1.45em; height:1.45em;}
+  .icon-btn [data-ui-icon], .icon-btn > .ui-ic{display:grid; place-items:center;}
+  .icon-btn .ui-ic{width:1.45em; height:1.45em;}
+  .coin-pill .icon{display:inline-grid; place-items:center;}
+  .coin-pill .icon .ui-ic{width:1.15em; height:1.15em;}

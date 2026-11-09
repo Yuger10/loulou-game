@@ -954,6 +954,21 @@ setTimeout(()=>{
       check('garde-robe : pas de cape pour la sirène', !d.querySelector('[data-lslot="cape"]'));
       ev('state.look = {tete:null, visage:null, tenue:null, cape:null}; state.wardrobe = []; state.avatar = "🦄"; save(); refreshLookEverywhere(); switchView("carte")');
     }
+    // ---- Icônes dessinées de l'interface (identiques sur tous les appareils) ----
+    {
+      const slots = [...d.querySelectorAll('[data-ui-icon]')];
+      check('icônes : barres du haut et du bas dessinées en SVG (pas d\'emoji de l\'appareil)', slots.length>=7 && slots.every(el=>el.querySelector('svg.ui-ic')));
+      check('icônes : les 4 boutons de navigation ont leur icône', [...d.querySelectorAll('nav.bottomnav .navbtn')].every(b=>b.querySelector('svg.ui-ic')));
+      const st = ev('JSON.stringify({s: state.sound, v: state.voice})');
+      const icons = [];
+      for(let i=0;i<3;i++){ d.getElementById('sound-btn').click(); icons.push(d.getElementById('sound-btn').innerHTML); }
+      check('icônes : le bouton son a une icône pour chaque état (voix, sons, silence)', icons.every(h=>h.includes('ui-ic')) && new Set(icons).size===3);
+      ev(`(function(o){ state.sound = o.s; state.voice = o.v; save(); renderSoundBtn(); })(${st})`);
+      check('icônes : chaque dessin est un SVG valide', ev('Object.keys(UI_ICONS)').every(k=>{
+        const doc = new w.DOMParser().parseFromString(ev(`uiIcon(${JSON.stringify(k)})`).replace('<svg ', '<svg xmlns="http://www.w3.org/2000/svg" '), 'image/svg+xml');
+        return !doc.querySelector('parsererror');
+      }));
+    }
     // ---- Chaque nouveau monde : couleurs propres et place sur la carte ----
     {
       const css = fs.readFileSync(path.join(__dirname, '..', 'styles.css'), 'utf8');

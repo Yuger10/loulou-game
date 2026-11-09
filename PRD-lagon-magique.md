@@ -797,3 +797,13 @@ Sac → onglet **« 🎩 Mon look »** (`js/wardrobe.js`). Chaque enfant habille
 - **Correctif** : « 👧‍🦱 » et « 👦‍🦱 », qui ne sont pas des emoji standard et s'affichaient en deux morceaux sur beaucoup d'appareils, deviennent « 👩‍🦱 » et « 👨‍🦱 » (parties existantes mises à jour).
 - Données : `state.wardrobe` (objets achetés), `state.look` = { tete, visage, tenue, cape }, recopié dans le profil (`profile.look`).
 - Cache `lagon-v43`.
+
+---
+
+# v44 — Mêmes icônes sur tous les appareils
+
+Retour du test sur tablette : la barre du bas ne ressemblait pas aux captures, ses icônes étaient de « vieux emoji ». Les emoji sont dessinés par chaque appareil (Apple, Google…) et une tablette ancienne garde d'anciens dessins.
+- **Icônes dessinées en SVG** (`js/icons.js`) pour la barre du bas (Carte, Île, Sac, Marché) et la barre du haut (missions, histoire, son — voix / sons / silence —, pièces) : identiques sur iPhone, iPad, Android et ordinateur, dans le style du design system (contour encre, couleurs bonbon).
+- **Barre du bas flottante partout** : sur grand écran et tablette à l'horizontale, elle garde ses coins arrondis comme sur téléphone.
+- Dans le contenu du jeu (objets, personnages emoji…), les emoji restent ceux de l'appareil.
+- Cache `lagon-v44`.
