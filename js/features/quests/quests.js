@@ -93,9 +93,11 @@ function openChest(){
   addCoins(bonusCoins);
   addItem(gift,1); markSeen(gift);
   state.newItems += 1; save(); renderBadge();
+  // v53 : toujours une boîte surprise de squishies en plus (à ouvrir dans la chambre 🧸)
+  addSquishyBox(null);
   playSound('win'); confetti(); vibrate([60,40,120,40,160]);
   const who = hello();
-  speak(`${who ? who+', b' : 'B'}ravo ! Tu as fini toutes tes missions du jour. Tu gagnes ${bonusCoins} pièces et ${ITEMS[gift].name}.`);
+  speak(`${who ? who+', b' : 'B'}ravo ! Tu as fini toutes tes missions du jour. Tu gagnes ${bonusCoins} pièces, ${ITEMS[gift].name}, et une boîte surprise de squishies !`);
   openModal(`
     <div class="reward-box">
       <span class="big-emoji">🎁</span>
@@ -106,6 +108,7 @@ function openChest(){
       <div class="speech" style="display:flex; align-items:center; justify-content:center; gap:10px; background:#FFF9E8;">
         <span data-gain-item style="font-size:2rem;">${ITEMS[gift].emoji}</span><span><strong>${ITEMS[gift].name}</strong></span>
       </div>
+      ${squishyBoxRewardHTML()}
     </div>
     <button class="btn-primary" id="btn-yay">Merci ! 🎉</button>
   `);

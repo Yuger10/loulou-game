@@ -35,14 +35,15 @@ js/app/              démarrage (init.js)
 js/features/         ce que l'enfant fait : minigame-engine/ (moteur) et minigames/<jeu>/, island/, map/,
                      story/, bag/ (sac, album), market/, quests/, profile/ (en-tête, accueil), wallet/,
                      adaptive/, party/ (chacun son tour, course), players/, gains/, gifts/, wardrobe/,
-                     parents/, seasons/, backup/, music/, companion-team/ (équipe et spécialités, v52)
-js/entities/         les données du jeu : item/, world/, character/, difficulty/, words/, game-state/
+                     parents/, seasons/, backup/, music/, companion-team/ (équipe et spécialités, v52),
+                     squishies/ (collection, chambre, rangement, v53)
+js/entities/         les données du jeu : item/, world/, character/, difficulty/, words/, squishy/, game-state/
                      (état, sauvegarde, migrations), player/ (profils, partie en cours), companion/
 js/shared/           sans rien connaître du jeu : lib/ (hasard), ui/ (modale, vues, son, voix, retours, icônes),
                      styles/ (variables, design system, responsive)
 index.html           page du jeu (markup) ; scripts et feuilles de style générés par `npm run sync`
 manifest.json, sw.js, icon*.png|svg    PWA
-test/                slices.test.js (architecture), smoke.test.js, games.test.js, companions.test.js
+test/                slices.test.js (architecture), smoke.test.js, squishies.test.js, games.test.js, companions.test.js
                      (indices, équipe, spécialités), tools/ (analyse, déplacements)
 conductor/           specs, plans, checklists « ajouter un mini-jeu » et « ajouter une île »
 docs/adr/            décisions d'architecture (ADR)

@@ -4,7 +4,7 @@ const MISSIONS_PER_LEVEL = 5;
 const SAVE_KEY = 'lagon-magique-save';
 
 /* ---------- État ---------- */
-const SAVE_VERSION = 4;
+const SAVE_VERSION = 5;
 
 const DEFAULT_STATE = {
   v: SAVE_VERSION,
@@ -36,7 +36,23 @@ const DEFAULT_STATE = {
   friendRewards: {},  // surprise de « meilleur ami » déjà donnée, par personnage
   team: { open:false, met:[], mates:[], day:null },   // l'équipe des compagnons (js/features/companion-team, v52)
   charsHelped: {},    // personnages déjà aidés au moins une fois (Sam le guide, v52)
+  squishies: squishyFreshState(),   // la collection de squishies (js/features/squishies, v53)
 };
+
+/* La collection de squishies (v53) : état neuf.
+     owned      squishies obtenus : { id: nombre d'exemplaires }
+     boxes      boîtes surprises pas encore ouvertes : la série de chacune
+                (id de SQUISHY_SERIES), ou null pour une boîte « mystère »
+     shelf      les 12 emplacements de l'étagère (id ou null)
+     dry        boîtes d'affilée sans nouveauté (filet de sécurité)
+     done       séries complétées (bonus de pièces déjà donné)
+     fromStory  îles dont l'énigme a déjà donné sa boîte
+     day        { date, bought, sorted } : achats et rangements du jour
+     sorted     boîtes de rangement remplies, en tout
+     hello      la chambre a déjà été annoncée (première ouverture) */
+function squishyFreshState(){
+  return { owned:{}, boxes:[], shelf:Array(12).fill(null), dry:0, done:{}, fromStory:{}, day:null, sorted:0, hello:false };
+}
 
 // copie profonde : sinon inventory/seen/decos seraient partagés avec DEFAULT_STATE
 function freshState(extra){
@@ -73,6 +89,7 @@ let state = {
   friendRewards: {},
   team: { open:false, met:[], mates:[], day:null },
   charsHelped: {},
+  squishies: squishyFreshState(),
 };
 
 function save(){
@@ -107,6 +124,17 @@ function migrate(saved){
     saved.team = saved.team || { open:false, met:[], mates:[], day:null };
     saved.charsHelped = saved.charsHelped || {};
     Object.values(saved.skills || {}).forEach(sk=>{ if(sk && sk.hints == null) sk.hints = 0; });
+  }
+  if(v < 5){
+    // v53 : la collection de squishies. Rattrapage : une boîte (de la série
+    // de l'île) par énigme d'histoire déjà résolue, à ouvrir.
+    const sq = saved.squishies || squishyFreshState();
+    Object.keys(saved.storySolved || {}).filter(w=> saved.storySolved[w]).forEach(w=>{
+      if(sq.fromStory[w]) return;
+      sq.fromStory[w] = true;
+      sq.boxes.push(SQUISHY_ISLAND_SERIES[w] || null);
+    });
+    saved.squishies = sq;
   }
   saved.v = SAVE_VERSION;
   return saved;

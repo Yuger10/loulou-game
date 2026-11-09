@@ -22,8 +22,11 @@ const SKILL_GROUPS = [
   { id:'mesures',  emoji:'🕐', name:'Temps et mesures',    games:['clock','calendar','volume'] },
   { id:'formes',   emoji:'🔷', name:'Formes et espace',    games:['shapes','jigsaw'] },
   { id:'sciences', emoji:'🪐', name:'Sciences',            games:['planets'] },
-  { id:'logique',  emoji:'🧠', name:'Mémoire et logique',  games:['memory','simon','diff','sequence'] },
+  { id:'logique',  emoji:'🧠', name:'Mémoire et logique',  games:['memory','simon','diff','sequence','rangement'] },
 ];
+// activités suivies qui ne sont pas des mini-jeux du choix des jeux
+// (les boîtes de rangement de la chambre à squishies, v53 : un tri)
+const SKILL_EXTRA_NAMES = { rangement:'📦 Boîtes de rangement' };
 const SKILL_STATUS = {
   aise:      { label:"À l'aise",                cls:'ok' },
   encours:   { label:'En cours',                 cls:'mid' },
@@ -210,7 +213,7 @@ function playTimeHTML(st){
 }
 function skillsHTML(st, age){
   const sk = st.skills || {};
-  const gameName = k=>{ const g = GAME_LIST.find(x=>x.key===k); return g ? `${g.emoji} ${g.name}` : k; };
+  const gameName = k=>{ const g = GAME_LIST.find(x=>x.key===k); return g ? `${g.emoji} ${g.name}` : (SKILL_EXTRA_NAMES[k] || k); };
   // les jeux proposés à cet âge, plus ceux déjà joués (avant un changement d'âge)
   const allowed = new Set([...gameTypesForAge(age), ...Object.keys(sk)]);
   const summary = { aise:[], difficile:[] };

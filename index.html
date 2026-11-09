@@ -63,6 +63,7 @@
 <link rel="stylesheet" href="js/features/story/episodes.css">
 <link rel="stylesheet" href="js/features/minigame-engine/hints.css">
 <link rel="stylesheet" href="js/features/companion-team/team.css">
+<link rel="stylesheet" href="js/features/squishies/squishies.css">
 <link rel="stylesheet" href="js/features/island/island.css">
 <link rel="stylesheet" href="js/entities/character/characters.css">
 </head>
@@ -76,6 +77,7 @@
   <header class="topbar">
     <button class="avatar-pill" id="avatar-pill" aria-label="Les joueurs"><span class="av">👧</span><span id="player-name">Toi</span></button>
     <button class="icon-btn team-btn" id="team-btn" data-team-slot aria-label="Mon équipe"></button>
+    <button class="icon-btn" id="squishy-btn" aria-label="Ma chambre à squishies"><span aria-hidden="true">🧸</span><span class="badge" id="squishy-badge" hidden></span></button>
     <button class="icon-btn" id="quests-btn" aria-label="Mes missions du jour"><span data-ui-icon="missions">📜</span><span class="badge" id="quest-badge" hidden></span></button>
     <button class="icon-btn" id="story-btn" aria-label="Mon histoire"><span data-ui-icon="histoire">📖</span></button>
     <button class="icon-btn" id="sound-btn" aria-label="Son">🔊</button>
@@ -128,6 +130,7 @@
         <button class="tab-btn" data-sactab="album">📖 Album</button>
         <button class="tab-btn" data-sactab="look">🎩 Mon look</button>
       </div>
+      <button type="button" class="sq-room-link" id="sq-room-link"><span class="sq-rl-ico" aria-hidden="true">🧸</span><span class="sq-rl-txt">Ma chambre à squishies</span><span class="badge" id="sq-room-link-n" hidden></span></button>
       <div id="sac-content"></div>
       <div id="album-content" hidden></div>
       <div id="look-content" hidden></div>
@@ -208,6 +211,7 @@
 <script src="js/entities/difficulty/difficulty.js"></script>
 <script src="js/entities/difficulty/game-types.js"></script>
 <script src="js/entities/difficulty/age.js"></script>
+<script src="js/entities/squishy/squishies.js"></script>
 <script src="js/entities/game-state/state.js"></script>
 <script src="js/entities/player/avatars.js"></script>
 <script src="js/entities/player/profiles.js"></script>
@@ -249,6 +253,8 @@
 <script src="js/features/minigames/jigsaw/jigsaw.js"></script>
 <script src="js/features/story/story.js"></script>
 <script src="js/features/story/episodes.js"></script>
+<script src="js/features/squishies/squishies.js"></script>
+<script src="js/features/squishies/squishy-room.js"></script>
 <script src="js/features/market/market.js"></script>
 <script src="js/features/gifts/gifts.js"></script>
 <script src="js/features/players/profiles-ui.js"></script>

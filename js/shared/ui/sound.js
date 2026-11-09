@@ -32,6 +32,21 @@ function playSound(kind){
     else if(kind==='coin') { tone(988, 0, .08, 'triangle'); tone(1319, .07, .14, 'triangle'); }
     else if(kind==='tick') tone(1568, 0, .05, 'triangle', .05);
     else if(kind==='pop') { tone(784, 0, .06, 'sine', .12); tone(1175, .05, .1, 'sine', .1); }
+    // un squishy qu'on presse (v53) : un petit « pouic » qui monte puis redescend
+    else if(kind==='pouic') {
+      const o = audioCtx.createOscillator(), g = audioCtx.createGain(), t = audioCtx.currentTime;
+      o.type = 'sine';
+      o.frequency.setValueAtTime(520, t);
+      o.frequency.exponentialRampToValueAtTime(1500, t + .14);
+      o.frequency.exponentialRampToValueAtTime(900, t + .26);
+      g.gain.setValueAtTime(0, t);
+      g.gain.linearRampToValueAtTime(.16, t + .02);
+      g.gain.exponentialRampToValueAtTime(.001, t + .3);
+      o.connect(g).connect(audioCtx.destination);
+      o.start(t); o.stop(t + .32);
+    }
+    // un squishy ✨ pailleté (v53) : des clochettes
+    else if(kind==='sparkle') { [1319,1568,1976,2637,2093,2637].forEach((f,i)=>tone(f, i*.08, .2, 'triangle', .09)); }
   }catch(e){}
 }
 

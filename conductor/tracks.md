@@ -14,7 +14,7 @@ Registre des tracks Conductor, **dans l'ordre d'implémentation**. Feuille de ro
 
 ---
 
-- [ ] **Track: Collection de squishies : boîtes surprises, séries, chambre, rangement à consigne (v53)**
+- [x] **Track: Collection de squishies : boîtes surprises, séries, chambre, rangement à consigne (v53)**
 *Link: [./tracks/squishy-collection_20261109/](./tracks/squishy-collection_20261109/)*
 
 ---

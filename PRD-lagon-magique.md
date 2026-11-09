@@ -967,3 +967,51 @@ Actives quand le compagnon est équipier, ou principal une fois l'équipe ouvert
 - `test/companions.test.js` (127 vérifications, branché sur `npm test`) : contrat d'indices, bouton, anti-devinette et réponse jamais donnée **sur chaque mini-jeu et chaque palier** (186 parties, gagnables après les indices), énigmes, équipe, migration, rencontres, « Mon équipe », chaque spécialité, mode course.
 - Cache `lagon-v52`.
 
+
+---
+
+# v53 — Collection de squishies : boîtes surprises, séries, chambre, rangement à consigne
+
+> **Idée de la joueuse principale :** « un système de squishies qu'on range dans des boîtes ». Inspirée des vrais squishies (taba squishies, boîtes mystère, séries, raretés : voir [`conductor/research-squishies.md`](conductor/research-squishies.md)).
+
+Track Conductor `squishy-collection` ([spec](conductor/tracks/squishy-collection_20261109/spec.md), [plan](conductor/tracks/squishy-collection_20261109/plan.md)). Catalogue dans l'entité `js/entities/squishy/` (données seules, pour que la migration de la sauvegarde puisse s'en servir), logique et interface dans la slice `js/features/squishies/`.
+
+## Les squishies
+- **3 séries de 6** au lancement : 🦫 Capybaras (capy fraise, capy orange, capy dodo, capy au bain ; rare : capy pyjama ; ✨ : capy doré), 🍩 Desserts (donut, mochi, cupcake, glace ; rare : macaron ; ✨ : gâteau arc-en-ciel), 🐾 Animaux (chat, pingouin, lapin, poussin ; rare : grenouille ; ✨ : chat holographique).
+- Chaque modèle a une **couleur** (celles du mini-jeu Formes), une **forme** (rond, ovale, carré arrondi) et une **taille** (petit, grand), qui servent au tri. Dessins en SVG dans le style des squishies du Pays Squishy (corps doux, reflet, petit visage, un détail propre au modèle) ; les ✨ ont des paillettes animées.
+- Une nouvelle série = une entrée de données : les mondes de la saison 2 ajouteront les leurs.
+
+## Les boîtes surprises
+- **Coffre des missions du jour :** toujours 1 boîte « mystère » en plus.
+- **Énigmes d'histoire :** 1 boîte de la série de l'île, une seule fois par île (Lagon, Forêt, Montagne → Animaux ; Château, Volcan, Pays Squishy → Desserts ; Jungle, Cité du Temps → Capybaras).
+- **Boutique du marché** (onglet Acheter) : 15 pièces, 3 par jour et par joueur, puis « Reviens demain pour d'autres boîtes 🌙 ».
+- **Rattrapage :** une partie qui avait déjà résolu N énigmes reçoit N boîtes à ouvrir ; une bulle le dit au lancement tant que la chambre n'a pas été ouverte.
+- Pastille sur le bouton 🧸 de l'en-tête : le nombre de boîtes à ouvrir.
+
+## Ouvrir une boîte (tirage doux)
+- 70 % commun, 25 % rare, 5 % ✨, dans la série de la boîte ; une boîte mystère choisit une série pas encore complète.
+- **Filet de sécurité :** après 3 boîtes d'affilée sans nouveauté, la suivante donne un squishy jamais obtenu (de sa série, sinon d'une autre). Un double dans une série complète ne compte pas.
+- La boîte tremble, s'ouvre, le squishy saute ; la voix dit son nom (« Un capy fraise ! »). « Nouveau ! » ou « ×2 » ; confettis pour un rare, fête avec clochettes et paillettes pour un ✨.
+- **Série complète :** fête et 20 pièces, une seule fois par série.
+
+## Ma chambre à squishies 🧸
+- Par le bouton 🧸 de l'en-tête ou depuis le Sac. Trois onglets : **📚 Collection** (une rangée par série, silhouettes grises pour les manquants, « 4 / 6 », boîtes à ouvrir en haut), **🗄️ Étagère** (12 places : toucher un squishy puis une place ; toucher un squishy posé pour le déplacer ou le retirer), **📦 Ranger**.
+- **Presser :** toucher un squishy l'écrase puis le fait remonter lentement (1,5 s), avec un « pouic » et une petite vibration. Rien ne change dans la partie.
+- Sur petit téléphone, les boutons ronds de l'en-tête suivent la largeur de l'écran pour que les pièces restent visibles.
+
+## Les boîtes de rangement à consigne (tri)
+- Une consigne en image et à voix haute (« Range les squishies roses ! », pastille rose), 4 cases à remplir, 8 squishies **de sa collection** au choix. Seules les consignes réalisables sont proposées : au moins 4 exemplaires qui la respectent et 2 qui ne la respectent pas (les doubles comptent). Moins de 6 modèles différents : la zone l'explique et propose d'ouvrir des boîtes.
+- **Selon l'âge :** moins de 6 ans ou sans âge, la couleur ; 6-7 ans, un critère (couleur, forme ou taille) ; 8 ans et plus, deux critères (« les petits squishies ronds »), avec des « presque » sur le plateau. Le niveau adaptatif (`skills.rangement.lvl`) peut redescendre d'un cran (2 boîtes ratées sur 3) puis remonter (2 réussites avec au plus 1 erreur), jamais au-dessus du plafond de l'âge.
+- **Anti-devinette :** un mauvais squishy rebondit, avec un indice parlé (« Lui, il est bleu. On cherche des roses ! ») ; après 2 erreurs, une autre consigne (relance annulable si la fenêtre se ferme). Le bouton 💡 du compagnon aide aussi (la piste, puis 3 squishies qui brillent dont au moins un à ranger).
+- **Récompense :** 5 pièces pour les 3 premières boîtes du jour, puis pour le plaisir ; un compteur et une petite pile des boîtes rangées. Ranger n'enlève rien à la collection.
+- **Espace parents :** « 📦 Boîtes de rangement » dans Mémoire et logique (réussites, erreurs, niveau).
+
+## Le marché
+- **Échanger :** « Mes doubles de squishies » : 3 doubles, quels qu'ils soient (les plus nombreux partent d'abord), contre le squishy manquant choisi parmi les silhouettes. « Encore 2 doubles » tant qu'il en manque ; un mot doux si la collection est complète.
+- **Acheter :** la boîte surprise, en tête de liste.
+
+## Données et tests
+- `SAVE_VERSION` 5 : `state.squishies = { owned, boxes, shelf, dry, done, fromStory, day, sorted, hello }` et `skills.rangement` ; migration sans perte avec les boîtes de rattrapage. La sauvegarde par fichier et le code de transfert emportent tout.
+- Sons « pouic » et « clochettes » ajoutés au son du jeu (Web Audio, sans fichier).
+- `test/squishies.test.js` (123 vérifications, branché sur `npm test`) : catalogue, migration, sauvegarde et restauration, boîtes (coffre, énigmes, boutique et sa limite), raretés et filet de sécurité (hasard injecté), bonus de série, échange, dessins, chambre, ouverture animée, presser, étagère et rechargement, consignes réalisables sur 300 collections au hasard selon l'âge, partie de rangement complète (relance, pièces, limite du jour), marché.
+- Cache `lagon-v53`.
