@@ -492,6 +492,7 @@ function contextualLine(charId){
   }
   if(state.decos.length===0 && state.coins>=8) lines.push(`Avec tes ${state.coins} pièces, tu pourrais décorer ${WORLDS[currentWorld].name} 🌴 !`);
   if(typeof WARDROBE!=='undefined' && !Object.values(state.look||{}).some(Boolean) && state.coins >= 8) lines.push(`Avec tes pièces, tu peux habiller ton avatar : regarde dans ton sac, « Mon look » 🎩 !`);
+  if(typeof favoritesOf==='function'){ const fv = favoritesOf(charId).map(k=>ITEMS[k]); if(fv.length) lines.push(`Mes cadeaux préférés ? ${fv.map(i=>i.name + ' ' + i.emoji).join(' et ')} ! 💖`); }
   if(state.decos.length>=3) lines.push(`C'est magnifique ici${who?', '+who:''} ! ${state.decos.length} décorations déjà ✨`);
   if(level()>=3) lines.push(`Niveau ${level()} déjà ! Tu es un${ac('','e')} vrai${ac('','e')} ${ac('explorateur','exploratrice')}.`);
   if(level()===2 && levelProgress()>=0.6) lines.push(`Encore quelques missions et la forêt enchantée s'ouvrira 🌲 !`);
@@ -509,10 +510,11 @@ function openDialogue(charId){
   openModal(`
     <div class="char-header">
       <span class="emoji">${charFace(charId)}</span>
-      <h2>${c.name} ${c.title}</h2>
+      <h2>${c.name} ${c.title}${typeof friendHearts==='function' && friendPoints(charId) ? friendHearts(charId) : ''}</h2>
     </div>
     ${speechBubble(text)}
     <button class="btn-primary" id="btn-play">Choisir un jeu 🎮</button>
+    ${typeof openGiftPicker==='function' ? '<button class="btn-craft gift-open" id="btn-gift">🎁 Offrir un objet</button>' : ''}
     <button class="btn-ghost" id="btn-random">🎲 Surprise</button>
     <button class="btn-ghost" id="btn-close">Pas maintenant</button>
   `);
@@ -521,6 +523,8 @@ function openDialogue(charId){
   document.getElementById('btn-play').onclick = ()=> { playSound('tap'); openGamePicker(charId); };
   const pickBtn = document.getElementById('btn-random');
   if(pickBtn) pickBtn.onclick = ()=> { playSound('tap'); startMinigame(); };
+  const giftBtn = document.getElementById('btn-gift');
+  if(giftBtn) giftBtn.onclick = ()=> { playSound('tap'); openGiftPicker(charId); };
   document.getElementById('btn-close').onclick = ()=>{ window.speechSynthesis && speechSynthesis.cancel(); closeModal(); };
 }
 

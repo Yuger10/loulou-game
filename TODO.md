@@ -18,15 +18,14 @@ Ce qui guide tout le reste. Après chaque partie, remplir les **Notes de session
 - [ ] Vérifier la taille des boutons et la lisibilité au doigt sur leur appareil
 - [ ] Ajuster la difficulté selon ce qu'on observe
 
-### Phase 1 — Ne rien perdre 🔴 ⏳ (reste : la mise en ligne)
+### Phase 1 — Ne rien perdre 🔴 ✅
 La partie est enregistrée dans le navigateur. Safari peut effacer ces données après 7 jours sans utilisation si le jeu n'est pas installé sur l'écran d'accueil, et changer d'appareil fait tout perdre.
 - [x] **Sauvegarder / restaurer** une partie dans un fichier (tous les joueurs, toute la progression), depuis le panneau des joueurs — v39
 - [x] **Code de transfert** à copier-coller pour passer sur un autre appareil sans fichier — v39
 - [x] **Stockage persistant** : demander au navigateur de ne pas effacer les données (`navigator.storage.persist`) — v39
 - [x] **Inviter à installer le jeu** sur l'écran d'accueil (explication iPhone/iPad, bouton « Installer » sur Android et ordinateur) — v39
 - [x] **Rappel de sauvegarde** discret quand la dernière sauvegarde date de plus de 2 semaines — v39
-- [ ] **Mettre le jeu en ligne en `https://`** (GitHub Pages) — *à faire par le propriétaire du dépôt : Settings → Pages → « Deploy from a branch » → `main`, dossier `/ (root)`* ; puis mettre l'adresse dans le README.
-  Pourquoi c'est important : ouvert depuis le Mac par le Wi-Fi (`http://`), le navigateur n'active ni le mode hors-ligne, ni le stockage protégé, et l'installation sur iPhone reste un simple raccourci. En `https://`, tout fonctionne, et on peut jouer sans le Mac allumé.
+- [x] **Jeu en ligne en `https://`** : https://yuger10.github.io/loulou-game/ (GitHub Pages, branche `main`) — à installer sur l'écran d'accueil de chaque appareil ; pour garder une partie jouée sur l'ancienne adresse, la transférer avec le code de transfert
 
 ### Phase 2 — Espace parents 🟠 ✅
 Panneau des joueurs → 👪 *Espace parents*.
@@ -48,7 +47,7 @@ Chaque mini-jeu a maintenant son propre niveau pour chaque enfant (`js/adaptive.
 ### Phase 4 — Plus de plaisir 🟢
 - [x] Habiller son avatar : Sac → « 🎩 Mon look » — 10 chapeaux, 6 accessoires de visage, couleurs de tenue, capes de Zap ; achetés avec les pièces ou gagnés avec les missions — v43
 - [ ] À observer : les prix (8 à 30 pièces) sont-ils bien réglés ? Faut-il plus d'objets à gagner ?
-- [ ] Offrir un objet à un personnage : il remercie avec une petite animation
+- [x] Offrir un objet à un personnage : il remercie (objet qui s'envole, cœurs, danse) ; 2 objets préférés par personnage, cœurs d'amitié, « meilleurs amis » à 5 cœurs, mission du jour « Offre 2 objets » — v47
 - [x] Une petite histoire par île : un chapitre et une énigme en images à chaque nouvelle île, relisible dans « 📖 Mon histoire » — v40
 - [ ] Faire avancer l'histoire aussi à chaque mission (pas seulement à chaque île)
 - [ ] Musique d'ambiance douce, activable
@@ -101,6 +100,7 @@ Chaque mini-jeu a maintenant son propre niveau pour chaque enfant (`js/adaptive.
 | v44 | Icônes dessinées pour les barres du haut et du bas (identiques sur tous les appareils), barre du bas flottante aussi sur grand écran |
 | v45 | Fêtes et saisons : Halloween, Noël, anniversaire (décor, chapeaux, cadeau), aperçu dans l'espace parents |
 | v46 | Mini-jeu « Le puzzle » (assembler l'image) : 2×2, 3×3, 4×3, images dessinées des îles et des compagnons |
+| v47 | Offrir un objet à un personnage : remerciements animés, objets préférés, amitié ; jeu en ligne sur GitHub Pages |
 
 ---
 
