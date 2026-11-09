@@ -2665,3 +2665,44 @@
   .icon-btn .ui-ic{width:1.45em; height:1.45em;}
   .coin-pill .icon{display:inline-grid; place-items:center;}
   .coin-pill .icon .ui-ic{width:1.15em; height:1.15em;}
+
+  /* =====================================================================
+     Fêtes et saisons (v45) : neige, feuilles, ballons — jamais pendant un jeu
+     (sous les fenêtres) et jamais si l'appareil demande moins d'animations
+     ===================================================================== */
+  #season-fx, #splash .season-fx{position:fixed; inset:0; pointer-events:none; overflow:hidden; z-index:9;}
+  #splash .season-fx{position:absolute; z-index:0;}
+  .sfx{position:absolute; top:-40px; width:var(--size); height:var(--size); animation:sfxFall var(--dur) linear var(--delay) infinite; will-change:transform;}
+  .sfx-neige{border-radius:50%; background:#fff; opacity:.9; box-shadow:0 0 6px rgba(255,255,255,.9);}
+  .sfx-feuilles{border-radius:0 70% 0 70%; background:#FF8A3D; opacity:.85;}
+  .sfx-feuilles.v1{background:#E5484D;} .sfx-feuilles.v2{background:#FFCB4C;} .sfx-feuilles.v3{background:#8B5CF6;}
+  .sfx-ballons{top:auto; bottom:-80px; height:calc(var(--size) * 1.2); border-radius:50% 50% 48% 48%; background:#FF6FA5; opacity:.6;
+    animation-name:sfxRise;}
+  .sfx-ballons::after{content:''; position:absolute; left:50%; top:100%; width:1px; height:18px; background:rgba(18,59,79,.3);}
+  .sfx-ballons.v1{background:#5AB0F2;} .sfx-ballons.v2{background:#FFCB4C;} .sfx-ballons.v3{background:#5FCB7E;}
+  @keyframes sfxFall{
+    0%{transform:translate3d(0,0,0) rotate(0deg);}
+    50%{transform:translate3d(24px,55vh,0) rotate(180deg);}
+    100%{transform:translate3d(-12px,112vh,0) rotate(360deg);}
+  }
+  @keyframes sfxRise{
+    0%{transform:translate3d(0,0,0);}
+    50%{transform:translate3d(18px,-60vh,0);}
+    100%{transform:translate3d(-8px,-125vh,0);}
+  }
+  .ss-bat{animation:batFlap 1.6s ease-in-out infinite; transform-box:fill-box; transform-origin:center;}
+  .ss-bat.b2{animation-delay:-.5s;} .ss-bat.b3{animation-delay:-1s;}
+  @keyframes batFlap{ 0%,100%{scale:1 1;} 50%{scale:1 .7;} }
+  .ss-balloon{animation:balloonBob 3.2s ease-in-out var(--d) infinite;}
+  @keyframes balloonBob{ 0%,100%{translate:0 0;} 50%{translate:0 -6px;} }
+  .ss-flame{animation:flameFlicker .9s ease-in-out infinite; transform-box:fill-box; transform-origin:bottom center;}
+  @keyframes flameFlicker{ 0%,100%{scale:1 1;} 50%{scale:.85 1.12;} }
+  @media (prefers-reduced-motion:reduce){
+    #season-fx, #splash .season-fx{display:none;}
+    .ss-bat, .ss-balloon, .ss-flame{animation:none;}
+  }
+  .season-gift .season-gift-av{font-size:64px; line-height:1; margin:10px auto 0; display:grid; place-items:center; padding-top:16px;}
+  .season-gift .season-gift-av .av-art{width:92px; height:100px;}
+  .bday-row{display:flex; gap:8px; margin:4px 0 10px;}
+  .bday-row select{flex:1; min-height:48px; padding:8px 10px; border:2px solid var(--line, #D3E4E8); border-radius:14px; background:#fff;
+    font:700 1rem 'Quicksand',sans-serif; color:var(--ink);}

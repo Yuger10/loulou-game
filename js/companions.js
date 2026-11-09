@@ -191,7 +191,10 @@ function buddyParts(c, o){
 // opts.look : la tenue choisie dans la garde-robe (js/wardrobe.js), pour
 // l'avatar dessiné du joueur — { tete, visage, tenue }.
 function companionSVG(id, mood, opts){
-  const look = (opts && opts.look) || null;
+  let look = (opts && opts.look) || null;
+  // saison (js/seasons.js) : bonnet de Noël, chapeau de sorcière ou de fête
+  const sHat = (!look || !look.tete) && typeof seasonHat==='function' ? seasonHat() : null;
+  if(sHat) look = Object.assign({}, look || {}, { tete: sHat });
   const base = COMPANIONS[id] || COMPANIONS.perle;
   const c = look && typeof lookColors==='function' ? Object.assign({}, base, lookColors(look)) : base;
   const m = BUDDY_MOODS.includes(mood) ? mood : 'happy';

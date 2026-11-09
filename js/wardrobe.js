@@ -38,6 +38,10 @@ const WARDROBE = {
   couronne:   { slot:'tete',   name:'Couronne dorée',     price:30 },
   antennes:   { slot:'tete',   name:'Antennes rigolotes', unlock:25 },
   etoiles:    { slot:'tete',   name:"Couronne d'étoiles", unlock:60 },
+  // offerts une fois par saison (js/seasons.js), puis gardés
+  bonnet_noel:{ slot:'tete',   name:'Bonnet de Noël',     season:'noel' },
+  sorciere:   { slot:'tete',   name:'Chapeau de sorcière', season:'halloween' },
+  fete:       { slot:'tete',   name:'Chapeau de fête',    season:'anniversaire' },
 
   lunettes:   { slot:'visage', name:'Lunettes rondes',    price:8 },
   moustache:  { slot:'visage', name:'Moustache rigolote', price:10 },
@@ -115,6 +119,20 @@ const LOOK_ART = {
   antennes: ()=> `<path d="M2 16 C6 -12 26 -22 50 -22 C74 -22 94 -12 98 16" fill="none" stroke="#5FCB7E" stroke-width="7" stroke-linecap="round"/>
       <path d="M32 -20 C28 -34 22 -42 16 -48 M68 -20 C72 -34 78 -42 84 -48" fill="none" stroke="#2B2140" stroke-width="3.5" stroke-linecap="round"/>
       <circle cx="15" cy="-50" r="9" fill="#FFD54A" stroke="#E0A92A" stroke-width="2"/><circle cx="85" cy="-50" r="9" fill="#FF8FB8" stroke="#E2679A" stroke-width="2"/>`,
+  bonnet_noel: ()=> `<path d="M-2 12 C2 -12 24 -34 54 -34 C78 -34 98 -20 110 0 C113 6 114 12 112 18 C106 8 98 2 90 0 C94 4 96 8 97 12 Z" fill="#E5484D" stroke="#A82E33" stroke-width="2.5" stroke-linejoin="round"/>
+      <path d="M22 -14 C32 -24 44 -28 56 -28" fill="none" stroke="#fff" stroke-width="3.5" opacity=".35" stroke-linecap="round"/>
+      <rect x="-8" y="5" width="112" height="18" rx="9" fill="#fff" stroke="#DCE3EA" stroke-width="2"/>
+      <circle cx="112" cy="20" r="10" fill="#fff" stroke="#DCE3EA" stroke-width="2"/>`,
+  sorciere: ()=> `<path d="M16 4 L46 -56 C50 -64 60 -66 66 -60 C60 -60 56 -56 56 -50 L84 4 Z" fill="#4B3570" stroke="#2A1D44" stroke-width="2.5" stroke-linejoin="round"/>
+      <path d="M19 -3 C40 1 62 1 81 -3 L78 -11 C60 -7 40 -7 22 -11 Z" fill="#FF8A3D"/>
+      <rect x="43" y="-12" width="13" height="10" rx="2" fill="none" stroke="#FFCB4C" stroke-width="2.5"/>
+      <ellipse cx="50" cy="5" rx="58" ry="10" fill="#2A1D44"/>
+      ${lookStar(66,-30,5,'#FFD54A')}`,
+  fete: ()=> `<g transform="rotate(10 50 6)"><path d="M24 8 L50 -54 L76 8 Z" fill="#5AB0F2" stroke="#2F7FC0" stroke-width="2.5" stroke-linejoin="round"/>
+      <path d="M33 -14 L42 -10 L46 -26 M58 -30 L62 -14 L70 -8" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="40" cy="-2" r="3.2" fill="#FFCB4C"/><circle cx="58" cy="-6" r="3.2" fill="#FF6FA5"/><circle cx="50" cy="-34" r="3" fill="#FFCB4C"/>
+      <path d="M22 8 Q50 16 78 8" fill="none" stroke="#FF6FA5" stroke-width="5" stroke-linecap="round"/>
+      <circle cx="50" cy="-56" r="7.5" fill="#FFCB4C" stroke="#E0A92A" stroke-width="2"/></g>`,
   etoiles: ()=> [[6,4,9],[24,-12,11],[50,-22,14],[76,-12,11],[94,4,9]].map(([x,y,r])=>lookStar(x,y,r,'#FFD54A','#E0A92A')).join('')
       + `<circle cx="37" cy="-30" r="2.6" fill="#fff"/><circle cx="63" cy="-30" r="2.6" fill="#fff"/><circle cx="12" cy="-14" r="2" fill="#fff"/><circle cx="88" cy="-14" r="2" fill="#fff"/>`,
 
@@ -196,6 +214,7 @@ let lookSlot = 'tete';
 function lookStatusText(id){
   const it = WARDROBE[id];
   if(ownsLookItem(id)) return '';
+  if(it.season && typeof FETES!=='undefined') return `${FETES[it.season].emoji} ${FETES[it.season].name}`;
   if(it.unlock) return `🔒 ${it.unlock} missions`;
   return `🪙 ${it.price}`;
 }
@@ -210,7 +229,10 @@ function renderLook(){
   const tryItem = lookTry && WARDROBE[lookTry.id];
   let action = '';
   if(tryItem){
-    if(tryItem.unlock){
+    if(tryItem.season && typeof FETES!=='undefined'){
+      const se = FETES[tryItem.season];
+      action = `<p class="look-msg">${se.emoji} ${tryItem.name} : un cadeau ${tryItem.season==='anniversaire' ? "le jour de ton anniversaire" : 'à ' + se.name}</p>`;
+    } else if(tryItem.unlock){
       const left = tryItem.unlock - (state.missions || 0);
       action = `<p class="look-msg">🔒 Encore <b>${left}</b> mission${left>1?'s':''} pour gagner : ${tryItem.name}</p>`;
     } else if(state.coins >= tryItem.price){
@@ -227,7 +249,7 @@ function renderLook(){
     const trying = lookTry && lookTry.id === id;
     const owned = !id || ownsLookItem(id);
     const lk = Object.assign({}, worn, { [lookSlot]: id });
-    const label = it ? `${it.name}${owned ? '' : it.unlock ? `, à gagner après ${it.unlock} missions` : `, ${it.price} pièces`}` : 'Rien';
+    const label = it ? `${it.name}${owned ? '' : it.season ? ', un cadeau de saison' : it.unlock ? `, à gagner après ${it.unlock} missions` : `, ${it.price} pièces`}` : 'Rien';
     return `<button type="button" class="look-tile ${on?'on':''} ${trying?'trying':''} ${owned?'':'locked'}" data-look="${id||''}" aria-pressed="${on}" aria-label="${label}">
       <span class="lt-av">${avatarHTML(av, lk)}</span>
       <span class="lt-name">${it ? it.name : 'Rien'}</span>
@@ -263,7 +285,7 @@ function renderLook(){
       if(it) speak(it.name);
     } else {
       lookTry = { slot: lookSlot, id };
-      speak(it.unlock ? `${it.name}. À gagner après ${it.unlock} missions.` : `${it.name}. ${it.price} pièces.`);
+      speak(it.season ? `${it.name}. Un cadeau de saison.` : it.unlock ? `${it.name}. À gagner après ${it.unlock} missions.` : `${it.name}. ${it.price} pièces.`);
     }
     renderLook();
   });
