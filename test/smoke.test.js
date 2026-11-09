@@ -911,6 +911,49 @@ setTimeout(()=>{
       check('adaptatif : le niveau du calcul mental va jusqu\'à 6, les autres jeux jusqu\'à 5', ev('gameMaxTier("calc")')===6 && ev('gameMaxTier("reading")')===5);
       ev('state.skills = {}; currentWorld = "lagon"; lastGame = null; save()');
     }
+    // ---- Garde-robe : habiller son avatar (Phase 4) ----
+    {
+      ev('closeModal(); party.active = false');
+      const ids = ev('Object.keys(WARDROBE)');
+      check('garde-robe : chaque objet a un dessin ou des couleurs', ids.every(k=>ev(`!!(LOOK_ART[${JSON.stringify(k)}] || WARDROBE[${JSON.stringify(k)}].colors)`)));
+      check('garde-robe : chaque objet a un prix ou se gagne avec des missions', ids.every(k=>ev(`!!(WARDROBE[${JSON.stringify(k)}].price || WARDROBE[${JSON.stringify(k)}].unlock)`)));
+      check('garde-robe : chaque dessin est un SVG valide', ids.filter(k=>ev(`!!LOOK_ART[${JSON.stringify(k)}]`)).every(k=>{
+        const svg = ev(`'<svg xmlns="http://www.w3.org/2000/svg">' + LOOK_ART[${JSON.stringify(k)}]() + '</svg>'`);
+        const doc = new w.DOMParser().parseFromString(svg, 'image/svg+xml');
+        return !doc.querySelector('parsererror');
+      }));
+      ev('state.avatar = "art:zap"; state.coins = 50; state.missions = 9; state.wardrobe = []; state.look = {tete:null, visage:null, tenue:null, cape:null}; save()');
+      check('garde-robe : Zap peut changer de cape', ev('lookSlotsFor("art:zap").map(s=>s.id).join()')==='tete,visage,tenue,cape');
+      check('garde-robe : un avatar emoji porte chapeaux et lunettes (pas de tenue)', ev('lookSlotsFor("🧒").map(s=>s.id).join()')==='tete,visage');
+      check('garde-robe : pas encore d\'objet', ev('ownsLookItem("couronne")')===false && ev('ownsLookItem("joues")')===false);
+      // acheter et porter
+      check('garde-robe : acheter la couronne', ev('buyLookItem("couronne")')===true && ev('state.coins')===20 && ev('state.look.tete')==='couronne');
+      check('garde-robe : pas deux fois, ni sans assez de pièces', ev('buyLookItem("couronne")')===false && ev('buyLookItem("tricorne")')===false && ev('state.coins')===20);
+      check('garde-robe : l\'avatar de la barre porte la couronne', d.querySelector('#avatar-pill .av').innerHTML.includes('b-look'));
+      check('garde-robe : la couronne remplace le couvre-chef d\'origine', !ev('avatarHTML("art:rose", {tete:"couronne"})').includes('M43 26 L46 12') && ev('avatarHTML("art:rose", null)').includes('M43 26 L46 12'));
+      ev('state.wardrobe.push("c_rouge"); wearLook("cape", "c_rouge")');
+      check('garde-robe : la cape de Zap change de couleur', ev('avatarHTML("art:zap", state.look)').includes('#E5484D') && !ev('avatarHTML("art:zap", state.look)').includes('#FF8A3D'));
+      check('garde-robe : un avatar emoji porte ses accessoires par-dessus', ev('avatarHTML("🧒", {tete:"couronne"})').includes('look-ov'));
+      check('garde-robe : pas d\'accessoire sur une fusée ou un héros en pied', ev('avatarHTML("🚀", {tete:"couronne"})')==='🚀' && ev('lookSlotsFor("🦸‍♂️").length')===0);
+      check('avatars : uniquement des emoji standard (pas de « 👧‍🦱 » en deux morceaux)', !ev('AVATARS').includes('👧‍🦱') && ev('fixAvatar("👦‍🦱")')==='👨‍🦱');
+      check('garde-robe : le look suit le joueur dans la liste des joueurs', ev('currentProfile().look.tete')==='couronne' && ev('currentProfile().look.cape')==='c_rouge');
+      // gagner un objet avec les missions
+      ev('currentWorld = "lagon"; lastGame = "count"; playGame("count"); onMissionWin()');
+      check('garde-robe : 10e mission → objet gagné, annoncé sur l\'écran de victoire', ev('ownsLookItem("joues")')===true && !!d.querySelector('.win-box .look-won'));
+      ev('closeModal()');
+      // l'onglet du sac
+      ev('switchView("sac"); setSacTab("look")');
+      check('garde-robe : onglet « Mon look » dans le sac', !d.getElementById('look-content').hidden && !!d.querySelector('.look-preview') && d.querySelectorAll('.look-tile').length > 3);
+      d.querySelector('[data-look="tricorne"]').click();
+      check('garde-robe : on essaie avant d\'acheter (pas assez de pièces → message)', ev('lookTry && lookTry.id')==='tricorne' && !!d.querySelector('.look-msg') && ev('state.look.tete')==='couronne');
+      d.querySelector('[data-look=""]').click();
+      check('garde-robe : « Rien » enlève le chapeau', ev('state.look.tete')===null);
+      d.querySelector('[data-lslot="avatar"]').click();
+      d.querySelector('.av-pick[data-av="art:perle"]').click();
+      check('garde-robe : changer de personnage depuis « Mon look »', ev('state.avatar')==='art:perle' && ev('currentProfile().avatar')==='art:perle');
+      check('garde-robe : pas de cape pour la sirène', !d.querySelector('[data-lslot="cape"]'));
+      ev('state.look = {tete:null, visage:null, tenue:null, cape:null}; state.wardrobe = []; state.avatar = "🦄"; save(); refreshLookEverywhere(); switchView("carte")');
+    }
     // ---- Chaque nouveau monde : couleurs propres et place sur la carte ----
     {
       const css = fs.readFileSync(path.join(__dirname, '..', 'styles.css'), 'utf8');

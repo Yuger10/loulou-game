@@ -2615,3 +2615,42 @@
      Un jeu qui s'adapte (v42) : le compagnon dit ce qui progresse
      ===================================================================== */
   .progress-cheer{background:var(--tint-mint) !important; color:#1B5E36; font-weight:800; display:flex; align-items:center; justify-content:center; gap:8px;}
+
+  /* =====================================================================
+     Garde-robe : habiller son avatar (v43)
+     ===================================================================== */
+  /* accessoires posés sur un avatar emoji (repère « tête » 0-100, voir js/wardrobe.js) */
+  .av-look{position:relative; display:inline-block; line-height:1;}
+  .av-look .look-ov{position:absolute; width:1.6em; height:2em; left:50%; top:-.62em; transform:translateX(-50%); pointer-events:none; overflow:visible;}
+  .look-stage{display:flex; align-items:center; gap:16px; padding:14px 16px; margin:0 0 10px; background:var(--foam);
+    border-radius:var(--radius-lg, 24px); box-shadow:var(--shadow-candy-sm);}
+  .look-preview{flex:0 0 auto; width:118px; height:128px; display:grid; place-items:center; font-size:76px; padding-top:10px;
+    background:radial-gradient(circle at 50% 62%, var(--lagoon-tint) 0 52%, transparent 53%);}
+  .look-preview .av-art{width:104px; height:113px;}
+  .look-side{min-width:0; flex:1;}
+  .look-name{font-family:'Baloo 2',sans-serif; font-weight:800; font-size:1.3rem; color:var(--ink); margin-bottom:6px;}
+  .look-side .market-wallet{margin:0;}
+  .look-action{min-height:0; margin:0 0 10px;}
+  .look-action .look-buy{margin:0;}
+  .look-msg{margin:0; padding:10px 14px; background:#FFF8E6; border-radius:14px; color:var(--ink); font-weight:600; text-align:center;}
+  .look-tabs{display:flex; flex-wrap:wrap; gap:6px; padding:2px 0 8px; margin:0 0 6px;}
+  .look-tab{flex:0 0 auto; min-height:44px; padding:6px 12px; border:2px solid var(--line, #D3E4E8); border-radius:999px; background:#fff;
+    color:var(--ink); font:800 .9rem 'Baloo 2',sans-serif; cursor:pointer; white-space:nowrap;}
+  .look-tab.on{background:var(--lagoon-tint); border-color:var(--lagoon-ink); color:var(--lagoon-ink);}
+  .look-hint{margin:0 0 8px; color:var(--ink-soft); font-weight:600; font-size:.9rem;}
+  .look-grid{display:grid; grid-template-columns:repeat(auto-fill, minmax(96px, 1fr)); gap:10px; padding-bottom:6px;}
+  .look-grid.avatars{grid-template-columns:repeat(auto-fill, minmax(64px, 1fr));}
+  .look-tile{position:relative; display:flex; flex-direction:column; align-items:center; gap:4px; min-height:44px; padding:14px 6px 8px;
+    border:2px solid transparent; border-radius:18px; background:#fff; box-shadow:var(--shadow-candy-sm); cursor:pointer; color:var(--ink);}
+  .look-tile .lt-av{font-size:44px; line-height:1; height:60px; display:grid; place-items:end center;}
+  .look-tile .lt-av .av-art{width:52px; height:56px;}
+  .look-grid.avatars .look-tile{padding:10px 4px 6px;}
+  .look-grid.avatars .lt-av{font-size:34px; height:44px;}
+  .look-grid.avatars .lt-av .av-art{width:40px; height:44px;}
+  .look-tile .lt-name{font-weight:700; font-size:.78rem; line-height:1.15; text-align:center;}
+  .look-tile .lt-tag{position:absolute; top:6px; right:6px; padding:1px 7px; border-radius:999px; background:var(--tint-sun); font-size:.72rem; font-weight:800; color:#7A5A00;}
+  .look-tile .lt-tag.on{background:var(--lagoon-ink); color:#fff;}
+  .look-tile.on{border-color:var(--lagoon-ink); background:var(--lagoon-tint);}
+  .look-tile.trying{border-color:var(--sun-edge); background:#FFF8E6;}
+  .look-tile.locked .lt-av{opacity:.85;}
+  .look-won{background:var(--tint-lilac) !important; font-weight:700;}

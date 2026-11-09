@@ -14,7 +14,7 @@ const COMPANIONS = {
   tom:    { name:'Tom',    title:'le pirate',      group:'m', skin:'#F6C9A6', hair:'#7A4426', hairDark:'#56301A', outfit:'#FFFFFF', outfitDark:'#3A7BD5', style:'pirate' },
   leo:    { name:'Léo',    title:'le chevalier',   group:'m', skin:'#C98B62', hair:'#4A2C1A', hairDark:'#2E1A0E', outfit:'#C9D3DE', outfitDark:'#97A6B6', style:'knight' },
   sam:    { name:'Sam',    title:"l'explorateur",  group:'m', skin:'#8D5A3B', hair:'#2B2420', hairDark:'#16110E', outfit:'#D9B26F', outfitDark:'#B38B47', style:'explorer' },
-  zap:    { name:'Zap',    title:'le super-héros', group:'m', skin:'#EDB98F', hair:'#4A2C1A', hairDark:'#2E1A0E', outfit:'#3A7BD5', outfitDark:'#24427A', style:'hero' },
+  zap:    { name:'Zap',    title:'le super-héros', group:'m', skin:'#EDB98F', hair:'#4A2C1A', hairDark:'#2E1A0E', outfit:'#3A7BD5', outfitDark:'#24427A', cape:'#FF8A3D', capeDark:'#E0692A', style:'hero' },
 };
 const COMPANION_ORDER = ['perle','rose','lili','tom','leo','sam','zap'];
 const BUDDY_MOODS = ['happy','think','wow','cheer','oops','sleepy'];
@@ -76,8 +76,11 @@ const HAIR_LONG_BACK = 'M25 58 C21 30 40 17 60 17 C80 17 99 30 95 58 C97 74 100 
 const HAIR_LONG_FRONT = 'M27 58 C25 33 41 21 60 21 C79 21 95 33 93 58 C90 47 83 40 74 38 C70 44 62 46 55 42 C48 46 41 46 37 41 C31 45 28 51 27 58 Z';
 const HAIR_SHORT_FRONT = 'M27 56 C25 31 41 20 60 20 C79 20 95 31 93 56 C90 45 84 38 76 37 C72 42 64 43 58 39 C52 43 44 43 40 38 C33 41 29 47 27 56 Z';
 
-function buddyParts(c){
-  const back = [], front = [];
+// o.noHat : un chapeau de la garde-robe remplace le couvre-chef d'origine ;
+// o.noMask : des lunettes ou un masque de la garde-robe remplacent celui de Zap.
+function buddyParts(c, o){
+  o = o || {};
+  const back = [], front = [], hat = [], mask = [];
   let body = `<path d="M22 130 C22 104 38 94 60 94 C82 94 98 104 98 130 Z" fill="${c.outfit}"/>`;
   switch(c.style){
     case 'mermaid':
@@ -88,9 +91,10 @@ function buddyParts(c){
         <path d="M44 104 C44 96 56 96 56 104 Z M64 104 C64 96 76 96 76 104 Z" fill="#C9A7F5"/>
         <path d="M50 97 L50 104 M70 97 L70 104" stroke="#A784E6" stroke-width="1.6"/>`;
       front.push(`<path d="${HAIR_LONG_FRONT}" fill="${c.hair}"/>`,
-        // étoile de mer dans les cheveux
-        `<path d="M83 27 L85.6 33 L92 33.4 L87 37.4 L88.8 43.6 L83 40 L77.2 43.6 L79 37.4 L74 33.4 L80.4 33 Z" fill="#FFCB4C" stroke="#E0A92A" stroke-width="1.2" stroke-linejoin="round"/>`,
         `<circle cx="34" cy="38" r="3" fill="#fff" opacity=".9"/><circle cx="40" cy="32" r="2" fill="#fff" opacity=".9"/>`);
+      hat.push(
+        // étoile de mer dans les cheveux
+        `<path d="M83 27 L85.6 33 L92 33.4 L87 37.4 L88.8 43.6 L83 40 L77.2 43.6 L79 37.4 L74 33.4 L80.4 33 Z" fill="#FFCB4C" stroke="#E0A92A" stroke-width="1.2" stroke-linejoin="round"/>`);
       break;
     case 'princess':
       back.push(`<path d="${HAIR_LONG_BACK}" fill="${c.hair}"/>`);
@@ -100,7 +104,8 @@ function buddyParts(c){
         <circle cx="90" cy="106" r="11" fill="none" stroke="${c.outfitDark}" stroke-width="2" opacity=".5"/>
         <path d="M46 96 Q60 108 74 96" fill="#fff" stroke="#fff" stroke-width="2"/>
         <circle cx="60" cy="108" r="3.4" fill="#5AB0F2" stroke="#fff" stroke-width="1.5"/>`;
-      front.push(`<path d="${HAIR_LONG_FRONT}" fill="${c.hair}"/>`,
+      front.push(`<path d="${HAIR_LONG_FRONT}" fill="${c.hair}"/>`);
+      hat.push(
         // couronne
         `<path d="M43 26 L46 12 L53 21 L60 8 L67 21 L74 12 L77 26 Z" fill="#FFCB4C" stroke="#D99A22" stroke-width="1.8" stroke-linejoin="round"/>`,
         `<circle cx="60" cy="20" r="2.8" fill="#F46B5D"/><circle cx="48.5" cy="22.5" r="2" fill="#5AB0F2"/><circle cx="71.5" cy="22.5" r="2" fill="#5AB0F2"/>`);
@@ -112,7 +117,8 @@ function buddyParts(c){
         `<path d="M24 60 C20 33 39 19 60 19 C81 19 100 33 96 60 C98 70 96 80 90 84 C86 78 84 72 84 66 L36 66 C36 72 34 78 30 84 C24 80 22 70 24 60 Z" fill="${c.hair}"/>`);
       body = `<path d="M22 130 C22 104 38 94 60 94 C82 94 98 104 98 130 Z" fill="${c.outfit}"/>
         <path d="M42 96 L50 108 L56 97 L60 110 L64 97 L70 108 L78 96 Z" fill="${c.outfitDark}"/>`;
-      front.push(`<path d="${HAIR_SHORT_FRONT}" fill="${c.hair}"/>`,
+      front.push(`<path d="${HAIR_SHORT_FRONT}" fill="${c.hair}"/>`);
+      hat.push(
         // couronne de fleurs
         `<g stroke="#fff" stroke-width="1"><circle cx="38" cy="30" r="5" fill="#FF8FB8"/><circle cx="49" cy="23" r="5" fill="#FFD54A"/><circle cx="60" cy="21" r="5.4" fill="#C9A7F5"/><circle cx="71" cy="23" r="5" fill="#FF8FB8"/><circle cx="82" cy="30" r="5" fill="#FFD54A"/></g>`,
         `<circle cx="38" cy="30" r="1.8" fill="#fff"/><circle cx="49" cy="23" r="1.8" fill="#fff"/><circle cx="60" cy="21" r="2" fill="#fff"/><circle cx="71" cy="23" r="1.8" fill="#fff"/><circle cx="82" cy="30" r="1.8" fill="#fff"/>`);
@@ -126,19 +132,21 @@ function buddyParts(c){
         <path d="M22.3 126 L97.7 126 L98 130 L22 130 Z" fill="${c.outfitDark}"/>
         <path d="M48 95 L60 106 L72 95" fill="none" stroke="#F46B5D" stroke-width="5" stroke-linejoin="round"/>`;
       front.push(`<path d="${HAIR_SHORT_FRONT}" fill="${c.hair}"/>`,
+        // anneau d'oreille
+        `<circle cx="28" cy="72" r="3.2" fill="none" stroke="#FFCB4C" stroke-width="2"/>`);
+      hat.push(
         // bandana rouge
         `<path d="M27 46 C30 30 44 22 60 22 C76 22 90 30 93 46 C84 40 72 37 60 37 C48 37 36 40 27 46 Z" fill="#F46B5D"/>`,
         `<circle cx="44" cy="31" r="1.6" fill="#fff"/><circle cx="56" cy="27" r="1.6" fill="#fff"/><circle cx="70" cy="28" r="1.6" fill="#fff"/><circle cx="82" cy="34" r="1.6" fill="#fff"/>`,
-        `<path d="M92 44 L104 40 L100 50 Z M92 44 L106 52 L96 55 Z" fill="#E0503F"/>`,
-        // anneau d'oreille
-        `<circle cx="28" cy="72" r="3.2" fill="none" stroke="#FFCB4C" stroke-width="2"/>`);
+        `<path d="M92 44 L104 40 L100 50 Z M92 44 L106 52 L96 55 Z" fill="#E0503F"/>`);
       break;
     case 'knight':
       body = `<path d="M22 130 C22 104 38 94 60 94 C82 94 98 104 98 130 Z" fill="${c.outfit}"/>
         <path d="M22 130 C22 112 28 102 36 98 L40 130 Z M98 130 C98 112 92 102 84 98 L80 130 Z" fill="${c.outfitDark}"/>
         <path d="M50 102 L70 102 L70 114 C70 121 60 126 60 126 C60 126 50 121 50 114 Z" fill="#F46B5D" stroke="#FFCB4C" stroke-width="2"/>
         <path d="M60 106 L61.8 110.4 L66.5 110.6 L62.8 113.5 L64 118 L60 115.4 L56 118 L57.2 113.5 L53.5 110.6 L58.2 110.4 Z" fill="#FFCB4C"/>`;
-      front.push(`<path d="${HAIR_SHORT_FRONT}" fill="${c.hair}"/>`,
+      front.push(`<path d="${HAIR_SHORT_FRONT}" fill="${c.hair}"/>`);
+      hat.push(
         // casque à visière relevée + plumet
         `<path d="M24 60 C22 30 40 15 60 15 C80 15 98 30 96 60 L90 60 C90 44 82 36 60 36 C38 36 30 44 30 60 Z" fill="${c.outfit}" stroke="${c.outfitDark}" stroke-width="2"/>`,
         `<path d="M32 40 C38 30 48 27 60 27 C72 27 82 30 88 40" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity=".7"/>`,
@@ -147,13 +155,14 @@ function buddyParts(c){
       break;
     case 'hero':
       // Zap : cape orange derrière, combinaison bleue, éclair doré, masque troué (les yeux restent visibles)
-      back.push(`<path d="M30 102 C18 110 10 122 6 130 L114 130 C110 122 102 110 90 102Z" fill="#FF8A3D"/>`,
-        `<path d="M30 102 C22 110 16 120 13 130 M90 102 C98 110 104 120 107 130" fill="none" stroke="#E0692A" stroke-width="2.5"/>`);
+      back.push(`<path d="M30 102 C18 110 10 122 6 130 L114 130 C110 122 102 110 90 102Z" fill="${c.cape || '#FF8A3D'}"/>`,
+        `<path d="M30 102 C22 110 16 120 13 130 M90 102 C98 110 104 120 107 130" fill="none" stroke="${c.capeDark || '#E0692A'}" stroke-width="2.5"/>`);
       body = `<path d="M22 130 C22 104 38 94 60 94 C82 94 98 104 98 130 Z" fill="${c.outfit}"/>
-        <path d="M34 100 L49 95 L44 109Z M86 100 L71 95 L76 109Z" fill="#FF8A3D"/>
+        <path d="M34 100 L49 95 L44 109Z M86 100 L71 95 L76 109Z" fill="${c.cape || '#FF8A3D'}"/>
         <path d="M63 101 L51 116 L59 116 L55 128 L70 110 L62 110 L66 101Z" fill="#FFD54A" stroke="#B8901A" stroke-width="1.6" stroke-linejoin="round"/>
         <path d="M30 112 Q36 106 40 108" fill="none" stroke="#6FA3EA" stroke-width="3" stroke-linecap="round"/>`;
-      front.push(`<path d="M27 52 C25 30 40 19 60 19 C80 19 95 30 93 52 C88 44 82 40 76 39 L73 29 L66 37 L60 25 L54 37 L47 29 L44 39 C38 40 32 44 27 52Z" fill="${c.hair}"/>`,
+      front.push(`<path d="M27 52 C25 30 40 19 60 19 C80 19 95 30 93 52 C88 44 82 40 76 39 L73 29 L66 37 L60 25 L54 37 L47 29 L44 39 C38 40 32 44 27 52Z" fill="${c.hair}"/>`);
+      mask.push(
         `<path fill-rule="evenodd" fill="${c.outfitDark}" d="M26 55 C32 47 50 48 60 53 C70 48 88 47 94 55 C95 63 91 71 83 73 C74 75 66 71 60 67 C54 71 46 75 37 73 C29 71 25 63 26 55Z M37.5 61 a9.5 10 0 1 0 19 0 a9.5 10 0 1 0 -19 0Z M63.5 61 a9.5 10 0 1 0 19 0 a9.5 10 0 1 0 -19 0Z"/>`,
         `<path d="M29 56 C34 51 44 50 52 52" fill="none" stroke="#5B86C9" stroke-width="2" stroke-linecap="round"/>`,
         `<path d="M93 57 L104 52 L102 60 Z" fill="${c.outfitDark}"/>`);
@@ -162,10 +171,12 @@ function buddyParts(c){
       body = `<path d="M22 130 C22 104 38 94 60 94 C82 94 98 104 98 130 Z" fill="${c.outfit}"/>
         <path d="M44 95 L60 110 L76 95" fill="#5FCB7E"/><path d="M60 110 L56 122 L64 122 Z" fill="#4AB067"/>
         <rect x="32" y="112" width="12" height="10" rx="2" fill="${c.outfitDark}"/><rect x="76" y="112" width="12" height="10" rx="2" fill="${c.outfitDark}"/>`;
+      if(o.noHat){ front.push(`<path d="${HAIR_SHORT_FRONT}" fill="${c.hair}"/>`); break; }
       front.push(
         // cheveux courts bouclés qui dépassent du chapeau
         `<path d="M27 57 C25 44 31 37 40 37 L80 37 C89 37 95 44 93 57 C90 49 84 45 77 46 C72 43 66 45 60 43 C54 45 48 43 43 46 C36 45 30 49 27 57 Z" fill="${c.hair}"/>`,
-        `<g fill="${c.hair}"><circle cx="30.5" cy="48" r="4.6"/><circle cx="89.5" cy="48" r="4.6"/></g>`,
+        `<g fill="${c.hair}"><circle cx="30.5" cy="48" r="4.6"/><circle cx="89.5" cy="48" r="4.6"/></g>`);
+      hat.push(
         // chapeau d'explorateur
         `<ellipse cx="60" cy="38" rx="44" ry="9" fill="${c.outfitDark}"/>`,
         `<path d="M34 38 C34 18 46 10 60 10 C74 10 86 18 86 38 Z" fill="${c.outfit}"/>`,
@@ -173,14 +184,19 @@ function buddyParts(c){
         `<path d="M44 20 C48 15 54 13 60 13" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity=".5"/>`);
       break;
   }
-  return { back: back.join(''), body, front: front.join('') };
+  return { back: back.join(''), body, front: front.join('') + (o.noHat ? '' : hat.join('')) + (o.noMask ? '' : mask.join('')) };
 }
 
 /* SVG complet d'un compagnon. mood ∈ BUDDY_MOODS */
+// opts.look : la tenue choisie dans la garde-robe (js/wardrobe.js), pour
+// l'avatar dessiné du joueur — { tete, visage, tenue }.
 function companionSVG(id, mood, opts){
-  const c = COMPANIONS[id] || COMPANIONS.perle;
+  const look = (opts && opts.look) || null;
+  const base = COMPANIONS[id] || COMPANIONS.perle;
+  const c = look && typeof lookColors==='function' ? Object.assign({}, base, lookColors(look)) : base;
   const m = BUDDY_MOODS.includes(mood) ? mood : 'happy';
-  const p = buddyParts(c);
+  const p = buddyParts(c, { noHat: !!(look && look.tete), noMask: !!(look && look.visage) });
+  const extra = look && typeof lookAccessoriesSVG==='function' ? lookAccessoriesSVG(look) : '';
   const label = (opts && opts.label) || `${c.name} ${c.title}`;
   return `<svg class="buddy buddy--${m}" data-buddy="${id}" viewBox="0 0 120 130" role="img" aria-label="${label}">
     <g class="b-body">
@@ -194,6 +210,7 @@ function companionSVG(id, mood, opts){
       <ellipse cx="60" cy="58" rx="33" ry="31.5" fill="${c.skin}"/>
       ${buddyFace(c, m)}
       ${p.front}
+      ${extra ? `<g class="b-look" transform="translate(27 26.5) scale(.66 .63)">${extra}</g>` : ''}
     </g>
   </svg>`;
 }
@@ -269,12 +286,19 @@ function bindCompanionSelector(root, onPick, onMore){
    dessiné (ex. « art:zap », le super-héros). avatarHTML l'affiche en image
    partout où l'avatar est affiché ; avatarText le remplace par un emoji
    dans le texte simple (notifications, voix). */
-const AVATAR_ART_EMOJI = { zap:'🦸‍♂️' };
+const AVATAR_ART_EMOJI = { zap:'🦸‍♂️', perle:'🧜‍♀️', rose:'👸', lili:'🧚‍♀️', tom:'🏴‍☠️', leo:'🛡️', sam:'🧭' };
 function isArtAvatar(av){ return typeof av==='string' && av.startsWith('art:') && !!COMPANIONS[av.slice(4)]; }
-function avatarHTML(av){
-  if(!isArtAvatar(av)) return av || '👧';
+// look (facultatif) : chapeau, lunettes, couleurs choisis dans la garde-robe
+function avatarHTML(av, look){
+  const hasLook = look && (look.tete || look.visage || look.tenue);
+  if(!isArtAvatar(av)){
+    const emo = av || '👧';
+    if(!hasLook || typeof lookAccessoriesSVG!=='function' || (typeof lookFits==='function' && !lookFits(emo))) return emo;
+    const acc = lookAccessoriesSVG(look);
+    return `<span class="av-look">${emo}${acc ? `<svg class="look-ov" viewBox="-30 -70 160 200" aria-hidden="true">${acc}</svg>` : ''}</span>`;
+  }
   const id = av.slice(4), c = COMPANIONS[id];
-  return `<span class="av-art" role="img" aria-label="${c.name} ${c.title}">${companionSVG(id,'happy')}</span>`;
+  return `<span class="av-art" role="img" aria-label="${c.name} ${c.title}">${companionSVG(id,'happy', hasLook ? { look } : null)}</span>`;
 }
 function avatarText(av){
   if(!isArtAvatar(av)) return av || '👧';

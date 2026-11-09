@@ -46,7 +46,8 @@ Chaque mini-jeu a maintenant son propre niveau pour chaque enfant (`js/adaptive.
 - [ ] À observer : la montée (2 réussites) est-elle trop rapide ou trop lente ? Les jeux à travailler reviennent-ils trop souvent ?
 
 ### Phase 4 — Plus de plaisir 🟢
-- [ ] Habiller son avatar : tenues et accessoires gagnés (cape d'une autre couleur pour Zap, couronnes, chapeaux…)
+- [x] Habiller son avatar : Sac → « 🎩 Mon look » — 10 chapeaux, 6 accessoires de visage, couleurs de tenue, capes de Zap ; achetés avec les pièces ou gagnés avec les missions — v43
+- [ ] À observer : les prix (8 à 30 pièces) sont-ils bien réglés ? Faut-il plus d'objets à gagner ?
 - [ ] Offrir un objet à un personnage : il remercie avec une petite animation
 - [x] Une petite histoire par île : un chapitre et une énigme en images à chaque nouvelle île, relisible dans « 📖 Mon histoire » — v40
 - [ ] Faire avancer l'histoire aussi à chaque mission (pas seulement à chaque île)
@@ -96,6 +97,7 @@ Chaque mini-jeu a maintenant son propre niveau pour chaque enfant (`js/adaptive.
 | v40 | L'Histoire du Lagon Magique : un chapitre et une énigme en images par île |
 | v41 | Espace parents : accès adulte, progrès par compétence, temps de jeu, pause douce |
 | v42 | Un jeu qui s'adapte : un niveau par mini-jeu et par enfant, ce qui est raté revient plus souvent, le compagnon encourage les progrès |
+| v43 | Habiller son avatar : garde-robe « Mon look », 7 personnages dessinés comme avatars, capes de Zap |
 
 ---
 
