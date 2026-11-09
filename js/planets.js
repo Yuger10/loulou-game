@@ -199,6 +199,7 @@ function renderPlanets(){
     <div class="pl-space">${body}</div>
   `);
   bindQuit();
+  setSolution([solSel('.pl-opt','v',q.answer)]);
   document.querySelectorAll('.pl-opt').forEach(btn=>{
     btn.onclick = ()=>{
       if(btn.dataset.v===q.answer){ stepOk(btn); flashModal('ok'); planetWin(q); }
@@ -221,6 +222,7 @@ function renderPlanetOrder(q){
     </div>
   `);
   bindQuit();
+  setSolution(seq.map(id=>solSel('.pl-opt','v',id)));
   document.querySelectorAll('.pl-opt').forEach(btn=>{
     btn.onclick = ()=>{
       if(btn.dataset.v===seq[next]){

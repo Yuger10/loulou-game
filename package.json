@@ -3,7 +3,8 @@
   "private": true,
   "scripts": {
     "start": "python3 -m http.server 8080",
-    "test": "node test/smoke.test.js"
+    "test": "node test/smoke.test.js && node test/games.test.js",
+    "test:jeux": "node test/games.test.js"
   },
   "devDependencies": {
     "jsdom": "^26.0.0"

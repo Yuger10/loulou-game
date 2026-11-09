@@ -43,6 +43,7 @@ function renderReading(){
   }
   bindQuit();
   startTimerIfNeeded('reading');
+  setSolution([solSel('.reading-opt','w',correct.word)]);
   document.querySelectorAll('.reading-opt').forEach(btn=>{
     btn.onclick = ()=>{
       if(btn.dataset.w===correct.word){ clearActiveTimer(); stepOk(btn); flashModal('ok'); setTimeout(onMissionWin, 350); }

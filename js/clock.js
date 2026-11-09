@@ -60,6 +60,7 @@ function renderClock(){
   `);
   bindQuit();
   startTimerIfNeeded('clock');
+  setSolution([solSel('.clock-opt-btn','v',answer)]);
   document.querySelectorAll('.clock-opt-btn').forEach(btn=>{
     btn.onclick = ()=>{
       if(btn.dataset.v===answer){ clearActiveTimer(); stepOk(btn); flashModal('ok'); setTimeout(onMissionWin, 350); }

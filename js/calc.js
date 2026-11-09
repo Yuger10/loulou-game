@@ -61,6 +61,7 @@ function renderCalc(){
   `);
   bindQuit();
   startTimerIfNeeded('calc');
+  setSolution([solSel('.num-btn','v',result)]);
   document.querySelectorAll('.num-btn').forEach(btn=>{
     btn.onclick = ()=>{
       if(Number(btn.dataset.v)===result){

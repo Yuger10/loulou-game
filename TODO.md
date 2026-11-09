@@ -55,7 +55,8 @@ Chaque mini-jeu a maintenant son propre niveau pour chaque enfant (`js/adaptive.
 - [x] Mini-jeu « Assembler l'image » (« Le puzzle ») : 2×2 avec l'image en transparence, puis 3×3, puis 4×3 avec un modèle ; glisser du doigt ou toucher morceau puis case — v46
 
 ### Technique 🔧 (au fil de l'eau)
-- [ ] Étendre les tests : mémoire complète jusqu'au bout, bouton son, chaque mini-jeu joué jusqu'à la victoire
+- [x] Étendre les tests (`test/games.test.js`) : les 18 mini-jeux joués jusqu'à la victoire à chaque palier (259 parties), la mémoire jouée « de mémoire » jusqu'au bout, une mauvaise réponse ne fait jamais gagner, bouton son et voix — v50
+- [ ] Faire tourner les tests automatiquement à chaque PR (GitHub Actions)
 - [ ] Tester sur de vrais appareils (iPhone, iPad, Android, ordinateur) à chaque grosse version
 - [ ] Garder le design system à jour (https://claude.ai/artifact/C55xYvvT7iYZo6KcSphBbu)
 
@@ -103,6 +104,7 @@ Chaque mini-jeu a maintenant son propre niveau pour chaque enfant (`js/adaptive.
 | v47 | Offrir un objet à un personnage : remerciements animés, objets préférés, amitié ; jeu en ligne sur GitHub Pages |
 | v48 | Musique d'ambiance douce, une par île (Web Audio, sans fichier), coupée par défaut |
 | v49 | L'histoire avance à chaque mission (24 épisodes) ; poissons de l'écran d'accueil qui nagent tête en avant |
+| v50 | Tests : chaque mini-jeu joué jusqu'à la victoire à chaque palier ; mémoire : les essais suivent le nombre de paires |
 
 ---
 

@@ -49,6 +49,7 @@ function renderMoney(){
   `);
   bindQuit();
   startTimerIfNeeded('money');
+  setSolution([solSel('.money-pile-btn','v',target)]);
   document.querySelectorAll('.money-pile-btn').forEach(btn=>{
     btn.onclick = ()=>{
       if(Number(btn.dataset.v)===target){ clearActiveTimer(); stepOk(btn); flashModal('ok'); setTimeout(onMissionWin, 350); }
