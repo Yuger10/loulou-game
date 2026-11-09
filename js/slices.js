@@ -17,11 +17,18 @@ const SLICES = [
   { id:'shared-lib',     layer:'shared',   files:['js/shared/lib/random.js'], css:[], public:null },
   { id:'shared-ui',      layer:'shared',   files:['js/shared/ui/icons.js','js/shared/ui/sound.js','js/shared/ui/voice.js',
                                                 'js/shared/ui/feedback.js','js/shared/ui/modal.js','js/shared/ui/views.js'], css:[], public:null },
-  { id:'data',           layer:'entities', files:['js/data.js'],           css:[], public:null },
-  { id:'difficulty',     layer:'entities', files:['js/difficulty.js'],     css:[], public:null },
-  { id:'players',        layer:'entities', files:['js/players.js'],        css:[], public:null },
-  { id:'companions',     layer:'entities', files:['js/companions.js'],     css:[], public:null },
-  { id:'characters-art', layer:'entities', files:['js/characters-art.js'], css:['characters.css'], public:null },
+  { id:'words',          layer:'entities', files:['js/entities/words/words.js'], css:[], public:null },
+  { id:'item',           layer:'entities', files:['js/entities/item/items.js'], css:[], public:null },
+  { id:'world',          layer:'entities', files:['js/entities/world/worlds.js'], css:[], public:null },
+  { id:'character',      layer:'entities', files:['js/entities/character/characters.js','js/entities/character/characters-art.js'],
+                                           css:['js/entities/character/characters.css'], public:null },
+  { id:'difficulty',     layer:'entities', files:['js/entities/difficulty/difficulty.js','js/entities/difficulty/game-types.js',
+                                                'js/entities/difficulty/age.js'], css:[], public:null },
+  { id:'game-state',     layer:'entities', files:['js/entities/game-state/state.js'], css:[], public:null },
+  { id:'player',         layer:'entities', files:['js/entities/player/avatars.js','js/entities/player/profiles.js',
+                                                'js/entities/player/party-state.js'], css:[], public:null },
+  { id:'companion',      layer:'entities', files:['js/entities/companion/companions.js'], css:[], public:null },
+  { id:'party',          layer:'features', files:['js/features/party/party.js'], css:[], public:null },
   { id:'story',          layer:'features', files:['js/story.js'],          css:[], public:null },
   { id:'episodes',       layer:'features', files:['js/episodes.js'],       css:[], public:null },
   { id:'state',          layer:'entities', files:['js/state.js'],          css:[], public:null },
@@ -56,6 +63,6 @@ const SLICES = [
 ];
 
 // ordre de chargement des feuilles de style : la cascade dépend de cet ordre
-const CSS_ORDER = ['styles.css', 'island.css', 'characters.css'];
+const CSS_ORDER = ['styles.css', 'island.css', 'js/entities/character/characters.css'];
 
 if(typeof module !== 'undefined') module.exports = { SLICES, CSS_ORDER };

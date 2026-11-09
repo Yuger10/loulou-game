@@ -1,18 +1,5 @@
 /* ---------- Utilitaires ---------- */
 
-// Compteur de défis joués, par joueur (stocké dans sa sauvegarde) : permet
-// de proposer en priorité les types de mini-jeux les moins essayés, pour
-// que chaque joueur finisse par toutes les découvrir.
-function gameCount(key){ return (state.gameCounts && state.gameCounts[key]) || 0; }
-function trackGamePlayed(key){
-  if(!state.gameCounts) state.gameCounts = {};
-  state.gameCounts[key] = gameCount(key) + 1;
-  save();
-}
-
-function addItem(key, qty=1){ state.inventory[key] = (state.inventory[key]||0) + qty; save(); }
-function removeItem(key, qty=1){ state.inventory[key] = Math.max(0, (state.inventory[key]||0) - qty); save(); }
-function countItem(key){ return state.inventory[key] || 0; }
 function addCoins(n){
   state.coins += n; save(); renderCoins();
   const pill = document.getElementById('coin-pill');
@@ -21,8 +8,6 @@ function addCoins(n){
 // pièces comptées mais encore en vol (voir gains.js) : l'affichage les attend
 var coinsInFlight = 0;
 function renderCoins(){ document.getElementById('coin-count').textContent = state.coins - (coinsInFlight || 0); }
-function level(){ return 1 + Math.floor(state.missions / MISSIONS_PER_LEVEL); }
-function levelProgress(){ return (state.missions % MISSIONS_PER_LEVEL) / MISSIONS_PER_LEVEL; }
 
 document.getElementById('sound-btn').addEventListener('click', ()=>{
   // cycle : musique (+ sons + voix) → sons + voix → sons seuls → silence → musique…
@@ -76,9 +61,6 @@ function renderBadge(){
   b.textContent = state.newItems;
 }
 
-/* ---------- Carte des îles ---------- */
-let currentWorld = 'lagon';
-function worldUnlocked(id){ return level() >= WORLDS[id].level; }
 function gameDiffIsland(){ return WORLDS[currentWorld] ? WORLDS[currentWorld].diff : 1; }
 // La difficulté suit l'île… mais jamais au-delà de ce que l'âge du
 // joueur permet, y compris en solo. Avant ce correctif, un enfant de
@@ -112,10 +94,6 @@ function gameDiff(){
 // Phase 3 : chaque mini-jeu a son propre niveau par enfant (js/adaptive.js) ;
 // on ne joue jamais au-dessus de ce qui est acquis dans CE jeu.
 function adaptedDiff(base){ return typeof adaptTier==='function' ? adaptTier(base) : base; }
-// prochaine île à débloquer, et progression vers celle-ci
-function nextLockedWorld(){
-  return WORLD_ORDER.find(id=>!worldUnlocked(id));
-}
 function setWorld(id, silent){
   const w = WORLDS[id];
   if(!worldUnlocked(id)){
@@ -319,7 +297,6 @@ function openDialogue(charId){
   if(giftBtn) giftBtn.onclick = ()=> { playSound('tap'); openGiftPicker(charId); };
   document.getElementById('btn-close').onclick = ()=>{ window.speechSynthesis && speechSynthesis.cancel(); closeModal(); };
 }
-
 
 registerView('ile', ()=> renderLagon());
 registerView('sac', ({ sacTab })=>{

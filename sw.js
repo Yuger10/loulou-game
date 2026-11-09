@@ -1,14 +1,16 @@
 const CACHE = 'lagon-v50';
 const FILES = [
   './','./index.html','./manifest.json','./icon.svg','./icon-192.png','./icon-512.png',
-  './icon-180.png','./styles.css','./island.css','./characters.css','./js/shared/lib/random.js','./js/shared/ui/icons.js',
-  './js/shared/ui/sound.js','./js/shared/ui/voice.js','./js/shared/ui/feedback.js','./js/shared/ui/modal.js','./js/shared/ui/views.js','./js/data.js',
-  './js/difficulty.js','./js/players.js','./js/companions.js','./js/characters-art.js','./js/story.js','./js/episodes.js',
-  './js/state.js','./js/ui.js','./js/music.js','./js/gains.js','./js/map.js','./js/island.js',
-  './js/minigames.js','./js/math.js','./js/reading.js','./js/grammar.js','./js/volume.js','./js/compare.js',
-  './js/money.js','./js/clock.js','./js/calendar.js','./js/calc.js','./js/shapes.js','./js/planets.js',
-  './js/jigsaw.js','./js/market.js','./js/gifts.js','./js/race.js','./js/profiles-ui.js','./js/backup.js',
-  './js/parents.js','./js/adaptive.js','./js/wardrobe.js','./js/seasons.js','./js/init.js'
+  './icon-180.png','./styles.css','./island.css','./js/entities/character/characters.css','./js/shared/lib/random.js','./js/shared/ui/icons.js',
+  './js/shared/ui/sound.js','./js/shared/ui/voice.js','./js/shared/ui/feedback.js','./js/shared/ui/modal.js','./js/shared/ui/views.js','./js/entities/words/words.js',
+  './js/entities/item/items.js','./js/entities/world/worlds.js','./js/entities/character/characters.js','./js/entities/character/characters-art.js','./js/entities/difficulty/difficulty.js','./js/entities/difficulty/game-types.js',
+  './js/entities/difficulty/age.js','./js/entities/game-state/state.js','./js/entities/player/avatars.js','./js/entities/player/profiles.js','./js/entities/player/party-state.js','./js/entities/companion/companions.js',
+  './js/features/party/party.js','./js/story.js','./js/episodes.js','./js/state.js','./js/ui.js','./js/music.js',
+  './js/gains.js','./js/map.js','./js/island.js','./js/minigames.js','./js/math.js','./js/reading.js',
+  './js/grammar.js','./js/volume.js','./js/compare.js','./js/money.js','./js/clock.js','./js/calendar.js',
+  './js/calc.js','./js/shapes.js','./js/planets.js','./js/jigsaw.js','./js/market.js','./js/gifts.js',
+  './js/race.js','./js/profiles-ui.js','./js/backup.js','./js/parents.js','./js/adaptive.js','./js/wardrobe.js',
+  './js/seasons.js','./js/init.js'
 ];
 self.addEventListener('install', e=>{
   e.waitUntil(caches.open(CACHE).then(c=>c.addAll(FILES)).then(()=>self.skipWaiting()));
