@@ -45,14 +45,14 @@ let missionErrors = 0;
 let missionProgress = null;   // progrès de la dernière mission, pour l'écran de victoire
 function noteAnswerError(){ missionErrors++; }
 function recordMission(ok){
-  const key = typeof lastGame!=='undefined' ? lastGame : null;
+  const key = lastGame;
   // à plusieurs (chacun son tour, course), une erreur passe la main au
   // suivant : la mission n'est ni gagnée ni ratée, on ne compte rien.
   missionProgress = null;
-  if(!key || (typeof party!=='undefined' && party.active)){ missionErrors = 0; return null; }
+  if(!key || (party.active)){ missionErrors = 0; return null; }
   if(!state.skills) state.skills = {};
   const s = state.skills[key] || (state.skills[key] = { wins:0, fails:0, errors:0, last:null, recent:[] });
-  const t = typeof gameDiff==='function' ? gameDiff() : 1;   // niveau joué (île, âge et niveau du jeu)
+  const t = gameDiff();   // niveau joué (île, âge et niveau du jeu)
   const e = missionErrors;
   const before = skillStatus(s, key);
   if(ok) s.wins++; else s.fails++;
@@ -62,7 +62,7 @@ function recordMission(ok){
   if(s.recent.length > 10) s.recent = s.recent.slice(-10);
   missionErrors = 0;
   // Phase 3 : le niveau du jeu monte ou redescend (js/features/adaptive/adaptive.js)
-  const step = typeof adaptAfterMission==='function' ? adaptAfterMission(key, s, t, !!ok, e) : null;
+  const step = adaptAfterMission(key, s, t, !!ok, e);
   // le compagnon félicitera si le jeu a progressé : niveau gagné, ou plus « à travailler »
   if(ok && ((step && step.type==='up') || (before==='difficile' && skillStatus(s, key)!=='difficile'))){
     missionProgress = { key, lvl: s.lvl, up: !!(step && step.type==='up') };
@@ -109,11 +109,11 @@ function startPlayTimeTracker(){
 
 /* ---- pause douce ---- */
 function pauseLimit(){
-  const p = typeof currentProfile==='function' ? currentProfile() : null;
+  const p = currentProfile();
   return (p && Number(p.pauseMin)) || 0;
 }
 function pauseDue(){
-  if(typeof party!=='undefined' && party.active) return false;   // à plusieurs : pas de coupure au milieu
+  if(party.active) return false;   // à plusieurs : pas de coupure au milieu
   const limit = pauseLimit();
   if(!limit) return false;
   const extra = state.pauseExtra && state.pauseExtra.date === todayKey() ? state.pauseExtra.min : 0;
@@ -121,7 +121,7 @@ function pauseDue(){
 }
 function showPauseScreen(){
   const p = currentProfile();
-  const comp = typeof currentCompanion==='function' ? currentCompanion() : null;
+  const comp = currentCompanion();
   const c = comp && COMPANIONS[comp];
   const cName = c ? c.name : 'Ton compagnon';
   const tired = c && c.group==='f' ? 'fatiguée' : 'fatigué';
@@ -129,7 +129,7 @@ function showPauseScreen(){
   const msg = `Tu as bien joué aujourd'hui${p && p.name ? ', ' + p.name : ''}\u00a0! ${cName} est ${tired}\u00a0: on fait une pause et on revient demain\u00a0?`;
   openModal(`
     <div class="reward-box pause-box">
-      ${typeof buddySlot==='function' ? buddySlot('sleepy','buddy-big') : '<span class="big-emoji">😴</span>'}
+      ${buddySlot('sleepy','buddy-big')}
       <h2>C'est l'heure de la pause</h2>
       <div class="speech">${msg}</div>
       <p class="pause-note">Tu peux encore regarder ton île, ton sac et ton album.</p>
@@ -201,7 +201,7 @@ function playTimeHTML(st){
 }
 function skillsHTML(st, age){
   const sk = st.skills || {};
-  const gameName = (k)=>{ const g = (typeof GAME_LIST!=='undefined' ? GAME_LIST : []).find(x=>x.key===k); return g ? `${g.emoji} ${g.name}` : k; };
+  const gameName = k=>{ const g = GAME_LIST.find(x=>x.key===k); return g ? `${g.emoji} ${g.name}` : k; };
   // les jeux proposés à cet âge, plus ceux déjà joués (avant un changement d'âge)
   const allowed = new Set([...gameTypesForAge(age), ...Object.keys(sk)]);
   const summary = { aise:[], difficile:[] };
@@ -244,7 +244,7 @@ function openParentSpace(selectedId){
       <p>Le jeu se décore tout seul : Halloween (20 oct. – 2 nov.), Noël (1er déc. – 6 janv.) et le jour de l'anniversaire de l'enfant (à régler dans ses réglages). Chaque fois, un petit cadeau : un chapeau pour son avatar et quelques pièces.</p>
       <p class="bk-help">Aperçu (sans cadeau, jusqu'à la fermeture du jeu) :</p>
       <div class="ps-chips" role="group" aria-label="Aperçu des saisons">
-        ${typeof FETES!=='undefined' ? Object.keys(FETES).map(k=>`<button type="button" class="ps-chip ${seasonPreview()===k?'on':''}" data-season-preview="${k}">${FETES[k].emoji} ${FETES[k].name}</button>`).join('') : ''}
+        ${Object.keys(FETES).map(k=>`<button type="button" class="ps-chip ${seasonPreview()===k?'on':''}" data-season-preview="${k}">${FETES[k].emoji} ${FETES[k].name}</button>`).join('')}
         <button type="button" class="ps-chip ${!seasonPreview()?'on':''}" data-season-preview="">Selon la date</button>
       </div>
     </section>

@@ -70,7 +70,7 @@ const EMPTY_LOOK = { tete:null, visage:null, tenue:null, cape:null };
 // dessin ; les personnages dessinés, eux, s'habillent entièrement.
 const LOOK_FACE_EMOJI = ['👧','👦','🧒','👩‍🦰','👨‍🦰','👩‍🦱','👨‍🦱','🤖','🦁','🐱'];
 function lookFits(av){
-  return (typeof isArtAvatar==='function' && isArtAvatar(av)) || LOOK_FACE_EMOJI.includes(av);
+  return isArtAvatar(av) || LOOK_FACE_EMOJI.includes(av);
 }
 
 /* ---- dessin des accessoires (repère « tête ») ---- */
@@ -181,7 +181,7 @@ function ownsLookItem(id){
 }
 function lookSlotsFor(av){
   if(!lookFits(av)) return [];
-  const art = typeof isArtAvatar==='function' && isArtAvatar(av);
+  const art = isArtAvatar(av);
   const hero = art && COMPANIONS[av.slice(4)].style === 'hero';
   return LOOK_SLOTS.filter(s=> (!s.artOnly || art) && (!s.heroOnly || hero));
 }
@@ -203,9 +203,9 @@ function newlyUnlockedLookItems(){
   return Object.keys(WARDROBE).filter(k=> WARDROBE[k].unlock && WARDROBE[k].unlock === state.missions);
 }
 function refreshLookEverywhere(){
-  if(typeof syncProfileFromState==='function') syncProfileFromState();
-  if(typeof renderProfile==='function') renderProfile();
-  if(typeof renderMap==='function' && document.getElementById('island-map')) { try{ renderMap(); }catch(e){} }
+  syncProfileFromState();
+  renderProfile();
+  if(document.getElementById('island-map')) { try{ renderMap(); }catch(e){} }
 }
 
 /* ---- l'onglet « Mon look » du sac ---- */
@@ -214,7 +214,7 @@ let lookSlot = 'tete';
 function lookStatusText(id){
   const it = WARDROBE[id];
   if(ownsLookItem(id)) return '';
-  if(it.season && typeof FETES!=='undefined') return `${FETES[it.season].emoji} ${FETES[it.season].name}`;
+  if(it.season) return `${FETES[it.season].emoji} ${FETES[it.season].name}`;
   if(it.unlock) return `🔒 ${it.unlock} missions`;
   return `🪙 ${it.price}`;
 }
@@ -229,7 +229,7 @@ function renderLook(){
   const tryItem = lookTry && WARDROBE[lookTry.id];
   let action = '';
   if(tryItem){
-    if(tryItem.season && typeof FETES!=='undefined'){
+    if(tryItem.season){
       const se = FETES[tryItem.season];
       action = `<p class="look-msg">${se.emoji} ${tryItem.name} : un cadeau ${tryItem.season==='anniversaire' ? "le jour de ton anniversaire" : 'à ' + se.name}</p>`;
     } else if(tryItem.unlock){
@@ -302,9 +302,9 @@ function renderLook(){
     const from = el.querySelector('.look-preview');
     if(!it || !buyLookItem(id)) return;
     lookTry = null;
-    if(typeof spendCoins==='function') spendCoins(it.price, from);
+    spendCoins(it.price, from);
     playSound('coin');
-    if(typeof confetti==='function') confetti();
+    confetti();
     showToast(`✨ Nouveau look : ${it.name} !`);
     speak(`Super ! ${it.name}, ça te va très bien !`);
     renderLook();

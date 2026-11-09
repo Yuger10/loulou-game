@@ -72,7 +72,7 @@ function raceWin(p){
     <button class="btn-primary" id="race-again">🔁 Refaire une course</button>
     <button class="btn-ghost" id="race-done">Terminer</button>
   `);
-  if(typeof queueGain==='function') queueGain({ coins:RACE_PRIZE });
+  queueGain({ coins:RACE_PRIZE });
   document.getElementById('race-again').onclick = ()=>{
     playSound('tap'); closeModal(); startRace(race.players);
   };

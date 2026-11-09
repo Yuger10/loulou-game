@@ -8,11 +8,11 @@ function partyCurrent(){ return profiles.list.find(p=>p.id===party.players[party
 // Le joueur dont c'est le tour (solo, chacun son tour, ou course) et son
 // âge, utilisés pour adapter le TYPE de défi proposé (pas que sa difficulté).
 function currentPlayer(){
-  if(typeof race!=='undefined' && race.active && typeof raceCurrent==='function'){
+  if(race.active){
     const r = raceCurrent();
     if(r) return r;
   }
-  return (party.active && partyCurrent()) || (typeof currentProfile==='function' && currentProfile());
+  return (party.active && partyCurrent()) || currentProfile();
 }
 
 function currentPlayerAge(){

@@ -14,8 +14,8 @@ function gameDiff(){
   // multijoueur (chacun son tour / course) : l'âge prime totalement,
   // sans plafond lié à l'île — c'est le mécanisme d'équité déjà en
   // place (chacun joue à son niveau, peu importe où se déroule la partie).
-  if(typeof party!=='undefined' && party.active && typeof ageToDiff==='function'){
-    const p = (typeof partyCurrent==='function' && partyCurrent()) || (typeof currentProfile==='function' && currentProfile());
+  if(party.active){
+    const p = partyCurrent() || currentProfile();
     const d = p && ageToDiff(p.age);
     if(d) return d;
   }
@@ -23,7 +23,7 @@ function gameDiff(){
   // jamais l'inverse (un enfant plus âgé qu'une île facile n'est pas
   // artificiellement ralenti, seul le cas « trop dur pour son âge »
   // est corrigé).
-  if(typeof currentProfile==='function' && typeof ageToDiff==='function'){
+  {
     const p = currentProfile();
     const d = p && ageToDiff(p.age);
     if(d) return adaptedDiff(Math.min(d, island));
@@ -33,4 +33,4 @@ function gameDiff(){
 
 // Phase 3 : chaque mini-jeu a son propre niveau par enfant (js/features/adaptive/adaptive.js) ;
 // on ne joue jamais au-dessus de ce qui est acquis dans CE jeu.
-function adaptedDiff(base){ return typeof adaptTier==='function' ? adaptTier(base) : base; }
+function adaptedDiff(base){ return adaptTier(base); }

@@ -24,14 +24,14 @@ switchView('carte');
 /* Écran titre : sert aussi à débloquer le son et la voix (geste utilisateur requis sur iOS) */
 function showSplash(){
   const sp = document.getElementById('splash');
-  const season = typeof currentSeason==='function' ? currentSeason() : null;
+  const season = currentSeason();
   document.getElementById('splash-hello').textContent = season
     ? `${FETES[season].greet(state.name)} ${FETES[season].emoji}`
     : state.name ? `Coucou ${state.name} ${avatarText(state.avatar)} !` : "En route pour l'aventure ?";
   // joueur connu : son compagnon l'accueille ; sinon la troupe des personnages
   const bud = document.getElementById('splash-buddy');
   const cast = sp.querySelector('.cast');
-  if(bud && state.name && typeof companionSVG==='function'){
+  if(bud && state.name){
     bud.innerHTML = companionSVG(currentCompanion(), 'cheer');
     bud.hidden = false; if(cast) cast.hidden = true;
   } else if(bud){ bud.hidden = true; if(cast) cast.hidden = false; }
@@ -39,18 +39,18 @@ function showSplash(){
   sp.classList.add('show');
 }
 function hideSplash(){
-  if(typeof requestPersistentStorage==='function') requestPersistentStorage();
+  requestPersistentStorage();
   const sp = document.getElementById('splash');
   playSound('win');
   sp.classList.add('hiding');
-  setTimeout(()=>{ sp.classList.remove('show','hiding'); if(typeof updateMusic==='function') updateMusic(); }, 450);
+  setTimeout(()=>{ sp.classList.remove('show','hiding'); updateMusic(); }, 450);
   if(!state.name) openWelcome();
   else {
-    const season = typeof currentSeason==='function' ? currentSeason() : null;
+    const season = currentSeason();
     speak(season ? `${FETES[season].greet(state.name)} L'aventure t'attend.` : `Coucou ${state.name} ! L'aventure t'attend.`);
     switchView('carte');
     // une fois par saison : un cadeau (chapeau pour l'avatar + pièces)
-    if(typeof maybeSeasonGift==='function') setTimeout(maybeSeasonGift, 700);
+    setTimeout(maybeSeasonGift, 700);
   }
 }
 // navigation secondaire
@@ -102,6 +102,6 @@ if('serviceWorker' in navigator && location.protocol!=='file:'){
     location.reload();
   });
 }
-if(typeof initBackup==='function') initBackup();
-if(typeof initSeasons==='function') initSeasons();
-if(typeof startPlayTimeTracker==='function') startPlayTimeTracker();
+initBackup();
+initSeasons();
+startPlayTimeTracker();

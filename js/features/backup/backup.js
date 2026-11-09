@@ -29,8 +29,8 @@ function setBackupMeta(patch){
 
 /* ---- construire / lire une sauvegarde ---- */
 function buildBackup(){
-  if(typeof save==='function') save();
-  if(typeof saveProfiles==='function') saveProfiles();
+  save();
+  saveProfiles();
   const data = {};
   lsKeys().filter(k=>k.startsWith(BACKUP_PREFIX) && k!==BACKUP_META_KEY).forEach(k=>{
     try{ data[k] = localStorage.getItem(k); }catch(e){}
@@ -76,11 +76,11 @@ function applyBackup(backup){
   Object.entries(backup.data).forEach(([k,v])=>{ try{ localStorage.setItem(k, v); }catch(e){} });
   setBackupMeta({ restoredAt: new Date().toISOString(), lastBackupAt: backup.at || new Date().toISOString() });
   // recharge les joueurs et la partie sans recharger la page
-  if(typeof party!=='undefined' && party.active && typeof stopParty==='function') stopParty();
+  if(party.active) stopParty();
   loadProfiles(); load();
-  if(typeof currentWorld!=='undefined') currentWorld = 'lagon';
-  if(typeof refreshAll==='function') refreshAll();
-  if(typeof renderMap==='function') renderMap();
+  currentWorld = 'lagon';
+  refreshAll();
+  renderMap();
   renderBackupReminder();
 }
 function undoRestoreAvailable(){ try{ return !!localStorage.getItem(BACKUP_UNDO_KEY); }catch(e){ return false; } }
@@ -162,7 +162,7 @@ function renderInstallHint(){
 /* ---- rappel de sauvegarde ---- */
 function backupDue(){
   const last = backupMeta().lastBackupAt;
-  const anyProgress = (typeof profiles!=='undefined' ? profiles.list : []).length > 0 && (typeof state!=='undefined' && state.missions >= 5);
+  const anyProgress = (profiles.list).length > 0 && (state.missions >= 5);
   if(!last) return anyProgress;
   return (Date.now() - new Date(last).getTime()) > BACKUP_REMIND_DAYS * 864e5;
 }
@@ -201,7 +201,7 @@ async function exportBackupFile(){
 }
 
 function openBackup(){
-  const players = (typeof profiles!=='undefined' ? profiles.list : []).map(p=>p.name || 'Sans nom').join(', ');
+  const players = (profiles.list).map(p=>p.name || 'Sans nom').join(', ');
   openModal(`
     ${gameHeader('💾 Sauvegarde', 'Pour ne jamais perdre la partie (à faire avec un adulte)')}
     <section class="bk-card">

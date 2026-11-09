@@ -23,7 +23,7 @@ function loadProfiles(){
     if(raw) profiles = JSON.parse(raw);
   }catch(e){}
   if(!profiles || !Array.isArray(profiles.list)) profiles = { list: [], current: null };
-  if(typeof fixAvatar==='function') profiles.list.forEach(p=>{ p.avatar = fixAvatar(p.avatar); });
+  profiles.list.forEach(p=>{ p.avatar = fixAvatar(p.avatar); });
 
   // migration : une ancienne partie unique devient le premier joueur
   if(!profiles.list.length){
@@ -70,7 +70,7 @@ function switchProfile(id, silent){
 function addProfile(name, avatar, age, gender, companion){
   const id = newId();
   profiles.list.push({ id, name: name||'', avatar: avatar||'👧', age: age||null, gender: gender||'',
-    companion: companion || (typeof defaultCompanionFor==='function' ? defaultCompanionFor(gender||'') : null) });
+    companion: companion || defaultCompanionFor(gender||'') });
   profiles.current = id; saveProfiles();
   state = freshState({ name: name||'', avatar: avatar||'👧', visited:['lagon'] });
   save();
@@ -104,7 +104,7 @@ function refreshAll(){ profileRefreshHooks.forEach(fn=> fn()); }
 /* ---------- Accords féminin / masculin / neutre ---------- */
 // 'f' = féminin, 'm' = masculin, '' = neutre (formulations sans accord)
 function playerGender(){
-  const p = (typeof currentProfile==='function' && currentProfile()) || null;
+  const p = currentProfile() || null;
   return (p && p.gender) || '';
 }
 

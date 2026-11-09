@@ -1,8 +1,8 @@
 /* ---------- En-tête du joueur et écran de bienvenue ---------- */
 function renderProfile(){
   document.querySelector('#avatar-pill .av').innerHTML = avatarHTML(state.avatar, state.look);
-  if(typeof renderBackupReminder==='function') renderBackupReminder();
-  if(typeof applySeason==='function') applySeason();   // anniversaire : propre à chaque joueur
+  renderBackupReminder();
+  applySeason();   // anniversaire : propre à chaque joueur
   document.getElementById('player-name').textContent = state.name || 'Toi';
 }
 let pendingAvatar = '👧';
@@ -36,7 +36,7 @@ function openWelcome(){
     };
   });
   document.getElementById('name-input').value = state.name || '';
-  const p0 = typeof currentProfile==='function' && currentProfile();
+  const p0 = currentProfile();
   pendingGender = (p0 && p0.gender) || '';
   pendingCompanion = (p0 && p0.companion) || null;
   welcomeAllBuddies = false;
@@ -47,11 +47,11 @@ function closeWelcome(){
   const name = document.getElementById('name-input').value.trim().slice(0,12);
   state.name = name;
   state.avatar = pendingAvatar;
-  const p1 = typeof currentProfile==='function' && currentProfile();
+  const p1 = currentProfile();
   if(p1){
     p1.gender = pendingGender;
     p1.companion = pendingCompanion || defaultCompanionFor(pendingGender);
-    if(typeof saveProfiles==='function') saveProfiles();
+    saveProfiles();
   }
   save();
   renderProfile();
@@ -65,7 +65,7 @@ function closeWelcome(){
   renderLagon();
   // premier lancement : le fil de l'histoire commence par le chapitre du
   // Lagon (jamais répété une fois résolu — voir js/features/story/story.js)
-  if(typeof openStoryChapter === 'function' && typeof storySolved === 'function' && !storySolved('lagon')){
+  if(!storySolved('lagon')){
     setTimeout(()=> openStoryChapter('lagon'), 600);
   }
 }

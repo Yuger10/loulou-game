@@ -18,9 +18,9 @@ const JIGSAW_W = 480, JIGSAW_H = 360;
 // L'image : ciel, paysage de l'île (js/features/island/island.js), et un compagnon en grand.
 function jigsawPicture(worldId, compId){
   const w = WORLDS[worldId] || WORLDS.lagon;
-  const draw = (typeof ISLE_SCENERY!=='undefined' && (ISLE_SCENERY[w.shape] || ISLE_SCENERY[worldId]))
-    || (typeof isleGenericScenery==='function' ? isleGenericScenery : ()=> '');
-  const buddy = (typeof companionSVG==='function' ? companionSVG(compId, 'happy') : '')
+  const draw = (ISLE_SCENERY[w.shape] || ISLE_SCENERY[worldId])
+    || isleGenericScenery;
+  const buddy = companionSVG(compId, 'happy')
     .replace(/^<svg class="[^"]*"/, '<svg class="jg-buddy" x="138" y="140" width="204" height="221"');
   return `<linearGradient id="jg-sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7FD3EE"/><stop offset=".6" stop-color="#E2F7F6"/></linearGradient>
     <rect width="${JIGSAW_W}" height="${JIGSAW_H}" fill="url(#jg-sky)"/>
@@ -61,9 +61,9 @@ function renderJigsaw(){
   const n = r.cols * r.rows;
   const pw = JIGSAW_W / r.cols, ph = JIGSAW_H / r.rows;
   // une île déjà découverte (ou le Lagon) et un compagnon au hasard
-  const worlds = (typeof WORLD_ORDER!=='undefined' ? WORLD_ORDER : Object.keys(WORLDS)).filter(id=> typeof worldUnlocked!=='function' || worldUnlocked(id));
+  const worlds = WORLD_ORDER.filter(id=> worldUnlocked(id));
   const worldId = pickRandom(worlds.length ? worlds : ['lagon']);
-  const compId = pickRandom(typeof COMPANION_ORDER!=='undefined' ? COMPANION_ORDER : Object.keys(COMPANIONS));
+  const compId = pickRandom(COMPANION_ORDER);
   // ordre mélangé, jamais déjà en place
   let order = shuffle(Array.from({length:n}, (_,i)=>i));
   if(order.every((p,i)=>p===i)) order = order.slice(1).concat(order[0]);

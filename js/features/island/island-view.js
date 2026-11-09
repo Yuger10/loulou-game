@@ -51,7 +51,7 @@ function checkNewIsland(){
   };
   // le fil de l'histoire (js/features/story/story.js) précède l'écran habituel : une
   // nouvelle île est d'abord racontée, avec son énigme à résoudre.
-  if(typeof openStoryChapter==='function' && typeof STORY!=='undefined' && STORY[id] && typeof storySolved==='function' && !storySolved(id)){
+  if(STORY[id] && !storySolved(id)){
     openStoryChapter(id, showUnlockModal);
   } else {
     showUnlockModal();
@@ -73,7 +73,7 @@ function renderIslandCard(){
     <div class="ic-head"><span class="ic-emoji">${w.emoji}</span>
       <div><div class="ic-name">${w.name}</div><div class="ic-sub">${w.subtitle} · ${'⭐'.repeat(w.diff)}</div></div>
     </div>
-    <div class="ic-chars">${charsOfForPlayer(currentWorld, typeof playerGender==='function' ? playerGender() : '').map(([cid])=>charFace(cid)).join('')}</div>
+    <div class="ic-chars">${charsOfForPlayer(currentWorld, playerGender()).map(([cid])=>charFace(cid)).join('')}</div>
     <button class="btn-primary" id="ic-go">🏝️ Débarquer sur l'île</button>`;
   const b = document.getElementById('ic-go');
   if(b) b.onclick = ()=>{ playSound('tap'); switchView('ile'); };
@@ -93,7 +93,7 @@ function renderLagon(){
   document.getElementById('islands').innerHTML = '';
   renderQuests();
   renderScene();
-  if(typeof renderRaceTrack==='function') renderRaceTrack();
+  renderRaceTrack();
 }
 
 /* ---------- Décorations ---------- */
@@ -125,9 +125,9 @@ function openDecoShop(){
       const d = DECOS[k];
       if(state.coins < d.price || state.decos.includes(k)) return;
       const rowEmoji = btn.closest('.market-row').querySelector('.emoji');
-      const fromPt = typeof gainCenter==='function' ? gainCenter(rowEmoji) : null;
+      const fromPt = gainCenter(rowEmoji);
       addCoins(-d.price);
-      if(typeof spendCoins==='function'){
+      {
         spendCoins(d.price, rowEmoji);
         const scene = document.getElementById('scene');
         flyEmoji(d.emoji, fromPt, gainCenter(scene), { delay:480, size:'2.6rem', endScale:.9, onLand:()=>{ playSound('pop'); gainLand(scene, true); } });
@@ -168,8 +168,8 @@ function contextualLine(charId){
     }
   }
   if(state.decos.length===0 && state.coins>=8) lines.push(`Avec tes ${state.coins} pièces, tu pourrais décorer ${WORLDS[currentWorld].name} 🌴 !`);
-  if(typeof WARDROBE!=='undefined' && !Object.values(state.look||{}).some(Boolean) && state.coins >= 8) lines.push(`Avec tes pièces, tu peux habiller ton avatar : regarde dans ton sac, « Mon look » 🎩 !`);
-  if(typeof favoritesOf==='function'){ const fv = favoritesOf(charId).map(k=>ITEMS[k]); if(fv.length) lines.push(`Mes cadeaux préférés ? ${fv.map(i=>i.name + ' ' + i.emoji).join(' et ')} ! 💖`); }
+  if(!Object.values(state.look||{}).some(Boolean) && state.coins >= 8) lines.push(`Avec tes pièces, tu peux habiller ton avatar : regarde dans ton sac, « Mon look » 🎩 !`);
+  { const fv = favoritesOf(charId).map(k=>ITEMS[k]); if(fv.length) lines.push(`Mes cadeaux préférés ? ${fv.map(i=>i.name + ' ' + i.emoji).join(' et ')} ! 💖`); }
   if(state.decos.length>=3) lines.push(`C'est magnifique ici${who?', '+who:''} ! ${state.decos.length} décorations déjà ✨`);
   if(level()>=3) lines.push(`Niveau ${level()} déjà ! Tu es un${ac('','e')} vrai${ac('','e')} ${ac('explorateur','exploratrice')}.`);
   if(level()===2 && levelProgress()>=0.6) lines.push(`Encore quelques missions et la forêt enchantée s'ouvrira 🌲 !`);
@@ -187,11 +187,11 @@ function openDialogue(charId){
   openModal(`
     <div class="char-header">
       <span class="emoji">${charFace(charId)}</span>
-      <h2>${c.name} ${c.title}${typeof friendHearts==='function' && friendPoints(charId) ? friendHearts(charId) : ''}</h2>
+      <h2>${c.name} ${c.title}${friendPoints(charId) ? friendHearts(charId) : ''}</h2>
     </div>
     ${speechBubble(text)}
     <button class="btn-primary" id="btn-play">Choisir un jeu 🎮</button>
-    ${typeof openGiftPicker==='function' ? '<button class="btn-craft gift-open" id="btn-gift">🎁 Offrir un objet</button>' : ''}
+    ${'<button class="btn-craft gift-open" id="btn-gift">🎁 Offrir un objet</button>'}
     <button class="btn-ghost" id="btn-random">🎲 Surprise</button>
     <button class="btn-ghost" id="btn-close">Pas maintenant</button>
   `);

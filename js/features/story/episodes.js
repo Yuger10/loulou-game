@@ -110,8 +110,8 @@ function storyProgressHTML(world){
 
 // Montre l'épisode dû (après l'écran de victoire). Renvoie true s'il y en a un.
 function maybeStoryEpisode(){
-  if(typeof party!=='undefined' && party.active) return false;
-  const world = typeof currentWorld!=='undefined' ? currentWorld : 'lagon';
+  if(party.active) return false;
+  const world = currentWorld;
   const k = episodeDue(world);
   if(k < 0) return false;
   state.storyEpisodes = Object.assign({}, state.storyEpisodes || {}, { [world]: k + 1 });
@@ -128,7 +128,7 @@ function openEpisode(world, k, line, fresh){
   const last = line >= ep.lines.length - 1;
   openModal(`
     <div class="char-header">
-      <span class="emoji">${typeof charFace==='function' ? charFace(ep.by) : c.emoji}</span>
+      <span class="emoji">${charFace(ep.by)}</span>
       <h2><small class="ep-num">Épisode ${k + 1} sur ${EPISODES[world].length}</small>${ep.title}</h2>
     </div>
     ${speechBubble(ep.lines[line])}
@@ -137,11 +137,11 @@ function openEpisode(world, k, line, fresh){
   `);
   bindSpeakButtons();
   speak(`${line === 0 ? c.name + ' : ' : ''}${ep.lines[line]}`);
-  if(last && fresh){ playSound('coin'); if(typeof gainCoins==='function') gainCoins(EPISODE_REWARD, document.querySelector('.ep-find-emoji')); }
+  if(last && fresh){ playSound('coin'); gainCoins(EPISODE_REWARD, document.querySelector('.ep-find-emoji')); }
   document.getElementById('ep-next').onclick = ()=>{
     playSound('tap');
     if(!last){ openEpisode(world, k, line + 1, fresh); return; }
     closeModal();
-    if(typeof renderLagon==='function') renderLagon();
+    renderLagon();
   };
 }

@@ -41,7 +41,7 @@ function openPlayers(){
       </div>
       <button class="btn-craft" id="btn-add-player">➕ Ajouter un joueur</button>
       <div class="adult-row">
-        <button class="btn-small ghost bk-open ${typeof backupDue==='function' && backupDue() ? 'due' : ''}" id="btn-backup">💾 Sauvegarde${typeof backupDue==='function' && backupDue() ? ' · à faire' : ''}</button>
+        <button class="btn-small ghost bk-open ${backupDue() ? 'due' : ''}" id="btn-backup">💾 Sauvegarde${backupDue() ? ' · à faire' : ''}</button>
         <button class="btn-small ghost" id="btn-parents">👪 Espace parents</button>
       </div>
       <div class="mode-row">
@@ -301,18 +301,18 @@ const GAME_PICKER_SIZE = 2;
 //    remontent toujours en premier, pour forcer la variété (égalités
 //    départagées au hasard).
 function pickPickerChoices(n){
-  const allowed = new Set(gameTypesForAge(typeof currentPlayerAge==='function' ? currentPlayerAge() : null));
+  const allowed = new Set(gameTypesForAge(currentPlayerAge()));
   const pool = GAME_LIST.filter(g=>allowed.has(g.key));
   const withCount = shuffle(pool.length ? pool : GAME_LIST).map(g=>({ g, c: gameCount(g.key) }));
   withCount.sort((a,b)=>a.c-b.c);
   const choices = withCount.slice(0, n).map(x=>x.g);
   // une île peut avoir « son » mini-jeu (WORLDS[id].game) : il est toujours
   // proposé quand on y joue (s'il convient à l'âge du joueur)
-  const own = typeof currentWorld!=='undefined' && WORLDS[currentWorld] && WORLDS[currentWorld].game;
+  const own = WORLDS[currentWorld] && WORLDS[currentWorld].game;
   const ownGame = own && pool.find(g=>g.key===own);
   if(ownGame && !choices.includes(ownGame)) choices[0] = ownGame;
   // Phase 3 : un jeu à travailler revient plus souvent (js/features/adaptive/adaptive.js)
-  const practice = typeof pickPracticeGame==='function' ? pickPracticeGame(pool.map(g=>g.key)) : null;
+  const practice = pickPracticeGame(pool.map(g=>g.key));
   if(practice && !choices.some(g=>g.key===practice)){
     const slot = choices.length > 1 && choices[choices.length-1]!==ownGame ? choices.length-1 : (choices[0]===ownGame ? -1 : 0);
     if(slot >= 0) choices[slot] = pool.find(g=>g.key===practice);

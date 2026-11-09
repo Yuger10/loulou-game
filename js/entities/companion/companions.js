@@ -234,7 +234,7 @@ function companionOf(profile){
 }
 // le compagnon du joueur dont c'est le tour (solo, chacun son tour ou course)
 function currentCompanion(){
-  const p = (typeof currentPlayer==='function' && currentPlayer()) || (typeof currentProfile==='function' && currentProfile());
+  const p = currentPlayer() || currentProfile();
   return companionOf(p);
 }
 // compagnons proposés en premier selon le profil ; '' = tous

@@ -13,7 +13,7 @@ function setSacTab(tab){
   if(look) look.hidden = tab!=='look';
   if(tab==='sac') renderSac();
   else if(tab==='album') renderAlbum();
-  else if(typeof renderLook==='function'){ lookTry = null; renderLook(); }
+  else { lookTry = null; renderLook(); }
 }
 
 function renderBadge(){
@@ -82,7 +82,7 @@ function checkAlbumComplete(){
     </div>
     <button class="btn-primary" id="btn-yay">Waouh ! 🎉</button>
   `);
-  if(typeof queueGain==='function') queueGain({ coins:ALBUM_REWARD });
+  queueGain({ coins:ALBUM_REWARD });
   document.getElementById('btn-yay').onclick = ()=>{ playSound('tap'); closeModal(); };
 }
 
@@ -120,7 +120,7 @@ function renderAlbum(){
 document.getElementById('reset-btn').addEventListener('click', ()=>{
   playSound('tap');
   // ouvre les réglages du joueur courant : renommer, recommencer, supprimer
-  if(typeof openPlayerSettings==='function'){ openPlayerSettings(profiles.current); return; }
+  { openPlayerSettings(profiles.current); return; }
   if(confirm('Tout recommencer à zéro ? (pièces, objets et niveau seront perdus)')){
     resetState();
     renderCoins(); renderBadge(); renderSac(); renderScene(); renderQuests();

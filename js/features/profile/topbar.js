@@ -14,10 +14,9 @@ document.getElementById('sound-btn').addEventListener('click', ()=>{
 function renderSoundBtn(){
   const k = state.sound ? (state.music && state.voice ? 'musique' : state.voice ? 'voix' : 'son') : 'muet';
   const b = document.getElementById('sound-btn');
-  if(typeof uiIcon==='function') b.innerHTML = uiIcon(k);
-  else b.textContent = state.sound ? (state.voice ? '🗣️' : '🔊') : '🔇';
+  b.innerHTML = uiIcon(k);
   b.setAttribute('aria-label', soundModeLabel().replace(/^\S+\s/, ''));
-  if(typeof updateMusic==='function') updateMusic();
+  updateMusic();
 }
 
 onProfileRefresh(renderSoundBtn);

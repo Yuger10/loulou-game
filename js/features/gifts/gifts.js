@@ -51,7 +51,7 @@ function giveGift(charId, key){
     addCoins(reward);
   }
   save();
-  if(typeof questProgress==='function') questProgress('gift', null, 1);
+  questProgress('gift', null, 1);
   return { fav, reward, bestFriends: before < FRIEND_MAX && state.friends[charId] >= FRIEND_MAX };
 }
 
@@ -88,7 +88,7 @@ function openGiftPicker(charId){
 /* ---- le merci ---- */
 function showGiftThanks(charId, key, res, fromRect){
   const c = CHARACTERS[charId], it = ALL_ITEMS[key];
-  const who = typeof hello==='function' ? hello() : '';
+  const who = hello();
   const msg = res.fav
     ? `Oh, ${it.name} ! C'est mon cadeau préféré ! Merci${who ? ' ' + who : ''} !`
     : pickRandom([
@@ -97,7 +97,7 @@ function showGiftThanks(charId, key, res, fromRect){
         `Comme c'est gentil ! Merci${who ? ' ' + who : ''} !`,
       ]);
   const best = res.bestFriends
-    ? `Tu es ${typeof ac==='function' ? ac('mon meilleur ami', 'ma meilleure amie') : 'mon meilleur ami'} !${res.reward ? ` Voici ${res.reward} pièces, pour toi !` : ''}`
+    ? `Tu es ${ac('mon meilleur ami', 'ma meilleure amie')} !${res.reward ? ` Voici ${res.reward} pièces, pour toi !` : ''}`
     : '';
   openModal(`
     <div class="gift-thanks">
@@ -116,8 +116,8 @@ function showGiftThanks(charId, key, res, fromRect){
   `);
   bindSpeakButtons();
   playSound(res.fav || res.bestFriends ? 'win' : 'good');
-  if((res.bestFriends) && typeof confetti==='function') confetti();
-  if(res.reward && typeof gainCoins==='function') gainCoins(res.reward, document.querySelector('.gt-face'));
+  if(res.bestFriends) confetti();
+  if(res.reward) gainCoins(res.reward, document.querySelector('.gt-face'));
   speak(`${msg} ${best}`);
   // l'objet s'envole du sac jusqu'au personnage
   const face = document.querySelector('.gt-face');

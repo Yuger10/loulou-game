@@ -57,7 +57,7 @@ function helpedToday(charId){
   return !!(state.helped && state.helped.date === isleToday() && state.helped.ids[charId]);
 }
 function charMood(charId){
-  const q = typeof ensureQuests === 'function' ? ensureQuests() : null;
+  const q = ensureQuests();
   const quest = q && q.list.find(i=>i.type==='char' && i.target===charId && i.n < i.goal);
   if(quest) return { icon:'📜', label:'mission du jour' };
   if(helpedToday(charId)) return { icon:'❤️', label:"déjà aidé aujourd'hui" };
@@ -233,7 +233,7 @@ function landscapeSVG(worldId){
     </linearGradient></defs>
     ${isleSky()}
     ${draw(w)}
-    ${typeof seasonSceneSVG==='function' ? seasonSceneSVG(currentSeason()) : ''}
+    ${seasonSceneSVG(currentSeason())}
   </svg>`;
 }
 
@@ -299,7 +299,7 @@ let isleResizeObs = null;
 function renderLiveIsland(sc){
   if(!sc) return;
   const w = WORLDS[currentWorld];
-  const chars = charsOfForPlayer(currentWorld, typeof playerGender==='function' ? playerGender() : '');
+  const chars = charsOfForPlayer(currentWorld, playerGender());
   const owned = decosOf(currentWorld).map(([k])=>k).filter(k=>state.decos.includes(k));
   const tod = isleTimeOfDay();
   const pos = decoPositions(owned);
@@ -378,7 +378,7 @@ function bindDecoDrag(sc, el){
       el.classList.remove('wiggle'); void el.offsetWidth; el.classList.add('wiggle');
       playSound('tap');
       const d = DECOS[el.dataset.decoKey];
-      if(d && typeof speak === 'function') speak(d.name);
+      if(d) speak(d.name);
     }
     start = null; dragging = false;
   };

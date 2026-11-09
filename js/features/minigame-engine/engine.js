@@ -69,10 +69,10 @@ function scheduleRetry(fn){
 
 function loseLife(el, opts){
   opts = opts || {};
-  if(typeof buddyReact==='function') buddyReact('oops', 1300);
+  buddyReact('oops', 1300);
   // multijoueur : la règle reste « une erreur = on passe la main »
-  if(typeof party!=='undefined' && party.active){ wrongFeedback(el); return false; }
-  if(typeof noteAnswerError==='function') noteAnswerError();   // pour l'espace parents
+  if(party.active){ wrongFeedback(el); return false; }
+  noteAnswerError();   // pour l'espace parents
 
   playSound('wrong');
   vibrate(90);
@@ -134,11 +134,11 @@ function startTimerIfNeeded(kind){
   clearActiveTimer();
   // en multijoueur (chacun son tour / course), on garde l'expérience
   // simple : pas de minuteur qui se superpose au passage de main.
-  if(typeof party!=='undefined' && party.active) return;
-  if(typeof race!=='undefined' && race.active) return;
+  if(party.active) return;
+  if(race.active) return;
   const dd = gameDiff();
   // jamais de pression temporelle avant le CP (programme de maternelle)
-  const age = typeof currentPlayerAge === 'function' ? currentPlayerAge() : null;
+  const age = currentPlayerAge();
   if(age && age < 6) return;
   const seconds = timerFor(kind, dd);
   if(!seconds) return;
@@ -189,7 +189,7 @@ function flashModal(kind){
 // bonne étape : pastille verte + petite étoile qui monte
 function stepOk(el){
   playSound('good');
-  if(typeof buddyReact==='function') buddyReact('wow', 900);
+  buddyReact('wow', 900);
   if(!el) return;
   el.classList.add('ok-flash');
   setTimeout(()=> el.classList.remove('ok-flash'), 600);
@@ -221,8 +221,8 @@ function gameRenderer(key){ return GAME_RENDERERS[key] || GAME_RENDERERS.memory;
 // (utilisé pour proposer en priorité les jeux les moins essayés).
 function playGame(key){
   // pause douce réglée par les parents : plus de nouveau défi aujourd'hui
-  if(typeof pauseDue==='function' && pauseDue()){ showPauseScreen(); return; }
-  if(typeof missionErrors!=='undefined') missionErrors = 0;
+  if(pauseDue()){ showPauseScreen(); return; }
+  missionErrors = 0;
   trackGamePlayed(key);
   lastGame = key;
   gameSolution = null;
@@ -232,9 +232,9 @@ function playGame(key){
 function startMinigame(){
   // ne propose que des défis adaptés à l'âge du joueur, et évite de
   // tomber deux fois de suite sur le même jeu
-  const allowed = gameTypesForAge(typeof currentPlayerAge==='function' ? currentPlayerAge() : null);
+  const allowed = gameTypesForAge(currentPlayerAge());
   const pool = allowed.filter(t=>t!==lastGame);
-  const practice = typeof pickPracticeGame==='function' ? pickPracticeGame(allowed) : null;
+  const practice = pickPracticeGame(allowed);
   const type = practice || pickRandom(pool.length ? pool : allowed);
   playGame(type);
 }
@@ -247,7 +247,7 @@ function gameHeader(title, hint, spoken){
     <div class="game-head"><h2>${title}</h2></div>
     <p class="puzzle-hint has-buddy">
       <span class="hint-txt">${hint}</span>
-      ${typeof buddySlot==='function' ? buddySlot('think') : ''}
+      ${buddySlot('think')}
       <button class="btn-speak" data-say="${say}" aria-label="Écouter la consigne">🔈</button>
     </p>
   `;
@@ -265,7 +265,7 @@ function progressDots(done, total){
 
 /* Mission ratée : on encourage, on ne punit pas — mais pas de récompense. */
 function onMissionFail(){
-  if(typeof recordMission==='function') recordMission(false);
+  recordMission(false);
   missionFact = null;
   bindQuit._last = null;
   lives = 0;
@@ -282,7 +282,7 @@ function onMissionFail(){
 
   openModal(`
     <div class="reward-box fail-box">
-      ${typeof buddySlot==='function' ? buddySlot('oops','buddy-big fail-emoji') : '<span class="big-emoji fail-emoji">😅</span>'}
+      ${buddySlot('oops','buddy-big fail-emoji')}
       <h2>Raté !</h2>
       <div class="speech">${msg}</div>
       <div class="speech" style="background:#FFF1EC;">
@@ -299,17 +299,17 @@ function onMissionFail(){
 }
 
 function onMissionWin(){
-  if(typeof recordMission==='function') recordMission(true);   // avant le mode course, qui s'arrête plus bas
+  recordMission(true);   // avant le mode course, qui s'arrête plus bas
   bindQuit._last = null;
-  if(typeof partyScore==='function') partyScore();
+  partyScore();
   // course : on avance d'une case ; si la ligne d'arrivée est franchie, l'écran de victoire s'affiche
-  if(typeof partyAfterWin==='function' && partyAfterWin()) return;
+  if(partyAfterWin()) return;
   const c = CHARACTERS[currentChar] || CHARACTERS.sirene;
-  if(typeof markHelped==='function') markHelped(currentChar);   // ❤️ sur l'île
+  markHelped(currentChar);   // ❤️ sur l'île
   const prevLevel = level();
   state.missions += 1;
-  const solo = !(typeof party!=='undefined' && party.active);
-  if(solo && typeof noteStoryMission==='function') noteStoryMission(currentWorld);   // l'histoire avance (js/features/story/episodes.js)
+  const solo = !(party.active);
+  if(solo) noteStoryMission(currentWorld);   // l'histoire avance (js/features/story/episodes.js)
   const key = pickRandom(c.loot);
   // bonus : de temps en temps un objet rare en plus
   const bonus = Math.random() < 0.2 ? pickRandom(availableItems()) : null;
@@ -339,14 +339,14 @@ function onMissionWin(){
   ]).replace(/ ([!?])/g, '\u00a0$1');   // espace insécable : le « ! » ne part pas seul à la ligne
   const fact = missionFact; missionFact = null;
   // garde-robe : un objet se gagne à certains nombres de missions (js/features/wardrobe/wardrobe.js)
-  const lookWon = typeof newlyUnlockedLookItems==='function' ? newlyUnlockedLookItems().map(k=>WARDROBE[k].name) : [];
-  const cheer = typeof progressCheer==='function' ? progressCheer(typeof missionProgress!=='undefined' ? missionProgress : null) : null;
+  const lookWon = newlyUnlockedLookItems().map(k=>WARDROBE[k].name);
+  const cheer = progressCheer(missionProgress);
   setTimeout(()=> speak(`${levelUp ? `Niveau ${level()} ! ` : ''}${praise} ${cheer ? cheer + ' ' : ''}${lookWon.length ? `Tu gagnes ${lookWon.join(' et ')} pour ton avatar ! ` : ''}${fact ? fact + ' ' : ''}${c.name} t'offre ${it.name}${bonus ? `, et une surprise : ${ITEMS[bonus].name}` : ''}.`), 300);
 
   openModal(`
     <div class="reward-box win-box">
       <span class="win-rays" aria-hidden="true"></span>
-      ${typeof buddySlot==='function' ? buddySlot('cheer','buddy-big win-emoji') : `<span class="big-emoji win-emoji">${levelUp ? '🌟' : '🎉'}</span>`}
+      ${buddySlot('cheer','buddy-big win-emoji')}
       <span class="win-stamp">${levelUp ? '🌟' : '✅'}</span>
       <h2>${levelUp ? `Niveau ${level()} !` : praise}</h2>
       ${lookWon.length ? `<div class="speech look-won"><span aria-hidden="true">🎁</span> Nouveau pour ton avatar : <strong>${lookWon.join(', ')}</strong> (sac → Mon look)</div>` : ''}
@@ -356,23 +356,23 @@ function onMissionWin(){
         <span class="reward-emoji" data-gain-item style="font-size:2rem;">${it.emoji}</span>
         <span>${c.name} t'offre : <strong>${it.name}</strong></span>
       </div>
-      ${solo && typeof storyProgressHTML==='function' ? storyProgressHTML(currentWorld) : ''}
+      ${solo ? storyProgressHTML(currentWorld) : ''}
       ${bonus ? `<div class="speech" style="display:flex; align-items:center; justify-content:center; gap:10px; background:#FFF9E8;">
         <span data-gain-item style="font-size:2rem;">${ITEMS[bonus].emoji}</span>
         <span>Surprise ! <strong>${ITEMS[bonus].name}</strong> en plus ✨</span>
       </div>` : ''}
     </div>
-    <button class="btn-primary" id="btn-yay">${(typeof party!=='undefined' && party.active) ? 'Au joueur suivant 👉' : 'Super !'}</button>
-    ${(typeof party!=='undefined' && party.active) ? '' : '<button class="btn-ghost" id="btn-again">Encore une mission 🎮</button>'}
+    <button class="btn-primary" id="btn-yay">${(party.active) ? 'Au joueur suivant 👉' : 'Super !'}</button>
+    ${(party.active) ? '' : '<button class="btn-ghost" id="btn-again">Encore une mission 🎮</button>'}
   `);
   // l'objet gagné s'envolera jusqu'au sac quand la fenêtre se fermera
-  if(typeof queueGain==='function') queueGain({ items:[it.emoji, bonus ? ITEMS[bonus].emoji : null] });
+  queueGain({ items:[it.emoji, bonus ? ITEMS[bonus].emoji : null] });
   document.getElementById('btn-yay').onclick = ()=> {
     playSound('tap'); closeModal(); renderLagon();
     // multijoueur : la main passe au joueur suivant après une réussite
-    if(typeof party!=='undefined' && party.active){ passTurn('next'); return; }
+    if(party.active){ passTurn('next'); return; }
     // nouvelle île débloquée ? sinon, peut-être un épisode de l'histoire
-    setTimeout(()=>{ if(!checkNewIsland() && typeof maybeStoryEpisode==='function') maybeStoryEpisode(); }, 250);
+    setTimeout(()=>{ if(!checkNewIsland()) maybeStoryEpisode(); }, 250);
   };
   const againBtn = document.getElementById('btn-again');
   if(againBtn) againBtn.onclick = ()=> { playSound('tap'); renderLagon(); startMinigame(); };

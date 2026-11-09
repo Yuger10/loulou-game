@@ -28,8 +28,8 @@ const MUSIC_DUCK = 0.3;         // part du volume gardée pendant que la voix pa
 let music = { on:false, timer:null, nextTime:0, step:0, master:null, filter:null, last:7 };
 
 function musicTheme(){
-  const th = Object.assign({}, MUSIC_THEMES[typeof currentWorld!=='undefined' ? currentWorld : 'lagon'] || MUSIC_THEMES.lagon);
-  const season = typeof currentSeason==='function' ? currentSeason() : null;
+  const th = Object.assign({}, MUSIC_THEMES[currentWorld] || MUSIC_THEMES.lagon);
+  const season = currentSeason();
   if(season === 'noel') th.lead = 'bell';
   if(season === 'halloween'){ th.scale = [0,3,5,7,10]; th.minor = true; th.prog = [0,8,5,7]; }
   return th;

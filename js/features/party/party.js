@@ -13,7 +13,7 @@ function startParty(ids){
   return true;
 }
 function stopParty(){
-  if(typeof race!=='undefined' && race.active){ stopRace(); return; }
+  if(race.active){ stopRace(); return; }
   party.active = false; party.mode = null;
   renderTurnBar();
   showToast('👤 Mode solo');
@@ -24,7 +24,7 @@ function stopParty(){
 function passTurn(reason){
   if(!party.active) return;
   party.turn = (party.turn + 1) % party.players.length;
-  if(typeof race!=='undefined' && race.active){ race.turn = party.turn; race.rounds++; }
+  if(race.active){ race.turn = party.turn; race.rounds++; }
   const p = partyCurrent();
   switchProfile(p.id, true);
   renderTurnBar();
@@ -78,7 +78,7 @@ function partyScore(){
 // en course : le joueur avance d'une case, puis la main passe au suivant
 function partyAfterWin(){
   if(!party.active) return false;
-  if(party.mode==='race' && typeof raceAdvance==='function'){
+  if(party.mode==='race'){
     const finished = raceAdvance();
     if(finished) return true;      // course gagnée : pas de passage de main
   }

@@ -45,7 +45,7 @@ function currentSeason(date){
   if(prev === SEASON_NONE) return null;
   if(prev && FETES[prev]) return prev;
   const d = date || new Date();
-  const p = typeof currentProfile==='function' ? currentProfile() : null;
+  const p = currentProfile();
   if(isBirthday(p, d)) return 'anniversaire';
   return Object.keys(FETES).find(k=>FETES[k].from && inSeasonRange(d, FETES[k].from, FETES[k].to)) || null;
 }
@@ -83,8 +83,8 @@ function applySeason(force){
   }
   // les dessins qui dépendent de la saison (île, compagnons, avatar)
   if(force){
-    if(typeof renderLagon==='function'){ try{ renderLagon(); }catch(e){} }
-    if(typeof renderProfile==='function'){ try{ renderProfile(); }catch(e){} }
+    { try{ renderLagon(); }catch(e){} }
+    { try{ renderProfile(); }catch(e){} }
   }
 }
 
@@ -162,7 +162,7 @@ function seasonGiftKey(id, d){
 function seasonGiftDue(){
   const id = currentSeason();
   if(!id || seasonPreview() || !state.name) return null;
-  if(typeof party!=='undefined' && party.active) return null;
+  if(party.active) return null;
   return (state.seasonGifts || {})[seasonGiftKey(id)] ? null : id;
 }
 function giveSeasonGift(id){
@@ -176,13 +176,13 @@ function maybeSeasonGift(){
   const id = seasonGiftDue();
   if(!id) return false;
   const s = FETES[id], hat = WARDROBE[s.hat];
-  const comp = typeof currentCompanion==='function' ? COMPANIONS[currentCompanion()] : null;
+  const comp = COMPANIONS[currentCompanion()];
   giveSeasonGift(id);
   const msg = `${s.greet(state.name)} ${comp ? comp.name : 'Ton compagnon'} t'offre ${s.hatGift} pour ton avatar, et ${s.gift} pièces !`;
-  const tryLook = Object.assign({}, typeof currentLook==='function' ? currentLook() : {}, { tete: s.hat });
+  const tryLook = Object.assign({}, currentLook(), { tete: s.hat });
   openModal(`
     <div class="reward-box season-gift">
-      ${typeof buddySlot==='function' ? buddySlot('cheer','buddy-big') : ''}
+      ${buddySlot('cheer','buddy-big')}
       <h2>${s.emoji} Surprise ${id==='anniversaire' ? "d'anniversaire" : 'de ' + s.name} !</h2>
       <div class="speech">${msg}</div>
       <div class="season-gift-av">${avatarHTML(state.avatar, tryLook)}</div>
@@ -191,9 +191,9 @@ function maybeSeasonGift(){
     <button class="btn-ghost" id="sg-ok">Merci !</button>
   `);
   playSound('win');
-  if(typeof confetti==='function') confetti();
+  confetti();
   speak(msg);
-  document.getElementById('sg-wear').onclick = ()=>{ playSound('tap'); if(typeof wearLook==='function') wearLook('tete', s.hat); closeModal(); showToast(`${s.emoji} ${hat.name} !`); };
+  document.getElementById('sg-wear').onclick = ()=>{ playSound('tap'); wearLook('tete', s.hat); closeModal(); showToast(`${s.emoji} ${hat.name} !`); };
   document.getElementById('sg-ok').onclick = ()=>{ playSound('tap'); closeModal(); };
   return true;
 }

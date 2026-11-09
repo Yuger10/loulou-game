@@ -54,7 +54,7 @@ const PROGRESS_CHEERS = {
 
 function gameMaxTier(key){ return GAME_TIER_MAX[key] || 5; }
 function skillOf(key){ return (state.skills || {})[key] || null; }
-function inGroupPlay(){ return typeof party!=='undefined' && party.active; }
+function inGroupPlay(){ return party.active; }
 
 // Niveau de départ d'un jeu jamais joué : un cran sous l'île.
 function placementTier(base){ return Math.max(1, base - 1); }
@@ -62,7 +62,7 @@ function placementTier(base){ return Math.max(1, base - 1); }
 // Niveau réellement joué pour ce jeu, à partir du palier de l'île (déjà
 // plafonné par l'âge). Appelé par gameDiff() en solo.
 function adaptTier(base, key){
-  key = key || (typeof lastGame!=='undefined' ? lastGame : null);
+  key = key || lastGame;
   if(!key || inGroupPlay()) return base;
   const s = skillOf(key);
   const lvl = s && s.lvl ? s.lvl : placementTier(base);
@@ -76,7 +76,7 @@ function adaptAfterMission(key, s, tier, ok, errors){
   if(!s.lvl) s.lvl = tier;           // premier passage : on part du niveau joué
   if(tier !== s.lvl) return null;    // joué plus bas (île plus facile) : ne compte pas
   s.atLvl = (s.atLvl || []).concat({ ok: !!ok, e: errors }).slice(-3);
-  const tol = (typeof SKILL_ERR_TOLERANCE!=='undefined' && SKILL_ERR_TOLERANCE[key]) || 1;
+  const tol = (SKILL_ERR_TOLERANCE[key]) || 1;
   const streak = s.atLvl.slice(-ADAPT_UP_STREAK);
   if(streak.length === ADAPT_UP_STREAK && streak.every(x=>x.ok && x.e <= tol) && s.lvl < gameMaxTier(key)){
     const back = !!s.support;
@@ -99,7 +99,7 @@ function needsPractice(key){
 // jouer), une fois sur deux ; sinon null.
 function pickPracticeGame(keys){
   if(inGroupPlay() || Math.random() >= PRACTICE_CHANCE) return null;
-  const last = typeof lastGame!=='undefined' ? lastGame : null;
+  const last = lastGame;
   const list = keys.filter(k=>k!==last && needsPractice(k));
   return list.length ? pickRandom(list) : null;
 }

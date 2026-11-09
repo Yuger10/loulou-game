@@ -73,8 +73,8 @@ let state = {
 
 function save(){
   try{
-    localStorage.setItem(typeof currentSaveKey==='function' ? currentSaveKey() : SAVE_KEY, JSON.stringify(state));
-    if(typeof syncProfileFromState==='function') syncProfileFromState();
+    localStorage.setItem(currentSaveKey(), JSON.stringify(state));
+    syncProfileFromState();
   }catch(e){}
 }
 
@@ -103,7 +103,7 @@ function migrate(saved){
 
 function load(){
   try{
-    const key = typeof currentSaveKey==='function' ? currentSaveKey() : SAVE_KEY;
+    const key = currentSaveKey();
     const raw = localStorage.getItem(key);
     if(!raw){ state = freshState(); return; }
     const saved = migrate(JSON.parse(raw));
@@ -115,7 +115,7 @@ function load(){
       if((saved[k] !== undefined && saved[k] !== null) || k==='quests') clean[k] = saved[k];
     });
     state = freshState(clean);
-    if(typeof fixAvatar==='function') state.avatar = fixAvatar(state.avatar);
+    state.avatar = fixAvatar(state.avatar);
     save();
   }catch(e){
     console.warn('Sauvegarde illisible, on repart à zéro', e);

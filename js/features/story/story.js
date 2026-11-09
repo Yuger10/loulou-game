@@ -188,7 +188,7 @@ function renderStoryIntro(world, idx, onDone){
   const already = storySolved(world);
   openModal(`
     <div class="char-header">
-      <span class="emoji">${typeof charFace === 'function' ? charFace(ch.guide) : CHARACTERS[ch.guide].emoji}</span>
+      <span class="emoji">${charFace(ch.guide)}</span>
       <h2>${ch.title}</h2>
     </div>
     ${speechBubble(line)}
@@ -270,8 +270,8 @@ function openStoryJournal(){
         const ch = STORY[id]; if(!ch) return '';
         const unlocked = worldUnlocked(id);
         const solved = storySolved(id);
-        const eps = typeof EPISODES!=='undefined' && EPISODES[id] ? EPISODES[id] : [];
-        const seen = typeof episodesSeen==='function' ? episodesSeen(id) : 0;
+        const eps = EPISODES[id] ? EPISODES[id] : [];
+        const seen = episodesSeen(id);
         return `<button type="button" class="story-chap ${solved ? 'done' : ''} ${!unlocked ? 'locked' : ''}" data-world="${id}" ${!unlocked ? 'disabled' : ''}>
           <span class="story-chap-n">${i + 1}</span>
           <span class="story-chap-ico">${!unlocked ? '🔒' : (solved ? '✅' : '📖')}</span>
