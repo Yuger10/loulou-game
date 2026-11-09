@@ -859,3 +859,32 @@ Le sac sert à faire plaisir (`js/gifts.js`). Dans le dialogue d'un personnage :
 - **Réglage** : coupée par défaut. Le bouton son de l'enfant fait le tour : 🗣️ sons + voix → 🔊 sons seuls → 🔇 silence → 🎵 musique + sons + voix. Espace parents → Réglages : « Musique d'ambiance » / « Pas de musique », pour chaque enfant.
 - Tests avec un faux moteur audio (notes programmées, changement d'île, arrêt en silence) ; extrait rendu hors ligne dans Chromium pour vérifier le volume.
 - Cache `lagon-v48`.
+
+---
+
+# v49 — L'histoire avance à chaque mission ; les poissons nagent dans le bon sens
+
+## Épisodes (`js/episodes.js`)
+Entre deux chapitres (un par île), il se passait 10 à 20 missions sans rien de nouveau dans l'histoire. Chaque île a maintenant **3 épisodes** — 24 petites scènes en deux phrases, racontées par les autres habitants de l'île (jamais le guide du chapitre), qui suivent le fil de la chasse au trésor et annoncent l'île suivante :
+- Lagon : la bouteille à la mer (« Le trésor dort là où les huit îles se donnent la main »), l'étoile filante, la danse des vagues ;
+- Forêt : des traces qui brillent, **la petite clé dorée**, le vent des montagnes ;
+- Montagne : la grotte aux cristaux, le vieux parchemin (un château), la boule de cristal ;
+- Château : le tour des tours, **la clé de la forêt ouvre la fenêtre de la tour** (une carte de la jungle), la gentille sorcière ;
+- Jungle : la noix de coco qui fait tic-tac, l'horloge cachée, le chemin secret ;
+- Cité du Temps : l'horloge rapportée, le secret du temps, la nuit du volcan ;
+- Volcan : la lave qui chante « dou-ceur », la pierre de feu, le mot mystère ;
+- Pays Squishy : tout est tout doux, le coffre aux huit serrures, le vrai trésor (« tout ce que tu as appris en chemin »).
+
+Fonctionnement :
+- un épisode arrive **après la 2e, la 4e et la 7e mission réussie sur l'île** (en solo), juste après l'écran de victoire (après la nouvelle île s'il y en a une) ;
+- l'écran de victoire montre que **l'histoire avance** (●●○) ;
+- chaque épisode fait trouver un objet de l'histoire et **3 pièces** ;
+- **« 📖 Mon histoire »** : sous chaque chapitre, les épisodes vus (à relire, sans regagner de pièces) et ceux à venir (🔒).
+- Données : `state.storyMissions[île]`, `state.storyEpisodes[île]`.
+
+## Écran d'accueil
+Les poissons nageaient de gauche à droite alors que les emoji 🐠 🐟 🐢 regardent vers la gauche sur iPhone et iPad : ils semblaient reculer. Ils sont maintenant **dessinés** (poisson-clown, poisson bleu, tortue), tournés dans le sens où ils nagent, avec une petite ondulation — identiques sur tous les appareils.
+
+## Divers
+- Écran de victoire : espace insécable avant « ! » (il ne part plus seul à la ligne).
+- Cache `lagon-v49`.

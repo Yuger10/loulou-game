@@ -321,6 +321,8 @@ function onMissionWin(){
   if(typeof markHelped==='function') markHelped(currentChar);   // ❤️ sur l'île
   const prevLevel = level();
   state.missions += 1;
+  const solo = !(typeof party!=='undefined' && party.active);
+  if(solo && typeof noteStoryMission==='function') noteStoryMission(currentWorld);   // l'histoire avance (js/episodes.js)
   const key = pickRandom(c.loot);
   // bonus : de temps en temps un objet rare en plus
   const bonus = Math.random() < 0.2 ? pickRandom(availableItems()) : null;
@@ -347,7 +349,7 @@ function onMissionWin(){
     `Waouh${who?' '+who:''}, quel${ac('','le')} ${ac('champion','championne')} !`,
     `Incroyable, tu as tout trouvé !`,
     `Trop ${ac('malin','maligne')} ! 💪`,
-  ]);
+  ]).replace(/ ([!?])/g, '\u00a0$1');   // espace insécable : le « ! » ne part pas seul à la ligne
   const fact = missionFact; missionFact = null;
   // garde-robe : un objet se gagne à certains nombres de missions (js/wardrobe.js)
   const lookWon = typeof newlyUnlockedLookItems==='function' ? newlyUnlockedLookItems().map(k=>WARDROBE[k].name) : [];
@@ -367,6 +369,7 @@ function onMissionWin(){
         <span class="reward-emoji" data-gain-item style="font-size:2rem;">${it.emoji}</span>
         <span>${c.name} t'offre : <strong>${it.name}</strong></span>
       </div>
+      ${solo && typeof storyProgressHTML==='function' ? storyProgressHTML(currentWorld) : ''}
       ${bonus ? `<div class="speech" style="display:flex; align-items:center; justify-content:center; gap:10px; background:#FFF9E8;">
         <span data-gain-item style="font-size:2rem;">${ITEMS[bonus].emoji}</span>
         <span>Surprise ! <strong>${ITEMS[bonus].name}</strong> en plus ✨</span>
@@ -381,7 +384,8 @@ function onMissionWin(){
     playSound('tap'); closeModal(); renderLagon();
     // multijoueur : la main passe au joueur suivant après une réussite
     if(typeof party!=='undefined' && party.active){ passTurn('next'); return; }
-    setTimeout(checkNewIsland, 250);   // nouvelle île débloquée ?
+    // nouvelle île débloquée ? sinon, peut-être un épisode de l'histoire
+    setTimeout(()=>{ if(!checkNewIsland() && typeof maybeStoryEpisode==='function') maybeStoryEpisode(); }, 250);
   };
   const againBtn = document.getElementById('btn-again');
   if(againBtn) againBtn.onclick = ()=> { playSound('tap'); renderLagon(); startMinigame(); };

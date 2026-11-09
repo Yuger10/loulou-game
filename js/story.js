@@ -270,11 +270,16 @@ function openStoryJournal(){
         const ch = STORY[id]; if(!ch) return '';
         const unlocked = worldUnlocked(id);
         const solved = storySolved(id);
+        const eps = typeof EPISODES!=='undefined' && EPISODES[id] ? EPISODES[id] : [];
+        const seen = typeof episodesSeen==='function' ? episodesSeen(id) : 0;
         return `<button type="button" class="story-chap ${solved ? 'done' : ''} ${!unlocked ? 'locked' : ''}" data-world="${id}" ${!unlocked ? 'disabled' : ''}>
           <span class="story-chap-n">${i + 1}</span>
           <span class="story-chap-ico">${!unlocked ? '🔒' : (solved ? '✅' : '📖')}</span>
           <span class="story-chap-title">${unlocked ? ch.title : '???'}</span>
-        </button>`;
+        </button>
+        ${unlocked && eps.length ? `<div class="story-eps">${eps.map((ep, k)=> k < seen
+          ? `<button type="button" class="story-ep" data-ep="${id}:${k}" aria-label="Épisode ${k+1} : ${ep.title}"><span aria-hidden="true">${ep.find}</span> ${ep.title}</button>`
+          : `<span class="story-ep locked" aria-label="Épisode ${k+1} : à venir">🔒 Épisode ${k+1}</span>`).join('')}</div>` : ''}`;
       }).join('')}
     </div>
   `);
@@ -283,6 +288,13 @@ function openStoryJournal(){
     b.onclick = ()=>{
       playSound('tap'); closeModal();
       setTimeout(()=> openStoryChapter(b.dataset.world), 200);
+    };
+  });
+  document.querySelectorAll('[data-ep]').forEach(b=>{
+    b.onclick = ()=>{
+      playSound('tap');
+      const [w, k] = b.dataset.ep.split(':');
+      openEpisode(w, Number(k), 0, false);
     };
   });
 }
