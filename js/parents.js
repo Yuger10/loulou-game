@@ -249,6 +249,11 @@ function openParentSpace(selectedId){
       </div>
     </section>
     <section class="bk-card"><h3>⚙️ Réglages</h3>
+      <div class="ps-chips" role="group" aria-label="Musique d'ambiance">
+        <button type="button" class="ps-chip ${st.music ? 'on' : ''}" data-music="1">🎵 Musique d'ambiance</button>
+        <button type="button" class="ps-chip ${st.music ? '' : 'on'}" data-music="0">Pas de musique</button>
+      </div>
+      <p class="bk-help">Une petite musique douce, différente sur chaque île, qui baisse quand la voix parle. L'enfant peut aussi la couper avec le bouton du son, en haut.</p>
       <div class="ps-actions">
         <button class="btn-small" id="ps-backup">💾 Sauvegarde</button>
         <button class="btn-small ghost" id="ps-player">✏️ Prénom, âge, compagnon, remise à zéro</button>
@@ -267,6 +272,14 @@ function openParentSpace(selectedId){
     document.querySelectorAll('[data-season-preview]').forEach(x=>x.classList.toggle('on', x===b));
     const s = currentSeason();
     showToast(s ? `${FETES[s].emoji} Aperçu : ${FETES[s].name}` : 'Pas de fête aujourd\'hui');
+  });
+  document.querySelectorAll('[data-music]').forEach(b=> b.onclick = ()=>{
+    playSound('tap');
+    const on = b.dataset.music === '1';
+    if(p.id === profiles.current){ state.music = on; if(on){ state.sound = true; state.voice = true; } save(); renderSoundBtn(); }
+    else { st.music = on; try{ localStorage.setItem(profileSaveKey(p.id), JSON.stringify(st)); }catch(e){} }
+    document.querySelectorAll('[data-music]').forEach(x=>x.classList.toggle('on', x===b));
+    showToast(on ? '🎵 Musique d\'ambiance' : 'Pas de musique');
   });
   document.getElementById('ps-backup').onclick = ()=>{ playSound('tap'); openBackup(); };
   document.getElementById('ps-player').onclick = ()=>{ playSound('tap'); openPlayerSettings(p.id); };

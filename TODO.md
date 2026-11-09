@@ -50,7 +50,7 @@ Chaque mini-jeu a maintenant son propre niveau pour chaque enfant (`js/adaptive.
 - [x] Offrir un objet à un personnage : il remercie (objet qui s'envole, cœurs, danse) ; 2 objets préférés par personnage, cœurs d'amitié, « meilleurs amis » à 5 cœurs, mission du jour « Offre 2 objets » — v47
 - [x] Une petite histoire par île : un chapitre et une énigme en images à chaque nouvelle île, relisible dans « 📖 Mon histoire » — v40
 - [ ] Faire avancer l'histoire aussi à chaque mission (pas seulement à chaque île)
-- [ ] Musique d'ambiance douce, activable
+- [x] Musique d'ambiance douce, activable : une ambiance par île, inventée en direct, qui baisse quand la voix parle ; bouton son (🎵) ou espace parents — v48
 - [x] Décorations de saison : Halloween, Noël, anniversaire — île décorée, neige / feuilles / ballons, chapeaux de fête pour les compagnons, un cadeau par saison ; aperçu dans l'espace parents — v45
 - [x] Mini-jeu « Assembler l'image » (« Le puzzle ») : 2×2 avec l'image en transparence, puis 3×3, puis 4×3 avec un modèle ; glisser du doigt ou toucher morceau puis case — v46
 
@@ -101,6 +101,7 @@ Chaque mini-jeu a maintenant son propre niveau pour chaque enfant (`js/adaptive.
 | v45 | Fêtes et saisons : Halloween, Noël, anniversaire (décor, chapeaux, cadeau), aperçu dans l'espace parents |
 | v46 | Mini-jeu « Le puzzle » (assembler l'image) : 2×2, 3×3, 4×3, images dessinées des îles et des compagnons |
 | v47 | Offrir un objet à un personnage : remerciements animés, objets préférés, amitié ; jeu en ligne sur GitHub Pages |
+| v48 | Musique d'ambiance douce, une par île (Web Audio, sans fichier), coupée par défaut |
 
 ---
 

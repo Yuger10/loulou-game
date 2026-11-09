@@ -962,11 +962,11 @@ setTimeout(()=>{
       const slots = [...d.querySelectorAll('[data-ui-icon]')];
       check('icônes : barres du haut et du bas dessinées en SVG (pas d\'emoji de l\'appareil)', slots.length>=7 && slots.every(el=>el.querySelector('svg.ui-ic')));
       check('icônes : les 4 boutons de navigation ont leur icône', [...d.querySelectorAll('nav.bottomnav .navbtn')].every(b=>b.querySelector('svg.ui-ic')));
-      const st = ev('JSON.stringify({s: state.sound, v: state.voice})');
+      const st = ev('JSON.stringify({s: state.sound, v: state.voice, m: state.music})');
       const icons = [];
       for(let i=0;i<3;i++){ d.getElementById('sound-btn').click(); icons.push(d.getElementById('sound-btn').innerHTML); }
-      check('icônes : le bouton son a une icône pour chaque état (voix, sons, silence)', icons.every(h=>h.includes('ui-ic')) && new Set(icons).size===3);
-      ev(`(function(o){ state.sound = o.s; state.voice = o.v; save(); renderSoundBtn(); })(${st})`);
+      check('icônes : le bouton son a une icône pour chaque état (sons, silence, musique)', icons.every(h=>h.includes('ui-ic')) && new Set(icons).size===3);
+      ev(`(function(o){ state.sound = o.s; state.voice = o.v; state.music = o.m; save(); renderSoundBtn(); })(${st})`);
       check('icônes : chaque dessin est un SVG valide', ev('Object.keys(UI_ICONS)').every(k=>{
         const doc = new w.DOMParser().parseFromString(ev(`uiIcon(${JSON.stringify(k)})`).replace('<svg ', '<svg xmlns="http://www.w3.org/2000/svg" '), 'image/svg+xml');
         return !doc.querySelector('parsererror');
@@ -1059,6 +1059,41 @@ setTimeout(()=>{
       ev('openDialogue("sirene")');
       check('cadeaux : l\'amitié se voit en cœurs dans le dialogue', !!d.querySelector('.char-header .friend-hearts'));
       ev('closeModal(); state.friends = {}; state.friendRewards = {}; state.inventory = {}; state.quests = null; save()');
+    }
+    // ---- Musique d'ambiance ----
+    {
+      // jsdom n'a pas de son : un faux moteur audio qui compte les notes
+      ev(`(function(){
+        const param = ()=>({ value:0, setValueAtTime(){}, linearRampToValueAtTime(){}, exponentialRampToValueAtTime(){}, setTargetAtTime(){}, cancelScheduledValues(){} });
+        const node = (extra)=>Object.assign({ connect(n){ return n || this; }, disconnect(){} }, extra);
+        window.__notes = 0;
+        window.AudioContext = class { constructor(){ this.currentTime = 0; this.state = 'running'; this.destination = node({}); }
+          createOscillator(){ window.__notes++; return node({ type:'', frequency:param(), start(){}, stop(){} }); }
+          createGain(){ return node({ gain:param() }); }
+          createBiquadFilter(){ return node({ type:'', frequency:param(), Q:param() }); }
+          resume(){} };
+        audioCtx = null;
+      })()`);
+      check('musique : chaque île a son ambiance', ev('WORLD_ORDER.every(id=>!!MUSIC_THEMES[id])'));
+      check('musique : coupée par défaut', ev('freshState().music')===false && ev('musicWanted()')===false);
+      // le bouton son : sons + voix → sons seuls → silence → musique → sons + voix
+      ev('state.sound = true; state.voice = true; state.music = false; save(); renderSoundBtn()');
+      const modes = [];
+      for(let i=0;i<4;i++){ d.getElementById('sound-btn').click(); modes.push(ev('soundModeLabel()')); }
+      check('musique : le bouton son passe par la musique', modes.join(' | ')==='🔊 Sons seulement | 🔇 Silence | 🎵 Musique + sons + voix | 🗣️ Sons + voix');
+      ev('state.music = true; state.sound = true; state.voice = true; save(); updateMusic()');
+      check('musique : démarre quand elle est activée', ev('music.on')===true && ev('window.__notes')>0);
+      const n0 = ev('window.__notes');
+      ev('for(let i=0;i<20;i++){ audioCtx.currentTime += .3; musicTick(); }');   // 6 s : au moins une mesure entière
+      check('musique : la mélodie continue (notes programmées à l\'avance)', ev('window.__notes')>n0);
+      ev('currentWorld = "volcan"; for(let i=0;i<20;i++){ audioCtx.currentTime += .3; musicTick(); }');
+      check('musique : change d\'ambiance avec l\'île', ev('musicTheme().lead')==='pluck' && ev('musicTheme().minor')===true);
+      ev('state.sound = false; updateMusic()');
+      check('musique : s\'arrête en mode silence', ev('music.on')===false);
+      ev('state.sound = true; state.music = false; currentWorld = "lagon"; save(); updateMusic(); renderSoundBtn(); audioCtx = null; delete window.AudioContext');
+      ev('openParentSpace()');
+      check('musique : interrupteur dans l\'espace parents', !!d.querySelector('[data-music="1"]') && d.querySelector('[data-music="0"]').classList.contains('on'));
+      ev('closeModal()');
     }
     // ---- Chaque nouveau monde : couleurs propres et place sur la carte ----
     {

@@ -23,6 +23,7 @@ const DEFAULT_STATE = {
   wardrobe: [],       // objets de la garde-robe achetés (js/wardrobe.js)
   look: { tete:null, visage:null, tenue:null, cape:null },   // ce que porte l'avatar
   seasonGifts: {},    // cadeaux de saison reçus, ex. { 'noel-2026': true } (js/seasons.js)
+  music: false,       // musique d'ambiance (js/music.js), coupée par défaut
   friends: {},        // points d'amitié par personnage (cadeaux, js/gifts.js)
   friendRewards: {},  // surprise de « meilleur ami » déjà donnée, par personnage
 };
@@ -53,6 +54,7 @@ let state = {
   wardrobe: [],
   look: { tete:null, visage:null, tenue:null, cape:null },
   seasonGifts: {},
+  music: false,
   friends: {},
   friendRewards: {},
 };

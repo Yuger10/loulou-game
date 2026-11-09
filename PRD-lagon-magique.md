@@ -847,3 +847,15 @@ Le sac sert à faire plaisir (`js/gifts.js`). Dans le dialogue d'un personnage :
 - Données : `state.friends[perso]` (points), `state.friendRewards[perso]`.
 - **En ligne** : le jeu est publié sur https://yuger10.github.io/loulou-game/ (GitHub Pages), en `https://` : hors-ligne, installation et stockage protégé fonctionnent. Phase 1 terminée.
 - Cache `lagon-v47`.
+
+---
+
+# v48 — Musique d'ambiance douce
+
+`js/music.js` : une petite musique inventée en direct avec le Web Audio (aucun fichier à télécharger, marche hors ligne).
+- **Une ambiance par île** : gamme, tempo et instrument — marimba au Lagon, flûte en Forêt, clochettes en Montagne, harpe au Château, pincé rythmé (avec un petit hochet) dans la Jungle, clochettes et tic-tac à la Cité du Temps, gamme mineure au Volcan, bulles au Pays Squishy. À Noël des clochettes, à Halloween une gamme mineure.
+- **Composition** : 4 accords tenus très doucement (filtrés), une basse, et une mélodie tirée au hasard dans une gamme pentatonique (jamais de fausse note), avec des silences : elle ne se répète jamais tout à fait.
+- **Discrète** : crête d'environ 0,11 (les bruitages vont de 0,2 à 0,35) ; elle **baisse d'elle-même quand la voix parle**, s'arrête quand le jeu passe en arrière-plan et reprend au retour ; elle démarre après « Jouer » (le toucher qui débloque le son sur iPhone).
+- **Réglage** : coupée par défaut. Le bouton son de l'enfant fait le tour : 🗣️ sons + voix → 🔊 sons seuls → 🔇 silence → 🎵 musique + sons + voix. Espace parents → Réglages : « Musique d'ambiance » / « Pas de musique », pour chaque enfant.
+- Tests avec un faux moteur audio (notes programmées, changement d'île, arrêt en silence) ; extrait rendu hors ligne dans Chromium pour vérifier le volume.
+- Cache `lagon-v48`.

@@ -81,21 +81,28 @@ function playSound(kind){
   }catch(e){}
 }
 document.getElementById('sound-btn').addEventListener('click', ()=>{
-  // cycle : son+voix → son seul → muet
-  if(state.sound && state.voice){ state.voice=false; }
+  // cycle : musique (+ sons + voix) → sons + voix → sons seuls → silence → musique…
+  if(state.sound && state.voice && state.music){ state.music=false; }
+  else if(state.sound && state.voice){ state.voice=false; }
   else if(state.sound){ state.sound=false; }
-  else { state.sound=true; state.voice=true; }
+  else { state.sound=true; state.voice=true; state.music=true; }
   save(); renderSoundBtn();
   if(!state.voice && window.speechSynthesis) speechSynthesis.cancel();
   if(state.sound) playSound('tap');
-  showToast(state.sound ? (state.voice ? '🗣️ Sons + voix' : '🔊 Sons seulement') : '🔇 Silence');
+  showToast(soundModeLabel());
 });
+function soundModeLabel(){
+  if(!state.sound) return '🔇 Silence';
+  if(state.music && state.voice) return '🎵 Musique + sons + voix';
+  return state.voice ? '🗣️ Sons + voix' : '🔊 Sons seulement';
+}
 function renderSoundBtn(){
-  const k = state.sound ? (state.voice ? 'voix' : 'son') : 'muet';
+  const k = state.sound ? (state.music && state.voice ? 'musique' : state.voice ? 'voix' : 'son') : 'muet';
   const b = document.getElementById('sound-btn');
   if(typeof uiIcon==='function') b.innerHTML = uiIcon(k);
   else b.textContent = state.sound ? (state.voice ? '🗣️' : '🔊') : '🔇';
-  b.setAttribute('aria-label', state.sound ? (state.voice ? 'Sons et voix' : 'Sons seulement') : 'Silence');
+  b.setAttribute('aria-label', soundModeLabel().replace(/^\S+\s/, ''));
+  if(typeof updateMusic==='function') updateMusic();
 }
 
 /* ---------- Voix (Web Speech) ---------- */
