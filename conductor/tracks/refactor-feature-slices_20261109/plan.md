@@ -3,7 +3,7 @@
 Spec : [spec.md](./spec.md). Workflow : [workflow.md](../../workflow.md).
 Principe : **un déplacement ou un découpage = un commit avec `npm test` vert**. On ne change aucune logique.
 
-## Phase 1 : Inventaire et outillage
+## Phase 1 : Inventaire et outillage [checkpoint: bce5d59]
 - [x] Task: Inventaire des noms globaux
     - [x] Script `test/tools/globals.js` : pour chaque fichier JS, liste de ses définitions de haut niveau (`function`, `const`, `let`) et des noms d'autres fichiers qu'il référence
     - [x] Tableau de correspondance fichier/fonction → slice cible, dans `conductor/tracks/refactor-feature-slices_20261109/inventory.md`, avec l'API publique pressentie de chaque slice
@@ -12,7 +12,7 @@ Principe : **un déplacement ou un découpage = un commit avec `npm test` vert**
     - [x] `js/slices.js` (au départ : une slice par fichier actuel, dans l'ordre actuel) ; `test/smoke.test.js` lit le manifeste
 - [x] Task: Tests de cohérence
     - [x] Tests : `index.html` et `sw.js` (`FILES`) correspondent au manifeste (liste et ordre) ; une seule définition par nom global
-- [ ] Task: Conductor - User Manual Verification 'Inventaire et outillage' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Inventaire et outillage' (Protocol in workflow.md)
 
 ## Phase 2 : Couches basses (shared, entities)
 - [ ] Task: `shared/`
