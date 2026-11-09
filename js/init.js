@@ -43,7 +43,7 @@ function hideSplash(){
   const sp = document.getElementById('splash');
   playSound('win');
   sp.classList.add('hiding');
-  setTimeout(()=>{ sp.classList.remove('show','hiding'); }, 450);
+  setTimeout(()=>{ sp.classList.remove('show','hiding'); if(typeof updateMusic==='function') updateMusic(); }, 450);
   if(!state.name) openWelcome();
   else {
     const season = typeof currentSeason==='function' ? currentSeason() : null;
