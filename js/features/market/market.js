@@ -49,13 +49,89 @@ function renderVendre(el){
   });
 }
 
+/* ---------- Squishies (v53) : échanger ses doubles, acheter des boîtes ----------
+   3 doubles, quels qu'ils soient, donnent 1 squishy manquant au choix (une
+   silhouette des séries incomplètes). La boutique vend des boîtes surprises
+   « mystère » : 15 pièces, 3 par jour au plus. */
+let sqWanted = null;
+function squishyTradeHTML(){
+  const dupes = squishyDuplicates(), missing = squishyMissing();
+  const need = Math.max(0, SQ_TRADE_COST - dupes);
+  if(sqWanted && !missing.includes(sqWanted)) sqWanted = null;
+  const head = `<h3>🧸 Mes doubles de squishies <span class="sqm-n">${dupes} double${dupes > 1 ? 's' : ''}</span></h3>`;
+  if(!missing.length) return `<section class="sq-market">${head}<p class="sqm-msg">Ta collection est complète, bravo ! 🏆 Garde tes doubles, ce sont tes préférés.</p></section>`;
+  const label = need ? `Encore ${need} double${need > 1 ? 's' : ''}` : sqWanted ? 'Échanger 3 doubles 🔄' : 'Choisis un squishy';
+  return `<section class="sq-market">${head}
+    <p class="sqm-msg">${SQ_TRADE_COST} doubles = 1 squishy de ton choix.${need ? '' : ' Lequel veux-tu ?'}</p>
+    <div class="sqm-grid">${missing.map(id=> `<button type="button" class="sq-cell missing ${sqWanted === id ? 'selected' : ''}" data-want="${id}" aria-label="Un squishy ${SQUISHY_SERIES[SQUISHIES[id].series].name}">${squishyArtSVG(id, { silhouette:true })}<span class="sq-name">${SQUISHY_SERIES[SQUISHIES[id].series].emoji}</span></button>`).join('')}</div>
+    <button type="button" class="btn-craft" id="sqm-trade" ${!need && sqWanted ? '' : 'disabled'}>${label}</button>
+  </section>`;
+}
+function bindSquishyTrade(el, rerender){
+  el.querySelectorAll('[data-want]').forEach(b=>{
+    b.onclick = ()=>{
+      playSound('tap');
+      sqWanted = b.dataset.want;
+      const need = Math.max(0, SQ_TRADE_COST - squishyDuplicates());
+      speak(need ? `Il te faut encore ${need} double${need > 1 ? 's' : ''} pour l'échanger.` : 'Celui-là ? Touche Échanger !');
+      rerender();
+    };
+  });
+  const t = el.querySelector('#sqm-trade');
+  if(t) t.onclick = ()=>{
+    const res = tradeDuplicatesFor(sqWanted);
+    if(!res.ok) return;
+    sqWanted = null;
+    const m = SQUISHIES[res.id];
+    playSound('win'); confetti(); vibrate([40, 30, 80]);
+    showToast(`🔄 ${m.name} est à toi !`);
+    speak(`Échangé ! ${m.say.charAt(0).toUpperCase() + m.say.slice(1)} rejoint ta collection !${res.seriesCompleted ? ` Et la série ${SQUISHY_SERIES[m.series].name} est complète : tu gagnes ${SQ_SERIES_BONUS} pièces !` : ''}`);
+    if(res.seriesCompleted) gainCoins(SQ_SERIES_BONUS, t);
+    rerender();
+  };
+}
+function squishyShopHTML(){
+  const shop = squishyShopState();
+  const sub = !shop.left ? 'Reviens demain pour d\'autres boîtes 🌙'
+    : `🪙 ${shop.price} pièces · encore ${shop.left} aujourd'hui`;
+  const say = (shop.left ? `Boîte surprise de squishies, ${shop.price} pièces` : 'Reviens demain pour d\'autres boîtes').replace(/"/g,'&quot;');
+  return `<section class="sq-market sqm-shop">
+    <div class="market-row">
+      <button type="button" class="emoji sqm-box" data-say="${say}" aria-label="Écouter : boîte surprise">${squishyBoxSVG(null)}</button>
+      <div class="info"><div class="name">Boîte surprise de squishies</div><div class="sub">${sub}</div></div>
+      <button class="btn-small" id="sqm-buy" ${shop.left && shop.canPay ? '' : 'disabled'}>Acheter</button>
+    </div>
+    ${squishyBoxCount() ? `<button type="button" class="chip-btn sqm-go" id="sqm-go">🧸 Ouvrir mes boîtes (${squishyBoxCount()})</button>` : ''}
+  </section>`;
+}
+function bindSquishyShop(el, rerender){
+  const b = el.querySelector('#sqm-buy');
+  if(b) b.onclick = ()=>{
+    const res = buySquishyBox();
+    if(!res.ok){
+      speak(res.reason === 'limit' ? 'Reviens demain pour d\'autres boîtes !' : `Il te faut ${SQ_BOX_PRICE} pièces.`);
+      rerender();
+      return;
+    }
+    spendCoins(SQ_BOX_PRICE, el.querySelector('.sqm-box'));
+    playSound('coin');
+    showToast('🎁 Boîte surprise achetée !');
+    speak('Une boîte surprise ! Ouvre-la dans ta chambre à squishies.');
+    rerender();
+  };
+  const go = el.querySelector('#sqm-go');
+  if(go) go.onclick = ()=>{ playSound('tap'); openSquishyRoom('collection'); };
+}
+
 function renderEchanger(el){
   const owned = Object.keys(ITEMS).filter(k=>countItem(k)>0);
+  const sqPart = squishyTradeHTML();
   if(owned.length===0){
-    el.innerHTML = `<div class="empty-state"><span class="es-art">🔄</span>Tu n'as pas encore d'objet à échanger.</div>`;
+    el.innerHTML = sqPart + `<div class="empty-state"><span class="es-art">🔄</span>Tu n'as pas encore d'objet à échanger.</div>`;
+    bindSquishyTrade(el, ()=> renderEchanger(el));
     return;
   }
-  el.innerHTML = owned.map(k=>{
+  el.innerHTML = sqPart + owned.map(k=>{
     const it = ITEMS[k];
     const say = `${it.name}, contre un objet surprise`.replace(/"/g,'&quot;');
     return `<div class="market-row">
@@ -65,6 +141,7 @@ function renderEchanger(el){
     </div>`;
   }).join('');
   bindSpeakButtons();
+  bindSquishyTrade(el, ()=> renderEchanger(el));
   el.querySelectorAll('[data-trade]').forEach(btn=>{
     btn.onclick = ()=>{
       const k = btn.dataset.trade;
@@ -84,6 +161,7 @@ function renderEchanger(el){
 
 function renderAcheter(el){
   el.innerHTML = `<div class="market-wallet">Tu as <span class="mw-coin">🪙</span> <strong>${state.coins}</strong> pièces</div>` +
+  squishyShopHTML() +
   Object.entries(ITEMS).map(([k,it])=>{
     const cost = it.price * 2;
     const can = state.coins >= cost;
@@ -95,6 +173,7 @@ function renderAcheter(el){
     </div>`;
   }).join('');
   bindSpeakButtons();
+  bindSquishyShop(el, ()=> renderAcheter(el));
   el.querySelectorAll('[data-buy]').forEach(btn=>{
     btn.onclick = ()=>{
       const k = btn.dataset.buy;

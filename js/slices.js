@@ -45,9 +45,12 @@ const SLICES = [
       'readingOptions', 'readingWordOnly', 'sequencePatternLength', 'shapesRound', 'simonLength', 
       'solidOptions', 'timerFor', 'volumeAskLessChance', 'volumeContainerCount', 
       'volumeUsesCapacityCompare'] },
+  { id:'squishy',        layer:'entities', files:['js/entities/squishy/squishies.js'], css:[], public:[
+      'SQUISHIES', 'squishiesOf', 'SQUISHY_ISLAND_SERIES', 'SQUISHY_RARITY', 'SQUISHY_SERIES', 
+      'SQUISHY_SERIES_ORDER'] },
   { id:'game-state',     layer:'entities', files:['js/entities/game-state/state.js'], css:[], public:[
       'freshState', 'gameCount', 'hello', 'level', 'levelProgress', 'load', 'MISSIONS_PER_LEVEL', 
-      'resetState', 'save', 'state', 'trackGamePlayed'] },
+      'resetState', 'save', 'squishyFreshState', 'state', 'trackGamePlayed'] },
   { id:'player',         layer:'entities', files:['js/entities/player/avatars.js','js/entities/player/profiles.js',
                                                 'js/entities/player/party-state.js'], css:[], public:[
       'ac', 'addProfile', 'AVATARS', 'currentPlayer', 'currentPlayerAge', 'currentProfile', 
@@ -104,12 +107,18 @@ const SLICES = [
   { id:'minigame-clock', layer:'features', files:['js/features/minigames/clock/clock.js'], css:['js/features/minigames/clock/clock.css'], public:[] },
   { id:'minigame-calendar', layer:'features', files:['js/features/minigames/calendar/calendar.js'], css:['js/features/minigames/calendar/calendar.css'], public:[] },
   { id:'minigame-calc', layer:'features', files:['js/features/minigames/calc/calc.js'], css:['js/features/minigames/calc/calc.css'], public:[] },
-  { id:'minigame-shapes', layer:'features', files:['js/features/minigames/shapes/shapes.js'], css:['js/features/minigames/shapes/shapes.css'], public:[] },
+  { id:'minigame-shapes', layer:'features', files:['js/features/minigames/shapes/shapes.js'], css:['js/features/minigames/shapes/shapes.css'], public:[
+      'SQ_COLORS'] },
   { id:'minigame-planets', layer:'features', files:['js/features/minigames/planets/planets.js'], css:['js/features/minigames/planets/planets.css'], public:[] },
   { id:'minigame-jigsaw', layer:'features', files:['js/features/minigames/jigsaw/jigsaw.js'], css:['js/features/minigames/jigsaw/jigsaw.css'], public:[] },
   { id:'story', layer:'features', files:['js/features/story/story.js','js/features/story/episodes.js'], css:['js/features/story/story.css','js/features/story/episodes.css'], public:[
       'maybeStoryEpisode', 'noteStoryMission', 'openStoryChapter', 'openStoryJournal', 'STORY', 
       'storyProgressHTML', 'storySolved'] },
+  { id:'squishies', layer:'features', files:['js/features/squishies/squishies.js','js/features/squishies/squishy-room.js'], css:['js/features/squishies/squishies.css'], public:[
+      'addSquishyBox', 'addStorySquishyBox', 'buySquishyBox', 'openSquishyRoom', 'renderSquishyBadge', 
+      'SQ_BOX_PRICE', 'SQ_SERIES_BONUS', 'SQ_TRADE_COST', 'squishyArtSVG', 'squishyBoxCount', 
+      'squishyBoxRewardHTML', 'squishyBoxSVG', 'squishyDuplicates', 'squishyMissing', 
+      'squishySessionHello', 'squishyShopState', 'tradeDuplicatesFor'] },
   { id:'market', layer:'features', files:['js/features/market/market.js'], css:['js/features/market/market.css'], public:[] },
   { id:'gifts', layer:'features', files:['js/features/gifts/gifts.js'], css:['js/features/gifts/gifts.css'], public:[
       'favoritesOf', 'friendHearts', 'friendPoints', 'openGiftPicker'] },
@@ -188,6 +197,7 @@ const CSS_ORDER = [
   'js/features/story/episodes.css',
   'js/features/minigame-engine/hints.css',
   'js/features/companion-team/team.css',
+  'js/features/squishies/squishies.css',
   'js/features/island/island.css',
   'js/entities/character/characters.css',
 ];

@@ -267,7 +267,9 @@ function storyWin(world, onDone){
   save();
   playSound('win'); confetti(); vibrate([60, 40, 120, 40, 160]);
   addCoins(ch.reward);
-  speak(`${ch.success} Tu gagnes ${ch.reward} pièces.`);
+  // v53 : une boîte surprise de la série de l'île (une seule fois par île)
+  const box = addStorySquishyBox(world);
+  speak(`${ch.success} Tu gagnes ${ch.reward} pièces${box ? ' et une boîte surprise de squishies' : ''}.`);
   openModal(`
     <div class="reward-box win-box">
       <span class="win-rays" aria-hidden="true"></span>
@@ -277,6 +279,7 @@ function storyWin(world, onDone){
       <div class="speech" style="display:flex; align-items:center; justify-content:center; gap:10px; background:#FFF9E8;">
         <span data-gain-coins style="font-size:2rem;">🪙</span><span><strong>+${ch.reward} pièces</strong></span>
       </div>
+      ${box ? squishyBoxRewardHTML(box.series) : ''}
     </div>
     <button class="btn-primary" id="story-continue">Continuer l'aventure ✨</button>
   `);

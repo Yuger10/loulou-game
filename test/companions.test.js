@@ -229,7 +229,7 @@ const wrongOf = (sel)=>{ const good = d.querySelector(ev('gameSolution')[0]); re
   section('Partie migrée');
   ev(`closeModal(); localStorage.setItem(currentSaveKey(), JSON.stringify({ v:3, coins:9, missions:60, inventory:{ coquillage:2 }, name:'Lou', avatar:'🦄', visited:WORLD_ORDER.slice(),
       skills:{ count:{ wins:3, fails:0, errors:1, last:null, recent:[] } } })); load()`);
-  check('migration v3 → v4 sans perte (pièces, missions, objets, progrès)', ev('state.v') === 4 && ev('state.coins') === 9 && ev('state.missions') === 60 && ev('state.inventory.coquillage') === 2 && ev('state.skills.count.wins') === 3);
+  check('migration v3 → v4 sans perte (pièces, missions, objets, progrès)', ev('state.v') === ev('SAVE_VERSION') && ev('state.coins') === 9 && ev('state.missions') === 60 && ev('state.inventory.coquillage') === 2 && ev('state.skills.count.wins') === 3);
   check('migration : équipe fermée, compteur d\'indices à 0', ev('teamIsOpen()') === false && ev('state.skills.count.hints') === 0 && Array.isArray(ev('state.team.mates')));
   ev('teamOnSessionStart()');
   check('partie déjà au niveau 10 ou plus : l\'écran d\'équipe au chargement', !!d.querySelector('.team-open'));

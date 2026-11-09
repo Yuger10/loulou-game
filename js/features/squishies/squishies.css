@@ -1,0 +1,174 @@
+  /* =====================================================================
+     Ma chambre à squishies (v53) — dessins, collection, ouverture,
+     étagère, boîtes de rangement, marché
+     ===================================================================== */
+  /* les dessins */
+  .sq-art{width:100%; height:100%; display:block; overflow:visible;}
+  .sq-sil *{fill:#D9E2E8 !important; stroke:#B9C8D1 !important;}
+  .sq-sil .sq-face, .sq-sil .sq-deco, .sq-sil text{display:none;}
+  .sq-sparkles path{transform-box:fill-box; transform-origin:center; animation:sqTwinkle 1.4s ease-in-out infinite;}
+  .sq-sparkles path:nth-child(2){animation-delay:.45s;}
+  .sq-sparkles path:nth-child(3){animation-delay:.9s;}
+  @keyframes sqTwinkle{0%,100%{transform:scale(.4) rotate(0deg); opacity:.4;} 50%{transform:scale(1.15) rotate(25deg); opacity:1;}}
+  .sq-brille{filter:drop-shadow(0 0 4px rgba(255,214,70,.75));}
+
+  /* presser : il s'écrase vite, puis remonte lentement (« slow rising ») */
+  .sq-press .sq-art{transform-origin:50% 92%; animation:sqPress 1.5s cubic-bezier(.2,.9,.3,1);}
+  @keyframes sqPress{
+    0%{transform:scale(1,1);} 8%{transform:scale(1.3,.55);} 18%{transform:scale(1.26,.6);}
+    70%{transform:scale(1.04,.95);} 85%{transform:scale(.98,1.03);} 100%{transform:scale(1,1);}
+  }
+
+  /* l'en-tête et le Sac : les entrées de la chambre */
+  #squishy-btn .badge.ready{animation:chipPulse 1.2s ease-in-out infinite;}
+  .sq-room-link{
+    display:flex; align-items:center; gap:10px; width:100%; margin:0 0 12px; padding:8px 14px 8px 8px;
+    border:2px solid #FFC2DB; border-radius:var(--radius-md); background:#FFEAF3; color:var(--ink);
+    font:inherit; font-weight:800; font-size:1rem; text-align:left; cursor:pointer; box-shadow:var(--shadow-candy-sm);
+  }
+  .sq-room-link .sq-rl-ico{font-size:1.7rem; line-height:1;}
+  .sq-room-link .sq-rl-txt{flex:1;}
+  .sq-room-link .badge{position:static; min-width:24px; height:24px; padding:0 7px; border-radius:12px; display:inline-flex; align-items:center; justify-content:center; font-size:.85rem;}
+
+  /* téléphone : avec le bouton 🧸, l'en-tête compte 7 éléments. Les boutons
+     ronds suivent la largeur de l'écran (38 px à 360 px, 48 px dès 453 px)
+     pour que les pièces restent toujours visibles. */
+  @media (max-width:460px){
+    .topbar{gap:clamp(3px, 1vw, 8px);}
+    .topbar .icon-btn, .topbar .sound-btn{width:clamp(36px, 10.6vw, 48px); height:clamp(36px, 10.6vw, 48px); font-size:1.15rem;}
+    .topbar .team-btn{width:auto; min-width:clamp(36px, 10.6vw, 48px);}
+    .topbar .coin-pill{padding:6px 10px 6px 6px; gap:4px; flex-shrink:0;}
+  }
+
+  /* la chambre : les onglets, puis le contenu */
+  .sq-tabs{margin-bottom:10px;}
+  .sq-room h3, .sq-h{display:flex; align-items:center; justify-content:space-between; gap:8px; font-size:1rem; margin:12px 2px 6px; text-align:left;}
+  .sq-prog{font-size:.9rem; color:var(--ink-soft); white-space:nowrap;}
+  .sq-series .quest-bar{margin:0 2px 8px;}
+  .sq-series.complete h3{color:#2F7D52;}
+  .sq-grid{display:grid; grid-template-columns:repeat(3, 1fr); gap:8px;}
+  .sq-cell{
+    position:relative; display:flex; flex-direction:column; align-items:center; gap:0; min-width:0;
+    padding:6px 4px 4px; border:2px solid rgba(18,59,79,.06); border-radius:18px; background:#fff;
+    box-shadow:0 4px 0 #EFC7DB, inset 0 3px 0 rgba(255,255,255,.9); cursor:pointer; -webkit-tap-highlight-color:transparent;
+    font:inherit; color:var(--ink);
+  }
+  .sq-cell .sq-art{width:100%; max-width:84px; height:auto; aspect-ratio:112/124;}
+  .sq-cell .sq-name{font-size:.72rem; font-weight:800; line-height:1.1; text-align:center; min-height:1.6em; display:flex; align-items:center;}
+  .sq-cell.missing{background:#F3F6F8; box-shadow:0 3px 0 #DCE4E9;}
+  .sq-cell.missing .sq-name{color:#9AAAB5;}
+  .sq-cell.r-rare{border-color:#FFD95A;}
+  .sq-cell.r-brille{border-color:#FFD95A; background:linear-gradient(160deg, #FFFBEA, #F6EEFF);}
+  .sq-n{position:absolute; top:4px; left:6px; padding:0 6px; border-radius:10px; background:#3A7BD5; color:#fff; font-size:.75rem; font-weight:800;}
+  .sq-rar{position:absolute; top:2px; right:4px; font-size:.9rem;}
+  .sq-cell.selected{border-color:#3EC778; box-shadow:0 0 0 3px #3EC778, 0 4px 0 #9BDDAE;}
+
+  /* les boîtes à ouvrir, et l'ouverture */
+  .sq-boxes{display:flex; flex-direction:column; align-items:center; gap:6px; padding:10px; margin:0 0 6px;
+    border-radius:var(--radius-lg); background:radial-gradient(circle at 50% 40%, #FFF6D8 0, #FFEAF4 70%);}
+  .sq-stage{position:relative; width:130px; height:130px;}
+  .sq-stage .sq-boxart{width:100%; height:100%; display:block; overflow:visible;}
+  .sq-box-n{position:absolute; right:-6px; bottom:6px; padding:2px 9px; border-radius:12px; background:var(--coral-strong); color:#fff; font-weight:800;}
+  .sq-boxart .sb-lid{transform-box:fill-box; transform-origin:50% 100%; transition:transform .45s cubic-bezier(.2,1.4,.4,1), opacity .45s;}
+  .sq-stage.shake .sq-boxart{animation:sqShake .3s ease-in-out 3;}
+  @keyframes sqShake{0%,100%{transform:rotate(0);} 25%{transform:rotate(-8deg) translateY(-2px);} 75%{transform:rotate(8deg) translateY(-2px);}}
+  .sq-stage.open .sb-lid{transform:translate(18px, -46px) rotate(28deg); opacity:0;}
+  .sq-open{min-width:200px;}
+  .sq-reveal{position:relative; display:flex; justify-content:center; animation:sqJump .7s cubic-bezier(.2,1.5,.4,1);}
+  @keyframes sqJump{0%{transform:translateY(40px) scale(.3); opacity:0;} 60%{transform:translateY(-18px) scale(1.08); opacity:1;} 100%{transform:translateY(0) scale(1);}}
+  .sq-cell.sq-big{width:150px; padding:8px; border-radius:26px;}
+  .sq-cell.sq-big .sq-art{max-width:none;}
+  .sq-reveal.r-rare .sq-big{box-shadow:0 0 0 4px #FFD95A, 0 6px 0 #EFC7DB;}
+  .sq-reveal.r-brille .sq-big{box-shadow:0 0 0 4px #FFD95A, 0 0 26px 6px rgba(255,214,70,.7);}
+  .sq-tag{position:absolute; top:-6px; right:calc(50% - 92px); padding:3px 10px; border-radius:999px; font-weight:800; font-size:.95rem; color:#fff;
+    background:#3EC778; box-shadow:0 3px 0 #2A9A5A; transform:rotate(8deg);}
+  .sq-reveal.is-dup .sq-tag{background:#3A7BD5; box-shadow:0 3px 0 #2A5EA8;}
+  .sq-reveal-name{margin:4px 0 2px; font-size:1.25rem; font-weight:800;}
+  .sq-complete{padding:6px 14px; border-radius:999px; background:var(--tint-sun); font-weight:800; animation:hintPop .4s ease;}
+
+  /* les récompenses (coffre, énigme) : la ligne de la boîte surprise */
+  .sq-reward-line{display:flex; align-items:center; justify-content:center; gap:10px; background:#FFEAF3;}
+  .sq-reward-box{display:block; width:40px; height:40px;}
+  .sq-reward-box svg{width:100%; height:100%; display:block;}
+
+  /* 🗄️ l'étagère : 3 planches de 4 places */
+  .sq-shelf{display:grid; grid-template-columns:repeat(4, 1fr); gap:0 6px; padding:10px 10px 0; border-radius:18px;
+    background:#FFF4E2; border:3px solid #E9C9A0;}
+  .sq-slot{position:relative; aspect-ratio:1/1.05; padding:4px 4px 8px; border:none; background:transparent; cursor:pointer;
+    border-bottom:9px solid #D9A66B; margin-bottom:10px; border-radius:0; box-shadow:0 5px 0 -1px #B9844A; display:flex; align-items:flex-end; justify-content:center;}
+  .sq-slot:not(.full)::after{content:'+'; position:absolute; inset:18% 22% 26%; border:2px dashed #E3C597; border-radius:12px; color:#D3AE7A;
+    display:flex; align-items:center; justify-content:center; font-weight:800; font-size:1.2rem;}
+  .sq-shelf:not(.picking) .sq-slot:not(.full)::after{content:'';}
+  .sq-slot .sq-art{width:100%; height:auto; max-height:100%;}
+  .sq-slot.selected{background:rgba(62,199,120,.18); border-radius:12px 12px 0 0;}
+  .sq-shelf.picking .sq-slot:not(.full)::after{border-color:#3EC778; color:#3EC778; animation:chipPulse 1.2s ease-in-out infinite;}
+  .sq-shelf-tip{display:flex; align-items:center; gap:8px; margin:8px 0 0; padding:6px 10px; border-radius:var(--radius-md); background:var(--tint-sun); font-weight:700; text-align:left;}
+  .sq-shelf-tip .sq-art{width:40px; height:44px; flex-shrink:0;}
+  .sq-shelf-tip span{flex:1;}
+  .sq-shelf-tip .btn-small{min-height:40px; padding:6px 12px; flex-shrink:0;}
+  .sq-pick .sq-cell.used{opacity:.45;}
+
+  /* 📦 les boîtes de rangement */
+  .sr-top{display:flex; align-items:center; justify-content:space-between; gap:8px; margin:0 2px 8px; font-weight:800; font-size:.9rem;}
+  .sr-pile{display:flex; align-items:flex-end; gap:0;}
+  .sr-pile i{display:block; width:16px; height:12px; margin-right:-3px; border-radius:3px; background:#E9C9A0; border:2px solid #B9844A;}
+  .sr-pile i:nth-child(even){transform:translateY(-3px);}
+  .sr-pile b{margin-left:8px;}
+  .sr-pay small{font-weight:700; color:var(--ink-soft);}
+  .sr-crate{display:grid; grid-template-columns:repeat(4, 1fr); gap:6px; max-width:360px; margin:0 auto 12px; padding:8px;
+    border-radius:14px; background:#E9C9A0; border:3px solid #B9844A; box-shadow:inset 0 4px 0 rgba(255,255,255,.35), 0 5px 0 #9A6B3A;}
+  .sr-cell{aspect-ratio:1/1; border-radius:10px; background:#F7E3C6; box-shadow:inset 0 3px 0 rgba(155,107,58,.3); display:flex; align-items:center; justify-content:center; padding:3px;}
+  .sr-cell .sq-art{width:100%; height:100%;}
+  .sr-cell.in .sq-art{animation:sqJump .45s cubic-bezier(.2,1.5,.4,1);}
+  .sr-crate.done{animation:winPop .5s cubic-bezier(.2,1.5,.4,1);}
+  .sr-board{display:grid; grid-template-columns:repeat(4, 1fr); gap:8px; max-width:440px; margin:0 auto;}
+  .sr-item{padding:4px; border-radius:16px;}
+  .sr-item .sq-art{max-width:72px;}
+  .sr-item.placed{opacity:.35; filter:grayscale(.4); box-shadow:none; transform:translateY(3px);}
+  .sr-item .sq-check{position:absolute; top:-6px; right:-6px; width:24px; height:24px; border-radius:50%; display:none; place-items:center;
+    background:#3EC778; color:#fff; font-weight:900; font-size:.9rem; box-shadow:0 0 0 3px #fff;}
+  .sr-item.placed .sq-check{display:grid;}
+  .sr-item.sr-bounce{animation:srBounce .6s cubic-bezier(.3,1.6,.5,1); background:#FFE2DC;}
+  @keyframes srBounce{0%{transform:translateY(0);} 30%{transform:translateY(-34px) scale(.92);} 55%{transform:translateY(0) scale(1.05,.92);} 75%{transform:translateY(-8px);} 100%{transform:translateY(0);}}
+  .sr-win{text-align:center;}
+  .sr-win-txt{font-size:1.2rem; font-weight:800; margin:4px 0 10px;}
+  .sr-empty{margin-top:6px;}
+  /* la consigne en image : pastille de couleur (.sq-dot, mini-jeu Formes), forme, taille */
+  .puzzle-hint .hint-txt:has(> .sr-icons){display:flex; flex:1; min-width:0; align-items:center; gap:8px; text-align:left;}
+  .sr-icons{display:inline-flex; align-items:center; gap:6px; flex-shrink:0;}
+  .sr-icons .sq-dot{margin:0;}
+  .sr-ico{display:inline-block; vertical-align:middle; flex-shrink:0; background:#fff; border:3px solid var(--ink-soft);}
+  .sr-shape-rond{width:28px; height:28px; border-radius:50%;}
+  .sr-shape-ovale{width:36px; height:24px; border-radius:50%;}
+  .sr-shape-carre{width:28px; height:28px; border-radius:9px;}
+  .sr-size{display:inline-flex; align-items:flex-end; gap:3px; background:none; border:none;}
+  .sr-size i{display:block; border-radius:50%; background:var(--ink-soft);}
+  .sr-size i:first-child{width:12px; height:12px;}
+  .sr-size i:last-child{width:26px; height:26px;}
+  .sr-size-petit i:last-child, .sr-size-grand i:first-child{opacity:.2;}
+
+  /* au marché : les doubles et la boutique */
+  .sq-market{margin:0 0 14px; padding:10px; border-radius:var(--radius-md); background:#FFEAF3; border:2px solid #FFC2DB;}
+  .sq-market h3{display:flex; align-items:center; justify-content:space-between; gap:8px; margin:0 0 4px; font-size:1rem;}
+  .sqm-n{font-size:.85rem; padding:2px 10px; border-radius:999px; background:#fff; white-space:nowrap;}
+  .sqm-msg{margin:0 0 8px; font-weight:700; font-size:.92rem; text-align:left;}
+  .sqm-grid{display:grid; grid-template-columns:repeat(6, 1fr); gap:6px; margin-bottom:10px;}
+  .sqm-grid .sq-cell{padding:3px 2px 2px; border-radius:12px;}
+  .sqm-grid .sq-cell .sq-name{min-height:0; font-size:.8rem;}
+  .sq-market .btn-craft{width:100%;}
+  .sqm-shop .market-row{margin:0; background:transparent; box-shadow:none; padding:0;}
+  .sqm-shop .sqm-box{width:52px; height:52px; padding:2px;}
+  .sqm-shop .sqm-box svg{width:100%; height:100%; display:block;}
+  .sqm-go{margin-top:8px;}
+
+  @media (max-width:400px){
+    .sqm-grid{grid-template-columns:repeat(5, 1fr);}
+    .sr-board{gap:6px;}
+  }
+  @media (min-width:700px){
+    .sq-grid{grid-template-columns:repeat(6, 1fr);}
+  }
+  @media (prefers-reduced-motion: reduce){
+    .sq-press .sq-art, .sq-sparkles path, .sq-stage.shake .sq-boxart, .sq-reveal, .sr-item.sr-bounce, .sr-cell.in .sq-art,
+    .sq-shelf.picking .sq-slot:not(.full)::after, #squishy-btn .badge.ready{animation:none;}
+  }
