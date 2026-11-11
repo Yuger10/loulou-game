@@ -72,6 +72,8 @@
 <link rel="stylesheet" href="js/features/minigames/recipe/recipe.css">
 <link rel="stylesheet" href="js/features/island/island.css">
 <link rel="stylesheet" href="js/entities/character/characters.css">
+<link rel="stylesheet" href="js/features/settings/settings.css">
+<link rel="stylesheet" href="js/shared/ui/nav.css">
 <link rel="stylesheet" href="js/shared/ui/form.css">
 </head>
 <body>
@@ -82,7 +84,7 @@
   <div class="bubble" style="width:20px;height:20px; top:230px; left:60px; animation-delay:2.6s;"></div>
 
   <header class="topbar">
-    <button class="avatar-pill" id="avatar-pill" aria-label="Les joueurs"><span class="av">👧</span><span id="player-name">Toi</span></button>
+    <button class="avatar-pill" id="avatar-pill" aria-label="Réglages"><span class="av">👧</span><span id="player-name">Toi</span><span class="pill-gear" aria-hidden="true">⚙️</span></button>
     <button class="icon-btn team-btn" id="team-btn" data-team-slot aria-label="Mon équipe"></button>
     <button class="icon-btn" id="squishy-btn" aria-label="Ma chambre à squishies"><span aria-hidden="true">🧸</span><span class="badge" id="squishy-badge" hidden></span></button>
     <button class="icon-btn" id="quests-btn" aria-label="Mes missions du jour"><span data-ui-icon="missions">📜</span><span class="badge" id="quest-badge" hidden></span></button>
@@ -142,7 +144,12 @@
       <div id="sac-content"></div>
       <div id="album-content" hidden></div>
       <div id="look-content" hidden></div>
-      <button class="reset-btn" id="reset-btn">⚙️ Mon profil</button>
+    </section>
+
+    <!-- Réglages : ouverts en touchant l'avatar et le prénom, en haut (pas dans la barre du bas) -->
+    <section id="view-reglages" class="view">
+      <div class="view-head"><h2>⚙️ Réglages</h2></div>
+      <div id="reglages-content"></div>
     </section>
 
     <!-- 4. Marché -->

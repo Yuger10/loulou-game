@@ -310,4 +310,6 @@ function openParents(){ openParentGate(()=> openParentSpace(), ()=> openPlayers(
 on('nav:parents', openParents);
 on('game:before', ()=>{ if(pauseDue()){ showPauseScreen(); return true; } return false; });
 
-export { startPlayTimeTracker };
+export {
+  openParentGate, openParents, startPlayTimeTracker
+};

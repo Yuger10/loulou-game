@@ -34,4 +34,17 @@ document.querySelectorAll('.navbtn').forEach(btn=>{
   btn.addEventListener('click', ()=> { playSound('tap'); switchView(btn.dataset.view); });
 });
 
-export { registerView, switchView };
+// Le libellé d'un bouton de la barre du bas, donné par la feature concernée
+// (par exemple le bouton Île affiche l'île courante : 🌲 Forêt). `shared` ne
+// connaît pas les îles : on lui passe l'icône et le texte. `iconKey` garde la
+// marque des icônes dessinées (data-ui-icon, js/shared/ui/icons.js).
+function setNavLabel(view, icon, label, iconKey){
+  const b = document.querySelector(`.navbtn[data-view="${view}"]`);
+  if(!b) return;
+  const badge = b.querySelector('.badge');
+  b.innerHTML = `<span class="icon" aria-hidden="true"${iconKey ? ` data-ui-icon="${iconKey}"` : ''}>${icon}</span><span class="nav-label">${label}</span>`;
+  if(badge) b.appendChild(badge);
+  b.setAttribute('aria-label', label);
+}
+
+export { registerView, switchView, setNavLabel };

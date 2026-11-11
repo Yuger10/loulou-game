@@ -11,8 +11,7 @@ import {
 } from '../../entities/world/index.js';
 import { emit, on, pickRandom } from '../../shared/lib/index.js';
 import {
-  bindSpeakButtons, closeModal, confetti, openModal, playSound, registerView, showToast, speak,
-  speechBubble, switchView, vibrate
+  bindSpeakButtons, closeModal, confetti, openModal, playSound, registerView, setNavLabel, showToast, speak, speechBubble, switchView, uiIcon, vibrate
 } from '../../shared/ui/index.js';
 import { checkAlbumComplete } from '../bag/index.js';
 import { flyEmoji, gainCenter, gainLand, spendCoins } from '../gains/index.js';
@@ -123,7 +122,16 @@ function renderLevelPill(){
 }
 
 // carte : fiche de l'île courante avec le bouton pour y aller
+// le bouton Île de la barre du bas affiche le nom de l'île courante (Forêt,
+// Volcan…) : on sait toujours où il mène. L'icône reste celle, dessinée, de
+// la v44 (identique sur tous les appareils, contrairement aux emoji).
+function refreshIslandNav(){
+  const w = WORLDS[currentWorld] || WORLDS.lagon;
+  setNavLabel('ile', uiIcon('ile'), w.short || w.name, 'ile');
+}
+
 function renderIslandCard(){
+  refreshIslandNav();
   const el = document.getElementById('island-card');
   if(!el) return;
   const w = WORLDS[currentWorld];
@@ -140,6 +148,7 @@ function renderIslandCard(){
 function renderLagon(){
   // si le monde courant n'est plus accessible, on revient au lagon
   if(!worldUnlocked(currentWorld)) setCurrentWorld('lagon');
+  refreshIslandNav();
   document.body.dataset.world = currentWorld;
   const w = WORLDS[currentWorld];
   const intro = document.getElementById('lagon-intro-text');

@@ -167,7 +167,7 @@ function key(el, k){ el.dispatchEvent(new w.KeyboardEvent('keydown', { key:k, bu
 
   section('Actions dangereuses derrière l\'accès parents');
   {
-    check('le bouton du Sac ne parle plus de « Recommencer »', !/Recommencer/.test(d.getElementById('reset-btn').textContent));
+    check('le Sac n\'a plus de bouton de réglages (ils sont dans les Réglages)', !d.getElementById('reset-btn'));
     ev('state.coins = 77; save(); parentUnlockedUntil = 0; openParents()'); await wait(20);
     check('l\'espace parents demande la multiplication d\'abord', !!d.getElementById('gate-in') && !d.getElementById('ps-reset'));
     ev('parentUnlockedUntil = Date.now() + 60000; openParentSpace()'); await wait(20);

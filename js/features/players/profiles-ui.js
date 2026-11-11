@@ -10,10 +10,9 @@ import {
   profileSaveKey, saveProfiles, switchProfile
 } from '../../entities/player/index.js';
 import { currentWorld, worldGame, WORLDS } from '../../entities/world/index.js';
-import { emit, on, pickRandom, shuffle } from '../../shared/lib/index.js';
+import { on, pickRandom, shuffle } from '../../shared/lib/index.js';
 import { bindForm, closeModal, confetti, formSheet, openModal, playSound, showToast, speak } from '../../shared/ui/index.js';
 import { pickPracticeGame } from '../adaptive/index.js';
-import { backupDue, openBackup } from '../backup/index.js';
 import { teamOnGamePicker } from '../companion-team/index.js';
 import { renderLagon, setCurrentChar } from '../island/index.js';
 import { playGame, startMinigame } from '../minigame-engine/index.js';
@@ -40,10 +39,6 @@ function openPlayers(){
           </div>`).join('')}
       </div>
       <button class="btn-craft" id="btn-add-player">➕ Ajouter un joueur</button>
-      <div class="adult-row">
-        <button class="btn-small ghost bk-open ${backupDue() ? 'due' : ''}" id="btn-backup">💾 Sauvegarde${backupDue() ? ' · à faire' : ''}</button>
-        <button class="btn-small ghost" id="btn-parents">👪 Espace parents</button>
-      </div>
       <div class="mode-row">
         <button class="btn-primary" id="btn-solo">👤 Solo</button>
         <button class="btn-primary alt" id="btn-turns">🎲 Chacun<br>son tour</button>
@@ -66,8 +61,6 @@ function openPlayers(){
       b.onclick = ()=>{ playSound('tap'); openPlayerSettings(b.dataset.edit); };
     });
     document.getElementById('btn-add-player').onclick = ()=>{ playSound('tap'); openNewPlayer(); };
-    document.getElementById('btn-backup').onclick = ()=>{ playSound('tap'); openBackup(); };
-    document.getElementById('btn-parents').onclick = ()=>{ playSound('tap'); emit('nav:parents'); };
     document.getElementById('btn-solo').onclick = ()=>{
       playSound('tap');
       const id = [...sel][0] || profiles.current;
@@ -332,4 +325,6 @@ function openGamePicker(charId){
 on('nav:game-picker', openGamePicker);
 on('nav:player-settings', openPlayerSettings);
 
-export { openPlayers, openPlayerSettings };
+export {
+  openNewPlayer, openPlayers, openPlayerSettings
+};
