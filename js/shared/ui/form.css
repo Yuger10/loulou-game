@@ -1,0 +1,64 @@
+  /* =====================================================================
+     Formulaires (modèle commun, js/shared/ui/form.js) : en-tête fixe avec ✕,
+     contenu qui défile, barre d'actions fixe en bas, à portée du pouce.
+     ===================================================================== */
+  #modal.has-form{padding-top:0;}
+  #modal.has-form > .modal-close, #modal.has-form > .modal-handle{display:none;}
+  .form-head{
+    position:sticky; top:0; z-index:3;
+    display:flex; align-items:center; gap:8px;
+    margin:0 -20px; padding:14px 16px 10px;
+    background:var(--sand);
+    box-shadow:0 6px 10px -10px rgba(18,59,79,.45);
+  }
+  .form-head h2{flex:1; margin:0 !important; padding-left:46px; text-align:center; text-wrap:balance;}
+  .form-close{
+    flex:none; width:46px; height:46px; border-radius:50%; border:none;
+    background:rgba(18,59,79,.09); color:var(--ocean-deep);
+    font-size:1.1rem; font-weight:800; cursor:pointer;
+  }
+  .form-section{margin:16px 0 4px;}
+  .form-section-title{margin:0 0 8px; font-size:1rem; font-weight:800; color:var(--ocean-deep);}
+  .form-missing{outline:3px solid var(--sun); outline-offset:2px;}
+  .form-actions{
+    position:sticky; bottom:0; z-index:3;
+    display:grid; grid-template-columns:1fr 1.4fr; gap:10px;
+    margin:18px -20px 0; padding:12px 16px max(10px, env(safe-area-inset-bottom));
+    background:linear-gradient(180deg, rgba(255,243,222,0) 0, var(--sand) 18px);
+  }
+  .form-actions button, .confirm-actions button{
+    min-height:56px; border:none; border-radius:18px; cursor:pointer;
+    font:inherit; font-size:1.05rem; font-weight:800;
+  }
+  .form-primary{background:var(--lagoon); color:#fff; box-shadow:0 4px 0 rgba(18,59,79,.18);}
+  .form-secondary{background:rgba(18,59,79,.08); color:var(--ocean-deep);}
+  .form-primary[aria-disabled="true"], .danger[aria-disabled="true"]{opacity:.45; box-shadow:none;}
+  .form-actions button:active, .confirm-actions button:active{transform:translateY(2px);}
+
+  /* l'en-tête des boutiques et sélecteurs reste visible quand on fait défiler */
+  /* form.css est chargée en dernier (CSS_ORDER) : elle l'emporte sur `.game-head{position:relative}` (indices) */
+  #modal-body > .game-head:first-child{position:sticky; top:23px; z-index:2; background:var(--sand);}
+
+  /* l'accueil : « C'est parti » toujours visible */
+  .welcome-actions{position:sticky; bottom:0; z-index:2; padding:10px 0 max(6px, env(safe-area-inset-bottom)); background:linear-gradient(180deg, rgba(255,255,255,0), #fff 16px);}
+
+  /* =====================================================================
+     Fenêtre de confirmation du jeu (js/shared/ui/confirm.js), par-dessus tout
+     ===================================================================== */
+  #confirm-layer{
+    position:fixed; inset:0; z-index:60;
+    display:flex; align-items:flex-end; justify-content:center;
+    padding:16px 16px max(16px, env(safe-area-inset-bottom));
+    background:rgba(18,59,79,.55);
+  }
+  #confirm-layer[hidden]{display:none;}
+  .confirm-box{
+    width:100%; max-width:420px; display:grid; gap:14px;
+    padding:20px; border-radius:24px; background:var(--sand);
+    box-shadow:0 12px 30px rgba(18,59,79,.35); animation:slideup .2s ease;
+  }
+  .confirm-text{margin:0; font-size:1.15rem; font-weight:800; text-align:center; color:var(--ocean-deep);}
+  .confirm-type{display:grid; gap:6px; font-weight:700; text-align:center;}
+  .confirm-type input{min-height:52px; border-radius:14px; border:2px solid rgba(18,59,79,.2); padding:0 12px; font:inherit; font-size:1.1rem; text-align:center; text-transform:uppercase;}
+  .confirm-actions{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
+  .confirm-actions .danger{background:#D9483B; color:#fff;}

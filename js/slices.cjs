@@ -20,7 +20,7 @@ const SLICES = [
   { id:'shared-lib',     layer:'shared',   files:['js/shared/lib/random.js','js/shared/lib/events.js'], css:[] },
   { id:'shared-styles',  layer:'shared',   files:[], css:['js/shared/styles/base.css','js/shared/styles/interface-v12.css','js/shared/styles/pointer-v13.css','js/shared/styles/responsive-v14.css','js/shared/styles/design-system-v21.css','js/shared/styles/devices.css'] },
   { id:'shared-ui',      layer:'shared',   files:['js/shared/ui/icons.js','js/shared/ui/sound.js','js/shared/ui/voice.js',
-                                                'js/shared/ui/feedback.js','js/shared/ui/modal.js','js/shared/ui/views.js'], css:['js/shared/ui/views.css','js/shared/ui/modal.css','js/shared/ui/feedback.css','js/shared/ui/icons.css'] },
+                                                'js/shared/ui/feedback.js','js/shared/ui/modal.js','js/shared/ui/confirm.js','js/shared/ui/form.js','js/shared/ui/views.js'], css:['js/shared/ui/views.css','js/shared/ui/modal.css','js/shared/ui/form.css','js/shared/ui/feedback.css','js/shared/ui/icons.css'] },
   { id:'words',          layer:'entities', files:['js/entities/words/words.js'], css:[] },
   { id:'squishy',        layer:'entities', files:['js/entities/squishy/squishies.js'], css:[] },
   { id:'game-state',     layer:'entities', files:['js/entities/game-state/state.js'], css:[] },
@@ -143,6 +143,8 @@ const CSS_ORDER = [
   'js/features/minigames/shelf/shelf.css',
   'js/features/island/island.css',
   'js/entities/character/characters.css',
+  // en dernier : le modèle de formulaire et la confirmation l'emportent sur les styles des features
+  'js/shared/ui/form.css',
 ];
 
 module.exports = { SLICES, CSS_ORDER };

@@ -18,13 +18,14 @@ import {
   avatarHTML, buddySlot, COMPANIONS, companionSVG, currentCompanion
 } from '../../entities/companion/index.js';
 import { GAME_LIST, gameTypesForAge } from '../../entities/difficulty/index.js';
-import { save, state } from '../../entities/game-state/index.js';
+import { resetState, save, state } from '../../entities/game-state/index.js';
 import {
-  currentProfile, party, profiles, profileSaveKey, saveProfiles
+  currentProfile, deleteProfile, party, profiles, profileSaveKey, refreshAll, saveProfiles
 } from '../../entities/player/index.js';
+import { setCurrentWorld } from '../../entities/world/index.js';
 import { currentSeason, FETES, seasonPreview } from '../../entities/season/index.js';
 import { on } from '../../shared/lib/index.js';
-import { closeModal, openModal, playSound, showToast, speak } from '../../shared/ui/index.js';
+import { askConfirm, closeModal, openModal, playSound, showToast, speak } from '../../shared/ui/index.js';
 import { SKILL_STATUS, skillStatus, todayKey } from '../adaptive/index.js';
 import { openBackup } from '../backup/index.js';
 import { pauseAnnouncer } from '../companion-team/index.js';
@@ -234,7 +235,14 @@ function openParentSpace(selectedId){
       </div>
       <div class="ps-actions">
         <button class="btn-small" id="ps-backup">💾 Sauvegarde</button>
-        <button class="btn-small ghost" id="ps-player">✏️ Prénom, âge, compagnon, remise à zéro</button>
+        <button class="btn-small ghost" id="ps-player">✏️ Prénom, âge, avatar, compagnon</button>
+      </div>
+    </section>
+    <section class="bk-card ps-danger"><h3>⚠️ Zone sensible</h3>
+      <p class="bk-help">Ces actions effacent une partie. Elles demandent une double confirmation.</p>
+      <div class="ps-actions">
+        <button class="btn-small danger" id="ps-reset">🔄 Recommencer la partie de ${p.name || 'ce joueur'}</button>
+        ${profiles.list.length > 1 ? `<button class="btn-small danger" id="ps-delete">🗑️ Supprimer ${p.name || 'ce joueur'}</button>` : ''}
       </div>
     </section>
   `);
@@ -268,6 +276,29 @@ function openParentSpace(selectedId){
   };
   document.getElementById('ps-backup').onclick = ()=>{ playSound('tap'); openBackup(); };
   document.getElementById('ps-player').onclick = ()=>{ playSound('tap'); openPlayerSettings(p.id); };
+  document.getElementById('ps-reset').onclick = async ()=>{
+    playSound('tap');
+    const ok = await askConfirm({ text:`Tout recommencer à zéro pour ${p.name || 'ce joueur'} ? Pièces, objets, îles et niveau seront perdus.`,
+      confirmLabel:'🔄 Recommencer', typeWord:'RECOMMENCER' });
+    if(!ok) return;
+    if(p.id === profiles.current){ resetState(); setCurrentWorld('lagon'); refreshAll(); }
+    else { try{ localStorage.removeItem(profileSaveKey(p.id)); }catch(e){} }
+    playSound('win');
+    speak(`Nouvelle aventure pour ${p.name || 'toi'} !`);
+    showToast('🔄 Nouvelle aventure !');
+    openParentSpace(p.id);
+  };
+  const del = document.getElementById('ps-delete');
+  if(del) del.onclick = async ()=>{
+    playSound('tap');
+    const word = (p.name || 'SUPPRIMER').trim();
+    const ok = await askConfirm({ text:`Supprimer ${p.name || 'ce joueur'} et toute sa partie ?`, confirmLabel:'🗑️ Supprimer', typeWord:word });
+    if(!ok) return;
+    deleteProfile(p.id);
+    playSound('tap');
+    showToast('Joueur supprimé');
+    openParentSpace();
+  };
 }
 // volume d'un joueur (0 à 100), 80 % s'il n'a jamais été réglé
 function psVolumeOf(st){ return typeof (st && st.soundVolume) === 'number' ? st.soundVolume : 80; }

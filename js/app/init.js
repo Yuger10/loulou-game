@@ -19,7 +19,7 @@ import { initSeasons, maybeSeasonGift } from '../features/seasons/index.js';
 import { renderSquishyBadge, squishySessionHello } from '../features/squishies/index.js';
 import { openStoryJournal } from '../features/story/index.js';
 import { renderCoins } from '../features/wallet/index.js';
-import { closeModal, playSound, speak, switchView } from '../shared/ui/index.js';
+import { playSound, requestCloseModal, speak, switchView } from '../shared/ui/index.js';
 
 loadProfiles();
 load();
@@ -90,13 +90,13 @@ document.getElementById('quests-btn').addEventListener('click', ()=>{ playSound(
 document.getElementById('story-btn').addEventListener('click', ()=>{ playSound('tap'); openStoryJournal(); });
 
 // fermeture facile des fenêtres : croix, poignée, clic à côté, touche Échap
-document.getElementById('modal-close').addEventListener('click', ()=>{ playSound('tap'); closeModal(); });
-document.getElementById('modal-handle').addEventListener('click', ()=>{ playSound('tap'); closeModal(); });
+document.getElementById('modal-close').addEventListener('click', ()=>{ playSound('tap'); requestCloseModal(); });
+document.getElementById('modal-handle').addEventListener('click', ()=>{ playSound('tap'); requestCloseModal(); });
 document.getElementById('overlay').addEventListener('click', (e)=>{
-  if(e.target.id==='overlay') closeModal();
+  if(e.target.id==='overlay') requestCloseModal();
 });
 document.addEventListener('keydown', (e)=>{
-  if(e.key==='Escape') closeModal();
+  if(e.key==='Escape' && document.getElementById('overlay').classList.contains('show')) requestCloseModal();
 });
 
 document.getElementById('btn-splash-play').addEventListener('click', hideSplash);

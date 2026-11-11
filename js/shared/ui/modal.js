@@ -8,7 +8,23 @@ function onModalClose(fn){ modalCloseHooks.push(fn); }
 // raccourci : la même fonction à l'ouverture et à la fermeture
 function onModalChange(fn){ onModalOpen(fn); onModalClose(fn); }
 
+// Garde de fermeture : un formulaire avec des changements non enregistrés
+// (js/shared/ui/form.js) peut retenir la fermeture demandée par l'enfant
+// (✕, poignée, clic à côté, Échap). Le garde renvoie false pour la retenir.
+// Tout nouveau contenu l'efface.
+let modalCloseGuard = null;
+function setModalCloseGuard(fn){ modalCloseGuard = fn; }
+// fermeture demandée par l'enfant : passe par le garde
+function requestCloseModal(){
+  if(modalCloseGuard && modalCloseGuard() === false) return false;
+  closeModal();
+  return true;
+}
+
 function openModal(html){
+  modalCloseGuard = null;
+  const m0 = document.getElementById('modal');
+  if(m0) m0.classList.remove('has-form');
   // tout nouveau contenu invalide ce qui dépendait de l'ancien : minuteur de
   // défi, relance programmée après une erreur (anti-devinette), gains en
   // attente… Chaque feature concernée s'inscrit avec onModalOpen.
@@ -24,10 +40,11 @@ function openModal(html){
 }
 
 function closeModal(){
+  modalCloseGuard = null;
   modalCloseHooks.forEach(fn=> fn());
   document.getElementById('overlay').classList.remove('show');
   document.body.classList.remove('modal-open');
   if(window.speechSynthesis) speechSynthesis.cancel();
 }
 
-export { closeModal, onModalChange, onModalClose, onModalOpen, openModal };
+export { closeModal, onModalChange, onModalClose, onModalOpen, openModal, requestCloseModal, setModalCloseGuard };
