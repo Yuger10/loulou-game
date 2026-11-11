@@ -41,10 +41,55 @@ Registre des tracks Conductor, **dans l'ordre d'implémentation**. Feuille de ro
 
 ---
 
-- [ ] **Track: Saison 2 « Le Ciel des Rêves » + Monde des Boîtes (v55)**
+- [ ] **Track: Saison 2 « Le Ciel des Rêves » + île 1 : 📦 Monde des Boîtes**
 *Link: [./tracks/saison2-monde-boites_20261109/](./tracks/saison2-monde-boites_20261109/)*
 
 ---
 
-- [ ] **Track: Monde des Licornes + grand final de la saison 2 (v56)**
+- [ ] **Track: Saison 2, île 2 : 🧸 Le Coffre aux Jouets Doux (idée de la joueuse)**
+*Link: [./tracks/monde-jouets_20261111/](./tracks/monde-jouets_20261111/)*
+
+---
+
+- [ ] **Track: Saison 2, île 3 : 🍭 Le Royaume des Bonbons**
+*Link: [./tracks/monde-bonbons_20261111/](./tracks/monde-bonbons_20261111/)*
+
+---
+
+- [ ] **Track: Saison 2, île 4 : 🎵 L'Île de la Musique (après la track sons)**
+*Link: [./tracks/monde-musique_20261111/](./tracks/monde-musique_20261111/)*
+
+---
+
+- [ ] **Track: Saison 2, île 5 : 🌸 Le Jardin des Fées**
+*Link: [./tracks/monde-jardin_20261111/](./tracks/monde-jardin_20261111/)*
+
+---
+
+- [ ] **Track: Saison 2, île 6 : 🦄 Monde des Licornes + grand final de la saison 2**
 *Link: [./tracks/monde-licornes_20261109/](./tracks/monde-licornes_20261109/)*
+
+---
+
+- [ ] **Track: Saison 3 « La Grande Expédition » + île 1 : ☁️ La Cité des Nuages (carte au trésor de Zap)**
+*Link: [./tracks/saison3-monde-nuages_20261111/](./tracks/saison3-monde-nuages_20261111/)*
+
+---
+
+- [ ] **Track: Saison 3, île 2 : 🦕 La Vallée des Dinosaures**
+*Link: [./tracks/monde-dinosaures_20261111/](./tracks/monde-dinosaures_20261111/)*
+
+---
+
+- [ ] **Track: Saison 3, île 3 : 🎪 La Fête Foraine**
+*Link: [./tracks/monde-fete-foraine_20261111/](./tracks/monde-fete-foraine_20261111/)*
+
+---
+
+- [ ] **Track: Saison 3, île 4 : 📚 La Bibliothèque Magique**
+*Link: [./tracks/monde-bibliotheque_20261111/](./tracks/monde-bibliotheque_20261111/)*
+
+---
+
+- [ ] **Track: Saison 3, île 5 : 🚀 La Station des Étoiles (grand final de la saison 3)**
+*Link: [./tracks/monde-etoiles_20261111/](./tracks/monde-etoiles_20261111/)*

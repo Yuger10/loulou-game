@@ -1,4 +1,4 @@
-# Spec : Saison 2 « Le Ciel des Rêves » et le Monde des Boîtes (v55)
+# Spec : Saison 2 « Le Ciel des Rêves » et le Monde des Boîtes
 
 > Idée de la joueuse principale : « le monde des boîtes ».
 > **Dépend de** la track `squishy-collection_20261109` (v53) : les rêves libérés sont des squishies, et le Monde des Boîtes apporte sa série.
@@ -12,7 +12,7 @@ Sa première île est le **Monde des Boîtes** (« La Fabrique de boîtes »), a
 
 ### 2.1 Deuxième archipel et navigation
 - Les îles portent maintenant un **archipel** : `saison:1` pour les 8 îles existantes (comportement inchangé), `saison:2` pour le Ciel des Rêves.
-- **Ouverture :** le Ciel des Rêves s'ouvre au **niveau 8**. Ses îles ont leur **propre niveau d'ouverture**, plus espacé qu'en saison 1 pour que chaque monde dure : Monde des Boîtes au **niveau 8**, Monde des Licornes au **niveau 13** (track 3), puis de 5 en 5 pour les mondes suivants.
+- **Ouverture :** le Ciel des Rêves s'ouvre au **niveau 8**. Ses îles ont leur **propre niveau d'ouverture**, plus espacé qu'en saison 1 pour que chaque monde dure : de 5 en 5 : 📦 Boîtes **8**, 🧸 Jouets Doux **13**, 🍭 Bonbons **18**, 🎵 Musique **23**, 🌸 Jardin des Fées **28**, 🦄 Licornes **33** (grand final). Chaque île a sa track (`monde-jouets`, `monde-bonbons`, `monde-musique`, `monde-jardin`, `monde-licornes`).
 - **Carte :** l'écran carte affiche **deux onglets en haut**, « 🌊 Le Lagon Magique » et « ☁️ Le Ciel des Rêves ». L'onglet du Ciel est grisé, avec un cadenas et « Niveau 8 », tant qu'il est fermé. Le Ciel a son propre fond (dégradé pastel, nuages) et ses positions d'îles. Les règles « dans le cadre » et « pas de chevauchement » des tests s'appliquent à chaque archipel.
 - **Bateau :** dans le Ciel, le bateau devient une **montgolfière** 🎈. Le trajet se fait d'île en île à l'intérieur d'un archipel. Passer d'un archipel à l'autre se fait par l'onglet, sans trajet.
 - **Ouverture du Ciel :** au passage au niveau 8, un écran spécial « Un nouveau monde s'ouvre dans le ciel ! ☁️ » s'affiche. Il passe avant le chapitre 1 de la saison 2.
@@ -23,7 +23,7 @@ Sa première île est le **Monde des Boîtes** (« La Fabrique de boîtes »), a
 - Le **journal 📖** affiche deux parties, Saison 1 et Saison 2. Les chapitres de la saison 2 sont regroupés sous « Le Ciel des Rêves ».
 - **Prologue** (à l'ouverture du Ciel, lu par Capucine) : Grisou, le petit nuage, a eu peur de perdre les rêves colorés et les a tous enfermés dans des boîtes. Le ciel est devenu gris. « Aide-nous à les libérer ! »
 - **Chapitre Monde des Boîtes :** les rêves sont cachés dans les boîtes de la Fabrique. Résoudre l'énigme en libère les premiers. Récompense : des pièces, plus **une boîte surprise de la série Boîtes** (mécanique de la track 1).
-- **Grisou** apparaît dans chaque chapitre (un nuage gris avec un petit visage triste en SVG) et devient un peu plus coloré à chaque île libérée. C'est la progression visible de la saison.
+- **Grisou** apparaît dans chaque chapitre (un nuage gris avec un petit visage triste en SVG) et devient un peu plus coloré à chaque île libérée (6 étapes, une par île : rose, caramel, turquoise, vert tendre, puis toutes les couleurs avec les Licornes). C'est la progression visible de la saison.
 - **Fin de saison :** elle est prévue mais **hors de cette track**. Elle arrivera avec la dernière île de la saison 2.
 
 ### 2.3 Le Monde des Boîtes (« La Fabrique de boîtes »)
@@ -78,7 +78,7 @@ Sa première île est le **Monde des Boîtes** (« La Fabrique de boîtes »), a
 10. `npm test` passe, sans aucune erreur JS.
 
 ## 5. Hors périmètre
-- Le Monde des Licornes (track 3) et les îles suivantes.
+- Les autres îles de la saison 2 (Jouets Doux, Bonbons, Musique, Jardin des Fées, Licornes), chacune dans sa track.
 - La fin de la saison 2 (Grisou devient l'ami de tous), qui arrivera avec la dernière île.
 - Le glisser-déposer dans les gigognes (on touche).
 - Le changement des niveaux d'ouverture de la saison 1.
