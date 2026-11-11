@@ -367,7 +367,7 @@ function squishyOpenAnimated(popRng){
   playSound('tap');
   sqLater(()=> playSound('tap'), 300);
   sqLater(()=>{
-    stage.classList.remove('shake'); stage.classList.add('open'); playSound('pop');
+    stage.classList.remove('shake'); stage.classList.add('open'); playSound('box');
     if(pop){
       stage.insertAdjacentHTML('beforeend', `<span class="sq-pop-jack" aria-hidden="true">${squishyArtSVG('pop')}</span>`);
       playSound('pouic');

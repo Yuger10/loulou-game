@@ -1,5 +1,5 @@
 /* ---------- Voix (Web Speech) ---------- */
-import { audioPrefs } from './sound.js';
+import { audioPrefs, setVoiceDuck } from './sound.js';
 
 // Mots prononcés pour chaque emoji (singulier, pluriel)
 const EMOJI_WORDS = {
@@ -71,6 +71,9 @@ function speak(text, opts){
     u.pitch = 1.0;
     const v = chosenVoice || pickVoice();
     if(v) u.voice = v;
+    // tout le bus audio baisse pendant que la voix parle (js/shared/ui/sound.js)
+    u.onstart = ()=> setVoiceDuck(true);
+    u.onend = u.onerror = ()=> setVoiceDuck(false);
     window.speechSynthesis.speak(u);
   }catch(e){}
 }

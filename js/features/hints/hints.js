@@ -150,7 +150,7 @@ if(typeof document !== 'undefined') document.addEventListener('pointerdown', e=>
 const HINT_CHEERS = ['Tu peux le faire !', 'Je crois en toi !', 'Prends ton temps, tu vas trouver !'];
 function useHint(){
   if(!hint.on) return null;
-  playSound('tap');
+  playSound('hint');
   if(hint.level >= HINT_LEVELS){
     speak(pickRandom(HINT_CHEERS));
     buddyReact('cheer', 1200);

@@ -1146,3 +1146,26 @@ Track Conductor `squishy-collection` ([spec](conductor/tracks/squishy-collection
   - jeu de l'île, histoire, épisodes, Grisou, journal.
 - Les 20 mini-jeux sont joués jusqu'à la victoire à chaque palier, avec une vérification indépendante pour les gigognes et les cubes. Leurs indices passent le contrôle d'anti-devinette.
 - Cache `lagon-v55`.
+
+---
+
+# v56 — Les sons du jeu : ambiance « marimba doux »
+
+Track Conductor `sons`. Choix faits avec la joueuse sur la page d'écoute « Sons du Lagon » (https://claude.ai/artifact/F5xuENW8ePFKLk4QogwH8K) : **ambiance « marimba doux »**, **synthèse retravaillée** (toujours aucun fichier audio).
+
+## Ce que l'on entend
+- **Tous les sons en marimba**, dans une gamme pentatonique (do, ré, mi, sol, la) : deux sons qui se superposent ne font jamais une fausse note. Plus d'onde carrée : le « oups » devient deux notes douces qui descendent, plus jamais un buzzer.
+- **3 nouveaux sons** : l'indice 💡 (deux notes qui montent), la nouvelle île (une gamme et un accord), l'ouverture d'une boîte surprise (un glissé puis trois notes).
+- **Le Simon** joue ses 4 couleurs en marimba, avec des notes exactes (sans variation), pour qu'on puisse les mémoriser.
+
+## Un moteur audio unique (`js/shared/ui/sound.js`)
+- Un seul `AudioContext` et un **bus principal** : sons, Simon et musique → volume général → réduction pendant la voix → **limiteur** → haut-parleur. Plusieurs sons ensemble ne saturent plus.
+- **Écho doux** (réverbération légère, générée une fois), **variation naturelle** (±1,2 % de hauteur, ±12 % de volume : 112 touchers ne sonnent plus comme une machine), **anti-rafale** (un même son n'est pas rejoué à moins de 60 ms : plus de crépitement quand on tape vite), **mixage par famille** (touchers discrets, fêtes plus présentes).
+- **Pendant la voix, tout baisse** (sons et musique), puis remonte. La musique n'a plus sa propre réduction.
+- **Volume général par joueur** (80 % par défaut) : espace parents → Réglages, avec une note pour entendre le résultat. Sauvegarde en version 7 (les anciennes parties reçoivent 80 %).
+
+## Tests
+- `test/sounds.test.js` (44 tests) avec un faux `AudioContext` qui enregistre les nœuds (`test/tools/fake-audio.js`) : chemin du son, limiteur, plus d'onde carrée, notes de chaque son, anti-rafale, variation, Simon exact, réduction pendant la voix, musique sur le bus, volume et migration, nouveaux moments.
+- Les tests des squishies ne figent plus le numéro de sauvegarde.
+
+- Cache `lagon-v56`.

@@ -3,9 +3,8 @@
    s'afficher) — un décompte en plus ferait double pression, voir
    js/entities/difficulty/difficulty.js § « MINUTEUR ». Longueur dans § simonLength. */
 import { simonLength } from '../../../entities/difficulty/index.js';
-import { state } from '../../../entities/game-state/index.js';
 import { pickRandom } from '../../../shared/lib/index.js';
-import { audioCtx, ensureAudioCtx, openModal, tone } from '../../../shared/ui/index.js';
+import { openModal, playNote } from '../../../shared/ui/index.js';
 import { gameDiff } from '../../adaptive/index.js';
 import { registerHints, setHintQuestion } from '../../hints/index.js';
 import {
@@ -38,16 +37,9 @@ function renderSimon(){
   bindQuit();
 
   const padEl = k => document.querySelector(`.simon-pad[data-k="${k}"]`);
-  // chaque pastille a sa propre note : elle peut reconnaître la couleur à l'oreille
-  function padTone(p, dur=.3, vol=.16){
-    if(!state.sound) return;
-    try{
-      ensureAudioCtx();
-      if(audioCtx.state==='suspended') audioCtx.resume();
-      tone(p.freq, 0, dur, 'sine', vol);
-      tone(p.freq*2, 0, dur*.5, 'triangle', vol*.35); // harmonique : timbre plus doux
-    }catch(e){}
-  }
+  // chaque pastille a sa propre note : elle peut reconnaître la couleur à
+  // l'oreille. Note de marimba exacte (sans variation), pour être mémorisée.
+  function padTone(p, dur=.3, vol=.16){ playNote(p.freq, dur, vol); }
   function flash(p, i){
     setTimeout(()=>{
       const el = padEl(p.k);

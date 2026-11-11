@@ -54,7 +54,7 @@ function checkNewIsland(){
   save();
   if(id==='lagon') return false;
   const w = WORLDS[id];
-  playSound('win'); confetti(); vibrate([70,50,70,50,180]);
+  playSound('island'); confetti(); vibrate([70,50,70,50,180]);
   const who = hello();
   const showUnlockModal = ()=>{
     speak(`Nouvelle île débloquée${who?', '+who:''} ! ${w.name} : ${w.subtitle}. Attention, les défis y sont plus difficiles !`);

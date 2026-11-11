@@ -5,7 +5,7 @@
    - une suite de 4 accords tenus très doucement, une basse, et une
      mélodie tirée au hasard dans une gamme pentatonique (jamais de fausse
      note) : elle ne se répète jamais tout à fait ;
-   - elle baisse d'elle-même quand la voix parle, s'arrête quand le jeu
+   - elle baisse quand la voix parle (avec tous les sons, par le bus principal), s'arrête quand le jeu
      passe en arrière-plan et reprend au retour ;
    - à Noël, les clochettes ; à Halloween, une gamme mineure.
    Coupée par défaut. Le bouton son passe par 🎵 (musique + sons + voix) ;
@@ -13,7 +13,7 @@
 import { state } from '../../entities/game-state/index.js';
 import { currentSeason } from '../../entities/season/index.js';
 import { currentWorld } from '../../entities/world/index.js';
-import { audioCtx, ensureAudioCtx } from '../../shared/ui/index.js';
+import { audioCtx, ensureAudioCtx, musicBusNode } from '../../shared/ui/index.js';
 
 // root : note MIDI de départ ; scale : gamme (demi-tons) ; prog : accords (degrés en demi-tons)
 const MUSIC_THEMES = {
@@ -28,8 +28,7 @@ const MUSIC_THEMES = {
   // saison 2 : une harpe aérienne, et les petits « tchac » des machines de la Fabrique
   boites:   { root:65, scale:[0,2,4,7,9],  bpm:88, lead:'harp',    prog:[0,5,9,7], tick:true },
 };
-const MUSIC_VOLUME = 1.0;       // volume général : crête ≈ 0,11, bien sous les bruitages (≈ 0,2-0,35)
-const MUSIC_DUCK = 0.3;         // part du volume gardée pendant que la voix parle
+const MUSIC_VOLUME = 1.0;       // crête ≈ 0,11, bien sous les bruitages ; passe ensuite par le volume général du bus
 
 let music = { on:false, timer:null, nextTime:0, step:0, master:null, filter:null, last:7 };
 
@@ -113,9 +112,6 @@ function musicStep(t){
 function musicTick(){
   if(!musicWanted() || !audioCtx){ stopMusic(); return; }
   const now = audioCtx.currentTime;
-  // la voix parle : la musique se fait toute petite
-  const speaking = typeof window!=='undefined' && window.speechSynthesis && window.speechSynthesis.speaking;
-  music.master.gain.setTargetAtTime(MUSIC_VOLUME * (speaking ? MUSIC_DUCK : 1), now, .25);
   if(music.nextTime < now) music.nextTime = now + .05;
   while(music.nextTime < now + .6) music.nextTime += musicStep(music.nextTime);
 }
@@ -127,7 +123,8 @@ function startMusic(){
     music.master = audioCtx.createGain();
     music.master.gain.setValueAtTime(0, audioCtx.currentTime);
     music.master.gain.linearRampToValueAtTime(MUSIC_VOLUME, audioCtx.currentTime + 1.5);
-    music.master.connect(audioCtx.destination);
+    // sur le bus principal : volume général, réduction pendant la voix, limiteur (js/shared/ui/sound.js)
+    music.master.connect(musicBusNode() || audioCtx.destination);
     music.filter = audioCtx.createBiquadFilter();
     music.filter.type = 'lowpass'; music.filter.frequency.value = 900;
     music.filter.connect(music.master);

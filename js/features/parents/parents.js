@@ -227,6 +227,11 @@ function openParentSpace(selectedId){
         <button type="button" class="ps-chip ${st.music ? '' : 'on'}" data-music="0">Pas de musique</button>
       </div>
       <p class="bk-help">Une petite musique douce, différente sur chaque île, qui baisse quand la voix parle. L'enfant peut aussi la couper avec le bouton du son, en haut.</p>
+      <div class="ps-volume">
+        <label for="ps-volume">🔊 Volume des sons et de la musique</label>
+        <input type="range" id="ps-volume" min="0" max="100" step="5" value="${psVolumeOf(st)}">
+        <output id="ps-volume-v" for="ps-volume">${psVolumeOf(st)} %</output>
+      </div>
       <div class="ps-actions">
         <button class="btn-small" id="ps-backup">💾 Sauvegarde</button>
         <button class="btn-small ghost" id="ps-player">✏️ Prénom, âge, compagnon, remise à zéro</button>
@@ -254,9 +259,19 @@ function openParentSpace(selectedId){
     document.querySelectorAll('[data-music]').forEach(x=>x.classList.toggle('on', x===b));
     showToast(on ? '🎵 Musique d\'ambiance' : 'Pas de musique');
   });
+  const vol = document.getElementById('ps-volume');
+  vol.oninput = ()=>{
+    const v = Number(vol.value);
+    document.getElementById('ps-volume-v').textContent = v + ' %';
+    if(p.id === profiles.current){ state.soundVolume = v; save(); playSound('pop'); }   // une note pour entendre le nouveau volume
+    else { st.soundVolume = v; try{ localStorage.setItem(profileSaveKey(p.id), JSON.stringify(st)); }catch(e){} }
+  };
   document.getElementById('ps-backup').onclick = ()=>{ playSound('tap'); openBackup(); };
   document.getElementById('ps-player').onclick = ()=>{ playSound('tap'); openPlayerSettings(p.id); };
 }
+// volume d'un joueur (0 à 100), 80 % s'il n'a jamais été réglé
+function psVolumeOf(st){ return typeof (st && st.soundVolume) === 'number' ? st.soundVolume : 80; }
+
 function openParents(){ openParentGate(()=> openParentSpace(), ()=> openPlayers()); }
 
 // le panneau des joueurs ouvre l'espace parents ; avant chaque mini-jeu, la

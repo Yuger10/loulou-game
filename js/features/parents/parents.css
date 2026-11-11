@@ -42,3 +42,8 @@
   .sk-pill.hard{background:var(--coral-tint); color:#A83A22;}
   .sk-pill.new{background:#EEF2F4; color:var(--ink-soft);}
 
+  /* volume des sons (espace parents) */
+  .ps-volume{display:grid; grid-template-columns:1fr auto; gap:6px 12px; align-items:center; margin:10px 0 4px;}
+  .ps-volume label{grid-column:1 / -1; font-weight:700;}
+  .ps-volume input{width:100%; min-height:44px; accent-color:var(--lagoon-dark, #1FA3A5);}
+  .ps-volume output{min-width:3.5em; text-align:right; font-variant-numeric:tabular-nums; font-weight:700;}

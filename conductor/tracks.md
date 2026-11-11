@@ -41,7 +41,7 @@ Registre des tracks Conductor, **dans l'ordre d'implémentation**. Feuille de ro
 
 ---
 
-- [ ] **Track: Les sons du jeu : moteur audio unique et ambiance « marimba doux »**
+- [x] **Track: Les sons du jeu : moteur audio unique et ambiance « marimba doux » (v56)**
 *Link: [./tracks/sons_20261111/](./tracks/sons_20261111/)*
 
 ---
