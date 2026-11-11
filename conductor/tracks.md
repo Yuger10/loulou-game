@@ -68,7 +68,7 @@ Registre des tracks Conductor, **dans l'ordre d'implémentation**. Feuille de ro
 
 ---
 
-- [ ] **Track: Une pause qui tient : voile sur tout le jeu, plus de contournement, compagnon fatigué, une activité au choix (bouger, yoga, respirer)** : prioritaire (demande du parent)
+- [~] **Track: Une pause qui tient : voile sur tout le jeu, plus de contournement, compagnon fatigué, une activité au choix (bouger, yoga, respirer)** : prioritaire (demande du parent)
 *Link: [./tracks/pause-verrou_20261111/](./tracks/pause-verrou_20261111/)*
 
 ---

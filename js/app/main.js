@@ -66,5 +66,6 @@ import '../features/market/index.js';
 import '../features/backup/index.js';
 import '../features/players/index.js';
 import '../features/parents/index.js';
+import '../features/rest/index.js';
 import '../features/settings/index.js';
 import './init.js';

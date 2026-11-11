@@ -362,9 +362,9 @@ const wrongOf = (sel)=>{ const good = d.querySelector(ev('gameSolution')[0]); re
   wrongOf('.num-btn').click();
   check('2 erreurs d\'affilée : Grisou console', sayShown() === 'grisou' && /pas grave|câlin|ensemble/.test(d.getElementById('team-say').textContent));
   ev('teamSayClear(); currentProfile().pauseMin = 1; state.playTime = {}; state.playTime[todayKey()] = 120; closeModal(); playGame("count")');
-  check('pause douce des parents : c\'est Grisou qui l\'annonce, en respirant', !!d.querySelector('.pause-hug .breathe svg[data-buddy="grisou"]'));
-  ev('closeModal(); currentProfile().pauseMin = 0; playGame("count")');
-  check('Grisou n\'a pas de minuteur à lui : sans réglage des parents, pas de pause', !!d.querySelector('.count-row') && !d.querySelector('.pause-box'));
+  check('pause douce des parents : c\'est Grisou qui l\'annonce, en respirant', !!d.querySelector('#rest-veil .rest-buddy svg[data-buddy="grisou"]') && /respire/.test(d.querySelector('#rest-veil .rest-say').textContent));
+  ev('restWake(); currentProfile().pauseMin = 0; playGame("count")');
+  check('Grisou n\'a pas de minuteur à lui : sans réglage des parents, pas de pause', !!d.querySelector('.count-row') && d.getElementById('rest-veil').hidden);
   ev('closeModal(); delete COMPANIONS.grisou; state.playTime = {}');
 
   section('Léo : le tuteur');
