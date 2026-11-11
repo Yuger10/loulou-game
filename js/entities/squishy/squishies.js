@@ -23,8 +23,9 @@ const SQUISHY_SERIES = {
   desserts: { name:'Desserts',  emoji:'🍩' },
   animaux:  { name:'Animaux',   emoji:'🐾' },
   boites:   { name:'Boîtes',    emoji:'📦', world:'boites' },   // le Monde des Boîtes (v55)
+  jouets:   { name:'Jouets doux', emoji:'🧸', world:'jouets' }, // le Coffre aux Jouets Doux
 };
-const SQUISHY_SERIES_ORDER = ['capy', 'desserts', 'animaux', 'boites'];
+const SQUISHY_SERIES_ORDER = ['capy', 'desserts', 'animaux', 'boites', 'jouets'];
 
 // les trois raretés, et leur chance au tirage (voir openSquishyBox)
 const SQUISHY_RARITY = {
@@ -63,6 +64,13 @@ const SQUISHIES = {
   'colis':        { series:'boites', name:'Petit colis',    say:'un petit colis',    rarity:'commun', color:'jaune',  shape:'carre', size:'petit' },
   'pop':          { series:'boites', name:'Pop',            say:'Pop, le diablotin à ressort', rarity:'rare', color:'vert', shape:'rond', size:'petit' },
   'boite-doree':  { series:'boites', name:'Boîte dorée',    say:'une boîte dorée',   rarity:'brille', color:'jaune',  shape:'carre', size:'grand' },
+  // 🧸 Jouets doux (saison 2, le Coffre aux Jouets Doux)
+  'ourson-guimauve':    { series:'jouets', name:'Ourson guimauve', say:'un ourson guimauve', rarity:'commun', color:'rose',   shape:'rond',  size:'grand' },
+  'lapin-mochi':        { series:'jouets', name:'Lapin mochi',     say:'un lapin mochi',     rarity:'commun', color:'violet', shape:'ovale', size:'petit' },
+  'poulpe-mou':         { series:'jouets', name:'Poulpe tout mou', say:'un poulpe tout mou', rarity:'commun', color:'bleu',   shape:'rond',  size:'grand' },
+  'grenouille-sauteuse':{ series:'jouets', name:'Grenouille sauteuse', say:'une grenouille sauteuse', rarity:'commun', color:'vert', shape:'ovale', size:'petit' },
+  'nougat':             { series:'jouets', name:'Nougat',          say:'Nougat, l\'ourson du coffre', rarity:'rare', color:'orange', shape:'carre', size:'grand' },
+  'ourson-arc':         { series:'jouets', name:'Ourson arc-en-ciel', say:'un ourson arc-en-ciel', rarity:'brille', color:'jaune', shape:'rond', size:'grand' },
 };
 
 // La série gagnée en résolvant l'énigme d'une île (une seule fois par île)
@@ -70,7 +78,7 @@ const SQUISHY_ISLAND_SERIES = {
   lagon:'animaux', foret:'animaux', montagne:'animaux',
   chateau:'desserts', volcan:'desserts', squishy:'desserts',
   jungle:'capy', cite:'capy',
-  boites:'boites',
+  boites:'boites', jouets:'jouets',
 };
 
 function squishiesOf(series){ return Object.keys(SQUISHIES).filter(id=> SQUISHIES[id].series === series); }

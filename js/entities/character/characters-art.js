@@ -280,6 +280,53 @@ ART.lola=human('#C98663','#3B2A24','#6FB8F5',
   `<path d="M24 44 Q30 16 60 16 Q90 16 96 44Z" fill="#FF8FB8" ${O()}/><path d="M86 41 L112 45 L108 52 L86 49Z" fill="#FF8FB8" ${O(2)}/>`,
   `<rect x="76" y="100" width="30" height="24" rx="4" fill="#E3B57E" ${O(2)}/><path d="M76 108 H106" stroke="#C79A63" stroke-width="2"/>`+
   `<path d="M8 126 H104 M14 126 L20 100" stroke="#5E6B7C" stroke-width="4" stroke-linecap="round"/><circle cx="12" cy="126" r="4" fill="#5E6B7C"/><circle cx="100" cy="126" r="4" fill="#5E6B7C"/>`);
+// ---- Saison 2, le Coffre aux Jouets Doux (idée de la joueuse) ----
+// Nougat l'ourson en guimauve : tout blanc crème, oreilles roses, ruban et clé du coffre
+ART.nougat=svg(
+  `<circle cx="30" cy="30" r="13" fill="#FFF4E8" ${O()}/><circle cx="90" cy="30" r="13" fill="#FFF4E8" ${O()}/>`+
+  `<circle cx="30" cy="30" r="6.5" fill="#FFC2D6"/><circle cx="90" cy="30" r="6.5" fill="#FFC2D6"/>`+
+  `<rect x="14" y="24" width="92" height="102" rx="40" fill="#FFF4E8" ${O()}/>`+
+  `<path d="M18 84 Q60 96 102 84" fill="none" stroke="#F3DCC8" stroke-width="3"/>`+
+  `<path d="M30 44 Q40 36 52 38" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round"/>`+
+  eyes(46,74,56,4.8,6)+cheeks(32,88,68)+
+  `<ellipse cx="60" cy="72" rx="13" ry="9" fill="#F7DDC8" ${O(2)}/><ellipse cx="60" cy="68.5" rx="4.4" ry="3.2" fill="${AI}"/>`+
+  `<path d="M55 75 Q60 79 65 75" fill="none" stroke="${AM}" stroke-width="2.4" stroke-linecap="round"/>`+
+  `<path d="M38 96 Q60 108 82 96" fill="none" stroke="#FF8FB8" stroke-width="5" stroke-linecap="round"/>`+
+  `<circle cx="60" cy="108" r="6" fill="#FFD95A" ${O(2)}/><path d="M60 114 V125 M60 121 H66" stroke="#B8901A" stroke-width="3" stroke-linecap="round"/>`);
+
+// Cocotte la lapine mochi : une boule rose toute ronde, longues oreilles, un cube menthe
+ART.cocotte=svg(
+  `<ellipse cx="42" cy="28" rx="10" ry="24" fill="#FFE4EE" ${O()} transform="rotate(-12 42 28)"/><ellipse cx="78" cy="28" rx="10" ry="24" fill="#FFE4EE" ${O()} transform="rotate(12 78 28)"/>`+
+  `<ellipse cx="42" cy="30" rx="4.5" ry="15" fill="#FFB3CC" transform="rotate(-12 42 30)"/><ellipse cx="78" cy="30" rx="4.5" ry="15" fill="#FFB3CC" transform="rotate(12 78 30)"/>`+
+  `<path d="M60 46 C94 46 110 72 108 98 C106 120 86 126 60 126 C34 126 14 120 12 98 C10 72 26 46 60 46Z" fill="#FFE4EE" ${O()}/>`+
+  `<path d="M28 66 Q36 56 48 56" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round"/>`+
+  eyes(46,74,82,4.8,6)+cheeks(32,88,94)+
+  `<path d="M57 90 L63 90 L60 93.5Z" fill="#FF8FB8"/><path d="M60 94 Q56 99 52 96 M60 94 Q64 99 68 96" fill="none" stroke="${AM}" stroke-width="2.2" stroke-linecap="round"/>`+
+  `<rect x="86" y="102" width="20" height="20" rx="5" fill="#BFF0DA" ${O(2)}/><circle cx="96" cy="112" r="4" fill="#fff" opacity=".8"/>`);
+
+// Gloups le poulpe tout mou : tête ronde bleu pâle, huit petits bras, un grand sourire
+ART.gloups=svg(
+  `<g fill="#A9C9F5" ${O(2.4)}>`+
+  `<path d="M22 90 C8 98 6 116 16 120 C22 112 28 104 36 100Z"/><path d="M98 90 C112 98 114 116 104 120 C98 112 92 104 84 100Z"/>`+
+  `<path d="M36 100 C28 112 30 126 40 126 C42 116 46 108 50 104Z"/><path d="M84 100 C92 112 90 126 80 126 C78 116 74 108 70 104Z"/>`+
+  `<path d="M50 104 C48 116 52 128 60 128 C68 128 72 116 70 104Z"/></g>`+
+  `<g fill="#D6E7FC"><circle cx="14" cy="112" r="2"/><circle cx="106" cy="112" r="2"/><circle cx="60" cy="120" r="2"/></g>`+
+  `<path d="M60 14 C92 14 106 40 104 66 C102 92 84 104 60 104 C36 104 18 92 16 66 C14 40 28 14 60 14Z" fill="#A9C9F5" ${O()}/>`+
+  `<g fill="#D6E7FC"><circle cx="78" cy="30" r="4"/><circle cx="88" cy="46" r="3"/></g>`+
+  `<path d="M30 44 Q38 32 52 30" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" opacity=".8"/>`+
+  eyes(46,74,62,5.2,6.6)+cheeks(32,88,76)+smile(50,70,78,9));
+
+// Rainette la grenouille squishy : verte, yeux sur la tête, ventre clair, petites taches
+ART.rainette=svg(
+  `<circle cx="36" cy="36" r="17" fill="#7FD49A" ${O()}/><circle cx="84" cy="36" r="17" fill="#7FD49A" ${O()}/>`+
+  `<path d="M60 34 C96 34 112 60 110 88 C108 116 88 126 60 126 C32 126 12 116 10 88 C8 60 24 34 60 34Z" fill="#7FD49A" ${O()}/>`+
+  `<ellipse cx="60" cy="102" rx="30" ry="18" fill="#D6F5DE"/>`+
+  `<circle cx="36" cy="36" r="9" fill="#fff"/><circle cx="84" cy="36" r="9" fill="#fff"/>`+
+  `<circle cx="37" cy="37" r="5" fill="${AI}"/><circle cx="85" cy="37" r="5" fill="${AI}"/><circle cx="38.5" cy="35" r="1.8" fill="#fff"/><circle cx="86.5" cy="35" r="1.8" fill="#fff"/>`+
+  cheeks(28,92,70)+
+  `<path d="M40 68 Q60 84 80 68" fill="none" stroke="${AM}" stroke-width="2.6" stroke-linecap="round"/>`+
+  `<path d="M24 58 Q30 50 40 50" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" opacity=".6"/>`+
+  `<g fill="#5DBB7C"><circle cx="22" cy="90" r="3"/><circle cx="98" cy="94" r="3.5"/><circle cx="90" cy="78" r="2.4"/></g>`);
 return ART;
 })();
 function charArtSVG(id){return CHAR_ART[id]||''}

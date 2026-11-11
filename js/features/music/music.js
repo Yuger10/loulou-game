@@ -27,6 +27,8 @@ const MUSIC_THEMES = {
   squishy:  { root:67, scale:[0,2,4,7,9],  bpm:98, lead:'bubble',  prog:[0,5,9,7] },
   // saison 2 : une harpe aérienne, et les petits « tchac » des machines de la Fabrique
   boites:   { root:65, scale:[0,2,4,7,9],  bpm:88, lead:'harp',    prog:[0,5,9,7], tick:true },
+  // une boîte à musique (célesta), très douce
+  jouets:   { root:72, scale:[0,2,4,7,9],  bpm:80, lead:'celesta', prog:[0,9,5,7] },
 };
 const MUSIC_VOLUME = 1.0;       // crête ≈ 0,11, bien sous les bruitages ; passe ensuite par le volume général du bus
 
@@ -54,6 +56,7 @@ function mNote(freq, t, dur, kind, vol){
   if(kind === 'marimba'){ type = 'sine'; dur = Math.min(dur, .45); }
   else if(kind === 'flute'){ type = 'sine'; attack = .07; }
   else if(kind === 'bell'){ type = 'sine'; dur = Math.max(dur, 1.1); }
+  else if(kind === 'celesta'){ type = 'sine'; dur = Math.min(Math.max(dur, .6), .9); }
   else if(kind === 'harp'){ type = 'triangle'; dur = Math.max(dur, .8); }
   else if(kind === 'pluck'){ type = 'triangle'; dur = Math.min(dur, .28); }
   else if(kind === 'bubble'){ type = 'sine'; dur = Math.min(dur, .2); }
@@ -68,9 +71,9 @@ function mNote(freq, t, dur, kind, vol){
   o.connect(g).connect(kind === 'pad' ? music.filter : music.master);
   o.start(t); o.stop(t + dur + .05);
   // clochette : un second partiel, plus aigu, qui s'éteint plus vite
-  if(kind === 'bell' || kind === 'marimba'){
+  if(kind === 'bell' || kind === 'marimba' || kind === 'celesta'){
     const o2 = ctx.createOscillator(), g2 = ctx.createGain();
-    o2.type = 'sine'; o2.frequency.setValueAtTime(freq * (kind === 'bell' ? 2.76 : 4), t);
+    o2.type = 'sine'; o2.frequency.setValueAtTime(freq * (kind === 'bell' ? 2.76 : kind === 'celesta' ? 3 : 4), t);
     g2.gain.setValueAtTime(0, t); g2.gain.linearRampToValueAtTime(vol * .35, t + .005);
     g2.gain.exponentialRampToValueAtTime(.0008, t + dur * .4);
     o2.connect(g2).connect(music.master);

@@ -57,6 +57,8 @@ const PROGRESS_CHEERS = {
   jigsaw:       'Tu assembles les images de mieux en mieux !',
   nesting:      'Tu ranges les boîtes de mieux en mieux !',
   cubes:        'Tu comptes les cubes de mieux en mieux, même ceux qui se cachent !',
+  packs:        'Tu comptes par paquets de mieux en mieux !',
+  shelf:        'Tu ranges l\'étagère magique de mieux en mieux !',
 };
 
 function gameMaxTier(key){ return GAME_TIER_MAX[key] || 5; }

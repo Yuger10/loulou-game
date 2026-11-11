@@ -54,6 +54,14 @@ const WORLDS = {
     map:{x:30, y:62}, shape:'boites', icon:'📦', sand:'#F3E2C4', land:'#D9AE7A',
     intro:"Bienvenue à la Fabrique de boîtes, où les rêves attendent d'être libérés 📦",
     sceneEmpty:"Ta Fabrique attend ses décorations en carton !" },
+  // idée de la joueuse : « un monde de jouets qui ressemblent à des squishies »
+  jouets:{ name:'Le Coffre aux Jouets Doux', emoji:'🧸', level:38, diff:6, saison:2, short:'Jouets',
+    subtitle:'Le grand coffre à jouets',
+    // son mini-jeu, selon l'âge : les paquets avant 7 ans, l'étagère ensuite
+    game:(age)=> (age && age < 7) ? 'packs' : 'shelf',
+    map:{x:68, y:40}, shape:'jouets', icon:'🧸', sand:'#FFF1E0', land:'#F7C6D9',
+    intro:"Bienvenue dans le Coffre aux Jouets Doux, où les jouets se sont endormis 🧸",
+    sceneEmpty:"Ton Coffre attend ses décorations toutes douces !" },
 };
 
 /* Les archipels (v55) : chaque île appartient à un archipel (`saison`), qui a

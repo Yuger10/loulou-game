@@ -314,7 +314,7 @@ function livesFor(kind, dd){
   // essais suivent donc le nombre de paires : n + 2. Bien retenir fait
   // toujours gagner ; toucher au hasard fait toujours perdre.
   if(kind === 'memory') return memoryPairs(d) + 2;
-  const GENEROUS_KINDS = ['math','reading','determinants','volume','compare','money','clock','calendar','calc','shapes','planets','cubes'];
+  const GENEROUS_KINDS = ['math','reading','determinants','volume','compare','money','clock','calendar','calc','shapes','planets','cubes','packs','shelf'];
   const table = LIVES_TABLE[kind] || (GENEROUS_KINDS.includes(kind) ? LIVES_TABLE.generous : LIVES_TABLE.default);
   // le calcul mental (palier 6, Volcan) emprunte le barème d'essais du
   // palier 5 : seul le minuteur continue de se resserrer au-delà.
@@ -351,7 +351,7 @@ const TIMER_SECONDS = {
   calc:         {3:28, 4:24, 5:22, 6:20},   // calcul abstrait : le plus généreux de tous
 };
 // jeux à plusieurs étapes : jamais de minuteur, quelle que soit la difficulté
-const NO_TIMER_KINDS = ['memory','simon','puzzle','calendar','shapes','planets','jigsaw','nesting','cubes'];
+const NO_TIMER_KINDS = ['memory','simon','puzzle','calendar','shapes','planets','jigsaw','nesting','cubes','packs','shelf'];
 function timerFor(kind, dd){
   if(NO_TIMER_KINDS.includes(kind)) return null;
   const table = TIMER_SECONDS[kind];
@@ -522,6 +522,50 @@ function cubesRound(dd){
   }, dd);
 }
 
+/* ---------------------------------------------------------------------
+   LES PAQUETS DE JOUETS (Coffre aux Jouets Doux, saison 2) — le début de la
+   multiplication : compter par paquets plutôt qu'un par un (« compter de 2
+   en 2, de 5 en 5, de 10 en 10 », CP-CE1 ; « 4 paquets de 5 », 4 × 5, CE2).
+     palier 1   paquets de 2, 2 ou 3 paquets (on peut compter un par un)
+     palier 2   paquets de 2 et de 5, 2 à 4 paquets
+     palier 3   paquets de 2, 5 et 10, 2 à 4 paquets
+     palier 4   paquets de 2, 5 et 10, jusqu'à 5 paquets, parfois un jouet seul
+     palier 5   idem, 3 à 5 paquets, et « 4 paquets de 5 » écrit sous l'image
+   `extra` : chance d'un jouet tout seul en plus ; `label` : la phrase écrite.
+   Pas de minuteur.
+   --------------------------------------------------------------------- */
+function packsRound(dd){
+  return tierValue({
+    1:{ sizes:[2],        min:2, max:3, extra:0,  label:false },
+    2:{ sizes:[2, 5],     min:2, max:4, extra:0,  label:false },
+    3:{ sizes:[2, 5, 10], min:2, max:4, extra:0,  label:false },
+    4:{ sizes:[2, 5, 10], min:2, max:5, extra:.5, label:false },
+    5:{ sizes:[2, 5, 10], min:3, max:5, extra:.5, label:true },
+  }, dd);
+}
+
+/* ---------------------------------------------------------------------
+   L'ÉTAGÈRE MAGIQUE (Coffre aux Jouets Doux, saison 2) — lire un tableau à
+   double entrée (une couleur par ligne, une forme par colonne), puis des
+   coordonnées (« ligne rose, colonne étoile », repérage CE2).
+     palier 1   2 × 2 cases, un jouet à ranger
+     palier 2   3 × 3, deux jouets
+     palier 3   3 × 3, trois jouets ; parfois « quel jouet va dans cette case ? »
+     palier 4   4 × 4, trois jouets ; parfois « quel jouet… ? »
+     palier 5   4 × 4 : souvent des cadeaux à poser aux coordonnées dites
+   `find` : chance de la question inverse ; `coords` : chance des coordonnées.
+   Pas de minuteur.
+   --------------------------------------------------------------------- */
+function shelfRound(dd){
+  return tierValue({
+    1:{ size:2, toys:1, find:0,  coords:0 },
+    2:{ size:3, toys:2, find:0,  coords:0 },
+    3:{ size:3, toys:3, find:.3, coords:0 },
+    4:{ size:4, toys:3, find:.3, coords:0 },
+    5:{ size:4, toys:3, find:.2, coords:.5 },
+  }, dd);
+}
+
 function jigsawRound(dd){
   return tierValue({
     1:{cols:2, rows:2, ghost:.45},
@@ -536,7 +580,7 @@ export {
   CALC_MULT_TABLES, calcBounds, calendarUsesWeekdayOrder, calendarWeekdayCount, clockGranularity,
   clockOptions, compareCloseChance, compareEqualChance, compareRange, countRange,
   determinantsExtraDistractor, determinantsImageShown, determinantsPluralChance, diffMirrorChance,
-  cubesRound, diffTotal, jigsawRound, nestingRound, livesFor, mathBounds, memoryPairs, moneyDenoms, moneyPileSize, planetsTier,
+  cubesRound, diffTotal, jigsawRound, nestingRound, livesFor, packsRound, shelfRound, mathBounds, memoryPairs, moneyDenoms, moneyPileSize, planetsTier,
   puzzleCount, puzzleStartMax, puzzleVariants, readingOptions, readingWordOnly, sequencePatternLength,
   shapesRound, simonLength, solidOptions, timerFor, volumeAskLessChance, volumeContainerCount,
   volumeUsesCapacityCompare

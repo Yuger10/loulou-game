@@ -1,0 +1,26 @@
+  /* =====================================================================
+     L'étagère magique — Coffre aux Jouets Doux (saison 2)
+     ===================================================================== */
+  .shelf-stage{display:flex; justify-content:center; margin:0 auto 6px; padding:8px; max-width:340px;
+    border-radius:var(--radius-lg, 24px); background:linear-gradient(180deg, #FFF8F0, #E8F7EF); border:3px solid #fff;}
+  .shelf{display:grid; grid-template-columns:34px repeat(var(--n), minmax(44px, 62px)); gap:5px; align-items:center; justify-items:center;}
+  .shelf-corner{font-size:1.2rem;}
+  .shelf-head{display:flex; align-items:center; justify-content:center; width:100%; height:100%;}
+  .shelf-head.col .shelf-toy{width:30px; height:30px;}
+  .shelf-head.row i{display:block; width:24px; height:24px; border-radius:50%; border:3px solid;}
+  .shelf-cell{width:100%; aspect-ratio:1; min-height:44px; padding:4px; border-radius:12px; border:3px solid #E7C9A4;
+    background:#FFF3E0; box-shadow:inset 0 -4px 0 rgba(184,87,126,.12); cursor:pointer; display:flex; align-items:center; justify-content:center;}
+  .shelf-cell .shelf-toy{width:100%; height:100%;}
+  .shelf-cell.filled{background:#fff;}
+  .shelf-cell.target{border-color:#FFC028; background:#FFF7D6;}
+  .shelf-cell.target b{font-size:1.6rem; color:#B8577E;}
+  .shelf-cell[disabled]{cursor:default; opacity:1;}
+  .shelf-gift{font-size:1.6rem; line-height:1;}
+  .shelf-tray{display:flex; justify-content:center; gap:8px; margin:0 0 4px;}
+  .shelf-todo{width:40px; height:40px; padding:3px; border-radius:12px; background:#fff; opacity:.55; display:flex; align-items:center; justify-content:center;}
+  .shelf-todo .shelf-toy{width:100%; height:100%;}
+  .shelf-todo.now{opacity:1; transform:scale(1.15); box-shadow:0 0 0 3px #FFC028;}
+  .shelf-todo.done{opacity:.25;}
+  .shelf-ask{margin:2px 0 6px; font-weight:800; color:var(--ink);}
+  .shelf-opt{width:76px; height:76px; padding:8px;}
+  .shelf-opt .shelf-toy{width:100%; height:100%;}

@@ -1205,3 +1205,60 @@ Track Conductor `sons`. Choix faits avec la joueuse sur la page d'écoute « Son
   - que le calcul du niveau est fait à un seul endroit.
 - `test/saison2.test.js` passe à 102 vérifications : il ajoute la barre de la carte, « encore N missions » au singulier comme au pluriel, et « toutes les îles ouvertes ».
 - Cache `lagon-v56`.
+
+---
+
+# v58 — Saison 2, île 2 : le Coffre aux Jouets Doux
+
+> **Idée de la joueuse principale :** « un monde de jouets qui ressemblent à des squishies ». Track Conductor `monde-jouets` ([spec](conductor/tracks/monde-jouets_20261111/spec.md), [plan](conductor/tracks/monde-jouets_20261111/plan.md)).
+
+## L'île
+- **`jouets` 🧸, niveau 38** (règle des niveaux : `conductor/niveaux.md`), palier 6, deuxième île du Ciel des Rêves, après les Boîtes.
+- **Le paysage :** un grand coffre ouvert d'où dépassent un ourson et une lapine qui se balancent, une étagère pastel avec des jouets mochi, des cubes à formes et un ballon. Le thème est crème, rose et menthe.
+- **La musique :** une boîte à musique (nouveau timbre « célesta »), très douce, à 80 battements par minute.
+- **4 personnages,** chacun avec son butin et 3 répliques :
+  - 🧸 **Nougat**, l'ourson en guimauve, gardien du coffre et guide du chapitre ;
+  - 🐰 **Cocotte**, la lapine mochi, qui présente l'étagère magique ;
+  - 🐙 **Gloups**, le poulpe tout mou, qui fait des paquets avec ses huit bras ;
+  - 🐸 **Rainette**, la grenouille squishy, qui cache des jouets.
+- **8 objets** (ruban de peluche, bouton de nounours, grelot, ressort tout doux, mini-mochi, étoile en feutrine, yo-yo doux, toupie à pois). Trois d'entre eux ne sont donnés par personne, pour les objets préférés.
+- **2 recettes** (Doudou des rêves, Boîte à musique) et **5 décorations** (coffre à jouets, manège de peluches, panier de câlins, piñata en feutrine, tipi des doudous).
+- **La série de squishies « Jouets doux »** : ourson guimauve, lapin mochi, poulpe tout mou, grenouille sauteuse ; le rare est Nougat ; le ✨ est l'ourson arc-en-ciel. Elle n'apparaît qu'une fois l'île ouverte.
+
+## Deux nouveaux mini-jeux
+- **Le jeu de l'île :** les paquets avant 7 ans, l'étagère ensuite. Les deux jeux sont proposés dès 5 ans, sans minuteur, avec un essai de plus que le barème par défaut.
+- **🧸 Les paquets de jouets** (`packs`) : le début de la multiplication. Les jouets sont rangés par paquets de 2, 5 ou 10. On choisit le total parmi 3 réponses.
+  - Palier 1 : paquets de 2, 2 ou 3 paquets.
+  - Palier 2 : paquets de 2 et de 5.
+  - Palier 3 : paquets de 2, 5 et 10.
+  - Palier 4 : jusqu'à 5 paquets, parfois un jouet tout seul en plus.
+  - Palier 5 : la phrase « 4 paquets de 5 » est écrite sous l'image, et l'indice montre l'écriture 4 × 5.
+  - Les pièges sont plausibles : un paquet de plus ou de moins, le jouet seul oublié.
+  - Les indices disent de compter de paquet en paquet, sans jamais dire le total. Compétence « Nombres » dans l'espace parents.
+- **🗄️ L'étagère magique** (`shelf`) : lire un tableau à double entrée, une couleur par ligne et une forme par colonne.
+  - Palier 1 : 2 × 2 cases, un jouet à ranger.
+  - Palier 2 : 3 × 3, deux jouets.
+  - Palier 3 : trois jouets, et parfois « quel jouet va dans la case « ? » ? ».
+  - Palier 4 : 4 × 4.
+  - Palier 5 : souvent des cadeaux à poser aux coordonnées écrites et dites à voix haute (« ligne rose, colonne étoile »).
+  - Les jouets à ranger attendent dans un panier, et le prochain est mis en avant.
+  - L'indice 2 fait briller la ligne de la couleur, sans jamais nommer la case. Compétence « Formes et espace ».
+- Pour les deux jeux, une erreur relance une autre question (anti-devinette, relance annulable).
+
+## Histoire : « Les jouets qui ne jouent plus »
+- **Le chapitre :** Grisou a rangé le rêve de « jouer ensemble » tout au fond du coffre, et les jouets se sont endormis.
+  - Nougat pose 3 devinettes en images : la peluche, le ballon, le puzzle.
+  - Résoudre le chapitre rapporte 14 pièces et une boîte surprise de la série Jouets doux, une seule fois.
+  - Grisou reprend des couleurs (2 îles du Ciel libérées).
+- **3 épisodes,** racontés par Cocotte, Gloups et Rainette. Dans le dernier, un ballon qui sent la fraise annonce le Royaume des Bonbons.
+
+## Tests
+- Nouveau `test/jouets.test.js` (70 vérifications), branché sur `npm test`. Il couvre :
+  - l'île et son ouverture au niveau 38 ;
+  - les personnages, les objets et la série de squishies ;
+  - les paliers, les pièges, les indices et la relance des deux jeux ;
+  - le jeu de l'île selon l'âge ;
+  - le chapitre, la récompense unique et les épisodes.
+- Les 22 mini-jeux sont joués jusqu'à la victoire à chaque palier, avec une vérification indépendante pour les paquets (jouets dessinés) et l'étagère (ligne et colonne de chaque case).
+- `test/niveaux.test.js` vérifie aussi les fiches `metadata.json` des tracks. Il a corrigé 4 niveaux restés à l'ancienne valeur.
+- Cache `lagon-v58`.

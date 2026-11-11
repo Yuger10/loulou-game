@@ -101,6 +101,14 @@ const EPISODES = {
     { by:'lola', title:'Le colis arc-en-ciel', find:'🌈',
       lines:["J'ai une livraison très spéciale : un colis qui brille de toutes les couleurs !", "L'adresse dit : Royaume Arc-en-ciel. Ce sera sûrement notre prochaine île !"] },
   ],
+  jouets: [
+    { by:'cocotte', title:'Le premier bâillement', find:'🥱',
+      lines:["Boing ! Une petite toupie vient de bâiller, puis de tourner toute seule.", "Les jouets se réveillent, un par un, quand on joue avec eux !"] },
+    { by:'gloups', title:'Huit bras pour un câlin', find:'🤗',
+      lines:["Gloups ! Grisou est passé tout près du coffre, et il avait l'air si seul…", "Alors je lui ai fait un câlin avec mes huit bras. Il est devenu un peu rose !"] },
+    { by:'rainette', title:'La cachette de Rainette', find:'🎈',
+      lines:["Hop ! En sautant au fond du coffre, j'ai trouvé un ballon qui flotte vers le ciel.", "Il sent le sucre et la fraise… Je crois qu'il vient du Royaume des Bonbons !"] },
+  ],
 };
 
 function storyMissionsOn(world){ return (state.storyMissions || {})[world] || 0; }

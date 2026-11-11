@@ -65,6 +65,15 @@ for(const x of islandSpecs){
     x.level === want && said.every(n=> n === want) && x.text.includes('conductor/niveaux.md'),
     `spec : ${x.level}, phrases : ${said.join('/')}, tableau : ${want}`);
 }
+// les fiches (metadata.json) des tracks d'îles : le niveau de leur description
+const META = SPECS.map(p=> p.replace(/spec\.md$/, 'metadata.json')).filter(p=> fs.existsSync(path.join(page.root, p)));
+const metaWrong = islandSpecs.flatMap(x=>{
+  const p = x.p.replace(/spec\.md$/, 'metadata.json');
+  if(!META.includes(p)) return [];
+  const said = [...JSON.parse(read(p)).description.matchAll(/niveau (\d+)/g)].map(m=> +m[1]);
+  return said.every(n=> n === TABLE[x.id].level) ? [] : [`${x.id} (${said.join('/')})`];
+});
+check('les fiches des tracks (metadata.json) citent le même niveau que le tableau', metaWrong.length === 0, metaWrong.join(', '));
 check('aucune spec ne garde une ancienne règle (« de 5 en 5 », « en parallèle », « décalés », « revus »)',
   SPECS.every(p=> !/(?:îles?|saisons?|niveaux?)[^.\n]{0,60}(?:de 5 en 5|en parallèle|Décalés depuis|Revus depuis)/i.test(read(p))),
   SPECS.filter(p=> /(?:îles?|saisons?|niveaux?)[^.\n]{0,60}(?:de 5 en 5|en parallèle|Décalés depuis|Revus depuis)/i.test(read(p))).join(', '));

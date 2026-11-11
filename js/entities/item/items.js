@@ -71,6 +71,15 @@ const ITEMS = {
   ciseaux:{emoji:'✂️', name:'Ciseaux à bouts ronds', price:8, world:'boites'},
   noeud:{emoji:'🪢', name:'Nœud doré', price:9, world:'boites'},
   crayon:{emoji:'✏️', name:'Crayon de bois', price:6, world:'boites'},
+  // Coffre aux Jouets Doux
+  rubanpeluche:{emoji:'🎀', name:'Ruban de peluche', price:6, world:'jouets'},
+  boutonours:{emoji:'🔘', name:'Bouton de nounours', price:5, world:'jouets'},
+  grelot:{emoji:'🔔', name:'Grelot', price:6, world:'jouets'},
+  ressort:{emoji:'➰', name:'Ressort tout doux', price:7, world:'jouets'},
+  minimochi:{emoji:'🍡', name:'Mini-mochi', price:5, world:'jouets'},
+  etoilefeutrine:{emoji:'⭐', name:'Étoile en feutrine', price:8, world:'jouets'},
+  yoyo:{emoji:'🪀', name:'Yo-yo doux', price:7, world:'jouets'},
+  toupie:{emoji:'🎯', name:'Toupie à pois', price:9, world:'jouets'},
 };
 
 const CRAFTED = {
@@ -164,6 +173,11 @@ const CRAFTED = {
     recipe:{carton:1, etiquette:1, ficelle:1}},
   colisvolant:{emoji:'🪁', name:'Colis volant', price:20, world:'boites',
     recipe:{papierbulle:1, trombone:2}},
+  // Coffre aux Jouets Doux
+  doudoureves:{emoji:'🧸', name:'Doudou des rêves', price:22, world:'jouets',
+    recipe:{boutonours:1, rubanpeluche:1, etoilefeutrine:1}},
+  boiteamusique:{emoji:'🎶', name:'Boîte à musique', price:20, world:'jouets',
+    recipe:{ressort:1, grelot:2}},
 };
 
 const ALL_ITEMS = Object.assign({}, ITEMS, CRAFTED);
@@ -262,6 +276,12 @@ const DECOS = {
   chariotD:{emoji:'🛒', name:'Chariot à colis', price:18, world:'boites'},
   lampionD:{emoji:'🏮', name:'Lampions de papier', price:14, world:'boites'},
   echelleD:{emoji:'🪜', name:'Échelle de carton', price:12, world:'boites'},
+  // Coffre aux Jouets Doux
+  coffreD:{emoji:'🧰', name:'Coffre à jouets', price:40, world:'jouets'},
+  manegeD:{emoji:'🎠', name:'Manège de peluches', price:30, world:'jouets'},
+  panierD:{emoji:'🧺', name:'Panier de câlins', price:18, world:'jouets'},
+  ballonsD:{emoji:'🪅', name:'Piñata en feutrine', price:14, world:'jouets'},
+  tipiD:{emoji:'⛺', name:'Tipi des doudous', price:12, world:'jouets'},
 };
 
 const ALBUM_REWARD = 100;
