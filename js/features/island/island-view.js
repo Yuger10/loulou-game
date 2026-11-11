@@ -6,7 +6,8 @@ import {
 import { ALL_ITEMS, countItem, CRAFTED, DECOS, decosOf, ITEMS } from '../../entities/item/index.js';
 import { ac, onProfileRefresh, playerGender } from '../../entities/player/index.js';
 import {
-  currentWorld, setCurrentWorld, WORLD_ORDER, WORLDS, worldUnlocked
+  ARCHIPELAGOS, archipelagoOf, archipelagoUnlocked, currentWorld, setCurrentWorld, WORLD_ORDER, WORLDS,
+  worldUnlocked
 } from '../../entities/world/index.js';
 import { emit, on, pickRandom } from '../../shared/lib/index.js';
 import {
@@ -19,7 +20,7 @@ import { favoritesOf, friendHearts, friendPoints, openGiftPicker } from '../gift
 import { renderRaceTrack } from '../party/index.js';
 import { ensureQuests, renderQuests } from '../quests/index.js';
 import { bindQuit, gameHeader } from '../screen/index.js';
-import { openStoryChapter, STORY, storySolved } from '../story/index.js';
+import { openSeasonPrologue, openStoryChapter, STORY, storySolved } from '../story/index.js';
 import { addCoins } from '../wallet/index.js';
 import { renderLiveIsland } from './island.js';
 
@@ -76,12 +77,44 @@ function checkNewIsland(){
   };
   // le fil de l'histoire (js/features/story/story.js) précède l'écran habituel : une
   // nouvelle île est d'abord racontée, avec son énigme à résoudre.
-  if(STORY[id] && !storySolved(id)){
-    openStoryChapter(id, showUnlockModal);
-  } else {
-    showUnlockModal();
-  }
+  const chapter = ()=>{
+    if(STORY[id] && !storySolved(id)) openStoryChapter(id, showUnlockModal);
+    else showUnlockModal();
+  };
+  // la première île d'un archipel encore jamais montré (le Ciel des Rêves,
+  // v55) : son écran d'ouverture, puis le prologue de la saison, puis le chapitre
+  if(archipelagoOf(id) === 2 && !state.skyIntroSeen) openSkyOpening(()=> openSeasonPrologue(2, chapter));
+  else chapter();
   return true;
+}
+
+/* L'ouverture du Ciel des Rêves (saison 2, v55) : un écran spécial, une seule
+   fois, au passage au niveau 8 (ou au premier lancement d'une partie qui y est
+   déjà). La carte montre ensuite le Ciel. */
+function openSkyOpening(onDone){
+  const a = ARCHIPELAGOS[2];
+  state.skyIntroSeen = true;
+  save();
+  emit('map:archipelago', 2);
+  const who = hello();
+  playSound('win'); confetti(); vibrate([60, 40, 60, 40, 160]);
+  speak(`${who ? who + ', u' : 'U'}n nouveau monde s'ouvre dans le ciel ! ${a.name}.`);
+  openModal(`
+    <div class="reward-box sky-open">
+      <div class="sky-open-art" aria-hidden="true">
+        <span class="so-cloud c1">☁️</span><span class="so-balloon">🎈</span><span class="so-cloud c2">☁️</span>
+      </div>
+      <h2>Un nouveau monde s'ouvre dans le ciel ! ☁️</h2>
+      <div class="speech"><strong>${a.name}</strong> : une deuxième carte, avec ses îles et son histoire. Tu passes d'un monde à l'autre avec les onglets de la carte.</div>
+    </div>
+    <button class="btn-primary" id="sky-go">Découvrir le Ciel ☁️</button>
+  `);
+  document.getElementById('sky-go').onclick = ()=>{ playSound('tap'); onDone(); };
+}
+// Au lancement : une partie déjà au niveau 8 ou plus découvre le Ciel une fois
+function maybeSkyOpening(){
+  if(state.skyIntroSeen || !archipelagoUnlocked(2)) return false;
+  return checkNewIsland();
 }
 
 function renderLevelPill(){
@@ -240,6 +273,6 @@ registerView('ile', ()=> renderLagon());
 onProfileRefresh(()=> renderLagon());
 
 export {
-  checkNewIsland, currentChar, openDecoShop, openDialogue, renderIslandCard, renderLagon,
+  checkNewIsland, maybeSkyOpening, currentChar, openDecoShop, openDialogue, renderIslandCard, renderLagon,
   renderLevelPill, setCurrentChar, setWorld
 };

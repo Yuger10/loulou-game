@@ -93,6 +93,14 @@ const INDEPENDENT = {
     return days.every((x, i)=> i === 0 || order.indexOf(x) === order.indexOf(days[i - 1]) + 1);
   },
   jigsaw(sol){ return sol.length === 2 * d.querySelectorAll('.jg-slot').length; },
+  // gigognes (v55) : toutes les boîtes, de la plus petite à la plus grande (ou l'inverse)
+  nesting(sol){
+    const sizes = sol.map(s=> Number(d.querySelector(s).dataset.size));
+    const up = sizes.every((x, i)=> i === 0 || x > sizes[i - 1]), down = sizes.every((x, i)=> i === 0 || x < sizes[i - 1]);
+    return sol.length === d.querySelectorAll('.nest-btn').length && (up || down);
+  },
+  // cubes (v55) : la bonne réponse est le nombre de cubes dessinés (cachés compris)
+  cubes(sol){ return Number(d.querySelector(sol[0]).dataset.v) === d.querySelectorAll('.cubes-svg .cube').length; },
 };
 
 async function playToWin(key, tier){
@@ -138,7 +146,7 @@ async function playToWin(key, tier){
     }
   }
   console.log(`  ${played} parties jouées`);
-  check('les 18 mini-jeux sont testés', games.length >= 18);
+  check('les 20 mini-jeux sont testés', games.length >= 20);
 
   /* ---- 2. une mauvaise réponse ne fait jamais gagner ---- */
   section('Une mauvaise réponse ne fait pas gagner');

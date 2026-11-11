@@ -26,7 +26,8 @@ import {
   makeSortingTask, onSquishyChange, openSquishyBox, recordSorting, shelfPlace, shelfRemove,
   sortingDone, sortingPaidLeft, sortMatches, sortSay, sortWrongHint, SQ_SERIES_BONUS,
   SQ_SORT_MAX_ERRORS, SQ_SORT_MIN_MODELS, SQ_SORT_REWARD, SQ_SORT_SHAPES, SQ_SORT_SIZES, SQ_SORT_SLOTS,
-  sqState, squishyBoxCount, squishyCount, squishyOwnedIds, squishySeriesProgress, squishyShelfCount
+  sqState, squishyBoxCount, squishyCount, squishyOwnedIds, squishySeriesAvailable, squishySeriesProgress,
+  squishyShelfCount
 } from './squishies.js';
 
 /* ---------- Les dessins (SVG, aucune image) ----------
@@ -144,6 +145,31 @@ const SQ_ART = {
     front: ()=> `<g class="sq-deco"><ellipse cx="34" cy="78" rx="12" ry="5" fill="#9CE7F2" opacity=".55" transform="rotate(-25 34 78)"/><ellipse cx="68" cy="80" rx="11" ry="5" fill="#FFB8E1" opacity=".6" transform="rotate(20 68 80)"/>
       <ellipse cx="74" cy="40" rx="8" ry="4" fill="#FFF3A6" opacity=".7" transform="rotate(35 74 40)"/></g>
       <path class="sq-deco" d="M18 62 H30 M82 62 H70" stroke="#2B2140" stroke-width="1.8" stroke-linecap="round" opacity=".5"/>` },
+  // 📦 Boîtes (saison 2, v55) : des boîtes douces, chacune avec son détail
+  'chat-boite': { body:'carre', face:{}, faceY:58,
+    back: c=> `<path d="M18 34 L22 6 L44 26Z M82 34 L78 6 L56 26Z" fill="${c.fill}" stroke="${c.edge}" stroke-width="4" stroke-linejoin="round"/>
+      <path d="M24 26 L25 14 L36 24Z M76 26 L75 14 L64 24Z" fill="#FFC9D6"/>`,
+    front: c=> `<path class="sq-deco" d="M13 76 H87" stroke="${c.edge}" stroke-width="3" opacity=".5"/>
+      <path class="sq-deco" d="M20 58 H30 M20 64 L30 62 M80 58 H70 M80 64 L70 62" stroke="#2B2140" stroke-width="1.8" stroke-linecap="round" opacity=".55"/>` },
+  'robot-carton': { body:'carre', face:{}, faceY:58,
+    back: ()=> `<path d="M50 24 V8" stroke="#5E6B7C" stroke-width="4"/><circle cx="50" cy="6" r="5" fill="#FF9CC8" stroke="#C9497F" stroke-width="2.5"/>`,
+    front: c=> `<rect x="26" y="40" width="48" height="36" rx="8" fill="#fff" opacity=".45"/>
+      <g class="sq-deco" fill="${c.edge}"><circle cx="22" cy="34" r="2.6"/><circle cx="78" cy="34" r="2.6"/><circle cx="22" cy="86" r="2.6"/><circle cx="78" cy="86" r="2.6"/></g>` },
+  'cadeau': { body:'carre', face:{}, faceY:66,
+    front: ()=> `<path d="M50 24 V94 M13 50 H87" stroke="#FFD95A" stroke-width="8" opacity=".95"/>
+      <path d="M50 24 C40 8 24 14 34 24Z M50 24 C60 8 76 14 66 24Z" fill="#FFD95A" stroke="#B8901A" stroke-width="3" stroke-linejoin="round"/>` },
+  'colis': { body:'carre', face:{}, faceY:64,
+    front: ()=> `<rect x="44" y="24" width="12" height="70" fill="#F3E2C4" opacity=".9"/>
+      <rect class="sq-deco" x="60" y="78" width="20" height="12" rx="2" fill="#fff" stroke="#B8901A" stroke-width="2"/>` },
+  'pop': { body:'rond', face:{ wide:true },
+    back: ()=> `<path d="M42 92 L58 98 L42 104 L58 110" fill="none" stroke="#9AA7B8" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M22 30 Q28 6 50 18 Q72 6 78 30" fill="#FF8FB8" stroke="#C9497F" stroke-width="3.5" stroke-linejoin="round"/>
+      <circle cx="22" cy="30" r="5" fill="#FFD95A"/><circle cx="78" cy="30" r="5" fill="#FFD95A"/>`,
+    front: ()=> `<path class="sq-deco" d="M24 86 Q50 98 76 86" fill="none" stroke="#FFD95A" stroke-width="5" stroke-linecap="round"/>` },
+  'boite-doree': { body:'carre', face:{}, faceY:64,
+    front: ()=> `<path d="M50 24 V94" stroke="#fff" stroke-width="7" opacity=".7"/>
+      <path d="M50 24 C40 8 24 14 34 24Z M50 24 C60 8 76 14 66 24Z" fill="#FFF3A6" stroke="#B8780A" stroke-width="3" stroke-linejoin="round"/>
+      <path class="sq-deco" d="M20 46 Q24 34 36 32" fill="none" stroke="#fff" stroke-width="4" opacity=".8" stroke-linecap="round"/>` },
 };
 
 // les paillettes d'un ✨ (animées en CSS)
@@ -172,7 +198,7 @@ function squishyArtSVG(id, opts){
 }
 
 // Une boîte surprise (la couleur dit sa série ; violette avec « ? » : mystère)
-const SQ_BOX_COLORS = { capy:['#FFC98F','#C8661A'], desserts:['#FFB8D6','#C9497F'], animaux:['#A6E8B8','#2F9551'] };
+const SQ_BOX_COLORS = { capy:['#FFC98F','#C8661A'], desserts:['#FFB8D6','#C9497F'], animaux:['#A6E8B8','#2F9551'], boites:['#EFC896','#8A5A2B'] };
 function squishyBoxSVG(series){
   const col = SQ_BOX_COLORS[series] || ['#CDB8F2','#7B5CC0'];
   return `<svg class="sq-boxart" viewBox="0 0 100 100" aria-hidden="true">
@@ -299,7 +325,7 @@ function renderSquishyCollection(){
       <div class="sq-stage" id="sq-stage">${squishyBoxSVG(next)}${sq.boxes.length > 1 ? `<span class="sq-box-n">×${sq.boxes.length}</span>` : ''}</div>
       <button type="button" class="btn-primary sq-open" id="sq-open">Ouvrir ! 🎁</button>
     </div>` : ''}
-    ${SQUISHY_SERIES_ORDER.map(series=>{
+    ${SQUISHY_SERIES_ORDER.filter(squishySeriesAvailable).map(series=>{
       const s = SQUISHY_SERIES[series], p = squishySeriesProgress(series);
       return `<section class="sq-series ${p.have === p.total ? 'complete' : ''}" data-series="${series}">
         <h3><span>${s.emoji} ${s.name}</span><span class="sq-prog">${p.have === p.total ? '🏆 ' : ''}${p.have} / ${p.total}</span></h3>
@@ -325,17 +351,31 @@ function sqBindPress(el){
 }
 
 // La boîte tremble, s'ouvre, et le squishy saute ; la voix dit son nom.
-function squishyOpenAnimated(){
+/* Pop, le diablotin à ressort du Monde des Boîtes (v55) : de temps en temps
+   (1 fois sur 5), il surgit de la boîte pour le plaisir. Il ne change rien au
+   tirage, qui a déjà eu lieu : son hasard (`popRng`) est à part. */
+const SQ_POP_CHANCE = 0.2;
+function squishyPopDue(popRng){ return (popRng || Math.random)() < SQ_POP_CHANCE; }
+function squishyOpenAnimated(popRng){
   const btn = document.getElementById('sq-open'), stage = document.getElementById('sq-stage');
   if(!btn || !stage || btn.disabled) return;
   const res = openSquishyBox();
   if(!res) return;
+  const pop = squishyPopDue(popRng);
   btn.disabled = true;
   stage.classList.add('shake');
   playSound('tap');
   sqLater(()=> playSound('tap'), 300);
-  sqLater(()=>{ stage.classList.remove('shake'); stage.classList.add('open'); playSound('pop'); }, 900);
-  sqLater(()=> squishyReveal(res), 1300);
+  sqLater(()=>{
+    stage.classList.remove('shake'); stage.classList.add('open'); playSound('pop');
+    if(pop){
+      stage.insertAdjacentHTML('beforeend', `<span class="sq-pop-jack" aria-hidden="true">${squishyArtSVG('pop')}</span>`);
+      playSound('pouic');
+      speak('Pop !');
+    }
+  }, 900);
+  sqLater(()=> squishyReveal(res), pop ? 1900 : 1300);
+  return { res, pop };
 }
 function squishyReveal(res){
   const box = document.getElementById('sq-boxes');

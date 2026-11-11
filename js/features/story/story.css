@@ -28,3 +28,17 @@
   .story-chap-title{ flex:1; font-size:.92rem; }
   .weekday-btn.done{background:var(--sun); color:var(--ocean-deep, #123B4F);}
 
+
+  /* =====================================================================
+     Saison 2 (v55) : Grisou, le journal en deux saisons
+     ===================================================================== */
+  .story-grisou{display:flex; justify-content:center; margin:-4px 0 4px;}
+  .story-grisou .grisou{width:110px; height:auto; animation:grisouFloat 3.4s ease-in-out infinite;}
+  .story-grisou.happy .grisou{width:90px;}
+  @keyframes grisouFloat{0%,100%{transform:translateY(0);} 50%{transform:translateY(-6px);}}
+  .story-season{margin:0 0 12px; padding:8px; border-radius:var(--radius-md); background:rgba(255,255,255,.5);}
+  .story-season.sky{background:linear-gradient(180deg,#FDE7F3, #E6DDFB);}
+  .story-season h3{margin:2px 4px 8px; font-size:1rem; text-align:left;}
+  .story-season h3 small{font-weight:700; color:var(--ink-soft);}
+  .story-prologue{background:#F2ECFF;}
+  @media (prefers-reduced-motion: reduce){ .story-grisou .grisou{animation:none;} }

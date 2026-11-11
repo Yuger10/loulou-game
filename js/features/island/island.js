@@ -228,6 +228,24 @@ const ISLE_SCENERY = {
     <g class="ls-lolly l2"><rect x="301" y="200" width="6" height="52" rx="3" fill="#fff"/><circle cx="304" cy="194" r="17" fill="#9FDCF5"/><path d="M304 194 m-11 0 a11 11 0 1 1 11 11 a6.5 6.5 0 1 1 -6.5 -6.5" fill="none" stroke="#fff" stroke-width="4.5" stroke-linecap="round"/></g>
     <g><path d="M118 300 q10 -24 20 0z" fill="#FFE07A"/><path d="M340 318 q10 -24 20 0z" fill="#BFA3EC"/><path d="M372 292 q8 -18 16 0z" fill="#6ED38C"/><path d="M88 334 q8 -18 16 0z" fill="#FF8FB8"/></g>
     <g fill="#fff" opacity=".7"><circle cx="130" cy="292" r="2"/><circle cx="350" cy="310" r="2"/><circle cx="380" cy="287" r="1.6"/></g>`,
+  // Monde des Boîtes (saison 2) : une île qui flotte sur les nuages, des piles
+  // de boîtes en carton et le tapis roulant de la Fabrique
+  boites: (w)=>`
+    <g class="ls-cloud c3" fill="#fff" opacity=".9"><ellipse cx="400" cy="96" rx="30" ry="12"/><ellipse cx="418" cy="88" rx="18" ry="12"/></g>
+    <g fill="#fff" opacity=".9"><ellipse cx="60" cy="252" rx="96" ry="26"/><ellipse cx="240" cy="248" rx="124" ry="24"/><ellipse cx="420" cy="252" rx="96" ry="26"/></g>
+    <path d="M0 254 C140 240 340 240 480 254 L480 360 L0 360 Z" fill="${w.land}"/>
+    <path d="M0 264 C140 252 340 252 480 264" fill="none" stroke="#fff" stroke-width="4" stroke-dasharray="2 14" stroke-linecap="round" opacity=".6"/>
+    <g stroke="#8A5A2B" stroke-width="3" stroke-linejoin="round">
+      <rect x="34" y="196" width="62" height="58" rx="4" fill="#E3B57E"/><rect x="46" y="150" width="46" height="46" rx="4" fill="#EFC896"/><rect x="54" y="116" width="32" height="34" rx="3" fill="#F4C6E0"/>
+      <rect x="384" y="188" width="70" height="66" rx="4" fill="#E3B57E"/><rect x="396" y="142" width="48" height="46" rx="4" fill="#C9E7FB"/>
+    </g>
+    <g stroke="#C79A63" stroke-width="5" opacity=".85"><path d="M65 196 V254 M69 150 V196 M419 188 V254"/></g>
+    <g stroke="#FF8FB8" stroke-width="4" opacity=".85"><path d="M70 116 V150 M420 142 V188"/></g>
+    <rect x="150" y="226" width="180" height="16" rx="8" fill="#9AA7B8" stroke="#5E6B7C" stroke-width="3"/>
+    <g fill="#5E6B7C"><circle cx="166" cy="234" r="4.5"/><circle cx="198" cy="234" r="4.5"/><circle cx="230" cy="234" r="4.5"/><circle cx="262" cy="234" r="4.5"/><circle cx="294" cy="234" r="4.5"/><circle cx="314" cy="234" r="4.5"/></g>
+    <g class="ls-belt"><rect x="176" y="200" width="28" height="26" rx="3" fill="#EFC896" stroke="#8A5A2B" stroke-width="2.5"/><rect x="232" y="204" width="22" height="22" rx="3" fill="#C9E7FB" stroke="#5B8FC7" stroke-width="2.5"/><rect x="280" y="198" width="30" height="28" rx="3" fill="#F4C6E0" stroke="#C9497F" stroke-width="2.5"/><path d="M287 198 l8 -8 l8 8" fill="#FF9CC8" stroke="#C9497F" stroke-width="2"/></g>
+    <path d="M196 360 C212 322 236 296 240 260" fill="none" stroke="${w.sand}" stroke-width="18" stroke-linecap="round"/>
+    <g fill="#fff" opacity=".7"><circle cx="128" cy="300" r="2"/><circle cx="356" cy="316" r="2"/></g>`,
 };
 // paysage générique, aux couleurs du monde (toute nouvelle île en profite)
 function isleGenericScenery(w){

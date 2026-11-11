@@ -25,6 +25,8 @@ const MUSIC_THEMES = {
   cite:     { root:64, scale:[0,2,4,7,11], bpm:80, lead:'bell',    prog:[0,9,5,7], tick:true },
   volcan:   { root:50, scale:[0,3,5,7,10], bpm:74, lead:'pluck',   prog:[0,8,5,7], minor:true },
   squishy:  { root:67, scale:[0,2,4,7,9],  bpm:98, lead:'bubble',  prog:[0,5,9,7] },
+  // saison 2 : une harpe aérienne, et les petits « tchac » des machines de la Fabrique
+  boites:   { root:65, scale:[0,2,4,7,9],  bpm:88, lead:'harp',    prog:[0,5,9,7], tick:true },
 };
 const MUSIC_VOLUME = 1.0;       // volume général : crête ≈ 0,11, bien sous les bruitages (≈ 0,2-0,35)
 const MUSIC_DUCK = 0.3;         // part du volume gardée pendant que la voix parle

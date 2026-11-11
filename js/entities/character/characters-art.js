@@ -1,4 +1,4 @@
-/* 28 mascottes SVG originales, aplats uniquement.
+/* 32 mascottes SVG originales, aplats uniquement.
    Tout le dessin est enfermé dans une fonction : seuls CHAR_ART, charArtSVG
    et charFace sont globaux (le jeu n'a pas de modules, des noms comme
    « face » ou « robot » entreraient vite en collision). */
@@ -239,6 +239,47 @@ ART.robotsavant=svg(
   `<path d="M40 38 Q50 28 64 28" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round"/>`+
   `<circle cx="47" cy="55" r="11" fill="#CFF3EE" stroke="#4FC3C1" stroke-width="4"/><circle cx="73" cy="55" r="11" fill="#CFF3EE" stroke="#4FC3C1" stroke-width="4"/><path d="M58 55 H62" stroke="#4FC3C1" stroke-width="4"/>`+
   eyes(47,73,56,4.4,5.4)+cheeks(36,84,71)+smile(52,68,73,6));
+// ---- Saison 2, le Monde des Boîtes (v55) ----
+// Capucine la capybara : corps carré tout doux, museau, lunettes rondes, carnet de directrice
+ART.capucine=svg(
+  `<ellipse cx="30" cy="34" rx="9" ry="8" fill="#A06A3E" ${O()}/><ellipse cx="90" cy="34" rx="9" ry="8" fill="#A06A3E" ${O()}/>`+
+  `<rect x="14" y="28" width="92" height="96" rx="34" fill="#C08A55" ${O()}/>`+
+  `<ellipse cx="60" cy="106" rx="30" ry="16" fill="#E2B98A"/>`+
+  `<path d="M30 44 Q40 36 52 38" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" opacity=".5"/>`+
+  eyes(44,76,58,4.4,5.6)+
+  `<circle cx="44" cy="58" r="11" fill="none" stroke="#5A3A22" stroke-width="2.5"/><circle cx="76" cy="58" r="11" fill="none" stroke="#5A3A22" stroke-width="2.5"/><path d="M55 57 Q60 54 65 57" fill="none" stroke="#5A3A22" stroke-width="2.5"/>`+
+  `<ellipse cx="60" cy="82" rx="20" ry="13" fill="#9C6B42" ${O(2)}/><ellipse cx="53" cy="79" rx="3" ry="2.2" fill="${AI}"/><ellipse cx="67" cy="79" rx="3" ry="2.2" fill="${AI}"/>`+
+  `<path d="M54 88 Q60 92 66 88" fill="none" stroke="${AM}" stroke-width="2.4" stroke-linecap="round"/>`+cheeks(28,92,74)+
+  `<rect x="80" y="96" width="24" height="28" rx="3" fill="#FFF7E8" ${O(2)}/><path d="M85 104 H99 M85 110 H99 M85 116 H95" stroke="#C79A63" stroke-width="2"/>`);
+
+// Kiki le chat-dans-la-boîte : la tête et les pattes dépassent d'un carton ouvert
+ART.kiki=svg(
+  `<path d="M30 46 L26 14 L52 32Z M90 46 L94 14 L68 32Z" fill="#F2A65A" ${O()}/><path d="M33 38 L31 22 L45 32Z M87 38 L89 22 L75 32Z" fill="#FFC9D6"/>`+
+  `<ellipse cx="60" cy="58" rx="36" ry="32" fill="#F2A65A" ${O()}/>`+
+  `<path d="M46 30 L49 40 M60 27 V38 M74 30 L71 40" stroke="#D9803A" stroke-width="4" stroke-linecap="round"/>`+
+  eyes(46,74,56,5,6.4)+cheeks(34,86,68)+
+  `<path d="M57 66 L63 66 L60 70Z" fill="#FF8FB8"/><path d="M60 70 Q55 76 51 72 M60 70 Q65 76 69 72" fill="none" stroke="${AM}" stroke-width="2.4" stroke-linecap="round"/>`+
+  `<path d="M24 64 H10 M25 70 L12 74 M96 64 H110 M95 70 L108 74" stroke="#B5763A" stroke-width="2" stroke-linecap="round"/>`+
+  `<path d="M14 84 L60 76 L106 84 L106 128 L14 128Z" fill="#E3B57E" ${O()}/><path d="M14 84 L2 70 L48 64 L60 76Z M106 84 L118 70 L72 64 L60 76Z" fill="#EFC896" ${O(2)}/>`+
+  `<ellipse cx="42" cy="86" rx="9" ry="6" fill="#F2A65A" ${O(2)}/><ellipse cx="78" cy="86" rx="9" ry="6" fill="#F2A65A" ${O(2)}/>`+
+  `<path d="M60 92 V128" stroke="#C79A63" stroke-width="6"/>`);
+
+// Boulon le robot en carton : tête-boîte avec une bande de scotch, il tient un cube
+ART.boulon=svg(
+  `<path d="M25 130 L30 98 H90 L95 130Z" fill="#D19C62" ${O()}/>`+
+  `<rect x="24" y="31" width="72" height="67" rx="10" fill="#E3B57E" ${O(3)}/>`+
+  `<rect x="54" y="32.5" width="12" height="64" fill="#F3D9A8" opacity=".9"/>`+
+  `<rect x="32" y="42" width="56" height="44" rx="8" fill="#FFF4E0" ${O(2)}/>`+
+  eyes(47,73,61,5,6.4)+cheeks(38,82,74)+smile(52,68,75,6)+
+  `<path d="M60 31 V15" stroke="${AI}" stroke-width="3"/><circle cx="60" cy="12" r="5" fill="#FF9CC8" ${O(2)}/>`+
+  `<path d="M24 50 L12 44 M96 50 L108 44" stroke="#8A5A2B" stroke-width="3" stroke-linecap="round"/>`+
+  `<rect x="14" y="100" width="28" height="26" rx="3" fill="#C9E7FB" ${O(2)}/><path d="M14 110 H42 M28 100 V126" stroke="#5B8FC7" stroke-width="2"/>`);
+
+// Lola la livreuse : casquette rose, sac à colis, trottinette
+ART.lola=human('#C98663','#3B2A24','#6FB8F5',
+  `<path d="M24 44 Q30 16 60 16 Q90 16 96 44Z" fill="#FF8FB8" ${O()}/><path d="M86 41 L112 45 L108 52 L86 49Z" fill="#FF8FB8" ${O(2)}/>`,
+  `<rect x="76" y="100" width="30" height="24" rx="4" fill="#E3B57E" ${O(2)}/><path d="M76 108 H106" stroke="#C79A63" stroke-width="2"/>`+
+  `<path d="M8 126 H104 M14 126 L20 100" stroke="#5E6B7C" stroke-width="4" stroke-linecap="round"/><circle cx="12" cy="126" r="4" fill="#5E6B7C"/><circle cx="100" cy="126" r="4" fill="#5E6B7C"/>`);
 return ART;
 })();
 function charArtSVG(id){return CHAR_ART[id]||''}

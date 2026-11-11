@@ -7,7 +7,7 @@ import { WORLD_ORDER, worldUnlocked } from '../entities/world/index.js';
 import { initBackup, requestPersistentStorage } from '../features/backup/index.js';
 import { markSeen, renderBadge, setSacTab } from '../features/bag/index.js';
 import { renderTeamHeads, teamOnSessionStart } from '../features/companion-team/index.js';
-import { renderIslandCard, renderLagon, renderLevelPill } from '../features/island/index.js';
+import { maybeSkyOpening, renderIslandCard, renderLagon, renderLevelPill } from '../features/island/index.js';
 import { renderMap } from '../features/map/index.js';
 import { updateMusic } from '../features/music/index.js';
 import { startPlayTimeTracker } from '../features/parents/index.js';
@@ -75,7 +75,8 @@ function hideSplash(){
     switchView('carte');
     // une fois par saison : un cadeau (chapeau pour l'avatar + pièces) ;
     // sinon l'équipe des compagnons : son ouverture (niveau 10) ou une rencontre
-    setTimeout(()=>{ if(!maybeSeasonGift()) teamOnSessionStart(); }, 700);
+    // le Ciel des Rêves (v55) : son ouverture, pour une partie déjà au niveau 8
+    setTimeout(()=>{ if(!maybeSeasonGift() && !maybeSkyOpening()) teamOnSessionStart(); }, 700);
     // v53 : des boîtes surprises attendent dans la chambre à squishies (une fois)
     setTimeout(squishySessionHello, 2600);
   }

@@ -17,12 +17,14 @@
      shape   la forme du corps : 'rond', 'ovale' ou 'carre' (carré arrondi)
      size    'petit' ou 'grand' */
 
+// `world` : la série n'apparaît qu'une fois cette île ouverte (saison 2)
 const SQUISHY_SERIES = {
   capy:     { name:'Capybaras', emoji:'🦫' },
   desserts: { name:'Desserts',  emoji:'🍩' },
   animaux:  { name:'Animaux',   emoji:'🐾' },
+  boites:   { name:'Boîtes',    emoji:'📦', world:'boites' },   // le Monde des Boîtes (v55)
 };
-const SQUISHY_SERIES_ORDER = ['capy', 'desserts', 'animaux'];
+const SQUISHY_SERIES_ORDER = ['capy', 'desserts', 'animaux', 'boites'];
 
 // les trois raretés, et leur chance au tirage (voir openSquishyBox)
 const SQUISHY_RARITY = {
@@ -54,6 +56,13 @@ const SQUISHIES = {
   'poussin':      { series:'animaux', name:'Poussin',     say:'un poussin',        rarity:'commun', color:'jaune',  shape:'rond',  size:'petit' },
   'grenouille':   { series:'animaux', name:'Grenouille',  say:'une grenouille',    rarity:'rare',   color:'vert',   shape:'ovale', size:'grand' },
   'chat-holo':    { series:'animaux', name:'Chat holographique', say:'un chat holographique', rarity:'brille', color:'violet', shape:'rond', size:'grand' },
+  // 📦 Boîtes (saison 2, le Monde des Boîtes, v55)
+  'chat-boite':   { series:'boites', name:'Chat dans la boîte', say:'un chat dans la boîte', rarity:'commun', color:'orange', shape:'carre', size:'grand' },
+  'robot-carton': { series:'boites', name:'Robot carton',   say:'un robot carton',   rarity:'commun', color:'bleu',   shape:'carre', size:'grand' },
+  'cadeau':       { series:'boites', name:'Cadeau surprise', say:'un cadeau surprise', rarity:'commun', color:'rose',  shape:'carre', size:'petit' },
+  'colis':        { series:'boites', name:'Petit colis',    say:'un petit colis',    rarity:'commun', color:'jaune',  shape:'carre', size:'petit' },
+  'pop':          { series:'boites', name:'Pop',            say:'Pop, le diablotin à ressort', rarity:'rare', color:'vert', shape:'rond', size:'petit' },
+  'boite-doree':  { series:'boites', name:'Boîte dorée',    say:'une boîte dorée',   rarity:'brille', color:'jaune',  shape:'carre', size:'grand' },
 };
 
 // La série gagnée en résolvant l'énigme d'une île (une seule fois par île)
@@ -61,6 +70,7 @@ const SQUISHY_ISLAND_SERIES = {
   lagon:'animaux', foret:'animaux', montagne:'animaux',
   chateau:'desserts', volcan:'desserts', squishy:'desserts',
   jungle:'capy', cite:'capy',
+  boites:'boites',
 };
 
 function squishiesOf(series){ return Object.keys(SQUISHIES).filter(id=> SQUISHIES[id].series === series); }

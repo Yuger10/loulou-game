@@ -61,6 +61,16 @@ const ITEMS = {
   bonbonsq:{emoji:'🍬', name:'Bonbon squishy', price:7, world:'squishy'},
   sucette:{emoji:'🍭', name:'Sucette arc-en-ciel', price:9, world:'squishy'},
   peluche:{emoji:'🧸', name:'Peluche toute douce', price:11, world:'squishy'},
+  // Monde des Boîtes (saison 2, v55) : ciseaux, nœud et crayon ne sont donnés
+  // par personne (les objets préférés des habitants, js/features/gifts)
+  carton:{emoji:'📦', name:'Carton plié', price:6, world:'boites'},
+  etiquette:{emoji:'🏷️', name:'Étiquette', price:5, world:'boites'},
+  ficelle:{emoji:'🧶', name:'Pelote de ficelle', price:6, world:'boites'},
+  papierbulle:{emoji:'🫧', name:'Papier bulle', price:7, world:'boites'},
+  trombone:{emoji:'📎', name:'Trombone', price:5, world:'boites'},
+  ciseaux:{emoji:'✂️', name:'Ciseaux à bouts ronds', price:8, world:'boites'},
+  noeud:{emoji:'🪢', name:'Nœud doré', price:9, world:'boites'},
+  crayon:{emoji:'✏️', name:'Crayon de bois', price:6, world:'boites'},
 };
 
 const CRAFTED = {
@@ -149,6 +159,11 @@ const CRAFTED = {
     recipe:{peluche:1, mochi:1}},
   coeurcalin:{emoji:'💝', name:'Cœur des câlins', price:84, tier:2, world:'squishy',
     recipe:{boitesquishy:1, gateaumoelleux:1, pinata:1}},
+  // Monde des Boîtes
+  boitereves:{emoji:'🗃️', name:'Boîte à rêves', price:22, world:'boites',
+    recipe:{carton:1, etiquette:1, ficelle:1}},
+  colisvolant:{emoji:'🪁', name:'Colis volant', price:20, world:'boites',
+    recipe:{papierbulle:1, trombone:2}},
 };
 
 const ALL_ITEMS = Object.assign({}, ITEMS, CRAFTED);
@@ -241,6 +256,12 @@ const DECOS = {
   flan:{emoji:'🍮', name:'Flan tremblotant', price:25, world:'squishy'},
   ballons:{emoji:'🎈', name:'Ballons pastel', price:20, world:'squishy'},
   gateauchateau:{emoji:'🍰', name:'Gâteau château', price:50, world:'squishy'},
+  // Monde des Boîtes
+  grueD:{emoji:'🏗️', name:'Grue de la Fabrique', price:40, world:'boites'},
+  cadeauxD:{emoji:'🎁', name:'Montagne de cadeaux', price:30, world:'boites'},
+  chariotD:{emoji:'🛒', name:'Chariot à colis', price:18, world:'boites'},
+  lampionD:{emoji:'🏮', name:'Lampions de papier', price:14, world:'boites'},
+  echelleD:{emoji:'🪜', name:'Échelle de carton', price:12, world:'boites'},
 };
 
 const ALBUM_REWARD = 100;

@@ -92,6 +92,15 @@ const EPISODES = {
     { by:'avocat', title:'Le vrai trésor', find:'🏆',
       lines:["Tu as tous les indices, et tous nos amis sont avec toi.", "Le vrai trésor du Lagon Magique, c'est tout ce que tu as appris en chemin. Bravo !"] },
   ],
+  // ---- Saison 2 : le fil de Grisou (v55) ----
+  boites: [
+    { by:'kiki', title:'Les boîtes qui frissonnent', find:'📦',
+      lines:["Miaou ! Cette nuit, toutes les boîtes de la Fabrique frissonnaient.", "Je crois que les rêves enfermés dedans ont très envie de sortir !"] },
+    { by:'boulon', title:'Un rêve s\'échappe', find:'🫧',
+      lines:["BIP ! Un petit rêve rose s'est échappé d'une boîte mal fermée.", "Il a fait le tour du ciel… et Grisou a souri. Si, si, je l'ai vu !"] },
+    { by:'lola', title:'Le colis arc-en-ciel', find:'🌈',
+      lines:["J'ai une livraison très spéciale : un colis qui brille de toutes les couleurs !", "L'adresse dit : Royaume Arc-en-ciel. Ce sera sûrement notre prochaine île !"] },
+  ],
 };
 
 function storyMissionsOn(world){ return (state.storyMissions || {})[world] || 0; }

@@ -314,7 +314,7 @@ function livesFor(kind, dd){
   // essais suivent donc le nombre de paires : n + 2. Bien retenir fait
   // toujours gagner ; toucher au hasard fait toujours perdre.
   if(kind === 'memory') return memoryPairs(d) + 2;
-  const GENEROUS_KINDS = ['math','reading','determinants','volume','compare','money','clock','calendar','calc','shapes','planets'];
+  const GENEROUS_KINDS = ['math','reading','determinants','volume','compare','money','clock','calendar','calc','shapes','planets','cubes'];
   const table = LIVES_TABLE[kind] || (GENEROUS_KINDS.includes(kind) ? LIVES_TABLE.generous : LIVES_TABLE.default);
   // le calcul mental (palier 6, Volcan) emprunte le barème d'essais du
   // palier 5 : seul le minuteur continue de se resserrer au-delà.
@@ -351,7 +351,7 @@ const TIMER_SECONDS = {
   calc:         {3:28, 4:24, 5:22, 6:20},   // calcul abstrait : le plus généreux de tous
 };
 // jeux à plusieurs étapes : jamais de minuteur, quelle que soit la difficulté
-const NO_TIMER_KINDS = ['memory','simon','puzzle','calendar','shapes','planets','jigsaw'];
+const NO_TIMER_KINDS = ['memory','simon','puzzle','calendar','shapes','planets','jigsaw','nesting','cubes'];
 function timerFor(kind, dd){
   if(NO_TIMER_KINDS.includes(kind)) return null;
   const table = TIMER_SECONDS[kind];
@@ -477,6 +477,51 @@ function planetsTier(dd){ return Math.max(1, Math.min(6, Number(dd) || 1)); }
      palier 5   4×3 (12 morceaux), modèle à côté
    Pas de minuteur (tâche à plusieurs étapes) ; essais généreux.
    --------------------------------------------------------------------- */
+/* ---------------------------------------------------------------------
+   LES BOÎTES GIGOGNES (Monde des Boîtes, saison 2, v55) — sériation :
+   ranger des boîtes de la plus petite à la plus grande (« Explorer des
+   formes, des grandeurs », cycle 1 : ranger 3 objets en PS-MS, davantage
+   ensuite).
+     palier 1   3 boîtes, tailles bien différentes
+     palier 2   4 boîtes
+     palier 3   5 boîtes
+     palier 4   5 boîtes, écarts plus fins ; parfois à l'envers
+     palier 5   5 boîtes, écarts fins ; une fois sur deux, à l'envers
+                (« de la plus grande à la plus petite »)
+   `sizes` : tailles relatives (100 = la plus grande). Pas de minuteur.
+   --------------------------------------------------------------------- */
+function nestingRound(dd){
+  return tierValue({
+    1:{ n:3, sizes:[42, 71, 100],               reverse:0 },
+    2:{ n:4, sizes:[40, 60, 80, 100],           reverse:0 },
+    3:{ n:5, sizes:[40, 55, 70, 85, 100],       reverse:0 },
+    4:{ n:5, sizes:[60, 70, 80, 90, 100],       reverse:.3 },
+    5:{ n:5, sizes:[64, 73, 82, 91, 100],       reverse:.5 },
+  }, dd);
+}
+
+/* ---------------------------------------------------------------------
+   COMBIEN DE CUBES ? (Monde des Boîtes, saison 2, v55) — se repérer dans
+   l'espace : une pile de cubes dessinée en perspective. La pile est une
+   « carte des hauteurs » : chaque cube du dessus repose sur un autre cube.
+     palier 1   2 à 4 cubes, une rangée, tous visibles
+     palier 2   3 à 5 cubes, une rangée, tous visibles
+     palier 3   jusqu'à 8 cubes, une rangée, sur 2 étages
+     palier 4   jusqu'à 8 cubes, 2 étages, quelques cubes sur 2 rangées
+     palier 5   jusqu'à 12 cubes, 2 rangées et 3 étages : certains sont
+                cachés derrière ou dessous
+   `w` × `d` : largeur et profondeur ; `h` : étages ; `min`/`max` : cubes.
+   --------------------------------------------------------------------- */
+function cubesRound(dd){
+  return tierValue({
+    1:{ w:4, d:1, h:1, min:2, max:4 },
+    2:{ w:4, d:1, h:2, min:3, max:5 },
+    3:{ w:4, d:1, h:2, min:5, max:8 },
+    4:{ w:3, d:2, h:2, min:6, max:8 },
+    5:{ w:3, d:2, h:3, min:8, max:12 },
+  }, dd);
+}
+
 function jigsawRound(dd){
   return tierValue({
     1:{cols:2, rows:2, ghost:.45},
@@ -491,7 +536,7 @@ export {
   CALC_MULT_TABLES, calcBounds, calendarUsesWeekdayOrder, calendarWeekdayCount, clockGranularity,
   clockOptions, compareCloseChance, compareEqualChance, compareRange, countRange,
   determinantsExtraDistractor, determinantsImageShown, determinantsPluralChance, diffMirrorChance,
-  diffTotal, jigsawRound, livesFor, mathBounds, memoryPairs, moneyDenoms, moneyPileSize, planetsTier,
+  cubesRound, diffTotal, jigsawRound, nestingRound, livesFor, mathBounds, memoryPairs, moneyDenoms, moneyPileSize, planetsTier,
   puzzleCount, puzzleStartMax, puzzleVariants, readingOptions, readingWordOnly, sequencePatternLength,
   shapesRound, simonLength, solidOptions, timerFor, volumeAskLessChance, volumeContainerCount,
   volumeUsesCapacityCompare

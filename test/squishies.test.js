@@ -55,13 +55,13 @@ const ALL = ()=> ev('Object.keys(SQUISHIES)');
   section('Catalogue');
   {
     const series = ev('SQUISHY_SERIES_ORDER');
-    check('3 séries au lancement : capybaras, desserts, animaux', json(series) === json(['capy', 'desserts', 'animaux']));
-    check('6 modèles par série (18 squishies)', series.every(s=> ev(`squishiesOf("${s}").length`) === 6) && ALL().length === 18);
+    check('3 séries au lancement, puis la série Boîtes (saison 2, v55)', json(series) === json(['capy', 'desserts', 'animaux', 'boites']));
+    check('6 modèles par série (24 squishies)', series.every(s=> ev(`squishiesOf("${s}").length`) === 6) && ALL().length === 24);
     check('par série : 4 communs, 1 rare, 1 ✨', series.every(s=>{
       const r = ev(`squishiesOf("${s}").map(id=> SQUISHIES[id].rarity)`);
       return r.filter(x=> x === 'commun').length === 4 && r.filter(x=> x === 'rare').length === 1 && r.filter(x=> x === 'brille').length === 1;
     }));
-    check('noms uniques et faciles à dire', new Set(ev('Object.values(SQUISHIES).map(m=> m.name)')).size === 18 && ev('Object.values(SQUISHIES).every(m=> m.say.length > 3)'));
+    check('noms uniques et faciles à dire', new Set(ev('Object.values(SQUISHIES).map(m=> m.name)')).size === 24 && ev('Object.values(SQUISHIES).every(m=> m.say.length > 3)'));
     check('chaque modèle a une couleur du mini-jeu Formes', ev('Object.values(SQUISHIES).every(m=> !!SQ_COLORS[m.color])'));
     check('chaque modèle a une forme et une taille', ev('Object.values(SQUISHIES).every(m=> ["rond","ovale","carre"].includes(m.shape) && ["petit","grand"].includes(m.size))'));
     check('chaque île donne une série existante', ev('Object.keys(STORY).every(w=> !!SQUISHY_SERIES[SQUISHY_ISLAND_SERIES[w]])'));
@@ -74,14 +74,14 @@ const ALL = ()=> ev('Object.keys(SQUISHIES)');
     const sq = ev('state.squishies');
     check('partie neuve : une collection vide', json(sq.owned) === '{}' && sq.boxes.length === 0 && sq.dry === 0);
     check('partie neuve : une étagère de 12 places libres', sq.shelf.length === 12 && sq.shelf.every(x=> x === null));
-    check('sauvegarde en version 5', ev('SAVE_VERSION') === 5 && JSON.parse(w.localStorage.getItem(ev('currentSaveKey()'))).v === 5);
+    check('sauvegarde versionnée (5 en v53, 6 depuis la v55)', ev('SAVE_VERSION') >= 5 && JSON.parse(w.localStorage.getItem(ev('currentSaveKey()'))).v === ev('SAVE_VERSION'));
     const old = { v:4, coins:9, missions:60, inventory:{ coquillage:2 }, storySolved:{ lagon:true, jungle:true, volcan:true },
       skills:{ count:{ wins:3, fails:0, errors:1, last:null, recent:[], hints:2 } }, team:{ open:true, met:['perle'], mates:[], day:null } };
     const m = ev(`migrate(${json(old)})`);
     check('migration v4 → v5 : une boîte par chapitre résolu', m.squishies.boxes.length === 3);
     check('migration : chaque boîte est de la série de son île', json(m.squishies.boxes) === json(['animaux', 'capy', 'desserts']));
     check('migration : ces îles ne redonneront pas de boîte', m.squishies.fromStory.lagon && m.squishies.fromStory.jungle && m.squishies.fromStory.volcan);
-    check('migration : aucune autre donnée perdue', m.v === 5 && m.coins === 9 && m.missions === 60 && m.inventory.coquillage === 2 && m.skills.count.hints === 2 && m.team.open === true);
+    check('migration : aucune autre donnée perdue', m.v === ev('SAVE_VERSION') && m.coins === 9 && m.missions === 60 && m.inventory.coquillage === 2 && m.skills.count.hints === 2 && m.team.open === true);
     check('migration sans chapitre résolu : aucune boîte', ev('migrate({ v:4, coins:1 }).squishies.boxes.length') === 0);
     // par le vrai chargement
     ev(`localStorage.setItem(currentSaveKey(), ${json(json(old))}); load()`);
@@ -201,7 +201,7 @@ const ALL = ()=> ev('Object.keys(SQUISHIES)');
   section('Bouton 🧸 et chambre');
   {
     setOwned({ 'capy-fraise':1, 'donut':2 });
-    ev('state.squishies.boxes = ["capy", "desserts"]; save(); renderSquishyBadge()');
+    ev('state.missions = 0; state.squishies.boxes = ["capy", "desserts"]; save(); renderSquishyBadge()');   // niveau 1 : sans la série Boîtes
     check('bouton 🧸 dans l\'en-tête, avec la pastille des boîtes', !!d.querySelector('.topbar #squishy-btn') && d.getElementById('squishy-badge').textContent === '2');
     check('un bouton dans le Sac aussi', (ev('switchView("sac")'), !!d.querySelector('#view-sac #sq-room-link')) && d.getElementById('sq-room-link-n').textContent === '2');
     d.getElementById('sq-room-link').click();
@@ -369,7 +369,7 @@ const ALL = ()=> ev('Object.keys(SQUISHIES)');
   section('Marché');
   {
     setOwned({ 'donut':2, 'chat':1 });
-    ev('switchView("marche"); currentTab = "echanger"; renderMarche()');
+    ev('state.missions = 0; switchView("marche"); currentTab = "echanger"; renderMarche()');
     check('Échanger : la section « Mes doubles de squishies »', !!d.querySelector('#marche-content .sq-market') && /Mes doubles de squishies/.test(d.querySelector('.sq-market h3').textContent));
     check('il manque des doubles : « Encore 2 doubles », bouton inactif', d.getElementById('sqm-trade').disabled && /Encore 2 doubles/.test(d.getElementById('sqm-trade').textContent));
     check('les silhouettes des manquants', d.querySelectorAll('.sqm-grid .sq-cell.missing').length === 16);

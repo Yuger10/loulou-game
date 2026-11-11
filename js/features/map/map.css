@@ -180,3 +180,41 @@
   .deco-row .emoji{font-size:2rem;}
   .deco-row.owned{opacity:.75; background:#E8FBE9;}
 
+
+  /* =====================================================================
+     Deux archipels (v55) : les onglets, et la carte du Ciel des Rêves
+     ===================================================================== */
+  .map-tabs{display:flex; gap:8px; margin:0 0 8px;}
+  .map-tab{
+    flex:1; min-width:0; display:flex; align-items:center; gap:6px; padding:6px 10px; min-height:46px;
+    border:none; border-radius:16px; background:rgba(255,255,255,.55); color:var(--ink);
+    font:inherit; font-weight:800; text-align:left; cursor:pointer; box-shadow:var(--shadow-candy-sm);
+  }
+  .map-tab .mt-ico{font-size:1.3rem; line-height:1; flex-shrink:0;}
+  .map-tab .mt-txt{display:flex; flex-direction:column; min-width:0; line-height:1.1;}
+  .map-tab b{font-family:'Baloo 2',sans-serif; font-size:.82rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .map-tab i{font-style:normal; font-size:.7rem; color:var(--ink-soft); font-weight:800;}
+  .map-tab.active{background:var(--foam); box-shadow:var(--shadow-candy-sm), var(--card-shine), 0 0 0 3px var(--sun);}
+  .map-tab.sky.active{box-shadow:var(--shadow-candy-sm), var(--card-shine), 0 0 0 3px #C9B6F2;}
+  .map-tab.locked{background:rgba(255,255,255,.35); color:var(--ink-soft); filter:grayscale(.6);}
+
+  /* le Ciel : dégradé pastel, nuages, étoiles ; les îles flottent sur des nuages */
+  .island-map.sky{background:linear-gradient(180deg,#FDE7F3 0%, #E6DDFB 45%, #C9E7FB 100%);}
+  /* des nuages posés dans le ciel, qui se balancent doucement (pas de dérive) */
+  .island-map.sky .sea .cloud{opacity:.95; font-size:2rem; animation:skyCloud 7s ease-in-out infinite;}
+  .island-map.sky .sea .c1{top:8%; left:8%;}
+  .island-map.sky .sea .c2{top:22%; left:72%; font-size:1.6rem; animation-delay:-2s;}
+  .island-map.sky .sea .c3{top:78%; left:66%; font-size:2.2rem; animation-delay:-4s;}
+  @keyframes skyCloud{0%,100%{transform:translateX(0);} 50%{transform:translateX(10px);}}
+  .island-map.sky .sea .s3{top:20%; left:78%; animation-delay:.6s;}
+  .island-map.sky .route-line{stroke:rgba(150,120,200,.7);}
+  .island-map.sky .isle-land::after{
+    left:-6%; right:-6%; bottom:-8px; height:16px;
+    background:radial-gradient(ellipse at 50% 50%, #fff 0 60%, transparent 64%);
+  }
+  /* la montgolfière : elle flotte, sans tanguer */
+  .boat.balloon{animation:balloonFloat 3s ease-in-out infinite; font-size:2rem;}
+  .boat.balloon .boat-av{top:-14px;}
+  @keyframes balloonFloat{0%,100%{margin-top:0;} 50%{margin-top:-7px;}}
+  .boat.parked{opacity:.8;}
+  @media (prefers-reduced-motion: reduce){ .boat.balloon{animation:none;} }

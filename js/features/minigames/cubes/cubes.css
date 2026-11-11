@@ -1,0 +1,14 @@
+  /* =====================================================================
+     Combien de cubes ? — Monde des Boîtes (saison 2, v55)
+     ===================================================================== */
+  .cubes-stage{display:flex; justify-content:center; align-items:center; margin:0 auto 6px; padding:10px; max-width:340px; min-height:150px;
+    border-radius:var(--radius-lg, 24px); background:linear-gradient(180deg, #FBF3FF, #EFE4FB); border:3px solid #fff;}
+  .cubes-svg{width:100%; max-width:260px; max-height:200px; display:block; overflow:visible;}
+  .cube.hint-glow{animation:cubeGlow 1.1s ease-in-out 3;}
+  @keyframes cubeGlow{0%,100%{filter:none;} 50%{filter:drop-shadow(0 0 5px #FFC028) brightness(1.15);}}
+  .cubes-tip{margin:0 0 8px; font-size:.85rem; font-weight:700; color:var(--ink-soft);}
+  .cube-opt{display:flex; flex-direction:column; align-items:center; gap:4px;}
+  .cube-opt b{font-size:1.8rem; line-height:1;}
+  .cube-dots{display:flex; flex-wrap:wrap; justify-content:center; gap:3px; max-width:62px;}
+  .cube-dots i{display:block; width:8px; height:8px; border-radius:50%; background:currentColor; opacity:.55;}
+  @media (prefers-reduced-motion: reduce){ .cube.hint-glow{animation:none; filter:drop-shadow(0 0 5px #FFC028);} }
