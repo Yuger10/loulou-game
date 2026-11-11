@@ -1418,3 +1418,65 @@ Les deux se jouent aussi sans le son. Ils sont proposés dès 5 ans, sans minute
   - le jeu de l'île, le chapitre, la récompense unique et les épisodes.
 - Les 26 mini-jeux sont joués jusqu'à la victoire à chaque palier. Le rythme et les cloches ont une vérification indépendante : le rythme écrit, l'ordre des cloches, le sens de la mélodie.
 - Cache `lagon-v62`.
+
+---
+
+# v63 — Saison 2, île 5 : le Jardin des Fées
+
+> **Proposition retenue par la joueuse.** Track Conductor `monde-jardin` ([spec](conductor/tracks/monde-jardin_20261111/spec.md), [plan](conductor/tracks/monde-jardin_20261111/plan.md)).
+
+## L'île
+- **`jardin` 🌸, niveau 56** (règle des niveaux : `conductor/niveaux.md`), palier 6. C'est l'avant-dernière île du Ciel des Rêves.
+- **Le paysage :** un jardin vu à hauteur d'insecte, avec des fleurs géantes qui se balancent, des champignons-maisons, des gouttes de rosée et des brins d'herbe. Le thème est vert tendre, lilas et pêche.
+- **La musique :** une flûte légère et de petites cloches, à 76 battements par minute.
+- **4 personnages**, chacun avec son butin et 3 répliques :
+  - 🧚 **Pétale**, la fée jardinière, guide du chapitre ;
+  - 🐞 **Pois**, la coccinelle, qui présente les coccinelles ;
+  - 🦋 **Azur**, le papillon, qui présente « De la graine à la fleur » ;
+  - 🐝 **Miella**, l'abeille.
+- **8 objets :** graine magique, goutte de rosée, pollen doré, petit arrosoir, pétale de rose, fil d'araignée, noisette, mini-champignon.
+- **2 recettes** (bouquet des fées, pot de miel des fées) et **5 décorations** (maison-champignon, balançoire de fleurs, tournesol géant, ruche dorée, fontaine de rosée).
+- **La série de squishies « Petites bêtes » :** coccinelle, abeille, escargot, chenille ; le rare est Pois, le ✨ est le papillon irisé.
+
+## La carte du Ciel
+- Les îles du Ciel sont désormais placées en serpentin, sur 3 colonnes et 2 rangées.
+  - En bas : les Boîtes, les Jouets Doux, les Bonbons.
+  - En haut, de droite à gauche : la Musique, le Jardin, puis la place gardée pour les Licornes.
+- Avant, la carte n'avait plus de place libre pour une cinquième île sans chevauchement.
+
+## Deux nouveaux mini-jeux
+Les deux sont proposés dès 5 ans, sans minuteur. Le jeu de l'île est les coccinelles avant 7 ans, « De la graine à la fleur » ensuite.
+
+- **🌱 De la graine à la fleur** (`lifecycle`) : les étapes de la vie de la plante (graine, pousse, bouton, fleur, fruit), du papillon (œuf, chenille, chrysalide, papillon) et de la poule. Chaque étape est dessinée et nommée.
+  - Palier 1 : 3 étapes à remettre dans l'ordre.
+  - Palier 2 : 4 étapes.
+  - Palier 3 : 5 étapes, ou une étape manquante à retrouver.
+  - Palier 4 : l'étape manquante, ou deux cycles mélangés (ne ranger que ceux de la plante).
+  - Palier 5 : en plus, « Que se passe-t-il ensuite ? ». L'œuf, partagé par la poule et le papillon, n'a jamais deux bonnes réponses.
+  - Compétence « Sciences » dans l'espace parents.
+- **🐞 Les coccinelles** (`ladybugs`) : les deux ailes sont symétriques.
+  - Palier 1 : compter jusqu'à 3 points par aile.
+  - Palier 2 : les doubles jusqu'à 5 + 5.
+  - Palier 3 : les doubles jusqu'à 10 + 10, ou compléter l'aile vide (↩️ enlève un point, puis « Pareil ! »).
+  - Palier 4 : surtout compléter l'aile vide.
+  - Palier 5 : les moitiés (« 12 points en tout, combien sur chaque aile ? »).
+  - Compétence « Calcul ».
+- Pour les deux jeux, une erreur relance une autre question.
+
+## Histoire : « Le jardin endormi »
+- **Le chapitre :** Grisou a posé le rêve « grandir et fleurir » sous une cloche de verre, et plus rien ne pousse.
+  - Pétale pose 3 devinettes : la graine, la coccinelle, le papillon.
+  - Le jardin refleurit, et Grisou est presque tout coloré : il ne lui manque plus que les couleurs des licornes.
+  - Le chapitre rapporte 14 pièces et une boîte Petites bêtes, une seule fois.
+- **3 épisodes,** racontés par Pois, Azur et Miella. Le dernier annonce le Royaume Arc-en-ciel.
+
+## Tests
+- Nouveau `test/jardin.test.js` (63 vérifications), branché sur `npm test`. Il couvre :
+  - l'île, la carte du Ciel (une place libre pour les Licornes), les personnages, les objets et la série ;
+  - les cycles toujours dans l'ordre de la vie, l'étape manquante, les cycles mélangés, une seule réponse pour « ensuite » ;
+  - les ailes pareilles, les doubles sans dire le total, l'aile à compléter, les moitiés ;
+  - le jeu de l'île, le chapitre, la récompense unique et les épisodes.
+- Les 28 mini-jeux sont joués jusqu'à la victoire à chaque palier, avec une vérification indépendante :
+  - pour les cycles, comparés à une liste d'étapes propre au test ;
+  - pour les coccinelles, avec les points dessinés.
+- Cache `lagon-v63`.

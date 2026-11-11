@@ -73,7 +73,7 @@ Registre des tracks Conductor, **dans l'ordre d'implémentation**. Feuille de ro
 
 ---
 
-- [ ] **Track: Saison 2, île 5 : 🌸 Le Jardin des Fées, niveau 56**
+- [x] **Track: Saison 2, île 5 : 🌸 Le Jardin des Fées, niveau 56 (v63)**
 *Link: [./tracks/monde-jardin_20261111/](./tracks/monde-jardin_20261111/)*
 
 ---
