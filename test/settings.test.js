@@ -115,7 +115,11 @@ const sw = (k)=> $(`[role="switch"][data-sound="${k}"]`);
     check('le profil du joueur courant', /Lou/.test($('.rg-me').textContent));
     d.getElementById('rg-edit').click(); await wait(20);
     check('« Modifier » ouvre le formulaire du profil (v59)', !!$('#modal .form-sheet') && !!d.getElementById('pe-name'));
-    ev('closeModal()');
+    $('.form-actions .form-primary').click(); await wait(20);
+    check('enregistrer ramène aux Réglages (pas au panneau des joueurs)', !d.getElementById('overlay').classList.contains('show') && view('reglages').classList.contains('active'));
+    d.getElementById('rg-edit').click(); await wait(20);
+    $('.form-actions .form-secondary').click(); await wait(20);
+    check('« Retour » ramène aussi aux Réglages', !d.getElementById('overlay').classList.contains('show') && view('reglages').classList.contains('active'));
     check('« Mon compagnon / Mon équipe » accessible', !!$('#view-reglages [data-team-slot]'));
   }
 

@@ -11,7 +11,7 @@ import {
 } from '../../entities/player/index.js';
 import { currentWorld, worldGame, WORLDS } from '../../entities/world/index.js';
 import { on, pickRandom, shuffle } from '../../shared/lib/index.js';
-import { bindForm, closeModal, confetti, formSheet, openModal, playSound, showToast, speak } from '../../shared/ui/index.js';
+import { bindForm, closeModal, confetti, formSheet, openModal, playSound, showToast, speak, switchView } from '../../shared/ui/index.js';
 import { pickPracticeGame } from '../adaptive/index.js';
 import { teamOnGamePicker } from '../companion-team/index.js';
 import { renderLagon, setCurrentChar } from '../island/index.js';
@@ -127,6 +127,13 @@ function ageSelector(sel){
 }
 
 /* --- Formulaires des joueurs (modèle commun de js/shared/ui/form.js) --- */
+// après un formulaire : on revient d'où l'on vient (l'écran Réglages, ou le panneau des joueurs)
+function backFromPlayerForm(){
+  const rg = document.getElementById('view-reglages');
+  if(rg && rg.classList.contains('active')){ closeModal(); switchView('reglages'); }
+  else openPlayers();
+}
+
 const NAME_INPUT_ATTRS = 'type="text" maxlength="12" placeholder="Prénom" autocomplete="off" autocapitalize="words" autocorrect="off" spellcheck="false" enterkeyhint="done"';
 const NAME_REQUIRED = 'Écris d\'abord un prénom, en haut.';
 const escAttr = (v)=> String(v || '').replace(/"/g, '&quot;');
@@ -178,9 +185,9 @@ function openNewPlayer(){
         playSound('win'); confetti();
         speak(`Bienvenue ${n} !`);
         showToast(`${avatarText(av)} ${n} ajouté !`);
-        openPlayers();
+        backFromPlayerForm();
       },
-      onCancel:()=> openPlayers(),
+      onCancel:()=> backFromPlayerForm(),
     });
   };
   render();
@@ -252,9 +259,9 @@ function openPlayerSettings(id){
         }
         playSound('good');
         showToast('Enregistré ✅');
-        openPlayers();
+        backFromPlayerForm();
       },
-      onCancel:()=> openPlayers(),
+      onCancel:()=> backFromPlayerForm(),
     });
   };
   render();

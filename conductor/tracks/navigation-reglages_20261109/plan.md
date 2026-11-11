@@ -19,7 +19,7 @@ Spec : [spec.md](./spec.md). Workflow : [workflow.md](../../workflow.md).
 - [x] Task: Bouton Île nommé
     - [x] Tests : icône et nom court de l'île courante ; mis à jour en changeant d'île et de joueur ; même destination qu'avant
     - [x] Point d'accroche dans `shared/ui/views` pour le libellé, alimenté par `features/island`
-- [ ] Task: Conductor - User Manual Verification 'Barre du bas' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Barre du bas' (Protocol in workflow.md)
 
 ## Phase 2 : Écran Réglages
 - [x] Task: Slice `features/settings` et section 🔊 Son
@@ -30,12 +30,12 @@ Spec : [spec.md](./spec.md). Workflow : [workflow.md](../../workflow.md).
     - [x] Tests : verrouillée par `openParentGate` ; donne accès à l'espace parents, la sauvegarde et le code de transfert, l'installation, l'aperçu des saisons ; zone sensible (recommencer, supprimer) avec double confirmation ; rappel de sauvegarde en tête si conseillé
 - [x] Task: Nettoyage
     - [x] Tests : plus de bouton de réglages dans le Sac ; l'ancien panneau des joueurs est remplacé par l'écran Réglages
-- [ ] Task: Conductor - User Manual Verification 'Écran Réglages' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Écran Réglages' (Protocol in workflow.md)
 
-## Phase 3 : Livraison
-- [ ] Task: Docs et intégration
-    - [ ] Numéro de version attribué à la livraison (le suivant sur `main`) : PRD, TODO, cache `sw.js` incrémenté, `npm run sync`
-- [ ] Task: Vérification complète
-    - [ ] `npm test` vert ; parcours manuel sur téléphone (portrait, paysage), tablette et ordinateur
-- [ ] Task: Conductor - User Manual Verification 'Livraison' (Protocol in workflow.md)
-- [ ] Task: Branche, PR sur `main`, merge
+## Phase 3 : Livraison (v61)
+- [x] Task: Docs et intégration
+    - [x] Numéro de version attribué à la livraison (le suivant sur `main`) : PRD, TODO, cache `sw.js` incrémenté, `npm run sync`
+- [x] Task: Vérification complète
+    - [x] `npm test` vert ; parcours manuel sur téléphone (portrait, paysage), tablette et ordinateur
+- [x] Task: Conductor - User Manual Verification 'Livraison' (Protocol in workflow.md)
+- [x] Task: Branche, PR sur `main`, merge
