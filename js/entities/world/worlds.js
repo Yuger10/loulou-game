@@ -51,7 +51,7 @@ const WORLDS = {
     subtitle:'La Fabrique de boîtes',
     // son mini-jeu, selon l'âge : les gigognes avant 7 ans, les cubes ensuite
     game:(age)=> (age && age < 7) ? 'nesting' : 'cubes',
-    map:{x:30, y:62}, shape:'boites', icon:'📦', sand:'#F3E2C4', land:'#D9AE7A',
+    map:{x:18, y:72}, shape:'boites', icon:'📦', sand:'#F3E2C4', land:'#D9AE7A',
     intro:"Bienvenue à la Fabrique de boîtes, où les rêves attendent d'être libérés 📦",
     sceneEmpty:"Ta Fabrique attend ses décorations en carton !" },
   // idée de la joueuse : « un monde de jouets qui ressemblent à des squishies »
@@ -59,23 +59,31 @@ const WORLDS = {
     subtitle:'Le grand coffre à jouets',
     // son mini-jeu, selon l'âge : les paquets avant 7 ans, l'étagère ensuite
     game:(age)=> (age && age < 7) ? 'packs' : 'shelf',
-    map:{x:68, y:40}, shape:'jouets', icon:'🧸', sand:'#FFF1E0', land:'#F7C6D9',
+    map:{x:50, y:74}, shape:'jouets', icon:'🧸', sand:'#FFF1E0', land:'#F7C6D9',
     intro:"Bienvenue dans le Coffre aux Jouets Doux, où les jouets se sont endormis 🧸",
     sceneEmpty:"Ton Coffre attend ses décorations toutes douces !" },
   bonbons:{ name:'Le Royaume des Bonbons', emoji:'🍭', level:44, diff:6, saison:2, short:'Bonbons',
     subtitle:'Le village en pâtisserie',
     // son mini-jeu, selon l'âge : la recette avant 7 ans, le gâteau partagé ensuite
     game:(age)=> (age && age < 7) ? 'recipe' : 'share',
-    map:{x:34, y:26}, shape:'bonbons', icon:'🍭', sand:'#FFF3E0', land:'#F2A7BC',
+    map:{x:82, y:70}, shape:'bonbons', icon:'🍭', sand:'#FFF3E0', land:'#F2A7BC',
     intro:"Bienvenue au Royaume des Bonbons, où le grand four s'est éteint 🍭",
     sceneEmpty:"Ton Royaume attend ses décorations sucrées !" },
   musique:{ name:'L\'Île de la Musique', emoji:'🎵', level:50, diff:6, saison:2, short:'Musique',
     subtitle:'L\'île en forme de piano',
     // son mini-jeu, selon l'âge : le rythme avant 7 ans, grave ou aigu ensuite
     game:(age)=> (age && age < 7) ? 'rhythm' : 'pitch',
-    map:{x:66, y:74}, shape:'musique', icon:'🎵', sand:'#FFF3C4', land:'#7FD1D6',
+    map:{x:82, y:26}, shape:'musique', icon:'🎵', sand:'#FFF3C4', land:'#7FD1D6',
     intro:"Bienvenue sur l'Île de la Musique… où plus personne ne chante 🎵",
     sceneEmpty:"Ton île attend ses décorations en musique !" },
+  // l'avant-dernière île du Ciel ; la place suivante (18, 26) attend les Licornes
+  jardin:{ name:'Le Jardin des Fées', emoji:'🌸', level:56, diff:6, saison:2, short:'Jardin',
+    subtitle:'Le jardin vu à hauteur d\'insecte',
+    // son mini-jeu, selon l'âge : les coccinelles avant 7 ans, le cycle de vie ensuite
+    game:(age)=> (age && age < 7) ? 'ladybugs' : 'lifecycle',
+    map:{x:50, y:22}, shape:'jardin', icon:'🌸', sand:'#FFE9D6', land:'#A8DDA0',
+    intro:"Bienvenue au Jardin des Fées, où plus rien ne pousse depuis longtemps 🌸",
+    sceneEmpty:"Ton jardin attend ses décorations fleuries !" },
 };
 
 /* Les archipels (v55) : chaque île appartient à un archipel (`saison`), qui a

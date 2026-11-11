@@ -26,8 +26,9 @@ const SQUISHY_SERIES = {
   jouets:   { name:'Jouets doux', emoji:'🧸', world:'jouets' }, // le Coffre aux Jouets Doux
   bonbons:  { name:'Bonbons',   emoji:'🍬', world:'bonbons' },  // le Royaume des Bonbons
   instruments: { name:'Instruments', emoji:'🎺', world:'musique' }, // l'Île de la Musique
+  petitesbetes: { name:'Petites bêtes', emoji:'🐞', world:'jardin' }, // le Jardin des Fées
 };
-const SQUISHY_SERIES_ORDER = ['capy', 'desserts', 'animaux', 'boites', 'jouets', 'bonbons', 'instruments'];
+const SQUISHY_SERIES_ORDER = ['capy', 'desserts', 'animaux', 'boites', 'jouets', 'bonbons', 'instruments', 'petitesbetes'];
 
 // les trois raretés, et leur chance au tirage (voir openSquishyBox)
 const SQUISHY_RARITY = {
@@ -87,6 +88,13 @@ const SQUISHIES = {
   'trompette':     { series:'instruments', name:'Trompette',     say:'une trompette',    rarity:'commun', color:'rose',   shape:'rond',  size:'petit' },
   'boumbo':        { series:'instruments', name:'Boumbo',        say:'Boumbo, le petit tambour', rarity:'rare', color:'bleu', shape:'rond', size:'grand' },
   'lyre-doree':    { series:'instruments', name:'Lyre dorée',    say:'une lyre dorée',   rarity:'brille', color:'jaune', shape:'carre', size:'grand' },
+  // 🐞 Petites bêtes (saison 2, le Jardin des Fées)
+  'coccinelle':     { series:'petitesbetes', name:'Coccinelle', say:'une coccinelle', rarity:'commun', color:'rose',   shape:'rond',  size:'grand' },
+  'abeille':        { series:'petitesbetes', name:'Abeille',    say:'une abeille',    rarity:'commun', color:'jaune',  shape:'ovale', size:'petit' },
+  'escargot':       { series:'petitesbetes', name:'Escargot',   say:'un escargot',    rarity:'commun', color:'violet', shape:'rond',  size:'petit' },
+  'chenille':       { series:'petitesbetes', name:'Chenille',   say:'une chenille',   rarity:'commun', color:'vert',   shape:'ovale', size:'grand' },
+  'pois':           { series:'petitesbetes', name:'Pois',       say:'Pois, la coccinelle', rarity:'rare', color:'orange', shape:'rond', size:'grand' },
+  'papillon-irise': { series:'petitesbetes', name:'Papillon irisé', say:'un papillon irisé', rarity:'brille', color:'bleu', shape:'ovale', size:'grand' },
 };
 
 // La série gagnée en résolvant l'énigme d'une île (une seule fois par île)
@@ -94,7 +102,7 @@ const SQUISHY_ISLAND_SERIES = {
   lagon:'animaux', foret:'animaux', montagne:'animaux',
   chateau:'desserts', volcan:'desserts', squishy:'desserts',
   jungle:'capy', cite:'capy',
-  boites:'boites', jouets:'jouets', bonbons:'bonbons', musique:'instruments',
+  boites:'boites', jouets:'jouets', bonbons:'bonbons', musique:'instruments', jardin:'petitesbetes',
 };
 
 function squishiesOf(series){ return Object.keys(SQUISHIES).filter(id=> SQUISHIES[id].series === series); }

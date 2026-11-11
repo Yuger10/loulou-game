@@ -237,6 +237,28 @@ const SQ_ART = {
   'lyre-doree': { body:'carre', face:{}, faceY:64,
     back: ()=> `<path d="M24 30 Q4 12 22 0 M76 30 Q96 12 78 0" fill="none" stroke="#B8780A" stroke-width="6" stroke-linecap="round"/><path d="M18 2 H82" stroke="#B8780A" stroke-width="5" stroke-linecap="round"/>`,
     front: ()=> `<path class="sq-deco" d="M38 26 V46 M50 26 V46 M62 26 V46" stroke="#fff" stroke-width="2.6" opacity=".8"/>` },
+  // 🐞 Petites bêtes (saison 2, le Jardin des Fées)
+  'coccinelle': { body:'rond', face:{}, faceY:62,
+    back: ()=> `<path d="M40 24 Q34 8 26 8 M60 24 Q66 8 74 8" fill="none" stroke="#2B2140" stroke-width="3" stroke-linecap="round"/><circle cx="26" cy="8" r="3.6" fill="#2B2140"/><circle cx="74" cy="8" r="3.6" fill="#2B2140"/>`,
+    front: ()=> `<path class="sq-deco" d="M50 20 V40" stroke="#2B2140" stroke-width="3" opacity=".6"/>
+      <g class="sq-deco" fill="#2B2140" opacity=".75"><circle cx="30" cy="40" r="5"/><circle cx="70" cy="40" r="5"/><circle cx="24" cy="70" r="4"/><circle cx="76" cy="70" r="4"/><circle cx="38" cy="86" r="3.6"/><circle cx="62" cy="86" r="3.6"/></g>` },
+  'abeille': { body:'ovale-h', face:{}, faceY:62,
+    back: ()=> `<ellipse cx="34" cy="36" rx="16" ry="11" fill="#E6F4FF" stroke="#7FA8C9" stroke-width="3" transform="rotate(-20 34 36)"/><ellipse cx="66" cy="36" rx="16" ry="11" fill="#E6F4FF" stroke="#7FA8C9" stroke-width="3" transform="rotate(20 66 36)"/>`,
+    front: ()=> `<path class="sq-deco" d="M24 50 Q28 66 24 84 M76 50 Q72 66 76 84" fill="none" stroke="#6B3E26" stroke-width="6" stroke-linecap="round" opacity=".75"/>` },
+  'escargot': { body:'rond', face:{}, faceY:70,
+    back: c=> `<path d="M8 92 Q4 70 18 66 L30 70 L30 96Z" fill="#FFE1C9" stroke="#B5702E" stroke-width="3" stroke-linejoin="round"/><path d="M12 68 L6 54 M20 66 L18 52" stroke="#B5702E" stroke-width="3" stroke-linecap="round"/>`,
+    front: ()=> `<path class="sq-deco" d="M50 54 m-10 0 a10 10 0 1 1 10 10 a16 16 0 1 1 -16 -16" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" opacity=".6"/>` },
+  'chenille': { body:'ovale-h', face:{}, faceY:64,
+    back: c=> `<g fill="${c.fill}" stroke="${c.edge}" stroke-width="4"><circle cx="10" cy="74" r="13"/><circle cx="90" cy="74" r="13"/></g>
+      <path d="M40 42 L34 26 M60 42 L66 26" stroke="${c.edge}" stroke-width="3" stroke-linecap="round"/><circle cx="34" cy="25" r="3.4" fill="#FFD95A"/><circle cx="66" cy="25" r="3.4" fill="#FFD95A"/>`,
+    front: ()=> `<g class="sq-deco" fill="#FFF3A6" opacity=".8"><circle cx="20" cy="70" r="3"/><circle cx="80" cy="70" r="3"/><circle cx="34" cy="86" r="2.6"/><circle cx="66" cy="86" r="2.6"/></g>` },
+  'pois': { body:'rond', face:{}, faceY:62,
+    back: ()=> `<g stroke="#C9497F" stroke-width="2"><circle cx="30" cy="20" r="7" fill="#FF9CC8"/><circle cx="50" cy="12" r="7" fill="#FFF3A6"/><circle cx="70" cy="20" r="7" fill="#BFA3EC"/></g>`,
+    front: ()=> `<g class="sq-deco" fill="#2B2140" opacity=".7"><circle cx="28" cy="44" r="5"/><circle cx="72" cy="44" r="5"/><circle cx="26" cy="76" r="4"/><circle cx="74" cy="76" r="4"/></g>` },
+  'papillon-irise': { body:'ovale-v', face:{}, faceY:58,
+    back: ()=> `<path d="M44 46 C26 10 0 18 6 44 C10 60 30 60 44 54Z M56 46 C74 10 100 18 94 44 C90 60 70 60 56 54Z" fill="#FFB8E1" stroke="#7B5CC0" stroke-width="3.5" stroke-linejoin="round"/>
+      <path d="M44 66 C28 70 14 88 26 100 C36 108 46 90 46 76Z M56 66 C72 70 86 88 74 100 C64 108 54 90 54 76Z" fill="#9CE7F2" stroke="#7B5CC0" stroke-width="3.5" stroke-linejoin="round"/>`,
+    front: ()=> `<path class="sq-deco" d="M42 24 Q36 10 28 10 M58 24 Q64 10 72 10" fill="none" stroke="#7B5CC0" stroke-width="2.6" stroke-linecap="round"/>` },
 };
 
 // les paillettes d'un ✨ (animées en CSS)
@@ -265,7 +287,7 @@ function squishyArtSVG(id, opts){
 }
 
 // Une boîte surprise (la couleur dit sa série ; violette avec « ? » : mystère)
-const SQ_BOX_COLORS = { capy:['#FFC98F','#C8661A'], desserts:['#FFB8D6','#C9497F'], animaux:['#A6E8B8','#2F9551'], boites:['#EFC896','#8A5A2B'], jouets:['#FFD9E6','#B8577E'], bonbons:['#F6D7A8','#B5702E'], instruments:['#BFE9EC','#2B2F6B'] };
+const SQ_BOX_COLORS = { capy:['#FFC98F','#C8661A'], desserts:['#FFB8D6','#C9497F'], animaux:['#A6E8B8','#2F9551'], boites:['#EFC896','#8A5A2B'], jouets:['#FFD9E6','#B8577E'], bonbons:['#F6D7A8','#B5702E'], instruments:['#BFE9EC','#2B2F6B'], petitesbetes:['#CDEBC4','#4F8A45'] };
 function squishyBoxSVG(series){
   const col = SQ_BOX_COLORS[series] || ['#CDB8F2','#7B5CC0'];
   return `<svg class="sq-boxart" viewBox="0 0 100 100" aria-hidden="true">

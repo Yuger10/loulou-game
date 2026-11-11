@@ -140,6 +140,26 @@ const INDEPENDENT = {
     if(ask === 'low') return picked.length === 1 && picked[0] === Math.min(...all);
     return picked.length === all.length && picked.every((x, i)=> i === 0 || x > picked[i - 1]);
   },
+  // cycle de vie : comparé aux cycles connus du test (indépendants du jeu)
+  lifecycle(sol){
+    const CYC = { plante:['graine','pousse','bouton','fleur','fruit'], papillon:['oeuf','chenille','chrysalide','papillon'], poule:['oeuf','poussinoeuf','poussin','poule'] };
+    const strip = d.getElementById('lc-strip'), mode = strip.dataset.mode, cyc = CYC[strip.dataset.cycle];
+    const picked = sol.map(s=> d.querySelector(s).dataset.s);
+    if(mode === 'order' || mode === 'mixed') return picked.every((x, i)=> cyc.indexOf(x) >= 0 && (i === 0 || cyc.indexOf(x) > cyc.indexOf(picked[i - 1])))
+      && picked.length === strip.querySelectorAll('.lc-slot').length;
+    const shown = [...strip.children].filter(e=> e.matches('.lc-step, .lc-slot')).map(e=> e.dataset.s || '?');
+    const gap = shown.indexOf('?');
+    if(mode === 'next') return cyc.indexOf(picked[0]) === cyc.indexOf(shown[0]) + 1;
+    return cyc.indexOf(picked[0]) === cyc.indexOf(shown[gap - 1]) + 1 && cyc.indexOf(picked[0]) === cyc.indexOf(shown[gap + 1]) - 1;
+  },
+  // coccinelles : les points dessinés (deux ailes, l'aile pleine à recopier, le total écrit)
+  ladybugs(sol){
+    const stage = d.getElementById('lb-stage'), mode = stage.dataset.mode;
+    const l = stage.querySelectorAll('.lb-dot[data-w="l"]').length, r = stage.querySelectorAll('.lb-dot[data-w="r"]').length;
+    if(mode === 'complete') return r === 0 && sol.length === l + 1 && sol.slice(0, -1).every(s=> s === '#lb-add');
+    if(mode === 'half') return Number(d.querySelector(sol[0]).dataset.v) * 2 === Number(stage.dataset.total);
+    return Number(d.querySelector(sol[0]).dataset.v) === l + r && l === r;
+  },
   // étagère : chaque case est à la croisée de la ligne de la couleur et de la colonne de la forme
   shelf(sol){
     const els = sol.map(s=> d.querySelector(s));
@@ -196,7 +216,7 @@ async function playToWin(key, tier){
     }
   }
   console.log(`  ${played} parties jouées`);
-  check('les 26 mini-jeux sont testés', games.length >= 26);
+  check('les 28 mini-jeux sont testés', games.length >= 28);
 
   /* ---- 2. une mauvaise réponse ne fait jamais gagner ---- */
   section('Une mauvaise réponse ne fait pas gagner');
