@@ -1,5 +1,5 @@
 /* ---------- Types de mini-jeux et ceux proposés selon l'âge ---------- */
-const GAME_TYPES = ['memory','count','diff','puzzle','sequence','simon','math','reading','determinants','volume','compare','money','clock','calendar','calc','shapes','planets','jigsaw','nesting','cubes','packs','shelf','share','recipe','rhythm','pitch','lifecycle','ladybugs'];
+const GAME_TYPES = ['memory','count','diff','puzzle','sequence','simon','math','reading','determinants','volume','compare','money','clock','calendar','calc','shapes','planets','jigsaw','nesting','cubes','packs','shelf','share','recipe','rhythm','pitch','lifecycle','ladybugs','potions','mirror'];
 
 /* Quels types de défis proposer selon l'âge (programme de l'école
    maternelle, cycle 1, 3-6 ans — repères eduscol.education.fr) :
@@ -36,7 +36,9 @@ const AGE_GAME_TYPES = [
   // « Grave ou aigu ? » (pitch) : en GS, 2 cloches très différentes.
   // « De la graine à la fleur » (lifecycle) : en GS, 3 étapes à ordonner ;
   // « Les coccinelles » (ladybugs) : en GS, compter jusqu'à 3 points par aile.
-  { max:5, types:['memory','count','diff','volume','sequence','simon','clock','calendar','shapes','planets','jigsaw','nesting','cubes','packs','shelf','share','recipe','rhythm','pitch','lifecycle','ladybugs'] },
+  // « Les potions de couleurs » (potions) : en GS, reconnaître la couleur nommée ;
+  // « Le miroir magique » (mirror) : en GS, 2 cases à refléter dans une grille 4 × 4.
+  { max:5, types:['memory','count','diff','volume','sequence','simon','clock','calendar','shapes','planets','jigsaw','nesting','cubes','packs','shelf','share','recipe','rhythm','pitch','lifecycle','ladybugs','potions','mirror'] },
   // 6 ans et plus (ou âge non précisé) : tous les jeux, dont le calcul
   // mental abstrait (calc), réservé au CP confirmé et plus.
 ];
@@ -77,6 +79,8 @@ const GAME_LIST = [
   { key:'pitch',    emoji:'🔔', name:'Grave ou aigu ?' },
   { key:'lifecycle', emoji:'🌱', name:'De la graine à la fleur' },
   { key:'ladybugs', emoji:'🐞', name:'Les coccinelles' },
+  { key:'potions',  emoji:'🧪', name:'Les potions de couleurs' },
+  { key:'mirror',   emoji:'🪞', name:'Le miroir magique' },
 ];
 
 export { GAME_LIST, gameTypesForAge };

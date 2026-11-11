@@ -315,7 +315,7 @@ function livesFor(kind, dd){
   // essais suivent donc le nombre de paires : n + 2. Bien retenir fait
   // toujours gagner ; toucher au hasard fait toujours perdre.
   if(kind === 'memory') return memoryPairs(d) + 2;
-  const GENEROUS_KINDS = ['math','reading','determinants','volume','compare','money','clock','calendar','calc','shapes','planets','cubes','packs','shelf','share','recipe','pitch','lifecycle','ladybugs'];
+  const GENEROUS_KINDS = ['math','reading','determinants','volume','compare','money','clock','calendar','calc','shapes','planets','cubes','packs','shelf','share','recipe','pitch','lifecycle','ladybugs','potions','mirror'];
   const table = LIVES_TABLE[kind] || (GENEROUS_KINDS.includes(kind) ? LIVES_TABLE.generous : LIVES_TABLE.default);
   // le calcul mental (palier 6, Volcan) emprunte le barème d'essais du
   // palier 5 : seul le minuteur continue de se resserrer au-delà.
@@ -352,7 +352,7 @@ const TIMER_SECONDS = {
   calc:         {3:28, 4:24, 5:22, 6:20},   // calcul abstrait : le plus généreux de tous
 };
 // jeux à plusieurs étapes : jamais de minuteur, quelle que soit la difficulté
-const NO_TIMER_KINDS = ['memory','simon','puzzle','calendar','shapes','planets','jigsaw','nesting','cubes','packs','shelf','share','recipe','rhythm','pitch','lifecycle','ladybugs'];
+const NO_TIMER_KINDS = ['memory','simon','puzzle','calendar','shapes','planets','jigsaw','nesting','cubes','packs','shelf','share','recipe','rhythm','pitch','lifecycle','ladybugs','potions','mirror'];
 function timerFor(kind, dd){
   if(NO_TIMER_KINDS.includes(kind)) return null;
   const table = TIMER_SECONDS[kind];
@@ -691,6 +691,46 @@ function ladybugsRound(dd){
   }, dd);
 }
 
+/* ---------------------------------------------------------------------
+   LES POTIONS DE COULEURS (Royaume Arc-en-ciel, saison 2) — les couleurs
+   et leurs mélanges (arts plastiques) ; l'ordre de l'arc-en-ciel.
+     palier 1   reconnaître la couleur nommée à voix haute
+     palier 2   les 3 mélanges primaires (orange, vert, violet)
+     palier 3   tous les mélanges (+ rose, gris), l'arc-en-ciel à 2 trous
+     palier 4   tous les mélanges, l'arc-en-ciel à 3 trous, le mélange inverse
+     palier 5   le mélange inverse, l'arc-en-ciel à 4 trous
+   `mixes` : nombre de mélanges utilisés (3 = les primaires). Pas de minuteur.
+   --------------------------------------------------------------------- */
+function potionsRound(dd){
+  return tierValue({
+    1:{ modes:['name'],                          mixes:3, holes:2 },
+    2:{ modes:['mix'],                           mixes:3, holes:2 },
+    3:{ modes:['mix', 'rainbow'],                mixes:5, holes:2 },
+    4:{ modes:['mix', 'rainbow', 'inverse'],     mixes:5, holes:3 },
+    5:{ modes:['inverse', 'rainbow'],            mixes:5, holes:4 },
+  }, dd);
+}
+
+/* ---------------------------------------------------------------------
+   LE MIROIR MAGIQUE (Royaume Arc-en-ciel, saison 2) — la symétrie axiale
+   (cycle 2 : compléter une figure par symétrie).
+     palier 1   4 × 4, axe vertical, 2 cases
+     palier 2   4 × 4, axe vertical, 3 cases
+     palier 3   6 × 6, axe vertical, 5 cases
+     palier 4   6 × 6, axe vertical ou horizontal, 5 cases
+     palier 5   6 × 6, axe vertical ou horizontal, 6 cases ; souvent deux couleurs
+   Pas de minuteur.
+   --------------------------------------------------------------------- */
+function mirrorRound(dd){
+  return tierValue({
+    1:{ size:4, cells:2, axes:['v'],      two:0 },
+    2:{ size:4, cells:3, axes:['v'],      two:0 },
+    3:{ size:6, cells:5, axes:['v'],      two:0 },
+    4:{ size:6, cells:5, axes:['v', 'h'], two:0 },
+    5:{ size:6, cells:6, axes:['v', 'h'], two:.5 },
+  }, dd);
+}
+
 function jigsawRound(dd){
   return tierValue({
     1:{cols:2, rows:2, ghost:.45},
@@ -705,7 +745,7 @@ export {
   CALC_MULT_TABLES, calcBounds, calendarUsesWeekdayOrder, calendarWeekdayCount, clockGranularity,
   clockOptions, compareCloseChance, compareEqualChance, compareRange, countRange,
   determinantsExtraDistractor, determinantsImageShown, determinantsPluralChance, diffMirrorChance,
-  cubesRound, diffTotal, jigsawRound, nestingRound, ladybugsRound, lifecycleRound, livesFor, packsRound, pitchRound, recipeRound, rhythmRound, shareRound, shelfRound, mathBounds, memoryPairs, moneyDenoms, moneyPileSize, planetsTier,
+  cubesRound, diffTotal, jigsawRound, nestingRound, ladybugsRound, lifecycleRound, livesFor, mirrorRound, packsRound, potionsRound, pitchRound, recipeRound, rhythmRound, shareRound, shelfRound, mathBounds, memoryPairs, moneyDenoms, moneyPileSize, planetsTier,
   puzzleCount, puzzleStartMax, puzzleVariants, readingOptions, readingWordOnly, sequencePatternLength,
   shapesRound, simonLength, solidOptions, timerFor, volumeAskLessChance, volumeContainerCount,
   volumeUsesCapacityCompare

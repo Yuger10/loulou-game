@@ -42,3 +42,19 @@
   .story-season h3 small{font-weight:700; color:var(--ink-soft);}
   .story-prologue{background:#F2ECFF;}
   @media (prefers-reduced-motion: reduce){ .story-grisou .grisou{animation:none;} }
+  /* ---------- le grand final de la saison 2 (finale.js) ---------- */
+  .finale{position:relative; text-align:center; padding:6px 0 4px; overflow:hidden; border-radius:22px;
+    background:linear-gradient(180deg, #FFF6FD 0%, #F4EDFF 60%, #E9F6FF 100%);}
+  .finale-sky{position:absolute; inset:0; pointer-events:none;
+    background:radial-gradient(circle at 20% 20%, rgba(255,217,90,.35) 0 6px, transparent 7px),
+               radial-gradient(circle at 80% 30%, rgba(255,143,184,.35) 0 5px, transparent 6px),
+               radial-gradient(circle at 65% 12%, rgba(111,184,245,.35) 0 4px, transparent 5px);}
+  .finale-grisou{position:relative; width:180px; margin:0 auto; animation:finaleFloat 3s ease-in-out infinite;}
+  .finale-grisou .grisou{width:100%; height:auto;}
+  .finale-grisou .grisou.full{filter:drop-shadow(0 0 10px rgba(255,217,90,.6));}
+  @keyframes finaleFloat{0%,100%{transform:translateY(0);} 50%{transform:translateY(-8px);}}
+  .finale h2{position:relative; margin:4px 0;}
+  .finale-buddy, .finale-treasure{display:block; width:140px; margin:0 auto;}
+  .finale-buddy svg, .finale-treasure svg{width:100%; height:auto;}
+  .story-season h3 .done{margin-left:4px;}
+  @media (prefers-reduced-motion: reduce){ .finale-grisou{animation:none;} }

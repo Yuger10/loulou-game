@@ -429,6 +429,42 @@ ART.miella=svg(
   `<path d="M30 56 Q38 44 52 44" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" opacity=".7"/>`+
   eyes(47,73,64,4.8,6)+cheeks(34,86,76)+smile(52,68,76,7)+
   `<rect x="90" y="104" width="22" height="20" rx="6" fill="#F2B04E" ${O(2)}/><path d="M90 110 H112" stroke="#B5702E" stroke-width="2"/>`);
+// ---- Saison 2, le Royaume Arc-en-ciel ----
+const plus=(base,extra)=> base.replace('</svg>', extra+'</svg>');
+// la Reine Arc-en-ciel : licorne blanche à crinière arc-en-ciel, couronne d'or
+ART.reine=plus(horse({coat:'#FFFFFF',muzzle:'#F6EEFF',
+  maneBack:`<path d="M64 25 C38 19 21 44 25 80 C28 92 37 97 43 99 C38 86 38 70 45 55Z" fill="#FF6F61" ${O(2)}/><path d="M58 28 C40 28 30 46 32 74 C34 84 38 90 42 92 C40 80 40 66 46 54Z" fill="#FFD95A"/><path d="M53 31 C43 36 38 50 39 66 C41 74 43 80 45 82 C44 70 45 60 49 52Z" fill="#6ED38C"/><path d="M49 36 C44 44 42 54 43 64 C44 70 45 74 46 76 C46 66 47 58 50 52Z" fill="#6FB8F5"/>`,
+  horn:`<path d="M55 30 L60 6 L65 30Z" fill="#FFF3A6" ${O(2)}/>`,
+  forelock:`<path d="M64 29 C74 26 81 34 78 46 C74 40 69 37 63 37Z" fill="#BFA3EC" ${O(2)}/>`}),
+  `<path d="M42 22 L46 8 L53 16 L60 4 L67 16 L74 8 L78 22Z" fill="#FFD95A" ${O(2)}/><circle cx="60" cy="13" r="2.6" fill="#FF6F91"/>`+
+  `<path d="M44 102 Q60 112 76 102" fill="none" stroke="#BFA3EC" stroke-width="5" stroke-linecap="round"/>`);
+// Étincelle, rentrée chez elle : la licorne du Lagon avec un foulard arc-en-ciel et une étoile
+ART.etincelle=plus(horse({coat:'#FFFDF8',muzzle:'#FBE8EE',
+  maneBack:`<path d="M64 25 C38 19 21 44 25 80 C28 92 37 97 43 99 C38 86 38 70 45 55Z" fill="#F48FB8" ${O(2)}/><path d="M58 28 C40 28 30 46 32 74 C34 84 38 90 42 92 C40 80 40 66 46 54Z" fill="#B79BE0"/>`,
+  horn:`<path d="M55 30 L60 2 L65 30Z" fill="#F6C94E" ${O(2)}/><path d="M57 22 L63 19 M56 14 L62 11" stroke="#D99A22" stroke-width="1.8"/>`,
+  forelock:`<path d="M64 29 C74 26 81 34 78 46 C74 40 69 37 63 37Z" fill="#B79BE0" ${O(2)}/>`}),
+  `<path d="M42 92 Q60 104 78 92 L76 100 Q60 110 44 100Z" fill="#FF8FB8" ${O(2)}/><path d="M46 96 Q60 104 74 96" fill="none" stroke="#FFD95A" stroke-width="2.5"/>`+
+  `<path d="M96 30 l3 7 l7 1 l-5 5 l1 7 l-6 -3 l-6 3 l1 -7 l-5 -5 l7 -1z" fill="#FFD95A" ${O(1.6)}/>`);
+// Biscotte le bébé licorne : couleur biscuit, petite corne, un arc-en-ciel tout tordu
+ART.biscotte=plus(horse({coat:'#FFE3BF',muzzle:'#FFF1DE',
+  maneBack:`<path d="M64 25 C40 21 26 42 30 72 C32 82 38 88 42 90 C40 78 40 66 46 54Z" fill="#FFAE5C" ${O(2)}/>`,
+  horn:`<path d="M56 30 L60 14 L64 30Z" fill="#FFF3A6" ${O(2)}/>`,
+  forelock:`<path d="M64 29 C72 26 78 32 76 42 C73 37 69 35 63 36Z" fill="#9FDCF5" ${O(2)}/>`}),
+  `<g fill="none" stroke-width="4" stroke-linecap="round"><path d="M86 120 Q92 92 106 104 Q112 112 104 116" stroke="#FF6F61"/><path d="M90 120 Q95 98 104 108" stroke="#FFD95A"/></g>`);
+// Félix le licorne alchimiste : bleu pâle, lunettes rondes, une fiole verte qui fume
+ART.felix=plus(horse({coat:'#E3F2FF',muzzle:'#F2F8FF',
+  maneBack:`<path d="M64 25 C38 19 21 44 25 80 C28 92 37 97 43 99 C38 86 38 70 45 55Z" fill="#6ED38C" ${O(2)}/><path d="M58 28 C40 28 30 46 32 74 C34 84 38 90 42 92 C40 80 40 66 46 54Z" fill="#5CC6CC"/>`,
+  horn:`<path d="M55 30 L60 4 L65 30Z" fill="#C9D6E3" ${O(2)}/>`,
+  forelock:`<path d="M64 29 C74 26 81 34 78 46 C74 40 69 37 63 37Z" fill="#5CC6CC" ${O(2)}/>`}),
+  `<circle cx="49" cy="50" r="9" fill="none" stroke="#5A3A22" stroke-width="2.5"/><circle cx="71" cy="50" r="9" fill="none" stroke="#5A3A22" stroke-width="2.5"/><path d="M58 50 H62" stroke="#5A3A22" stroke-width="2.5"/>`+
+  `<path d="M92 96 V108 L84 124 H112 L104 108 V96Z" fill="#9FE8B8" ${O(2)}/><path d="M86 118 H110" stroke="#4FB57F" stroke-width="3"/><g fill="#fff" opacity=".8"><circle cx="96" cy="88" r="3"/><circle cx="102" cy="80" r="2.4"/></g>`);
+// Mira la licorne coiffeuse : longue crinière violette, un miroir à main et un peigne
+ART.mira=plus(horse({coat:'#FFF0FA',muzzle:'#FFF8FC',
+  maneBack:`<path d="M64 25 C34 19 14 50 20 90 C22 104 30 112 40 114 C34 96 34 74 45 55Z" fill="#BFA3EC" ${O(2)}/><path d="M56 30 C38 32 28 52 30 80 C32 92 36 100 40 104 C38 86 40 66 46 54Z" fill="#E3D6FB"/>`,
+  horn:`<path d="M55 30 L60 2 L65 30Z" fill="#FFB8E1" ${O(2)}/>`,
+  forelock:`<path d="M64 29 C74 26 81 34 78 46 C74 40 69 37 63 37Z" fill="#BFA3EC" ${O(2)}/>`}),
+  `<ellipse cx="98" cy="96" rx="12" ry="14" fill="#E9F6FF" stroke="#B8901A" stroke-width="3"/><path d="M98 110 V126" stroke="#B8901A" stroke-width="4" stroke-linecap="round"/><path d="M92 90 Q96 86 100 88" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/>`+
+  `<rect x="10" y="108" width="22" height="6" rx="3" fill="#FFD95A" ${O(1.6)}/><path d="M13 114 V120 M18 114 V120 M23 114 V120 M28 114 V120" stroke="${AI}" stroke-width="1.8"/>`);
 return ART;
 })();
 function charArtSVG(id){return CHAR_ART[id]||''}

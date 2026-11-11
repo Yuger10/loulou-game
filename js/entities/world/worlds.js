@@ -76,7 +76,7 @@ const WORLDS = {
     map:{x:82, y:26}, shape:'musique', icon:'🎵', sand:'#FFF3C4', land:'#7FD1D6',
     intro:"Bienvenue sur l'Île de la Musique… où plus personne ne chante 🎵",
     sceneEmpty:"Ton île attend ses décorations en musique !" },
-  // l'avant-dernière île du Ciel ; la place suivante (18, 26) attend les Licornes
+  // l'avant-dernière île du Ciel
   jardin:{ name:'Le Jardin des Fées', emoji:'🌸', level:56, diff:6, saison:2, short:'Jardin',
     subtitle:'Le jardin vu à hauteur d\'insecte',
     // son mini-jeu, selon l'âge : les coccinelles avant 7 ans, le cycle de vie ensuite
@@ -84,6 +84,14 @@ const WORLDS = {
     map:{x:50, y:22}, shape:'jardin', icon:'🌸', sand:'#FFE9D6', land:'#A8DDA0',
     intro:"Bienvenue au Jardin des Fées, où plus rien ne pousse depuis longtemps 🌸",
     sceneEmpty:"Ton jardin attend ses décorations fleuries !" },
+  // idée de la joueuse : « le monde des licornes » ; le grand final de la saison 2
+  licornes:{ name:'Le Royaume Arc-en-ciel', emoji:'🦄', level:62, diff:6, saison:2, short:'Licornes',
+    subtitle:'Le royaume des licornes',
+    // son mini-jeu, selon l'âge : les potions avant 7 ans, le miroir ensuite
+    game:(age)=> (age && age < 7) ? 'potions' : 'mirror',
+    map:{x:18, y:26}, shape:'licornes', icon:'🦄', sand:'#FFF0FA', land:'#C9B8F2',
+    intro:"Bienvenue au Royaume Arc-en-ciel… où les couleurs ont disparu 🦄",
+    sceneEmpty:"Ton Royaume attend ses décorations irisées !" },
 };
 
 /* Les archipels (v55) : chaque île appartient à un archipel (`saison`), qui a

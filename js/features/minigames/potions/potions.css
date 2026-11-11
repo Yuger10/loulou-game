@@ -1,0 +1,22 @@
+  /* =====================================================================
+     Les potions de couleurs — Royaume Arc-en-ciel (saison 2)
+     ===================================================================== */
+  .po-eq{display:flex; justify-content:center; align-items:center; gap:6px; margin:0 auto 8px; padding:8px; max-width:340px;
+    border-radius:var(--radius-lg, 24px); background:linear-gradient(180deg, #FFF6FD, #EDE6FF); border:3px solid #fff;}
+  .po-eq b{font-size:1.4rem; color:#6A4FB3;}
+  .po-show{display:flex; flex-direction:column; align-items:center; width:64px;}
+  .po-show .po-svg{width:52px; height:62px;}
+  .po-q{justify-content:center; height:76px; border:3px dashed #B9A6E0; border-radius:16px; color:#6A4FB3; font-size:1.6rem; font-weight:800;}
+  .po-ask{font-size:1.3rem; font-weight:800; color:var(--ink); padding:6px 14px;}
+  .po-name{font-size:.8rem; font-weight:800; color:var(--ink);}
+  .po-options{display:flex; justify-content:center; gap:10px; flex-wrap:wrap; margin-bottom:6px;}
+  .po-opt{display:flex; flex-direction:column; align-items:center; justify-content:center; width:88px; height:104px; padding:4px;
+    border-radius:18px; border:3px solid #D9CCF2; background:#fff; box-shadow:0 4px 0 rgba(106,79,179,.2); cursor:pointer;}
+  .po-opt .po-svg{width:56px; height:68px;}
+  .po-opt.done{opacity:.35; pointer-events:none;}
+  .po-rainbow{display:flex; flex-direction:column; gap:4px; margin:0 auto 8px; padding:8px; max-width:280px;
+    border-radius:var(--radius-lg, 24px); background:#FFF6FD; border:3px solid #fff;}
+  .po-band{display:flex; align-items:center; gap:8px; height:28px; padding:0 12px; border-radius:14px; font-weight:800; font-size:.85rem; color:var(--ink);
+    border:2px solid rgba(43,33,64,.25);}
+  .po-band b{min-width:22px;}
+  .po-band.hole{justify-content:center; background:#F1EEF8; border:2px dashed #B9A6E0; color:#6A4FB3;}

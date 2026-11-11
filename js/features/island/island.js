@@ -348,6 +348,26 @@ const ISLE_SCENERY = {
     <g stroke="#6DBB57" stroke-width="5" stroke-linecap="round"><path d="M30 256 L24 228 M40 256 L44 232 M440 256 L436 226 M452 256 L458 234 M170 256 L166 236"/></g>
     <path d="M150 360 C168 322 210 290 232 252" fill="none" stroke="${w.sand}" stroke-width="18" stroke-linecap="round"/>
     <g fill="#fff" opacity=".7"><circle cx="110" cy="306" r="2"/><circle cx="380" cy="300" r="2"/></g>`,
+  // Royaume Arc-en-ciel (saison 2, grand final) : une île de nuages, une
+  // cascade arc-en-ciel, le château des licornes, des étoiles
+  licornes: (w)=>`
+    <g fill="#FFE07A" opacity=".85"><path d="M70 64 l3 7 l7 1 l-5 5 l1 7 l-6 -3 l-6 3 l1 -7 l-5 -5 l7 -1z"/><path d="M430 50 l2 5 l5 1 l-4 3 l1 5 l-4 -2 l-4 2 l1 -5 l-4 -3 l5 -1z"/><path d="M250 40 l2 4 l4 1 l-3 3 l1 4 l-4 -2 l-4 2 l1 -4 l-3 -3 l4 -1z"/></g>
+    <g fill="none" stroke-width="10" stroke-linecap="round" opacity=".8"><path d="M60 214 Q240 30 420 214" stroke="#FF6F61"/><path d="M74 214 Q240 46 406 214" stroke="#FFD95A"/><path d="M88 214 Q240 62 392 214" stroke="#6ED38C"/><path d="M102 214 Q240 78 378 214" stroke="#6FB8F5"/><path d="M116 214 Q240 94 364 214" stroke="#BFA3EC"/></g>
+    <g fill="#fff"><ellipse cx="60" cy="236" rx="96" ry="34"/><ellipse cx="240" cy="240" rx="124" ry="30"/><ellipse cx="420" cy="236" rx="96" ry="34"/></g>
+    <path d="M0 254 C140 240 340 240 480 254 L480 360 L0 360 Z" fill="${w.land}"/>
+    <g stroke="#6A4FB3" stroke-width="3" stroke-linejoin="round">
+      <rect x="196" y="150" width="88" height="96" rx="8" fill="#FFF6FD"/>
+      <rect x="176" y="126" width="30" height="120" rx="6" fill="#F4EDFF"/><rect x="274" y="126" width="30" height="120" rx="6" fill="#F4EDFF"/>
+      <path d="M170 128 L191 92 L212 128Z M268 128 L289 92 L310 128Z" fill="#FFB8E1"/><path d="M190 152 L240 108 L290 152Z" fill="#BFA3EC"/>
+      <path d="M226 246 V214 Q240 196 254 214 V246Z" fill="#C9B8F2"/>
+    </g>
+    <g fill="#9CE7F2" stroke="#6A4FB3" stroke-width="2"><circle cx="191" cy="160" r="6"/><circle cx="289" cy="160" r="6"/><circle cx="240" cy="176" r="7"/></g>
+    <g class="ls-lolly l1"><path d="M191 92 V76 L206 82 L191 88" fill="#FFD95A" stroke="#B8901A" stroke-width="2"/></g>
+    <g class="ls-lolly l2"><path d="M289 92 V76 L304 82 L289 88" fill="#FF9CC8" stroke="#C9497F" stroke-width="2"/></g>
+    <path d="M410 214 Q420 250 404 290 Q396 320 410 360" fill="none" stroke="#9CE7F2" stroke-width="14" stroke-linecap="round" opacity=".9"/>
+    <path d="M416 214 Q426 250 410 290" fill="none" stroke="#FFB8E1" stroke-width="5" stroke-linecap="round" opacity=".9"/>
+    <path d="M150 360 C168 322 210 292 236 250" fill="none" stroke="${w.sand}" stroke-width="18" stroke-linecap="round"/>
+    <g fill="#fff" opacity=".8"><circle cx="110" cy="306" r="2.4"/><circle cx="340" cy="310" r="2"/><circle cx="60" cy="290" r="1.8"/></g>`,
 };
 // paysage générique, aux couleurs du monde (toute nouvelle île en profite)
 function isleGenericScenery(w){

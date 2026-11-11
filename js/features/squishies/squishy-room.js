@@ -14,8 +14,9 @@
 import { save } from '../../entities/game-state/index.js';
 import { currentPlayerAge, onProfileRefresh } from '../../entities/player/index.js';
 import {
-  SQ_COLORS, SQUISHIES, squishiesOf, SQUISHY_SERIES, SQUISHY_SERIES_ORDER
+  SQ_COLORS, SQUISHIES, squishiesOf, SQUISHY_SERIES, SQUISHY_SERIES_ORDER, SQUISHY_TREASURES
 } from '../../entities/squishy/index.js';
+import { archipelagoUnlocked } from '../../entities/world/index.js';
 import {
   confetti, onModalChange, openModal, playSound, showToast, speak, vibrate
 } from '../../shared/ui/index.js';
@@ -27,7 +28,7 @@ import {
   sortingDone, sortingPaidLeft, sortMatches, sortSay, sortWrongHint, SQ_SERIES_BONUS,
   SQ_SORT_MAX_ERRORS, SQ_SORT_MIN_MODELS, SQ_SORT_REWARD, SQ_SORT_SHAPES, SQ_SORT_SIZES, SQ_SORT_SLOTS,
   sqState, squishyBoxCount, squishyCount, squishyOwnedIds, squishySeriesAvailable, squishySeriesProgress,
-  squishyShelfCount
+  squishyShelfCount, squishyTreasureOwned
 } from './squishies.js';
 
 /* ---------- Les dessins (SVG, aucune image) ----------
@@ -259,6 +260,30 @@ const SQ_ART = {
     back: ()=> `<path d="M44 46 C26 10 0 18 6 44 C10 60 30 60 44 54Z M56 46 C74 10 100 18 94 44 C90 60 70 60 56 54Z" fill="#FFB8E1" stroke="#7B5CC0" stroke-width="3.5" stroke-linejoin="round"/>
       <path d="M44 66 C28 70 14 88 26 100 C36 108 46 90 46 76Z M56 66 C72 70 86 88 74 100 C64 108 54 90 54 76Z" fill="#9CE7F2" stroke="#7B5CC0" stroke-width="3.5" stroke-linejoin="round"/>`,
     front: ()=> `<path class="sq-deco" d="M42 24 Q36 10 28 10 M58 24 Q64 10 72 10" fill="none" stroke="#7B5CC0" stroke-width="2.6" stroke-linecap="round"/>` },
+  // 🦄 Licornes (saison 2, le Royaume Arc-en-ciel) : une corne, une crinière
+  'licorne-nuage': { body:'rond', face:{}, faceY:62,
+    back: c=> `<path d="M44 24 L50 0 L56 24Z" fill="#FFF3A6" stroke="#B8901A" stroke-width="3" stroke-linejoin="round"/><path d="M24 30 L22 12 L36 24Z M76 30 L78 12 L64 24Z" fill="${c.fill}" stroke="${c.edge}" stroke-width="3.5" stroke-linejoin="round"/>`,
+    front: ()=> `<g class="sq-deco" fill="#fff" opacity=".75"><ellipse cx="28" cy="88" rx="12" ry="7"/><ellipse cx="72" cy="88" rx="12" ry="7"/><ellipse cx="50" cy="92" rx="14" ry="7"/></g>` },
+  'licorne-fraise': { body:'rond', face:{}, faceY:62,
+    back: c=> `<path d="M44 24 L50 0 L56 24Z" fill="#FFF3A6" stroke="#B8901A" stroke-width="3" stroke-linejoin="round"/><path d="M64 24 Q86 20 88 48 Q78 40 70 38Z" fill="#6ED38C" stroke="#2F9551" stroke-width="3"/>`,
+    front: ()=> `<g class="sq-deco" fill="#FFF3A6"><circle cx="30" cy="44" r="2.6"/><circle cx="70" cy="46" r="2.6"/><circle cx="26" cy="74" r="2.6"/><circle cx="74" cy="76" r="2.6"/><circle cx="50" cy="86" r="2.6"/></g>` },
+  'licorne-dodo': { body:'ovale-h', face:{ sleep:true }, faceY:66,
+    back: c=> `<path d="M44 40 L48 18 L54 40Z" fill="#FFF3A6" stroke="#B8901A" stroke-width="3" stroke-linejoin="round"/><path d="M60 40 Q84 32 92 56 Q80 50 70 50Z" fill="#9CE7F2" stroke="#2F7CC0" stroke-width="3"/>`,
+    front: ()=> `<path class="sq-deco" d="M76 28 h8 l-8 8 h8 M86 16 h6 l-6 6 h6" fill="none" stroke="#7B5CC0" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>` },
+  'bebe-licorne': { body:'rond', face:{ wide:true }, faceY:62,
+    back: ()=> `<path d="M46 24 L50 10 L54 24Z" fill="#FFF3A6" stroke="#B8901A" stroke-width="3" stroke-linejoin="round"/>`,
+    front: ()=> `<path class="sq-deco" d="M28 36 Q38 26 50 30 Q62 26 72 36" fill="none" stroke="#FF9CC8" stroke-width="5" stroke-linecap="round"/>` },
+  'biscotte': { body:'rond', face:{}, faceY:62,
+    back: ()=> `<path d="M46 24 L50 10 L54 24Z" fill="#FFF3A6" stroke="#B8901A" stroke-width="3" stroke-linejoin="round"/><g fill="none" stroke-width="4.5" stroke-linecap="round"><path d="M80 80 Q100 56 106 78" stroke="#FF6F61"/><path d="M82 86 Q98 66 102 84" stroke="#FFD95A"/></g>`,
+    front: ()=> `<path class="sq-deco" d="M26 34 Q40 22 54 30" fill="none" stroke="#9FDCF5" stroke-width="5" stroke-linecap="round"/>` },
+  'licorne-etoile': { body:'carre', face:{}, faceY:62,
+    back: c=> `<path d="M44 26 L50 0 L56 26Z" fill="#FFF3A6" stroke="#B8780A" stroke-width="3" stroke-linejoin="round"/><path d="M14 40 Q4 20 22 22 M86 40 Q96 20 78 22" fill="none" stroke="${c.edge}" stroke-width="4" stroke-linecap="round"/>`,
+    front: ()=> `<path class="sq-deco" d="M24 82 l2.4 5 l5.5 .8 l-4 3.8 l1 5.5 l-4.9 -2.6 l-4.9 2.6 l1 -5.5 l-4 -3.8 l5.5 -.8z M76 82 l2.4 5 l5.5 .8 l-4 3.8 l1 5.5 l-4.9 -2.6 l-4.9 2.6 l1 -5.5 l-4 -3.8 l5.5 -.8z" fill="#FFF3A6" stroke="#B8780A" stroke-width="1.6"/>` },
+  // 💎 Trésors : uniques, jamais dans les boîtes
+  'grisou-arc': { body:'rond', face:{ wide:true }, faceY:62,
+    back: ()=> `<g fill="none" stroke-width="6" stroke-linecap="round"><path d="M4 70 Q50 -20 96 70" stroke="#FF6F61"/><path d="M11 70 Q50 -6 89 70" stroke="#FFD95A"/><path d="M18 70 Q50 8 82 70" stroke="#6ED38C"/><path d="M25 70 Q50 22 75 70" stroke="#6FB8F5"/></g>
+      <g fill="#F3E8FF" stroke="#7B5CC0" stroke-width="4"><circle cx="16" cy="80" r="16"/><circle cx="84" cy="80" r="16"/><circle cx="50" cy="30" r="20"/></g>`,
+    front: ()=> `<g class="sq-deco"><ellipse cx="30" cy="74" rx="6" ry="3.6" fill="#FF6F91" opacity=".55"/><ellipse cx="70" cy="74" rx="6" ry="3.6" fill="#FF6F91" opacity=".55"/></g>` },
 };
 
 // les paillettes d'un ✨ (animées en CSS)
@@ -268,7 +293,7 @@ const SQ_SPARKLE = (x, y, s)=> `<path d="M${x} ${y-s} Q${x+s*.18} ${y-s*.18} ${x
    pas encore trouvé). */
 function squishyArtSVG(id, opts){
   opts = opts || {};
-  const m = SQUISHIES[id], art = SQ_ART[id];
+  const m = SQUISHIES[id] || SQUISHY_TREASURES[id], art = SQ_ART[id];
   if(!m || !art) return '';
   const c = SQ_COLORS[m.color] || { fill:'#E4ECF0', edge:'#7C8E99' };
   const body = SQ_BODIES[art.body] || SQ_BODIES.rond;
@@ -287,7 +312,7 @@ function squishyArtSVG(id, opts){
 }
 
 // Une boîte surprise (la couleur dit sa série ; violette avec « ? » : mystère)
-const SQ_BOX_COLORS = { capy:['#FFC98F','#C8661A'], desserts:['#FFB8D6','#C9497F'], animaux:['#A6E8B8','#2F9551'], boites:['#EFC896','#8A5A2B'], jouets:['#FFD9E6','#B8577E'], bonbons:['#F6D7A8','#B5702E'], instruments:['#BFE9EC','#2B2F6B'], petitesbetes:['#CDEBC4','#4F8A45'] };
+const SQ_BOX_COLORS = { capy:['#FFC98F','#C8661A'], desserts:['#FFB8D6','#C9497F'], animaux:['#A6E8B8','#2F9551'], boites:['#EFC896','#8A5A2B'], jouets:['#FFD9E6','#B8577E'], bonbons:['#F6D7A8','#B5702E'], instruments:['#BFE9EC','#2B2F6B'], petitesbetes:['#CDEBC4','#4F8A45'], licornes:['#E3D6FB','#6A4FB3'] };
 function squishyBoxSVG(series){
   const col = SQ_BOX_COLORS[series] || ['#CDB8F2','#7B5CC0'];
   return `<svg class="sq-boxart" viewBox="0 0 100 100" aria-hidden="true">
@@ -421,7 +446,13 @@ function renderSquishyCollection(){
         <div class="quest-bar"><i style="width:${p.have / p.total * 100}%"></i></div>
         <div class="sq-grid">${squishiesOf(series).map(sqCellHTML).join('')}</div>
       </section>`;
-    }).join('')}`;
+    }).join('')}
+    ${Object.keys(SQUISHY_TREASURES).some(squishyTreasureOwned) || archipelagoUnlocked(2) ? `<section class="sq-series sq-treasures" data-series="tresors">
+      <h3><span>💎 Trésors</span><span class="sq-prog">${Object.keys(SQUISHY_TREASURES).filter(squishyTreasureOwned).length} / ${Object.keys(SQUISHY_TREASURES).length}</span></h3>
+      <div class="sq-grid">${Object.keys(SQUISHY_TREASURES).map(id=> squishyTreasureOwned(id)
+        ? `<button type="button" class="sq-cell owned treasure" data-sq="${id}" aria-label="${SQUISHY_TREASURES[id].name}">${squishyArtSVG(id)}<span class="sq-name">${SQUISHY_TREASURES[id].name}</span></button>`
+        : `<div class="sq-cell treasure locked" data-treasure="${id}" aria-label="Un trésor à trouver : ${SQUISHY_TREASURES[id].how}">${squishyArtSVG(id, { silhouette:true })}<span class="sq-name">${SQUISHY_TREASURES[id].how}</span></div>`).join('')}</div>
+    </section>` : ''}`;
   sqBindPress(el);
   const open = document.getElementById('sq-open');
   if(open) open.onclick = ()=> squishyOpenAnimated();
@@ -431,8 +462,11 @@ function sqBindPress(el){
     b.onclick = ()=>{
       const id = b.dataset.sq, n = squishyCount(id);
       squishyPress(b);
-      speak(`${SQUISHIES[id].name}${n > 1 ? `. Tu en as ${n}.` : ' !'}`);
+      speak(`${(SQUISHIES[id] || SQUISHY_TREASURES[id]).name}${n > 1 ? `. Tu en as ${n}.` : ' !'}`);
     };
+  });
+  el.querySelectorAll('.sq-cell[data-treasure]').forEach(b=>{
+    b.onclick = ()=>{ playSound('tap'); speak(`Un trésor unique ! ${SQUISHY_TREASURES[b.dataset.treasure].how}.`); };
   });
   el.querySelectorAll('.sq-cell[data-miss]').forEach(b=>{
     b.onclick = ()=>{ playSound('tap'); speak('Celui-là, tu ne l\'as pas encore. Ouvre des boîtes surprises pour le trouver !'); };

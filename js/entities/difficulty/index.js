@@ -5,7 +5,7 @@ export {
   clockOptions, compareCloseChance, compareEqualChance, compareRange, countRange,
   determinantsExtraDistractor, determinantsImageShown, determinantsPluralChance, diffMirrorChance,
   cubesRound, diffTotal, jigsawRound, livesFor, mathBounds, memoryPairs, moneyDenoms, moneyPileSize, planetsTier,
-  ladybugsRound, lifecycleRound, nestingRound, packsRound, pitchRound, puzzleCount, recipeRound, rhythmRound, shareRound, puzzleStartMax, puzzleVariants, readingOptions, readingWordOnly, sequencePatternLength,
+  ladybugsRound, lifecycleRound, mirrorRound, nestingRound, packsRound, pitchRound, potionsRound, puzzleCount, recipeRound, rhythmRound, shareRound, puzzleStartMax, puzzleVariants, readingOptions, readingWordOnly, sequencePatternLength,
   shapesRound, shelfRound, simonLength, solidOptions, timerFor, volumeAskLessChance, volumeContainerCount,
   volumeUsesCapacityCompare
 } from './difficulty.js';

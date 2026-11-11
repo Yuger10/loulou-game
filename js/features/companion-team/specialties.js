@@ -183,7 +183,7 @@ function samNextStep(){
   const chap = WORLD_ORDER.find(id=> worldUnlocked(id) && STORY[id] && !storySolved(id));
   if(chap) return { icon:'📖', text:`L'énigme de ${WORLDS[chap].name} n'est pas encore résolue !`, go:()=> openStoryChapter(chap) };
   const helped = state.charsHelped || {};
-  const friend = charsOf(currentWorld).map(([cid])=> cid).find(cid=> !helped[cid]);
+  const friend = charsOf(currentWorld).map(([cid])=> cid).find(cid=> !helped[cid] && !CHARACTERS[cid].noGames);
   if(friend) return { icon:'💬', text:`${CHARACTERS[friend].name} n'a encore jamais joué avec toi !`, go:()=>{ switchView('ile'); openDialogue(friend); } };
   return null;
 }

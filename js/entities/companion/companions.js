@@ -6,6 +6,7 @@
    Par défaut on propose ceux qui correspondent au profil (fille : sirène,
    princesse, fée ; garçon : pirate, chevalier, explorateur), mais l'enfant
    peut toujours choisir n'importe lequel. */
+import { state } from '../game-state/index.js';
 import { playSound } from '../../shared/ui/index.js';
 
 // La garde-robe (« Mon look ») et les fêtes de saison habillent compagnons et
@@ -22,9 +23,14 @@ const COMPANIONS = {
   tom:    { name:'Tom',    title:'le pirate',      group:'m', skin:'#F6C9A6', hair:'#7A4426', hairDark:'#56301A', outfit:'#FFFFFF', outfitDark:'#3A7BD5', style:'pirate' },
   leo:    { name:'Léo',    title:'le chevalier',   group:'m', skin:'#C98B62', hair:'#4A2C1A', hairDark:'#2E1A0E', outfit:'#C9D3DE', outfitDark:'#97A6B6', style:'knight' },
   sam:    { name:'Sam',    title:"l'explorateur",  group:'m', skin:'#8D5A3B', hair:'#2B2420', hairDark:'#16110E', outfit:'#D9B26F', outfitDark:'#B38B47', style:'explorer' },
+  // Grisou, le petit nuage de la saison 2 : il ne se choisit qu'après le grand
+  // final (unlock : le champ de la sauvegarde qui le débloque)
+  grisou: { name:'Grisou', title:'le petit nuage', group:'', style:'cloud', unlock:'season2Done', skin:'#F3E8FF' },
   zap:    { name:'Zap',    title:'le super-héros', group:'m', skin:'#EDB98F', hair:'#4A2C1A', hairDark:'#2E1A0E', outfit:'#3A7BD5', outfitDark:'#24427A', cape:'#FF8A3D', capeDark:'#E0692A', style:'hero' },
 };
-const COMPANION_ORDER = ['perle','rose','lili','tom','leo','sam','zap'];
+const COMPANION_ORDER = ['perle','rose','lili','tom','leo','sam','zap','grisou'];
+// un compagnon se choisit s'il n'a pas de condition, ou si elle est remplie
+function companionUnlocked(id){ const c = COMPANIONS[id]; return !!c && (!c.unlock || !!state[c.unlock]); }
 const BUDDY_MOODS = ['happy','think','wow','cheer','oops','sleepy'];
 
 const INK = '#2B2140';
@@ -199,6 +205,7 @@ function buddyParts(c, o){
 // opts.look : la tenue choisie dans la garde-robe (js/features/wardrobe/wardrobe.js), pour
 // l'avatar dessiné du joueur — { tete, visage, tenue }.
 function companionSVG(id, mood, opts){
+  if(id === 'grisou') return grisouBuddySVG(BUDDY_MOODS.includes(mood) ? mood : 'happy', opts);
   let look = (opts && opts.look) || null;
   // saison (js/features/seasons/seasons.js) : bonnet de Noël, chapeau de sorcière ou de fête
   const sHat = (!look || !look.tete) && companionDressing.seasonHat ? companionDressing.seasonHat() : null;
@@ -226,6 +233,38 @@ function companionSVG(id, mood, opts){
   </svg>`;
 }
 
+/* Grisou en compagnon : le petit nuage, tout coloré depuis le grand final,
+   avec son arc-en-ciel ; son visage suit l'humeur (comme les autres). */
+function grisouBuddySVG(m, opts){
+  const label = (opts && opts.label) || 'Grisou le petit nuage';
+  const eyes = m === 'sleepy'
+    ? '<path d="M40 66 q6 5 12 0 M68 66 q6 5 12 0" fill="none" stroke="#2B2140" stroke-width="3" stroke-linecap="round"/>'
+    : m === 'think'
+      ? '<ellipse cx="47" cy="64" rx="4.6" ry="6" fill="#2B2140"/><ellipse cx="73" cy="64" rx="4.6" ry="6" fill="#2B2140"/><circle cx="48.5" cy="60.5" r="1.8" fill="#fff"/><circle cx="74.5" cy="60.5" r="1.8" fill="#fff"/>'
+      : '<ellipse cx="47" cy="66" rx="4.6" ry="6" fill="#2B2140"/><ellipse cx="73" cy="66" rx="4.6" ry="6" fill="#2B2140"/><circle cx="48.6" cy="63.5" r="1.7" fill="#fff"/><circle cx="74.6" cy="63.5" r="1.7" fill="#fff"/>';
+  const mouth = {
+    happy:'<path d="M50 78 Q60 88 70 78" fill="none" stroke="#8C2F3F" stroke-width="3" stroke-linecap="round"/>',
+    cheer:'<path d="M48 76 Q60 94 72 76Z" fill="#8C2F3F"/><path d="M53 84 Q60 89 67 84" fill="#FF8FA3"/>',
+    wow:'<ellipse cx="60" cy="82" rx="5.5" ry="7" fill="#8C2F3F"/>',
+    think:'<path d="M54 82 H66" stroke="#8C2F3F" stroke-width="3" stroke-linecap="round"/><g fill="#C9B8F2"><circle cx="94" cy="34" r="4"/><circle cx="102" cy="24" r="5"/></g>',
+    oops:'<path d="M50 82 Q55 78 60 82 Q65 86 70 82" fill="none" stroke="#8C2F3F" stroke-width="3" stroke-linecap="round"/><path d="M38 56 L52 59 M82 56 L68 59" stroke="#5B6474" stroke-width="2.4" stroke-linecap="round"/>',
+    sleepy:'<path d="M55 82 Q60 85 65 82" fill="none" stroke="#8C2F3F" stroke-width="2.6" stroke-linecap="round"/><path d="M92 36 h8 l-8 8 h8" fill="none" stroke="#7B5CC0" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>',
+  }[m];
+  const sparkle = m === 'cheer' || m === 'wow' ? '<g fill="#FFD95A"><path d="M14 30 l2 5 l5 1 l-4 3 l1 5 l-4 -2 l-4 2 l1 -5 l-4 -3 l5 -1z"/><path d="M104 66 l1.6 4 l4 .6 l-3 2.6 l.8 4 l-3.4 -1.8 l-3.4 1.8 l.8 -4 l-3 -2.6 l4 -.6z"/></g>' : '';
+  return `<svg class="buddy buddy--${m}" data-buddy="grisou" viewBox="0 0 120 130" role="img" aria-label="${label}">
+    <g class="b-body">
+      <g fill="none" stroke-width="5" stroke-linecap="round"><path d="M8 100 Q60 10 112 100" stroke="#FF6F61"/><path d="M15 100 Q60 22 105 100" stroke="#FFD95A"/><path d="M22 100 Q60 34 98 100" stroke="#6ED38C"/><path d="M29 100 Q60 46 91 100" stroke="#6FB8F5"/><path d="M36 100 Q60 58 84 100" stroke="#BFA3EC"/></g>
+    </g>
+    <g class="b-head">
+      <path d="M26 104 C10 104 6 84 20 78 C16 60 34 50 46 58 C50 40 76 36 84 54 C100 48 114 64 104 78 C116 84 110 106 94 104 Z" fill="#F3E8FF" stroke="#7B5CC0" stroke-width="3" stroke-linejoin="round"/>
+      <path d="M36 64 Q44 56 54 60" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" opacity=".8"/>
+      ${eyes}
+      <ellipse cx="38" cy="78" rx="6" ry="3.6" fill="#FF8FA3" opacity=".6"/><ellipse cx="82" cy="78" rx="6" ry="3.6" fill="#FF8FA3" opacity=".6"/>
+      ${mouth}${sparkle}
+    </g>
+  </svg>`;
+}
+
 /* ---- quel compagnon pour quel joueur ---- */
 function defaultCompanionFor(gender){
   return gender==='m' ? 'tom' : gender==='f' ? 'perle' : 'perle';
@@ -244,8 +283,8 @@ function currentCompanion(){
 }
 // compagnons proposés en premier selon le profil ; '' = tous
 function companionsFor(gender){
-  if(gender==='f' || gender==='m') return COMPANION_ORDER.filter(k=>COMPANIONS[k].group===gender);
-  return COMPANION_ORDER.slice();
+  if(gender==='f' || gender==='m') return COMPANION_ORDER.filter(k=>COMPANIONS[k].group===gender && companionUnlocked(k));
+  return COMPANION_ORDER.filter(companionUnlocked);
 }
 
 /* ---- le compagnon réagit dans la fenêtre de jeu ---- */
@@ -275,8 +314,9 @@ function buddySlot(mood, extraClass){
 
 /* ---- sélecteur de compagnon (accueil, nouveau joueur, réglages) ---- */
 function companionSelector(sel, gender, showAll){
-  const list = showAll ? COMPANION_ORDER : companionsFor(gender);
-  const others = COMPANION_ORDER.length - list.length;
+  const all = COMPANION_ORDER.filter(companionUnlocked);
+  const list = showAll ? all : companionsFor(gender);
+  const others = all.length - list.length;
   return `<label class="mini-label">✨ Ton compagnon d'aventure</label>
     <div class="buddy-grid">
       ${list.map(k=>`<button type="button" class="buddy-opt ${k===sel?'sel':''}" data-buddy="${k}" aria-label="${COMPANIONS[k].name} ${COMPANIONS[k].title}">
@@ -300,7 +340,7 @@ function bindCompanionSelector(root, onPick, onMore){
    dessiné (ex. « art:zap », le super-héros). avatarHTML l'affiche en image
    partout où l'avatar est affiché ; avatarText le remplace par un emoji
    dans le texte simple (notifications, voix). */
-const AVATAR_ART_EMOJI = { zap:'🦸‍♂️', perle:'🧜‍♀️', rose:'👸', lili:'🧚‍♀️', tom:'🏴‍☠️', leo:'🛡️', sam:'🧭' };
+const AVATAR_ART_EMOJI = { zap:'🦸‍♂️', perle:'🧜‍♀️', rose:'👸', lili:'🧚‍♀️', tom:'🏴‍☠️', leo:'🛡️', sam:'🧭', grisou:'☁️' };
 function isArtAvatar(av){ return typeof av==='string' && av.startsWith('art:') && !!COMPANIONS[av.slice(4)]; }
 // look (facultatif) : chapeau, lunettes, couleurs choisis dans la garde-robe
 function avatarHTML(av, look){
@@ -321,6 +361,6 @@ function avatarText(av){
 
 export {
   avatarHTML, avatarText, bindCompanionSelector, buddyReact, buddySlot, COMPANION_ORDER, companionOf,
-  COMPANIONS, companionSelector, companionsFor, companionSVG, currentCompanion, defaultCompanionFor,
+  COMPANIONS, companionSelector, companionsFor, companionSVG, companionUnlocked, currentCompanion, defaultCompanionFor,
   isArtAvatar, setCompanionDressing, setCompanionPlayerSource
 };
