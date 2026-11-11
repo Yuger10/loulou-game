@@ -36,7 +36,7 @@ Registre des tracks Conductor, **dans l'ordre d'implémentation**. Feuille de ro
 
 ---
 
-- [~] **Track: Formulaires et boutons d'action : barre fixe en bas, modifications non enregistrées, actions dangereuses protégées**
+- [x] **Track: Formulaires et boutons d'action : barre fixe en bas, modifications non enregistrées, actions dangereuses protégées (v59)**
 *Link: [./tracks/formulaires-boutons_20261109/](./tracks/formulaires-boutons_20261109/)*
 
 ---

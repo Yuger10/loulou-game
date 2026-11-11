@@ -17,7 +17,7 @@ Spec : [spec.md](./spec.md). Workflow : [workflow.md](../../workflow.md).
     - [x] Tests : fermer sans changement ferme ; après un changement, « Garder tes changements ? » (voix) ; « Garder » enregistre, « Ne pas garder » rétablit l'état d'avant ; vaut pour ✕, Retour, toucher à côté et Échap
 - [x] Task: Slice `shared/ui/confirm`
     - [x] Tests : fenêtre du jeu lue à voix haute, bouton rouge et « Annuler » mis en avant ; double confirmation par saisie d'un mot
-- [ ] Task: Conductor - User Manual Verification 'Modèle commun' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Modèle commun' (Protocol in workflow.md)
 
 ## Phase 2 : Migrer les formulaires
 - [x] Task: Accueil et nouveau joueur
@@ -28,19 +28,19 @@ Spec : [spec.md](./spec.md). Workflow : [workflow.md](../../workflow.md).
     - [x] Tests : même modèle ; coller un code puis valider
 - [x] Task: Boutiques et sélecteurs
     - [x] Tests : garde-robe, cadeaux, décorations et choix du jeu ont l'en-tête fixe avec ✕
-- [ ] Task: Conductor - User Manual Verification 'Migrer les formulaires' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Migrer les formulaires' (Protocol in workflow.md)
 
 ## Phase 3 : Actions dangereuses
 - [x] Task: Plus de `confirm()`
     - [x] Tests : aucun `confirm(` dans `js/` (test d'architecture) ; recommencer et supprimer passent par `shared/ui/confirm` avec double confirmation
 - [x] Task: Derrière l'accès parents
     - [x] Tests : recommencer et supprimer ont disparu du Sac et des réglages du joueur ; ils ne sont accessibles qu'après `openParentGate`, dans une zone sensible séparée (provisoirement dans l'espace parents, en attendant la section Parents des Réglages de la track `navigation-reglages`)
-- [ ] Task: Conductor - User Manual Verification 'Actions dangereuses' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Actions dangereuses' (Protocol in workflow.md)
 
-## Phase 4 : Livraison
-- [ ] Task: Docs et intégration
-    - [ ] Numéro de version attribué à la livraison (le suivant sur `main`) : PRD, TODO, cache `sw.js` incrémenté, `npm run sync`
-- [ ] Task: Vérification complète
-    - [ ] `npm test` vert ; parcours manuel sur téléphone (portrait, paysage, clavier ouvert)
-- [ ] Task: Conductor - User Manual Verification 'Livraison' (Protocol in workflow.md)
-- [ ] Task: Branche, PR sur `main`, merge
+## Phase 4 : Livraison (v59)
+- [x] Task: Docs et intégration
+    - [x] Numéro de version attribué à la livraison (le suivant sur `main`) : PRD, TODO, cache `sw.js` incrémenté, `npm run sync`
+- [x] Task: Vérification complète
+    - [x] `npm test` vert ; parcours manuel sur téléphone (portrait, paysage, clavier ouvert)
+- [x] Task: Conductor - User Manual Verification 'Livraison' (Protocol in workflow.md)
+- [x] Task: Branche, PR sur `main`, merge
