@@ -132,7 +132,7 @@ function renderAlbum(){
 // bouton « réglages / recommencer » du sac
 document.getElementById('reset-btn').addEventListener('click', ()=>{
   playSound('tap');
-  // ouvre les réglages du joueur courant : renommer, recommencer, supprimer
+  // ouvre les réglages du joueur courant (recommencer et supprimer : espace parents)
   emit('nav:player-settings', profiles.current);
 });
 

@@ -55,7 +55,17 @@ function openWelcome(){
   document.getElementById('welcome').classList.add('show');
 }
 function closeWelcome(){
-  const name = document.getElementById('name-input').value.trim().slice(0,12);
+  const input = document.getElementById('name-input');
+  const name = input.value.trim().slice(0,12);
+  // le prénom est obligatoire : on le demande en douceur, à voix haute
+  if(!name){
+    playSound('tap');
+    speak('Écris d\'abord ton prénom, en haut.');
+    input.classList.add('form-missing');
+    input.focus();
+    input.addEventListener('input', ()=> input.classList.remove('form-missing'), { once:true });
+    return;
+  }
   state.name = name;
   state.avatar = pendingAvatar;
   const p1 = currentProfile();

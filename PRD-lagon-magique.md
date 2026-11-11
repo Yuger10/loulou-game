@@ -1262,3 +1262,25 @@ Track Conductor `sons`. Choix faits avec la joueuse sur la page d'écoute « Son
 - Les 22 mini-jeux sont joués jusqu'à la victoire à chaque palier, avec une vérification indépendante pour les paquets (jouets dessinés) et l'étagère (ligne et colonne de chaque case).
 - `test/niveaux.test.js` vérifie aussi les fiches `metadata.json` des tracks. Il a corrigé 4 niveaux restés à l'ancienne valeur.
 - Cache `lagon-v58`.
+
+---
+
+# v59 — Formulaires et boutons d'action
+
+Track Conductor `formulaires-boutons`. Demande : « bien gérer les boutons dans les formulaires, avec des boutons d'enregistrement flottants ou en haut ; revoir les formulaires ».
+
+## Un modèle de formulaire commun (`js/shared/ui/form.js`)
+- **En-tête fixe** (titre et ✕), **contenu qui défile** en sections titrées (🙂 Moi, 🎨 Mon avatar, 🧚 Mon compagnon, 🎂 Mon anniversaire), **barre d'actions fixe en bas**, à portée du pouce : Retour / Annuler à gauche, Enregistrer ✅ à droite.
+- Utilisé par l'accueil, « Nouveau joueur » et les réglages d'un joueur. Les boutiques et sélecteurs gardent leur titre visible en défilant.
+- **« Garder tes changements ? »** si l'on ferme après une modification (✕, Retour, poignée, toucher à côté, Échap) ; Échap ou toucher à côté ramènent au formulaire, sans rien enregistrer ni effacer.
+- **Prénom obligatoire, demandé en douceur** : bouton grisé, message parlé ; clavier adapté sur mobile ; « Entrée » valide.
+
+## Actions dangereuses
+- **Plus aucun `confirm()` du navigateur** : une fenêtre du jeu (`js/shared/ui/confirm.js`), lue à voix haute, « Annuler » mis en avant.
+- **« Recommencer » et « Supprimer un joueur » ne sont plus accessibles à l'enfant** : zone sensible de l'espace parents (derrière la multiplication), avec double confirmation (écrire « RECOMMENCER » ou le prénom).
+
+## Tests
+- `test/forms.test.js` (47 tests) ; le test de fumée suit la nouvelle place de la remise à zéro.
+- `form.css` est chargée en dernier (jsdom applique la dernière règle déclarée, sans tenir compte de la spécificité).
+
+- Cache `lagon-v59`.

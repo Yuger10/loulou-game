@@ -4,14 +4,14 @@ import {
   companionSVG, defaultCompanionFor
 } from '../../entities/companion/index.js';
 import { ageToDiff, GAME_LIST, gameTypesForAge } from '../../entities/difficulty/index.js';
-import { gameCount, levelOf, resetState, save, state } from '../../entities/game-state/index.js';
+import { gameCount, levelOf, save, state } from '../../entities/game-state/index.js';
 import {
-  addProfile, AVATARS, currentPlayerAge, currentProfile, deleteProfile, party, partyCurrent, profiles,
-  profileSaveKey, refreshAll, saveProfiles, switchProfile
+  addProfile, AVATARS, currentPlayerAge, currentProfile, party, partyCurrent, profiles,
+  profileSaveKey, saveProfiles, switchProfile
 } from '../../entities/player/index.js';
-import { currentWorld, setCurrentWorld, worldGame, WORLDS } from '../../entities/world/index.js';
+import { currentWorld, worldGame, WORLDS } from '../../entities/world/index.js';
 import { emit, on, pickRandom, shuffle } from '../../shared/lib/index.js';
-import { closeModal, confetti, openModal, playSound, showToast, speak } from '../../shared/ui/index.js';
+import { bindForm, closeModal, confetti, formSheet, openModal, playSound, showToast, speak } from '../../shared/ui/index.js';
 import { pickPracticeGame } from '../adaptive/index.js';
 import { backupDue, openBackup } from '../backup/index.js';
 import { teamOnGamePicker } from '../companion-team/index.js';
@@ -133,143 +133,136 @@ function ageSelector(sel){
     <p class="mode-hint" id="age-hint">${sel?`Défi adapté : ${'⭐'.repeat(ageToDiff(sel))}`:'Sert à adapter la difficulté en course 🏁'}</p>`;
 }
 
+/* --- Formulaires des joueurs (modèle commun de js/shared/ui/form.js) --- */
+const NAME_INPUT_ATTRS = 'type="text" maxlength="12" placeholder="Prénom" autocomplete="off" autocapitalize="words" autocorrect="off" spellcheck="false" enterkeyhint="done"';
+const NAME_REQUIRED = 'Écris d\'abord un prénom, en haut.';
+const escAttr = (v)=> String(v || '').replace(/"/g, '&quot;');
+// les sections communes : Moi (prénom, âge), Mon avatar, Mon compagnon
+function playerFormSections(o){
+  return [
+    { title:'🙂 Moi', html:`<input id="${o.nameId}" class="name-input-modal" ${NAME_INPUT_ATTRS} value="${escAttr(o.name)}">${ageSelector(o.age)}` },
+    { title:'🎨 Mon avatar', html:`<div class="avatar-grid">
+        ${AVATARS.map(a=>`<button class="avatar-opt ${a===o.av?'sel':''}" data-av="${a}" aria-label="${avatarText(a)}">${avatarHTML(a)}</button>`).join('')}
+      </div>` },
+    { title:'🧚 Mon compagnon', html:`${genderSelector(o.gen)}${companionSelector(o.comp, o.gen, o.allBuddies)}` },
+  ];
+}
+
 /* --- Nouveau joueur --- */
 function openNewPlayer(){
   let av = pickRandom(AVATARS);
-  let age = null, gen = '', comp = null, allBuddies = false;
+  let age = null, gen = '', comp = null, allBuddies = false, name = '';
+  const snap = ()=> ({ name: name.trim(), av, age, gen, comp });
+  const initial = snap();
   const render = ()=>{
-    openModal(`
-      ${gameHeader('➕ Nouveau joueur', 'Choisis un prénom, un avatar et ton âge')}
-      <input id="np-name" class="name-input-modal" type="text" maxlength="12" placeholder="Prénom" autocomplete="off">
-      <div class="avatar-grid">
-        ${AVATARS.map(a=>`<button class="avatar-opt ${a===av?'sel':''}" data-av="${a}" aria-label="${avatarText(a)}">${avatarHTML(a)}</button>`).join('')}
-      </div>
-      ${genderSelector(gen)}
-      ${companionSelector(comp || defaultCompanionFor(gen), gen, allBuddies)}
-      ${ageSelector(age)}
-      <button class="btn-primary" id="np-ok">C'est parti ! 🎮</button>
-      <button class="btn-ghost" id="np-cancel">Annuler</button>
-    `);
-    bindQuit();
+    openModal(formSheet({
+      title:'➕ Nouveau joueur',
+      sections: playerFormSections({ nameId:'np-name', name, age, av, gen, comp: comp || defaultCompanionFor(gen), allBuddies }),
+      primary:'C\'est parti ! 🎮', secondary:'Annuler',
+    }));
     const input = document.getElementById('np-name');
-    const redraw = ()=>{ const v = input.value; render(); document.getElementById('np-name').value = v; };
+    input.addEventListener('input', ()=>{ name = input.value; });
     document.querySelectorAll('.avatar-opt').forEach(b=>{
-      b.onclick = ()=>{ av = b.dataset.av; playSound('tap'); redraw(); };
+      b.onclick = ()=>{ av = b.dataset.av; playSound('tap'); render(); };
     });
     document.querySelectorAll('.age-opt').forEach(b=>{
-      b.onclick = ()=>{ age = Number(b.dataset.age); playSound('tap'); redraw(); };
+      b.onclick = ()=>{ age = Number(b.dataset.age); playSound('tap'); render(); };
     });
     document.querySelectorAll('.gender-opt').forEach(b=>{
       b.onclick = ()=>{
         gen = b.dataset.gender; playSound('tap');
         if(comp && !allBuddies && !companionsFor(gen).includes(comp)) comp = null;
-        redraw();
+        render();
       };
     });
-    bindCompanionSelector(document, k=>{ comp = k; redraw(); }, ()=>{ allBuddies = true; redraw(); });
-    document.getElementById('np-ok').onclick = ()=>{
-      const name = (document.getElementById('np-name').value || '').trim().slice(0,12);
-      addProfile(name, av, age, gen, comp || defaultCompanionFor(gen));
-      playSound('win'); confetti();
-      speak(`Bienvenue ${name || ''} !`);
-      showToast(`${avatarText(av)} ${name || 'Nouveau joueur'} ajouté !`);
-      openPlayers();
-    };
-    document.getElementById('np-cancel').onclick = ()=>{ playSound('tap'); openPlayers(); };
+    bindCompanionSelector(document, k=>{ comp = k; render(); }, ()=>{ allBuddies = true; render(); });
+    bindForm({
+      initial, current: snap,
+      required:[{ value:()=> name, say:NAME_REQUIRED, focus:()=> document.getElementById('np-name') }],
+      onSave:()=>{
+        const n = name.trim().slice(0,12);
+        addProfile(n, av, age, gen, comp || defaultCompanionFor(gen));
+        playSound('win'); confetti();
+        speak(`Bienvenue ${n} !`);
+        showToast(`${avatarText(av)} ${n} ajouté !`);
+        openPlayers();
+      },
+      onCancel:()=> openPlayers(),
+    });
   };
   render();
 }
 
-/* --- Réglages d'un joueur : renommer, réinitialiser, supprimer --- */
+/* --- Réglages d'un joueur : prénom, âge, avatar, compagnon, anniversaire ---
+   (recommencer et supprimer sont dans l'espace parents, zone sensible) */
 function openPlayerSettings(id){
   const p = profiles.list.find(x=>x.id===id);
   if(!p) return;
+  let name = p.name || '';
   let av = p.avatar;
   let age = p.age || null;
   let gen = p.gender || '';
   let comp = companionOf(p), allBuddies = !companionsFor(gen).includes(comp);
   let bday = p.birthday || '';   // « MM-JJ » : le jeu fête l'anniversaire ce jour-là (js/features/seasons/seasons.js)
   const MONTHS = ['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
+  // le jour et le mois sont relus dans la page à chaque fois (une liste peut changer sans événement)
+  const readBday = ()=>{
+    const de = document.getElementById('pe-bday-d'), me = document.getElementById('pe-bday-m');
+    if(!de || !me) return bday;
+    const d = Number(de.value), m = Number(me.value);
+    bday = d && m ? `${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}` : '';
+    return bday;
+  };
+  const snap = ()=> ({ name: name.trim(), av, age, gen, comp, bday: readBday() });
+  const initial = { name: name.trim(), av, age, gen, comp, bday };
   const render = ()=>{
     const [bm, bd] = bday ? bday.split('-').map(Number) : [0, 0];
-    openModal(`
-      ${gameHeader(`⚙️ ${p.name || 'Joueur'}`, 'Modifier, réinitialiser ou supprimer')}
-      <input id="pe-name" class="name-input-modal" type="text" maxlength="12" value="${(p.name||'').replace(/"/g,'&quot;')}" placeholder="Prénom">
-      <div class="avatar-grid">
-        ${AVATARS.map(a=>`<button class="avatar-opt ${a===av?'sel':''}" data-av="${a}" aria-label="${avatarText(a)}">${avatarHTML(a)}</button>`).join('')}
-      </div>
-      ${genderSelector(gen)}
-      ${companionSelector(comp, gen, allBuddies)}
-      ${ageSelector(age)}
-      <label class="mini-label">🎂 Son anniversaire (facultatif)</label>
-      <div class="bday-row">
-        <select id="pe-bday-d" aria-label="Jour de l'anniversaire"><option value="0">Jour</option>${Array.from({length:31},(_,i)=>`<option value="${i+1}" ${bd===i+1?'selected':''}>${i+1}</option>`).join('')}</select>
-        <select id="pe-bday-m" aria-label="Mois de l'anniversaire"><option value="0">Mois</option>${MONTHS.map((m,i)=>`<option value="${i+1}" ${bm===i+1?'selected':''}>${m}</option>`).join('')}</select>
-      </div>
-      <div class="speech" style="font-size:.82rem;">${playerSummary(id)}</div>
-      <button class="btn-primary" id="pe-save">Enregistrer ✅</button>
-      <button class="btn-craft danger" id="pe-reset">🔄 Recommencer à zéro</button>
-      ${profiles.list.length>1 ? `<button class="btn-craft danger" id="pe-del">🗑️ Supprimer ce joueur</button>` : ''}
-      <button class="btn-ghost" id="pe-back">Retour</button>
-    `);
-    bindQuit();
+    openModal(formSheet({
+      title:`⚙️ ${p.name || 'Joueur'}`,
+      sections:[
+        ...playerFormSections({ nameId:'pe-name', name, age, av, gen, comp, allBuddies }),
+        { title:'🎂 Mon anniversaire (facultatif)', html:`<div class="bday-row">
+            <select id="pe-bday-d" aria-label="Jour de l'anniversaire"><option value="0">Jour</option>${Array.from({length:31},(_,i)=>`<option value="${i+1}" ${bd===i+1?'selected':''}>${i+1}</option>`).join('')}</select>
+            <select id="pe-bday-m" aria-label="Mois de l'anniversaire"><option value="0">Mois</option>${MONTHS.map((m,i)=>`<option value="${i+1}" ${bm===i+1?'selected':''}>${m}</option>`).join('')}</select>
+          </div>` },
+        { html:`<div class="speech" style="font-size:.82rem;">${playerSummary(id)}</div>` },
+      ],
+      primary:'Enregistrer ✅', secondary:'Retour',
+    }));
     const input = document.getElementById('pe-name');
-    const redraw = ()=>{ const v = input.value; render(); document.getElementById('pe-name').value = v; };
+    input.addEventListener('input', ()=>{ name = input.value; });
     document.querySelectorAll('.avatar-opt').forEach(b=>{
-      b.onclick = ()=>{ av = b.dataset.av; playSound('tap'); redraw(); };
+      b.onclick = ()=>{ av = b.dataset.av; playSound('tap'); render(); };
     });
     document.querySelectorAll('.age-opt').forEach(b=>{
-      b.onclick = ()=>{ age = Number(b.dataset.age); playSound('tap'); redraw(); };
+      b.onclick = ()=>{ age = Number(b.dataset.age); playSound('tap'); render(); };
     });
     document.querySelectorAll('.gender-opt').forEach(b=>{
-      b.onclick = ()=>{ gen = b.dataset.gender; playSound('tap'); redraw(); };
+      b.onclick = ()=>{ gen = b.dataset.gender; playSound('tap'); render(); };
     });
-    bindCompanionSelector(document, k=>{ comp = k; redraw(); }, ()=>{ allBuddies = true; redraw(); });
-    const readBday = ()=>{
-      const d = Number(document.getElementById('pe-bday-d').value), m = Number(document.getElementById('pe-bday-m').value);
-      bday = d && m ? `${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}` : '';
-    };
-    ['pe-bday-d','pe-bday-m'].forEach(k=> document.getElementById(k).onchange = readBday);
-    document.getElementById('pe-save').onclick = ()=>{
-      readBday();
-      p.birthday = bday;
-      p.name = (document.getElementById('pe-name').value||'').trim().slice(0,12);
-      p.avatar = av;
-      p.age = age;
-      p.gender = gen;
-      p.companion = comp;
-      saveProfiles();
-      if(id === profiles.current){
-        state.name = p.name; state.avatar = p.avatar; save();
-        renderProfile(); renderLagon();
-      }
-      playSound('good');
-      showToast('Enregistré ✅');
-      openPlayers();
-    };
-    document.getElementById('pe-reset').onclick = ()=>{
-      if(!confirm(`Tout recommencer à zéro pour ${p.name || 'ce joueur'} ?\n(pièces, objets, îles et niveau seront perdus)`)) return;
-      if(id === profiles.current){
-        resetState();
-        setCurrentWorld('lagon');
-        refreshAll();
-      } else {
-        try{ localStorage.removeItem(profileSaveKey(id)); }catch(e){}
-      }
-      playSound('win');
-      speak(`Nouvelle aventure pour ${p.name || 'toi'} !`);
-      showToast('🔄 Nouvelle aventure !');
-      openPlayers();
-    };
-    const del = document.getElementById('pe-del');
-    if(del) del.onclick = ()=>{
-      if(!confirm(`Supprimer ${p.name || 'ce joueur'} et toute sa partie ?`)) return;
-      deleteProfile(id);
-      playSound('tap');
-      showToast('Joueur supprimé');
-      openPlayers();
-    };
-    document.getElementById('pe-back').onclick = ()=>{ playSound('tap'); openPlayers(); };
+    bindCompanionSelector(document, k=>{ comp = k; render(); }, ()=>{ allBuddies = true; render(); });
+    ['pe-bday-d','pe-bday-m'].forEach(k=> document.getElementById(k).addEventListener('change', readBday));
+    bindForm({
+      initial, current: snap,
+      required:[{ value:()=> name, say:NAME_REQUIRED, focus:()=> document.getElementById('pe-name') }],
+      onSave:()=>{
+        p.birthday = readBday();
+        p.name = name.trim().slice(0,12);
+        p.avatar = av;
+        p.age = age;
+        p.gender = gen;
+        p.companion = comp;
+        saveProfiles();
+        if(id === profiles.current){
+          state.name = p.name; state.avatar = p.avatar; save();
+          renderProfile(); renderLagon();
+        }
+        playSound('good');
+        showToast('Enregistré ✅');
+        openPlayers();
+      },
+      onCancel:()=> openPlayers(),
+    });
   };
   render();
 }

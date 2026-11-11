@@ -325,13 +325,22 @@ setTimeout(()=>{
     check('panneau joueurs : bouton ajouter', !!d.getElementById('btn-add-player'));
     check('panneau joueurs : 2 modes proposés', !!d.getElementById('btn-solo') && !!d.getElementById('btn-turns'));
 
-    // réglages / reset d'un joueur
+    // réglages d'un joueur : plus de remise à zéro ici, elle est dans la zone
+    // sensible de l'espace parents, avec une double confirmation
     ev(`openPlayerSettings(${JSON.stringify(p2)})`);
-    check('réglages : bouton recommencer', !!d.getElementById('pe-reset'));
-    check('réglages : bouton supprimer', !!d.getElementById('pe-del'));
+    check('réglages : plus de bouton recommencer ni supprimer', !d.getElementById('pe-reset') && !d.getElementById('pe-del'));
+    ev('closeModal()');
+    ev(`parentUnlockedUntil = Date.now() + 60000; openParentSpace(${JSON.stringify(p2)})`);
+    check('espace parents : recommencer et supprimer dans la zone sensible', !!d.getElementById('ps-reset') && !!d.getElementById('ps-delete'));
     ev("state.coins = 77; save()");
-    d.getElementById('pe-reset').click();
+    d.getElementById('ps-reset').click();
+    await wait(20);
+    const resetWord = d.querySelector('#confirm-layer input');
+    resetWord.value = 'RECOMMENCER'; resetWord.dispatchEvent(new w.Event('input', { bubbles:true }));
+    d.querySelector('#confirm-layer [data-confirm="yes"]').click();
+    await wait(40);
     check('reset du joueur : pièces remises à 5', ev('state.coins')===5);
+    ev('closeModal()');
 
     // ---- Mode chacun son tour ----
     ev(`startParty([${JSON.stringify(p1)}, ${JSON.stringify(p2)}])`);
@@ -994,7 +1003,7 @@ setTimeout(()=>{
       ev('openPlayerSettings(profiles.current)');
       d.getElementById('pe-bday-d').value = String(new Date().getDate());
       d.getElementById('pe-bday-m').value = String(new Date().getMonth()+1);
-      d.getElementById('pe-save').click();
+      d.querySelector('.form-actions .form-primary').click();
       check('anniversaire : réglé dans les réglages du joueur', ev('currentProfile().birthday')===ev('seasonMMDD(new Date())'));
       check('anniversaire : le jour J, c\'est la fête', ev('currentSeason()')==='anniversaire' && ev('seasonGiftDue()')==='anniversaire');
       const coins = ev('state.coins');

@@ -47,3 +47,8 @@
   .ps-volume label{grid-column:1 / -1; font-weight:700;}
   .ps-volume input{width:100%; min-height:44px; accent-color:var(--lagoon-dark, #1FA3A5);}
   .ps-volume output{min-width:3.5em; text-align:right; font-variant-numeric:tabular-nums; font-weight:700;}
+
+  /* zone sensible (recommencer, supprimer) : séparée, double confirmation */
+  .ps-danger{border:2px solid rgba(217,72,59,.35);}
+  .ps-danger .ps-actions{display:grid; gap:10px;}
+  .btn-small.danger{background:#D9483B; color:#fff;}
