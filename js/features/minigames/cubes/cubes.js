@@ -79,10 +79,14 @@ function cubesOptions(total, rng){
 }
 const cubeDots = (n)=> `<span class="cube-dots" aria-hidden="true">${'<i></i>'.repeat(n)}</span>`;
 
+// la pile précédente : une relance en tire toujours une AUTRE (anti-devinette)
+let cubesLast = '';
 function renderCubes(){
   setupLives('cubes');
   const dd = gameDiff();
-  const stack = cubesBuildStack(dd);
+  let stack = cubesBuildStack(dd);
+  for(let k = 0; k < 8 && JSON.stringify(stack.heights) === cubesLast; k++) stack = cubesBuildStack(dd);
+  cubesLast = JSON.stringify(stack.heights);
   const opts = cubesOptions(stack.total);
   const q = { heights: stack.heights, total: stack.total, hidden: stack.cfg.d > 1 };
   const say = 'Combien y a-t-il de cubes dans la pile ?';

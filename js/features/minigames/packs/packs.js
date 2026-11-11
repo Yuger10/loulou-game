@@ -51,10 +51,15 @@ function packsLabel(r){
   return r.extra ? `${what} et 1 jouet tout seul` : what;
 }
 
+// la collection précédente : une relance en tire toujours une AUTRE (anti-devinette)
+let packsLast = '';
 function renderPacks(){
   setupLives('packs');
   const dd = gameDiff();
-  const r = packsBuildRound(dd);
+  const key = (x)=> `${x.size}-${x.n}-${x.extra}-${x.toy}`;
+  let r = packsBuildRound(dd);
+  for(let k = 0; k < 8 && key(r) === packsLast; k++) r = packsBuildRound(dd);
+  packsLast = key(r);
   const opts = packsOptions(r);
   const q = { size: r.size, n: r.n, extra: r.extra, label: r.label, total: r.total };
   const say = r.extra
