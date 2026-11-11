@@ -35,6 +35,10 @@ const ISLE_W = 480, ISLE_H = 360;
 const ISLE_CHAR_SLOTS = [
   {x:126, y:250}, {x:354, y:248}, {x:198, y:340}, {x:284, y:342}, {x:96, y:330}, {x:384, y:330},
 ];
+// une île à 5 personnages (le Royaume Arc-en-ciel) : 2 en haut, 3 en bas, bien espacés,
+// pour qu'aucune bulle ne cache le nom d'un voisin (vérifié de 360 à 1280 px de large)
+const ISLE_CHAR_SLOTS_5 = [ {x:126, y:240}, {x:354, y:240}, {x:112, y:352}, {x:220, y:350}, {x:330, y:352} ];
+const isleCharSlots = (n)=> n === 5 ? ISLE_CHAR_SLOTS_5 : ISLE_CHAR_SLOTS;
 const ISLE_GROUND_SLOTS = [
   {x:242, y:262}, {x:110, y:276}, {x:378, y:276}, {x:248, y:348}, {x:150, y:350}, {x:345, y:350},
   {x:282, y:292}, {x:182, y:290}, {x:104, y:342}, {x:384, y:342}, {x:214, y:270}, {x:300, y:268},
@@ -466,7 +470,7 @@ function renderLiveIsland(sc){
         style="z-index:${isleZ(p.y)}; --d:${(i*0.7)%3}s">${DECOS[k].emoji}</span>`;
     }).join('')}
     ${chars.map(([id,c],i)=>{
-      const p = ISLE_CHAR_SLOTS[i % ISLE_CHAR_SLOTS.length];
+      const slots = isleCharSlots(chars.length), p = slots[i % slots.length];
       const mood = charMood(id);
       return `<button class="island isle-char" data-char="${id}" data-vx="${p.x}" data-vy="${p.y}" aria-label="${c.name} ${c.title}, ${mood.label}"
         style="z-index:${isleZ(p.y)}; --d:${i*0.6}s">

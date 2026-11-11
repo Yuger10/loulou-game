@@ -1566,8 +1566,8 @@ Les deux sont proposés dès 5 ans, sans minuteur. Le jeu de l'île est les poti
 - **Version 9** (après la v8 de la pause) : `season2Done` et `squishies.treasures`. Une partie v8 se migre sans perte.
 
 ## Tests
-- Nouveau `test/licornes.test.js` (67 vérifications), branché sur `npm test`. Il couvre :
-  - l'île, les 6 îles du Ciel sans chevauchement, la Reine sans mission, les deux Étincelle ;
+- Nouveau `test/licornes.test.js` (68 vérifications), branché sur `npm test`. Il couvre :
+  - l'île, les 6 îles du Ciel sans chevauchement, les 5 personnages bien placés (aucune bulle sur un nom), la Reine sans mission, les deux Étincelle ;
   - la table des mélanges, l'arc-en-ciel, une seule potion juste, les initiales ;
   - le reflet par les deux axes, les cases qui clignotent, le nouveau motif après 2 erreurs ;
   - Grisou verrouillé avant le final, jamais tiré de 60 boîtes ;

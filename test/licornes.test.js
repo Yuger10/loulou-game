@@ -83,6 +83,11 @@ function startGame(key, tier, age){
     check('2 objets préférés par personnage', chars.every(c=> ev(`(()=>{ const f = favoritesOf(${json(c)}); return f.length===2 && f.every(k=> ITEMS[k].world==="licornes" && !CHARACTERS.${c}.loot.includes(k)); })()`)));
     ev(`closeModal(); state.missions = ${LEVEL(62)}; save(); setWorld("licornes", true); switchView("ile")`);
     check('sur l\'île : ses 5 personnages, le thème appliqué', (d.querySelectorAll('#scene [data-char]').length === 5 || d.querySelectorAll('#scene .isle-char').length === 5) && d.body.dataset.world === 'licornes');
+    // un personnage dont la bulle tomberait sur le nom d'un autre : à peu près à la même place, juste en dessous
+    const under = (sel)=>{ const p = [...d.querySelectorAll(sel)].map(e=> [+e.dataset.vx, +e.dataset.vy]);
+      return p.some((a, i)=> p.some((b, j)=> i !== j && Math.abs(a[0] - b[0]) < 60 && Math.abs(a[1] - b[1]) < 100)); };
+    check('les 5 personnages ont chacun leur place, aucun juste sous un autre (sa bulle cacherait un nom)',
+      new Set([...d.querySelectorAll('#scene .isle-char')].map(e=> e.dataset.vx + ',' + e.dataset.vy)).size === 5 && !under('#scene .isle-char'));
     ev('openDialogue("reine")');
     check('la Reine parle et accepte les cadeaux, sans proposer de jeu', !d.getElementById('btn-play') && !!d.getElementById('btn-gift'));
     ev('closeModal(); openDialogue("felix")');

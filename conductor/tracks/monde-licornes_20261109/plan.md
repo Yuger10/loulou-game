@@ -14,9 +14,10 @@ Nouveaux fichiers prévus : `js/features/minigames/potions/potions.js` (Les poti
 > - **Le miroir :** au palier 5, les deux couleurs s'obtiennent en touchant une case une fois (♥ rose) ou deux fois (★ bleu). Chaque couleur a son symbole.
 > - **Grisou compagnon :** il a son propre dessin pour chaque humeur (un nuage arc-en-ciel). Il est verrouillé (`unlock:'season2Done'`) dans le choix des compagnons, et ne se rencontre pas sur l'île : il rejoint l'équipe au final (événement `season2:done`).
 > - **Trésors :** un catalogue à part (`SQUISHY_TREASURES`), hors de `SQUISHIES` : aucun tirage ni échange ne peut le donner. La case n'apparaît qu'une fois le Ciel ouvert, ou le trésor gagné.
+> - **Sur l'île, 5 personnages** au lieu de 4 : une disposition à part (2 en haut, 3 en bas), pour qu'aucune bulle ne cache le nom d'un voisin, de 360 à 1280 px de large.
 > - **Les récompenses du final** sont données dès son début, pour ne rien perdre si la fenêtre est fermée en route.
 > - **La musique de fête** passe par un événement (`music:theme`), qui remplace un moment le thème de l'île.
-> - **Tests :** un fichier `test/licornes.test.js` (67 vérifications). Le test des compagnons sur Grisou et celui de la migration de la pause ont été mis à jour.
+> - **Tests :** un fichier `test/licornes.test.js` (68 vérifications). Le test des compagnons sur Grisou et celui de la migration de la pause ont été mis à jour.
 
 ## Phase 1 : L'île du Royaume Arc-en-ciel
 - [x] Task: L'île et son contenu
