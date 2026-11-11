@@ -1340,3 +1340,27 @@ Les deux sont proposés dès 5 ans, sans minuteur. Le jeu de l'île est la recet
   - le jeu de l'île, le chapitre, la récompense unique et les épisodes.
 - Les 24 mini-jeux sont joués jusqu'à la victoire à chaque palier, avec une vérification indépendante pour le gâteau (parts dessinées, largeurs égales) et la recette (nombre de cuillères, bon trait).
 - Cache `lagon-v60`.
+
+---
+
+# v61 — Barre de navigation et écran Réglages
+
+Track Conductor `navigation-reglages`. Demande : retravailler la barre du bas (taille selon le support, rôle du bouton Île) et regrouper les paramètres, **sans 5e bouton** : on ouvre les Réglages en touchant son avatar et son prénom.
+
+## Réglages (`js/features/settings/`)
+- **Ouverts en touchant l'avatar et le prénom**, en haut ; un petit ⚙️ l'indique (« Réglages de Loulou » pour les lecteurs d'écran).
+- 🙂 **Moi** : le profil (formulaire de la v59) et « Mon compagnon, mon équipe ».
+- 🔊 **Son** : trois interrupteurs (Bruitages, Voix, Musique) et le volume ; couper les bruitages coupe tout ; le 🔊 du haut reste un raccourci, synchronisé.
+- 👥 **Joueurs** : « Changer de joueur » visible d'emblée, un bouton par joueur, « Ajouter un joueur », « Jouer à plusieurs » (solo, chacun son tour, course).
+- 🔒 **Parents** : espace parents (avec la zone sensible) et sauvegarde, derrière la multiplication ; rappel de sauvegarde en tête si besoin.
+- Les formulaires ouverts depuis les Réglages y ramènent.
+
+## Barre du bas
+- **4 boutons** ; le bouton Île affiche **le nom de l'île courante** (Forêt, Volcan…), avec son icône dessinée (v44).
+- **Une seule règle de taille** (`js/shared/ui/nav.css`) : 64 px en portrait, 48 px en paysage, 72 px sur tablette, barre centrée (~640 px) sur ordinateur ; jamais moins de 48 px. Elle remplace 4 hauteurs empilées depuis la v12.
+- Plus de bouton de réglages dans le Sac ; plus de doublons (sauvegarde, parents) dans le panneau des joueurs.
+
+## Tests
+- `test/settings.test.js` (38 tests) ; tests existants adaptés au nouveau chemin.
+
+- Cache `lagon-v61`.

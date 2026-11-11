@@ -1,7 +1,7 @@
 // onglets du sac : objets / album
 import { hello, save, state } from '../../entities/game-state/index.js';
 import { ALBUM_REWARD, ALL_ITEMS, countItem, CRAFTED, DECOS } from '../../entities/item/index.js';
-import { onProfileRefresh, profiles } from '../../entities/player/index.js';
+import { onProfileRefresh } from '../../entities/player/index.js';
 import { WORLDS } from '../../entities/world/index.js';
 import { emit } from '../../shared/lib/index.js';
 import {
@@ -128,13 +128,6 @@ function renderAlbum(){
       `).join('')}
     </div>`;
 }
-
-// bouton « réglages / recommencer » du sac
-document.getElementById('reset-btn').addEventListener('click', ()=>{
-  playSound('tap');
-  // ouvre les réglages du joueur courant (recommencer et supprimer : espace parents)
-  emit('nav:player-settings', profiles.current);
-});
 
 registerView('sac', ({ sacTab })=>{
   state.newItems = 0; save(); renderBadge();

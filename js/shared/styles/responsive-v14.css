@@ -39,7 +39,6 @@
     .islands{grid-template-columns:repeat(4,1fr);}
     .island{min-height:92px;}
     .island .emoji{font-size:2rem;}
-    nav.bottomnav button{min-height:52px;}
   }
 
   /* Tablette */
@@ -74,7 +73,6 @@
     .islands{grid-template-columns:repeat(4, 1fr); gap:18px;}
     .island{min-height:150px;}
     .island .emoji{font-size:3.4rem;}
-    nav.bottomnav{border-radius:26px 26px 0 0;}
     .sac-grid{grid-template-columns:repeat(auto-fill, minmax(124px, 1fr));}
     .item-card .emoji{font-size:2.4rem;}
     .item-card .name{font-size:.9rem;}

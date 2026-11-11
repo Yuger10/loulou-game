@@ -53,6 +53,7 @@ Chaque mini-jeu a maintenant son propre niveau pour chaque enfant (`js/adaptive.
 - [x] Musique d'ambiance douce, activable : une ambiance par île, inventée en direct, qui baisse quand la voix parle ; bouton son (🎵) ou espace parents — v48
 - [x] Sons retravaillés : ambiance « marimba doux » (gamme pentatonique, plus de buzzer), moteur audio unique (limiteur, écho doux, variation, anti-rafale, réduction pendant la voix), sons de l'indice, de la nouvelle île et de la boîte, volume par joueur — v56
 - [x] Formulaires : barre d'actions fixe en bas, « Garder tes changements ? », prénom obligatoire en douceur, plus de confirm(), recommencer et supprimer dans la zone sensible de l'espace parents — v59
+- [x] Navigation : Réglages ouverts par l'avatar et le prénom (Son, Moi, Joueurs, Parents protégé), bouton Île nommé, une seule règle de taille pour la barre du bas — v61
 - [ ] À observer : le volume des touchers et des fêtes est-il bien dosé ? Le « oups » est-il assez clair sans être triste ?
 - [x] Décorations de saison : Halloween, Noël, anniversaire — île décorée, neige / feuilles / ballons, chapeaux de fête pour les compagnons, un cadeau par saison ; aperçu dans l'espace parents — v45
 - [x] Mini-jeu « Assembler l'image » (« Le puzzle ») : 2×2 avec l'image en transparence, puis 3×3, puis 4×3 avec un modèle ; glisser du doigt ou toucher morceau puis case — v46

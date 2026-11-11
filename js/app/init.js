@@ -12,7 +12,6 @@ import { renderMap } from '../features/map/index.js';
 import { updateMusic } from '../features/music/index.js';
 import { startPlayTimeTracker } from '../features/parents/index.js';
 import { renderRaceTrack, renderTurnBar } from '../features/party/index.js';
-import { openPlayers } from '../features/players/index.js';
 import { closeWelcome, openWelcome, renderProfile, renderSoundBtn } from '../features/profile/index.js';
 import { ensureQuests, openQuestsModal } from '../features/quests/index.js';
 import { initSeasons, maybeSeasonGift } from '../features/seasons/index.js';
@@ -102,7 +101,8 @@ document.addEventListener('keydown', (e)=>{
 document.getElementById('btn-splash-play').addEventListener('click', hideSplash);
 showSplash();
 // la pastille en haut ouvre le panneau des joueurs (profils, solo / chacun son tour)
-document.getElementById('avatar-pill').addEventListener('click', ()=>{ playSound('tap'); openPlayers(); });
+// toucher l'avatar et le prénom ouvre les Réglages (pas de 5e bouton dans la barre du bas)
+document.getElementById('avatar-pill').addEventListener('click', ()=>{ playSound('tap'); switchView('reglages'); });
 document.getElementById('btn-start').addEventListener('click', closeWelcome);
 document.getElementById('name-input').addEventListener('keydown', e=>{ if(e.key==='Enter') closeWelcome(); });
 // Installe le service worker ET recharge automatiquement dès qu'une

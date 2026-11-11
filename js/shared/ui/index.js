@@ -7,4 +7,4 @@ export { confetti, onWrongFeedback, shakeEl, showToast, vibrate, wrongFeedback }
 export { closeModal, onModalChange, onModalClose, onModalOpen, openModal, requestCloseModal, setModalCloseGuard } from './modal.js';
 export { askConfirm } from './confirm.js';
 export { bindForm, formSheet } from './form.js';
-export { registerView, switchView } from './views.js';
+export { registerView, setNavLabel, switchView } from './views.js';

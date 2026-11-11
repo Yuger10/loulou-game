@@ -814,8 +814,8 @@ setTimeout(()=>{
       check('code de transfert : un code tronqué est refusé', ev(`parseBackupText(${JSON.stringify(code.slice(0, code.length-40))}).ok`)===false);
       check('sauvegarde : un fichier étranger est refusé', ev('parseBackupText(JSON.stringify({app:"autre", data:{}})).ok')===false && ev('parseBackupText("bonjour").ok')===false);
       check('sauvegarde : une clé étrangère est refusée', ev('parseBackupText(JSON.stringify({app:"lagon-magique", data:{"autre-site":"{}"}})).ok')===false);
-      ev('openPlayers()');
-      check('sauvegarde : accessible depuis le panneau des joueurs', !!d.getElementById('btn-backup'));
+      ev('switchView("reglages")');
+      check('sauvegarde : accessible depuis les Réglages (section Parents)', !!d.getElementById('rg-backup'));
       ev('openBackup()');
       check('sauvegarde : la fenêtre propose enregistrer, transférer, restaurer, installer', !!d.getElementById('bk-export') && !!d.getElementById('bk-code') && !!d.getElementById('bk-file') && !!d.getElementById('bk-install-zone'));
       ev('closeModal()');
@@ -857,9 +857,9 @@ setTimeout(()=>{
       check('pause douce : un adulte peut ajouter 10 minutes', ev('pauseDue()')===false);
       ev('currentProfile().pauseMin = 0; state.pauseExtra = null; state.playTime = {}; save(); saveProfiles()');
       // accès réservé aux adultes
-      ev('parentUnlockedUntil = 0; openPlayers()');
-      check('parents : bouton dans le panneau des joueurs', !!d.getElementById('btn-parents'));
-      d.getElementById('btn-parents').click();
+      ev('parentUnlockedUntil = 0; switchView("reglages")');
+      check('parents : bouton dans les Réglages (section Parents)', !!d.getElementById('rg-parents'));
+      d.getElementById('rg-parents').click();
       check('parents : une question pour adultes protège l\'accès', !!d.getElementById('gate-in') && !d.querySelector('.ps-tabs'));
       const q = d.querySelector('.gate-q').textContent.match(/(\d+) × (\d+)/);
       d.getElementById('gate-in').value = String(Number(q[1])*Number(q[2]) + 1);

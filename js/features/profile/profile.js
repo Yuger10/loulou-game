@@ -15,6 +15,8 @@ function renderProfile(){
   emit('ui:backup-reminder');
   applySeason();   // anniversaire : propre à chaque joueur
   document.getElementById('player-name').textContent = state.name || 'Toi';
+  // toucher l'avatar et le prénom ouvre les Réglages (le petit ⚙️ l'indique)
+  document.getElementById('avatar-pill').setAttribute('aria-label', `Réglages de ${state.name || 'Toi'}`);
 }
 let pendingAvatar = '👧';
 let pendingGender = '', pendingCompanion = null, welcomeAllBuddies = false;

@@ -303,11 +303,19 @@ function openParentSpace(selectedId){
 // volume d'un joueur (0 à 100), 80 % s'il n'a jamais été réglé
 function psVolumeOf(st){ return typeof (st && st.soundVolume) === 'number' ? st.soundVolume : 80; }
 
-function openParents(){ openParentGate(()=> openParentSpace(), ()=> openPlayers()); }
+// annuler la question des parents : on revient d'où l'on vient
+function openParents(){
+  openParentGate(()=> openParentSpace(), ()=>{
+    const rg = document.getElementById('view-reglages');
+    if(rg && rg.classList.contains('active')) closeModal(); else openPlayers();
+  });
+}
 
 // le panneau des joueurs ouvre l'espace parents ; avant chaque mini-jeu, la
 // pause douce peut l'empêcher (le moteur, plus bas, demande avec game:before)
 on('nav:parents', openParents);
 on('game:before', ()=>{ if(pauseDue()){ showPauseScreen(); return true; } return false; });
 
-export { startPlayTimeTracker };
+export {
+  openParentGate, openParents, startPlayTimeTracker
+};
