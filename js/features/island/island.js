@@ -246,6 +246,35 @@ const ISLE_SCENERY = {
     <g class="ls-belt"><rect x="176" y="200" width="28" height="26" rx="3" fill="#EFC896" stroke="#8A5A2B" stroke-width="2.5"/><rect x="232" y="204" width="22" height="22" rx="3" fill="#C9E7FB" stroke="#5B8FC7" stroke-width="2.5"/><rect x="280" y="198" width="30" height="28" rx="3" fill="#F4C6E0" stroke="#C9497F" stroke-width="2.5"/><path d="M287 198 l8 -8 l8 8" fill="#FF9CC8" stroke="#C9497F" stroke-width="2"/></g>
     <path d="M196 360 C212 322 236 296 240 260" fill="none" stroke="${w.sand}" stroke-width="18" stroke-linecap="round"/>
     <g fill="#fff" opacity=".7"><circle cx="128" cy="300" r="2"/><circle cx="356" cy="316" r="2"/></g>`,
+  // Coffre aux Jouets Doux (saison 2) : un grand coffre ouvert d'où dépassent
+  // des peluches, une étagère pastel avec des jouets mochi, des cubes à formes
+  jouets: (w)=>`
+    <g class="ls-cloud c3" fill="#fff" opacity=".9"><ellipse cx="80" cy="92" rx="30" ry="12"/><ellipse cx="98" cy="84" rx="18" ry="12"/></g>
+    <g fill="#fff" opacity=".9"><ellipse cx="60" cy="252" rx="96" ry="26"/><ellipse cx="240" cy="248" rx="124" ry="24"/><ellipse cx="420" cy="252" rx="96" ry="26"/></g>
+    <path d="M0 254 C140 240 340 240 480 254 L480 360 L0 360 Z" fill="${w.land}"/>
+    <path d="M0 264 C140 252 340 252 480 264" fill="none" stroke="#fff" stroke-width="4" stroke-dasharray="2 14" stroke-linecap="round" opacity=".6"/>
+    <g stroke="#B8577E" stroke-width="3" stroke-linejoin="round">
+      <rect x="26" y="128" width="10" height="126" rx="3" fill="#F7E3C8"/><rect x="112" y="128" width="10" height="126" rx="3" fill="#F7E3C8"/>
+      <rect x="20" y="160" width="108" height="10" rx="3" fill="#BFF0DA"/><rect x="20" y="210" width="108" height="10" rx="3" fill="#FFD1E3"/>
+    </g>
+    <g stroke="#B8577E" stroke-width="2.5"><circle cx="54" cy="147" r="13" fill="#FFD1E3"/><circle cx="92" cy="149" r="11" fill="#D9C2F5"/><circle cx="56" cy="196" r="14" fill="#BFF0DA"/><rect x="80" y="184" width="26" height="26" rx="7" fill="#FFF3A6"/></g>
+    <g fill="#2B2140"><circle cx="50" cy="146" r="1.8"/><circle cx="58" cy="146" r="1.8"/><circle cx="52" cy="195" r="1.8"/><circle cx="60" cy="195" r="1.8"/><circle cx="89" cy="148" r="1.5"/><circle cx="95" cy="148" r="1.5"/></g>
+    <path d="M178 152 L194 96 L286 96 L302 152Z" fill="#F7C6D9" stroke="#B8577E" stroke-width="3" stroke-linejoin="round"/>
+    <path d="M196 104 H284" stroke="#fff" stroke-width="4" stroke-linecap="round" opacity=".6"/>
+    <g class="ls-lolly l1"><circle cx="204" cy="132" r="9" fill="#FFF4E8" stroke="#B8577E" stroke-width="2.5"/><circle cx="232" cy="132" r="9" fill="#FFF4E8" stroke="#B8577E" stroke-width="2.5"/>
+      <circle cx="218" cy="152" r="22" fill="#FFF4E8" stroke="#B8577E" stroke-width="2.5"/><circle cx="211" cy="148" r="2.2" fill="#2B2140"/><circle cx="225" cy="148" r="2.2" fill="#2B2140"/>
+      <ellipse cx="218" cy="157" rx="5" ry="3.4" fill="#F7DDC8"/></g>
+    <g class="ls-lolly l2"><ellipse cx="262" cy="124" rx="6" ry="16" fill="#E9D8FB" stroke="#B8577E" stroke-width="2.5"/><ellipse cx="280" cy="124" rx="6" ry="16" fill="#E9D8FB" stroke="#B8577E" stroke-width="2.5"/>
+      <ellipse cx="271" cy="152" rx="20" ry="16" fill="#E9D8FB" stroke="#B8577E" stroke-width="2.5"/><circle cx="265" cy="150" r="2" fill="#2B2140"/><circle cx="277" cy="150" r="2" fill="#2B2140"/></g>
+    <rect x="168" y="152" width="144" height="92" rx="14" fill="#FFE3C2" stroke="#B8577E" stroke-width="3"/>
+    <path d="M170 178 H310" stroke="#F7C6D9" stroke-width="8"/>
+    <rect x="228" y="170" width="24" height="18" rx="5" fill="#FFD95A" stroke="#B8901A" stroke-width="2.5"/>
+    <g fill="#FFF" opacity=".7"><circle cx="190" cy="214" r="5"/><circle cx="290" cy="220" r="4"/><circle cx="240" cy="226" r="3"/></g>
+    <g stroke="#B8577E" stroke-width="3" stroke-linejoin="round"><rect x="358" y="206" width="48" height="48" rx="7" fill="#BFF0DA"/><rect x="408" y="206" width="48" height="48" rx="7" fill="#FFD1E3"/><rect x="383" y="157" width="48" height="48" rx="7" fill="#FFF3A6"/></g>
+    <g fill="#B8577E"><circle cx="382" cy="230" r="9"/><path d="M432 219 L442 239 L422 239Z"/><path d="M407 170 l3 7 l7 1 l-5 5 l1 7 l-6 -3 l-6 3 l1 -7 l-5 -5 l7 -1z"/></g>
+    <circle cx="336" cy="300" r="16" fill="#FFD1E3" stroke="#B8577E" stroke-width="3"/><path d="M322 292 Q336 300 350 292 M322 308 Q336 300 350 308" fill="none" stroke="#fff" stroke-width="4"/>
+    <path d="M196 360 C212 322 236 296 240 246" fill="none" stroke="${w.sand}" stroke-width="18" stroke-linecap="round"/>
+    <g fill="#fff" opacity=".7"><circle cx="128" cy="300" r="2"/><circle cx="400" cy="316" r="2"/></g>`,
 };
 // paysage générique, aux couleurs du monde (toute nouvelle île en profite)
 function isleGenericScenery(w){

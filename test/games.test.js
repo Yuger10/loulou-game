@@ -101,6 +101,19 @@ const INDEPENDENT = {
   },
   // cubes (v55) : la bonne réponse est le nombre de cubes dessinés (cachés compris)
   cubes(sol){ return Number(d.querySelector(sol[0]).dataset.v) === d.querySelectorAll('.cubes-svg .cube').length; },
+  // paquets : la bonne réponse est le nombre de jouets dessinés (paquets et jouet seul)
+  packs(sol){ return Number(d.querySelector(sol[0]).dataset.v) === d.querySelectorAll('.packs-stage .pack-toy').length; },
+  // étagère : chaque case est à la croisée de la ligne de la couleur et de la colonne de la forme
+  shelf(sol){
+    const els = sol.map(s=> d.querySelector(s));
+    if(d.querySelector('.shelf-opt')){
+      const t = d.querySelector('.shelf-cell.target'), o = els[0];
+      return sol.length === 1 && o.dataset.color === t.dataset.color && o.dataset.shape === t.dataset.shape;
+    }
+    const todo = [...d.querySelectorAll('.shelf-todo')];
+    return els.length === todo.length && els.every((c, i)=> c.dataset.color === todo[i].dataset.color && c.dataset.shape === todo[i].dataset.shape
+      && !c.classList.contains('filled'));
+  },
 };
 
 async function playToWin(key, tier){
@@ -146,7 +159,7 @@ async function playToWin(key, tier){
     }
   }
   console.log(`  ${played} parties jouées`);
-  check('les 20 mini-jeux sont testés', games.length >= 20);
+  check('les 22 mini-jeux sont testés', games.length >= 22);
 
   /* ---- 2. une mauvaise réponse ne fait jamais gagner ---- */
   section('Une mauvaise réponse ne fait pas gagner');

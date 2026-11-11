@@ -23,7 +23,7 @@ Le mode hors-ligne et le stockage protégé demandent `https://` : c'est le cas 
 ```bash
 npm install
 npm test             # architecture (imports, couches, aucun cycle), vrais modules ES, test de fumée,
-                     # squishies, saison 2, niveaux (conductor/niveaux.md), chaque mini-jeu joué jusqu'à la victoire,
+                     # squishies, saison 2, Jouets Doux, niveaux (conductor/niveaux.md), chaque mini-jeu joué jusqu'à la victoire,
                      # compagnons
 npm run sync         # après avoir ajouté/déplacé un fichier : index.html et sw.js depuis js/slices.cjs
 npm run sw           # (même chose) la liste des fichiers mis en cache hors-ligne
@@ -48,7 +48,8 @@ js/shared/           sans rien connaître du jeu : lib/ (hasard, événements), 
 index.html           page du jeu (markup) ; balise du module et feuilles de style générées par `npm run sync`
 manifest.json, sw.js, icon*.png|svg    PWA
 test/                slices.test.js (architecture), modules.test.js (vrais modules), smoke.test.js,
-                     squishies.test.js, saison2.test.js, niveaux.test.js (le tableau des niveaux, le jeu et les specs),
+                     squishies.test.js, saison2.test.js, jouets.test.js (le Coffre aux Jouets Doux),
+                     niveaux.test.js (le tableau des niveaux, le jeu et les specs),
                      games.test.js, companions.test.js (indices, équipe, spécialités),
                      tools/ (page de test regroupée par esbuild, analyse, synchronisation, déplacements)
 conductor/           specs, plans, checklists « ajouter un mini-jeu » et « ajouter une île », niveaux.md (le tableau des niveaux)

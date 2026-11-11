@@ -211,6 +211,29 @@ const STORY = {
     success: "Bravo ! Les premiers rêves s'échappent des boîtes, et Grisou retrouve un peu de couleur 🌈",
     reward: 14,
   },
+  // idée de la joueuse : « un monde de jouets qui ressemblent à des squishies »
+  jouets: {
+    guide: 'nougat',
+    title: 'Les jouets qui ne jouent plus',
+    intro: [
+      "Chut… Bienvenue dans le Coffre aux Jouets Doux 🧸",
+      "Grisou a rangé le rêve de « jouer ensemble » tout au fond du coffre, et depuis, tous les jouets se sont endormis.",
+      "Résous mes devinettes : chaque bonne réponse réveille un jouet !",
+    ],
+    riddles: [
+      { q: "Je suis tout doux, j'ai deux petites oreilles rondes, et on me fait des câlins le soir. Qui suis-je ?",
+        tip: 'On l\'emmène au lit pour dormir.',
+        opts: [{ e:'🧸', ok:true }, { e:'🚗' }, { e:'⚽' }] },
+      { q: "Je suis rond, je rebondis, et on joue avec moi avec les pieds. Qui suis-je ?",
+        tip: 'On tape dedans pour marquer un but.',
+        opts: [{ e:'⚽', ok:true }, { e:'🧩' }, { e:'🪁' }] },
+      { q: "J'ai beaucoup de petits morceaux qui s'emboîtent pour faire une image. Qui suis-je ?",
+        tip: 'Chaque morceau a des bosses et des creux.',
+        opts: [{ e:'🧩', ok:true }, { e:'🎈' }, { e:'🪀' }] },
+    ],
+    success: "Bravo ! Les jouets se réveillent et se mettent à jouer ensemble. Grisou rosit de plaisir 🌸",
+    reward: 14,
+  },
 };
 
 /* Les prologues des saisons (v55) : lus à l'ouverture d'un archipel, avant le

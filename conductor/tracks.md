@@ -53,7 +53,7 @@ Registre des tracks Conductor, **dans l'ordre d'implémentation**. Feuille de ro
 
 > **Niveaux :** une seule règle et un seul tableau, dans [`niveaux.md`](./niveaux.md). Un niveau = 5 missions ; les saisons se suivent ; une île tous les 4 niveaux dans le Lagon, tous les 6 dans le Ciel, tous les 8 dans la saison 3.
 
-- [ ] **Track: Saison 2, île 2 : 🧸 Le Coffre aux Jouets Doux (idée de la joueuse), niveau 38**
+- [x] **Track: Saison 2, île 2 : 🧸 Le Coffre aux Jouets Doux (idée de la joueuse), niveau 38 (v58)**
 *Link: [./tracks/monde-jouets_20261111/](./tracks/monde-jouets_20261111/)*
 
 ---

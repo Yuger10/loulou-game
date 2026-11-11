@@ -170,6 +170,34 @@ const SQ_ART = {
     front: ()=> `<path d="M50 24 V94" stroke="#fff" stroke-width="7" opacity=".7"/>
       <path d="M50 24 C40 8 24 14 34 24Z M50 24 C60 8 76 14 66 24Z" fill="#FFF3A6" stroke="#B8780A" stroke-width="3" stroke-linejoin="round"/>
       <path class="sq-deco" d="M20 46 Q24 34 36 32" fill="none" stroke="#fff" stroke-width="4" opacity=".8" stroke-linecap="round"/>` },
+  // 🧸 Jouets doux (saison 2, le Coffre aux Jouets Doux) : des peluches toutes rondes
+  'ourson-guimauve': { body:'rond', face:{}, faceY:56,
+    back: c=> `<circle cx="22" cy="26" r="11" fill="${c.fill}" stroke="${c.edge}" stroke-width="4"/><circle cx="78" cy="26" r="11" fill="${c.fill}" stroke="${c.edge}" stroke-width="4"/>
+      <circle cx="22" cy="26" r="5" fill="#FFE1EE"/><circle cx="78" cy="26" r="5" fill="#FFE1EE"/>`,
+    front: ()=> `<ellipse class="sq-deco" cx="50" cy="82" rx="15" ry="9" fill="#fff" opacity=".55"/>` },
+  'lapin-mochi': { body:'ovale-h', face:{}, faceY:66,
+    back: c=> `<ellipse cx="36" cy="26" rx="8" ry="18" fill="${c.fill}" stroke="${c.edge}" stroke-width="4" transform="rotate(-14 36 26)"/><ellipse cx="64" cy="26" rx="8" ry="18" fill="${c.fill}" stroke="${c.edge}" stroke-width="4" transform="rotate(14 64 26)"/>
+      <ellipse cx="36" cy="27" rx="3.4" ry="11" fill="#F3E4FF" transform="rotate(-14 36 27)"/><ellipse cx="64" cy="27" rx="3.4" ry="11" fill="#F3E4FF" transform="rotate(14 64 27)"/>`,
+    front: ()=> `<path class="sq-deco" d="M20 84 Q50 96 80 84" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" opacity=".55"/>` },
+  'poulpe-mou': { body:'rond', face:{ wide:true }, faceY:54,
+    back: c=> `<g fill="${c.fill}" stroke="${c.edge}" stroke-width="4" stroke-linejoin="round"><path d="M18 76 Q6 96 18 104 Q26 96 30 86Z"/><path d="M82 76 Q94 96 82 104 Q74 96 70 86Z"/>
+      <path d="M34 88 Q28 106 40 108 Q46 100 46 92Z"/><path d="M66 88 Q72 106 60 108 Q54 100 54 92Z"/></g>`,
+    front: ()=> `<g class="sq-deco" fill="#fff" opacity=".6"><circle cx="70" cy="32" r="3.4"/><circle cx="78" cy="44" r="2.4"/></g>` },
+  'grenouille-sauteuse': { body:'ovale-h', face:{ noEyes:true, wide:true }, faceY:68,
+    back: c=> `<circle cx="31" cy="42" r="12" fill="${c.fill}" stroke="${c.edge}" stroke-width="4"/><circle cx="69" cy="42" r="12" fill="${c.fill}" stroke="${c.edge}" stroke-width="4"/>
+      <path d="M12 86 Q2 100 18 100 M88 86 Q98 100 82 100" fill="none" stroke="${c.edge}" stroke-width="4" stroke-linecap="round"/>`,
+    front: ()=> `<g class="sq-face"><circle cx="31" cy="42" r="7" fill="#fff"/><circle cx="69" cy="42" r="7" fill="#fff"/>
+      <circle cx="31" cy="43" r="3.8" fill="#2B2140"/><circle cx="69" cy="43" r="3.8" fill="#2B2140"/><circle cx="32" cy="41.5" r="1.2" fill="#fff"/><circle cx="70" cy="41.5" r="1.2" fill="#fff"/></g>
+      <g class="sq-deco" fill="#FFF3A6"><circle cx="38" cy="82" r="3"/><circle cx="62" cy="83" r="3"/><circle cx="50" cy="88" r="2.4"/></g>` },
+  'nougat': { body:'carre', face:{}, faceY:58,
+    back: c=> `<circle cx="22" cy="28" r="12" fill="${c.fill}" stroke="${c.edge}" stroke-width="4"/><circle cx="78" cy="28" r="12" fill="${c.fill}" stroke="${c.edge}" stroke-width="4"/>
+      <circle cx="22" cy="28" r="5.5" fill="#FFE1EE"/><circle cx="78" cy="28" r="5.5" fill="#FFE1EE"/>`,
+    front: ()=> `<path d="M37 80 L50 87 L63 80 L63 94 L50 87 L37 94Z" fill="#FF8FB8" stroke="#C9497F" stroke-width="2.4" stroke-linejoin="round"/>
+      <circle cx="50" cy="87" r="3.6" fill="#FFD95A" stroke="#C9497F" stroke-width="1.6"/>` },
+  'ourson-arc': { body:'rond', face:{}, faceY:54,
+    back: c=> `<circle cx="22" cy="26" r="11" fill="${c.fill}" stroke="${c.edge}" stroke-width="4"/><circle cx="78" cy="26" r="11" fill="${c.fill}" stroke="${c.edge}" stroke-width="4"/>
+      <circle cx="22" cy="26" r="5" fill="#FFF3A6"/><circle cx="78" cy="26" r="5" fill="#9CE7F2"/>`,
+    front: ()=> `<g class="sq-deco" fill="none" stroke-width="4.5" stroke-linecap="round"><path d="M28 88 Q50 68 72 88" stroke="#FF6F91"/><path d="M33 91 Q50 76 67 91" stroke="#FFD95A"/><path d="M38 94 Q50 84 62 94" stroke="#6ED38C"/></g>` },
 };
 
 // les paillettes d'un ✨ (animées en CSS)
@@ -198,7 +226,7 @@ function squishyArtSVG(id, opts){
 }
 
 // Une boîte surprise (la couleur dit sa série ; violette avec « ? » : mystère)
-const SQ_BOX_COLORS = { capy:['#FFC98F','#C8661A'], desserts:['#FFB8D6','#C9497F'], animaux:['#A6E8B8','#2F9551'], boites:['#EFC896','#8A5A2B'] };
+const SQ_BOX_COLORS = { capy:['#FFC98F','#C8661A'], desserts:['#FFB8D6','#C9497F'], animaux:['#A6E8B8','#2F9551'], boites:['#EFC896','#8A5A2B'], jouets:['#FFD9E6','#B8577E'] };
 function squishyBoxSVG(series){
   const col = SQ_BOX_COLORS[series] || ['#CDB8F2','#7B5CC0'];
   return `<svg class="sq-boxart" viewBox="0 0 100 100" aria-hidden="true">

@@ -64,7 +64,7 @@ function startGame(key, tier, age){
     check('leurs niveaux d\'ouverture sont inchangés', json(s1.map(id=> ev(`WORLDS.${id}.level`))) === json([1,3,6,10,14,18,22,26]));
     check('chaque île a un archipel (saison 1 ou 2)', ev('Object.values(WORLDS).every(w=> w.saison===1 || w.saison===2)'));
     check('le Ciel des Rêves : saison 2, ouvert au niveau 32 (après tout le Lagon), en montgolfière', ev('ARCHIPELAGOS[2].level') === 32 && ev('ARCHIPELAGOS[2].level') > ev('WORLDS.squishy.level') && ev('ARCHIPELAGOS[2].vehicle') === '🎈' && /Ciel des Rêves/.test(ev('ARCHIPELAGOS[2].name')));
-    check('le Monde des Boîtes est sa première île (niveau 32, palier 6)', json(ev('worldsOf(2)')) === json(['boites']) && ev('WORLDS.boites.level') === 32 && ev('WORLDS.boites.diff') === 6);
+    check('le Monde des Boîtes est sa première île (niveau 32, palier 6)', ev('worldsOf(2)[0]') === 'boites' && ev('WORLDS.boites.level') === 32 && ev('WORLDS.boites.diff') === 6);
     check('prochaine île de chaque archipel', (ev(`state.missions = ${LEVEL(7)}; save()`), ev('nextLockedWorld(1)')) === 'chateau' && ev('nextLockedWorld(2)') === 'boites');
   }
 
@@ -94,9 +94,12 @@ function startGame(key, tier, age){
     check('toucher l\'onglet fermé : la voix dit quand il s\'ouvre, la carte ne change pas', /niveau 32/.test(lastSaid()) && d.querySelectorAll('.map-island').length === 8);
     ev(`state.missions = ${LEVEL(32)}; save(); renderMap()`);
     check('niveau 32 : l\'onglet du Ciel s\'ouvre', !d.querySelector('#map-tabs .map-tab[data-saison="2"]').classList.contains('locked'));
+    check('niveau 32 : sous la carte, la prochaine île du Ciel (même depuis l\'onglet du Lagon)', /Prochaine île : Le Coffre aux Jouets Doux au niveau 38/.test(d.getElementById('map-next').textContent));
+    ev(`state.missions = ${LEVEL(38)}; save(); renderMap()`);
     check('toutes les îles ouvertes : la carte le dit, sans annoncer d\'île qui n\'existe pas encore', /Tu as ouvert toutes les îles/.test(d.getElementById('map-next').textContent) && !d.querySelector('#map-next .quest-bar'));
+    ev(`state.missions = ${LEVEL(32)}; save(); renderMap()`);
     d.querySelector('#map-tabs .map-tab[data-saison="2"]').click();
-    check('la carte du Ciel : fond pastel, ses îles seulement', d.getElementById('island-map').classList.contains('sky') && d.querySelectorAll('.map-island').length === 1 && !!d.querySelector('.map-island[data-world="boites"]'));
+    check('la carte du Ciel : fond pastel, ses îles seulement', d.getElementById('island-map').classList.contains('sky') && d.querySelectorAll('.map-island').length === ev('worldsOf(2).length') && !!d.querySelector('.map-island[data-world="boites"]') && !d.querySelector('.map-island[data-world="lagon"]'));
     check('dans le Ciel, le bateau devient une montgolfière', /🎈/.test(d.getElementById('map-boat').textContent) && d.getElementById('map-boat').classList.contains('balloon'));
     check('la montgolfière attend à la première île (l\'île courante est au Lagon)', d.getElementById('map-boat').classList.contains('parked'));
     const pos = ev('worldsOf(2).map(id=> WORLDS[id].map)');

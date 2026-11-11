@@ -5,8 +5,8 @@ export {
   clockOptions, compareCloseChance, compareEqualChance, compareRange, countRange,
   determinantsExtraDistractor, determinantsImageShown, determinantsPluralChance, diffMirrorChance,
   cubesRound, diffTotal, jigsawRound, livesFor, mathBounds, memoryPairs, moneyDenoms, moneyPileSize, planetsTier,
-  nestingRound, puzzleCount, puzzleStartMax, puzzleVariants, readingOptions, readingWordOnly, sequencePatternLength,
-  shapesRound, simonLength, solidOptions, timerFor, volumeAskLessChance, volumeContainerCount,
+  nestingRound, packsRound, puzzleCount, puzzleStartMax, puzzleVariants, readingOptions, readingWordOnly, sequencePatternLength,
+  shapesRound, shelfRound, simonLength, solidOptions, timerFor, volumeAskLessChance, volumeContainerCount,
   volumeUsesCapacityCompare
 } from './difficulty.js';
 export { GAME_LIST, gameTypesForAge } from './game-types.js';

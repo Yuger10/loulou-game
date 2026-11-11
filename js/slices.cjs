@@ -73,6 +73,8 @@ const SLICES = [
   { id:'minigame-jigsaw', layer:'features', files:['js/features/minigames/jigsaw/jigsaw.js'], css:['js/features/minigames/jigsaw/jigsaw.css'] },
   { id:'minigame-nesting', layer:'features', files:['js/features/minigames/nesting/nesting.js'], css:['js/features/minigames/nesting/nesting.css'] },
   { id:'minigame-cubes', layer:'features', files:['js/features/minigames/cubes/cubes.js'], css:['js/features/minigames/cubes/cubes.css'] },
+  { id:'minigame-packs', layer:'features', files:['js/features/minigames/packs/packs.js'], css:['js/features/minigames/packs/packs.css'] },
+  { id:'minigame-shelf', layer:'features', files:['js/features/minigames/shelf/shelf.js'], css:['js/features/minigames/shelf/shelf.css'] },
   { id:'market', layer:'features', files:['js/features/market/market.js'], css:['js/features/market/market.css'] },
   { id:'backup', layer:'features', files:['js/features/backup/backup.js'], css:['js/features/backup/backup.css'] },
   { id:'players', layer:'features', files:['js/features/players/profiles-ui.js'], css:[] },
@@ -137,6 +139,8 @@ const CSS_ORDER = [
   'js/features/squishies/squishies.css',
   'js/features/minigames/nesting/nesting.css',
   'js/features/minigames/cubes/cubes.css',
+  'js/features/minigames/packs/packs.css',
+  'js/features/minigames/shelf/shelf.css',
   'js/features/island/island.css',
   'js/entities/character/characters.css',
 ];

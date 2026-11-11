@@ -332,6 +332,43 @@ const CHARACTERS = {
       "J'ai un colis pour toi… mais d'abord, un petit défi !",
       "Mes boîtes ont toutes une étiquette. Sans elle, je me perdrais dans les nuages !",
     ]},
+  // ---- Saison 2, le Coffre aux Jouets Doux (idée de la joueuse) ----
+  nougat:{
+    emoji:'🧸', name:'Nougat', title:'l\'ourson en guimauve', world:'jouets',
+    gender:'m',
+    loot:['boutonours','rubanpeluche'],
+    texts:[
+      "Bienvenue dans mon coffre ! Les jouets dorment… on va les réveiller ensemble ?",
+      "Je suis tout moelleux, comme une guimauve. Un câlin, puis un petit jeu ?",
+      "Chaque jouet réveillé fait un grand sourire. Allez, au travail !",
+    ]},
+  cocotte:{
+    emoji:'🐰', name:'Cocotte', title:'la lapine mochi', world:'jouets',
+    gender:'f',
+    loot:['minimochi','rubanpeluche'],
+    texts:[
+      "Une ligne pour chaque couleur, une colonne pour chaque forme : c'est mon étagère magique !",
+      "Je range, je range… et chaque jouet trouve sa case. Tu m'aides ?",
+      "Boing ! Je suis toute ronde et toute douce. On joue ?",
+    ]},
+  gloups:{
+    emoji:'🐙', name:'Gloups', title:'le poulpe tout mou', world:'jouets',
+    gender:'m',
+    loot:['ressort','boutonours'],
+    texts:[
+      "J'ai huit bras, alors je fais des paquets de jouets ! Deux par deux, cinq par cinq…",
+      "Compter les paquets, c'est plus rapide que compter un par un. Tu essaies ?",
+      "Gloups gloups ! Je suis tout mou, mais je compte très bien.",
+    ]},
+  rainette:{
+    emoji:'🐸', name:'Rainette', title:'la grenouille squishy', world:'jouets',
+    gender:'f',
+    loot:['grelot','minimochi'],
+    texts:[
+      "Hop ! Hop ! J'ai caché des jouets partout dans le coffre. Tu les trouves ?",
+      "Quand on m'appuie dessus, je fais « couic » ! Encore un jeu ?",
+      "Je saute de case en case sur l'étagère. Suis-moi !",
+    ]},
 };
 
 function charsOf(world){
