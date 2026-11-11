@@ -64,6 +64,7 @@ Chaque mini-jeu a maintenant son propre niveau pour chaque enfant (`js/adaptive.
 - [x] Niveaux équilibrés et simples à suivre (demande du propriétaire) : un niveau = 5 missions ; une île tous les 4, puis 6, puis 8 niveaux selon la saison ; une seule référence, `conductor/niveaux.md`, que le jeu et les specs suivent (`test/niveaux.test.js`) ; sous la carte, « encore N missions » et une barre qui part de la dernière île (v57)
 - [x] Saison 2, île 2 : le Coffre aux Jouets Doux (idée de la joueuse : « un monde de jouets qui ressemblent à des squishies »), niveau 38 : Nougat, Cocotte, Gloups, Rainette, la série de squishies « Jouets doux », « Les paquets de jouets » (compter par paquets, début de la multiplication) et « L'étagère magique » (tableau à double entrée, coordonnées), chapitre « Les jouets qui ne jouent plus » (v58)
 - [x] Saison 2, île 3 : le Royaume des Bonbons (proposition retenue par la joueuse), niveau 44 : Praline, Chouquette, Cacao, Berlingot, la série « Bonbons », « Le gâteau partagé » (parts égales, moitié, tiers, quart, ½ ⅓ ¼) et « La recette » (plus ou moins, balance, cuillères, verre doseur gradué), chapitre « La fête sans gâteau » (v60)
+- [x] Saison 2, île 4 : l'Île de la Musique (proposition retenue par la joueuse), niveau 50 : Viola, Boumbo, Flûtine, Piccolo, la série « Instruments », « Le rythme magique » (courts, longs, silences, écrits en images) et « Grave ou aigu ? » (cloches, ranger, mélodie qui monte ou descend), chapitre « Le silence de l'île » (v62)
 - [ ] À observer : le rythme des boîtes (coffre, énigmes, boutique) est-il assez généreux ? Le rangement est-il joué pour lui-même, au-delà des 3 boîtes payées ? Les consignes à deux critères (8 ans et plus) sont-elles bien comprises ?
 
 ### Technique 🔧 (au fil de l'eau)
@@ -132,6 +133,8 @@ Chaque mini-jeu a maintenant son propre niveau pour chaque enfant (`js/adaptive.
 | v58 | Saison 2, île 2 : le Coffre aux Jouets Doux (niveau 38), les paquets de jouets, l'étagère magique, la série « Jouets doux » |
 | v59 | Formulaires et boutons d'action : barre d'actions fixe en bas, « Garder tes changements ? », plus aucun confirm() |
 | v60 | Saison 2, île 3 : le Royaume des Bonbons (niveau 44), le gâteau partagé, la recette, la série « Bonbons » |
+| v61 | Navigation : Réglages ouverts par l'avatar et le prénom, barre du bas à 4 boutons avec le nom de l'île |
+| v62 | Saison 2, île 4 : l'Île de la Musique (niveau 50), le rythme magique, grave ou aigu, la série « Instruments » |
 
 ---
 
@@ -147,6 +150,7 @@ Chaque mini-jeu a maintenant son propre niveau pour chaque enfant (`js/adaptive.
 - À observer (v57) : le rythme des îles (tous les 4 niveaux dans le Lagon, tous les 6 dans le Ciel) paraît-il équilibré ? Les cubes cachés du palier haut sont-ils compris ?
 - À observer (v58) : les paquets de 10 (jusqu'à 50 jouets) se comptent-ils de 10 en 10, ou un par un ? Les coordonnées de l'étagère (« ligne rose, colonne étoile ») sont-elles comprises à l'oral seul ?
 - À observer (v60) : le piège du palier 4 du gâteau (bon nombre de parts, mais inégales) est-il compris ? Le verre doseur sans tous les nombres (compter de 10 en 10) est-il trop difficile ?
+- À observer (v62) : les jeux de musique sont-ils joués avec le son ? Le rythme caché (paliers 3-4) est-il trop dur à retenir ? Les cloches proches du palier 4 se distinguent-elles à l'oreille ?
 
 ---
 
