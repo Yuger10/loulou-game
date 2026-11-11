@@ -85,6 +85,7 @@ const SLICES = [
   { id:'backup', layer:'features', files:['js/features/backup/backup.js'], css:['js/features/backup/backup.css'] },
   { id:'players', layer:'features', files:['js/features/players/profiles-ui.js'], css:[] },
   { id:'parents', layer:'features', files:['js/features/parents/parents.js'], css:['js/features/parents/parents.css'] },
+  { id:'rest', layer:'features', files:['js/features/rest/rest.js'], css:['js/features/rest/rest.css'] },
   { id:'settings', layer:'features', files:['js/features/settings/settings.js'], css:['js/features/settings/settings.css'] },
   { id:'app', layer:'app', files:['js/app/init.js'], css:[] },
 ];
@@ -157,6 +158,7 @@ const CSS_ORDER = [
   'js/features/island/island.css',
   'js/entities/character/characters.css',
   'js/features/settings/settings.css',
+  'js/features/rest/rest.css',
   // la barre du bas : une seule règle de taille (après les styles généraux)
   'js/shared/ui/nav.css',
   // en dernier : le modèle de formulaire et la confirmation l'emportent sur les styles des features

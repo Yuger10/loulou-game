@@ -7,7 +7,7 @@ const MISSIONS_PER_LEVEL = 5;
 const SAVE_KEY = 'lagon-magique-save';
 
 /* ---------- État ---------- */
-const SAVE_VERSION = 7;
+const SAVE_VERSION = 8;
 
 const DEFAULT_STATE = {
   v: SAVE_VERSION,
@@ -34,6 +34,8 @@ const DEFAULT_STATE = {
   seasonGifts: {},    // cadeaux de saison reçus, ex. { 'noel-2026': true } (js/features/seasons/seasons.js)
   music: false,       // musique d'ambiance (js/features/music/music.js), coupée par défaut
   soundVolume: 80,    // volume général des sons et de la musique, 0 à 100 (js/shared/ui/sound.js)
+  restLog: {},        // pauses par jour : { at, activity, skipped, attempts } (js/features/rest)
+  restRecall: null,   // dernier jour où le compagnon a rappelé l'activité de la veille
   storyMissions: {},  // missions réussies par île, pour les épisodes (js/features/story/episodes.js)
   storyEpisodes: {},  // épisodes déjà vus, par île
   friends: {},        // points d'amitié par personnage (cadeaux, js/features/gifts/gifts.js)
@@ -89,6 +91,8 @@ let state = {
   seasonGifts: {},
   music: false,
   soundVolume: 80,
+  restLog: {},
+  restRecall: null,
   storyMissions: {},
   storyEpisodes: {},
   friends: {},
@@ -159,6 +163,11 @@ function migrate(saved){
   if(v < 7){
     // v56 : les nouveaux sons : un volume général par joueur, 80 % par défaut
     if(typeof saved.soundVolume !== 'number') saved.soundVolume = 80;
+  }
+  if(v < 8){
+    // une pause qui tient : le journal des pauses (activité choisie, tentatives)
+    if(!saved.restLog || typeof saved.restLog !== 'object') saved.restLog = {};
+    if(saved.restRecall === undefined) saved.restRecall = null;
   }
   saved.v = SAVE_VERSION;
   return saved;

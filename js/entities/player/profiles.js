@@ -79,8 +79,9 @@ function switchProfile(id, silent){
 
 function addProfile(name, avatar, age, gender, companion){
   const id = newId();
+  // la pause du nouveau joueur : le réglage familial (la dernière durée choisie par un adulte)
   profiles.list.push({ id, name: name||'', avatar: avatar||'👧', age: age||null, gender: gender||'',
-    companion: companion || defaultCompanionFor(gender||'') });
+    companion: companion || defaultCompanionFor(gender||''), pauseMin: Number(profiles.familyPause) || 0 });
   profiles.current = id; saveProfiles();
   replaceState(freshState({ name: name||'', avatar: avatar||'👧', visited:['lagon'] }));
   save();

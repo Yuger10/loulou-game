@@ -849,13 +849,13 @@ setTimeout(()=>{
       ev('currentProfile().pauseMin = 10');
       check('pause douce : due une fois le temps atteint', ev('pauseDue()')===true);
       ev('playGame("count")');
-      check('pause douce : plus de nouveau défi, l\'écran de pause s\'affiche', !!d.querySelector('.pause-box') && !d.querySelector('.count-row'));
-      check('pause douce : accord avec le compagnon (fatigué / fatiguée)', d.querySelector('.pause-box .speech').textContent.includes(ev('COMPANIONS[currentCompanion()].group')==='f' ? 'fatiguée' : 'fatigué\u00a0'));
-      ev('closeModal()');
-      check('pause douce : jamais en mode à plusieurs', ev('(party.active = true, pauseDue())')===false);
+      check('pause douce : plus de nouveau défi, le voile de la pause couvre le jeu', !d.getElementById('rest-veil').hidden && !d.querySelector('.count-row'));
+      check('pause douce : accord avec le compagnon (fatigué / fatiguée)', d.querySelector('#rest-veil .rest-say').textContent.includes(ev('COMPANIONS[currentCompanion()].group')==='f' ? 'toute fatiguée' : 'tout fatigué'));
+      ev('restWake()');
+      check('pause douce : aussi en mode à plusieurs (plus de contournement)', ev('(party.active = true, pauseDue())')===true);
       ev('party.active = false; state.pauseExtra = { date: todayKey(), min: 10 }');
       check('pause douce : un adulte peut ajouter 10 minutes', ev('pauseDue()')===false);
-      ev('currentProfile().pauseMin = 0; state.pauseExtra = null; state.playTime = {}; save(); saveProfiles()');
+      ev('currentProfile().pauseMin = 0; state.pauseExtra = null; state.playTime = {}; save(); saveProfiles(); restWake()');
       // accès réservé aux adultes
       ev('parentUnlockedUntil = 0; switchView("reglages")');
       check('parents : bouton dans les Réglages (section Parents)', !!d.getElementById('rg-parents'));

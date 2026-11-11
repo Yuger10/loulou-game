@@ -275,6 +275,7 @@ function progressDots(done, total){
 /* Mission ratée : on encourage, on ne punit pas — mais pas de récompense. */
 function onMissionFail(){
   recordMission(false);
+  emit('game:after', { win:false });   // fin naturelle : la pause peut venir ensuite (js/features/rest)
   endBonusChallenge();
   missionFact = null;
   bindQuit._last = null;
@@ -310,6 +311,7 @@ function onMissionFail(){
 
 function onMissionWin(){
   recordMission(true);   // avant le mode course, qui s'arrête plus bas
+  emit('game:after', { win:true });    // fin naturelle : la pause peut venir ensuite (js/features/rest)
   bindQuit._last = null;
   partyScore();
   // course : on avance d'une case ; si la ligne d'arrivée est franchie, l'écran de victoire s'affiche

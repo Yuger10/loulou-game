@@ -15,20 +15,19 @@
      state.pauseExtra   = { date, min }  minutes ajoutées par un adulte aujourd'hui
    Réglage dans le profil : profile.pauseMin (0 = pas de pause). */
 import {
-  avatarHTML, buddySlot, COMPANIONS, companionSVG, currentCompanion
+  avatarHTML
 } from '../../entities/companion/index.js';
 import { GAME_LIST, gameTypesForAge } from '../../entities/difficulty/index.js';
 import { resetState, save, state } from '../../entities/game-state/index.js';
 import {
-  currentProfile, deleteProfile, party, profiles, profileSaveKey, refreshAll, saveProfiles
+  currentProfile, deleteProfile, profiles, profileSaveKey, refreshAll, saveProfiles
 } from '../../entities/player/index.js';
 import { setCurrentWorld } from '../../entities/world/index.js';
 import { currentSeason, FETES, seasonPreview } from '../../entities/season/index.js';
-import { on } from '../../shared/lib/index.js';
+import { emit, on } from '../../shared/lib/index.js';
 import { askConfirm, closeModal, openModal, playSound, showToast, speak } from '../../shared/ui/index.js';
 import { SKILL_STATUS, skillStatus, todayKey } from '../adaptive/index.js';
 import { openBackup } from '../backup/index.js';
-import { pauseAnnouncer } from '../companion-team/index.js';
 import { openPlayers, openPlayerSettings } from '../players/index.js';
 import { renderSoundBtn } from '../profile/index.js';
 import { bindQuit, gameHeader } from '../screen/index.js';
@@ -78,52 +77,25 @@ function pauseLimit(){
   const p = currentProfile();
   return (p && Number(p.pauseMin)) || 0;
 }
+// La pause s'applique aussi à plusieurs (track pause-verrou) : la partie
+// s'arrête à la fin de la mission en cours (js/features/rest), sauf adulte.
+function pauseExtraToday(){ return state.pauseExtra && state.pauseExtra.date === todayKey() ? state.pauseExtra.min : 0; }
+// minutes de jeu restantes avant la pause (Infinity s'il n'y a pas de pause)
+function pauseMinutesLeft(){
+  const limit = pauseLimit();
+  if(!limit) return Infinity;
+  return limit + pauseExtraToday() - playMinutesToday();
+}
 function pauseDue(){
-  if(party.active) return false;   // à plusieurs : pas de coupure au milieu
   const limit = pauseLimit();
   if(!limit) return false;
   const extra = state.pauseExtra && state.pauseExtra.date === todayKey() ? state.pauseExtra.min : 0;
   return playMinutesToday() >= limit + extra;
 }
-function showPauseScreen(){
-  const p = currentProfile();
-  const comp = currentCompanion();
-  const c = comp && COMPANIONS[comp];
-  const cName = c ? c.name : 'Ton compagnon';
-  const tired = c && c.group==='f' ? 'fatiguée' : 'fatigué';
-  // Grisou (câlins, v52) annonce la pause en respirant tout doucement, à la
-  // place du compagnon qui s'endort ; la durée reste le réglage des parents
-  const hug = pauseAnnouncer();
-  // espaces insécables avant « ! ? : » (typographie française, pas de retour à la ligne)
-  const msg = hug
-    ? `Tu as bien joué aujourd'hui${p && p.name ? ', ' + p.name : ''}\u00a0! Viens, on respire tout doucement, comme un petit nuage\u00a0: on fait une pause et on revient demain\u00a0?`
-    : `Tu as bien joué aujourd'hui${p && p.name ? ', ' + p.name : ''}\u00a0! ${cName} est ${tired}\u00a0: on fait une pause et on revient demain\u00a0?`;
-  openModal(`
-    <div class="reward-box pause-box ${hug ? 'pause-hug' : ''}">
-      ${hug ? `<span class="buddy-slot buddy-big breathe" aria-hidden="true">${companionSVG(hug, 'happy')}</span>` : buddySlot('sleepy','buddy-big')}
-      <h2>C'est l'heure de la pause</h2>
-      <div class="speech">${msg}</div>
-      <p class="pause-note">Tu peux encore regarder ton île, ton sac et ton album.</p>
-    </div>
-    <button class="btn-primary" id="pause-ok">D'accord 😴</button>
-    <button class="btn-ghost" id="pause-more">Un adulte peut ajouter 10 minutes</button>
-  `);
-  speak(hug ? `${COMPANIONS[hug].name} : ${msg}` : msg);
-  document.getElementById('pause-ok').onclick = ()=>{ playSound('tap'); closeModal(); };
-  document.getElementById('pause-more').onclick = ()=>{
-    playSound('tap');
-    openParentGate(()=>{
-      const k = todayKey();
-      const cur = state.pauseExtra && state.pauseExtra.date===k ? state.pauseExtra.min : 0;
-      state.pauseExtra = { date:k, min: cur + 10 }; save();
-      closeModal(); showToast('⏱️ 10 minutes de plus');
-    }, ()=> showPauseScreen());
-  };
-}
-
 /* ---- accès réservé aux adultes ---- */
 let parentUnlockedUntil = 0;
-function openParentGate(onOk, onCancel){
+// onWrong : appelée à chaque mauvaise réponse (tentatives notées pendant la pause)
+function openParentGate(onOk, onCancel, onWrong){
   if(Date.now() < parentUnlockedUntil){ onOk(); return; }
   const a = 6 + Math.floor(Math.random()*4), b = 6 + Math.floor(Math.random()*4);
   openModal(`
@@ -139,7 +111,7 @@ function openParentGate(onOk, onCancel){
   const input = document.getElementById('gate-in');
   const ok = ()=>{
     if(Number(input.value) === a*b){ parentUnlockedUntil = Date.now() + 5*60*1000; playSound('good'); onOk(); }
-    else { playSound('wrong'); document.getElementById('gate-err').textContent = "Ce n'est pas la bonne réponse."; input.value=''; input.focus(); }
+    else { playSound('wrong'); document.getElementById('gate-err').textContent = "Ce n'est pas la bonne réponse."; input.value=''; input.focus(); if(onWrong) onWrong(); }
   };
   document.getElementById('gate-ok').onclick = ok;
   input.addEventListener('keydown', e=>{ if(e.key==='Enter') ok(); });
@@ -210,6 +182,7 @@ function openParentSpace(selectedId){
         ${PAUSE_CHOICES.map(m=>`<button type="button" class="ps-chip ${(Number(p.pauseMin)||0)===m?'on':''}" data-pause="${m}">${m ? m + ' min' : 'Pas de pause'}</button>`).join('')}
       </div>
     </section>
+    ${emit('parents:cards', { st, p }).filter(Boolean).join('')}
     <section class="bk-card"><h3>📈 Progrès par compétence</h3>${skillsHTML(st, p.age)}
       <p class="bk-help">« À l'aise » : réussi sans erreur ou presque ces dernières fois. « À travailler » : souvent raté ou beaucoup d'erreurs.</p>
       <p class="bk-help">Les indices du compagnon (💡) sont comptés pour information : ils ne changent ni les récompenses ni le niveau du jeu.</p>
@@ -249,7 +222,9 @@ function openParentSpace(selectedId){
   bindQuit();
   document.querySelectorAll('[data-ps]').forEach(b=> b.onclick = ()=>{ playSound('tap'); openParentSpace(b.dataset.ps); });
   document.querySelectorAll('[data-pause]').forEach(b=> b.onclick = ()=>{
-    playSound('tap'); p.pauseMin = Number(b.dataset.pause); saveProfiles();
+    playSound('tap'); p.pauseMin = Number(b.dataset.pause);
+    profiles.familyPause = p.pauseMin;   // les nouveaux joueurs recevront ce réglage
+    saveProfiles();
     document.querySelectorAll('[data-pause]').forEach(x=>x.classList.toggle('on', x===b));
     showToast(p.pauseMin ? `😴 Pause après ${p.pauseMin} min` : 'Pas de pause');
   });
@@ -311,11 +286,10 @@ function openParents(){
   });
 }
 
-// le panneau des joueurs ouvre l'espace parents ; avant chaque mini-jeu, la
-// pause douce peut l'empêcher (le moteur, plus bas, demande avec game:before)
+// l'espace parents s'ouvre aussi par événement ; la pause elle-même (le voile)
+// est gérée par js/features/rest
 on('nav:parents', openParents);
-on('game:before', ()=>{ if(pauseDue()){ showPauseScreen(); return true; } return false; });
 
 export {
-  openParentGate, openParents, startPlayTimeTracker
+  openParentGate, openParents, PAUSE_CHOICES, pauseDue, pauseMinutesLeft, startPlayTimeTracker
 };

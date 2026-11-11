@@ -4,6 +4,9 @@
 import { playSound } from './sound.js';
 
 const viewRenderers = {};
+// fonctions appelées à chaque changement de vue (par exemple : la pause revient)
+const viewChangeHooks = [];
+function onViewChange(fn){ viewChangeHooks.push(fn); }
 function registerView(name, fn){ (viewRenderers[name] = viewRenderers[name] || []).push(fn); }
 
 let currentView = 'carte';
@@ -27,6 +30,7 @@ function switchView(name){
   }catch(e){}
 
   (viewRenderers[name] || []).forEach(fn=> fn({ sacTab }));
+  viewChangeHooks.forEach(fn=> fn(name));
 }
 
 /* ---------- Navigation ---------- */
@@ -47,4 +51,4 @@ function setNavLabel(view, icon, label, iconKey){
   b.setAttribute('aria-label', label);
 }
 
-export { registerView, switchView, setNavLabel };
+export { registerView, switchView, setNavLabel, onViewChange };

@@ -1,4 +1,5 @@
 /* ---------- Init ---------- */
+import { maybeRest, restActive, restRecallYesterday } from '../features/rest/index.js';
 import { avatarText, companionSVG, currentCompanion } from '../entities/companion/index.js';
 import { load, save, state } from '../entities/game-state/index.js';
 import { loadProfiles } from '../entities/player/index.js';
@@ -66,7 +67,12 @@ function hideSplash(){
   const sp = document.getElementById('splash');
   playSound('win');
   sp.classList.add('hiding');
-  setTimeout(()=>{ sp.classList.remove('show','hiding'); updateMusic(); }, 450);
+  setTimeout(()=>{
+    sp.classList.remove('show','hiding'); updateMusic();
+    // la pause revient toujours (même après un rechargement) ; le lendemain, le compagnon se souvient
+    maybeRest();
+    if(state.name && !restActive()) restRecallYesterday();
+  }, 450);
   if(!state.name) openWelcome();
   else {
     const season = currentSeason();
