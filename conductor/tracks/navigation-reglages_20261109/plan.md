@@ -8,8 +8,8 @@ Spec : [spec.md](./spec.md). Workflow : [workflow.md](../../workflow.md).
 - [ ] Task: Une seule règle de taille
     - [ ] Tests : hauteurs 64 px (portrait), 48 px (paysage, hauteur ≤ 500 px), 72 px (tablette, largeur ≥ 700 px), barre centrée à ~640 px (ordinateur) ; toujours ≥ 48 px ; aucun débordement à 360 px ; une seule source de règles de hauteur pour la barre
     - [ ] Retirer les règles empilées (v12, v13, v14, « tous les écrans ») et les remplacer par une feuille dans la slice de navigation
-- [ ] Task: 5e bouton ⚙️ Réglages
-    - [ ] Tests : 5 boutons de même largeur ; la pastille du Sac fonctionne toujours ; Réglages ouvre la vue `reglages`
+- [ ] Task: Accès aux Réglages par l'avatar et le prénom
+    - [ ] Tests : la barre garde 4 boutons ; toucher l'avatar et le prénom ouvre la vue `reglages` (section Moi) ; petit ⚙️ visible et libellé « Réglages de … » ; en mode chacun son tour, l'avatar du joueur du tour ; la pastille du Sac fonctionne toujours
 - [ ] Task: Bouton Île nommé
     - [ ] Tests : icône et nom court de l'île courante ; mis à jour en changeant d'île et de joueur ; même destination qu'avant
     - [ ] Point d'accroche dans `shared/ui/views` pour le libellé, alimenté par `features/island`
@@ -23,7 +23,7 @@ Spec : [spec.md](./spec.md). Workflow : [workflow.md](../../workflow.md).
 - [ ] Task: Section 🔒 Parents
     - [ ] Tests : verrouillée par `openParentGate` ; donne accès à l'espace parents, la sauvegarde et le code de transfert, l'installation, l'aperçu des saisons ; zone sensible (recommencer, supprimer) avec double confirmation ; rappel de sauvegarde en tête si conseillé
 - [ ] Task: Nettoyage
-    - [ ] Tests : plus de bouton de réglages dans le Sac ; le panneau du prénom n'a plus de doublons
+    - [ ] Tests : plus de bouton de réglages dans le Sac ; l'ancien panneau des joueurs est remplacé par l'écran Réglages
 - [ ] Task: Conductor - User Manual Verification 'Écran Réglages' (Protocol in workflow.md)
 
 ## Phase 3 : Livraison
