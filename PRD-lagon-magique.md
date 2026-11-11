@@ -1075,9 +1075,10 @@ Track Conductor `squishy-collection` ([spec](conductor/tracks/squishy-collection
 ## Deux archipels
 - Chaque île porte son archipel (`saison`) :
   - les 8 îles de la saison 1 forment **Le Lagon Magique** ; leur ordre, leurs niveaux et leur carte sont inchangés ;
-  - **Le Ciel des Rêves** (saison 2) s'ouvre au **niveau 8**, en parallèle.
+  - **Le Ciel des Rêves** (saison 2) s'ouvre au **niveau 36**, une fois toutes les îles du Lagon ouvertes (le Pays Squishy est au niveau 26). C'est la décision du propriétaire, après relecture : la spec prévoyait le niveau 8, en parallèle de la saison 1. Ses îles gardent la difficulté la plus haute (palier 6, toujours plafonnée par l'âge et le niveau de chaque jeu).
 - **La carte a deux onglets en haut.**
-  - Tant que le Ciel est fermé, son onglet est grisé, avec un cadenas et « Niveau 8 ». Le toucher dit quand il s'ouvre.
+  - Tant que le Ciel est fermé, son onglet est grisé, avec un cadenas et « Niveau 36 ». Le toucher dit quand il s'ouvre.
+  - Une fois toutes les îles du Lagon ouvertes, la carte annonce « Prochain monde : Le Ciel des Rêves au niveau 36 », avec sa barre de progression (il y a 50 missions entre le Pays Squishy et le Ciel).
   - Le Ciel a son fond pastel, ses nuages et ses îles. Le bateau y devient une **montgolfière** 🎈.
   - On voyage d'île en île à l'intérieur d'un archipel ; on passe de l'un à l'autre par l'onglet, sans trajet.
 - **L'ouverture du Ciel** se fait une seule fois, dans cet ordre :
@@ -1086,14 +1087,14 @@ Track Conductor `squishy-collection` ([spec](conductor/tracks/squishy-collection
   3. le chapitre du Monde des Boîtes ;
   4. l'écran de nouvelle île.
 
-  Une partie déjà au niveau 8 ou plus découvre le Ciel au premier lancement.
+  Une partie déjà au niveau 36 ou plus découvre le Ciel au premier lancement.
 - Données :
   - `ARCHIPELAGOS`, `worldsOf(saison)`, `archipelagoOf(id)`, `worldGame(id, age)` dans `js/entities/world/` ;
   - `SAVE_VERSION` 6 : `skyIntroSeen`. Les îles visitées couvrent les deux archipels, et la migration ne perd rien.
 - Ajouter une île à la saison 2 se fait dans les données : une entrée dans `WORLDS` avec `saison:2`, un chapitre dans `STORY`, une série de squishies. Rien d'autre à coder, sauf son paysage.
 
 ## Le Monde des Boîtes (« La Fabrique de boîtes »)
-- **L'île :** `boites` 📦, au niveau 8. Elle flotte sur les nuages, avec des piles de cartons et le tapis roulant de la Fabrique. Son thème est kraft et pastel, et sa musique est une harpe aérienne avec les « tchac » des machines.
+- **L'île :** `boites` 📦, au niveau 36, palier 6. Elle flotte sur les nuages, avec des piles de cartons et le tapis roulant de la Fabrique. Son thème est kraft et pastel, et sa musique est une harpe aérienne avec les « tchac » des machines.
 - **4 personnages dessinés en SVG :**
   - 🦫 **Capucine**, la capybara directrice, guide du chapitre ;
   - 🐱 **Kiki**, le chat-dans-la-boîte ;
@@ -1136,9 +1137,9 @@ Track Conductor `squishy-collection` ([spec](conductor/tracks/squishy-collection
 - **Le journal 📖** a deux parties : « Saison 1 : Le Lagon Magique » et « Le Ciel des Rêves », avec son prologue.
 
 ## Tests
-- Nouveau `test/saison2.test.js` (95 vérifications), branché sur `npm test`. Il couvre :
+- Nouveau `test/saison2.test.js` (96 vérifications), branché sur `npm test`. Il couvre :
   - archipels, onglets, montgolfière, voyage d'un archipel à l'autre ;
-  - ouverture au niveau 8 et au chargement, migration ;
+  - ouverture au niveau 36 et au chargement, migration ;
   - l'île, les personnages, les objets, les préférés ;
   - la série Boîtes et Pop ;
   - gigognes (ordre, erreurs et relance, paliers, envers) et cubes (comptage avec les cachés, piles possibles, paliers, autre pile) ;

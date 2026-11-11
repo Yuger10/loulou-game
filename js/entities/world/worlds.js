@@ -47,7 +47,7 @@ const WORLDS = {
     intro:"Bienvenue au Pays Squishy, où tout est doux et moelleux 🍡",
     sceneEmpty:"Ton Pays Squishy attend ses décorations toutes douces !" },
   // ---- Saison 2 : le Ciel des Rêves (v55) ----
-  boites:{ name:'Le Monde des Boîtes', emoji:'📦', level:8, diff:3, saison:2, short:'Boîtes',
+  boites:{ name:'Le Monde des Boîtes', emoji:'📦', level:36, diff:6, saison:2, short:'Boîtes',
     subtitle:'La Fabrique de boîtes',
     // son mini-jeu, selon l'âge : les gigognes avant 7 ans, les cubes ensuite
     game:(age)=> (age && age < 7) ? 'nesting' : 'cubes',
@@ -58,11 +58,14 @@ const WORLDS = {
 
 /* Les archipels (v55) : chaque île appartient à un archipel (`saison`), qui a
    sa carte, son fond et son véhicule. Le Lagon Magique (saison 1) est ouvert
-   dès le départ ; le Ciel des Rêves (saison 2) au niveau 8, en parallèle.
+   dès le départ ; le Ciel des Rêves (saison 2) au niveau 36, une fois toutes
+   les îles du Lagon ouvertes (le Pays Squishy est au niveau 26). Ses îles
+   gardent la difficulté la plus haute (palier 6, toujours plafonnée par
+   l'âge et le niveau de chaque jeu).
    Ajouter une île à un archipel : une entrée dans WORLDS avec `saison`. */
 const ARCHIPELAGOS = {
   1: { name:'Le Lagon Magique', short:'Le Lagon', emoji:'🌊', level:1, vehicle:'⛵', sky:false },
-  2: { name:'Le Ciel des Rêves', short:'Le Ciel', emoji:'☁️', level:8, vehicle:'🎈', sky:true },
+  2: { name:'Le Ciel des Rêves', short:'Le Ciel', emoji:'☁️', level:36, vehicle:'🎈', sky:true },
 };
 const ARCHIPELAGO_ORDER = [1, 2];
 

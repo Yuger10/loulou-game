@@ -149,7 +149,7 @@ function migrate(saved){
     saved.squishies = sq;
   }
   if(v < 6){
-    // v55 : le Ciel des Rêves. Une partie déjà au niveau 8 ou plus le verra
+    // v55 : le Ciel des Rêves. Une partie déjà au niveau 36 ou plus le verra
     // s'ouvrir au prochain lancement (écran d'ouverture, prologue, chapitre).
     // Les îles visitées (state.visited) couvrent les deux archipels.
     saved.skyIntroSeen = false;

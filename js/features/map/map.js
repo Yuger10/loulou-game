@@ -13,7 +13,7 @@ import { renderIslandCard, renderLevelPill, setWorld } from '../island/index.js'
 
 /* Deux archipels (v55) : le Lagon Magique et le Ciel des Rêves, chacun sa
    carte, choisie par deux onglets en haut. Le Ciel est verrouillé (cadenas,
-   « Niveau 8 ») tant qu'il n'est pas ouvert ; il a son fond pastel et ses
+   « Niveau 36 ») tant qu'il n'est pas ouvert ; il a son fond pastel et ses
    nuages, et le bateau y devient une montgolfière. On voyage d'île en île à
    l'intérieur d'un archipel ; on passe de l'un à l'autre par l'onglet. */
 let mapSaison = null;   // l'archipel affiché (par défaut, celui de l'île courante)
@@ -147,7 +147,19 @@ function renderMap(){
     } else if(arch.sky){
       info.innerHTML = `☁️ D'autres îles arriveront bientôt dans le Ciel des Rêves !`;
     } else {
-      info.innerHTML = `🏆 Tu as débloqué toutes les îles !`;
+      // toutes les îles du Lagon sont ouvertes : le prochain monde, avec sa progression
+      const later = ARCHIPELAGO_ORDER.find(s=> !archipelagoUnlocked(s));
+      if(later){
+        const a = ARCHIPELAGOS[later];
+        const need = (a.level-1) * MISSIONS_PER_LEVEL;
+        const pct = Math.min(100, Math.round(state.missions/need*100));
+        const say = `Prochain monde : ${a.name}, au niveau ${a.level}`.replace(/"/g,'&quot;');
+        info.innerHTML = `${a.emoji} Prochain monde : <strong>${a.name}</strong> au niveau ${a.level}
+          <button type="button" class="btn-speak map-next-speak" data-say="${say}" aria-label="Écouter">🔈</button>
+          <div class="quest-bar"><i style="width:${pct}%"></i></div>`;
+      } else {
+        info.innerHTML = `🏆 Tu as débloqué toutes les îles !`;
+      }
     }
     info.hidden = false;
     bindSpeakButtons();

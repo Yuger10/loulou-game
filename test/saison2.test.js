@@ -1,5 +1,5 @@
 // La saison 2 (v55) : le Ciel des Rêves (deuxième archipel, carte à deux
-// onglets, montgolfière, ouverture au niveau 8, migration), le Monde des
+// onglets, montgolfière, ouverture au niveau 36, migration), le Monde des
 // Boîtes (île, personnages, objets, série de squishies, Pop), les deux
 // mini-jeux (gigognes, cubes) et l'histoire « Les Rêves dans les boîtes »
 // (prologue, chapitre, épisodes, Grisou, journal à deux saisons).
@@ -63,23 +63,24 @@ function startGame(key, tier, age){
     check('les 8 îles de la saison 1, dans le même ordre', json(s1) === json(['lagon','foret','montagne','chateau','jungle','cite','volcan','squishy']));
     check('leurs niveaux d\'ouverture sont inchangés', json(s1.map(id=> ev(`WORLDS.${id}.level`))) === json([1,3,6,10,14,18,22,26]));
     check('chaque île a un archipel (saison 1 ou 2)', ev('Object.values(WORLDS).every(w=> w.saison===1 || w.saison===2)'));
-    check('le Ciel des Rêves : saison 2, ouvert au niveau 8, en montgolfière', ev('ARCHIPELAGOS[2].level') === 8 && ev('ARCHIPELAGOS[2].vehicle') === '🎈' && /Ciel des Rêves/.test(ev('ARCHIPELAGOS[2].name')));
-    check('le Monde des Boîtes est sa première île (niveau 8)', json(ev('worldsOf(2)')) === json(['boites']) && ev('WORLDS.boites.level') === 8);
+    check('le Ciel des Rêves : saison 2, ouvert au niveau 36 (après tout le Lagon), en montgolfière', ev('ARCHIPELAGOS[2].level') === 36 && ev('ARCHIPELAGOS[2].level') > ev('WORLDS.squishy.level') && ev('ARCHIPELAGOS[2].vehicle') === '🎈' && /Ciel des Rêves/.test(ev('ARCHIPELAGOS[2].name')));
+    check('le Monde des Boîtes est sa première île (niveau 36, palier 6)', json(ev('worldsOf(2)')) === json(['boites']) && ev('WORLDS.boites.level') === 36 && ev('WORLDS.boites.diff') === 6);
     check('prochaine île de chaque archipel', (ev(`state.missions = ${LEVEL(7)}; save()`), ev('nextLockedWorld(1)')) === 'chateau' && ev('nextLockedWorld(2)') === 'boites');
   }
 
   section('Carte à deux onglets');
   {
-    ev(`closeModal(); state.missions = ${LEVEL(7)}; state.skyIntroSeen = true; save(); setCurrentWorld("lagon"); switchView("carte")`);
+    ev(`closeModal(); state.missions = ${LEVEL(35)}; state.skyIntroSeen = true; save(); setCurrentWorld("lagon"); switchView("carte")`);
     const tabs = d.querySelectorAll('#map-tabs .map-tab');
     check('deux onglets : le Lagon Magique et le Ciel des Rêves', tabs.length === 2 && /Lagon Magique/.test(tabs[0].textContent) && /Ciel des Rêves/.test(tabs[1].textContent));
-    check('niveau 7 : le Ciel est verrouillé (cadenas, « Niveau 8 »)', tabs[1].classList.contains('locked') && /🔒/.test(tabs[1].textContent) && /Niveau 8/.test(tabs[1].textContent));
+    check('niveau 35 : le Ciel est verrouillé (cadenas, « Niveau 36 »)', tabs[1].classList.contains('locked') && /🔒/.test(tabs[1].textContent) && /Niveau 36/.test(tabs[1].textContent));
+    check('toutes les îles du Lagon ouvertes : la carte annonce le prochain monde, avec sa progression', /Prochain monde : Le Ciel des Rêves au niveau 36/.test(d.getElementById('map-next').textContent) && !!d.querySelector('#map-next .quest-bar'));
     check('la carte de la saison 1 reste la même (8 îles, bateau ⛵)', d.querySelectorAll('.map-island').length === 8 && /⛵/.test(d.getElementById('map-boat').textContent) && !d.getElementById('island-map').classList.contains('sky'));
     spoken.length = 0;
     tabs[1].click();
-    check('toucher l\'onglet fermé : la voix dit quand il s\'ouvre, la carte ne change pas', /niveau 8/.test(lastSaid()) && d.querySelectorAll('.map-island').length === 8);
-    ev(`state.missions = ${LEVEL(8)}; save(); renderMap()`);
-    check('niveau 8 : l\'onglet du Ciel s\'ouvre', !d.querySelector('#map-tabs .map-tab[data-saison="2"]').classList.contains('locked'));
+    check('toucher l\'onglet fermé : la voix dit quand il s\'ouvre, la carte ne change pas', /niveau 36/.test(lastSaid()) && d.querySelectorAll('.map-island').length === 8);
+    ev(`state.missions = ${LEVEL(36)}; save(); renderMap()`);
+    check('niveau 36 : l\'onglet du Ciel s\'ouvre', !d.querySelector('#map-tabs .map-tab[data-saison="2"]').classList.contains('locked'));
     d.querySelector('#map-tabs .map-tab[data-saison="2"]').click();
     check('la carte du Ciel : fond pastel, ses îles seulement', d.getElementById('island-map').classList.contains('sky') && d.querySelectorAll('.map-island').length === 1 && !!d.querySelector('.map-island[data-world="boites"]'));
     check('dans le Ciel, le bateau devient une montgolfière', /🎈/.test(d.getElementById('map-boat').textContent) && d.getElementById('map-boat').classList.contains('balloon'));
@@ -97,11 +98,11 @@ function startGame(key, tier, age){
     ev('setCurrentWorld("lagon"); renderMap()');
   }
 
-  section('Ouverture du Ciel (niveau 8)');
+  section('Ouverture du Ciel (niveau 36)');
   {
-    ev(`closeModal(); state.missions = ${LEVEL(8) - 1}; state.skyIntroSeen = false; state.visited = worldsOf(1).filter(worldUnlocked); state.storySolved = { lagon:true }; save(); setCurrentWorld("lagon")`);
+    ev(`closeModal(); state.missions = ${LEVEL(36) - 1}; state.skyIntroSeen = false; state.visited = worldsOf(1).filter(worldUnlocked); state.storySolved = { lagon:true }; save(); setCurrentWorld("lagon")`);
     ev('playGame("count"); onMissionWin()');
-    check('la mission qui fait passer au niveau 8', ev('level()') === 8);
+    check('la mission qui fait passer au niveau 36', ev('level()') === 36);
     d.getElementById('btn-yay').click();   // « Continuer » sur l'écran de victoire
     await waitFor(()=> shown('.sky-open'), 1500);
     check('l\'écran « Un nouveau monde s\'ouvre dans le ciel ! » s\'affiche', shown('.sky-open') && /nouveau monde s'ouvre dans le ciel/i.test(d.querySelector('.sky-open h2').textContent));
@@ -121,13 +122,13 @@ function startGame(key, tier, age){
 
   section('Partie existante et migration');
   {
-    const old = { v:5, coins:12, missions:60, inventory:{ coquillage:3 }, storySolved:{ lagon:true, foret:true }, visited:['lagon','foret','montagne','chateau','jungle'],
+    const old = { v:5, coins:12, missions:180, inventory:{ coquillage:3 }, storySolved:{ lagon:true, foret:true }, visited:['lagon','foret','montagne','chateau','jungle'],
       squishies:{ owned:{ donut:2 }, boxes:['capy'], shelf:Array(12).fill(null), dry:0, done:{}, fromStory:{ lagon:true, foret:true }, day:null, sorted:3, hello:true } };
     const m = ev(`migrate(${json(old)})`);
-    check('migration v5 → v6 : rien n\'est perdu', m.v === ev('SAVE_VERSION') && m.coins === 12 && m.missions === 60 && m.inventory.coquillage === 3 && m.squishies.owned.donut === 2 && m.squishies.sorted === 3 && json(m.visited) === json(old.visited));
+    check('migration v5 → v6 : rien n\'est perdu', m.v === ev('SAVE_VERSION') && m.coins === 12 && m.missions === 180 && m.inventory.coquillage === 3 && m.squishies.owned.donut === 2 && m.squishies.sorted === 3 && json(m.visited) === json(old.visited));
     check('migration : l\'ouverture du Ciel reste à montrer', m.skyIntroSeen === false);
     ev(`closeModal(); localStorage.setItem(currentSaveKey(), ${json(json(old))}); load(); refreshAll()`);
-    check('une partie déjà au niveau 13 : le Ciel s\'ouvre au premier lancement', ev('maybeSkyOpening()') === true && shown('.sky-open'));
+    check('une partie déjà au niveau 37 : le Ciel s\'ouvre au premier lancement', ev('maybeSkyOpening()') === true && shown('.sky-open'));
     d.getElementById('sky-go').click();
     check('… suivi du prologue', shown('.story-grisou') && !!d.getElementById('story-next'));
     ev('closeModal()');
@@ -137,7 +138,7 @@ function startGame(key, tier, age){
   section('Le Monde des Boîtes');
   {
     const css = page.manifestCss().map(f=> page.read(f)).join('\n');
-    check('l\'île : saison 2, niveau 8, son thème de couleurs', ev('WORLDS.boites.saison') === 2 && css.includes('body[data-world="boites"]{--world-sky'));
+    check('l\'île : saison 2, niveau 36, son thème de couleurs', ev('WORLDS.boites.saison') === 2 && css.includes('body[data-world="boites"]{--world-sky'));
     const chars = ev('charsOf("boites").map(([id])=> id)');
     check('4 personnages : Capucine, Kiki, Boulon, Lola', json(chars) === json(['capucine','kiki','boulon','lola']));
     check('chacun a son butin (2 objets de l\'île) et 3 répliques', chars.every(c=> ev(`CHARACTERS.${c}.loot.length===2 && CHARACTERS.${c}.loot.every(k=> ITEMS[k] && ITEMS[k].world==="boites") && CHARACTERS.${c}.texts.length===3`)));
@@ -150,7 +151,7 @@ function startGame(key, tier, age){
     check('2 objets préférés par personnage, de l\'île', chars.every(c=> ev(`(()=>{ const f = favoritesOf(${json(c)}); return f.length===2 && f.every(k=> ITEMS[k].world==="boites" && !CHARACTERS.${c}.loot.includes(k)); })()`)));
     check('sa musique (MUSIC_THEMES.boites)', !!ev('MUSIC_THEMES.boites'));
     check('son paysage (des boîtes en carton)', !!ev('ISLE_SCENERY.boites'));
-    ev(`closeModal(); state.missions = ${LEVEL(8)}; save(); setWorld("boites", true); switchView("ile")`);
+    ev(`closeModal(); state.missions = ${LEVEL(36)}; save(); setWorld("boites", true); switchView("ile")`);
     check('sur l\'île : ses 4 personnages dans le paysage', d.querySelectorAll('#scene [data-char]').length === 4 || d.querySelectorAll('#scene .isle-char').length === 4);
     check('le thème de l\'île est appliqué', d.body.dataset.world === 'boites');
     ev('ensureQuests()');
@@ -164,9 +165,9 @@ function startGame(key, tier, age){
     check('6 modèles : 4 communs, 1 rare, 1 ✨', ids.length === 6 && rar.filter(r=> r==='commun').length === 4 && rar.filter(r=> r==='rare').length === 1 && rar.filter(r=> r==='brille').length === 1);
     check('le rare est Pop, le ✨ la boîte dorée', ev('SQUISHIES.pop.rarity') === 'rare' && ev('SQUISHIES["boite-doree"].rarity') === 'brille');
     check('chaque modèle a son dessin', ids.every(id=> ev(`squishyArtSVG(${json(id)})`).includes('sq-face')));
-    ev(`state.missions = ${LEVEL(7)}; save()`);
+    ev(`state.missions = ${LEVEL(35)}; save()`);
     check('avant le Monde des Boîtes : la série n\'apparaît pas', ev('squishySeriesAvailable("boites")') === false && !ev('squishyMissing()').includes('pop'));
-    ev(`state.missions = ${LEVEL(8)}; save(); openSquishyRoom("collection")`);
+    ev(`state.missions = ${LEVEL(36)}; save(); openSquishyRoom("collection")`);
     check('ensuite, elle apparaît dans la chambre', !!d.querySelector('.sq-series[data-series="boites"]'));
     ev('closeModal(); state.storySolved = { lagon:true }; state.squishies = squishyFreshState(); save(); storyWin("boites")');
     check('l\'énigme des Boîtes donne une boîte de la série Boîtes', json(ev('state.squishies.boxes')) === json(['boites']) && shown('.sq-reward-line'));
@@ -266,7 +267,7 @@ function startGame(key, tier, age){
   section('Le jeu de l\'île');
   {
     check('les gigognes pour moins de 7 ans, les cubes ensuite', ev('worldGame("boites", 5)') === 'nesting' && ev('worldGame("boites", 8)') === 'cubes');
-    ev(`closeModal(); currentProfile().age = 5; state.missions = ${LEVEL(8)}; save(); setWorld("boites", true); openGamePicker("kiki")`);
+    ev(`closeModal(); currentProfile().age = 5; state.missions = ${LEVEL(36)}; save(); setWorld("boites", true); openGamePicker("kiki")`);
     check('sur l\'île, un enfant de 5 ans se voit proposer les gigognes', !!d.querySelector('.game-choice[data-game="nesting"]'));
     ev('closeModal(); currentProfile().age = 8; openGamePicker("boulon")');
     check('à 8 ans, Combien de cubes ?', !!d.querySelector('.game-choice[data-game="cubes"]'));
@@ -282,7 +283,7 @@ function startGame(key, tier, age){
     check('le prologue de la saison 2, lu par Capucine', ev('STORY_PROLOGUES[2].guide') === 'capucine' && ev('STORY_PROLOGUES[2].intro.length') >= 3);
     const eps = ev('EPISODES.boites');
     check('3 épisodes, racontés par Kiki, Boulon et Lola (jamais Capucine)', eps.length === 3 && eps.every(e=> ['kiki','boulon','lola'].includes(e.by)) && eps.every(e=> e.lines.length >= 2 && e.find));
-    ev(`closeModal(); state.missions = ${LEVEL(8)}; state.storyMissions = {}; state.storyEpisodes = {}; save(); setCurrentWorld("boites")`);
+    ev(`closeModal(); state.missions = ${LEVEL(36)}; state.storyMissions = {}; state.storyEpisodes = {}; save(); setCurrentWorld("boites")`);
     let seen = 0;
     for(let k = 0; k < 7; k++){ ev('noteStoryMission("boites")'); if(ev('maybeStoryEpisode()')){ seen++; ev('closeModal()'); } }
     check('les épisodes arrivent après la 2ᵉ, 4ᵉ et 7ᵉ mission sur l\'île', seen === 3 && ev('state.storyEpisodes.boites') === 3);
@@ -303,10 +304,10 @@ function startGame(key, tier, age){
     ev(`closeModal(); state.missions = ${LEVEL(5)}; state.storySolved = { lagon:true }; save(); openStoryJournal()`);
     const secs = d.querySelectorAll('.story-season');
     check('deux parties : Saison 1 et le Ciel des Rêves', secs.length === 2 && /Saison 1/.test(secs[0].querySelector('h3').textContent) && /Ciel des Rêves/.test(secs[1].querySelector('h3').textContent));
-    check('le Ciel est verrouillé avant le niveau 8 (chapitre fermé)', /🔒/.test(secs[1].querySelector('h3').textContent) && d.querySelector('.story-season[data-saison="2"] .story-chap[data-world="boites"]').disabled);
+    check('le Ciel est verrouillé avant le niveau 36 (chapitre fermé)', /🔒/.test(secs[1].querySelector('h3').textContent) && d.querySelector('.story-season[data-saison="2"] .story-chap[data-world="boites"]').disabled);
     check('la saison 1 est inchangée (8 chapitres)', secs[0].querySelectorAll('.story-chap[data-world]').length === 8);
-    ev(`closeModal(); state.missions = ${LEVEL(8)}; state.storySolved = { lagon:true, boites:true }; save(); openStoryJournal()`);
-    check('niveau 8 : le prologue et le chapitre des Boîtes (résolu) s\'ouvrent', !!d.querySelector('[data-prologue="2"]') && d.querySelector('.story-chap[data-world="boites"]').classList.contains('done'));
+    ev(`closeModal(); state.missions = ${LEVEL(36)}; state.storySolved = { lagon:true, boites:true }; save(); openStoryJournal()`);
+    check('niveau 36 : le prologue et le chapitre des Boîtes (résolu) s\'ouvrent', !!d.querySelector('[data-prologue="2"]') && d.querySelector('.story-chap[data-world="boites"]').classList.contains('done'));
     d.querySelector('[data-prologue="2"]').click();
     check('relire le prologue', shown('.story-grisou') && /Rêves dans les boîtes/.test(d.querySelector('.char-header h2').textContent));
     ev('closeModal()');

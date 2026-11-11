@@ -7,7 +7,7 @@ Spec : [spec.md](./spec.md). Workflow : [workflow.md](../../workflow.md).
 
 ## Phase 1 : L'île
 - [ ] Task: Entités de l'île
-    - [ ] Tests : `WORLDS.jardin` (saison, niveau 28, position, thème) ; 4 personnages avec butin, 3 répliques et 2 objets préférés ; objets, recettes, décorations
+    - [ ] Tests : `WORLDS.jardin` (saison, niveau 56, position, thème) ; 4 personnages avec butin, 3 répliques et 2 objets préférés ; objets, recettes, décorations
 - [ ] Task: Scène, thème et musique
     - [ ] Tests : `ISLE_SCENERY.jardin`, thème `--world-*`, `MUSIC_THEMES.jardin`
 - [ ] Task: Série de squishies « Petites bêtes »

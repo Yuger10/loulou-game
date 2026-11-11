@@ -149,7 +149,7 @@ ev('openGamePicker("mochichat")');
 check('squishy : son mini-jeu « Formes et couleurs » est toujours proposé', !!d.querySelector('.game-choice[data-game="shapes"]'));
 ev('closeModal()');
 ev("switchView('carte')");
-check('carte : toutes les îles débloquées', d.getElementById('map-next').innerHTML.includes('toutes les îles'));
+check('carte : toutes les îles du Lagon débloquées, le prochain monde est annoncé', d.getElementById('map-next').innerHTML.includes('Prochain monde') && d.getElementById('map-next').innerHTML.includes('Ciel des Rêves'));
 
 // Annonce de nouvelle île
 ev('state.visited = ["lagon"]; state.missions = 10');

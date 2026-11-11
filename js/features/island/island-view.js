@@ -89,7 +89,7 @@ function checkNewIsland(){
 }
 
 /* L'ouverture du Ciel des Rêves (saison 2, v55) : un écran spécial, une seule
-   fois, au passage au niveau 8 (ou au premier lancement d'une partie qui y est
+   fois, au passage au niveau 36 (ou au premier lancement d'une partie qui y est
    déjà). La carte montre ensuite le Ciel. */
 function openSkyOpening(onDone){
   const a = ARCHIPELAGOS[2];
@@ -111,7 +111,7 @@ function openSkyOpening(onDone){
   `);
   document.getElementById('sky-go').onclick = ()=>{ playSound('tap'); onDone(); };
 }
-// Au lancement : une partie déjà au niveau 8 ou plus découvre le Ciel une fois
+// Au lancement : une partie déjà au niveau 36 ou plus découvre le Ciel une fois
 function maybeSkyOpening(){
   if(state.skyIntroSeen || !archipelagoUnlocked(2)) return false;
   return checkNewIsland();

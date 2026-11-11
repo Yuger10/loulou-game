@@ -1,6 +1,7 @@
 # Spec : Saison 2 « Le Ciel des Rêves » et le Monde des Boîtes
 
 > Idée de la joueuse principale : « le monde des boîtes ».
+> **Décision du propriétaire (11/11/2026, après relecture) :** le Ciel des Rêves s'ouvre au **niveau 36**, et non au niveau 8 : une fois toutes les îles du Lagon ouvertes (le Pays Squishy est au niveau 26), et non en parallèle. Le Monde des Boîtes passe au palier 6, et les îles suivantes gardent leur écart de 5 niveaux (41, 46, 51, 56, 61). Les mentions du niveau 8 ci-dessous sont celles de la demande d'origine.
 > **Dépend de** la track `squishy-collection_20261109` (v53) : les rêves libérés sont des squishies, et le Monde des Boîtes apporte sa série.
 
 ## 1. Vue d'ensemble
@@ -12,7 +13,7 @@ Sa première île est le **Monde des Boîtes** (« La Fabrique de boîtes »), a
 
 ### 2.1 Deuxième archipel et navigation
 - Les îles portent maintenant un **archipel** : `saison:1` pour les 8 îles existantes (comportement inchangé), `saison:2` pour le Ciel des Rêves.
-- **Ouverture :** le Ciel des Rêves s'ouvre au **niveau 8**. Ses îles ont leur **propre niveau d'ouverture**, plus espacé qu'en saison 1 pour que chaque monde dure : de 5 en 5 : 📦 Boîtes **8**, 🧸 Jouets Doux **13**, 🍭 Bonbons **18**, 🎵 Musique **23**, 🌸 Jardin des Fées **28**, 🦄 Licornes **33** (grand final). Chaque île a sa track (`monde-jouets`, `monde-bonbons`, `monde-musique`, `monde-jardin`, `monde-licornes`).
+- **Ouverture :** le Ciel des Rêves s'ouvre au **niveau 8**. Ses îles ont leur **propre niveau d'ouverture**, plus espacé qu'en saison 1 pour que chaque monde dure : de 5 en 5 : 📦 Boîtes **8**, 🧸 Jouets Doux **13**, 🍭 Bonbons **18**, 🎵 Musique **23**, 🌸 Jardin des Fées **28**, 🦄 Licornes **33** (grand final). *Décalés depuis (décision du propriétaire) : 36, 41, 46, 51, 56 et 61.* Chaque île a sa track (`monde-jouets`, `monde-bonbons`, `monde-musique`, `monde-jardin`, `monde-licornes`).
 - **Carte :** l'écran carte affiche **deux onglets en haut**, « 🌊 Le Lagon Magique » et « ☁️ Le Ciel des Rêves ». L'onglet du Ciel est grisé, avec un cadenas et « Niveau 8 », tant qu'il est fermé. Le Ciel a son propre fond (dégradé pastel, nuages) et ses positions d'îles. Les règles « dans le cadre » et « pas de chevauchement » des tests s'appliquent à chaque archipel.
 - **Bateau :** dans le Ciel, le bateau devient une **montgolfière** 🎈. Le trajet se fait d'île en île à l'intérieur d'un archipel. Passer d'un archipel à l'autre se fait par l'onglet, sans trajet.
 - **Ouverture du Ciel :** au passage au niveau 8, un écran spécial « Un nouveau monde s'ouvre dans le ciel ! ☁️ » s'affiche. Il passe avant le chapitre 1 de la saison 2.
