@@ -1,0 +1,8 @@
+{
+  "track_id": "navigation-reglages_20261109",
+  "type": "feature",
+  "status": "new",
+  "created_at": "2026-11-09T00:00:00Z",
+  "updated_at": "2026-11-11T00:00:00Z",
+  "description": "Barre du bas à 5 boutons (Réglages, île nommée, tailles selon le support) et écran Réglages (son, moi, joueurs, parents protégé). Dépend de formulaires-boutons."
+}
