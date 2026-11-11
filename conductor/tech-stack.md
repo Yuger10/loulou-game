@@ -7,6 +7,7 @@
   - `js/package.json` déclare `"type": "module"` (pour Node).
 - **Servir en `http://localhost` ou `https://`** : ouvert depuis le disque (`file://`), le jeu ne charge pas ses modules, car les navigateurs l'interdisent. En local : `npm start`.
 - **Aucune dépendance d'exécution.** Les dessins sont en SVG et en emojis, les sons en Web Audio, la voix passe par `speechSynthesis`.
+- **Son (v56) :** un seul `AudioContext` et un bus principal dans `js/shared/ui/sound.js` (volume général, réduction pendant la voix, limiteur, écho doux). Les sons passent par `playSound(clé)` (palette « marimba doux », `SOUND_PALETTE`), les notes exactes par `playNote`, la musique se branche sur `musicBusNode()`. Les tests utilisent `test/tools/fake-audio.js`.
 
 ## Architecture : feature slices (v51) en modules ES (v54)
 > Décisions et options écartées : [ADR 0001](../docs/adr/0001-architecture-feature-slices.md) (slices) et [ADR 0002](../docs/adr/0002-modules-es-natifs.md) (modules ES, couches sans cycle).

@@ -51,6 +51,8 @@ Chaque mini-jeu a maintenant son propre niveau pour chaque enfant (`js/adaptive.
 - [x] Une petite histoire par île : un chapitre et une énigme en images à chaque nouvelle île, relisible dans « 📖 Mon histoire » — v40
 - [x] Faire avancer l'histoire aussi à chaque mission : 3 épisodes par île (24 scènes) après la 2e, 4e et 7e mission, progression visible sur l'écran de victoire, à relire dans « Mon histoire » — v49
 - [x] Musique d'ambiance douce, activable : une ambiance par île, inventée en direct, qui baisse quand la voix parle ; bouton son (🎵) ou espace parents — v48
+- [x] Sons retravaillés : ambiance « marimba doux » (gamme pentatonique, plus de buzzer), moteur audio unique (limiteur, écho doux, variation, anti-rafale, réduction pendant la voix), sons de l'indice, de la nouvelle île et de la boîte, volume par joueur — v56
+- [ ] À observer : le volume des touchers et des fêtes est-il bien dosé ? Le « oups » est-il assez clair sans être triste ?
 - [x] Décorations de saison : Halloween, Noël, anniversaire — île décorée, neige / feuilles / ballons, chapeaux de fête pour les compagnons, un cadeau par saison ; aperçu dans l'espace parents — v45
 - [x] Mini-jeu « Assembler l'image » (« Le puzzle ») : 2×2 avec l'image en transparence, puis 3×3, puis 4×3 avec un modèle ; glisser du doigt ou toucher morceau puis case — v46
 - [x] Les compagnons et leurs rôles : le compagnon donne des indices 💡 dans tous les mini-jeux et les énigmes (2 niveaux, jamais la réponse, sans pénalité) ; au niveau 10, l'équipe s'ouvre : rencontres sur les îles, 2 équipiers, une spécialité chacun (conteuse, tuteur, guide, défis, trésors, collection) — v52

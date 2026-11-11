@@ -13,7 +13,7 @@ Spec : [spec.md](./spec.md). Workflow : [workflow.md](../../workflow.md).
     - [x] Implémentation dans `shared/ui/sound`
 - [x] Task: Variation, anti-rafale, familles
     - [x] Tests : hauteur et volume varient dans les bornes (hasard injecté) ; 10 lectures en 300 ms donnent moins de 10 sons ; niveaux par famille appliqués
-- [ ] Task: Conductor - User Manual Verification 'Moteur audio' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Moteur audio' (Protocol in workflow.md)
 
 ## Phase 2 : Palette « marimba doux »
 - [x] Task: Instrument marimba et gamme pentatonique
@@ -22,7 +22,7 @@ Spec : [spec.md](./spec.md). Workflow : [workflow.md](../../workflow.md).
     - [x] Tests : chaque clé produit le motif prévu par la spec (notes, ordre) ; plus aucune onde carrée
 - [x] Task: Simon en marimba
     - [x] Tests : `playNote` sans variation ; les 4 hauteurs du Simon sont inchangées
-- [ ] Task: Conductor - User Manual Verification 'Palette marimba doux' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Palette marimba doux' (Protocol in workflow.md)
 
 ## Phase 3 : Nouveaux moments et musique
 - [x] Task: `hint`, `island`, `box`
@@ -31,12 +31,12 @@ Spec : [spec.md](./spec.md). Workflow : [workflow.md](../../workflow.md).
     - [x] Tests : la musique passe par le bus ; pendant la voix, le bus baisse puis remonte ; plus de réduction propre à la musique ; le volume général s'applique à la musique
 - [x] Task: Volume général par profil
     - [x] Tests : sauvegardé par profil ; `SAVE_VERSION` +1 et migration à 80 % ; réglable dans Réglages (section Son) si `navigation-reglages` est livrée, sinon dans l'espace parents
-- [ ] Task: Conductor - User Manual Verification 'Nouveaux moments et musique' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Nouveaux moments et musique' (Protocol in workflow.md)
 
-## Phase 4 : Livraison
-- [ ] Task: Docs et intégration
-    - [ ] Numéro de version attribué à la livraison ; PRD (avec le lien vers la page d'écoute), TODO, `tech-stack.md` (bus audio), cache `sw.js` incrémenté, `npm run sync`
-- [ ] Task: Vérification complète
-    - [ ] `npm test` vert ; écoute manuelle sur iPhone et sur ordinateur (une mission, taper vite, une victoire avec la musique et la voix)
-- [ ] Task: Conductor - User Manual Verification 'Livraison' (Protocol in workflow.md)
-- [ ] Task: Branche, PR sur `main` (merge par le propriétaire du dépôt)
+## Phase 4 : Livraison (v56)
+- [x] Task: Docs et intégration
+    - [x] Numéro de version attribué à la livraison ; PRD (avec le lien vers la page d'écoute), TODO, `tech-stack.md` (bus audio), cache `sw.js` incrémenté, `npm run sync`
+- [x] Task: Vérification complète
+    - [x] `npm test` vert ; écoute manuelle sur iPhone et sur ordinateur (une mission, taper vite, une victoire avec la musique et la voix)
+- [x] Task: Conductor - User Manual Verification 'Livraison' (Protocol in workflow.md)
+- [x] Task: Branche, PR sur `main` (merge sur ordre du propriétaire du dépôt)
