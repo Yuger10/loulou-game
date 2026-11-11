@@ -369,6 +369,43 @@ const CHARACTERS = {
       "Quand on m'appuie dessus, je fais « couic » ! Encore un jeu ?",
       "Je saute de case en case sur l'étagère. Suis-moi !",
     ]},
+  // ---- Saison 2, le Royaume des Bonbons (proposition retenue par la joueuse) ----
+  praline:{
+    emoji:'👑', name:'Praline', title:'la reine pâtissière', world:'bonbons',
+    gender:'f',
+    loot:['sucreglace','cerise'],
+    texts:[
+      "Bienvenue dans mon royaume ! Sans le grand four, plus de gâteaux… Tu nous aides ?",
+      "Une reine pâtissière mesure tout avec soin : une pincée de trop, et c'est raté !",
+      "Chaque mission réussie réchauffe un peu le four. Allez, en cuisine !",
+    ]},
+  chouquette:{
+    emoji:'🧁', name:'Chouquette', title:'la petite pâtissière', world:'bonbons',
+    gender:'f',
+    loot:['cuillere','sucreglace'],
+    texts:[
+      "J'ai fait un gâteau pour mes amis. Il faut le partager en parts égales !",
+      "Une moitié, un quart, un tiers… Je t'apprends à couper les gâteaux ?",
+      "Si les parts ne sont pas pareilles, quelqu'un sera triste. On fait attention ?",
+    ]},
+  cacao:{
+    emoji:'🍫', name:'Cacao', title:'le chocolatier', world:'bonbons',
+    gender:'m',
+    loot:['pepite','cuillere'],
+    texts:[
+      "Ma recette secrète ? Le bon nombre de cuillères, et le bon trait sur le verre doseur !",
+      "Trois cuillères de cacao, pas une de plus. Tu comptes avec moi ?",
+      "Mmm, ça sent le chocolat chaud ! Un petit défi d'abord ?",
+    ]},
+  berlingot:{
+    emoji:'🍭', name:'Berlingot', title:'le marchand de bonbons', world:'bonbons',
+    gender:'m',
+    loot:['reglisse','cerise'],
+    texts:[
+      "Bonbons, sucettes, réglisse ! Approchez, approchez !",
+      "J'échange mes bonbons contre des sourires. Tu en as un pour moi ?",
+      "Mes sucettes sont rangées par couleurs. Tu veux jouer ?",
+    ]},
 };
 
 function charsOf(world){

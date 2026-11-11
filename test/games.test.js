@@ -103,6 +103,24 @@ const INDEPENDENT = {
   cubes(sol){ return Number(d.querySelector(sol[0]).dataset.v) === d.querySelectorAll('.cubes-svg .cube').length; },
   // paquets : la bonne réponse est le nombre de jouets dessinés (paquets et jouet seul)
   packs(sol){ return Number(d.querySelector(sol[0]).dataset.v) === d.querySelectorAll('.packs-stage .pack-toy').length; },
+  // gâteau partagé : la solution correspond au gâteau dessiné (parts égales, bon nombre, bonne écriture)
+  share(sol){
+    const el = d.querySelector(sol[0]), box = d.querySelector('.share-options'), stage = d.querySelector('.share-stage');
+    const ask = box.dataset.ask, n = Number(box.dataset.n);
+    // des parts égales : pour une tablette, toutes les bandes ont la même largeur
+    const equal = (o)=>{ const w = [...o.querySelectorAll('rect.share-part')].map(r=> Number(r.getAttribute('width'))); return w.every(x=> Math.abs(x - w[0]) < .2); };
+    if(ask === 'fair') return el.dataset.equal === '1' && equal(el) && el.querySelectorAll('.share-part').length === n && [...box.querySelectorAll('.share-opt')].filter(o=> o.dataset.equal === '1').length === 1;
+    if(ask === 'show') return el.dataset.equal === '1' && equal(el) && el.querySelectorAll('.share-part').length === n;
+    if(ask === 'write') return el.dataset.v === `1/${stage.querySelectorAll('.share-part').length}`;
+    return Number(el.dataset.v) === ({ 'quarts-moitie':2, 'quarts-entier':4, 'moities-entier':2, 'tiers-entier':3 })[stage.dataset.q];
+  },
+  // recette : le bol le plus (moins) rempli, le bon sac, le bon nombre de cuillères, le bon trait
+  recipe(sol){
+    const ask = d.querySelector('.recipe-ask');
+    if(ask && ask.dataset.n) return sol.length === Number(ask.dataset.n) + 1 && sol.slice(0, -1).every(s=> s === '#recipe-add') && sol[sol.length - 1] === '#recipe-done';
+    if(ask && ask.dataset.target) return d.querySelector(sol[0]).dataset.v === ask.dataset.target;
+    return sol.length === 1 && !!d.querySelector(sol[0]);
+  },
   // étagère : chaque case est à la croisée de la ligne de la couleur et de la colonne de la forme
   shelf(sol){
     const els = sol.map(s=> d.querySelector(s));
@@ -159,7 +177,7 @@ async function playToWin(key, tier){
     }
   }
   console.log(`  ${played} parties jouées`);
-  check('les 22 mini-jeux sont testés', games.length >= 22);
+  check('les 24 mini-jeux sont testés', games.length >= 24);
 
   /* ---- 2. une mauvaise réponse ne fait jamais gagner ---- */
   section('Une mauvaise réponse ne fait pas gagner');

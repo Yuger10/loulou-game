@@ -29,6 +29,8 @@ const MUSIC_THEMES = {
   boites:   { root:65, scale:[0,2,4,7,9],  bpm:88, lead:'harp',    prog:[0,5,9,7], tick:true },
   // une boîte à musique (célesta), très douce
   jouets:   { root:72, scale:[0,2,4,7,9],  bpm:80, lead:'celesta', prog:[0,9,5,7] },
+  // une petite valse sucrée, en pizzicato
+  bonbons:  { root:67, scale:[0,2,4,7,9],  bpm:92, lead:'pluck',   prog:[0,5,7,0] },
 };
 const MUSIC_VOLUME = 1.0;       // crête ≈ 0,11, bien sous les bruitages ; passe ensuite par le volume général du bus
 

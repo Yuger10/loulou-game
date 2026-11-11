@@ -314,7 +314,7 @@ function livesFor(kind, dd){
   // essais suivent donc le nombre de paires : n + 2. Bien retenir fait
   // toujours gagner ; toucher au hasard fait toujours perdre.
   if(kind === 'memory') return memoryPairs(d) + 2;
-  const GENEROUS_KINDS = ['math','reading','determinants','volume','compare','money','clock','calendar','calc','shapes','planets','cubes','packs','shelf'];
+  const GENEROUS_KINDS = ['math','reading','determinants','volume','compare','money','clock','calendar','calc','shapes','planets','cubes','packs','shelf','share','recipe'];
   const table = LIVES_TABLE[kind] || (GENEROUS_KINDS.includes(kind) ? LIVES_TABLE.generous : LIVES_TABLE.default);
   // le calcul mental (palier 6, Volcan) emprunte le barème d'essais du
   // palier 5 : seul le minuteur continue de se resserrer au-delà.
@@ -351,7 +351,7 @@ const TIMER_SECONDS = {
   calc:         {3:28, 4:24, 5:22, 6:20},   // calcul abstrait : le plus généreux de tous
 };
 // jeux à plusieurs étapes : jamais de minuteur, quelle que soit la difficulté
-const NO_TIMER_KINDS = ['memory','simon','puzzle','calendar','shapes','planets','jigsaw','nesting','cubes','packs','shelf'];
+const NO_TIMER_KINDS = ['memory','simon','puzzle','calendar','shapes','planets','jigsaw','nesting','cubes','packs','shelf','share','recipe'];
 function timerFor(kind, dd){
   if(NO_TIMER_KINDS.includes(kind)) return null;
   const table = TIMER_SECONDS[kind];
@@ -566,6 +566,49 @@ function shelfRound(dd){
   }, dd);
 }
 
+/* ---------------------------------------------------------------------
+   LE GÂTEAU PARTAGÉ (Royaume des Bonbons, saison 2) — fractions simples :
+   des parts égales (GS-CP), puis la moitié, le quart et le tiers (CE1),
+   puis les écritures ½, ⅓, ¼ et « combien de quarts pour une moitié ? » (CE2).
+     palier 1   « quel gâteau est coupé en 2 parts égales ? » (parts bien différentes)
+     palier 2   en 2 ou en 4 parts égales, parts inégales plus proches
+     palier 3   montrer la moitié ou le quart (la part colorée)
+     palier 4   moitié, tiers, quart ; un piège : le bon nombre de parts, mais inégales
+     palier 5   l'écriture de la part colorée, ou « combien de… pour faire… ? »
+   `whole` : chance de la question « combien de… ». Pas de minuteur.
+   --------------------------------------------------------------------- */
+function shareRound(dd){
+  return tierValue({
+    1:{ ask:'fair',  parts:[2],       near:false },
+    2:{ ask:'fair',  parts:[2, 4],    near:true },
+    3:{ ask:'show',  fracs:[2, 4],    trap:false },
+    4:{ ask:'show',  fracs:[2, 3, 4], trap:true },
+    5:{ ask:'write', fracs:[2, 3, 4], whole:.4 },
+  }, dd);
+}
+
+/* ---------------------------------------------------------------------
+   LA RECETTE (Royaume des Bonbons, saison 2) — grandeurs et mesures :
+   comparer (GS), compter des cuillères (CP), lire un verre doseur gradué de
+   1 en 1 (CE1), puis de 10 en 10 et de 50 en 50 en grammes et centilitres,
+   où seuls quelques traits portent un nombre (CE2).
+     palier 1   le bol qui en a le plus (le moins), ou le sac le plus lourd (léger)
+     palier 2   2 à 6 cuillères, puis « C'est prêt ! »
+     palier 3   4 à 10 cuillères, ou le verre doseur en verres (traits numérotés)
+     palier 4   le verre doseur en grammes : traits de 10 en 10, nombres tous les 50
+     palier 5   grammes de 50 en 50 (nombres tous les 250) ou centilitres de 10 en 10
+   Pas de minuteur.
+   --------------------------------------------------------------------- */
+function recipeRound(dd){
+  return tierValue({
+    1:{ asks:['bowls', 'balance'], amounts:[1, 3, 5] },
+    2:{ asks:['spoons'], min:2, max:6 },
+    3:{ asks:['spoons', 'cup'], min:4, max:10, scales:[{ unit:'verres', step:1, max:5, label:1 }] },
+    4:{ asks:['cup'], scales:[{ unit:'g', step:10, max:100, label:50 }] },
+    5:{ asks:['cup'], scales:[{ unit:'g', step:50, max:500, label:250 }, { unit:'cl', step:10, max:100, label:50 }] },
+  }, dd);
+}
+
 function jigsawRound(dd){
   return tierValue({
     1:{cols:2, rows:2, ghost:.45},
@@ -580,7 +623,7 @@ export {
   CALC_MULT_TABLES, calcBounds, calendarUsesWeekdayOrder, calendarWeekdayCount, clockGranularity,
   clockOptions, compareCloseChance, compareEqualChance, compareRange, countRange,
   determinantsExtraDistractor, determinantsImageShown, determinantsPluralChance, diffMirrorChance,
-  cubesRound, diffTotal, jigsawRound, nestingRound, livesFor, packsRound, shelfRound, mathBounds, memoryPairs, moneyDenoms, moneyPileSize, planetsTier,
+  cubesRound, diffTotal, jigsawRound, nestingRound, livesFor, packsRound, recipeRound, shareRound, shelfRound, mathBounds, memoryPairs, moneyDenoms, moneyPileSize, planetsTier,
   puzzleCount, puzzleStartMax, puzzleVariants, readingOptions, readingWordOnly, sequencePatternLength,
   shapesRound, simonLength, solidOptions, timerFor, volumeAskLessChance, volumeContainerCount,
   volumeUsesCapacityCompare

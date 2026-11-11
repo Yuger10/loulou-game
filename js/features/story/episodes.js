@@ -109,6 +109,14 @@ const EPISODES = {
     { by:'rainette', title:'La cachette de Rainette', find:'🎈',
       lines:["Hop ! En sautant au fond du coffre, j'ai trouvé un ballon qui flotte vers le ciel.", "Il sent le sucre et la fraise… Je crois qu'il vient du Royaume des Bonbons !"] },
   ],
+  bonbons: [
+    { by:'chouquette', title:'Le premier gâteau', find:'🧁',
+      lines:["Le four est encore tiède, mais j'ai réussi à cuire un tout petit gâteau !", "Je l'ai coupé en quatre parts égales, une pour chaque ami. C'est ça, partager !"] },
+    { by:'cacao', title:'Le chocolat chaud de Grisou', find:'☕',
+      lines:["J'ai préparé un chocolat chaud pour Grisou : trois cuillères de cacao, pas une de plus.", "Il l'a bu d'un trait… et une petite tache marron est apparue sur son nuage !"] },
+    { by:'berlingot', title:'La partition sucrée', find:'🎵',
+      lines:["Dans un paquet de bonbons, j'ai trouvé une feuille pleine de notes de musique.", "Quand on la lit, on entend chanter le ciel. Elle vient sûrement de l'Île de la Musique !"] },
+  ],
 };
 
 function storyMissionsOn(world){ return (state.storyMissions || {})[world] || 0; }

@@ -24,8 +24,9 @@ const SQUISHY_SERIES = {
   animaux:  { name:'Animaux',   emoji:'🐾' },
   boites:   { name:'Boîtes',    emoji:'📦', world:'boites' },   // le Monde des Boîtes (v55)
   jouets:   { name:'Jouets doux', emoji:'🧸', world:'jouets' }, // le Coffre aux Jouets Doux
+  bonbons:  { name:'Bonbons',   emoji:'🍬', world:'bonbons' },  // le Royaume des Bonbons
 };
-const SQUISHY_SERIES_ORDER = ['capy', 'desserts', 'animaux', 'boites', 'jouets'];
+const SQUISHY_SERIES_ORDER = ['capy', 'desserts', 'animaux', 'boites', 'jouets', 'bonbons'];
 
 // les trois raretés, et leur chance au tirage (voir openSquishyBox)
 const SQUISHY_RARITY = {
@@ -71,6 +72,13 @@ const SQUISHIES = {
   'grenouille-sauteuse':{ series:'jouets', name:'Grenouille sauteuse', say:'une grenouille sauteuse', rarity:'commun', color:'vert', shape:'ovale', size:'petit' },
   'nougat':             { series:'jouets', name:'Nougat',          say:'Nougat, l\'ourson du coffre', rarity:'rare', color:'orange', shape:'carre', size:'grand' },
   'ourson-arc':         { series:'jouets', name:'Ourson arc-en-ciel', say:'un ourson arc-en-ciel', rarity:'brille', color:'jaune', shape:'rond', size:'grand' },
+  // 🍬 Bonbons (saison 2, le Royaume des Bonbons)
+  'sucette-spirale': { series:'bonbons', name:'Sucette spirale', say:'une sucette spirale', rarity:'commun', color:'rose',   shape:'rond',  size:'grand' },
+  'berlingot':       { series:'bonbons', name:'Berlingot',       say:'un berlingot',       rarity:'commun', color:'bleu',   shape:'carre', size:'petit' },
+  'guimauve':        { series:'bonbons', name:'Guimauve',        say:'une guimauve',       rarity:'commun', color:'vert',   shape:'ovale', size:'grand' },
+  'dragee':          { series:'bonbons', name:'Dragée',          say:'une dragée',         rarity:'commun', color:'violet', shape:'ovale', size:'petit' },
+  'praline':         { series:'bonbons', name:'Praline',         say:'Praline, la reine pâtissière', rarity:'rare', color:'orange', shape:'rond', size:'grand' },
+  'gateau-etages':   { series:'bonbons', name:'Gâteau à étages doré', say:'un gâteau à étages doré', rarity:'brille', color:'jaune', shape:'carre', size:'grand' },
 };
 
 // La série gagnée en résolvant l'énigme d'une île (une seule fois par île)
@@ -78,7 +86,7 @@ const SQUISHY_ISLAND_SERIES = {
   lagon:'animaux', foret:'animaux', montagne:'animaux',
   chateau:'desserts', volcan:'desserts', squishy:'desserts',
   jungle:'capy', cite:'capy',
-  boites:'boites', jouets:'jouets',
+  boites:'boites', jouets:'jouets', bonbons:'bonbons',
 };
 
 function squishiesOf(series){ return Object.keys(SQUISHIES).filter(id=> SQUISHIES[id].series === series); }

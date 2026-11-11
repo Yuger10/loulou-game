@@ -75,6 +75,8 @@ const SLICES = [
   { id:'minigame-cubes', layer:'features', files:['js/features/minigames/cubes/cubes.js'], css:['js/features/minigames/cubes/cubes.css'] },
   { id:'minigame-packs', layer:'features', files:['js/features/minigames/packs/packs.js'], css:['js/features/minigames/packs/packs.css'] },
   { id:'minigame-shelf', layer:'features', files:['js/features/minigames/shelf/shelf.js'], css:['js/features/minigames/shelf/shelf.css'] },
+  { id:'minigame-share', layer:'features', files:['js/features/minigames/share/share.js'], css:['js/features/minigames/share/share.css'] },
+  { id:'minigame-recipe', layer:'features', files:['js/features/minigames/recipe/recipe.js'], css:['js/features/minigames/recipe/recipe.css'] },
   { id:'market', layer:'features', files:['js/features/market/market.js'], css:['js/features/market/market.css'] },
   { id:'backup', layer:'features', files:['js/features/backup/backup.js'], css:['js/features/backup/backup.css'] },
   { id:'players', layer:'features', files:['js/features/players/profiles-ui.js'], css:[] },
@@ -141,6 +143,8 @@ const CSS_ORDER = [
   'js/features/minigames/cubes/cubes.css',
   'js/features/minigames/packs/packs.css',
   'js/features/minigames/shelf/shelf.css',
+  'js/features/minigames/share/share.css',
+  'js/features/minigames/recipe/recipe.css',
   'js/features/island/island.css',
   'js/entities/character/characters.css',
   // en dernier : le modèle de formulaire et la confirmation l'emportent sur les styles des features

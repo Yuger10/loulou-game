@@ -59,6 +59,8 @@ const PROGRESS_CHEERS = {
   cubes:        'Tu comptes les cubes de mieux en mieux, même ceux qui se cachent !',
   packs:        'Tu comptes par paquets de mieux en mieux !',
   shelf:        'Tu ranges l\'étagère magique de mieux en mieux !',
+  share:        'Tu partages les gâteaux de mieux en mieux !',
+  recipe:       'Tu mesures tes recettes de mieux en mieux !',
 };
 
 function gameMaxTier(key){ return GAME_TIER_MAX[key] || 5; }

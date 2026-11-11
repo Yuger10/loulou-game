@@ -600,7 +600,7 @@ setTimeout(()=>{
     ev('closeModal(); state.avatar="👧"; renderProfile(); renderMap()');
     check('compagnon par défaut : fille → sirène, garçon → pirate', ev("defaultCompanionFor('f')")==='perle' && ev("defaultCompanionFor('m')")==='tom');
     // ---- Illustrations SVG des personnages ----
-    check('personnages : les 40 ids possèdent un SVG', ev('Object.keys(CHARACTERS).length===40 && Object.keys(CHARACTERS).every(k=>charArtSVG(k).startsWith("<svg"))'));
+    check('personnages : les 44 ids possèdent un SVG', ev('Object.keys(CHARACTERS).length===44 && Object.keys(CHARACTERS).every(k=>charArtSVG(k).startsWith("<svg"))'));
     check('personnages : viewBox et longueur SVG valides', ev('Object.values(CHAR_ART).every(s=>s.startsWith("<svg") && s.includes(\'viewBox="0 0 120 130"\') && s.length<=6000)'));
     check('personnages : aucun élément ou attribut SVG interdit', ev('Object.values(CHAR_ART).every(s=>!/\\bid\\s*=|\\bhref\\s*=|url\\s*\\(|<\\s*(?:defs|linearGradient|radialGradient|clipPath|mask|filter|text|image|style|script)\\b/i.test(s))'));
     check('personnages : fallback emoji pour id inconnu', ev('charFace("__unknown").includes("❔")'));
@@ -666,7 +666,7 @@ setTimeout(()=>{
     ev('closeModal()');
 
     // ---- Compteur de défis joués, et variété forcée ----
-    ev('state.gameCounts = {}; state.gameCounts["memory"]=1; state.gameCounts["count"]=1; state.gameCounts["diff"]=1; state.gameCounts["puzzle"]=1; state.gameCounts["sequence"]=1; state.gameCounts["simon"]=1; state.gameCounts["math"]=1; state.gameCounts["reading"]=1; state.gameCounts["determinants"]=1; state.gameCounts["volume"]=1; state.gameCounts["clock"]=1; state.gameCounts["calendar"]=1; state.gameCounts["calc"]=1; state.gameCounts["compare"]=0; state.gameCounts["shapes"]=1; state.gameCounts["planets"]=1; state.gameCounts["jigsaw"]=1; state.gameCounts["nesting"]=1; state.gameCounts["cubes"]=1; state.gameCounts["packs"]=1; state.gameCounts["shelf"]=1; state.gameCounts["money"]=0; openGamePicker("sirene")');
+    ev('state.gameCounts = {}; state.gameCounts["memory"]=1; state.gameCounts["count"]=1; state.gameCounts["diff"]=1; state.gameCounts["puzzle"]=1; state.gameCounts["sequence"]=1; state.gameCounts["simon"]=1; state.gameCounts["math"]=1; state.gameCounts["reading"]=1; state.gameCounts["determinants"]=1; state.gameCounts["volume"]=1; state.gameCounts["clock"]=1; state.gameCounts["calendar"]=1; state.gameCounts["calc"]=1; state.gameCounts["compare"]=0; state.gameCounts["shapes"]=1; state.gameCounts["planets"]=1; state.gameCounts["jigsaw"]=1; state.gameCounts["nesting"]=1; state.gameCounts["cubes"]=1; state.gameCounts["packs"]=1; state.gameCounts["shelf"]=1; state.gameCounts["share"]=1; state.gameCounts["recipe"]=1; state.gameCounts["money"]=0; openGamePicker("sirene")');
     const leastPlayed = [...d.querySelectorAll('.game-choice:not(.surprise)')].map(b=>b.dataset.game);
     check('variété : les 2 jeux jamais essayés remontent en priorité', leastPlayed.includes('compare') && leastPlayed.includes('money'));
     ev('closeModal()');

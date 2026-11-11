@@ -95,7 +95,7 @@ function startGame(key, tier, age){
     ev(`state.missions = ${LEVEL(32)}; save(); renderMap()`);
     check('niveau 32 : l\'onglet du Ciel s\'ouvre', !d.querySelector('#map-tabs .map-tab[data-saison="2"]').classList.contains('locked'));
     check('niveau 32 : sous la carte, la prochaine île du Ciel (même depuis l\'onglet du Lagon)', /Prochaine île : Le Coffre aux Jouets Doux au niveau 38/.test(d.getElementById('map-next').textContent));
-    ev(`state.missions = ${LEVEL(38)}; save(); renderMap()`);
+    ev(`state.missions = ${LEVEL(ev('Math.max(...Object.values(WORLDS).map(w=> w.level))'))}; save(); renderMap()`);
     check('toutes les îles ouvertes : la carte le dit, sans annoncer d\'île qui n\'existe pas encore', /Tu as ouvert toutes les îles/.test(d.getElementById('map-next').textContent) && !d.querySelector('#map-next .quest-bar'));
     ev(`state.missions = ${LEVEL(32)}; save(); renderMap()`);
     d.querySelector('#map-tabs .map-tab[data-saison="2"]').click();
