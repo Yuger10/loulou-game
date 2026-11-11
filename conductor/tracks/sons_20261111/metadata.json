@@ -1,0 +1,8 @@
+{
+  "track_id": "sons_20261111",
+  "type": "feature",
+  "status": "new",
+  "created_at": "2026-11-11T00:00:00Z",
+  "updated_at": "2026-11-11T00:00:00Z",
+  "description": "Retravailler tous les sons : moteur audio unique (bus principal, limiteur, écho doux, variation, anti-rafale, mixage par famille, réduction pendant la voix), ambiance « marimba doux » en synthèse, nouveaux sons (indice, nouvelle île, boîte), volume général par profil."
+}
