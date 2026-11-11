@@ -46,8 +46,8 @@
 | 3 | 📚 La Bibliothèque Magique | `biblio` | 94 | 8 | 40 | 465 |
 | 3 | 🚀 La Station des Étoiles | `etoiles` | 102 | 8 | 40 | 505 |
 
-Dans le jeu, aujourd'hui (v63) :
-- les îles de la saison 1, le Monde des Boîtes, le Coffre aux Jouets Doux, le Royaume des Bonbons, l'Île de la Musique et le Jardin des Fées existent ;
+Dans le jeu, aujourd'hui (v65) :
+- les îles de la saison 1 et toutes celles de la saison 2 (Boîtes, Jouets Doux, Bonbons, Musique, Jardin des Fées, Licornes) existent ;
 - les autres îles ont chacune leur track dans `conductor/tracks.md` ;
 - une saison s'ouvre au niveau de sa première île, que le jeu calcule lui-même (`ARCHIPELAGOS[s].level`).
 

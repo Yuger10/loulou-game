@@ -1508,3 +1508,72 @@ Track Conductor `pause-verrou`. Demande : « ma fille contourne facilement la pa
 - `test/rest.test.js` (56 tests) ; anciens tests de l'écran de pause remplacés.
 
 - Cache `lagon-v64`.
+
+---
+
+# v65 — Le Monde des Licornes et le grand final de la saison 2
+
+> **Idée de la joueuse principale :** « le monde des licornes ». Track Conductor `monde-licornes` ([spec](conductor/tracks/monde-licornes_20261109/spec.md), [plan](conductor/tracks/monde-licornes_20261109/plan.md)).
+
+## L'île : le Royaume Arc-en-ciel
+- **`licornes` 🦄, niveau 62** (règle des niveaux : `conductor/niveaux.md`), palier 6. C'est la 6ᵉ et dernière île du Ciel des Rêves, en haut à gauche de la carte.
+- **Le paysage :** une île de nuages sous un grand arc-en-ciel, le château des licornes avec ses fanions qui se balancent, une cascade arc-en-ciel, des étoiles. Le thème est pastel irisé.
+- **La musique :** la harpe et les clochettes du Royaume, et une musique de fête, plus rapide, pendant le grand final.
+- **5 personnages** dessinés, chacun avec son butin et 3 répliques :
+  - 👑 **La Reine Arc-en-ciel**, guide du chapitre. Elle ne propose pas de mini-jeu : elle parle et accepte les cadeaux.
+  - 🦄 **Étincelle**, la licorne du Lagon rentrée chez elle. C'est un personnage distinct, avec un foulard arc-en-ciel. Étincelle du Lagon ne change pas.
+  - 🐴 **Biscotte**, le bébé licorne qui rate ses arcs-en-ciel.
+  - 🧪 **Félix**, le licorne alchimiste, qui présente les potions.
+  - 🪞 **Mira**, la licorne coiffeuse, qui présente le miroir.
+- **9 objets** (corne scintillante, crin arc-en-ciel, fer à cheval étoilé, fiole de couleur, miroir d'argent, nuage doux, étoile filante, pot de paillettes, plume irisée), **2 recettes** (potion arc-en-ciel, diadème étoilé) et **5 décorations**.
+- **La série de squishies « Licornes » :** licorne nuage, licorne fraise, licorne dodo, bébé licorne ; le rare est Biscotte, le ✨ est la licorne étoile.
+
+## Deux nouveaux mini-jeux
+Les deux sont proposés dès 5 ans, sans minuteur. Le jeu de l'île est les potions avant 7 ans, le miroir ensuite.
+
+- **🧪 Les potions de couleurs** (`potions`) : les mélanges de la peinture (rouge + jaune = orange, bleu + jaune = vert, rouge + bleu = violet, rouge + blanc = rose, noir + blanc = gris).
+  - Palier 1 : reconnaître la couleur nommée à voix haute.
+  - Palier 2 : les 3 mélanges primaires.
+  - Palier 3 : tous les mélanges, et l'arc-en-ciel à 2 couleurs manquantes, à remettre dans l'ordre.
+  - Palier 4 : en plus, le mélange inverse (« rose = blanc + ? »), et l'arc-en-ciel à 3 trous.
+  - Palier 5 : le mélange inverse, et l'arc-en-ciel à 4 trous.
+  - **Une couleur n'est jamais donnée par la couleur seule :** chaque fiole porte son initiale (R, O, J, Ve, B, Vi, Ro…) et son nom, qui est aussi dit à voix haute.
+  - Compétence « Sciences ».
+- **🪞 Le miroir magique** (`mirror`) : la symétrie. D'un côté de la ligne de paillettes, Mira a colorié un motif ; l'enfant touche les cases de l'autre côté pour dessiner le reflet, puis « ✨ Fini ! ».
+  - Palier 1 : grille 4 × 4, 2 cases.
+  - Palier 2 : grille 4 × 4, 3 cases.
+  - Palier 3 : grille 6 × 6, 5 cases.
+  - Palier 4 : en plus, l'axe horizontal.
+  - Palier 5 : 6 cases, et souvent deux couleurs (une touche pour ♥ rose, deux pour ★ bleu).
+  - Une erreur : les cases fausses clignotent, avec un indice parlé. À la 2ᵉ erreur, un nouveau motif.
+  - Compétence « Formes et espace ».
+
+## Le chapitre et le grand final
+- **Le chapitre « Les couleurs du ciel » :** la Reine Arc-en-ciel pose 3 devinettes de couleurs (le soleil, l'arc-en-ciel, la pomme). Il rapporte 20 pièces et une boîte Licornes.
+- **Le grand final** suit, une seule fois par profil :
+  1. Grisou retrouve toutes ses couleurs, sous les confettis et la musique de fête.
+  2. Il s'excuse : il avait peur de perdre les rêves. Puis il comprend qu'un rêve partagé ne se perd jamais, et devient l'ami de tous.
+  3. Récompense 1 : **Grisou devient un compagnon** que l'on peut choisir (bouton « Choisir Grisou »). Il était verrouillé jusque-là. Il rejoint aussi l'équipe, avec sa spécialité Câlins.
+  4. Récompense 2 : le squishy unique **✨ Grisou arc-en-ciel**, dans la nouvelle case « 💎 Trésors » de la chambre à squishies. Il n'est jamais dans les boîtes ni à l'échange.
+  5. « **Le Ciel des Rêves ✅** » : la saison 2 est terminée.
+- **Les récompenses sont données dès le début du final**, pour ne rien perdre si la fenêtre est fermée en route.
+- **Le journal 📖** affiche « Le Ciel des Rêves ✅ » et un bouton « Revoir le grand final », qui ne redonne rien. Rejouer l'énigme ne relance pas le final.
+- **Grisou ne se rencontre pas en visitant le Royaume :** il n'arrive qu'avec le final.
+- **La case Trésors** n'apparaît qu'une fois le Ciel ouvert, ou le trésor gagné.
+- **3 épisodes,** racontés par Biscotte, Félix et Étincelle (jamais la Reine), préparent le final : les couleurs reviennent une à une, et Grisou hésite à rendre le dernier rêve.
+
+## Sauvegarde
+- **Version 9** (après la v8 de la pause) : `season2Done` et `squishies.treasures`. Une partie v8 se migre sans perte.
+
+## Tests
+- Nouveau `test/licornes.test.js` (67 vérifications), branché sur `npm test`. Il couvre :
+  - l'île, les 6 îles du Ciel sans chevauchement, la Reine sans mission, les deux Étincelle ;
+  - la table des mélanges, l'arc-en-ciel, une seule potion juste, les initiales ;
+  - le reflet par les deux axes, les cases qui clignotent, le nouveau motif après 2 erreurs ;
+  - Grisou verrouillé avant le final, jamais tiré de 60 boîtes ;
+  - le final pas à pas, les récompenses une seule fois, le choix de Grisou, les Trésors, le journal, revoir le final sans récompense ;
+  - la migration v8 → v9.
+- Les 30 mini-jeux sont joués jusqu'à la victoire à chaque palier, avec une vérification indépendante :
+  - pour les potions, une table des mélanges propre au test ;
+  - pour le miroir, le reflet calculé par le test.
+- Cache `lagon-v65`.

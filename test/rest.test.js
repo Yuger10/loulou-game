@@ -235,7 +235,8 @@ function answerGate(right){
 
   section('Sauvegarde');
   check('partie neuve : un journal de pause vide', JSON.stringify(ev('freshState().restLog')) === '{}');
-  check('migration : les anciennes parties reçoivent un journal', JSON.stringify(ev('migrate({ v: SAVE_VERSION - 1 }).restLog')) === '{}');
+  // la pause est arrivée avec la sauvegarde v8 : une partie v7 reçoit son journal
+  check('migration : les anciennes parties reçoivent un journal', JSON.stringify(ev('migrate({ v: 7 }).restLog')) === '{}');
 
   check('aucune erreur JS', errs.length === 0);
   if(errs.length) console.log(errs.slice(0, 5));
