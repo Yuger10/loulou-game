@@ -1,11 +1,11 @@
 # Spec : Saison 2 « Le Ciel des Rêves » et le Monde des Boîtes
 
 > Idée de la joueuse principale : « le monde des boîtes ».
-> **Décision du propriétaire (11/11/2026, après relecture) :** le Ciel des Rêves s'ouvre au **niveau 36**, et non au niveau 8 : une fois toutes les îles du Lagon ouvertes (le Pays Squishy est au niveau 26), et non en parallèle. Le Monde des Boîtes passe au palier 6. Puis, pour que chaque île dure plus longtemps, les îles suivantes sont espacées de 8 niveaux (44, 52, 60, 68, 76), et la saison 3 suit la saison 2, de 10 en 10 (86 à 126). Les mentions du niveau 8 ci-dessous sont celles de la demande d'origine.
+> **Niveau d'ouverture : 32** (le Ciel des Rêves et sa première île, les Boîtes, au palier de difficulté 6). Règle et tableau de tous les niveaux : `conductor/niveaux.md`. Puis, pour que chaque île dure plus longtemps, les îles suivantes sont espacées de 8 niveaux (44, 52, 60, 68, 76), et la saison 3 suit la saison 2, de 10 en 10 (86 à 126). Les mentions du niveau 8 ci-dessous sont celles de la demande d'origine.
 > **Dépend de** la track `squishy-collection_20261109` (v53) : les rêves libérés sont des squishies, et le Monde des Boîtes apporte sa série.
 
 ## 1. Vue d'ensemble
-Un **deuxième archipel**, **« Le Ciel des Rêves »**, s'ouvre **au niveau 8**, **en parallèle** de la saison 1. Il a sa propre carte, ses couleurs et son fil d'histoire : **« Les Rêves dans les boîtes »**. Grisou, un petit nuage triste, a rangé tous les rêves colorés du ciel dans des boîtes, parce qu'il avait peur de les perdre. Chaque île en libère quelques-uns, et à la fin Grisou devient l'ami de tous.
+Un **deuxième archipel**, **« Le Ciel des Rêves »**, s'ouvre **au niveau 32**, juste après la saison 1 (sa dernière île, le Pays Squishy, est au niveau 26). Il a sa propre carte, ses couleurs et son fil d'histoire : **« Les Rêves dans les boîtes »**. Grisou, un petit nuage triste, a rangé tous les rêves colorés du ciel dans des boîtes, parce qu'il avait peur de les perdre. Chaque île en libère quelques-uns, et à la fin Grisou devient l'ami de tous.
 
 Sa première île est le **Monde des Boîtes** (« La Fabrique de boîtes »), avec 4 personnages, 2 nouveaux mini-jeux (**Les boîtes gigognes** et **Combien de cubes ?**), ses objets, ses décorations, ses recettes, son chapitre et sa **série de squishies**.
 
@@ -13,11 +13,11 @@ Sa première île est le **Monde des Boîtes** (« La Fabrique de boîtes »), a
 
 ### 2.1 Deuxième archipel et navigation
 - Les îles portent maintenant un **archipel** : `saison:1` pour les 8 îles existantes (comportement inchangé), `saison:2` pour le Ciel des Rêves.
-- **Ouverture :** le Ciel des Rêves s'ouvre au **niveau 8**. Ses îles ont leur **propre niveau d'ouverture**, plus espacé qu'en saison 1 pour que chaque monde dure : de 5 en 5 : 📦 Boîtes **8**, 🧸 Jouets Doux **13**, 🍭 Bonbons **18**, 🎵 Musique **23**, 🌸 Jardin des Fées **28**, 🦄 Licornes **33** (grand final). *Revus depuis (décision du propriétaire) : de 8 en 8, soit 36, 44, 52, 60, 68 et 76.* Chaque île a sa track (`monde-jouets`, `monde-bonbons`, `monde-musique`, `monde-jardin`, `monde-licornes`).
-- **Carte :** l'écran carte affiche **deux onglets en haut**, « 🌊 Le Lagon Magique » et « ☁️ Le Ciel des Rêves ». L'onglet du Ciel est grisé, avec un cadenas et « Niveau 8 », tant qu'il est fermé. Le Ciel a son propre fond (dégradé pastel, nuages) et ses positions d'îles. Les règles « dans le cadre » et « pas de chevauchement » des tests s'appliquent à chaque archipel.
+- **Ouverture :** le Ciel des Rêves s'ouvre au **niveau 32**, avec sa première île. Ses îles s'ouvrent ensuite **tous les 6 niveaux** (contre 4 en saison 1), pour que chaque monde dure : 📦 Boîtes **32**, 🧸 Jouets Doux **38**, 🍭 Bonbons **44**, 🎵 Musique **50**, 🌸 Jardin des Fées **56**, 🦄 Licornes **62** (grand final). Chaque île a sa track (`monde-jouets`, `monde-bonbons`, `monde-musique`, `monde-jardin`, `monde-licornes`).
+- **Carte :** l'écran carte affiche **deux onglets en haut**, « 🌊 Le Lagon Magique » et « ☁️ Le Ciel des Rêves ». L'onglet du Ciel est grisé, avec un cadenas et « Niveau 32 », tant qu'il est fermé. Le Ciel a son propre fond (dégradé pastel, nuages) et ses positions d'îles. Les règles « dans le cadre » et « pas de chevauchement » des tests s'appliquent à chaque archipel.
 - **Bateau :** dans le Ciel, le bateau devient une **montgolfière** 🎈. Le trajet se fait d'île en île à l'intérieur d'un archipel. Passer d'un archipel à l'autre se fait par l'onglet, sans trajet.
-- **Ouverture du Ciel :** au passage au niveau 8, un écran spécial « Un nouveau monde s'ouvre dans le ciel ! ☁️ » s'affiche. Il passe avant le chapitre 1 de la saison 2.
-- **Parties existantes :** une joueuse déjà au niveau 8 ou plus voit le Ciel s'ouvrir à la première ouverture après la mise à jour, avec le même écran.
+- **Ouverture du Ciel :** au passage au niveau 32, un écran spécial « Un nouveau monde s'ouvre dans le ciel ! ☁️ » s'affiche. Il passe avant le chapitre 1 de la saison 2.
+- **Parties existantes :** une joueuse déjà au niveau 32 ou plus voit le Ciel s'ouvrir à la première ouverture après la mise à jour, avec le même écran.
 
 ### 2.2 Histoire de la saison 2 : « Les Rêves dans les boîtes »
 - Elle suit le même format que `js/features/story/story.js` : un chapitre par île (guide, titre, 3 phrases d'intro lues à voix haute, au moins 2 énigmes en images, un succès, une récompense).
@@ -67,8 +67,8 @@ Sa première île est le **Monde des Boîtes** (« La Fabrique de boîtes »), a
 - Mobile 360 px, voix, pas de texte à lire (voir `product-guidelines.md`).
 
 ## 4. Critères d'acceptation
-1. En dessous du niveau 8, l'onglet Ciel est verrouillé (cadenas, « Niveau 8 »). La carte de la saison 1 est identique à la v53.
-2. En atteignant le niveau 8 (ou en ouvrant une partie déjà au niveau 8 ou plus), l'écran d'ouverture s'affiche une seule fois, suivi du prologue, puis du chapitre des Boîtes.
+1. En dessous du niveau 32, l'onglet Ciel est verrouillé (cadenas, « Niveau 32 »). La carte de la saison 1 est identique à la v53.
+2. En atteignant le niveau 32 (ou en ouvrant une partie déjà au niveau 32 ou plus), l'écran d'ouverture s'affiche une seule fois, suivi du prologue, puis du chapitre des Boîtes.
 3. La carte du Ciel affiche ses îles dans le cadre, sans chevauchement, avec la montgolfière.
 4. Le Monde des Boîtes affiche ses 4 personnages, leurs butins, sa scène et son thème. Les missions donnent ses objets.
 5. Résoudre l'énigme des Boîtes donne des pièces et une boîte surprise de la série Boîtes. La série apparaît dans la chambre à squishies.

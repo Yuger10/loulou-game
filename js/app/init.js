@@ -75,7 +75,7 @@ function hideSplash(){
     switchView('carte');
     // une fois par saison : un cadeau (chapeau pour l'avatar + pièces) ;
     // sinon l'équipe des compagnons : son ouverture (niveau 10) ou une rencontre
-    // le Ciel des Rêves (v55) : son ouverture, pour une partie déjà au niveau 36
+    // le Ciel des Rêves (v55) : son ouverture, pour une partie qui a déjà son niveau
     setTimeout(()=>{ if(!maybeSeasonGift() && !maybeSkyOpening()) teamOnSessionStart(); }, 700);
     // v53 : des boîtes surprises attendent dans la chambre à squishies (une fois)
     setTimeout(squishySessionHello, 2600);

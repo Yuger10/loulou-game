@@ -4,10 +4,10 @@
 > Fait partie de la Saison 3 « La Grande Expédition ». Prérequis : l'archipel de sa saison existe (cette track le crée). Suivre `conductor/checklist-ile.md` et `conductor/checklist-mini-jeu.md`.
 > Spec écrite par Claude à partir des idées choisies : **à relire avec la joueuse**, en particulier les noms et les personnages.
 
-> **Niveaux (décision du propriétaire, 11/11/2026) :** les saisons se suivent, et chaque île demande plus de parties qu'en saison 1 (où les îles sont espacées de 2 à 4 niveaux, et un niveau vaut 5 victoires). Saison 2 « Le Ciel des Rêves », de 8 en 8 à partir du niveau 36 (après tout le Lagon) : 📦 Boîtes 36, 🧸 Jouets Doux 44, 🍭 Bonbons 52, 🎵 Musique 60, 🌸 Jardin des Fées 68, 🦄 Licornes 76. Saison 3 « La Grande Expédition », de 10 en 10 après le grand final de la saison 2 : ☁️ Nuages 86, 🦕 Dinosaures 96, 🎪 Fête Foraine 106, 📚 Bibliothèque 116, 🚀 Étoiles 126.
+> **Niveau d'ouverture : 70.** Règle et tableau de tous les niveaux : `conductor/niveaux.md`.
 
 ## 1. Vue d'ensemble
-- **L'île :** `nuages`, emoji ☁️, niveau d'ouverture **86**. Une ville posée sur des nuages : ponts en arc-en-ciel, girouettes, moulins à vent. Thème de couleurs bleu ciel, blanc et jaune soleil.
+- **L'île :** `nuages`, emoji ☁️, niveau d'ouverture **70**. Une ville posée sur des nuages : ponts en arc-en-ciel, girouettes, moulins à vent. Thème de couleurs bleu ciel, blanc et jaune soleil.
 - **Deux nouveaux mini-jeux**, chacun avec une compétence encore absente ou nouvelle dans le jeu.
 - **Son chapitre d'histoire** et ses 3 épisodes, sa série de squishies, sa musique.
 
@@ -54,9 +54,9 @@
 - **3 épisodes** (après la 2ᵉ, la 4ᵉ et la 7ᵉ mission réussie sur l'île), racontés par les trois autres personnages, jamais par le guide.
 
 ### Ouverture de la saison 3
-- **Troisième carte** « 🧭 La Grande Expédition » : troisième onglet de la carte (après « Le Lagon Magique » et « Le Ciel des Rêves »), sur le modèle des archipels de la saison 2. Elle s'ouvre au **niveau 86**, après le grand final de la saison 2 (les Licornes, niveau 76), et chaque île garde son propre niveau, de 10 en 10 (86, 96, 106, 116, 126).
+- **Troisième carte** « 🧭 La Grande Expédition » : troisième onglet de la carte (après « Le Lagon Magique » et « Le Ciel des Rêves »), sur le modèle des archipels de la saison 2. Elle s'ouvre au **niveau 70**, avec sa première île, juste après le grand final de la saison 2 (les Licornes, niveau 62). Ses îles s'ouvrent ensuite tous les 8 niveaux : 70, 78, 86, 94, 102 (`conductor/niveaux.md`).
 - **Véhicule :** un petit avion en papier ✈️ (le bateau en saison 1, la montgolfière en saison 2).
-- **Écran d'ouverture** « Une nouvelle expédition commence ! », une seule fois par profil, y compris pour une partie déjà au niveau 86 ou plus.
+- **Écran d'ouverture** « Une nouvelle expédition commence ! », une seule fois par profil, y compris pour une partie déjà au niveau 70 ou plus.
 - **La carte de Zap** : une image de carte en 5 morceaux, visible dans le journal 📖 (partie « Saison 3 »), qui se complète d'un morceau à chaque chapitre résolu.
 
 ## 3. Exigences non fonctionnelles
@@ -66,7 +66,7 @@
 - Une partie de la version précédente se charge sans perte (migration si l'état change).
 
 ## 4. Critères d'acceptation
-1. L'île s'ouvre au niveau 86 sur la carte de sa saison, avec l'écran « Nouvelle île » précédé de son chapitre.
+1. L'île s'ouvre au niveau 70 sur la carte de sa saison, avec l'écran « Nouvelle île » précédé de son chapitre.
 2. Les 4 personnages, leurs butins et répliques, les objets, recettes, décorations, la scène, le thème, la musique et la série de squishies sont présents.
 3. Les 2 mini-jeux suivent leurs paliers, relancent une autre question après une erreur, ont leurs 2 niveaux d'indice et leur niveau adaptatif, et sont joués jusqu'à la victoire à chaque palier par `test/games.test.js`.
 4. Le chapitre et les 3 épisodes se jouent au bon moment ; la récompense est donnée une seule fois.

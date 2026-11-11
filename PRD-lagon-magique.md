@@ -1075,10 +1075,11 @@ Track Conductor `squishy-collection` ([spec](conductor/tracks/squishy-collection
 ## Deux archipels
 - Chaque île porte son archipel (`saison`) :
   - les 8 îles de la saison 1 forment **Le Lagon Magique** ; leur ordre, leurs niveaux et leur carte sont inchangés ;
-  - **Le Ciel des Rêves** (saison 2) s'ouvre au **niveau 36**, une fois toutes les îles du Lagon ouvertes (le Pays Squishy est au niveau 26). C'est la décision du propriétaire, après relecture : la spec prévoyait le niveau 8, en parallèle de la saison 1. Ses îles gardent la difficulté la plus haute (palier 6, toujours plafonnée par l'âge et le niveau de chaque jeu).
+  - **Le Ciel des Rêves** (saison 2) s'ouvre au **niveau 32**, juste après le Lagon (le Pays Squishy est au niveau 26). Les saisons se suivent et l'écart entre deux îles grandit de 2 niveaux à chaque saison : tous les 4 niveaux dans le Lagon, tous les 6 dans le Ciel, tous les 8 dans la saison 3 (décision du propriétaire ; tableau de référence : `conductor/niveaux.md`, vérifié par `test/niveaux.test.js`). Un niveau vaut toujours 5 missions. Ses îles gardent la difficulté la plus haute (palier 6, toujours plafonnée par l'âge et le niveau de chaque jeu).
 - **La carte a deux onglets en haut.**
-  - Tant que le Ciel est fermé, son onglet est grisé, avec un cadenas et « Niveau 36 ». Le toucher dit quand il s'ouvre.
-  - Une fois toutes les îles du Lagon ouvertes, la carte annonce « Prochain monde : Le Ciel des Rêves au niveau 36 », avec sa barre de progression (il y a 50 missions entre le Pays Squishy et le Ciel).
+  - Tant que le Ciel est fermé, son onglet est grisé, avec un cadenas et « Niveau 32 ». Le toucher dit quand il s'ouvre.
+  - Une fois toutes les îles du Lagon ouvertes, la carte annonce « Prochain monde : Le Ciel des Rêves au niveau 32 · encore N missions » (il y a 30 missions entre le Pays Squishy et le Ciel).
+  - **La barre sous la carte part de la dernière île ouverte** et se remplit jusqu'à la prochaine (avant, elle comptait depuis le tout début, et elle était déjà presque pleine en arrivant sur une île). La carte, l'île verrouillée (« Encore N missions ! ») et les profils font le même calcul (`levelOf`, `missionsUntil`).
   - Le Ciel a son fond pastel, ses nuages et ses îles. Le bateau y devient une **montgolfière** 🎈.
   - On voyage d'île en île à l'intérieur d'un archipel ; on passe de l'un à l'autre par l'onglet, sans trajet.
 - **L'ouverture du Ciel** se fait une seule fois, dans cet ordre :
@@ -1087,14 +1088,14 @@ Track Conductor `squishy-collection` ([spec](conductor/tracks/squishy-collection
   3. le chapitre du Monde des Boîtes ;
   4. l'écran de nouvelle île.
 
-  Une partie déjà au niveau 36 ou plus découvre le Ciel au premier lancement.
+  Une partie déjà au niveau 32 ou plus découvre le Ciel au premier lancement.
 - Données :
   - `ARCHIPELAGOS`, `worldsOf(saison)`, `archipelagoOf(id)`, `worldGame(id, age)` dans `js/entities/world/` ;
   - `SAVE_VERSION` 6 : `skyIntroSeen`. Les îles visitées couvrent les deux archipels, et la migration ne perd rien.
 - Ajouter une île à la saison 2 se fait dans les données : une entrée dans `WORLDS` avec `saison:2`, un chapitre dans `STORY`, une série de squishies. Rien d'autre à coder, sauf son paysage.
 
 ## Le Monde des Boîtes (« La Fabrique de boîtes »)
-- **L'île :** `boites` 📦, au niveau 36, palier 6. Elle flotte sur les nuages, avec des piles de cartons et le tapis roulant de la Fabrique. Son thème est kraft et pastel, et sa musique est une harpe aérienne avec les « tchac » des machines.
+- **L'île :** `boites` 📦, au niveau 32, palier 6. Elle flotte sur les nuages, avec des piles de cartons et le tapis roulant de la Fabrique. Son thème est kraft et pastel, et sa musique est une harpe aérienne avec les « tchac » des machines.
 - **4 personnages dessinés en SVG :**
   - 🦫 **Capucine**, la capybara directrice, guide du chapitre ;
   - 🐱 **Kiki**, le chat-dans-la-boîte ;
@@ -1139,7 +1140,7 @@ Track Conductor `squishy-collection` ([spec](conductor/tracks/squishy-collection
 ## Tests
 - Nouveau `test/saison2.test.js` (96 vérifications), branché sur `npm test`. Il couvre :
   - archipels, onglets, montgolfière, voyage d'un archipel à l'autre ;
-  - ouverture au niveau 36 et au chargement, migration ;
+  - ouverture au niveau 32 et au chargement, migration ;
   - l'île, les personnages, les objets, les préférés ;
   - la série Boîtes et Pop ;
   - gigognes (ordre, erreurs et relance, paliers, envers) et cubes (comptage avec les cachés, piles possibles, paliers, autre pile) ;
@@ -1168,4 +1169,39 @@ Track Conductor `sons`. Choix faits avec la joueuse sur la page d'écoute « Son
 - `test/sounds.test.js` (44 tests) avec un faux `AudioContext` qui enregistre les nœuds (`test/tools/fake-audio.js`) : chemin du son, limiteur, plus d'onde carrée, notes de chaque son, anti-rafale, variation, Simon exact, réduction pendant la voix, musique sur le bus, volume et migration, nouveaux moments.
 - Les tests des squishies ne figent plus le numéro de sauvegarde.
 
+---
+
+# v57 — Des niveaux équilibrés, une seule règle
+
+> **Demande du propriétaire :** « que le passage de niveaux soit équilibré et simple à suivre, sans contradiction ». Règle choisie : l'écart entre deux îles grandit de 2 niveaux à chaque saison. Tableau de référence : [`conductor/niveaux.md`](conductor/niveaux.md).
+
+## La règle
+- **Un niveau = 5 missions réussies**, du premier au dernier niveau. Cette valeur ne change pas, et aucun enfant ne perd de niveau.
+- **Les saisons se suivent.** Une saison s'ouvre avec sa première île.
+- **Une île tous les 4 niveaux dans le Lagon** (après le départ rapide 1, 3, 6, 10). Ensuite, **une île tous les 6 niveaux dans le Ciel des Rêves**, puis **tous les 8 dans la saison 3**. Cela fait 20, puis 30, puis 40 missions par île.
+- Le Ciel des Rêves s'ouvre donc au **niveau 32**, contre 36 de la v55 à la v56. Il est 6 niveaux après le Pays Squishy (26).
+- Les îles à venir suivent la même règle :
+  - Saison 2 : Jouets Doux 38, Bonbons 44, Musique 50, Jardin des Fées 56, Licornes 62.
+  - Saison 3 : Nuages 70, Dinosaures 78, Fête Foraine 86, Bibliothèque 94, Étoiles 102.
+
+## Ce que voit l'enfant
+- **Sous la carte :** « Prochaine île : … au niveau N · encore X missions » (ou « Prochain monde »).
+  - La barre part de la dernière île ouverte et arrive pleine à la prochaine. Avant, elle comptait depuis le tout début, et elle était déjà presque pleine en arrivant sur une nouvelle île.
+- **Une fois toutes les îles ouvertes,** la carte le dit (« Tu as ouvert toutes les îles ! D'autres arriveront bientôt. ») sur les deux onglets. Elle n'annonce plus deux choses différentes selon l'onglet.
+- **Une île verrouillée** répond « … s'ouvrira au niveau N. Encore X missions ! », au singulier quand il n'en reste qu'une.
+
+## Sans contradiction
+- **Un seul calcul :** `levelOf`, `missionsForLevel` et `missionsUntil` (`js/entities/game-state`).
+  - La carte, l'île verrouillée et le résumé des profils s'en servent.
+  - Aucun autre fichier ne fait le calcul avec `MISSIONS_PER_LEVEL` (vérifié par un test).
+- **Le niveau d'un archipel** est celui de sa première île, calculé par le jeu (`ARCHIPELAGOS[s].level`).
+- **Les specs des îles** citent leur niveau et renvoient au tableau. Les anciennes notes (« de 5 en 5 », « en parallèle », niveaux décalés) sont retirées.
+
+## Tests
+- Nouveau `test/niveaux.test.js` (26 vérifications), branché sur `npm test`. Il vérifie :
+  - que le tableau suit la règle (écarts, missions) ;
+  - que chaque île du jeu a le niveau du tableau, et chaque archipel celui de sa première île ;
+  - que chaque spec cite le niveau du tableau, sans ancienne règle ;
+  - que le calcul du niveau est fait à un seul endroit.
+- `test/saison2.test.js` passe à 102 vérifications : il ajoute la barre de la carte, « encore N missions » au singulier comme au pluriel, et « toutes les îles ouvertes ».
 - Cache `lagon-v56`.

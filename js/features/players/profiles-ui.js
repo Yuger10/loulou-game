@@ -4,7 +4,7 @@ import {
   companionSVG, defaultCompanionFor
 } from '../../entities/companion/index.js';
 import { ageToDiff, GAME_LIST, gameTypesForAge } from '../../entities/difficulty/index.js';
-import { gameCount, MISSIONS_PER_LEVEL, resetState, save, state } from '../../entities/game-state/index.js';
+import { gameCount, levelOf, resetState, save, state } from '../../entities/game-state/index.js';
 import {
   addProfile, AVATARS, currentPlayerAge, currentProfile, deleteProfile, party, partyCurrent, profiles,
   profileSaveKey, refreshAll, saveProfiles, switchProfile
@@ -119,7 +119,7 @@ function playerSummary(id){
     const raw = localStorage.getItem(profileSaveKey(id));
     if(!raw) return 'Nouvelle aventure';
     const s = JSON.parse(raw);
-    const lvl = 1 + Math.floor((s.missions||0)/MISSIONS_PER_LEVEL);
+    const lvl = levelOf(s.missions);
     return `⭐ niveau ${lvl} · 🪙 ${s.coins||0} · 🎮 ${s.missions||0} missions`;
   }catch(e){ return ''; }
 }

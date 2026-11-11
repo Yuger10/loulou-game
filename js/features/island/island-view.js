@@ -1,7 +1,7 @@
 /* ---------- Vue Île : changer d'île, nouvelle île, personnages, dialogues, boutique de décorations ---------- */
 import { CHARACTERS, charFace, charsOf, charsOfForPlayer } from '../../entities/character/index.js';
 import {
-  hello, level, levelProgress, MISSIONS_PER_LEVEL, save, state
+  hello, level, levelProgress, missionsUntil, save, state
 } from '../../entities/game-state/index.js';
 import { ALL_ITEMS, countItem, CRAFTED, DECOS, decosOf, ITEMS } from '../../entities/item/index.js';
 import { ac, onProfileRefresh, playerGender } from '../../entities/player/index.js';
@@ -28,8 +28,8 @@ function setWorld(id, silent){
   const w = WORLDS[id];
   if(!worldUnlocked(id)){
     playSound('wrong');
-    const miss = (w.level - level()) * MISSIONS_PER_LEVEL - (state.missions % MISSIONS_PER_LEVEL);
-    speak(`${w.name} s'ouvrira au niveau ${w.level}. Encore ${miss} missions !`);
+    const miss = missionsUntil(w.level);
+    speak(`${w.name} s'ouvrira au niveau ${w.level}. Encore ${miss} mission${miss > 1 ? 's' : ''} !`);
     showToast(`🔒 ${w.name} : niveau ${w.level}`);
     return false;
   }
@@ -89,8 +89,8 @@ function checkNewIsland(){
 }
 
 /* L'ouverture du Ciel des Rêves (saison 2, v55) : un écran spécial, une seule
-   fois, au passage au niveau 36 (ou au premier lancement d'une partie qui y est
-   déjà). La carte montre ensuite le Ciel. */
+   fois, au passage à son niveau d'ouverture (ou au premier lancement d'une
+   partie qui l'a déjà). La carte montre ensuite le Ciel. */
 function openSkyOpening(onDone){
   const a = ARCHIPELAGOS[2];
   state.skyIntroSeen = true;
@@ -111,7 +111,7 @@ function openSkyOpening(onDone){
   `);
   document.getElementById('sky-go').onclick = ()=>{ playSound('tap'); onDone(); };
 }
-// Au lancement : une partie déjà au niveau 36 ou plus découvre le Ciel une fois
+// Au lancement : une partie qui a déjà le niveau du Ciel le découvre une fois
 function maybeSkyOpening(){
   if(state.skyIntroSeen || !archipelagoUnlocked(2)) return false;
   return checkNewIsland();
