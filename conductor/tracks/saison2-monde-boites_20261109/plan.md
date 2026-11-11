@@ -1,4 +1,4 @@
-# Plan : Saison 2 « Le Ciel des Rêves » et le Monde des Boîtes (v55)
+# Plan : Saison 2 « Le Ciel des Rêves » et le Monde des Boîtes
 
 > **Architecture (v51) :** chaque nouveau fichier JS ou CSS va dans sa slice et est déclaré dans `js/slices.cjs` (puis `npm run sync`) ; voir `conductor/checklist-mini-jeu.md` et `conductor/checklist-ile.md`.
 
@@ -56,10 +56,10 @@ Nouveaux fichiers prévus : `js/features/minigames/nesting/nesting.js` (Les boî
     - [ ] Tests : le journal 📖 affiche « Saison 1 » et « Le Ciel des Rêves » ; chapitres verrouillés et résolus corrects dans chaque partie
 - [ ] Task: Conductor - User Manual Verification 'Histoire de la saison 2' (Protocol in workflow.md)
 
-## Phase 5 : Livraison v55
+## Phase 5 : Livraison
 - [ ] Task: Intégration PWA et docs
     - [ ] `sw.js` : `lagon-v55` et nouveaux fichiers ; `index.html` : les scripts ; PRD (v55, idée de la joueuse), TODO, README
 - [ ] Task: Vérification complète
     - [ ] `npm test` vert ; parcours manuel à 360 px (niveau 7 → 8, ouverture du Ciel, Boîtes, deux mini-jeux, énigme, boîte surprise)
-- [ ] Task: Conductor - User Manual Verification 'Livraison v55' (Protocol in workflow.md)
+- [ ] Task: Conductor - User Manual Verification 'Livraison' (Protocol in workflow.md)
 - [ ] Task: Branche, PR sur `main`, merge
