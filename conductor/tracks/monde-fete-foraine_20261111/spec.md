@@ -4,10 +4,10 @@
 > Fait partie de la Saison 3 « La Grande Expédition ». Prérequis : l'archipel de sa saison existe (track `saison3-monde-nuages`). Suivre `conductor/checklist-ile.md` et `conductor/checklist-mini-jeu.md`.
 > Spec écrite par Claude à partir des idées choisies : **à relire avec la joueuse**, en particulier les noms et les personnages.
 
-> **Niveaux (décision du propriétaire, 11/11/2026) :** les saisons se suivent, et chaque île demande plus de parties qu'en saison 1 (où les îles sont espacées de 2 à 4 niveaux, et un niveau vaut 5 victoires). Saison 2 « Le Ciel des Rêves », de 8 en 8 à partir du niveau 36 (après tout le Lagon) : 📦 Boîtes 36, 🧸 Jouets Doux 44, 🍭 Bonbons 52, 🎵 Musique 60, 🌸 Jardin des Fées 68, 🦄 Licornes 76. Saison 3 « La Grande Expédition », de 10 en 10 après le grand final de la saison 2 : ☁️ Nuages 86, 🦕 Dinosaures 96, 🎪 Fête Foraine 106, 📚 Bibliothèque 116, 🚀 Étoiles 126.
+> **Niveau d'ouverture : 86.** Règle et tableau de tous les niveaux : `conductor/niveaux.md`.
 
 ## 1. Vue d'ensemble
-- **L'île :** `fete`, emoji 🎪, niveau d'ouverture **106**. Une fête foraine sur une île : grande roue, carrousel, stands de barbe à papa, guirlandes lumineuses. Thème de couleurs rouge cerise, crème et bleu nuit.
+- **L'île :** `fete`, emoji 🎪, niveau d'ouverture **86**. Une fête foraine sur une île : grande roue, carrousel, stands de barbe à papa, guirlandes lumineuses. Thème de couleurs rouge cerise, crème et bleu nuit.
 - **Deux nouveaux mini-jeux**, chacun avec une compétence encore absente ou nouvelle dans le jeu.
 - **Son chapitre d'histoire** et ses 3 épisodes, sa série de squishies, sa musique.
 
@@ -60,7 +60,7 @@
 - Une partie de la version précédente se charge sans perte (migration si l'état change).
 
 ## 4. Critères d'acceptation
-1. L'île s'ouvre au niveau 106 sur la carte de sa saison, avec l'écran « Nouvelle île » précédé de son chapitre.
+1. L'île s'ouvre au niveau 86 sur la carte de sa saison, avec l'écran « Nouvelle île » précédé de son chapitre.
 2. Les 4 personnages, leurs butins et répliques, les objets, recettes, décorations, la scène, le thème, la musique et la série de squishies sont présents.
 3. Les 2 mini-jeux suivent leurs paliers, relancent une autre question après une erreur, ont leurs 2 niveaux d'indice et leur niveau adaptatif, et sont joués jusqu'à la victoire à chaque palier par `test/games.test.js`.
 4. Le chapitre et les 3 épisodes se jouent au bon moment ; la récompense est donnée une seule fois.

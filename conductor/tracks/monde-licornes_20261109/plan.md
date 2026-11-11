@@ -8,7 +8,7 @@ Nouveaux fichiers prévus : `js/features/minigames/potions/potions.js` (Les poti
 
 ## Phase 1 : L'île du Royaume Arc-en-ciel
 - [ ] Task: L'île et son contenu
-    - [ ] Tests : `WORLDS.licornes` (saison 2, niveau 76, thème) ; Reine Arc-en-ciel, guide sans mission ; Étincelle, Biscotte, Félix et Mira avec butin et 3 répliques ; Étincelle du Lagon inchangée ; environ 6 objets, 2 recettes, 4 à 5 décorations ; île dans le cadre de la carte du Ciel, sans chevauchement
+    - [ ] Tests : `WORLDS.licornes` (saison 2, niveau 62, thème) ; Reine Arc-en-ciel, guide sans mission ; Étincelle, Biscotte, Félix et Mira avec butin et 3 répliques ; Étincelle du Lagon inchangée ; environ 6 objets, 2 recettes, 4 à 5 décorations ; île dans le cadre de la carte du Ciel, sans chevauchement
     - [ ] `js/entities/ (item, character, world)`, scène dans `js/features/island/island.js`, avatars si nécessaire
 - [ ] Task: Musique et cadeaux
     - [ ] Tests : `MUSIC_THEMES.licornes` et variante du final ; 2 objets préférés par personnage
@@ -51,6 +51,6 @@ Nouveaux fichiers prévus : `js/features/minigames/potions/potions.js` (Les poti
 - [ ] Task: Intégration PWA et docs
     - [ ] `sw.js` : `lagon-v56` et nouveaux fichiers ; `index.html` ; PRD (v56, idée de la joueuse), TODO (idées bonus : licorne volante, grand décor arc-en-ciel, saison 3), README
 - [ ] Task: Vérification complète
-    - [ ] `npm test` vert ; parcours manuel à 360 px (niveau 75 → 76, Royaume, deux mini-jeux, énigme, final, choix de Grisou comme compagnon, Trésors)
+    - [ ] `npm test` vert ; parcours manuel à 360 px (niveau 61 → 62, Royaume, deux mini-jeux, énigme, final, choix de Grisou comme compagnon, Trésors)
 - [ ] Task: Conductor - User Manual Verification 'Livraison' (Protocol in workflow.md)
 - [ ] Task: Branche, PR sur `main`, merge

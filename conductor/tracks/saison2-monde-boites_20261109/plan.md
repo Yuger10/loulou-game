@@ -6,7 +6,7 @@ Spec : [spec.md](./spec.md). Workflow : [workflow.md](../../workflow.md).
 **Prérequis :** la track `squishy-collection_20261109` (v53) est livrée.
 
 > **Réalisé (v55) — écarts au plan :**
-> - **Ouverture au niveau 36** (décision du propriétaire, après relecture), au lieu du niveau 8 : le Ciel vient après tout le Lagon. Le Monde des Boîtes est au palier 6. Les tests de la saison 2 suivent ce niveau. Une fois le Lagon entièrement ouvert, la carte annonce « Prochain monde : Le Ciel des Rêves au niveau 36 », avec sa progression.
+> - **Ouverture au niveau 32** (décision du propriétaire, après relecture) : le Ciel vient après tout le Lagon, et ses îles s'ouvrent tous les 6 niveaux (tableau de référence : `conductor/niveaux.md`). Le Monde des Boîtes est au palier 6. Une fois le Lagon entièrement ouvert, la carte annonce « Prochain monde : Le Ciel des Rêves au niveau 32 · encore N missions », avec une barre qui part de la dernière île ouverte.
 > - **`WORLD_ORDER` contient toutes les îles** (la saison 1, puis la saison 2), et `worldsOf(saison)` donne celles d'un archipel, pour sa carte et sa route. Ainsi les îles visitées, Sam le guide, le puzzle des images, la musique et les épisodes couvrent les deux saisons sans cas particulier.
 > - **Fichiers ajoutés :**
 >   - `js/features/story/grisou.js` (le dessin de Grisou) ;
@@ -24,19 +24,19 @@ Nouveaux fichiers prévus : `js/features/minigames/nesting/nesting.js` (Les boî
 
 ## Phase 1 : Deux archipels [checkpoint: 453fc6c]
 - [x] Task: Modèle de données des archipels
-    - [x] Tests : les 8 îles existantes ont `saison:1`, avec un ordre et des niveaux inchangés ; `worldsOf(saison)` ; le Ciel ouvert si niveau ≥ 8 ; aucune régression des tests de la carte
+    - [x] Tests : les 8 îles existantes ont `saison:1`, avec un ordre et des niveaux inchangés ; `worldsOf(saison)` ; le Ciel ouvert si niveau ≥ 32 ; aucune régression des tests de la carte
     - [x] `ARCHIPELAGOS` (nom, emoji, niveau d'ouverture, fond, véhicule) et `saison` dans `WORLDS` ; `WORLD_ORDER` reste l'ordre de la saison 1 ; la logique d'ouverture et `checkNewIsland` passent par archipel
 - [x] Task: Carte à deux onglets
-    - [x] Tests : onglets présents ; Ciel verrouillé sous le niveau 36 (cadenas, « Niveau 36 ») ; îles du Ciel dans le cadre, sans chevauchement ; montgolfière dans le Ciel ; trajet seulement à l'intérieur d'un archipel
+    - [x] Tests : onglets présents ; Ciel verrouillé sous le niveau 32 (cadenas, « Niveau 32 ») ; îles du Ciel dans le cadre, sans chevauchement ; montgolfière dans le Ciel ; trajet seulement à l'intérieur d'un archipel
     - [x] `js/features/map/map.js` (`renderMap(saison)`, `sailTo`), CSS du fond du Ciel
 - [x] Task: Ouverture du Ciel et migration
-    - [x] Tests : au passage au niveau 36, l'écran d'ouverture s'affiche une seule fois, puis le prologue ; une partie déjà au niveau 36 ou plus le voit au chargement ; une partie v53 migrée sans perte
+    - [x] Tests : au passage au niveau 32, l'écran d'ouverture s'affiche une seule fois, puis le prologue ; une partie déjà au niveau 32 ou plus le voit au chargement ; une partie v53 migrée sans perte
     - [x] `SAVE_VERSION` +1, `skyIntroSeen`, `migrate()`
 - [x] Task: Conductor - User Manual Verification 'Deux archipels' (Protocol in workflow.md)
 
 ## Phase 2 : Le Monde des Boîtes [checkpoint: 453fc6c]
 - [x] Task: L'île et son contenu
-    - [x] Tests : `WORLDS.boites` (saison 2, niveau 36, thème `--world-*`) ; 4 personnages avec butin et 3 répliques ; environ 6 objets, 2 recettes, 4 à 5 décorations
+    - [x] Tests : `WORLDS.boites` (saison 2, niveau 32, thème `--world-*`) ; 4 personnages avec butin et 3 répliques ; environ 6 objets, 2 recettes, 4 à 5 décorations
     - [x] `js/entities/ (item, character, world)` : Capucine, Kiki, Boulon, Lola, objets, recettes, décorations ; scène dans `js/features/island/island.js` ; avatars dans `js/entities/character/characters-art.js` si nécessaire
 - [x] Task: Musique, cadeaux, saisons
     - [x] Tests : `MUSIC_THEMES.boites` ; chaque personnage a 2 objets préférés (`favoritesOf`) ; décorations de fête sur la carte du Ciel
@@ -76,6 +76,6 @@ Nouveaux fichiers prévus : `js/features/minigames/nesting/nesting.js` (Les boî
 - [x] Task: Intégration PWA et docs
     - [x] `sw.js` : `lagon-v55` et nouveaux fichiers ; `index.html` : les scripts ; PRD (v55, idée de la joueuse), TODO, README
 - [x] Task: Vérification complète
-    - [x] `npm test` vert ; parcours manuel à 360 px (niveau 35 → 36, ouverture du Ciel, Boîtes, deux mini-jeux, énigme, boîte surprise)
+    - [x] `npm test` vert ; parcours manuel à 360 px (niveau 31 → 32, ouverture du Ciel, Boîtes, deux mini-jeux, énigme, boîte surprise)
 - [x] Task: Conductor - User Manual Verification 'Livraison v55' (Protocol in workflow.md)
 - [ ] Task: Branche, PR sur `main`, merge

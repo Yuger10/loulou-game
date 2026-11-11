@@ -8,7 +8,7 @@ Remplacer `<ile>` par la clé de l'île (ex. `boites`).
 
 ## 2. Entités
 - [ ] `js/entities/world/worlds.js` : l'entrée `WORLDS.<ile>` :
-  - nom, emoji, niveau, `diff`, sous-titre ;
+  - nom, emoji, niveau (celui de `conductor/niveaux.md` : `test/niveaux.test.js` vérifie que le jeu et la spec suivent ce tableau), `diff`, sous-titre ;
   - **`saison`** : son archipel (1 = Lagon Magique, 2 = Ciel des Rêves, v55) ;
   - position `map:{x,y}` sur la carte de son archipel, dans le cadre 14–86 % / 15–85 %, sans chevaucher les autres îles du même archipel ;
   - forme, couleurs ;

@@ -58,7 +58,8 @@ Chaque mini-jeu a maintenant son propre niveau pour chaque enfant (`js/adaptive.
 - [x] Les compagnons et leurs rôles : le compagnon donne des indices 💡 dans tous les mini-jeux et les énigmes (2 niveaux, jamais la réponse, sans pénalité) ; au niveau 10, l'équipe s'ouvre : rencontres sur les îles, 2 équipiers, une spécialité chacun (conteuse, tuteur, guide, défis, trésors, collection) — v52
 - [ ] À observer : les enfants trouvent-ils le bouton 💡 ? En abusent-ils ? Les rencontres et les bulles des compagnons sont-elles trop nombreuses ? (espace parents : indices par jeu)
 - [x] Collection de squishies (idée de la joueuse) : boîtes surprises (coffre du jour, énigmes, boutique 15 pièces, 3 par jour), 3 séries de 6 avec raretés et filet de sécurité, chambre à squishies 🧸 (collection, presser, étagère de 12 places), boîtes de rangement à consigne (tri par couleur, forme, taille selon l'âge), échange de 3 doubles au marché — v53
-- [x] Saison 2 « Le Ciel des Rêves » (idée de la joueuse : le monde des boîtes) : deuxième archipel au niveau 36 (après tout le Lagon), carte à deux onglets et montgolfière, le Monde des Boîtes (Capucine, Kiki, Boulon, Lola, série de squishies Boîtes, Pop), 2 mini-jeux (les boîtes gigognes, combien de cubes ?), histoire « Les Rêves dans les boîtes » avec Grisou — v55
+- [x] Saison 2 « Le Ciel des Rêves » (idée de la joueuse : le monde des boîtes) : deuxième archipel au niveau 32 (juste après le Lagon ; règle des niveaux : `conductor/niveaux.md`), carte à deux onglets et montgolfière, le Monde des Boîtes (Capucine, Kiki, Boulon, Lola, série de squishies Boîtes, Pop), 2 mini-jeux (les boîtes gigognes, combien de cubes ?), histoire « Les Rêves dans les boîtes » avec Grisou — v55
+- [x] Niveaux équilibrés et simples à suivre (demande du propriétaire) : un niveau = 5 missions ; une île tous les 4, puis 6, puis 8 niveaux selon la saison ; une seule référence, `conductor/niveaux.md`, que le jeu et les specs suivent (`test/niveaux.test.js`) ; sous la carte, « encore N missions » et une barre qui part de la dernière île (v57)
 - [ ] À observer : le rythme des boîtes (coffre, énigmes, boutique) est-il assez généreux ? Le rangement est-il joué pour lui-même, au-delà des 3 boîtes payées ? Les consignes à deux critères (8 ans et plus) sont-elles bien comprises ?
 
 ### Technique 🔧 (au fil de l'eau)
@@ -121,7 +122,9 @@ Chaque mini-jeu a maintenant son propre niveau pour chaque enfant (`js/adaptive.
 | v52 | Les compagnons et leurs rôles : indices 💡 dans tous les mini-jeux, équipe au niveau 10, 8 spécialités |
 | v53 | Collection de squishies : boîtes surprises, 3 séries, chambre à squishies (étagère, presser), boîtes de rangement à consigne, échange des doubles |
 | v54 | Code en modules ES natifs, couches sans cycle, aucune variable globale (aucun changement pour l'enfant) |
-| v55 | Saison 2 « Le Ciel des Rêves » : deuxième archipel au niveau 36, le Monde des Boîtes, les boîtes gigognes, combien de cubes ?, Grisou |
+| v55 | Saison 2 « Le Ciel des Rêves » : deuxième archipel au niveau 32, le Monde des Boîtes, les boîtes gigognes, combien de cubes ?, Grisou |
+| v56 | Sons retravaillés : ambiance « marimba doux » (gamme pentatonique, plus de buzzer), moteur audio unique, volume général par joueur |
+| v57 | Niveaux équilibrés, une seule règle : une île tous les 4 niveaux (Lagon), 6 (Ciel, ouvert au niveau 32), puis 8 (saison 3) ; barre de la carte depuis la dernière île, « encore N missions » ; tableau `conductor/niveaux.md` vérifié par un test |
 
 ---
 
@@ -134,7 +137,7 @@ Chaque mini-jeu a maintenant son propre niveau pour chaque enfant (`js/adaptive.
 - Espace parents : lire plus finement les statistiques (indices par jeu et par semaine, jeux réussis grâce à un indice)
 - Échanger des squishies entre frère et sœur (entre profils), hors périmètre de la v53
 - Une mission du jour « Range une boîte de squishies » ou « Ouvre une boîte surprise »
-- À observer (v55) : le Ciel au niveau 36 arrive-t-il au bon moment, ou la fin du Lagon paraît-elle longue ? Les cubes cachés du palier haut sont-ils compris ?
+- À observer (v57) : le rythme des îles (tous les 4 niveaux dans le Lagon, tous les 6 dans le Ciel) paraît-il équilibré ? Les cubes cachés du palier haut sont-ils compris ?
 
 ---
 

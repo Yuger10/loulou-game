@@ -47,7 +47,7 @@ const WORLDS = {
     intro:"Bienvenue au Pays Squishy, où tout est doux et moelleux 🍡",
     sceneEmpty:"Ton Pays Squishy attend ses décorations toutes douces !" },
   // ---- Saison 2 : le Ciel des Rêves (v55) ----
-  boites:{ name:'Le Monde des Boîtes', emoji:'📦', level:36, diff:6, saison:2, short:'Boîtes',
+  boites:{ name:'Le Monde des Boîtes', emoji:'📦', level:32, diff:6, saison:2, short:'Boîtes',
     subtitle:'La Fabrique de boîtes',
     // son mini-jeu, selon l'âge : les gigognes avant 7 ans, les cubes ensuite
     game:(age)=> (age && age < 7) ? 'nesting' : 'cubes',
@@ -57,20 +57,29 @@ const WORLDS = {
 };
 
 /* Les archipels (v55) : chaque île appartient à un archipel (`saison`), qui a
-   sa carte, son fond et son véhicule. Le Lagon Magique (saison 1) est ouvert
-   dès le départ ; le Ciel des Rêves (saison 2) au niveau 36, une fois toutes
-   les îles du Lagon ouvertes (le Pays Squishy est au niveau 26). Ses îles
-   gardent la difficulté la plus haute (palier 6, toujours plafonnée par
-   l'âge et le niveau de chaque jeu).
-   Ajouter une île à un archipel : une entrée dans WORLDS avec `saison`. */
+   sa carte, son fond et son véhicule. Les saisons se suivent : une saison
+   s'ouvre avec sa première île, et l'écart entre deux îles grandit de 2
+   niveaux à chaque saison (saison 1 : tous les 4 niveaux après le départ ;
+   saison 2 : tous les 6 ; saison 3 : tous les 8). Le Lagon Magique est ouvert
+   dès le départ (sa dernière île, le Pays Squishy, au niveau 26) ; le Ciel
+   des Rêves au niveau 32. Tableau de référence : conductor/niveaux.md
+   (test/niveaux.test.js vérifie qu'il dit la même chose que WORLDS).
+   Les îles du Ciel gardent la difficulté la plus haute (palier 6, toujours
+   plafonnée par l'âge et le niveau de chaque jeu).
+   Ajouter une île à un archipel : une entrée dans WORLDS avec `saison` et
+   son niveau ; le niveau de l'archipel en découle. */
 const ARCHIPELAGOS = {
-  1: { name:'Le Lagon Magique', short:'Le Lagon', emoji:'🌊', level:1, vehicle:'⛵', sky:false },
-  2: { name:'Le Ciel des Rêves', short:'Le Ciel', emoji:'☁️', level:36, vehicle:'🎈', sky:true },
+  1: { name:'Le Lagon Magique', short:'Le Lagon', emoji:'🌊', vehicle:'⛵', sky:false },
+  2: { name:'Le Ciel des Rêves', short:'Le Ciel', emoji:'☁️', vehicle:'🎈', sky:true },
 };
 const ARCHIPELAGO_ORDER = [1, 2];
 
 // toutes les îles, dans l'ordre du voyage : la saison 1, puis la saison 2
 const WORLD_ORDER = Object.keys(WORLDS);
+// un archipel s'ouvre avec sa première île : un seul chiffre à tenir à jour
+ARCHIPELAGO_ORDER.forEach(s=>{
+  ARCHIPELAGOS[s].level = Math.min(...WORLD_ORDER.filter(id=> (WORLDS[id].saison || 1) === s).map(id=> WORLDS[id].level));
+});
 // les îles d'un archipel, dans l'ordre de son voyage (sa carte, sa route)
 function worldsOf(saison){ return WORLD_ORDER.filter(id=> (WORLDS[id].saison || 1) === saison); }
 function archipelagoOf(id){ return (WORLDS[id] && WORLDS[id].saison) || 1; }
@@ -89,6 +98,12 @@ function nextLockedWorld(saison){
   return worldsOf(saison || 1).find(id=>!worldUnlocked(id));
 }
 
+// le niveau de la dernière île ouverte (toutes saisons) : le départ de la
+// barre de progression vers la prochaine île
+function lastOpenedLevel(){
+  return Math.max(1, ...WORLD_ORDER.map(id=> WORLDS[id].level).filter(l=> l <= level()));
+}
+
 // « son » mini-jeu, toujours proposé sur l'île : un nom, ou une fonction de
 // l'âge du joueur (le Monde des Boîtes)
 function worldGame(id, age){
@@ -97,6 +112,6 @@ function worldGame(id, age){
 }
 
 export {
-  ARCHIPELAGO_ORDER, ARCHIPELAGOS, archipelagoOf, archipelagoUnlocked, currentWorld, nextLockedWorld,
+  ARCHIPELAGO_ORDER, ARCHIPELAGOS, archipelagoOf, archipelagoUnlocked, currentWorld, lastOpenedLevel, nextLockedWorld,
   setCurrentWorld, WORLD_ORDER, worldGame, WORLDS, worldsOf, worldUnlocked
 };

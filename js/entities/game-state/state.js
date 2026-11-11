@@ -151,7 +151,7 @@ function migrate(saved){
     saved.squishies = sq;
   }
   if(v < 6){
-    // v55 : le Ciel des Rêves. Une partie déjà au niveau 36 ou plus le verra
+    // v55 : le Ciel des Rêves. Une partie qui a déjà son niveau d'ouverture le verra
     // s'ouvrir au prochain lancement (écran d'ouverture, prologue, chapitre).
     // Les îles visitées (state.visited) couvrent les deux archipels.
     saved.skyIntroSeen = false;
@@ -207,7 +207,18 @@ function trackGamePlayed(key){
   save();
 }
 
-function level(){ return 1 + Math.floor(state.missions / MISSIONS_PER_LEVEL); }
+/* Les niveaux : un niveau vaut toujours MISSIONS_PER_LEVEL missions réussies
+   (5), du premier au dernier. Le niveau d'ouverture de chaque île est dans
+   WORLDS (js/entities/world) ; le tableau de référence est conductor/niveaux.md.
+   Ces fonctions sont les seules à faire le calcul (niveau, missions qui
+   restent), pour que la carte, l'île et les profils disent la même chose. */
+function levelOf(missions){ return 1 + Math.floor((Number(missions) || 0) / MISSIONS_PER_LEVEL); }
+// missions réussies qu'il faut pour atteindre le niveau `lvl`
+function missionsForLevel(lvl){ return (Math.max(1, lvl) - 1) * MISSIONS_PER_LEVEL; }
+// missions qu'il reste à réussir pour atteindre le niveau `lvl` (0 si atteint)
+function missionsUntil(lvl){ return Math.max(0, missionsForLevel(lvl) - state.missions); }
+
+function level(){ return levelOf(state.missions); }
 
 function levelProgress(){ return (state.missions % MISSIONS_PER_LEVEL) / MISSIONS_PER_LEVEL; }
 
@@ -218,6 +229,6 @@ setAudioPrefsSource(()=> state);
 function hello(){ return state.name ? state.name : ''; }
 
 export {
-  freshState, gameCount, hello, level, levelProgress, load, MISSIONS_PER_LEVEL, replaceState,
-  resetState, save, setSaveSlot, squishyFreshState, state, trackGamePlayed
+  freshState, gameCount, hello, level, levelOf, levelProgress, load, missionsForLevel, MISSIONS_PER_LEVEL,
+  missionsUntil, replaceState, resetState, save, setSaveSlot, squishyFreshState, state, trackGamePlayed
 };

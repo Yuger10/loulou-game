@@ -1,10 +1,10 @@
 /* ---------- Carte des îles (mer animée, route, bateau) ---------- */
 import { charFace, charsOf } from '../../entities/character/index.js';
 import { avatarHTML } from '../../entities/companion/index.js';
-import { MISSIONS_PER_LEVEL, state } from '../../entities/game-state/index.js';
+import { missionsForLevel, missionsUntil, state } from '../../entities/game-state/index.js';
 import {
-  ARCHIPELAGO_ORDER, ARCHIPELAGOS, archipelagoOf, archipelagoUnlocked, currentWorld, nextLockedWorld,
-  WORLDS, worldsOf, worldUnlocked
+  ARCHIPELAGO_ORDER, ARCHIPELAGOS, archipelagoOf, archipelagoUnlocked, currentWorld, lastOpenedLevel,
+  nextLockedWorld, WORLD_ORDER, WORLDS, worldsOf, worldUnlocked
 } from '../../entities/world/index.js';
 import { on } from '../../shared/lib/index.js';
 import { bindSpeakButtons, playSound, registerView, showToast, speak, switchView } from '../../shared/ui/index.js';
@@ -12,8 +12,8 @@ import { renderSamGuide, teamHeadsHTML } from '../companion-team/index.js';
 import { renderIslandCard, renderLevelPill, setWorld } from '../island/index.js';
 
 /* Deux archipels (v55) : le Lagon Magique et le Ciel des Rêves, chacun sa
-   carte, choisie par deux onglets en haut. Le Ciel est verrouillé (cadenas,
-   « Niveau 36 ») tant qu'il n'est pas ouvert ; il a son fond pastel et ses
+   carte, choisie par deux onglets en haut. Le Ciel est verrouillé (cadenas et
+   son niveau) tant qu'il n'est pas ouvert ; il a son fond pastel et ses
    nuages, et le bateau y devient une montgolfière. On voyage d'île en île à
    l'intérieur d'un archipel ; on passe de l'un à l'autre par l'onglet. */
 let mapSaison = null;   // l'archipel affiché (par défaut, celui de l'île courante)
@@ -133,37 +133,36 @@ function renderMap(){
     };
   });
 
-  const nxt = nextLockedWorld(saison);
   const info = document.getElementById('map-next');
   if(info){
-    if(nxt){
-      const w = WORLDS[nxt];
-      const need = (w.level-1) * MISSIONS_PER_LEVEL;
-      const pct = Math.min(100, Math.round(state.missions/need*100));
-      const say = `Prochaine île : ${w.name}, au niveau ${w.level}`.replace(/"/g,'&quot;');
-      info.innerHTML = `🗺️ Prochaine île : <strong>${w.name}</strong> au niveau ${w.level}
-        <button type="button" class="btn-speak map-next-speak" data-say="${say}" aria-label="Écouter">🔈</button>
-        <div class="quest-bar"><i style="width:${pct}%"></i></div>`;
-    } else if(arch.sky){
-      info.innerHTML = `☁️ D'autres îles arriveront bientôt dans le Ciel des Rêves !`;
+    // la prochaine étape : une île de cette carte, sinon la prochaine île du
+    // voyage (un autre monde, verrouillé ou déjà ouvert), sinon rien
+    const nxt = nextLockedWorld(saison) || WORLD_ORDER.find(id=> !worldUnlocked(id));
+    if(!nxt){
+      info.innerHTML = `🏆 Tu as ouvert toutes les îles ! D'autres arriveront bientôt.`;
+    } else if(!archipelagoUnlocked(archipelagoOf(nxt))){
+      const a = ARCHIPELAGOS[archipelagoOf(nxt)];
+      info.innerHTML = nextStepHTML(a.emoji, 'Prochain monde', a.name, a.level);
     } else {
-      // toutes les îles du Lagon sont ouvertes : le prochain monde, avec sa progression
-      const later = ARCHIPELAGO_ORDER.find(s=> !archipelagoUnlocked(s));
-      if(later){
-        const a = ARCHIPELAGOS[later];
-        const need = (a.level-1) * MISSIONS_PER_LEVEL;
-        const pct = Math.min(100, Math.round(state.missions/need*100));
-        const say = `Prochain monde : ${a.name}, au niveau ${a.level}`.replace(/"/g,'&quot;');
-        info.innerHTML = `${a.emoji} Prochain monde : <strong>${a.name}</strong> au niveau ${a.level}
-          <button type="button" class="btn-speak map-next-speak" data-say="${say}" aria-label="Écouter">🔈</button>
-          <div class="quest-bar"><i style="width:${pct}%"></i></div>`;
-      } else {
-        info.innerHTML = `🏆 Tu as débloqué toutes les îles !`;
-      }
+      info.innerHTML = nextStepHTML('🗺️', 'Prochaine île', WORLDS[nxt].name, WORLDS[nxt].level);
     }
     info.hidden = false;
     bindSpeakButtons();
   }
+}
+
+/* La prochaine étape sous la carte : son nom, son niveau, les missions qui
+   restent, et une barre qui part de la dernière île ouverte (elle se remplit
+   à chaque île, au lieu de compter depuis le tout début). */
+function nextStepHTML(icon, label, name, lvl){
+  const from = missionsForLevel(lastOpenedLevel()), to = missionsForLevel(lvl);
+  const pct = Math.max(0, Math.min(100, Math.round((state.missions - from) / Math.max(1, to - from) * 100)));
+  const left = missionsUntil(lvl);
+  const rest = `encore ${left} mission${left > 1 ? 's' : ''}`;
+  const say = `${label} : ${name}, au niveau ${lvl}. ${rest[0].toUpperCase() + rest.slice(1)}.`.replace(/"/g,'&quot;');
+  return `${icon} ${label} : <strong>${name}</strong> au niveau ${lvl} · ${rest}
+        <button type="button" class="btn-speak map-next-speak" data-say="${say}" aria-label="Écouter">🔈</button>
+        <div class="quest-bar" role="progressbar" aria-label="Vers ${name.replace(/"/g,'&quot;')}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${pct}"><i style="width:${pct}%"></i></div>`;
 }
 
 function placeBoat(id, animated){
