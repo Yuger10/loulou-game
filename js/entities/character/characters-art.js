@@ -327,6 +327,36 @@ ART.rainette=svg(
   `<path d="M40 68 Q60 84 80 68" fill="none" stroke="${AM}" stroke-width="2.6" stroke-linecap="round"/>`+
   `<path d="M24 58 Q30 50 40 50" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" opacity=".6"/>`+
   `<g fill="#5DBB7C"><circle cx="22" cy="90" r="3"/><circle cx="98" cy="94" r="3.5"/><circle cx="90" cy="78" r="2.4"/></g>`);
+// ---- Saison 2, le Royaume des Bonbons ----
+// Praline la reine pâtissière : toque blanche et petite couronne dorée, tablier à la cerise
+ART.praline=human('#F0C4AA','#8A4A2B','#FF8FB8',
+  `<path d="M30 40 C18 36 20 16 34 18 C34 6 50 2 58 12 C64 2 84 4 84 18 C98 16 102 36 90 40Z" fill="#fff" ${O()}/>`+
+  `<rect x="30" y="34" width="60" height="10" rx="4" fill="#FFE3EC" ${O(2)}/>`+
+  `<path d="M47 15 L51 4 L57 11 L61 1 L65 11 L71 4 L75 15Z" fill="#FFD95A" ${O(2)}/>`,
+  `<path d="M42 100 H78 L84 130 H36Z" fill="#fff" ${O(2)}/><circle cx="58" cy="115" r="5" fill="#E8344E"/><circle cx="65" cy="117" r="5" fill="#E8344E"/><path d="M58 110 Q62 104 68 104 M65 112 Q66 106 68 104" stroke="#3E8E4A" stroke-width="2" fill="none"/>`);
+
+// Chouquette la petite pâtissière : un cupcake tout rond, crème rose, cerise sur la tête
+ART.chouquette=svg(
+  `<path d="M24 78 L96 78 L86 126 L34 126Z" fill="#9FDCF5" ${O()}/>`+
+  `<path d="M40 80 L44 124 M57 80 L58 126 M73 80 L71 124 M88 82 L83 122" stroke="#6FB8F5" stroke-width="3"/>`+
+  `<path d="M18 80 C6 72 12 52 28 54 C24 36 42 26 54 34 C58 18 80 20 82 36 C96 32 108 48 98 60 C110 66 104 84 92 82Z" fill="#FFD1E3" ${O()}/>`+
+  `<path d="M28 50 Q36 40 48 42" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round"/>`+
+  `<g stroke-linecap="round" stroke-width="3.5"><path d="M30 70 l5 -2" stroke="#FFD95A"/><path d="M92 68 l-4 -3" stroke="#6ED38C"/><path d="M84 46 l4 3" stroke="#6FB8F5"/><path d="M38 40 l4 -3" stroke="#BFA3EC"/></g>`+
+  eyes(46,74,60,4.6,5.8)+cheeks(33,87,70)+smile(52,68,70,6)+
+  `<circle cx="66" cy="22" r="8" fill="#E8344E" ${O(2)}/><path d="M66 14 Q70 6 77 5" stroke="#3E8E4A" stroke-width="2.5" fill="none" stroke-linecap="round"/>`);
+
+// Cacao le chocolatier : un ourson couleur chocolat, petite toque, une tablette à la main
+ART.cacao=beast('#8B5A3C',
+  `<circle cx="30" cy="36" r="12" fill="#8B5A3C" ${O()}/><circle cx="90" cy="36" r="12" fill="#8B5A3C" ${O()}/><circle cx="30" cy="36" r="6" fill="#C99364"/><circle cx="90" cy="36" r="6" fill="#C99364"/>`,
+  `<path d="M42 32 C34 28 36 14 46 16 C48 6 60 4 64 12 C70 4 84 8 80 18 C88 20 86 32 78 34Z" fill="#fff" ${O(2)}/><rect x="42" y="28" width="36" height="8" rx="3" fill="#F2E6DA" ${O(1.8)}/>`+
+  `<ellipse cx="60" cy="108" rx="20" ry="13" fill="#C99364"/>`+
+  `<rect x="80" y="96" width="22" height="28" rx="3" fill="#6B3E26" ${O(2)}/><path d="M80 105 H102 M80 114 H102 M91 96 V124" stroke="#8B5A3C" stroke-width="2"/>`);
+
+// Berlingot le marchand de bonbons : bonnet rayé à pompon, gilet menthe, grosse sucette
+ART.berlingot=human('#C98663','#2B2140','#6ED38C',
+  `<path d="M26 44 Q28 16 60 14 Q92 16 94 44Z" fill="#FF8FB8" ${O()}/><path d="M42 20 L38 42 M60 14 V42 M78 20 L82 42" stroke="#fff" stroke-width="5"/><circle cx="60" cy="12" r="6" fill="#FFD95A" ${O(2)}/>`,
+  `<path d="M42 100 L38 130 M78 100 L82 130" stroke="#FF8FB8" stroke-width="6"/>`+
+  `<rect x="98" y="84" width="5" height="40" rx="2.5" fill="#fff" ${O(1.5)}/><circle cx="100" cy="76" r="14" fill="#FF8FB8" ${O(2)}/><path d="M100 76 m-8 0 a8 8 0 1 1 8 8 a4.5 4.5 0 1 1 -4.5 -4.5" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/>`);
 return ART;
 })();
 function charArtSVG(id){return CHAR_ART[id]||''}

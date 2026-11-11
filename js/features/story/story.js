@@ -234,6 +234,28 @@ const STORY = {
     success: "Bravo ! Les jouets se réveillent et se mettent à jouer ensemble. Grisou rosit de plaisir 🌸",
     reward: 14,
   },
+  bonbons: {
+    guide: 'praline',
+    title: 'La fête sans gâteau',
+    intro: [
+      "Bienvenue au Royaume des Bonbons 🍭 Aujourd'hui, c'est jour de fête… mais le grand four est éteint !",
+      "Grisou a caché le rêve « fête et gourmandise » tout au fond du four, et sans lui, plus aucun gâteau ne cuit.",
+      "Résous mes devinettes gourmandes : chaque bonne réponse rallume une flamme !",
+    ],
+    riddles: [
+      { q: "Je suis rond, avec des bougies dessus, et on me mange pour un anniversaire. Qui suis-je ?",
+        tip: 'On souffle les bougies avant de le manger.',
+        opts: [{ e:'🎂', ok:true }, { e:'🍕' }, { e:'🥕' }] },
+      { q: "Je suis tout rouge, je pousse par deux sur un arbre, et on me pose sur les gâteaux. Qui suis-je ?",
+        tip: 'Un petit fruit rouge avec une longue queue verte.',
+        opts: [{ e:'🍒', ok:true }, { e:'🍌' }, { e:'🍇' }] },
+      { q: "Je suis tout froid, en boule sur un cornet, et je fonds au soleil. Qui suis-je ?",
+        tip: 'On la lèche vite avant qu\'elle ne coule.',
+        opts: [{ e:'🍦', ok:true }, { e:'🧁' }, { e:'🍪' }] },
+    ],
+    success: "Bravo ! Le grand four se rallume, la fête peut commencer… et Grisou devient tout jaune caramel 🍮",
+    reward: 14,
+  },
 };
 
 /* Les prologues des saisons (v55) : lus à l'ouverture d'un archipel, avant le

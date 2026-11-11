@@ -62,6 +62,13 @@ const WORLDS = {
     map:{x:68, y:40}, shape:'jouets', icon:'🧸', sand:'#FFF1E0', land:'#F7C6D9',
     intro:"Bienvenue dans le Coffre aux Jouets Doux, où les jouets se sont endormis 🧸",
     sceneEmpty:"Ton Coffre attend ses décorations toutes douces !" },
+  bonbons:{ name:'Le Royaume des Bonbons', emoji:'🍭', level:44, diff:6, saison:2, short:'Bonbons',
+    subtitle:'Le village en pâtisserie',
+    // son mini-jeu, selon l'âge : la recette avant 7 ans, le gâteau partagé ensuite
+    game:(age)=> (age && age < 7) ? 'recipe' : 'share',
+    map:{x:34, y:26}, shape:'bonbons', icon:'🍭', sand:'#FFF3E0', land:'#F2A7BC',
+    intro:"Bienvenue au Royaume des Bonbons, où le grand four s'est éteint 🍭",
+    sceneEmpty:"Ton Royaume attend ses décorations sucrées !" },
 };
 
 /* Les archipels (v55) : chaque île appartient à un archipel (`saison`), qui a

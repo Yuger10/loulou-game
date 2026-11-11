@@ -47,4 +47,4 @@ Spec : [spec.md](./spec.md). Workflow : [workflow.md](../../workflow.md).
 - [x] Task: Vérification complète
     - [x] `npm test` vert ; parcours manuel à 360 px (ouverture de l'île, 4 personnages, 2 mini-jeux, chapitre, un épisode)
 - [x] Task: Conductor - User Manual Verification 'Livraison' (Protocol in workflow.md)
-- [ ] Task: Branche, PR sur `main` (merge sur ordre du propriétaire)
+- [x] Task: Branche, PR sur `main` (merge sur ordre du propriétaire) : PR #35

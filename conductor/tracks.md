@@ -58,7 +58,7 @@ Registre des tracks Conductor, **dans l'ordre d'implémentation**. Feuille de ro
 
 ---
 
-- [ ] **Track: Saison 2, île 3 : 🍭 Le Royaume des Bonbons, niveau 44**
+- [x] **Track: Saison 2, île 3 : 🍭 Le Royaume des Bonbons, niveau 44 (v60)**
 *Link: [./tracks/monde-bonbons_20261111/](./tracks/monde-bonbons_20261111/)*
 
 ---

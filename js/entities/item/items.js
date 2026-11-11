@@ -80,6 +80,15 @@ const ITEMS = {
   etoilefeutrine:{emoji:'⭐', name:'Étoile en feutrine', price:8, world:'jouets'},
   yoyo:{emoji:'🪀', name:'Yo-yo doux', price:7, world:'jouets'},
   toupie:{emoji:'🎯', name:'Toupie à pois', price:9, world:'jouets'},
+  // Royaume des Bonbons
+  sucreglace:{emoji:'🧂', name:'Sucre glace', price:5, world:'bonbons'},
+  cerise:{emoji:'🍒', name:'Cerise confite', price:6, world:'bonbons'},
+  pepite:{emoji:'🟤', name:'Pépite de chocolat', price:5, world:'bonbons'},
+  reglisse:{emoji:'🎗️', name:'Ruban de réglisse', price:6, world:'bonbons'},
+  cuillere:{emoji:'🥄', name:'Cuillère en bois', price:6, world:'bonbons'},
+  moule:{emoji:'🥧', name:'Moule à gâteau', price:8, world:'bonbons'},
+  farine:{emoji:'🌾', name:'Sac de farine', price:7, world:'bonbons'},
+  caramel:{emoji:'🍮', name:'Caramel fondant', price:9, world:'bonbons'},
 };
 
 const CRAFTED = {
@@ -178,6 +187,11 @@ const CRAFTED = {
     recipe:{boutonours:1, rubanpeluche:1, etoilefeutrine:1}},
   boiteamusique:{emoji:'🎶', name:'Boîte à musique', price:20, world:'jouets',
     recipe:{ressort:1, grelot:2}},
+  // Royaume des Bonbons
+  gateauetages:{emoji:'🎂', name:'Gâteau à étages', price:24, world:'bonbons',
+    recipe:{farine:1, sucreglace:1, cerise:1}},
+  tablette:{emoji:'🍫', name:'Tablette de chocolat', price:20, world:'bonbons',
+    recipe:{pepite:2, moule:1}},
 };
 
 const ALL_ITEMS = Object.assign({}, ITEMS, CRAFTED);
@@ -282,6 +296,12 @@ const DECOS = {
   panierD:{emoji:'🧺', name:'Panier de câlins', price:18, world:'jouets'},
   ballonsD:{emoji:'🪅', name:'Piñata en feutrine', price:14, world:'jouets'},
   tipiD:{emoji:'⛺', name:'Tipi des doudous', price:12, world:'jouets'},
+  // Royaume des Bonbons
+  painepicesD:{emoji:'🏠', name:'Maison en pain d\'épices', price:40, world:'bonbons'},
+  fontaineD:{emoji:'⛲', name:'Fontaine de sirop', price:30, world:'bonbons'},
+  sucettesD:{emoji:'🍭', name:'Arbres-sucettes', price:18, world:'bonbons'},
+  guirlandeD:{emoji:'🎊', name:'Guirlande de bonbons', price:14, world:'bonbons'},
+  glacesD:{emoji:'🍨', name:'Chariot de glaces', price:12, world:'bonbons'},
 };
 
 const ALBUM_REWARD = 100;

@@ -275,6 +275,31 @@ const ISLE_SCENERY = {
     <circle cx="336" cy="300" r="16" fill="#FFD1E3" stroke="#B8577E" stroke-width="3"/><path d="M322 292 Q336 300 350 292 M322 308 Q336 300 350 308" fill="none" stroke="#fff" stroke-width="4"/>
     <path d="M196 360 C212 322 236 296 240 246" fill="none" stroke="${w.sand}" stroke-width="18" stroke-linecap="round"/>
     <g fill="#fff" opacity=".7"><circle cx="128" cy="300" r="2"/><circle cx="400" cy="316" r="2"/></g>`,
+  // Royaume des Bonbons (saison 2) : maisons en pain d'épices au toit glacé,
+  // rivière de sirop, arbres-sucettes, cailloux en bonbons
+  bonbons: (w)=>`
+    <g class="ls-cloud c3" fill="#fff" opacity=".9"><ellipse cx="392" cy="90" rx="30" ry="12"/><ellipse cx="410" cy="82" rx="18" ry="12"/></g>
+    <g fill="#fff" opacity=".9"><ellipse cx="60" cy="252" rx="96" ry="26"/><ellipse cx="240" cy="248" rx="124" ry="24"/><ellipse cx="420" cy="252" rx="96" ry="26"/></g>
+    <path d="M0 254 C140 240 340 240 480 254 L480 360 L0 360 Z" fill="${w.land}"/>
+    <path d="M0 264 C140 252 340 252 480 264" fill="none" stroke="#fff" stroke-width="4" stroke-dasharray="2 14" stroke-linecap="round" opacity=".6"/>
+    <g stroke="#7A4524" stroke-width="3" stroke-linejoin="round">
+      <rect x="40" y="176" width="78" height="78" rx="6" fill="#C9844E"/><path d="M30 184 L79 132 L128 184Z" fill="#8A4A2B"/>
+      <rect x="196" y="160" width="96" height="94" rx="6" fill="#D2935C"/><path d="M184 170 L244 108 L304 170Z" fill="#8A4A2B"/>
+    </g>
+    <g fill="none" stroke="#fff" stroke-width="6" stroke-linecap="round">
+      <path d="M34 184 Q44 194 54 184 Q64 194 74 184 Q84 194 94 184 Q104 194 114 184 Q119 190 124 184"/>
+      <path d="M188 170 Q198 180 208 170 Q218 180 228 170 Q238 180 248 170 Q258 180 268 170 Q278 180 288 170 Q294 178 300 170"/>
+    </g>
+    <g stroke="#7A4524" stroke-width="2.5"><rect x="66" y="214" width="26" height="40" rx="12" fill="#FFE3C2"/><rect x="230" y="206" width="30" height="48" rx="14" fill="#FFE3C2"/>
+      <rect x="50" y="194" width="16" height="16" rx="3" fill="#BFF0DA"/><rect x="92" y="194" width="16" height="16" rx="3" fill="#BFF0DA"/><rect x="206" y="180" width="18" height="18" rx="3" fill="#FFD1E3"/><rect x="266" y="180" width="18" height="18" rx="3" fill="#FFD1E3"/></g>
+    <g fill="#E8344E"><circle cx="79" cy="140" r="7"/><circle cx="244" cy="116" r="8"/></g>
+    <g class="ls-lolly l1"><rect x="347" y="178" width="6" height="76" rx="3" fill="#fff"/><circle cx="350" cy="170" r="24" fill="#FF8FB8"/><path d="M350 170 m-16 0 a16 16 0 1 1 16 16 a9 9 0 1 1 -9 -9" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round"/></g>
+    <g class="ls-lolly l2"><rect x="425" y="196" width="6" height="58" rx="3" fill="#fff"/><circle cx="428" cy="190" r="18" fill="#9FDCF5"/><path d="M428 190 m-11 0 a11 11 0 1 1 11 11 a6.5 6.5 0 1 1 -6.5 -6.5" fill="none" stroke="#fff" stroke-width="4.5" stroke-linecap="round"/></g>
+    <path d="M300 360 C318 320 360 300 420 292 C450 288 470 278 480 270 L480 300 C460 312 430 318 410 322 C370 330 344 344 336 360Z" fill="#E7A24A" opacity=".85"/>
+    <path d="M330 350 C344 330 372 318 410 312" fill="none" stroke="#FFD27A" stroke-width="4" stroke-linecap="round" opacity=".8"/>
+    <path d="M150 360 C168 322 198 296 214 258" fill="none" stroke="${w.sand}" stroke-width="18" stroke-linecap="round"/>
+    <g><path d="M96 300 q8 -18 16 0z" fill="#FFE07A"/><path d="M262 318 q10 -22 20 0z" fill="#BFA3EC"/><path d="M40 330 q8 -18 16 0z" fill="#6ED38C"/><circle cx="180" cy="300" r="7" fill="#FF8FB8"/></g>
+    <g fill="#fff" opacity=".7"><circle cx="128" cy="312" r="2"/><circle cx="300" cy="300" r="2"/></g>`,
 };
 // paysage générique, aux couleurs du monde (toute nouvelle île en profite)
 function isleGenericScenery(w){

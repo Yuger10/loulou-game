@@ -56,6 +56,8 @@ import '../features/minigames/nesting/index.js';
 import '../features/minigames/cubes/index.js';
 import '../features/minigames/packs/index.js';
 import '../features/minigames/shelf/index.js';
+import '../features/minigames/share/index.js';
+import '../features/minigames/recipe/index.js';
 import '../features/market/index.js';
 import '../features/backup/index.js';
 import '../features/players/index.js';

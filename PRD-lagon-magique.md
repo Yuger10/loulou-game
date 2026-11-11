@@ -1284,3 +1284,59 @@ Track Conductor `formulaires-boutons`. Demande : « bien gérer les boutons dans
 - `form.css` est chargée en dernier (jsdom applique la dernière règle déclarée, sans tenir compte de la spécificité).
 
 - Cache `lagon-v59`.
+
+---
+
+# v60 — Saison 2, île 3 : le Royaume des Bonbons
+
+> **Proposition retenue par la joueuse.** Track Conductor `monde-bonbons` ([spec](conductor/tracks/monde-bonbons_20261111/spec.md), [plan](conductor/tracks/monde-bonbons_20261111/plan.md)).
+
+## L'île
+- **`bonbons` 🍭, niveau 44** (règle des niveaux : `conductor/niveaux.md`), palier 6. C'est la troisième île du Ciel des Rêves.
+- **Le paysage :** deux maisons en pain d'épices au toit glacé, une rivière de sirop, des arbres-sucettes qui se balancent, des cailloux en bonbons. Le thème est framboise, caramel et vanille.
+- **La musique :** une petite valse sucrée en pizzicato, à 92 battements par minute.
+- **4 personnages**, chacun avec son butin et 3 répliques :
+  - 👑 **Praline**, la reine pâtissière, guide du chapitre ;
+  - 🧁 **Chouquette**, la petite pâtissière, une cupcake qui présente le gâteau partagé ;
+  - 🍫 **Cacao**, l'ourson chocolatier, qui présente la recette ;
+  - 🍭 **Berlingot**, le marchand de bonbons.
+- **8 objets :** sucre glace, cerise confite, pépite de chocolat, ruban de réglisse, cuillère en bois, moule à gâteau, sac de farine, caramel fondant. Trois d'entre eux ne sont donnés par personne.
+- **2 recettes** (gâteau à étages, tablette de chocolat) et **5 décorations** (maison en pain d'épices, fontaine de sirop, arbres-sucettes, guirlande de bonbons, chariot de glaces).
+- **La série de squishies « Bonbons » :** sucette spirale, berlingot, guimauve, dragée ; le rare est Praline, le ✨ est le gâteau à étages doré.
+
+## Deux nouveaux mini-jeux
+Les deux sont proposés dès 5 ans, sans minuteur. Le jeu de l'île est la recette avant 7 ans, le gâteau partagé ensuite.
+
+- **🎂 Le gâteau partagé** (`share`) : les fractions simples. Le gâteau est rond (parts en secteurs) ou rectangulaire (parts en bandes).
+  - Paliers 1 et 2 : « Quel gâteau est coupé en 2 (ou 4) parts égales ? ». Les parts inégales sont de plus en plus proches.
+  - Palier 3 : la moitié ou le quart (la part rose).
+  - Palier 4 : la moitié, le tiers ou le quart, avec un piège : le bon nombre de parts, mais inégales.
+  - Palier 5 : l'écriture de la part rose (½, ⅓, ¼), ou « Combien de quarts pour faire une moitié ? ».
+  - Les indices expliquent « parts égales », puis ce qu'il faut compter, sans jamais montrer le bon gâteau.
+  - Compétence « Calcul » dans l'espace parents.
+- **🥣 La recette** (`recipe`) : les grandeurs et les mesures.
+  - Palier 1 : le bol qui contient le plus (ou le moins), ou le sac le plus lourd (ou léger) sur la balance.
+  - Paliers 2 et 3 : mettre le bon nombre de cuillères (jusqu'à 10). Chaque cuillère se voit dans le bol ; ↩️ enlève la dernière ; « C'est prêt ! » vérifie.
+  - Palier 3 : aussi le verre doseur en verres, avec des traits numérotés.
+  - Palier 4 : en grammes, des traits de 10 en 10, et des nombres seulement tous les 50.
+  - Palier 5 : des grammes de 50 en 50 (nombres tous les 250) ou des centilitres de 10 en 10.
+  - Au palier haut, la cible est toujours un trait sans nombre : il faut compter.
+  - Compétence « Temps et mesures » dans l'espace parents.
+- Pour les deux jeux, une erreur relance une autre question, jamais la même.
+
+## Histoire : « La fête sans gâteau »
+- **Le chapitre :** c'est jour de fête, mais Grisou a caché le rêve « fête et gourmandise » au fond du grand four, et le four s'est éteint.
+  - Praline pose 3 devinettes gourmandes : le gâteau d'anniversaire, la cerise, la glace.
+  - Le four se rallume et Grisou devient jaune caramel.
+  - Le chapitre rapporte 14 pièces et une boîte Bonbons, une seule fois.
+- **3 épisodes,** racontés par Chouquette, Cacao et Berlingot. Le dernier annonce l'Île de la Musique.
+
+## Tests
+- Nouveau `test/bonbons.test.js` (64 vérifications), branché sur `npm test`. Il couvre :
+  - l'île et son ouverture au niveau 44 ;
+  - les personnages, les objets et la série ;
+  - les paliers, les pièges, les indices et la relance des deux jeux ;
+  - les cuillères (↩️, « C'est prêt ! » trop tôt) et le verre doseur ;
+  - le jeu de l'île, le chapitre, la récompense unique et les épisodes.
+- Les 24 mini-jeux sont joués jusqu'à la victoire à chaque palier, avec une vérification indépendante pour le gâteau (parts dessinées, largeurs égales) et la recette (nombre de cuillères, bon trait).
+- Cache `lagon-v60`.

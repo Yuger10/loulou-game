@@ -1,5 +1,5 @@
 /* ---------- Types de mini-jeux et ceux proposés selon l'âge ---------- */
-const GAME_TYPES = ['memory','count','diff','puzzle','sequence','simon','math','reading','determinants','volume','compare','money','clock','calendar','calc','shapes','planets','jigsaw','nesting','cubes','packs','shelf'];
+const GAME_TYPES = ['memory','count','diff','puzzle','sequence','simon','math','reading','determinants','volume','compare','money','clock','calendar','calc','shapes','planets','jigsaw','nesting','cubes','packs','shelf','share','recipe'];
 
 /* Quels types de défis proposer selon l'âge (programme de l'école
    maternelle, cycle 1, 3-6 ans — repères eduscol.education.fr) :
@@ -30,7 +30,9 @@ const AGE_GAME_TYPES = [
   // dont tous les cubes se voient.
   // « Les paquets de jouets » (packs) : en GS, compter des paquets de 2 ;
   // « L'étagère magique » (shelf) : ranger un jouet dans une étagère 2 × 2.
-  { max:5, types:['memory','count','diff','volume','sequence','simon','clock','calendar','shapes','planets','jigsaw','nesting','cubes','packs','shelf'] },
+  // « Le gâteau partagé » (share) : en GS, « est-ce coupé en parts égales ? » ;
+  // « La recette » (recipe) : en GS, le bol le plus rempli, la balance.
+  { max:5, types:['memory','count','diff','volume','sequence','simon','clock','calendar','shapes','planets','jigsaw','nesting','cubes','packs','shelf','share','recipe'] },
   // 6 ans et plus (ou âge non précisé) : tous les jeux, dont le calcul
   // mental abstrait (calc), réservé au CP confirmé et plus.
 ];
@@ -65,6 +67,8 @@ const GAME_LIST = [
   { key:'cubes',    emoji:'🧊', name:'Combien de cubes ?' },
   { key:'packs',    emoji:'🧸', name:'Les paquets de jouets' },
   { key:'shelf',    emoji:'🗄️', name:'L\'étagère magique' },
+  { key:'share',    emoji:'🎂', name:'Le gâteau partagé' },
+  { key:'recipe',   emoji:'🥣', name:'La recette' },
 ];
 
 export { GAME_LIST, gameTypesForAge };

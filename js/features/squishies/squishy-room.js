@@ -198,6 +198,24 @@ const SQ_ART = {
     back: c=> `<circle cx="22" cy="26" r="11" fill="${c.fill}" stroke="${c.edge}" stroke-width="4"/><circle cx="78" cy="26" r="11" fill="${c.fill}" stroke="${c.edge}" stroke-width="4"/>
       <circle cx="22" cy="26" r="5" fill="#FFF3A6"/><circle cx="78" cy="26" r="5" fill="#9CE7F2"/>`,
     front: ()=> `<g class="sq-deco" fill="none" stroke-width="4.5" stroke-linecap="round"><path d="M28 88 Q50 68 72 88" stroke="#FF6F91"/><path d="M33 91 Q50 76 67 91" stroke="#FFD95A"/><path d="M38 94 Q50 84 62 94" stroke="#6ED38C"/></g>` },
+  // 🍬 Bonbons (saison 2, le Royaume des Bonbons) : des bonbons tout doux
+  'sucette-spirale': { body:'rond', face:{},
+    back: c=> `<rect x="46" y="86" width="8" height="26" rx="4" fill="#fff" stroke="${c.edge}" stroke-width="3"/>`,
+    front: ()=> `<path class="sq-deco" d="M22 44 Q30 24 50 22 M30 34 Q40 26 52 30 M78 40 Q72 26 60 24" fill="none" stroke="#fff" stroke-width="5" opacity=".7" stroke-linecap="round"/>` },
+  'berlingot': { body:'carre', face:{}, faceY:62,
+    back: c=> `<path d="M13 58 L0 46 L0 72Z M87 58 L100 46 L100 72Z" fill="${c.fill}" stroke="${c.edge}" stroke-width="3.5" stroke-linejoin="round"/>`,
+    front: ()=> `<path class="sq-deco" d="M32 26 L28 92 M68 26 L72 92" stroke="#fff" stroke-width="5" opacity=".6"/>` },
+  'guimauve': { body:'ovale-h', face:{}, faceY:68,
+    front: ()=> `<ellipse class="sq-deco" cx="50" cy="48" rx="32" ry="7" fill="#fff" opacity=".5"/><path class="sq-deco" d="M18 76 Q50 88 82 76" fill="none" stroke="#FFB8D6" stroke-width="4" stroke-linecap="round" opacity=".8"/>` },
+  'dragee': { body:'ovale-v', face:{}, faceY:60,
+    front: ()=> `<ellipse class="sq-deco" cx="64" cy="34" rx="6" ry="10" fill="#fff" opacity=".5" transform="rotate(20 64 34)"/>` },
+  'praline': { body:'rond', face:{}, faceY:62,
+    back: ()=> `<path d="M28 28 L32 8 L42 20 L50 4 L58 20 L68 8 L72 28Z" fill="#FFD95A" stroke="#B8901A" stroke-width="3" stroke-linejoin="round"/>
+      <circle cx="50" cy="12" r="3" fill="#FF6F91"/>`,
+    front: ()=> `<g class="sq-deco" fill="#fff" opacity=".45"><circle cx="28" cy="78" r="3"/><circle cx="72" cy="80" r="3.4"/><circle cx="62" cy="88" r="2.4"/><circle cx="36" cy="88" r="2.2"/></g>` },
+  'gateau-etages': { body:'carre', face:{}, faceY:66,
+    back: c=> `<rect x="27" y="2" width="46" height="28" rx="10" fill="${c.fill}" stroke="${c.edge}" stroke-width="4"/><circle cx="50" cy="-2" r="6" fill="#E8344E" stroke="#A8264A" stroke-width="2"/>`,
+    front: ()=> `<path class="sq-deco" d="M15 42 Q21 52 27 42 Q33 52 39 42 Q45 52 51 42 Q57 52 63 42 Q69 52 75 42 Q81 52 85 42" fill="none" stroke="#fff" stroke-width="5" opacity=".85" stroke-linecap="round"/>` },
 };
 
 // les paillettes d'un ✨ (animées en CSS)
@@ -226,7 +244,7 @@ function squishyArtSVG(id, opts){
 }
 
 // Une boîte surprise (la couleur dit sa série ; violette avec « ? » : mystère)
-const SQ_BOX_COLORS = { capy:['#FFC98F','#C8661A'], desserts:['#FFB8D6','#C9497F'], animaux:['#A6E8B8','#2F9551'], boites:['#EFC896','#8A5A2B'], jouets:['#FFD9E6','#B8577E'] };
+const SQ_BOX_COLORS = { capy:['#FFC98F','#C8661A'], desserts:['#FFB8D6','#C9497F'], animaux:['#A6E8B8','#2F9551'], boites:['#EFC896','#8A5A2B'], jouets:['#FFD9E6','#B8577E'], bonbons:['#F6D7A8','#B5702E'] };
 function squishyBoxSVG(series){
   const col = SQ_BOX_COLORS[series] || ['#CDB8F2','#7B5CC0'];
   return `<svg class="sq-boxart" viewBox="0 0 100 100" aria-hidden="true">
