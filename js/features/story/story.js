@@ -278,6 +278,28 @@ const STORY = {
     success: "Bravo ! La boîte à musique s'ouvre, l'orchestre se remet à jouer… et Grisou devient tout turquoise 🎶",
     reward: 14,
   },
+  jardin: {
+    guide: 'petale',
+    title: 'Le jardin endormi',
+    intro: [
+      "Chut… Bienvenue au Jardin des Fées 🌸 D'habitude, tout pousse ici : les fleurs sont plus grandes que des maisons !",
+      "Mais Grisou a posé le rêve « grandir et fleurir » sous une cloche de verre, et plus rien ne pousse.",
+      "Résous mes devinettes de jardin : chaque bonne réponse fait éclore une fleur !",
+    ],
+    riddles: [
+      { q: "Je suis toute petite, on me met dans la terre, et je deviens une plante. Qui suis-je ?",
+        tip: 'On l\'arrose, et elle germe.',
+        opts: [{ e:'🌱', ok:true }, { e:'🍎' }, { e:'🌻' }] },
+      { q: "Je suis rouge avec des points noirs, et je me pose sur les feuilles. Qui suis-je ?",
+        tip: 'Elle a six pattes et des ailes cachées sous sa carapace.',
+        opts: [{ e:'🐞', ok:true }, { e:'🐌' }, { e:'🐛' }] },
+      { q: "Avant, j'étais une chenille. Maintenant, je vole avec de grandes ailes colorées. Qui suis-je ?",
+        tip: 'Il est sorti de sa chrysalide.',
+        opts: [{ e:'🦋', ok:true }, { e:'🐝' }, { e:'🐦' }] },
+    ],
+    success: "Bravo ! La cloche de verre se soulève, le jardin refleurit… et Grisou est presque tout coloré : il ne lui manque plus que les couleurs des licornes 🌈",
+    reward: 14,
+  },
 };
 
 /* Les prologues des saisons (v55) : lus à l'ouverture d'un archipel, avant le

@@ -443,6 +443,43 @@ const CHARACTERS = {
       "Cuicui-bravo ! Tu chantes juste, toi !",
       "J'ai entendu une jolie mélodie… elle montait, elle montait ! Tu joues ?",
     ]},
+  // ---- Saison 2, le Jardin des Fées (proposition retenue par la joueuse) ----
+  petale:{
+    emoji:'🧚', name:'Pétale', title:'la fée jardinière', world:'jardin',
+    gender:'f',
+    loot:['graine','rosee'],
+    texts:[
+      "Bienvenue dans mon jardin ! Depuis que Grisou est passé, plus rien ne pousse… Tu m'aides ?",
+      "Une graine, un peu d'eau, du soleil… et beaucoup de patience !",
+      "Chaque mission réussie fait éclore une fleur. Allez, au jardin !",
+    ]},
+  pois:{
+    emoji:'🐞', name:'Pois', title:'la coccinelle', world:'jardin',
+    gender:'f',
+    loot:['petalerose','graine'],
+    texts:[
+      "J'ai autant de points sur chaque aile. Tu veux les compter ?",
+      "Trois points d'un côté, trois points de l'autre : ça fait le double !",
+      "Je me pose sur ta main ? Ça porte bonheur, il paraît !",
+    ]},
+  azur:{
+    emoji:'🦋', name:'Azur', title:'le papillon', world:'jardin',
+    gender:'m',
+    loot:['pollen','petalerose'],
+    texts:[
+      "Avant d'être un papillon, j'étais une petite chenille ! Tu connais mon histoire ?",
+      "Œuf, chenille, chrysalide, papillon : dans l'ordre, c'est magique !",
+      "Je vole de fleur en fleur. On joue ensemble ?",
+    ]},
+  miella:{
+    emoji:'🐝', name:'Miella', title:'l\'abeille', world:'jardin',
+    gender:'f',
+    loot:['pollen','rosee'],
+    texts:[
+      "Bzz ! Je butine les fleurs et je fais du miel pour tout le jardin !",
+      "Sans les abeilles, les fleurs ne deviendraient pas des fruits. Bzz bzz !",
+      "Tu veux goûter mon miel ? D'abord, un petit défi !",
+    ]},
 };
 
 function charsOf(world){

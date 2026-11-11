@@ -169,7 +169,7 @@ function startGame(key, tier, age){
     const target = Number(d.querySelector('.recipe-ask').dataset.target);
     check('le verre doseur : 10 traits de 10 en 10, des nombres seulement tous les 50', d.querySelectorAll('.cup-mark').length === 10 && [...d.querySelectorAll('.cup-mark b')].map(b=> b.textContent).join() === '50,100');
     const lv = ev('hintsFor("recipe", hint.q)');
-    check('ses indices : compter de 10 en 10, en partant d\'un trait numéroté (jamais la cible)', /de 10 en 10/.test(lv[0].say) && !lv.some(h=> new RegExp(`(^|[^0-9])${target}([^0-9]|$)`).test(h.say)));
+    check('ses indices : compter de 10 en 10, en partant d\'un trait numéroté (jamais la cible)', /de 10 en 10/.test(lv[0].say) && !lv.some(h=> new RegExp(`(^|[^0-9])${target}([^0-9]|$)`).test(h.say.replace(/de [0-9]+ en [0-9]+/g, ''))));
     d.querySelector(`.cup-mark[data-v="${target}"]`).click();
     check('le bon trait : le lait monte, mission réussie', await waitFor(()=> !!d.querySelector('.win-box'), 1500));
     check('pas de minuteur ; compétence « Temps et mesures » dans l\'espace parents', ev('timerFor("recipe", 5)') === null && ev('SKILL_GROUPS.find(g=> g.id==="mesures").games').includes('recipe'));

@@ -63,6 +63,8 @@ const PROGRESS_CHEERS = {
   recipe:       'Tu mesures tes recettes de mieux en mieux !',
   rhythm:       'Tu rejoues les rythmes de mieux en mieux !',
   pitch:        'Ton oreille reconnaît le grave et l\'aigu de mieux en mieux !',
+  lifecycle:    'Tu connais de mieux en mieux la vie des plantes et des petites bêtes !',
+  ladybugs:     'Tu trouves les doubles et les moitiés de mieux en mieux !',
 };
 
 function gameMaxTier(key){ return GAME_TIER_MAX[key] || 5; }

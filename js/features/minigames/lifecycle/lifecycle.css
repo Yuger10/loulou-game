@@ -1,0 +1,17 @@
+  /* =====================================================================
+     De la graine à la fleur — Jardin des Fées (saison 2)
+     ===================================================================== */
+  .lc-strip{display:flex; justify-content:center; align-items:center; flex-wrap:wrap; gap:2px; min-height:70px; margin:0 auto 8px; padding:8px; max-width:340px;
+    border-radius:var(--radius-lg, 24px); background:linear-gradient(180deg, #FBF6FF, #E6F5E2); border:3px solid #fff;}
+  .lc-step, .lc-slot{display:flex; align-items:center; justify-content:center; width:50px; height:54px; border-radius:14px; background:#fff;}
+  .lc-slot{border:3px dashed #B9A6E0; color:#7B5CC0; font-weight:800; font-size:1.3rem; background:#F7F2FF;}
+  .lc-step.found{box-shadow:0 0 0 3px #A8DDA0;}
+  .lc-step .lc-svg, .lc-step .lc-emoji{width:40px; height:40px; font-size:32px; line-height:40px; text-align:center;}
+  .lc-arrow{color:#7B5CC0; font-size:.9rem;}
+  .lc-options{display:flex; justify-content:center; gap:8px; flex-wrap:wrap; margin-bottom:6px;}
+  .lc-card{display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; width:92px; height:96px; padding:6px;
+    border-radius:18px; border:3px solid #D9CCF2; background:#fff; box-shadow:0 4px 0 rgba(123,92,192,.18); cursor:pointer;}
+  .lc-card .lc-svg{width:52px; height:52px;}
+  .lc-card .lc-emoji{font-size:40px; line-height:52px;}
+  .lc-name{font-size:.75rem; font-weight:800; color:var(--ink); line-height:1.1;}
+  .lc-card.done{opacity:.35; pointer-events:none;}

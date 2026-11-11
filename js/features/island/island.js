@@ -323,6 +323,31 @@ const ISLE_SCENERY = {
     <g class="ls-lolly l2" fill="#5CC6CC" stroke="#2B2F6B" stroke-width="2"><circle cx="226" cy="132" r="6"/><path d="M231 132 V108" fill="none" stroke="#2B2F6B" stroke-width="3"/></g>
     <path d="M150 360 C168 322 196 290 196 248" fill="none" stroke="${w.sand}" stroke-width="18" stroke-linecap="round"/>
     <g fill="#fff" opacity=".7"><circle cx="110" cy="306" r="2"/><circle cx="380" cy="300" r="2"/></g>`,
+  // Jardin des Fées (saison 2) : vu à hauteur d'insecte ; fleurs géantes,
+  // champignons-maisons, gouttes de rosée, brins d'herbe
+  jardin: (w)=>`
+    <g class="ls-cloud c3" fill="#fff" opacity=".9"><ellipse cx="410" cy="84" rx="28" ry="11"/><ellipse cx="426" cy="77" rx="16" ry="11"/></g>
+    <g fill="#fff" opacity=".9"><ellipse cx="60" cy="252" rx="96" ry="26"/><ellipse cx="240" cy="248" rx="124" ry="24"/><ellipse cx="420" cy="252" rx="96" ry="26"/></g>
+    <path d="M0 254 C140 240 340 240 480 254 L480 360 L0 360 Z" fill="${w.land}"/>
+    <g class="ls-lolly l1"><path d="M96 254 C92 200 104 150 100 104" fill="none" stroke="#4F8A45" stroke-width="8" stroke-linecap="round"/>
+      <path d="M100 180 Q72 166 64 176 Q78 192 100 186Z" fill="#6DBB57"/>
+      <g fill="#FF9CC8" stroke="#C9497F" stroke-width="2.5"><ellipse cx="100" cy="78" rx="16" ry="26"/><ellipse cx="74" cy="100" rx="26" ry="16"/><ellipse cx="126" cy="100" rx="26" ry="16"/><ellipse cx="86" cy="124" rx="18" ry="16"/><ellipse cx="114" cy="124" rx="18" ry="16"/></g>
+      <circle cx="100" cy="104" r="14" fill="#FFD95A" stroke="#B8901A" stroke-width="2.5"/></g>
+    <g class="ls-lolly l2"><path d="M392 254 C396 214 384 184 388 150" fill="none" stroke="#4F8A45" stroke-width="7" stroke-linecap="round"/>
+      <g fill="#BFA3EC" stroke="#7B5CC0" stroke-width="2.5"><circle cx="388" cy="124" r="15"/><circle cx="366" cy="138" r="15"/><circle cx="410" cy="138" r="15"/><circle cx="376" cy="160" r="14"/><circle cx="400" cy="160" r="14"/></g>
+      <circle cx="388" cy="146" r="11" fill="#FFF3A6" stroke="#B8901A" stroke-width="2"/></g>
+    <g stroke="#7A4524" stroke-width="3" stroke-linejoin="round">
+      <rect x="208" y="176" width="54" height="76" rx="12" fill="#FFF1DC"/>
+      <path d="M184 186 C184 134 286 134 286 186Z" fill="#E8344E"/>
+      <rect x="226" y="214" width="20" height="38" rx="10" fill="#C99364"/>
+      <rect x="296" y="218" width="30" height="36" rx="8" fill="#FFF1DC"/>
+      <path d="M284 224 C284 194 338 194 338 224Z" fill="#FFAE5C"/>
+    </g>
+    <g fill="#fff"><circle cx="210" cy="168" r="6"/><circle cx="236" cy="152" r="7"/><circle cx="264" cy="164" r="6"/><circle cx="300" cy="212" r="4"/><circle cx="322" cy="208" r="4"/></g>
+    <g fill="#9FDCF5" stroke="#5B9FD4" stroke-width="2"><path d="M150 214 q-8 12 0 16 q8 -4 0 -16z"/><path d="M350 236 q-6 10 0 13 q6 -3 0 -13z"/><path d="M60 230 q-6 10 0 13 q6 -3 0 -13z"/></g>
+    <g stroke="#6DBB57" stroke-width="5" stroke-linecap="round"><path d="M30 256 L24 228 M40 256 L44 232 M440 256 L436 226 M452 256 L458 234 M170 256 L166 236"/></g>
+    <path d="M150 360 C168 322 210 290 232 252" fill="none" stroke="${w.sand}" stroke-width="18" stroke-linecap="round"/>
+    <g fill="#fff" opacity=".7"><circle cx="110" cy="306" r="2"/><circle cx="380" cy="300" r="2"/></g>`,
 };
 // paysage générique, aux couleurs du monde (toute nouvelle île en profite)
 function isleGenericScenery(w){

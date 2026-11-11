@@ -98,6 +98,15 @@ const ITEMS = {
   anche:{emoji:'🎐', name:'Anche de flûte', price:5, world:'musique'},
   metronome:{emoji:'⏱️', name:'Métronome', price:9, world:'musique'},
   micro:{emoji:'🎤', name:'Micro doré', price:8, world:'musique'},
+  // Jardin des Fées
+  graine:{emoji:'🌱', name:'Graine magique', price:6, world:'jardin'},
+  rosee:{emoji:'💧', name:'Goutte de rosée', price:5, world:'jardin'},
+  pollen:{emoji:'🟡', name:'Pollen doré', price:6, world:'jardin'},
+  arrosoir:{emoji:'🚿', name:'Petit arrosoir', price:8, world:'jardin'},
+  petalerose:{emoji:'🌹', name:'Pétale de rose', price:5, world:'jardin'},
+  filaraignee:{emoji:'🕸️', name:'Fil d\'araignée', price:7, world:'jardin'},
+  noisette:{emoji:'🌰', name:'Noisette', price:6, world:'jardin'},
+  champimini:{emoji:'🍄', name:'Mini-champignon', price:7, world:'jardin'},
 };
 
 const CRAFTED = {
@@ -206,6 +215,11 @@ const CRAFTED = {
     recipe:{corde:2, clesol:1}},
   carillondor:{emoji:'🔔', name:'Carillon d\'or', price:20, world:'musique',
     recipe:{grelotdore:2, baguettechef:1}},
+  // Jardin des Fées
+  bouquetfee:{emoji:'💐', name:'Bouquet des fées', price:22, world:'jardin',
+    recipe:{petalerose:2, rosee:1}},
+  potmielfee:{emoji:'🍯', name:'Pot de miel des fées', price:20, world:'jardin',
+    recipe:{pollen:2, noisette:1}},
 };
 
 const ALL_ITEMS = Object.assign({}, ITEMS, CRAFTED);
@@ -322,6 +336,12 @@ const DECOS = {
   notesD:{emoji:'🎶', name:'Guirlande de notes', price:18, world:'musique'},
   tambourD:{emoji:'🪘', name:'Grand tambour', price:14, world:'musique'},
   pupitreD:{emoji:'🎙️', name:'Pupitre doré', price:12, world:'musique'},
+  // Jardin des Fées
+  champignonD:{emoji:'🍄', name:'Maison-champignon', price:40, world:'jardin'},
+  balancoireD:{emoji:'🌼', name:'Balançoire de fleurs', price:30, world:'jardin'},
+  tournesolD:{emoji:'🌻', name:'Tournesol géant', price:18, world:'jardin'},
+  rucheD:{emoji:'🐝', name:'Ruche dorée', price:14, world:'jardin'},
+  fontaineroseeD:{emoji:'⛲', name:'Fontaine de rosée', price:12, world:'jardin'},
 };
 
 const ALBUM_REWARD = 100;

@@ -125,6 +125,14 @@ const EPISODES = {
     { by:'piccolo', title:'Piccolo a entendu', find:'🌸',
       lines:["Piccolo a entendu ! Piccolo a entendu ! Des clochettes qui tintent, très loin dans le ciel !", "Elles viennent d'un jardin plein de fleurs géantes… Le Jardin des Fées, peut-être ?"] },
   ],
+  jardin: [
+    { by:'pois', title:'La première fleur', find:'🌷',
+      lines:["Ce matin, une toute petite fleur a percé la terre, juste à côté de ma feuille !", "Elle était rose et pleine de rosée. Le jardin se réveille !"] },
+    { by:'azur', title:'Le vol de Grisou', find:'🦋',
+      lines:["J'ai volé jusqu'à Grisou, et je me suis posé sur son nuage.", "Il était presque tout coloré ! Il m'a dit qu'il lui manquait seulement… les couleurs de l'arc-en-ciel."] },
+    { by:'miella', title:'Le miel arc-en-ciel', find:'🌈',
+      lines:["Bzz ! Dans une fleur, j'ai trouvé un pollen de toutes les couleurs.", "Il vient du Royaume Arc-en-ciel, là où vivent les licornes. C'est là que tout va se jouer !"] },
+  ],
 };
 
 function storyMissionsOn(world){ return (state.storyMissions || {})[world] || 0; }

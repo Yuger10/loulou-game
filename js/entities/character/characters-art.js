@@ -392,6 +392,43 @@ ART.piccolo=svg(
   eyes(47,73,51,4.2,5.2)+cheeks(36,84,64)+
   `<path d="M53 60 Q60 55 67 60 Q67 72 60 77 Q55 71 53 60Z" fill="#FFD95A" ${O(2)}/>`+
   `<path d="M100 34 V16 L110 14 V28" fill="none" stroke="${AI}" stroke-width="2.4"/><circle cx="98" cy="35" r="3.2" fill="${AI}"/><circle cx="108" cy="30" r="3.2" fill="${AI}"/>`);
+// ---- Saison 2, le Jardin des Fées ----
+// Pétale la fée jardinière : chapeau-fleur rose, ailes nacrées, robe vert tendre, petit arrosoir
+ART.petale=human('#F0C4AA','#A85A3C','#8FD48A',
+  `<g ${O(2)}><ellipse cx="38" cy="22" rx="12" ry="8" fill="#FF9CC8" transform="rotate(-25 38 22)"/><ellipse cx="82" cy="22" rx="12" ry="8" fill="#FF9CC8" transform="rotate(25 82 22)"/><ellipse cx="60" cy="12" rx="9" ry="12" fill="#FFB8D6"/><circle cx="60" cy="24" r="7" fill="#FFD95A"/></g>`,
+  `<path d="M60 112 L84 128 L60 122 L36 128Z" fill="#6DBB57"/>`+
+  `<rect x="88" y="100" width="22" height="18" rx="5" fill="#9FDCF5" ${O(2)}/><path d="M110 104 L118 96" stroke="${AI}" stroke-width="3" stroke-linecap="round"/><path d="M92 100 Q99 90 106 100" fill="none" stroke="${AI}" stroke-width="2.5"/>`,
+  `<path d="M30 92 Q2 72 8 50 Q26 58 40 84Z M90 92 Q118 72 112 50 Q94 58 80 84Z" fill="#F3E8FF" opacity=".9" ${O(2)}/>`);
+
+// Pois la coccinelle : carapace rouge à points noirs, tête noire, antennes
+ART.pois=svg(
+  `<path d="M44 30 Q38 12 30 10 M76 30 Q82 12 90 10" fill="none" stroke="${AI}" stroke-width="3" stroke-linecap="round"/><circle cx="30" cy="10" r="4" fill="${AI}"/><circle cx="90" cy="10" r="4" fill="${AI}"/>`+
+  `<ellipse cx="60" cy="40" rx="26" ry="20" fill="#2B2140"/>`+
+  `<ellipse cx="60" cy="84" rx="46" ry="42" fill="#E8344E" ${O()}/>`+
+  `<path d="M60 44 V126" stroke="${AI}" stroke-width="3"/>`+
+  `<g fill="${AI}"><circle cx="36" cy="96" r="6"/><circle cx="84" cy="96" r="6"/><circle cx="32" cy="70" r="4.6"/><circle cx="88" cy="70" r="4.6"/><circle cx="44" cy="114" r="4.4"/><circle cx="76" cy="114" r="4.4"/></g>`+
+  `<path d="M28 60 Q36 50 48 50" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" opacity=".55"/>`+
+  `<g transform="translate(0 -22)">`+eyes(50,70,62,4.2,5.2)+`</g>`+cheeks(42,78,48)+`<path d="M54 50 Q60 54 66 50" fill="none" stroke="#FFB8C8" stroke-width="2.4" stroke-linecap="round"/>`);
+
+// Azur le papillon : grandes ailes bleues à taches, petit corps, antennes en spirale
+ART.azur=svg(
+  `<path d="M58 60 C36 20 4 26 10 56 C14 74 40 74 56 66Z M62 60 C84 20 116 26 110 56 C106 74 80 74 64 66Z" fill="#6FB8F5" ${O()}/>`+
+  `<path d="M56 70 C34 76 18 96 30 110 C42 120 54 98 58 80Z M64 70 C86 76 102 96 90 110 C78 120 66 98 62 80Z" fill="#BFA3EC" ${O()}/>`+
+  `<g fill="#fff" opacity=".8"><circle cx="28" cy="46" r="6"/><circle cx="92" cy="46" r="6"/><circle cx="36" cy="98" r="4"/><circle cx="84" cy="98" r="4"/></g>`+
+  `<path d="M54 28 Q48 12 40 14 Q36 18 42 20 M66 28 Q72 12 80 14 Q84 18 78 20" fill="none" stroke="${AI}" stroke-width="2.6" stroke-linecap="round"/>`+
+  `<ellipse cx="60" cy="86" rx="9" ry="30" fill="#5A4A7A" ${O(2)}/>`+
+  `<circle cx="60" cy="44" r="18" fill="#7B6AA8" ${O()}/>`+
+  `<g transform="translate(0 -18)">`+eyes(53,67,62,3.4,4.4)+`</g>`+`<path d="M55 50 Q60 54 65 50" fill="none" stroke="#FFB8C8" stroke-width="2.2" stroke-linecap="round"/>`);
+
+// Miella l'abeille : rayée jaune et brun, ailes transparentes, petit pot de miel
+ART.miella=svg(
+  `<ellipse cx="34" cy="48" rx="20" ry="14" fill="#E6F4FF" opacity=".9" ${O(2)} transform="rotate(-25 34 48)"/><ellipse cx="86" cy="48" rx="20" ry="14" fill="#E6F4FF" opacity=".9" ${O(2)} transform="rotate(25 86 48)"/>`+
+  `<path d="M50 24 Q46 10 38 8 M70 24 Q74 10 82 8" fill="none" stroke="${AI}" stroke-width="3" stroke-linecap="round"/><circle cx="38" cy="8" r="4" fill="${AI}"/><circle cx="82" cy="8" r="4" fill="${AI}"/>`+
+  `<ellipse cx="60" cy="80" rx="40" ry="44" fill="#FFD95A" ${O()}/>`+
+  `<path d="M24 92 Q60 102 96 92 M28 110 Q60 120 92 110" fill="none" stroke="#6B3E26" stroke-width="9" stroke-linecap="round"/>`+
+  `<path d="M30 56 Q38 44 52 44" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" opacity=".7"/>`+
+  eyes(47,73,64,4.8,6)+cheeks(34,86,76)+smile(52,68,76,7)+
+  `<rect x="90" y="104" width="22" height="20" rx="6" fill="#F2B04E" ${O(2)}/><path d="M90 110 H112" stroke="#B5702E" stroke-width="2"/>`);
 return ART;
 })();
 function charArtSVG(id){return CHAR_ART[id]||''}

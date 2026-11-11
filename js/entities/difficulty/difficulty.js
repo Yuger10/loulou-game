@@ -315,7 +315,7 @@ function livesFor(kind, dd){
   // essais suivent donc le nombre de paires : n + 2. Bien retenir fait
   // toujours gagner ; toucher au hasard fait toujours perdre.
   if(kind === 'memory') return memoryPairs(d) + 2;
-  const GENEROUS_KINDS = ['math','reading','determinants','volume','compare','money','clock','calendar','calc','shapes','planets','cubes','packs','shelf','share','recipe','pitch'];
+  const GENEROUS_KINDS = ['math','reading','determinants','volume','compare','money','clock','calendar','calc','shapes','planets','cubes','packs','shelf','share','recipe','pitch','lifecycle','ladybugs'];
   const table = LIVES_TABLE[kind] || (GENEROUS_KINDS.includes(kind) ? LIVES_TABLE.generous : LIVES_TABLE.default);
   // le calcul mental (palier 6, Volcan) emprunte le barème d'essais du
   // palier 5 : seul le minuteur continue de se resserrer au-delà.
@@ -352,7 +352,7 @@ const TIMER_SECONDS = {
   calc:         {3:28, 4:24, 5:22, 6:20},   // calcul abstrait : le plus généreux de tous
 };
 // jeux à plusieurs étapes : jamais de minuteur, quelle que soit la difficulté
-const NO_TIMER_KINDS = ['memory','simon','puzzle','calendar','shapes','planets','jigsaw','nesting','cubes','packs','shelf','share','recipe','rhythm','pitch'];
+const NO_TIMER_KINDS = ['memory','simon','puzzle','calendar','shapes','planets','jigsaw','nesting','cubes','packs','shelf','share','recipe','rhythm','pitch','lifecycle','ladybugs'];
 function timerFor(kind, dd){
   if(NO_TIMER_KINDS.includes(kind)) return null;
   const table = TIMER_SECONDS[kind];
@@ -651,6 +651,46 @@ function pitchRound(dd){
   }, dd);
 }
 
+/* ---------------------------------------------------------------------
+   DE LA GRAINE À LA FLEUR (Jardin des Fées, saison 2) — le vivant (cycle 2 :
+   naissance, croissance) : la plante, le papillon, la poule.
+     palier 1   3 étapes à remettre dans l'ordre (graine, pousse, fleur)
+     palier 2   4 étapes : plante, papillon ou poule
+     palier 3   5 étapes de la plante, ou une étape manquante à retrouver
+     palier 4   étape manquante, ou deux cycles mélangés (ranger ceux de la plante)
+     palier 5   « que se passe-t-il ensuite ? », cycles mélangés, étape manquante
+   Pas de minuteur.
+   --------------------------------------------------------------------- */
+function lifecycleRound(dd){
+  return tierValue({
+    1:{ n:3, modes:['order'] },
+    2:{ n:4, modes:['order'] },
+    3:{ n:5, modes:['order', 'missing'] },
+    4:{ n:4, modes:['missing', 'mixed'] },
+    5:{ n:5, modes:['next', 'mixed', 'missing'] },
+  }, dd);
+}
+
+/* ---------------------------------------------------------------------
+   LES COCCINELLES (Jardin des Fées, saison 2) — les doubles et les moitiés
+   grâce à la symétrie des ailes (calcul, CP-CE2).
+     palier 1   jusqu'à 3 points par aile : compter tous les points
+     palier 2   les doubles jusqu'à 5 + 5
+     palier 3   les doubles jusqu'à 10 + 10, ou compléter l'aile vide
+     palier 4   compléter l'aile (jusqu'à 10), ou les doubles
+     palier 5   les moitiés : « 14 points en tout, combien par aile ? »
+   `min`/`max` : points par aile. Pas de minuteur.
+   --------------------------------------------------------------------- */
+function ladybugsRound(dd){
+  return tierValue({
+    1:{ modes:['count'],              min:1, max:3 },
+    2:{ modes:['double'],             min:2, max:5 },
+    3:{ modes:['double', 'complete'], min:4, max:10 },
+    4:{ modes:['complete', 'double'], min:5, max:10 },
+    5:{ modes:['half', 'half', 'complete'], min:4, max:10 },
+  }, dd);
+}
+
 function jigsawRound(dd){
   return tierValue({
     1:{cols:2, rows:2, ghost:.45},
@@ -665,7 +705,7 @@ export {
   CALC_MULT_TABLES, calcBounds, calendarUsesWeekdayOrder, calendarWeekdayCount, clockGranularity,
   clockOptions, compareCloseChance, compareEqualChance, compareRange, countRange,
   determinantsExtraDistractor, determinantsImageShown, determinantsPluralChance, diffMirrorChance,
-  cubesRound, diffTotal, jigsawRound, nestingRound, livesFor, packsRound, pitchRound, recipeRound, rhythmRound, shareRound, shelfRound, mathBounds, memoryPairs, moneyDenoms, moneyPileSize, planetsTier,
+  cubesRound, diffTotal, jigsawRound, nestingRound, ladybugsRound, lifecycleRound, livesFor, packsRound, pitchRound, recipeRound, rhythmRound, shareRound, shelfRound, mathBounds, memoryPairs, moneyDenoms, moneyPileSize, planetsTier,
   puzzleCount, puzzleStartMax, puzzleVariants, readingOptions, readingWordOnly, sequencePatternLength,
   shapesRound, simonLength, solidOptions, timerFor, volumeAskLessChance, volumeContainerCount,
   volumeUsesCapacityCompare

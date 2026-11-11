@@ -1,0 +1,13 @@
+  /* =====================================================================
+     Les coccinelles — Jardin des Fées (saison 2)
+     ===================================================================== */
+  .lb-stage{position:relative; display:flex; justify-content:center; margin:0 auto 8px; padding:8px; max-width:300px;
+    border-radius:var(--radius-lg, 24px); background:radial-gradient(circle at 50% 60%, #DDF3D6, #F1EAFB); border:3px solid #fff;}
+  .lb-svg{width:150px; height:auto;}
+  .lb-total{position:absolute; left:50%; top:52%; transform:translate(-50%, -50%); padding:4px 12px; border-radius:14px; background:#fff;
+    font-weight:800; font-size:1.2rem; color:var(--ink); box-shadow:0 2px 0 rgba(0,0,0,.12);}
+  .lb-opt{display:flex; flex-direction:column; align-items:center; gap:4px;}
+  .lb-opt b{font-size:1.8rem; line-height:1;}
+  .lb-add{padding:10px 18px; border-radius:16px; border:3px solid #E8344E; background:#FFF1F3; font-weight:800; font-size:1.05rem; color:var(--ink);
+    box-shadow:0 4px 0 rgba(168,38,74,.25); cursor:pointer;}
+  .lb-actions{margin-top:4px;}
