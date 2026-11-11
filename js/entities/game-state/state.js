@@ -7,7 +7,7 @@ const MISSIONS_PER_LEVEL = 5;
 const SAVE_KEY = 'lagon-magique-save';
 
 /* ---------- État ---------- */
-const SAVE_VERSION = 6;
+const SAVE_VERSION = 7;
 
 const DEFAULT_STATE = {
   v: SAVE_VERSION,
@@ -33,6 +33,7 @@ const DEFAULT_STATE = {
   look: { tete:null, visage:null, tenue:null, cape:null },   // ce que porte l'avatar
   seasonGifts: {},    // cadeaux de saison reçus, ex. { 'noel-2026': true } (js/features/seasons/seasons.js)
   music: false,       // musique d'ambiance (js/features/music/music.js), coupée par défaut
+  soundVolume: 80,    // volume général des sons et de la musique, 0 à 100 (js/shared/ui/sound.js)
   storyMissions: {},  // missions réussies par île, pour les épisodes (js/features/story/episodes.js)
   storyEpisodes: {},  // épisodes déjà vus, par île
   friends: {},        // points d'amitié par personnage (cadeaux, js/features/gifts/gifts.js)
@@ -87,6 +88,7 @@ let state = {
   look: { tete:null, visage:null, tenue:null, cape:null },
   seasonGifts: {},
   music: false,
+  soundVolume: 80,
   storyMissions: {},
   storyEpisodes: {},
   friends: {},
@@ -153,6 +155,10 @@ function migrate(saved){
     // s'ouvrir au prochain lancement (écran d'ouverture, prologue, chapitre).
     // Les îles visitées (state.visited) couvrent les deux archipels.
     saved.skyIntroSeen = false;
+  }
+  if(v < 7){
+    // v56 : les nouveaux sons : un volume général par joueur, 80 % par défaut
+    if(typeof saved.soundVolume !== 'number') saved.soundVolume = 80;
   }
   saved.v = SAVE_VERSION;
   return saved;
