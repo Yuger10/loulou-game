@@ -89,6 +89,15 @@ const ITEMS = {
   moule:{emoji:'🥧', name:'Moule à gâteau', price:8, world:'bonbons'},
   farine:{emoji:'🌾', name:'Sac de farine', price:7, world:'bonbons'},
   caramel:{emoji:'🍮', name:'Caramel fondant', price:9, world:'bonbons'},
+  // Île de la Musique
+  baguettechef:{emoji:'🥢', name:'Baguette de chef', price:6, world:'musique'},
+  partition:{emoji:'📜', name:'Partition', price:5, world:'musique'},
+  clesol:{emoji:'🎼', name:'Clé de sol', price:7, world:'musique'},
+  grelotdore:{emoji:'🛎️', name:'Grelot doré', price:6, world:'musique'},
+  corde:{emoji:'〰️', name:'Corde de violon', price:6, world:'musique'},
+  anche:{emoji:'🎐', name:'Anche de flûte', price:5, world:'musique'},
+  metronome:{emoji:'⏱️', name:'Métronome', price:9, world:'musique'},
+  micro:{emoji:'🎤', name:'Micro doré', price:8, world:'musique'},
 };
 
 const CRAFTED = {
@@ -192,6 +201,11 @@ const CRAFTED = {
     recipe:{farine:1, sucreglace:1, cerise:1}},
   tablette:{emoji:'🍫', name:'Tablette de chocolat', price:20, world:'bonbons',
     recipe:{pepite:2, moule:1}},
+  // Île de la Musique
+  lyre:{emoji:'🪕', name:'Lyre des nuages', price:22, world:'musique',
+    recipe:{corde:2, clesol:1}},
+  carillondor:{emoji:'🔔', name:'Carillon d\'or', price:20, world:'musique',
+    recipe:{grelotdore:2, baguettechef:1}},
 };
 
 const ALL_ITEMS = Object.assign({}, ITEMS, CRAFTED);
@@ -302,6 +316,12 @@ const DECOS = {
   sucettesD:{emoji:'🍭', name:'Arbres-sucettes', price:18, world:'bonbons'},
   guirlandeD:{emoji:'🎊', name:'Guirlande de bonbons', price:14, world:'bonbons'},
   glacesD:{emoji:'🍨', name:'Chariot de glaces', price:12, world:'bonbons'},
+  // Île de la Musique
+  pianoD:{emoji:'🎹', name:'Piano à queue', price:40, world:'musique'},
+  kiosqueD:{emoji:'🎪', name:'Kiosque à musique', price:30, world:'musique'},
+  notesD:{emoji:'🎶', name:'Guirlande de notes', price:18, world:'musique'},
+  tambourD:{emoji:'🪘', name:'Grand tambour', price:14, world:'musique'},
+  pupitreD:{emoji:'🎙️', name:'Pupitre doré', price:12, world:'musique'},
 };
 
 const ALBUM_REWARD = 100;

@@ -25,8 +25,9 @@ const SQUISHY_SERIES = {
   boites:   { name:'Boîtes',    emoji:'📦', world:'boites' },   // le Monde des Boîtes (v55)
   jouets:   { name:'Jouets doux', emoji:'🧸', world:'jouets' }, // le Coffre aux Jouets Doux
   bonbons:  { name:'Bonbons',   emoji:'🍬', world:'bonbons' },  // le Royaume des Bonbons
+  instruments: { name:'Instruments', emoji:'🎺', world:'musique' }, // l'Île de la Musique
 };
-const SQUISHY_SERIES_ORDER = ['capy', 'desserts', 'animaux', 'boites', 'jouets', 'bonbons'];
+const SQUISHY_SERIES_ORDER = ['capy', 'desserts', 'animaux', 'boites', 'jouets', 'bonbons', 'instruments'];
 
 // les trois raretés, et leur chance au tirage (voir openSquishyBox)
 const SQUISHY_RARITY = {
@@ -79,6 +80,13 @@ const SQUISHIES = {
   'dragee':          { series:'bonbons', name:'Dragée',          say:'une dragée',         rarity:'commun', color:'violet', shape:'ovale', size:'petit' },
   'praline':         { series:'bonbons', name:'Praline',         say:'Praline, la reine pâtissière', rarity:'rare', color:'orange', shape:'rond', size:'grand' },
   'gateau-etages':   { series:'bonbons', name:'Gâteau à étages doré', say:'un gâteau à étages doré', rarity:'brille', color:'jaune', shape:'carre', size:'grand' },
+  // 🎺 Instruments (saison 2, l'Île de la Musique)
+  'tambour-mochi': { series:'instruments', name:'Tambour mochi', say:'un tambour mochi', rarity:'commun', color:'orange', shape:'rond',  size:'grand' },
+  'maracas':       { series:'instruments', name:'Maracas',       say:'des maracas',      rarity:'commun', color:'vert',   shape:'ovale', size:'petit' },
+  'xylophone':     { series:'instruments', name:'Xylophone',     say:'un xylophone',     rarity:'commun', color:'violet', shape:'carre', size:'grand' },
+  'trompette':     { series:'instruments', name:'Trompette',     say:'une trompette',    rarity:'commun', color:'rose',   shape:'rond',  size:'petit' },
+  'boumbo':        { series:'instruments', name:'Boumbo',        say:'Boumbo, le petit tambour', rarity:'rare', color:'bleu', shape:'rond', size:'grand' },
+  'lyre-doree':    { series:'instruments', name:'Lyre dorée',    say:'une lyre dorée',   rarity:'brille', color:'jaune', shape:'carre', size:'grand' },
 };
 
 // La série gagnée en résolvant l'énigme d'une île (une seule fois par île)
@@ -86,7 +94,7 @@ const SQUISHY_ISLAND_SERIES = {
   lagon:'animaux', foret:'animaux', montagne:'animaux',
   chateau:'desserts', volcan:'desserts', squishy:'desserts',
   jungle:'capy', cite:'capy',
-  boites:'boites', jouets:'jouets', bonbons:'bonbons',
+  boites:'boites', jouets:'jouets', bonbons:'bonbons', musique:'instruments',
 };
 
 function squishiesOf(series){ return Object.keys(SQUISHIES).filter(id=> SQUISHIES[id].series === series); }

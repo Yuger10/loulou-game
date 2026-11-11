@@ -55,13 +55,13 @@ const ALL = ()=> ev('Object.keys(SQUISHIES)');
   section('Catalogue');
   {
     const series = ev('SQUISHY_SERIES_ORDER');
-    check('3 séries au lancement, puis les séries des îles du Ciel (Boîtes, Jouets doux, Bonbons)', json(series) === json(['capy', 'desserts', 'animaux', 'boites', 'jouets', 'bonbons']));
-    check('6 modèles par série (36 squishies)', series.every(s=> ev(`squishiesOf("${s}").length`) === 6) && ALL().length === 36);
+    check('3 séries au lancement, puis les séries des îles du Ciel (Boîtes, Jouets doux, Bonbons, Instruments)', json(series) === json(['capy', 'desserts', 'animaux', 'boites', 'jouets', 'bonbons', 'instruments']));
+    check('6 modèles par série (42 squishies)', series.every(s=> ev(`squishiesOf("${s}").length`) === 6) && ALL().length === 42);
     check('par série : 4 communs, 1 rare, 1 ✨', series.every(s=>{
       const r = ev(`squishiesOf("${s}").map(id=> SQUISHIES[id].rarity)`);
       return r.filter(x=> x === 'commun').length === 4 && r.filter(x=> x === 'rare').length === 1 && r.filter(x=> x === 'brille').length === 1;
     }));
-    check('noms uniques et faciles à dire', new Set(ev('Object.values(SQUISHIES).map(m=> m.name)')).size === 36 && ev('Object.values(SQUISHIES).every(m=> m.say.length > 3)'));
+    check('noms uniques et faciles à dire', new Set(ev('Object.values(SQUISHIES).map(m=> m.name)')).size === 42 && ev('Object.values(SQUISHIES).every(m=> m.say.length > 3)'));
     check('chaque modèle a une couleur du mini-jeu Formes', ev('Object.values(SQUISHIES).every(m=> !!SQ_COLORS[m.color])'));
     check('chaque modèle a une forme et une taille', ev('Object.values(SQUISHIES).every(m=> ["rond","ovale","carre"].includes(m.shape) && ["petit","grand"].includes(m.size))'));
     check('chaque île donne une série existante', ev('Object.keys(STORY).every(w=> !!SQUISHY_SERIES[SQUISHY_ISLAND_SERIES[w]])'));

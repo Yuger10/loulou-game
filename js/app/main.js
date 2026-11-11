@@ -58,6 +58,8 @@ import '../features/minigames/packs/index.js';
 import '../features/minigames/shelf/index.js';
 import '../features/minigames/share/index.js';
 import '../features/minigames/recipe/index.js';
+import '../features/minigames/rhythm/index.js';
+import '../features/minigames/pitch/index.js';
 import '../features/market/index.js';
 import '../features/backup/index.js';
 import '../features/players/index.js';

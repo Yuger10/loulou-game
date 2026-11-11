@@ -69,6 +69,13 @@ const WORLDS = {
     map:{x:34, y:26}, shape:'bonbons', icon:'🍭', sand:'#FFF3E0', land:'#F2A7BC',
     intro:"Bienvenue au Royaume des Bonbons, où le grand four s'est éteint 🍭",
     sceneEmpty:"Ton Royaume attend ses décorations sucrées !" },
+  musique:{ name:'L\'Île de la Musique', emoji:'🎵', level:50, diff:6, saison:2, short:'Musique',
+    subtitle:'L\'île en forme de piano',
+    // son mini-jeu, selon l'âge : le rythme avant 7 ans, grave ou aigu ensuite
+    game:(age)=> (age && age < 7) ? 'rhythm' : 'pitch',
+    map:{x:66, y:74}, shape:'musique', icon:'🎵', sand:'#FFF3C4', land:'#7FD1D6',
+    intro:"Bienvenue sur l'Île de la Musique… où plus personne ne chante 🎵",
+    sceneEmpty:"Ton île attend ses décorations en musique !" },
 };
 
 /* Les archipels (v55) : chaque île appartient à un archipel (`saison`), qui a

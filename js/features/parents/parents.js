@@ -41,7 +41,7 @@ const SKILL_GROUPS = [
   { id:'mesures',  emoji:'🕐', name:'Temps et mesures',    games:['clock','calendar','volume','recipe'] },
   { id:'formes',   emoji:'🔷', name:'Formes et espace',    games:['shapes','jigsaw','nesting','cubes','shelf'] },
   { id:'sciences', emoji:'🪐', name:'Sciences',            games:['planets'] },
-  { id:'logique',  emoji:'🧠', name:'Mémoire et logique',  games:['memory','simon','diff','sequence','rangement'] },
+  { id:'logique',  emoji:'🧠', name:'Mémoire et logique',  games:['memory','simon','diff','sequence','rangement','rhythm','pitch'] },
 ];
 // activités suivies qui ne sont pas des mini-jeux du choix des jeux
 // (les boîtes de rangement de la chambre à squishies, v53 : un tri)

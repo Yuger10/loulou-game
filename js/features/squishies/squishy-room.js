@@ -216,6 +216,27 @@ const SQ_ART = {
   'gateau-etages': { body:'carre', face:{}, faceY:66,
     back: c=> `<rect x="27" y="2" width="46" height="28" rx="10" fill="${c.fill}" stroke="${c.edge}" stroke-width="4"/><circle cx="50" cy="-2" r="6" fill="#E8344E" stroke="#A8264A" stroke-width="2"/>`,
     front: ()=> `<path class="sq-deco" d="M15 42 Q21 52 27 42 Q33 52 39 42 Q45 52 51 42 Q57 52 63 42 Q69 52 75 42 Q81 52 85 42" fill="none" stroke="#fff" stroke-width="5" opacity=".85" stroke-linecap="round"/>` },
+  // 🎺 Instruments (saison 2, l'Île de la Musique)
+  'tambour-mochi': { body:'rond', face:{}, faceY:58,
+    back: ()=> `<path d="M34 26 L22 4 M66 26 L78 4" stroke="#C99364" stroke-width="4.5" stroke-linecap="round"/><circle cx="22" cy="4" r="4.5" fill="#FFF4E0" stroke="#7A4524" stroke-width="1.5"/><circle cx="78" cy="4" r="4.5" fill="#FFF4E0" stroke="#7A4524" stroke-width="1.5"/>`,
+    front: ()=> `<ellipse class="sq-deco" cx="50" cy="30" rx="24" ry="7" fill="#fff" opacity=".55"/>
+      <path class="sq-deco" d="M18 78 L26 88 L34 78 L42 88 L50 78 L58 88 L66 78 L74 88 L82 78" fill="none" stroke="#fff" stroke-width="3.5" stroke-linejoin="round" opacity=".75"/>` },
+  'maracas': { body:'ovale-v', face:{}, faceY:52,
+    back: ()=> `<rect x="44" y="88" width="12" height="24" rx="6" fill="#C99364" stroke="#7A4524" stroke-width="3"/>`,
+    front: ()=> `<g class="sq-deco" fill="#FFF3A6"><circle cx="32" cy="72" r="3.4"/><circle cx="50" cy="80" r="3.4"/><circle cx="68" cy="72" r="3.4"/><circle cx="40" cy="30" r="3"/><circle cx="62" cy="28" r="3"/></g>` },
+  'xylophone': { body:'carre', face:{}, faceY:52,
+    front: ()=> `<g class="sq-deco" stroke="#fff" stroke-width="1.5"><rect x="20" y="70" width="11" height="18" rx="3" fill="#FF8FB8"/><rect x="34" y="72" width="11" height="15" rx="3" fill="#FFD95A"/>
+      <rect x="48" y="74" width="11" height="12" rx="3" fill="#6ED38C"/><rect x="62" y="76" width="11" height="9" rx="3" fill="#6FB8F5"/></g>` },
+  'trompette': { body:'rond', face:{}, faceY:62,
+    back: ()=> `<path d="M80 48 L106 32 L106 84 L80 68Z" fill="#FFD95A" stroke="#B8901A" stroke-width="3" stroke-linejoin="round"/>
+      <g fill="#FFD95A" stroke="#B8901A" stroke-width="2.4"><rect x="36" y="10" width="7" height="14" rx="2"/><rect x="47" y="8" width="7" height="16" rx="2"/><rect x="58" y="10" width="7" height="14" rx="2"/></g>`,
+    front: ()=> `<path class="sq-deco" d="M24 40 Q32 30 44 30" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" opacity=".6"/>` },
+  'boumbo': { body:'rond', face:{}, faceY:56,
+    back: ()=> `<path d="M18 8 L46 34 M82 8 L54 34" stroke="#C99364" stroke-width="5" stroke-linecap="round"/><circle cx="18" cy="8" r="5" fill="#FFF4E0" stroke="#7A4524" stroke-width="1.5"/><circle cx="82" cy="8" r="5" fill="#FFF4E0" stroke="#7A4524" stroke-width="1.5"/>`,
+    front: ()=> `<path class="sq-deco" d="M16 76 Q50 94 84 76" fill="none" stroke="#FFD95A" stroke-width="6" stroke-linecap="round"/>` },
+  'lyre-doree': { body:'carre', face:{}, faceY:64,
+    back: ()=> `<path d="M24 30 Q4 12 22 0 M76 30 Q96 12 78 0" fill="none" stroke="#B8780A" stroke-width="6" stroke-linecap="round"/><path d="M18 2 H82" stroke="#B8780A" stroke-width="5" stroke-linecap="round"/>`,
+    front: ()=> `<path class="sq-deco" d="M38 26 V46 M50 26 V46 M62 26 V46" stroke="#fff" stroke-width="2.6" opacity=".8"/>` },
 };
 
 // les paillettes d'un ✨ (animées en CSS)
@@ -244,7 +265,7 @@ function squishyArtSVG(id, opts){
 }
 
 // Une boîte surprise (la couleur dit sa série ; violette avec « ? » : mystère)
-const SQ_BOX_COLORS = { capy:['#FFC98F','#C8661A'], desserts:['#FFB8D6','#C9497F'], animaux:['#A6E8B8','#2F9551'], boites:['#EFC896','#8A5A2B'], jouets:['#FFD9E6','#B8577E'], bonbons:['#F6D7A8','#B5702E'] };
+const SQ_BOX_COLORS = { capy:['#FFC98F','#C8661A'], desserts:['#FFB8D6','#C9497F'], animaux:['#A6E8B8','#2F9551'], boites:['#EFC896','#8A5A2B'], jouets:['#FFD9E6','#B8577E'], bonbons:['#F6D7A8','#B5702E'], instruments:['#BFE9EC','#2B2F6B'] };
 function squishyBoxSVG(series){
   const col = SQ_BOX_COLORS[series] || ['#CDB8F2','#7B5CC0'];
   return `<svg class="sq-boxart" viewBox="0 0 100 100" aria-hidden="true">

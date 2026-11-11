@@ -1364,3 +1364,57 @@ Track Conductor `navigation-reglages`. Demande : retravailler la barre du bas (t
 - `test/settings.test.js` (38 tests) ; tests existants adaptés au nouveau chemin.
 
 - Cache `lagon-v61`.
+
+---
+
+# v62 — Saison 2, île 4 : l'Île de la Musique
+
+> **Proposition retenue par la joueuse.** Elle s'appuie sur le moteur audio de la v56 (notes de marimba exactes). Track Conductor `monde-musique` ([spec](conductor/tracks/monde-musique_20261111/spec.md), [plan](conductor/tracks/monde-musique_20261111/plan.md)).
+
+## L'île
+- **`musique` 🎵, niveau 50** (règle des niveaux : `conductor/niveaux.md`), palier 6. C'est la quatrième île du Ciel des Rêves.
+- **Le paysage :** un grand clavier de piano en guise de pont, des arbres-flûtes, une cascade de notes, des notes qui se balancent. Le thème est nuit, or et turquoise.
+- **La musique :** un thème joyeux au marimba, à 100 battements par minute.
+- **4 personnages**, chacun avec son butin et 3 répliques :
+  - 🎻 **Viola**, la violoniste et cheffe d'orchestre, guide du chapitre ;
+  - 🥁 **Boumbo**, le petit tambour, qui présente le rythme magique ;
+  - 🪈 **Flûtine**, la flûte enchantée, qui présente « Grave ou aigu ? » ;
+  - 🦜 **Piccolo**, le perroquet chanteur.
+- **8 objets :** baguette de chef, partition, clé de sol, grelot doré, corde de violon, anche de flûte, métronome, micro doré.
+- **2 recettes** (lyre des nuages, carillon d'or) et **5 décorations** (piano à queue, kiosque à musique, guirlande de notes, grand tambour, pupitre doré).
+- **La série de squishies « Instruments » :** tambour mochi, maracas, xylophone, trompette ; le rare est Boumbo, le ✨ est la lyre dorée.
+
+## Deux nouveaux mini-jeux
+Les deux se jouent aussi sans le son. Ils sont proposés dès 5 ans, sans minuteur. Le jeu de l'île est le rythme avant 7 ans, « Grave ou aigu ? » ensuite. Compétence « Mémoire et logique » dans l'espace parents.
+
+- **🥁 Le rythme magique** (`rhythm`) : Boumbo frappe un rythme, que l'enfant rejoue avec les boutons du tambour.
+  - Le rythme est aussi écrit en images : ● pour un coup court « boum », ▬ pour un coup long « bouuum », 🤫 pour un silence.
+  - Palier 1 : 3 coups tous pareils.
+  - Palier 2 : 4 coups, courts et longs.
+  - Palier 3 : 5 symboles dont un silence. Le rythme se cache après l'écoute : il faut le retenir.
+  - Palier 4 : 6 symboles dont un silence.
+  - Palier 5 : 6 symboles et deux silences. On lit le rythme écrit avant de l'entendre, puis Boumbo le joue.
+  - L'indice 2 fait réécouter et revoir le rythme, plus lentement.
+  - Les boutons ne sont jamais bloqués pendant l'écoute.
+- **🔔 Grave ou aigu ?** (`pitch`) : des cloches dans une gamme pentatonique (jamais de fausse note). La grande cloche sonne grave, la petite sonne aigu.
+  - Palier 1 : 2 cloches très éloignées, la plus aiguë ou la plus grave.
+  - Paliers 2 à 4 : 3, 4 puis 5 cloches à ranger du grave à l'aigu, de plus en plus proches.
+  - Palier 5 : parfois « La mélodie monte ou descend ? », avec 4 notes dessinées comme un escalier.
+  - Le bouton 🔈 fait écouter les cloches.
+- Pour les deux jeux, une erreur relance une autre question (anti-devinette).
+
+## Histoire : « Le silence de l'île »
+- **Le chapitre :** Grisou a enfermé le rêve « chanter et danser » dans une boîte à musique fermée à clé, et l'île est devenue silencieuse.
+  - Viola pose 3 devinettes : le tambour, le piano, la trompette.
+  - L'orchestre se remet à jouer et Grisou devient turquoise.
+  - Le chapitre rapporte 14 pièces et une boîte Instruments, une seule fois.
+- **3 épisodes,** racontés par Boumbo, Flûtine et Piccolo. Le dernier annonce le Jardin des Fées.
+
+## Tests
+- Nouveau `test/musique.test.js` (60 vérifications), branché sur `npm test`. Il couvre :
+  - l'île, l'ouverture au niveau 50, les personnages, les objets et la série ;
+  - les règles des rythmes (pas de silence au début, à la fin, ni deux de suite), le rythme caché puis revu grâce à l'indice, la lecture au palier 5 ;
+  - les cloches (la plus grave est la plus grande), le rangement, la mélodie ;
+  - le jeu de l'île, le chapitre, la récompense unique et les épisodes.
+- Les 26 mini-jeux sont joués jusqu'à la victoire à chaque palier. Le rythme et les cloches ont une vérification indépendante : le rythme écrit, l'ordre des cloches, le sens de la mélodie.
+- Cache `lagon-v62`.

@@ -121,6 +121,25 @@ const INDEPENDENT = {
     if(ask && ask.dataset.target) return d.querySelector(sol[0]).dataset.v === ask.dataset.target;
     return sol.length === 1 && !!d.querySelector(sol[0]);
   },
+  // rythme : la suite des boutons est le rythme écrit (coups courts, longs, silences)
+  rhythm(sol){
+    const written = [...d.querySelectorAll('#rh-score .rh-beat')].map(b=> b.dataset.k);
+    return sol.length === written.length && sol.every((s, i)=> d.querySelector(s).dataset.k === written[i]);
+  },
+  // grave ou aigu : la bonne cloche (la plus aiguë, la plus grave), toutes du grave à l'aigu, ou le sens de la mélodie
+  pitch(sol){
+    const stage = d.querySelector('#pitch-stage'), ask = stage.dataset.ask;
+    if(ask === 'melody'){
+      const m = [...stage.querySelectorAll('.pm-dot')].map(x=> Number(x.dataset.m));
+      const up = m.every((x, i)=> i === 0 || x > m[i - 1]), down = m.every((x, i)=> i === 0 || x < m[i - 1]);
+      return d.querySelector(sol[0]).dataset.v === (up ? 'up' : down ? 'down' : '?');
+    }
+    const all = [...stage.querySelectorAll('.bell')].map(b=> Number(b.dataset.m));
+    const picked = sol.map(s=> Number(d.querySelector(s).dataset.m));
+    if(ask === 'high') return picked.length === 1 && picked[0] === Math.max(...all);
+    if(ask === 'low') return picked.length === 1 && picked[0] === Math.min(...all);
+    return picked.length === all.length && picked.every((x, i)=> i === 0 || x > picked[i - 1]);
+  },
   // étagère : chaque case est à la croisée de la ligne de la couleur et de la colonne de la forme
   shelf(sol){
     const els = sol.map(s=> d.querySelector(s));
@@ -177,7 +196,7 @@ async function playToWin(key, tier){
     }
   }
   console.log(`  ${played} parties jouées`);
-  check('les 24 mini-jeux sont testés', games.length >= 24);
+  check('les 26 mini-jeux sont testés', games.length >= 26);
 
   /* ---- 2. une mauvaise réponse ne fait jamais gagner ---- */
   section('Une mauvaise réponse ne fait pas gagner');

@@ -63,7 +63,7 @@ Registre des tracks Conductor, **dans l'ordre d'implémentation**. Feuille de ro
 
 ---
 
-- [ ] **Track: Saison 2, île 4 : 🎵 L'Île de la Musique (après la track sons), niveau 50**
+- [x] **Track: Saison 2, île 4 : 🎵 L'Île de la Musique (après la track sons), niveau 50 (v62)**
 *Link: [./tracks/monde-musique_20261111/](./tracks/monde-musique_20261111/)*
 
 ---

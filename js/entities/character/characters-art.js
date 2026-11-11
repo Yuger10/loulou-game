@@ -357,6 +357,41 @@ ART.berlingot=human('#C98663','#2B2140','#6ED38C',
   `<path d="M26 44 Q28 16 60 14 Q92 16 94 44Z" fill="#FF8FB8" ${O()}/><path d="M42 20 L38 42 M60 14 V42 M78 20 L82 42" stroke="#fff" stroke-width="5"/><circle cx="60" cy="12" r="6" fill="#FFD95A" ${O(2)}/>`,
   `<path d="M42 100 L38 130 M78 100 L82 130" stroke="#FF8FB8" stroke-width="6"/>`+
   `<rect x="98" y="84" width="5" height="40" rx="2.5" fill="#fff" ${O(1.5)}/><circle cx="100" cy="76" r="14" fill="#FF8FB8" ${O(2)}/><path d="M100 76 m-8 0 a8 8 0 1 1 8 8 a4.5 4.5 0 1 1 -4.5 -4.5" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/>`);
+// ---- Saison 2, l'Île de la Musique ----
+// Viola la violoniste, cheffe d'orchestre : chignon, robe bleu nuit, violon et archet
+ART.viola=human('#E8B69D','#2B2140','#2B2F6B',
+  `<circle cx="60" cy="16" r="10" fill="#2B2140" ${O()}/><path d="M50 10 L54 2 L60 8 L66 2 L70 10" fill="none" stroke="#FFD95A" stroke-width="3" stroke-linejoin="round"/>`,
+  `<path d="M44 98 L60 108 L76 98" fill="none" stroke="#FFD95A" stroke-width="4" stroke-linejoin="round"/>`+
+  `<g transform="rotate(-28 30 106)"><path d="M22 94 C13 94 13 104 19 106 C13 108 13 118 22 118 L38 118 C47 118 47 108 41 106 C47 104 47 94 38 94Z" fill="#B5652E" ${O(2)}/><rect x="28" y="72" width="4" height="22" fill="#5A3A22"/><path d="M27 104 h6 M27 110 h6" stroke="#5A3A22" stroke-width="2"/></g>`+
+  `<path d="M6 90 L56 124" stroke="#8A5A2B" stroke-width="3" stroke-linecap="round"/>`);
+
+// Boumbo le petit tambour : un tambour rouge à frange dorée, deux baguettes sur la tête
+ART.boumbo=svg(
+  `<path d="M40 34 L22 6 M80 34 L98 6" stroke="#C99364" stroke-width="5" stroke-linecap="round"/><circle cx="22" cy="6" r="5" fill="#FFF4E0" ${O(1.5)}/><circle cx="98" cy="6" r="5" fill="#FFF4E0" ${O(1.5)}/>`+
+  `<rect x="14" y="40" width="92" height="80" rx="14" fill="#E8573A" ${O()}/>`+
+  `<ellipse cx="60" cy="40" rx="46" ry="14" fill="#FFF4E0" ${O()}/>`+
+  `<path d="M30 36 Q44 30 58 32" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round"/>`+
+  eyes(46,74,70,4.8,6)+cheeks(31,89,82)+smile(52,68,82,7)+
+  `<rect x="12" y="96" width="96" height="8" rx="4" fill="#FFD95A" ${O(2)}/>`+
+  `<path d="M18 106 L28 118 L38 106 L48 118 L58 106 L68 118 L78 106 L88 118 L98 106" fill="none" stroke="#FFD95A" stroke-width="3" stroke-linejoin="round"/>`);
+
+// Flûtine la flûte enchantée : cheveux turquoise, couronne de fleurs, une flûte dans les mains
+ART.flutine=human('#F0C4AA','#3FB3BA','#FFD95A',
+  `<g ${O(1.6)}><circle cx="36" cy="30" r="6" fill="#FF8FB8"/><circle cx="50" cy="22" r="6" fill="#FFF3A6"/><circle cx="70" cy="22" r="6" fill="#BFA3EC"/><circle cx="84" cy="30" r="6" fill="#FF8FB8"/></g>`,
+  `<rect x="10" y="104" width="100" height="8" rx="4" fill="#DDE6EE" ${O(2)}/><g fill="${AI}"><circle cx="40" cy="108" r="1.8"/><circle cx="52" cy="108" r="1.8"/><circle cx="64" cy="108" r="1.8"/><circle cx="76" cy="108" r="1.8"/></g>`+
+  `<path d="M98 86 V70 L108 68 V82" fill="none" stroke="#2B2F6B" stroke-width="2.4"/><circle cx="96" cy="87" r="3" fill="#2B2F6B"/><circle cx="106" cy="83" r="3" fill="#2B2F6B"/>`);
+
+// Piccolo le perroquet chanteur : tête rouge, crête jaune, corps vert, une note de musique
+ART.piccolo=svg(
+  `<path d="M48 110 L40 128 L60 118 L80 128 L72 110Z" fill="#6FB8F5" ${O(2)}/>`+
+  `<ellipse cx="60" cy="96" rx="30" ry="26" fill="#6ED38C" ${O()}/>`+
+  `<path d="M30 88 Q14 104 26 118 Q34 106 36 96Z M90 88 Q106 104 94 118 Q86 106 84 96Z" fill="#3FB86A" ${O(2)}/>`+
+  `<path d="M50 26 Q52 8 60 16 Q64 4 70 16 Q78 10 74 28" fill="#FFD95A" ${O(2)}/>`+
+  `<circle cx="60" cy="52" r="30" fill="#FF6F61" ${O()}/>`+
+  `<ellipse cx="47" cy="50" rx="9" ry="10" fill="#fff"/><ellipse cx="73" cy="50" rx="9" ry="10" fill="#fff"/>`+
+  eyes(47,73,51,4.2,5.2)+cheeks(36,84,64)+
+  `<path d="M53 60 Q60 55 67 60 Q67 72 60 77 Q55 71 53 60Z" fill="#FFD95A" ${O(2)}/>`+
+  `<path d="M100 34 V16 L110 14 V28" fill="none" stroke="${AI}" stroke-width="2.4"/><circle cx="98" cy="35" r="3.2" fill="${AI}"/><circle cx="108" cy="30" r="3.2" fill="${AI}"/>`);
 return ART;
 })();
 function charArtSVG(id){return CHAR_ART[id]||''}

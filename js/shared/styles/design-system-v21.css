@@ -33,6 +33,7 @@
   body[data-world="boites"]{--world-sky:#EFE4FB; --world-sea:#D9AE7A; --world-deep:#8A5A2B; --world-scene-top:#FBF3FF; --world-scene-floor:#F3E2C4;}
   body[data-world="jouets"]{--world-sky:#FFF1E6; --world-sea:#F7C6D9; --world-deep:#B8577E; --world-scene-top:#FFF8F0; --world-scene-floor:#DDF5E8;}
   body[data-world="bonbons"]{--world-sky:#FFF3E2; --world-sea:#F2A7BC; --world-deep:#A8456A; --world-scene-top:#FFF9F0; --world-scene-floor:#F6D7A8;}
+  body[data-world="musique"]{--world-sky:#E4E8FB; --world-sea:#5CC6CC; --world-deep:#2B2F6B; --world-scene-top:#EEF0FF; --world-scene-floor:#FFE7A8;}
 
   /* un attribut hidden doit toujours cacher (la barre de tour vide restait visible) */
   [hidden]{display:none !important;}

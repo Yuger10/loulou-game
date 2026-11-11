@@ -1,0 +1,25 @@
+  /* =====================================================================
+     Le rythme magique — Île de la Musique (saison 2)
+     ===================================================================== */
+  .rh-score{display:flex; justify-content:center; align-items:center; gap:8px; flex-wrap:wrap; min-height:64px; margin:0 auto 4px; padding:10px; max-width:330px;
+    border-radius:var(--radius-lg, 24px); background:linear-gradient(180deg, #EEF0FF, #DDF4F5); border:3px solid #fff;}
+  .rh-beat{display:inline-flex; align-items:center; justify-content:center; min-width:40px; height:44px; padding:0 4px; border-radius:12px; background:#fff;
+    font-size:1.6rem; line-height:1; color:#2B2F6B; box-shadow:0 2px 0 rgba(43,47,107,.15); transition:transform .15s, background .15s;}
+  .rh-beat.rh-long{min-width:70px; letter-spacing:-2px;}
+  .rh-beat.rh-silence{font-size:1.3rem; background:#F3F3F8;}
+  .rh-beat.lit{background:#FFE07A; transform:scale(1.15);}
+  .rh-score.covered .rh-beat{color:transparent; text-shadow:none; background:#E4E8FB;}
+  .rh-score.covered .rh-beat::after{content:'?'; position:absolute; color:#8E93C8; font-size:1.2rem; font-weight:800;}
+  .rh-score.covered .rh-beat{position:relative;}
+  .rh-state{margin:2px 0 4px; font-weight:800; color:var(--ink);}
+  .rh-answer{display:flex; justify-content:center; gap:6px; flex-wrap:wrap; min-height:46px; margin-bottom:4px;}
+  .rh-answer .rh-beat{height:38px; min-width:34px; font-size:1.3rem;}
+  .rh-answer .rh-beat.rh-long{min-width:58px;}
+  .rh-pads{display:flex; justify-content:center; gap:10px; flex-wrap:wrap;}
+  .rh-btn{display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; width:92px; height:86px; border-radius:20px;
+    border:3px solid #E8573A; background:#FFF4E0; box-shadow:0 5px 0 #B8432A; cursor:pointer; color:#2B2F6B;}
+  .rh-btn b{font-size:1.8rem; line-height:1;}
+  .rh-btn span{font-size:.85rem; font-weight:800;}
+  .rh-btn.rh-silence{border-color:#8E93C8; box-shadow:0 5px 0 #6A6FA8;}
+  .rh-btn.lit, .rh-btn:active{transform:translateY(3px); box-shadow:0 2px 0 #B8432A;}
+  @media (prefers-reduced-motion: reduce){ .rh-beat{transition:none;} .rh-beat.lit{transform:none;} }

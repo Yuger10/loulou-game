@@ -31,6 +31,8 @@ const MUSIC_THEMES = {
   jouets:   { root:72, scale:[0,2,4,7,9],  bpm:80, lead:'celesta', prog:[0,9,5,7] },
   // une petite valse sucrée, en pizzicato
   bonbons:  { root:67, scale:[0,2,4,7,9],  bpm:92, lead:'pluck',   prog:[0,5,7,0] },
+  // un thème joyeux au marimba (le timbre du moteur de la v56)
+  musique:  { root:62, scale:[0,2,4,7,9],  bpm:100, lead:'marimba', prog:[0,5,9,7], tick:true },
 };
 const MUSIC_VOLUME = 1.0;       // crête ≈ 0,11, bien sous les bruitages ; passe ensuite par le volume général du bus
 

@@ -256,6 +256,28 @@ const STORY = {
     success: "Bravo ! Le grand four se rallume, la fête peut commencer… et Grisou devient tout jaune caramel 🍮",
     reward: 14,
   },
+  musique: {
+    guide: 'viola',
+    title: 'Le silence de l\'île',
+    intro: [
+      "Chut… Bienvenue sur l'Île de la Musique 🎵 Ici, d'habitude, tout chante : les arbres, la cascade, les touches du piano.",
+      "Mais Grisou a enfermé le rêve « chanter et danser » dans une boîte à musique fermée à clé, et l'île est devenue silencieuse.",
+      "Résous mes devinettes musicales : chaque bonne réponse remet un instrument de l'orchestre en marche !",
+    ],
+    riddles: [
+      { q: "Je suis rond, on tape sur moi avec des baguettes, et je fais boum boum ! Qui suis-je ?",
+        tip: 'On le frappe pour marquer le rythme.',
+        opts: [{ e:'🥁', ok:true }, { e:'🎺' }, { e:'🎻' }] },
+      { q: "J'ai des touches noires et des touches blanches, et on joue avec ses dix doigts. Qui suis-je ?",
+        tip: 'Il est parfois si grand qu\'il a besoin de trois pieds.',
+        opts: [{ e:'🎹', ok:true }, { e:'🥁' }, { e:'🪇' }] },
+      { q: "On souffle dedans, et je fais ta-ta-taaa très fort pour réveiller tout le monde. Qui suis-je ?",
+        tip: 'Elle est dorée, et on appuie sur ses pistons.',
+        opts: [{ e:'🎺', ok:true }, { e:'🎸' }, { e:'🎹' }] },
+    ],
+    success: "Bravo ! La boîte à musique s'ouvre, l'orchestre se remet à jouer… et Grisou devient tout turquoise 🎶",
+    reward: 14,
+  },
 };
 
 /* Les prologues des saisons (v55) : lus à l'ouverture d'un archipel, avant le
