@@ -3,18 +3,29 @@ import { charFace, charsOf } from '../../entities/character/index.js';
 import { avatarHTML } from '../../entities/companion/index.js';
 import { MISSIONS_PER_LEVEL, state } from '../../entities/game-state/index.js';
 import {
-  currentWorld, nextLockedWorld, WORLD_ORDER, WORLDS, worldUnlocked
+  ARCHIPELAGO_ORDER, ARCHIPELAGOS, archipelagoOf, archipelagoUnlocked, currentWorld, nextLockedWorld,
+  WORLDS, worldsOf, worldUnlocked
 } from '../../entities/world/index.js';
 import { on } from '../../shared/lib/index.js';
-import { bindSpeakButtons, playSound, registerView, switchView } from '../../shared/ui/index.js';
+import { bindSpeakButtons, playSound, registerView, showToast, speak, switchView } from '../../shared/ui/index.js';
 import { renderSamGuide, teamHeadsHTML } from '../companion-team/index.js';
 import { renderIslandCard, renderLevelPill, setWorld } from '../island/index.js';
 
-// courbe douce passant par les îles (toutes, ou de l'île `from` à l'île `to`) ;
-// un morceau suit exactement le tracé complet, pour s'y superposer
+/* Deux archipels (v55) : le Lagon Magique et le Ciel des Rêves, chacun sa
+   carte, choisie par deux onglets en haut. Le Ciel est verrouillé (cadenas,
+   « Niveau 36 ») tant qu'il n'est pas ouvert ; il a son fond pastel et ses
+   nuages, et le bateau y devient une montgolfière. On voyage d'île en île à
+   l'intérieur d'un archipel ; on passe de l'un à l'autre par l'onglet. */
+let mapSaison = null;   // l'archipel affiché (par défaut, celui de l'île courante)
+function shownSaison(){
+  const s = mapSaison || archipelagoOf(currentWorld);
+  return archipelagoUnlocked(s) ? s : 1;
+}
 
-function mapRoutePath(from, to){
-  const all = WORLD_ORDER.map(id=>WORLDS[id].map);
+// courbe douce passant par les îles d'un archipel (toutes, ou de l'île
+// `from` à l'île `to`) ; un morceau suit exactement le tracé complet
+function mapRoutePath(ids, from, to){
+  const all = ids.map(id=>WORLDS[id].map);
   const pts = all.slice(from || 0, (to == null ? all.length - 1 : to) + 1);
   let d = `M ${pts[0].x} ${pts[0].y}`;
   for(let i=1;i<pts.length;i++){
@@ -25,29 +36,66 @@ function mapRoutePath(from, to){
   return d;
 }
 
+function renderMapTabs(saison){
+  const tabs = document.getElementById('map-tabs');
+  if(!tabs) return;
+  tabs.innerHTML = ARCHIPELAGO_ORDER.map(s=>{
+    const a = ARCHIPELAGOS[s], open = archipelagoUnlocked(s);
+    return `<button type="button" class="map-tab ${s === saison ? 'active' : ''} ${open ? '' : 'locked'} ${a.sky ? 'sky' : ''}" data-saison="${s}"
+      aria-label="${a.name}${open ? '' : `, niveau ${a.level}`}">
+      <span class="mt-ico" aria-hidden="true">${open ? a.emoji : '🔒'}</span>
+      <span class="mt-txt"><b>${a.name}</b>${open ? '' : `<i>Niveau ${a.level}</i>`}</span>
+    </button>`;
+  }).join('');
+  tabs.querySelectorAll('[data-saison]').forEach(b=>{
+    b.onclick = ()=>{
+      const s = Number(b.dataset.saison), a = ARCHIPELAGOS[s];
+      if(!archipelagoUnlocked(s)){
+        playSound('wrong');
+        speak(`${a.name} s'ouvrira au niveau ${a.level}. Continue tes missions !`);
+        showToast(`🔒 ${a.name} : niveau ${a.level}`);
+        return;
+      }
+      playSound('tap');
+      if(s === shownSaison()) return;
+      mapSaison = s;
+      speak(a.name);
+      renderMap();
+    };
+  });
+}
+
 function renderMap(){
   const el = document.getElementById('island-map');
   if(!el) return;
-  const route = mapRoutePath();
+  const saison = shownSaison(), arch = ARCHIPELAGOS[saison];
+  renderMapTabs(saison);
+  const ids = worldsOf(saison);
+  const route = mapRoutePath(ids);
   // progression = dernière île débloquée (et non l'île où l'on se trouve)
-  const reached = WORLD_ORDER.reduce((m, id, i)=> worldUnlocked(id) ? i : m, 0);
-  const hasNext = reached < WORLD_ORDER.length - 1;
+  const reached = ids.reduce((m, id, i)=> worldUnlocked(id) ? i : m, 0);
+  const hasNext = reached < ids.length - 1;
+  el.classList.toggle('sky', !!arch.sky);
+  el.dataset.saison = saison;
 
   el.innerHTML = `
     <div class="sea" aria-hidden="true">
+      ${arch.sky ? `
+      <span class="cloud c1">☁️</span><span class="cloud c2">☁️</span><span class="cloud c3">☁️</span>
+      <span class="sparkle s1">✨</span><span class="sparkle s2">⭐</span><span class="sparkle s3">✨</span>` : `
       <span class="wave w1"></span><span class="wave w2"></span><span class="wave w3"></span>
       <span class="cloud c1">☁️</span><span class="cloud c2">☁️</span>
       <span class="sparkle s1">✨</span><span class="sparkle s2">✨</span>
-      <span class="mapfish f1">🐟</span><span class="mapfish f2">🐠</span>
+      <span class="mapfish f1">🐟</span><span class="mapfish f2">🐠</span>`}
     </div>
     <svg class="route" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
       <path d="${route}" class="route-band"/>
-      <path d="${mapRoutePath(0, reached)}" class="route-band-done"/>
+      <path d="${mapRoutePath(ids, 0, reached)}" class="route-band-done"/>
       <path d="${route}" class="route-line"/>
-      <path d="${mapRoutePath(0, reached)}" class="route-done"/>
-      ${hasNext ? `<path d="${mapRoutePath(reached, reached + 1)}" class="route-next"/>` : ''}
+      <path d="${mapRoutePath(ids, 0, reached)}" class="route-done"/>
+      ${hasNext ? `<path d="${mapRoutePath(ids, reached, reached + 1)}" class="route-next"/>` : ''}
     </svg>
-    ${WORLD_ORDER.map((id,i)=>{
+    ${ids.map((id,i)=>{
       const w = WORLDS[id];
       const locked = !worldUnlocked(id);
       const here = currentWorld===id;
@@ -64,10 +112,13 @@ function renderMap(){
         <span class="isle-label"><b>${i+1}. ${w.short}</b><i>${locked?`niv. ${w.level}`:'⭐'.repeat(w.diff)}</i></span>
       </button>`;
     }).join('')}
-    <span class="boat" id="map-boat"><span class="boat-av">${avatarHTML(state.avatar, state.look)}</span>⛵<span class="boat-team" data-team-heads>${teamHeadsHTML()}</span></span>
+    <span class="boat ${arch.sky ? 'balloon' : ''}" id="map-boat"><span class="boat-av">${avatarHTML(state.avatar, state.look)}</span><span class="boat-ride">${arch.vehicle}</span><span class="boat-team" data-team-heads>${teamHeadsHTML()}</span></span>
   `;
 
-  placeBoat(currentWorld, false);
+  // le véhicule est à l'île courante ; dans l'autre archipel, il attend à la première île
+  const here = ids.includes(currentWorld);
+  placeBoat(here ? currentWorld : ids[0], false);
+  document.getElementById('map-boat').classList.toggle('parked', !here);
   renderSamGuide();   // Sam le guide (js/features/companion-team)
 
   el.querySelectorAll('.map-island').forEach(b=>{
@@ -76,11 +127,13 @@ function renderMap(){
       const id = b.dataset.world;
       if(!worldUnlocked(id)){ setWorld(id); return; }
       if(id===currentWorld){ switchView('ile'); return; }
+      // d'un archipel à l'autre : pas de trajet, on y est tout de suite
+      if(!ids.includes(currentWorld)){ landOn(id); return; }
       sailTo(id);
     };
   });
 
-  const nxt = nextLockedWorld();
+  const nxt = nextLockedWorld(saison);
   const info = document.getElementById('map-next');
   if(info){
     if(nxt){
@@ -91,8 +144,22 @@ function renderMap(){
       info.innerHTML = `🗺️ Prochaine île : <strong>${w.name}</strong> au niveau ${w.level}
         <button type="button" class="btn-speak map-next-speak" data-say="${say}" aria-label="Écouter">🔈</button>
         <div class="quest-bar"><i style="width:${pct}%"></i></div>`;
+    } else if(arch.sky){
+      info.innerHTML = `☁️ D'autres îles arriveront bientôt dans le Ciel des Rêves !`;
     } else {
-      info.innerHTML = `🏆 Tu as débloqué toutes les îles !`;
+      // toutes les îles du Lagon sont ouvertes : le prochain monde, avec sa progression
+      const later = ARCHIPELAGO_ORDER.find(s=> !archipelagoUnlocked(s));
+      if(later){
+        const a = ARCHIPELAGOS[later];
+        const need = (a.level-1) * MISSIONS_PER_LEVEL;
+        const pct = Math.min(100, Math.round(state.missions/need*100));
+        const say = `Prochain monde : ${a.name}, au niveau ${a.level}`.replace(/"/g,'&quot;');
+        info.innerHTML = `${a.emoji} Prochain monde : <strong>${a.name}</strong> au niveau ${a.level}
+          <button type="button" class="btn-speak map-next-speak" data-say="${say}" aria-label="Écouter">🔈</button>
+          <div class="quest-bar"><i style="width:${pct}%"></i></div>`;
+      } else {
+        info.innerHTML = `🏆 Tu as débloqué toutes les îles !`;
+      }
     }
     info.hidden = false;
     bindSpeakButtons();
@@ -112,11 +179,19 @@ function placeBoat(id, animated){
   boat.style.top  = (w.map.y - 2) + '%';
 }
 
+// on débarque sur une île (après le trajet, ou tout de suite depuis l'autre archipel)
+function landOn(id){
+  setWorld(id);
+  renderMap(); renderIslandCard();
+  setTimeout(()=> switchView('ile'), 350);
+}
+
 // le bateau navigue d'île en île avant de débarquer
 let sailing = false;
 function sailTo(id){
   if(sailing){ return; }
-  const from = WORLD_ORDER.indexOf(currentWorld), to = WORLD_ORDER.indexOf(id);
+  const ids = worldsOf(archipelagoOf(id));
+  const from = ids.indexOf(currentWorld), to = ids.indexOf(id);
   const el = document.getElementById('island-map');
   const boat = document.getElementById('map-boat');
   if(!boat || from<0 || to<0){ setWorld(id); return; }
@@ -125,15 +200,13 @@ function sailTo(id){
   boat.classList.toggle('flip', to < from);
   const step = to > from ? 1 : -1;
   const stops = [];
-  for(let i=from+step; i!==to+step; i+=step) stops.push(WORLD_ORDER[i]);
+  for(let i=from+step; i!==to+step; i+=step) stops.push(ids[i]);
   let n = 0;
   (function hop(){
     if(n >= stops.length){
       sailing = false;
       if(el) el.classList.remove('sailing');
-      setWorld(id);
-      renderMap(); renderIslandCard();
-      setTimeout(()=> switchView('ile'), 350);   // on débarque
+      landOn(id);   // on débarque
       return;
     }
     placeBoat(stops[n], true);
@@ -147,5 +220,11 @@ registerView('carte', ()=>{ renderMap(); renderIslandCard(); renderLevelPill(); 
 
 // la garde-robe redemande la carte (le bateau porte la tenue)
 on('ui:map', renderMap);
+
+// montrer un archipel (l'ouverture du Ciel, js/features/island)
+function showArchipelago(saison){ mapSaison = saison; renderMap(); }
+on('map:archipelago', showArchipelago);
+// on change d'île : la carte montre de nouveau l'archipel de l'île courante
+on('world:changed', ()=>{ mapSaison = null; });
 
 export { renderMap };

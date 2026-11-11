@@ -7,7 +7,7 @@ Spec : [spec.md](./spec.md). Workflow : [workflow.md](../../workflow.md).
 
 ## Phase 1 : L'île
 - [ ] Task: Entités de l'île
-    - [ ] Tests : `WORLDS.musique` (saison, niveau 23, position, thème) ; 4 personnages avec butin, 3 répliques et 2 objets préférés ; objets, recettes, décorations
+    - [ ] Tests : `WORLDS.musique` (saison, niveau 60, position, thème) ; 4 personnages avec butin, 3 répliques et 2 objets préférés ; objets, recettes, décorations
 - [ ] Task: Scène, thème et musique
     - [ ] Tests : `ISLE_SCENERY.musique`, thème `--world-*`, `MUSIC_THEMES.musique`
 - [ ] Task: Série de squishies « Instruments »

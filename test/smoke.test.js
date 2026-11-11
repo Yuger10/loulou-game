@@ -149,7 +149,7 @@ ev('openGamePicker("mochichat")');
 check('squishy : son mini-jeu « Formes et couleurs » est toujours proposé', !!d.querySelector('.game-choice[data-game="shapes"]'));
 ev('closeModal()');
 ev("switchView('carte')");
-check('carte : toutes les îles débloquées', d.getElementById('map-next').innerHTML.includes('toutes les îles'));
+check('carte : toutes les îles du Lagon débloquées, le prochain monde est annoncé', d.getElementById('map-next').innerHTML.includes('Prochain monde') && d.getElementById('map-next').innerHTML.includes('Ciel des Rêves'));
 
 // Annonce de nouvelle île
 ev('state.visited = ["lagon"]; state.missions = 10');
@@ -591,7 +591,7 @@ setTimeout(()=>{
     ev('closeModal(); state.avatar="👧"; renderProfile(); renderMap()');
     check('compagnon par défaut : fille → sirène, garçon → pirate', ev("defaultCompanionFor('f')")==='perle' && ev("defaultCompanionFor('m')")==='tom');
     // ---- Illustrations SVG des personnages ----
-    check('personnages : les 32 ids possèdent un SVG', ev('Object.keys(CHARACTERS).length===32 && Object.keys(CHARACTERS).every(k=>charArtSVG(k).startsWith("<svg"))'));
+    check('personnages : les 36 ids possèdent un SVG', ev('Object.keys(CHARACTERS).length===36 && Object.keys(CHARACTERS).every(k=>charArtSVG(k).startsWith("<svg"))'));
     check('personnages : viewBox et longueur SVG valides', ev('Object.values(CHAR_ART).every(s=>s.startsWith("<svg") && s.includes(\'viewBox="0 0 120 130"\') && s.length<=6000)'));
     check('personnages : aucun élément ou attribut SVG interdit', ev('Object.values(CHAR_ART).every(s=>!/\\bid\\s*=|\\bhref\\s*=|url\\s*\\(|<\\s*(?:defs|linearGradient|radialGradient|clipPath|mask|filter|text|image|style|script)\\b/i.test(s))'));
     check('personnages : fallback emoji pour id inconnu', ev('charFace("__unknown").includes("❔")'));
@@ -657,7 +657,7 @@ setTimeout(()=>{
     ev('closeModal()');
 
     // ---- Compteur de défis joués, et variété forcée ----
-    ev('state.gameCounts = {}; state.gameCounts["memory"]=1; state.gameCounts["count"]=1; state.gameCounts["diff"]=1; state.gameCounts["puzzle"]=1; state.gameCounts["sequence"]=1; state.gameCounts["simon"]=1; state.gameCounts["math"]=1; state.gameCounts["reading"]=1; state.gameCounts["determinants"]=1; state.gameCounts["volume"]=1; state.gameCounts["clock"]=1; state.gameCounts["calendar"]=1; state.gameCounts["calc"]=1; state.gameCounts["compare"]=0; state.gameCounts["shapes"]=1; state.gameCounts["planets"]=1; state.gameCounts["jigsaw"]=1; state.gameCounts["money"]=0; openGamePicker("sirene")');
+    ev('state.gameCounts = {}; state.gameCounts["memory"]=1; state.gameCounts["count"]=1; state.gameCounts["diff"]=1; state.gameCounts["puzzle"]=1; state.gameCounts["sequence"]=1; state.gameCounts["simon"]=1; state.gameCounts["math"]=1; state.gameCounts["reading"]=1; state.gameCounts["determinants"]=1; state.gameCounts["volume"]=1; state.gameCounts["clock"]=1; state.gameCounts["calendar"]=1; state.gameCounts["calc"]=1; state.gameCounts["compare"]=0; state.gameCounts["shapes"]=1; state.gameCounts["planets"]=1; state.gameCounts["jigsaw"]=1; state.gameCounts["nesting"]=1; state.gameCounts["cubes"]=1; state.gameCounts["money"]=0; openGamePicker("sirene")');
     const leastPlayed = [...d.querySelectorAll('.game-choice:not(.surprise)')].map(b=>b.dataset.game);
     check('variété : les 2 jeux jamais essayés remontent en priorité', leastPlayed.includes('compare') && leastPlayed.includes('money'));
     ev('closeModal()');
@@ -666,8 +666,8 @@ setTimeout(()=>{
     ev('closeModal(); state.gameCounts = {}; renderLagon()');
 
     // ---- Défis adaptés à l\'âge (programme maternelle 3-6 ans) ----
-    check('âge 3 ans : mémoire/compter/intrus + saisons + formes + puzzle (sans lecture)', ev('gameTypesForAge(3)').join()==='memory,count,diff,calendar,shapes,jigsaw');
-    check('âge 4 ans : encore limité aux jeux visuels', ev('gameTypesForAge(4)').join()==='memory,count,diff,calendar,shapes,jigsaw');
+    check('âge 3 ans : mémoire/compter/intrus + saisons + formes + puzzle + gigognes (sans lecture)', ev('gameTypesForAge(3)').join()==='memory,count,diff,calendar,shapes,jigsaw,nesting');
+    check('âge 4 ans : encore limité aux jeux visuels', ev('gameTypesForAge(4)').join()==='memory,count,diff,calendar,shapes,jigsaw,nesting');
     check('âge 5 ans : un peu plus de jeux (volume, suite, simon, heure)', ev('gameTypesForAge(5)').includes('volume') && ev('gameTypesForAge(5)').includes('clock') && !ev('gameTypesForAge(5)').includes('math'));
     check('âge 5 ans : pas encore de calcul mental abstrait', !ev('gameTypesForAge(5)').includes('calc'));
     check('âge 6 ans : tous les jeux (CP)', ev('gameTypesForAge(6)').length===ev('GAME_TYPES').length);
@@ -1134,10 +1134,11 @@ setTimeout(()=>{
       const dehors = pos.filter(p=>p.x<14 || p.x>86 || p.y<15 || p.y>85);
       check('carte : chaque île tient dans le cadre (x 14–86 %, y 15–85 %)', dehors.length===0);
       if(dehors.length) console.log('   hors cadre :', dehors.map(p=>p.id).join(', '));
-      // une île + son étiquette ≈ 24 % de large et 30 % de haut sur téléphone
+      // une île + son étiquette ≈ 24 % de large et 30 % de haut sur téléphone ;
+      // chaque archipel a sa carte (v55) : on compare les îles d'un même archipel
       const collisions = [];
-      pos.forEach((a,i)=>pos.slice(i+1).forEach(b=>{ if(Math.abs(a.x-b.x)<24 && Math.abs(a.y-b.y)<30) collisions.push(a.id+'/'+b.id); }));
-      check('carte : aucune île ne chevauche une autre', collisions.length===0);
+      pos.forEach((a,i)=>pos.slice(i+1).forEach(b=>{ if(ev(`archipelagoOf(${JSON.stringify(a.id)})===archipelagoOf(${JSON.stringify(b.id)})`) && Math.abs(a.x-b.x)<24 && Math.abs(a.y-b.y)<30) collisions.push(a.id+'/'+b.id); }));
+      check('carte : aucune île ne chevauche une autre (dans chaque archipel)', collisions.length===0);
       if(collisions.length) console.log('   chevauchements :', collisions.join(', '));
     }
     // ---- Feuilles de style : une accolade perdue (ex. lors d'une fusion) enferme

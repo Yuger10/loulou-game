@@ -295,6 +295,43 @@ const CHARACTERS = {
       "Les grands d'un côté, les petits de l'autre : c'est facile avec toi !",
       "Je suis toute grise et toute douce. Tu veux jouer avec moi ?",
     ]},
+  // ---- Saison 2, le Monde des Boîtes : la Fabrique de boîtes (v55) ----
+  capucine:{
+    emoji:'🦫', name:'Capucine', title:'la directrice de la Fabrique', world:'boites',
+    gender:'f',
+    loot:['carton','etiquette'],
+    texts:[
+      "Bienvenue à la Fabrique ! Ici, on range les rêves avec soin. Tu nous aides ?",
+      "Une boîte bien pliée, c'est une boîte qui protège. On joue ?",
+      "Chaque mission réussie libère un petit rêve. Allez, au travail !",
+    ]},
+  kiki:{
+    emoji:'🐱', name:'Kiki', title:'le chat-dans-la-boîte', world:'boites',
+    gender:'m',
+    loot:['ficelle','papierbulle'],
+    texts:[
+      "Miaou ! Toutes les boîtes sont à moi… surtout les petites !",
+      "Je me range dans la plus petite boîte, puis dans la plus grande. Tu sais faire pareil ?",
+      "Chut… je fais la sieste dans un carton. Un petit jeu d'abord ?",
+    ]},
+  boulon:{
+    emoji:'🤖', name:'Boulon', title:'le robot en carton', world:'boites',
+    gender:'m',
+    loot:['trombone','carton'],
+    texts:[
+      "BIP ! Combien de cubes dans ma pile ? Je les compte même quand ils sont cachés !",
+      "Je suis tout en carton, mais mon cerveau est très solide. On réfléchit ensemble ?",
+      "Cubes empilés, cubes rangés : c'est mon jeu préféré. BIP BIP !",
+    ]},
+  lola:{
+    emoji:'🛴', name:'Lola', title:'la livreuse', world:'boites',
+    gender:'f',
+    loot:['etiquette','ficelle'],
+    texts:[
+      "Zoum ! Je livre les boîtes surprises dans tout le ciel. Tu m'aides ?",
+      "J'ai un colis pour toi… mais d'abord, un petit défi !",
+      "Mes boîtes ont toutes une étiquette. Sans elle, je me perdrais dans les nuages !",
+    ]},
 };
 
 function charsOf(world){

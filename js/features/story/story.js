@@ -20,7 +20,9 @@
    devinette plus simple qui ne nomme jamais la réponse. */
 import { charFace } from '../../entities/character/index.js';
 import { save, state } from '../../entities/game-state/index.js';
-import { WORLD_ORDER, worldUnlocked } from '../../entities/world/index.js';
+import {
+  ARCHIPELAGO_ORDER, ARCHIPELAGOS, archipelagoOf, archipelagoUnlocked, worldsOf, worldUnlocked
+} from '../../entities/world/index.js';
 import { shuffle } from '../../shared/lib/index.js';
 import {
   bindSpeakButtons, closeModal, confetti, onModalChange, openModal, playSound, shakeEl, speak,
@@ -31,6 +33,7 @@ import { bindQuit, gameHeader, speakWrongHint } from '../screen/index.js';
 import { addStorySquishyBox, squishyBoxRewardHTML } from '../squishies/index.js';
 import { addCoins } from '../wallet/index.js';
 import { EPISODES, episodesSeen, openEpisode } from './episodes.js';
+import { grisouSVG } from './grisou.js';
 
 const STORY = {
   lagon: {
@@ -185,7 +188,47 @@ const STORY = {
     success: "BRAVO ! Tu as trouvé tous les indices… le trésor du Lagon Magique est à toi ! 🏆✨",
     reward: 25,
   },
+  // ---- Saison 2 : « Les Rêves dans les boîtes » (v55) ----
+  boites: {
+    guide: 'capucine',
+    title: 'Les rêves de la Fabrique',
+    intro: [
+      "Bienvenue à la Fabrique de boîtes 📦",
+      "Ici, Grisou a caché des centaines de rêves, bien rangés dans nos boîtes.",
+      "Résous mon énigme, et nous ouvrirons les premières boîtes ensemble !",
+    ],
+    riddles: [
+      { q: "J'ai six faces toutes carrées, et on me remplit de cadeaux. Qui suis-je ?",
+        tip: 'On met les cadeaux dedans, et on l\'ouvre en soulevant le couvercle.',
+        opts: [{ e:'📦', ok:true }, { e:'⚽' }, { e:'🍩' }] },
+      { q: "Je suis un chat, et ma cachette préférée, c'est une boîte en carton. Qui suis-je ?",
+        tip: 'Il fait miaou.',
+        opts: [{ e:'🐱', ok:true }, { e:'🐶' }, { e:'🐟' }] },
+      { q: "Je flotte dans le ciel, je suis tout doux, et quand je suis triste, il pleut. Qui suis-je ?",
+        tip: 'Lève les yeux : il est blanc, ou gris quand il est triste.',
+        opts: [{ e:'☁️', ok:true }, { e:'☀️' }, { e:'🌙' }] },
+    ],
+    success: "Bravo ! Les premiers rêves s'échappent des boîtes, et Grisou retrouve un peu de couleur 🌈",
+    reward: 14,
+  },
 };
+
+/* Les prologues des saisons (v55) : lus à l'ouverture d'un archipel, avant le
+   chapitre de sa première île. Pas d'énigme : c'est le début de l'histoire. */
+const STORY_PROLOGUES = {
+  2: {
+    guide: 'capucine',
+    title: 'Les Rêves dans les boîtes',
+    intro: [
+      "Bonjour ! Je suis Capucine, la directrice de la Fabrique de boîtes ☁️",
+      "Voici Grisou, un petit nuage. Il avait si peur de perdre les rêves colorés du ciel… qu'il les a tous enfermés dans des boîtes !",
+      "Depuis, le ciel est tout gris. Aide-nous à libérer les rêves, île après île !",
+    ],
+  },
+};
+
+// Grisou reprend des couleurs à chaque île du Ciel libérée
+function skyIslandsFreed(){ return worldsOf(2).filter(storySolved).length; }
 
 function storyChapter(world){ return STORY[world] || null; }
 function storySolved(world){ return !!(state.storySolved && state.storySolved[world]); }
@@ -219,11 +262,13 @@ function renderStoryIntro(world, idx, onDone){
   const last = idx >= ch.intro.length - 1;
   const line = ch.intro[idx];
   const already = storySolved(world);
+  const sky = archipelagoOf(world) === 2;
   openModal(`
     <div class="char-header">
       <span class="emoji">${charFace(ch.guide)}</span>
       <h2>${ch.title}</h2>
     </div>
+    ${sky ? `<div class="story-grisou">${grisouSVG(skyIslandsFreed())}</div>` : ''}
     ${speechBubble(line)}
     <button class="btn-primary" id="story-next">${last ? (already ? 'Continuer ✨' : "Résoudre l'énigme 🔎") : 'Suite ➡️'}</button>
     ${!last ? `<button class="btn-ghost" id="story-skip">Passer</button>` : ''}
@@ -238,6 +283,32 @@ function renderStoryIntro(world, idx, onDone){
   };
   const skip = document.getElementById('story-skip');
   if(skip) skip.onclick = ()=>{ playSound('tap'); renderStoryIntro(world, ch.intro.length - 1, onDone); };
+}
+
+// Le prologue d'une saison (v55) : récit lu ligne à ligne, avec Grisou.
+function openSeasonPrologue(saison, onDone, idx){
+  const pr = STORY_PROLOGUES[saison];
+  if(!pr){ if(onDone) onDone(); return; }
+  idx = idx || 0;
+  const last = idx >= pr.intro.length - 1;
+  const line = pr.intro[idx];
+  openModal(`
+    <div class="char-header">
+      <span class="emoji">${charFace(pr.guide)}</span>
+      <h2>${pr.title}</h2>
+    </div>
+    <div class="story-grisou">${grisouSVG(skyIslandsFreed())}</div>
+    ${speechBubble(line)}
+    <button class="btn-primary" id="story-next">${last ? 'En route ! ☁️' : 'Suite ➡️'}</button>
+  `);
+  bindSpeakButtons();
+  speak(line);
+  document.getElementById('story-next').onclick = ()=>{
+    playSound('tap');
+    if(!last){ openSeasonPrologue(saison, onDone, idx + 1); return; }
+    closeModal();
+    if(onDone) onDone();
+  };
 }
 
 function renderStoryRiddle(world, idx, onDone){
@@ -293,6 +364,7 @@ function storyWin(world, onDone){
         <span data-gain-coins style="font-size:2rem;">🪙</span><span><strong>+${ch.reward} pièces</strong></span>
       </div>
       ${box ? squishyBoxRewardHTML(box.series) : ''}
+      ${archipelagoOf(world) === 2 ? `<div class="story-grisou happy">${grisouSVG(skyIslandsFreed())}</div>` : ''}
     </div>
     <button class="btn-primary" id="story-continue">Continuer l'aventure ✨</button>
   `);
@@ -307,34 +379,47 @@ function riddleHints(q){
 }
 registerHints('riddle', riddleHints);
 
-// « 📖 Mon histoire » : relire n'importe quel chapitre déjà débloqué.
+// « 📖 Mon histoire » : relire n'importe quel chapitre déjà débloqué, rangé
+// par saison (v55) : le Lagon Magique, puis le Ciel des Rêves.
+function storyChapterRow(id, i){
+  const ch = STORY[id]; if(!ch) return '';
+  const unlocked = worldUnlocked(id);
+  const solved = storySolved(id);
+  const eps = EPISODES[id] ? EPISODES[id] : [];
+  const seen = episodesSeen(id);
+  return `<button type="button" class="story-chap ${solved ? 'done' : ''} ${!unlocked ? 'locked' : ''}" data-world="${id}" ${!unlocked ? 'disabled' : ''}>
+      <span class="story-chap-n">${i + 1}</span>
+      <span class="story-chap-ico">${!unlocked ? '🔒' : (solved ? '✅' : '📖')}</span>
+      <span class="story-chap-title">${unlocked ? ch.title : '???'}</span>
+    </button>
+    ${unlocked && eps.length ? `<div class="story-eps">${eps.map((ep, k)=> k < seen
+      ? `<button type="button" class="story-ep" data-ep="${id}:${k}" aria-label="Épisode ${k+1} : ${ep.title}"><span aria-hidden="true">${ep.find}</span> ${ep.title}</button>`
+      : `<span class="story-ep locked" aria-label="Épisode ${k+1} : à venir">🔒 Épisode ${k+1}</span>`).join('')}</div>` : ''}`;
+}
 function openStoryJournal(){
   openModal(`
     ${gameHeader('📖 Mon histoire', 'Le grand voyage du Lagon Magique', 'Le grand voyage du Lagon Magique')}
     <div class="story-journal">
-      ${WORLD_ORDER.map((id, i)=>{
-        const ch = STORY[id]; if(!ch) return '';
-        const unlocked = worldUnlocked(id);
-        const solved = storySolved(id);
-        const eps = EPISODES[id] ? EPISODES[id] : [];
-        const seen = episodesSeen(id);
-        return `<button type="button" class="story-chap ${solved ? 'done' : ''} ${!unlocked ? 'locked' : ''}" data-world="${id}" ${!unlocked ? 'disabled' : ''}>
-          <span class="story-chap-n">${i + 1}</span>
-          <span class="story-chap-ico">${!unlocked ? '🔒' : (solved ? '✅' : '📖')}</span>
-          <span class="story-chap-title">${unlocked ? ch.title : '???'}</span>
-        </button>
-        ${unlocked && eps.length ? `<div class="story-eps">${eps.map((ep, k)=> k < seen
-          ? `<button type="button" class="story-ep" data-ep="${id}:${k}" aria-label="Épisode ${k+1} : ${ep.title}"><span aria-hidden="true">${ep.find}</span> ${ep.title}</button>`
-          : `<span class="story-ep locked" aria-label="Épisode ${k+1} : à venir">🔒 Épisode ${k+1}</span>`).join('')}</div>` : ''}`;
+      ${ARCHIPELAGO_ORDER.map(saison=>{
+        const a = ARCHIPELAGOS[saison], open = archipelagoUnlocked(saison), pr = STORY_PROLOGUES[saison];
+        return `<section class="story-season ${a.sky ? 'sky' : ''}" data-saison="${saison}">
+          <h3>${open ? a.emoji : '🔒'} ${saison === 1 ? 'Saison 1 : ' : ''}${a.name}${open ? '' : ` <small>(niveau ${a.level})</small>`}</h3>
+          ${pr && open ? `<button type="button" class="story-chap story-prologue" data-prologue="${saison}">
+            <span class="story-chap-n">☁️</span><span class="story-chap-ico">📜</span><span class="story-chap-title">${pr.title}</span></button>` : ''}
+          ${worldsOf(saison).map((id, i)=> storyChapterRow(id, i)).join('')}
+        </section>`;
       }).join('')}
     </div>
   `);
   bindQuit();
-  document.querySelectorAll('.story-chap').forEach(b=>{
+  document.querySelectorAll('.story-chap[data-world]').forEach(b=>{
     b.onclick = ()=>{
       playSound('tap'); closeModal();
       setTimeout(()=> openStoryChapter(b.dataset.world), 200);
     };
+  });
+  document.querySelectorAll('[data-prologue]').forEach(b=>{
+    b.onclick = ()=>{ playSound('tap'); openSeasonPrologue(Number(b.dataset.prologue), openStoryJournal); };
   });
   document.querySelectorAll('[data-ep]').forEach(b=>{
     b.onclick = ()=>{
@@ -350,4 +435,6 @@ function openStoryJournal(){
 // mini-jeux)
 onModalChange(storyClearPendingRetry);
 
-export { openStoryChapter, openStoryJournal, STORY, storySolved };
+export {
+  openSeasonPrologue, openStoryChapter, openStoryJournal, skyIslandsFreed, STORY, STORY_PROLOGUES, storySolved
+};

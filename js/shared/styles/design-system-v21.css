@@ -29,6 +29,8 @@
   body[data-world="cite"]{--world-sky:#F6E7C8; --world-sea:#C9A46A; --world-deep:#5C4128; --world-scene-top:#F8EEDB; --world-scene-floor:#E8D7B5;}
   body[data-world="volcan"]{--world-sky:#FFD3A8; --world-sea:#E0703A; --world-deep:#5A1A12; --world-scene-top:#FFE0C2; --world-scene-floor:#C9583A;}
   body[data-world="squishy"]{--world-sky:#FFE6F3; --world-sea:#F4A9CE; --world-deep:#8A4A9C; --world-scene-top:#FFF0F7; --world-scene-floor:#F9D6E8;}
+  /* saison 2 : le Monde des Boîtes, kraft et pastel (v55) */
+  body[data-world="boites"]{--world-sky:#EFE4FB; --world-sea:#D9AE7A; --world-deep:#8A5A2B; --world-scene-top:#FBF3FF; --world-scene-floor:#F3E2C4;}
 
   /* un attribut hidden doit toujours cacher (la barre de tour vide restait visible) */
   [hidden]{display:none !important;}

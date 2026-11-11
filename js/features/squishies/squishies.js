@@ -16,6 +16,7 @@ import {
   SQ_COLORS, SQUISHIES, squishiesOf, SQUISHY_ISLAND_SERIES, SQUISHY_RARITY, SQUISHY_SERIES,
   SQUISHY_SERIES_ORDER
 } from '../../entities/squishy/index.js';
+import { worldUnlocked } from '../../entities/world/index.js';
 import { todayKey } from '../adaptive/index.js';
 import { addCoins } from '../wallet/index.js';
 
@@ -58,8 +59,16 @@ function squishySeriesProgress(series){
   return { have: ids.filter(id=> squishyCount(id) > 0).length, total: ids.length };
 }
 function squishySeriesComplete(series){ const p = squishySeriesProgress(series); return p.have === p.total; }
+// Une série liée à une île (`world`, saison 2) n'apparaît qu'une fois l'île
+// ouverte : ni dans la chambre, ni dans les boîtes mystère, ni au marché.
+function squishySeriesAvailable(series){
+  const s = SQUISHY_SERIES[series];
+  return !!s && (!s.world || worldUnlocked(s.world));
+}
+function availableSeries(){ return SQUISHY_SERIES_ORDER.filter(squishySeriesAvailable); }
 function squishyMissing(series){
-  return (series ? squishiesOf(series) : Object.keys(SQUISHIES)).filter(id=> !squishyCount(id));
+  const ids = series ? squishiesOf(series) : availableSeries().flatMap(squishiesOf);
+  return ids.filter(id=> !squishyCount(id));
 }
 
 /* ---- gagner des boîtes ---- */
@@ -124,8 +133,8 @@ function openSquishyBox(rng){
   if(!sq.boxes.length) return null;
   let series = sq.boxes.shift();
   if(!series || !SQUISHY_SERIES[series]){
-    const open = SQUISHY_SERIES_ORDER.filter(s=> !squishySeriesComplete(s));
-    series = sqPick(open.length ? open : SQUISHY_SERIES_ORDER, rng);
+    const open = availableSeries().filter(s=> !squishySeriesComplete(s));
+    series = sqPick(open.length ? open : availableSeries(), rng);
   }
   const seriesHadMissing = squishyMissing(series).length > 0;
   let id;
@@ -358,6 +367,6 @@ export {
   recordSorting, shelfPlace, shelfRemove, sortingDone, sortingPaidLeft, sortMatches, sortSay,
   sortWrongHint, SQ_BOX_PRICE, SQ_SERIES_BONUS, SQ_SORT_MAX_ERRORS, SQ_SORT_MIN_MODELS, SQ_SORT_REWARD,
   SQ_SORT_SHAPES, SQ_SORT_SIZES, SQ_SORT_SLOTS, SQ_TRADE_COST, sqState, squishyBoxCount, squishyCount,
-  squishyDuplicates, squishyMissing, squishyOwnedIds, squishySeriesProgress, squishyShelfCount,
+  squishyDuplicates, squishyMissing, squishyOwnedIds, squishySeriesAvailable, squishySeriesProgress, squishyShelfCount,
   squishyShopState, tradeDuplicatesFor
 };

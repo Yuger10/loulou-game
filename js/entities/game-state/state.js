@@ -7,7 +7,7 @@ const MISSIONS_PER_LEVEL = 5;
 const SAVE_KEY = 'lagon-magique-save';
 
 /* ---------- État ---------- */
-const SAVE_VERSION = 5;
+const SAVE_VERSION = 6;
 
 const DEFAULT_STATE = {
   v: SAVE_VERSION,
@@ -40,6 +40,7 @@ const DEFAULT_STATE = {
   team: { open:false, met:[], mates:[], day:null },   // l'équipe des compagnons (js/features/companion-team, v52)
   charsHelped: {},    // personnages déjà aidés au moins une fois (Sam le guide, v52)
   squishies: squishyFreshState(),   // la collection de squishies (js/features/squishies, v53)
+  skyIntroSeen: false,  // l'ouverture du Ciel des Rêves (saison 2, v55) déjà montrée
 };
 
 /* La collection de squishies (v53) : état neuf.
@@ -93,6 +94,7 @@ let state = {
   team: { open:false, met:[], mates:[], day:null },
   charsHelped: {},
   squishies: squishyFreshState(),
+  skyIntroSeen: false,
 };
 
 /* L'emplacement de sauvegarde : le joueur courant (entities/player, une couche
@@ -145,6 +147,12 @@ function migrate(saved){
       sq.boxes.push(SQUISHY_ISLAND_SERIES[w] || null);
     });
     saved.squishies = sq;
+  }
+  if(v < 6){
+    // v55 : le Ciel des Rêves. Une partie déjà au niveau 36 ou plus le verra
+    // s'ouvrir au prochain lancement (écran d'ouverture, prologue, chapitre).
+    // Les îles visitées (state.visited) couvrent les deux archipels.
+    saved.skyIntroSeen = false;
   }
   saved.v = SAVE_VERSION;
   return saved;

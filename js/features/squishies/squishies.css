@@ -172,3 +172,10 @@
     .sq-press .sq-art, .sq-sparkles path, .sq-stage.shake .sq-boxart, .sq-reveal, .sr-item.sr-bounce, .sr-cell.in .sq-art,
     .sq-shelf.picking .sq-slot:not(.full)::after, #squishy-btn .badge.ready{animation:none;}
   }
+
+  /* Pop, le diablotin à ressort (v55) : il surgit de la boîte, puis redescend */
+  .sq-pop-jack{position:absolute; left:50%; top:20%; width:70px; height:78px; transform:translate(-50%, 0); pointer-events:none;
+    animation:sqPopJack .9s cubic-bezier(.2,1.6,.4,1) both;}
+  .sq-pop-jack .sq-art{width:100%; height:100%;}
+  @keyframes sqPopJack{0%{transform:translate(-50%, 40px) scale(.3); opacity:0;} 50%{transform:translate(-50%, -46px) scale(1.15); opacity:1;} 70%{transform:translate(-50%, -30px) scale(.95,1.08);} 100%{transform:translate(-50%, -38px) scale(1); opacity:1;}}
+  @media (prefers-reduced-motion: reduce){ .sq-pop-jack{animation:none; transform:translate(-50%, -38px);} }

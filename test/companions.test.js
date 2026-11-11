@@ -238,7 +238,7 @@ const wrongOf = (sel)=>{ const good = d.querySelector(ev('gameSolution')[0]); re
   section('Rencontres sur les îles');
   ev('closeModal(); currentProfile().companion = "perle"; state.team = { open:true, met:[], mates:[], day:null }; state.missions = 200; state.visited = WORLD_ORDER.slice(); currentWorld = "lagon"; save()');
   check('chaque compagnon a son île', ev('[TEAM_ROLES.perle.home, TEAM_ROLES.leo.home, TEAM_ROLES.sam.home, TEAM_ROLES.zap.home, TEAM_ROLES.tom.home, TEAM_ROLES.rose.home].join()') === 'lagon,chateau,jungle,cite,volcan,squishy');
-  check('Lili et Grisou absents tant que leurs îles (saison 2) ne sont pas livrées', ev('teamHomeOf("lili")') === null && ev('teamEncounterOn("boites")') === null && !ev('teamKnownIds().includes("grisou")'));
+  check('Lili habite le Monde des Boîtes (saison 2, v55) ; Grisou absent tant que son île n\'est pas livrée', ev('teamHomeOf("lili")') === 'boites' && ev('teamHomeOf("grisou")') === null && !ev('teamKnownIds().includes("grisou")'));
   ev('teamNewVisit(); maybeTeamEncounter("lagon")');
   check('le principal (Perle) est sauté : pas de rencontre au Lagon', !shown('.team-meet'));
   spoken.length = 0;

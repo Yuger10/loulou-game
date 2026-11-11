@@ -1,5 +1,5 @@
 /* ---------- Types de mini-jeux et ceux proposés selon l'âge ---------- */
-const GAME_TYPES = ['memory','count','diff','puzzle','sequence','simon','math','reading','determinants','volume','compare','money','clock','calendar','calc','shapes','planets','jigsaw'];
+const GAME_TYPES = ['memory','count','diff','puzzle','sequence','simon','math','reading','determinants','volume','compare','money','clock','calendar','calc','shapes','planets','jigsaw','nesting','cubes'];
 
 /* Quels types de défis proposer selon l'âge (programme de l'école
    maternelle, cycle 1, 3-6 ans — repères eduscol.education.fr) :
@@ -21,10 +21,14 @@ const AGE_GAME_TYPES = [
   // le jour et la nuit) ; plus tôt, ces notions sont trop abstraites.
   // « Assembler l'image » (jigsaw) : le puzzle 2×2 avec l'image en
   // transparence se fait dès la petite section.
-  { max:4, types:['memory','count','diff','calendar','shapes','jigsaw'] },
+  // « Les boîtes gigognes » (nesting, v55) : ranger 3 objets du plus petit
+  // au plus grand se fait dès la petite section.
+  { max:4, types:['memory','count','diff','calendar','shapes','jigsaw','nesting'] },
   // à 5 ans (MS/GS) : + comparer des tailles, suites simples, couleurs,
   // et lire l'heure en heures pleines (« il est 3 heures »).
-  { max:5, types:['memory','count','diff','volume','sequence','simon','clock','calendar','shapes','planets','jigsaw'] },
+  // « Combien de cubes ? » (cubes, v55) : à 5 ans, compter une petite pile
+  // dont tous les cubes se voient.
+  { max:5, types:['memory','count','diff','volume','sequence','simon','clock','calendar','shapes','planets','jigsaw','nesting','cubes'] },
   // 6 ans et plus (ou âge non précisé) : tous les jeux, dont le calcul
   // mental abstrait (calc), réservé au CP confirmé et plus.
 ];
@@ -55,6 +59,8 @@ const GAME_LIST = [
   { key:'shapes',   emoji:'🍡', name:'Formes et couleurs' },
   { key:'planets',  emoji:'🪐', name:'Les planètes' },
   { key:'jigsaw',   emoji:'🖼️', name:'Le puzzle' },
+  { key:'nesting',  emoji:'🪆', name:'Les boîtes gigognes' },
+  { key:'cubes',    emoji:'🧊', name:'Combien de cubes ?' },
 ];
 
 export { GAME_LIST, gameTypesForAge };

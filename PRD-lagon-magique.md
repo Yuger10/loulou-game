@@ -1065,3 +1065,84 @@ Track Conductor `squishy-collection` ([spec](conductor/tracks/squishy-collection
   - hors-ligne : 192 fichiers précachés, le jeu démarre sans réseau.
 - **À faire sur les vrais appareils :** Safari iPhone ou iPad, et Chrome Android (voir la note du TODO).
 - Cache `lagon-v54`.
+
+---
+
+# v55 — Saison 2 « Le Ciel des Rêves » et le Monde des Boîtes
+
+> **Idée de la joueuse principale :** « le monde des boîtes ». Track Conductor `saison2-monde-boites` ([spec](conductor/tracks/saison2-monde-boites_20261109/spec.md), [plan](conductor/tracks/saison2-monde-boites_20261109/plan.md)).
+
+## Deux archipels
+- Chaque île porte son archipel (`saison`) :
+  - les 8 îles de la saison 1 forment **Le Lagon Magique** ; leur ordre, leurs niveaux et leur carte sont inchangés ;
+  - **Le Ciel des Rêves** (saison 2) s'ouvre au **niveau 36**, une fois toutes les îles du Lagon ouvertes (le Pays Squishy est au niveau 26). C'est la décision du propriétaire, après relecture : la spec prévoyait le niveau 8, en parallèle de la saison 1. Ses îles gardent la difficulté la plus haute (palier 6, toujours plafonnée par l'âge et le niveau de chaque jeu).
+- **La carte a deux onglets en haut.**
+  - Tant que le Ciel est fermé, son onglet est grisé, avec un cadenas et « Niveau 36 ». Le toucher dit quand il s'ouvre.
+  - Une fois toutes les îles du Lagon ouvertes, la carte annonce « Prochain monde : Le Ciel des Rêves au niveau 36 », avec sa barre de progression (il y a 50 missions entre le Pays Squishy et le Ciel).
+  - Le Ciel a son fond pastel, ses nuages et ses îles. Le bateau y devient une **montgolfière** 🎈.
+  - On voyage d'île en île à l'intérieur d'un archipel ; on passe de l'un à l'autre par l'onglet, sans trajet.
+- **L'ouverture du Ciel** se fait une seule fois, dans cet ordre :
+  1. l'écran « Un nouveau monde s'ouvre dans le ciel ! ☁️ » ;
+  2. le prologue de la saison ;
+  3. le chapitre du Monde des Boîtes ;
+  4. l'écran de nouvelle île.
+
+  Une partie déjà au niveau 36 ou plus découvre le Ciel au premier lancement.
+- Données :
+  - `ARCHIPELAGOS`, `worldsOf(saison)`, `archipelagoOf(id)`, `worldGame(id, age)` dans `js/entities/world/` ;
+  - `SAVE_VERSION` 6 : `skyIntroSeen`. Les îles visitées couvrent les deux archipels, et la migration ne perd rien.
+- Ajouter une île à la saison 2 se fait dans les données : une entrée dans `WORLDS` avec `saison:2`, un chapitre dans `STORY`, une série de squishies. Rien d'autre à coder, sauf son paysage.
+
+## Le Monde des Boîtes (« La Fabrique de boîtes »)
+- **L'île :** `boites` 📦, au niveau 36, palier 6. Elle flotte sur les nuages, avec des piles de cartons et le tapis roulant de la Fabrique. Son thème est kraft et pastel, et sa musique est une harpe aérienne avec les « tchac » des machines.
+- **4 personnages dessinés en SVG :**
+  - 🦫 **Capucine**, la capybara directrice, guide du chapitre ;
+  - 🐱 **Kiki**, le chat-dans-la-boîte ;
+  - 🤖 **Boulon**, le robot en carton ;
+  - 🛴 **Lola**, la livreuse.
+- **Objets :** 8 objets (carton plié, étiquette, ficelle, papier bulle, trombone, ciseaux, nœud doré, crayon). Les 3 derniers ne sont donnés par personne : ce sont les objets préférés des habitants.
+- **Recettes et décorations :** 2 recettes (Boîte à rêves, Colis volant) et 5 décorations.
+- **Lili** (indices magiques, v52) a maintenant son île : on peut la rencontrer au Monde des Boîtes une fois l'équipe ouverte.
+- **Série de squishies « Boîtes »** : chat dans la boîte, robot carton, cadeau surprise, petit colis ; rare : **Pop** ; ✨ : **boîte dorée**. Elle n'apparaît (chambre, boîtes mystère, marché) qu'une fois l'île ouverte.
+- **Pop, le diablotin à ressort,** surgit 1 fois sur 5 à l'ouverture d'une boîte surprise, sans rien changer au tirage.
+
+## Deux nouveaux mini-jeux
+- **🪆 Les boîtes gigognes (sériation) :**
+  - on touche les boîtes de la plus petite à la plus grande, et chacune vient se ranger dans la suivante ;
+  - 3, puis 4, puis 5 boîtes, avec des écarts plus fins aux paliers hauts ;
+  - au palier haut, parfois à l'envers (de la plus grande à la plus petite) ;
+  - une erreur fait trembler la boîte et donne un indice parlé ; à la 2ᵉ erreur, nouvelle série (relance annulable) ;
+  - dès 3 ans.
+- **🧊 Combien de cubes ? (repérage dans l'espace) :**
+  - une pile de cubes en perspective (SVG isométrique) et 3 réponses en grands chiffres et en points ;
+  - jusqu'à 5, puis 8, puis 12 cubes ;
+  - au palier haut, 2 rangées et 3 étages, avec des cubes cachés derrière ou dessous et le rappel « les cubes du dessus sont toujours posés sur d'autres cubes » ;
+  - la pile est une carte des hauteurs, donc toujours possible ;
+  - une erreur donne une autre pile ;
+  - dès 5 ans.
+- **Ce que les deux jeux partagent :**
+  - leurs indices 💡 ;
+  - un niveau adaptatif propre ;
+  - leur place dans « Formes et espace » de l'espace parents ;
+  - pas de minuteur.
+- **Jeu de l'île :** les gigognes avant 7 ans, les cubes ensuite.
+
+## Histoire : « Les Rêves dans les boîtes »
+- **Prologue,** lu par Capucine : Grisou, un petit nuage, a eu si peur de perdre les rêves colorés du ciel qu'il les a tous enfermés dans des boîtes.
+- **Chapitre du Monde des Boîtes :** 3 énigmes en images. Il rapporte 14 pièces et une boîte surprise de la série Boîtes, une seule fois.
+- **3 épisodes,** racontés par Kiki, Boulon et Lola : des boîtes qui frissonnent, un rêve qui s'échappe, un colis pour le Royaume Arc-en-ciel.
+- **Grisou,** un nuage dessiné en SVG, apparaît dans les chapitres de la saison 2.
+  - Triste et gris au début, il reprend des couleurs à chaque île libérée : des joues, un sourire, une bande d'arc-en-ciel de plus.
+  - C'est la progression visible de la saison.
+- **Le journal 📖** a deux parties : « Saison 1 : Le Lagon Magique » et « Le Ciel des Rêves », avec son prologue.
+
+## Tests
+- Nouveau `test/saison2.test.js` (96 vérifications), branché sur `npm test`. Il couvre :
+  - archipels, onglets, montgolfière, voyage d'un archipel à l'autre ;
+  - ouverture au niveau 36 et au chargement, migration ;
+  - l'île, les personnages, les objets, les préférés ;
+  - la série Boîtes et Pop ;
+  - gigognes (ordre, erreurs et relance, paliers, envers) et cubes (comptage avec les cachés, piles possibles, paliers, autre pile) ;
+  - jeu de l'île, histoire, épisodes, Grisou, journal.
+- Les 20 mini-jeux sont joués jusqu'à la victoire à chaque palier, avec une vérification indépendante pour les gigognes et les cubes. Leurs indices passent le contrôle d'anti-devinette.
+- Cache `lagon-v55`.

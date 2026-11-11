@@ -23,7 +23,7 @@ Le mode hors-ligne et le stockage protégé demandent `https://` : c'est le cas 
 ```bash
 npm install
 npm test             # architecture (imports, couches, aucun cycle), vrais modules ES, test de fumée,
-                     # squishies, chaque mini-jeu joué jusqu'à la victoire, compagnons
+                     # squishies, saison 2, chaque mini-jeu joué jusqu'à la victoire, compagnons
 npm run sync         # après avoir ajouté/déplacé un fichier : index.html et sw.js depuis js/slices.cjs
 npm run sw           # (même chose) la liste des fichiers mis en cache hors-ligne
 npm run inventaire   # ce que chaque fichier définit, exporte et importe (analyse du code)
@@ -39,7 +39,7 @@ js/features/         ce que l'enfant fait : minigame-engine/ (moteur) et minigam
                      profile/ (en-tête, accueil), wallet/, adaptive/ (niveau, progrès), party/ (chacun son tour,
                      course), players/, gains/, gifts/, wardrobe/, parents/, seasons/, backup/, music/,
                      companion-team/ (équipe et spécialités, v52), squishies/ (collection, chambre, rangement, v53)
-js/entities/         les données du jeu : item/, world/, character/, difficulty/, words/, squishy/, season/,
+js/entities/         les données du jeu : item/, world/ (îles et archipels), character/, difficulty/, words/, squishy/, season/,
                      game-state/ (état, sauvegarde, migrations), player/ (profils, partie en cours), companion/
 js/shared/           sans rien connaître du jeu : lib/ (hasard, événements), ui/ (modale, vues, son, voix,
                      retours, icônes), styles/ (variables, design system, responsive)
@@ -47,7 +47,7 @@ js/shared/           sans rien connaître du jeu : lib/ (hasard, événements), 
 index.html           page du jeu (markup) ; balise du module et feuilles de style générées par `npm run sync`
 manifest.json, sw.js, icon*.png|svg    PWA
 test/                slices.test.js (architecture), modules.test.js (vrais modules), smoke.test.js,
-                     squishies.test.js, games.test.js, companions.test.js (indices, équipe, spécialités),
+                     squishies.test.js, saison2.test.js, games.test.js, companions.test.js (indices, équipe, spécialités),
                      tools/ (page de test regroupée par esbuild, analyse, synchronisation, déplacements)
 conductor/           specs, plans, checklists « ajouter un mini-jeu » et « ajouter une île »
 docs/adr/            décisions d'architecture (ADR)

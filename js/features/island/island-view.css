@@ -7,3 +7,18 @@
   .lagon-intro p{margin:4px 0 0; font-weight:600; opacity:.95;}
 
   /* scène décorée */
+
+  /* =====================================================================
+     L'ouverture du Ciel des Rêves (saison 2, v55)
+     ===================================================================== */
+  /* l'écran « Un nouveau monde s'ouvre dans le ciel ! » */
+  .sky-open{background:linear-gradient(180deg,#FDE7F3 0%, #E6DDFB 60%, #C9E7FB 100%); border-radius:var(--radius-lg); padding:8px 8px 4px;}
+  .sky-open-art{display:flex; align-items:center; justify-content:center; gap:10px; font-size:2.6rem; margin:4px 0;}
+  .sky-open-art .so-balloon{font-size:3.4rem; animation:skyBalloon 2.6s ease-in-out infinite;}
+  .sky-open-art .so-cloud.c2{font-size:2rem;}
+  @keyframes skyBalloon{0%,100%{transform:translateY(0);} 50%{transform:translateY(-8px);}}
+  @media (prefers-reduced-motion: reduce){ .sky-open-art .so-balloon{animation:none;} }
+
+  /* un long nom d'île (« Le Monde des Boîtes ») passe à la ligne plutôt que
+     sous les boutons de l'en-tête (v55) */
+  #view-ile .view-head h2{white-space:normal; flex:1; line-height:1.05; text-wrap:balance;}

@@ -9,7 +9,7 @@ import {
   addProfile, AVATARS, currentPlayerAge, currentProfile, deleteProfile, party, partyCurrent, profiles,
   profileSaveKey, refreshAll, saveProfiles, switchProfile
 } from '../../entities/player/index.js';
-import { currentWorld, setCurrentWorld, WORLDS } from '../../entities/world/index.js';
+import { currentWorld, setCurrentWorld, worldGame, WORLDS } from '../../entities/world/index.js';
 import { emit, on, pickRandom, shuffle } from '../../shared/lib/index.js';
 import { closeModal, confetti, openModal, playSound, showToast, speak } from '../../shared/ui/index.js';
 import { pickPracticeGame } from '../adaptive/index.js';
@@ -295,7 +295,7 @@ function pickPickerChoices(n){
   const choices = withCount.slice(0, n).map(x=>x.g);
   // une île peut avoir « son » mini-jeu (WORLDS[id].game) : il est toujours
   // proposé quand on y joue (s'il convient à l'âge du joueur)
-  const own = WORLDS[currentWorld] && WORLDS[currentWorld].game;
+  const own = worldGame(currentWorld, currentPlayerAge());
   const ownGame = own && pool.find(g=>g.key===own);
   if(ownGame && !choices.includes(ownGame)) choices[0] = ownGame;
   // Phase 3 : un jeu à travailler revient plus souvent (js/features/adaptive/adaptive.js)

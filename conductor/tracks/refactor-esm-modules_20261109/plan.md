@@ -62,4 +62,4 @@ Spec : [spec.md](./spec.md). Workflow : [workflow.md](../../workflow.md).
     - [x] Ordinateur (Chromium) : parcours au doigt sur les vrais modules, hors-ligne (192 fichiers précachés), rechargement ; émulation Pixel 7 et iPhone 13
     - [ ] Safari iOS et Chrome Android sur les vrais appareils : à faire par le propriétaire (noté dans TODO.md)
 - [x] Task: Conductor - User Manual Verification 'Documentation et livraison' (Protocol in workflow.md)
-- [ ] Task: Branche, PR sur `main`, merge
+- [x] Task: Branche, PR sur `main`, merge (Yuger10/loulou-game#27)
