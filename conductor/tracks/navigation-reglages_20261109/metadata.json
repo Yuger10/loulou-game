@@ -4,5 +4,5 @@
   "status": "new",
   "created_at": "2026-11-09T00:00:00Z",
   "updated_at": "2026-11-11T00:00:00Z",
-  "description": "Barre du bas à 5 boutons (Réglages, île nommée, tailles selon le support) et écran Réglages (son, moi, joueurs, parents protégé). Dépend de formulaires-boutons."
+  "description": "Barre du bas à 4 boutons (île nommée, tailles selon le support) et écran Réglages (son, moi, joueurs, parents protégé), ouvert en touchant l'avatar et le prénom en haut. Dépend de formulaires-boutons."
 }

@@ -41,7 +41,7 @@ Registre des tracks Conductor, **dans l'ordre d'implémentation**. Feuille de ro
 
 ---
 
-- [ ] **Track: Barre de navigation (5 boutons, île nommée, tailles selon le support) et écran Réglages** : dépend de formulaires-boutons
+- [ ] **Track: Barre de navigation (île nommée, tailles selon le support) et écran Réglages ouvert par le prénom** : dépend de formulaires-boutons
 *Link: [./tracks/navigation-reglages_20261109/](./tracks/navigation-reglages_20261109/)*
 
 ---
