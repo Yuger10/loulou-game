@@ -26,6 +26,11 @@ Registre des tracks Conductor, **dans l'ordre d'implémentation**. Feuille de ro
 
 ---
 
+- [x] **Track: Saison 2 « Le Ciel des Rêves » + île 1 : 📦 Monde des Boîtes (v55)** : le Ciel s'ouvre au niveau 36, après tout le Lagon (décision du propriétaire)
+*Link: [./tracks/saison2-monde-boites_20261109/](./tracks/saison2-monde-boites_20261109/)*
+
+---
+
 - [ ] **Track: Formulaires et boutons d'action : barre fixe en bas, modifications non enregistrées, actions dangereuses protégées**
 *Link: [./tracks/formulaires-boutons_20261109/](./tracks/formulaires-boutons_20261109/)*
 
@@ -38,11 +43,6 @@ Registre des tracks Conductor, **dans l'ordre d'implémentation**. Feuille de ro
 
 - [ ] **Track: Les sons du jeu : moteur audio unique et ambiance « marimba doux »**
 *Link: [./tracks/sons_20261111/](./tracks/sons_20261111/)*
-
----
-
-- [ ] **Track: Saison 2 « Le Ciel des Rêves » + île 1 : 📦 Monde des Boîtes**
-*Link: [./tracks/saison2-monde-boites_20261109/](./tracks/saison2-monde-boites_20261109/)*
 
 ---
 

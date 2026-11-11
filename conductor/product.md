@@ -38,4 +38,4 @@ Donner envie d'apprendre (lecture, nombres, calcul, heure, formes, planètes…)
 - **Ne jamais rien perdre :** la progression est sauvegardée, migrée et transférable.
 
 ## Prochaines grandes étapes
-- Saison 2 « Le Ciel des Rêves » (6 îles : Boîtes, Jouets Doux, Bonbons, Musique, Jardin des Fées, Licornes) et saison 3 « La Grande Expédition » (5 îles : Nuages, Dinosaures, Fête Foraine, Bibliothèque, Étoiles), d'après les idées de la joueuse.
+- Saison 2 « Le Ciel des Rêves », suite : 5 îles après les Boîtes (Jouets Doux, Bonbons, Musique, Jardin des Fées, et les Licornes en grand final, où Grisou devient l'ami de tous), puis la saison 3 « La Grande Expédition » (5 îles : Nuages, Dinosaures, Fête Foraine, Bibliothèque, Étoiles), d'après les idées de la joueuse.
