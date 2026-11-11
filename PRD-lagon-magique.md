@@ -1480,3 +1480,31 @@ Les deux sont proposés dès 5 ans, sans minuteur. Le jeu de l'île est les cocc
   - pour les cycles, comparés à une liste d'étapes propre au test ;
   - pour les coccinelles, avec les points dessinés.
 - Cache `lagon-v63`.
+
+---
+
+# v64 — Une pause qui tient, et des activités pour bouger
+
+Track Conductor `pause-verrou`. Demande : « ma fille contourne facilement la pause ; l'empêcher de continuer sauf intervention parentale, et pendant ce temps l'inciter à bouger, avec les personnages ; le compagnon fatigué, une animation, le choix entre activité physique, yoga ou autre ».
+
+## Ce que dit la recherche (et ce qu'on en a gardé)
+- Fin d'écran plus facile à une **fin naturelle** et quand la cause est **extérieure** ; un compte à rebours « encore 2 minutes » **aggrave** les crises chez les petits ([Université de Washington](https://www.washington.edu/news/2016/05/05/two-minute-warnings-make-kids-screen-time-tantrums-worse/)) → la mission se termine, puis c'est le compagnon qui est fatigué ; pas de compte à rebours.
+- **Limites constantes** dès 6 ans ([AAP](https://www.healthychildren.org/english/family-life/Media/Pages/helping-kids-thrive-in-a-digital-world-AAP-policy-explained.aspx)) ; **pauses actives** ([revue 2025](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC11822862/)) ; **yoga et pleine conscience** ([revue 2021](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8201280/)) ; laisser **choisir**.
+
+## Le verrou (`js/features/rest/`)
+- **Un voile flouté couvre tout le jeu** (contenu inerte) quand le temps du jour est atteint ; il revient toujours (rechargement, changement d'écran, retour dans l'application, minuterie).
+- Avant la limite : le compagnon de l'en-tête **bâille**, sans chiffre.
+- **« 🔒 Un adulte »** (la multiplication) : + 10 min, + 30 min, fin de la pause pour aujourd'hui, ou changer de joueur (revenir sur l'enfant en pause fait revenir le voile).
+- **Contournements fermés** : plus d'exception en mode à plusieurs (la partie s'arrête à la fin de la mission) ; un nouveau joueur reçoit la **pause familiale** (le dernier choix d'un adulte) ; les mauvaises réponses à la question des adultes sont notées comme tentatives.
+
+## L'île s'endort, et une activité au choix
+- La nuit tombe (lune, étoiles), le compagnon bâille, met son bonnet de nuit et se roule en boule ; il propose une activité (Grisou, s'il est dans l'équipe, en respirant).
+- 🤸 Bouger comme les animaux (Rainette, Marina, le singe) · 🧘 Le yoga des animaux (l'arbre, le chat, la sirène) · 🌬️ Respirer avec Grisou · 🎨 Une idée sans écran.
+- **Une seule activité**, puis « Bravo ! À demain ! » et l'écran s'endort. Aucune récompense pendant la pause.
+- Le lendemain, le compagnon s'en souvient. Espace parents : carte **🌙 Pauses** (7 jours, activité, tentatives, réglage des nouveaux joueurs, conseil Temps d'écran / Family Link).
+
+## Technique
+- Sauvegarde **v8** : `restLog`, `restRecall` ; `profiles.familyPause`. Événement `game:after` (fin de mission) ; point d'accroche `onViewChange` ; cartes de l'espace parents fournies par événement (`parents:cards`).
+- `test/rest.test.js` (56 tests) ; anciens tests de l'écran de pause remplacés.
+
+- Cache `lagon-v64`.

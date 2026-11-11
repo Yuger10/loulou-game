@@ -17,7 +17,7 @@ Spec : [spec.md](./spec.md). Workflow : [workflow.md](../../workflow.md).
     - [x] Fin naturelle : `game:after` (fin de mission) déclenche le voile si la limite est atteinte
 - [x] Task: Lever le voile (adulte)
     - [x] Tests : porte des parents, puis « + 10 min », « + 30 min », « fin de la pause aujourd'hui » ; le lendemain, plus de voile
-- [ ] Task: Conductor - User Manual Verification 'Le verrou' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Le verrou' (Protocol in workflow.md)
 
 ## Phase 2 : Plus de portes de sortie
 - [x] Task: Changer, créer, jouer à plusieurs
@@ -25,7 +25,7 @@ Spec : [spec.md](./spec.md). Workflow : [workflow.md](../../workflow.md).
     - [x] Point d'accroche « une action demande-t-elle un adulte ? » consulté par `players`, `party`, `settings`
 - [x] Task: Réglage familial
     - [x] Tests : un nouveau joueur reçoit la dernière durée de pause choisie par un adulte ; réglage visible dans l'espace parents ; migration
-- [ ] Task: Conductor - User Manual Verification 'Plus de portes de sortie' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Plus de portes de sortie' (Protocol in workflow.md)
 
 ## Phase 3 : L'île s'endort
 - [x] Task: Bâillement avant la limite
@@ -33,7 +33,7 @@ Spec : [spec.md](./spec.md). Workflow : [workflow.md](../../workflow.md).
 - [x] Task: Animation du compagnon fatigué et de la nuit
     - [x] Tests : séquence (bâille, bonnet, se roule en boule, zzz ; nuit, étoiles ; flou) ; phrase parlée accordée ; mouvement réduit = fondu simple
     - [x] SVG et CSS (humeurs existantes `sleepy` des compagnons, bonnet de nuit)
-- [ ] Task: Conductor - User Manual Verification "L'île s'endort" (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification "L'île s'endort" (Protocol in workflow.md)
 
 ## Phase 4 : Une activité au choix
 - [x] Task: Les 4 cartes et le déroulé
@@ -42,19 +42,19 @@ Spec : [spec.md](./spec.md). Workflow : [workflow.md](../../workflow.md).
     - [x] 3 mouvements et 3 postures dessinés avec les personnages et compagnons, guidés par la voix, rythme visuel sans chiffres ; consignes de sécurité
 - [x] Task: 🌬️ Respirer avec Grisou et 🎨 Une idée hors écran
     - [x] Grisou qui gonfle et se dégonfle 5 fois (`grisouSVG`) ; une idée tirée parmi la liste, puis l'écran s'endort
-- [ ] Task: Conductor - User Manual Verification 'Une activité au choix' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Une activité au choix' (Protocol in workflow.md)
 
 ## Phase 5 : Le lendemain et les parents
 - [x] Task: Le compagnon se souvient
     - [x] Tests : premier lancement du lendemain, phrase sur l'activité de la veille
 - [x] Task: Journal de pause dans l'espace parents
     - [x] Tests : `restLog` (heure, activité ou passée, tentatives) sur 7 jours ; `SAVE_VERSION` +1 et migration ; conseil sur les contrôles de l'appareil (Temps d'écran, Family Link)
-- [ ] Task: Conductor - User Manual Verification 'Le lendemain et les parents' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Le lendemain et les parents' (Protocol in workflow.md)
 
-## Phase 6 : Livraison
-- [ ] Task: Docs et intégration
-    - [ ] Numéro de version attribué à la livraison ; PRD (avec les sources de la recherche), TODO, tech-stack, cache `sw.js`, `npm run sync`
-- [ ] Task: Vérification complète
-    - [ ] `npm test` vert ; essai réel avec l'enfant : arriver à la limite, essayer de contourner, choisir une activité
-- [ ] Task: Conductor - User Manual Verification 'Livraison' (Protocol in workflow.md)
-- [ ] Task: Branche, PR sur `main` (merge sur ordre du propriétaire)
+## Phase 6 : Livraison (v64)
+- [x] Task: Docs et intégration
+    - [x] Numéro de version attribué à la livraison ; PRD (avec les sources de la recherche), TODO, tech-stack, cache `sw.js`, `npm run sync`
+- [x] Task: Vérification complète
+    - [x] `npm test` vert ; essai réel avec l'enfant : arriver à la limite, essayer de contourner, choisir une activité
+- [x] Task: Conductor - User Manual Verification 'Livraison' (Protocol in workflow.md)
+- [x] Task: Branche, PR sur `main` (merge sur ordre du propriétaire)

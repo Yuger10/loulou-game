@@ -162,9 +162,14 @@ function startGame(key, tier, age){
     do { startGame('ladybugs', 4); tries++; } while(!d.getElementById('lb-add') && tries < 20);
     const n = d.querySelectorAll('.lb-dot[data-w="l"]').length;
     check('compléter l\'aile : l\'aile droite est vide au début', d.querySelectorAll('.lb-dot[data-w="r"]').length === 0 && n >= 5);
-    for(let i = 0; i < n + 1; i++) d.getElementById('lb-add').click();
+    // exactement n points (l'aile peut déjà être au maximum : pas de point « en trop » à ajouter)
+    const right = ()=> d.querySelectorAll('.lb-dot[data-w="r"]').length;
+    let seen = true;
+    for(let i = 0; i < n; i++){ d.getElementById('lb-add').click(); if(right() !== i + 1) seen = false; }
     d.getElementById('lb-undo').click();
-    check('chaque point ajouté se voit ; ↩️ enlève le dernier', d.querySelectorAll('.lb-dot[data-w="r"]').length === n);
+    const afterUndo = right();
+    d.getElementById('lb-add').click();
+    check('chaque point ajouté se voit ; ↩️ enlève le dernier', seen && afterUndo === n - 1 && right() === n);
     d.getElementById('lb-done').click();
     check('autant de points des deux côtés, puis « Pareil ! » : mission réussie', await waitFor(()=> !!d.querySelector('.win-box'), 1500));
     tries = 0;
