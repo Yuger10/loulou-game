@@ -117,6 +117,14 @@ const EPISODES = {
     { by:'berlingot', title:'La partition sucrée', find:'🎵',
       lines:["Dans un paquet de bonbons, j'ai trouvé une feuille pleine de notes de musique.", "Quand on la lit, on entend chanter le ciel. Elle vient sûrement de l'Île de la Musique !"] },
   ],
+  musique: [
+    { by:'boumbo', title:'Le premier boum', find:'🥁',
+      lines:["Boum ! Ce matin, j'ai réussi à faire un tout petit boum, rien qu'un !", "Les arbres-flûtes ont frissonné… La musique revient, coup par coup !"] },
+    { by:'flutine', title:'La note de Grisou', find:'🎶',
+      lines:["Grisou est passé au-dessus de la cascade, et il a fredonné une note, très grave.", "Je lui ai répondu avec une note toute aiguë. Il a souri, et il a fredonné encore !"] },
+    { by:'piccolo', title:'Piccolo a entendu', find:'🌸',
+      lines:["Piccolo a entendu ! Piccolo a entendu ! Des clochettes qui tintent, très loin dans le ciel !", "Elles viennent d'un jardin plein de fleurs géantes… Le Jardin des Fées, peut-être ?"] },
+  ],
 };
 
 function storyMissionsOn(world){ return (state.storyMissions || {})[world] || 0; }

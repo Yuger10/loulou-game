@@ -1,0 +1,21 @@
+  /* =====================================================================
+     Grave ou aigu ? — Île de la Musique (saison 2)
+     ===================================================================== */
+  .pitch-bells{display:flex; justify-content:center; align-items:flex-end; gap:6px; flex-wrap:wrap; min-height:120px; margin:0 auto 6px; padding:10px 6px; max-width:340px;
+    border-radius:var(--radius-lg, 24px); background:linear-gradient(180deg, #EEF0FF, #DDF4F5); border:3px solid #fff;}
+  .bell{position:relative; display:flex; flex-direction:column; align-items:center; justify-content:flex-end; min-width:52px; min-height:56px; padding:4px 2px;
+    border:none; border-radius:16px; background:transparent; cursor:pointer;}
+  .bell-svg{display:block; height:auto; transition:transform .15s;}
+  .bell.lit .bell-svg, .bell:active .bell-svg{transform:rotate(-12deg);}
+  .bell.done{opacity:.55;}
+  .bell-n{position:absolute; top:0; right:2px; min-width:22px; height:22px; border-radius:11px; background:#2B2F6B; color:#fff; font-size:.8rem; line-height:22px;}
+  .bell-n:empty{display:none;}
+  .pitch-listen{display:block; margin:0 auto 8px;}
+  .pitch-melody{position:relative; height:150px; margin:0 auto 6px; max-width:300px; border-radius:var(--radius-lg, 24px);
+    background:repeating-linear-gradient(180deg, #EEF0FF 0 28px, #DCE1F7 28px 30px); border:3px solid #fff;}
+  .pm-dot{position:absolute; width:26px; height:26px; margin-left:-13px; transform:translateY(50%); border-radius:50%; background:#5CC6CC; border:3px solid #2B2F6B;}
+  .pm-dot[data-i="0"]{left:18%;} .pm-dot[data-i="1"]{left:39%;} .pm-dot[data-i="2"]{left:60%;} .pm-dot[data-i="3"]{left:81%;}
+  .pm-dot.lit{background:#FFD95A; transform:translateY(50%) scale(1.25);}
+  .pitch-dir{display:flex; flex-direction:column; align-items:center; gap:2px;}
+  .pitch-dir b{font-size:1.8rem;}
+  .pitch-dir span{font-size:.85rem; font-weight:800;}

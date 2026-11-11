@@ -300,6 +300,29 @@ const ISLE_SCENERY = {
     <path d="M150 360 C168 322 198 296 214 258" fill="none" stroke="${w.sand}" stroke-width="18" stroke-linecap="round"/>
     <g><path d="M96 300 q8 -18 16 0z" fill="#FFE07A"/><path d="M262 318 q10 -22 20 0z" fill="#BFA3EC"/><path d="M40 330 q8 -18 16 0z" fill="#6ED38C"/><circle cx="180" cy="300" r="7" fill="#FF8FB8"/></g>
     <g fill="#fff" opacity=".7"><circle cx="128" cy="312" r="2"/><circle cx="300" cy="300" r="2"/></g>`,
+  // Île de la Musique (saison 2) : un grand clavier-pont, des arbres-flûtes,
+  // une cascade de notes ; nuit, or et turquoise
+  musique: (w)=>`
+    <g fill="#FFE07A" opacity=".85"><path d="M60 70 l3 7 l7 1 l-5 5 l1 7 l-6 -3 l-6 3 l1 -7 l-5 -5 l7 -1z"/><path d="M420 56 l2 5 l5 1 l-4 3 l1 5 l-4 -2 l-4 2 l1 -5 l-4 -3 l5 -1z"/></g>
+    <g fill="#fff" opacity=".9"><ellipse cx="60" cy="252" rx="96" ry="26"/><ellipse cx="240" cy="248" rx="124" ry="24"/><ellipse cx="420" cy="252" rx="96" ry="26"/></g>
+    <path d="M0 254 C140 240 340 240 480 254 L480 360 L0 360 Z" fill="${w.land}"/>
+    <path d="M0 264 C140 252 340 252 480 264" fill="none" stroke="#fff" stroke-width="4" stroke-dasharray="2 14" stroke-linecap="round" opacity=".6"/>
+    <path d="M290 110 Q300 96 312 110 L316 252 L286 252Z" fill="#9FE3E8" opacity=".9"/>
+    <g fill="#fff" opacity=".9"><circle cx="297" cy="150" r="4"/><path d="M300 150 V136" stroke="#fff" stroke-width="2"/><circle cx="306" cy="196" r="4"/><path d="M309 196 V182" stroke="#fff" stroke-width="2"/><circle cx="296" cy="232" r="4"/><path d="M299 232 V218" stroke="#fff" stroke-width="2"/></g>
+    <g stroke="#2B2F6B" stroke-width="3" stroke-linejoin="round">
+      <rect x="24" y="200" width="240" height="44" rx="8" fill="#FFFDF6"/>
+      <g fill="#2B2F6B"><rect x="50" y="200" width="12" height="26" rx="2"/><rect x="80" y="200" width="12" height="26" rx="2"/><rect x="134" y="200" width="12" height="26" rx="2"/><rect x="164" y="200" width="12" height="26" rx="2"/><rect x="194" y="200" width="12" height="26" rx="2"/><rect x="236" y="200" width="12" height="26" rx="2"/></g>
+    </g>
+    <path d="M54 200 V244 M84 200 V244 M114 200 V244 M144 200 V244 M174 200 V244 M204 200 V244 M234 200 V244" stroke="#2B2F6B" stroke-width="2"/>
+    <g stroke="#2B2F6B" stroke-width="3" stroke-linejoin="round">
+      <rect x="352" y="130" width="22" height="124" rx="11" fill="#E9EEF5"/><rect x="420" y="150" width="20" height="104" rx="10" fill="#FFE7A8"/>
+    </g>
+    <g fill="#2B2F6B"><circle cx="363" cy="170" r="3.4"/><circle cx="363" cy="190" r="3.4"/><circle cx="363" cy="210" r="3.4"/><circle cx="430" cy="186" r="3"/><circle cx="430" cy="206" r="3"/></g>
+    <g fill="#6ED38C" stroke="#2F9551" stroke-width="2.5"><ellipse cx="363" cy="126" rx="30" ry="18"/><ellipse cx="430" cy="146" rx="26" ry="16"/></g>
+    <g class="ls-lolly l1" fill="#FFD95A" stroke="#B8901A" stroke-width="2"><circle cx="150" cy="150" r="7"/><path d="M156 150 V118 L172 114 V142" fill="none" stroke="#B8901A" stroke-width="3.5"/><circle cx="166" cy="143" r="7"/></g>
+    <g class="ls-lolly l2" fill="#5CC6CC" stroke="#2B2F6B" stroke-width="2"><circle cx="226" cy="132" r="6"/><path d="M231 132 V108" fill="none" stroke="#2B2F6B" stroke-width="3"/></g>
+    <path d="M150 360 C168 322 196 290 196 248" fill="none" stroke="${w.sand}" stroke-width="18" stroke-linecap="round"/>
+    <g fill="#fff" opacity=".7"><circle cx="110" cy="306" r="2"/><circle cx="380" cy="300" r="2"/></g>`,
 };
 // paysage générique, aux couleurs du monde (toute nouvelle île en profite)
 function isleGenericScenery(w){

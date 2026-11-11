@@ -298,6 +298,7 @@ const LIVES_TABLE = {
   // mémoire : voir livesFor — les essais suivent le nombre de paires
   jigsaw:       {2:5, 3:4, 4:4, 5:3},   // puzzle : beaucoup de morceaux, on essaie
   simon:        {2:3, 3:3, 4:2, 5:2},
+  rhythm:       {2:3, 3:3, 4:2, 5:2},   // comme Simon : une suite à rejouer
   default:      {2:3, 3:2, 4:2, 5:1},          // jeux « une seule bonne réponse »
   // les jeux plus récents (calcul, lecture…) demandent un temps de
   // réflexion : on laisse un essai de plus que le barème par défaut.
@@ -314,7 +315,7 @@ function livesFor(kind, dd){
   // essais suivent donc le nombre de paires : n + 2. Bien retenir fait
   // toujours gagner ; toucher au hasard fait toujours perdre.
   if(kind === 'memory') return memoryPairs(d) + 2;
-  const GENEROUS_KINDS = ['math','reading','determinants','volume','compare','money','clock','calendar','calc','shapes','planets','cubes','packs','shelf','share','recipe'];
+  const GENEROUS_KINDS = ['math','reading','determinants','volume','compare','money','clock','calendar','calc','shapes','planets','cubes','packs','shelf','share','recipe','pitch'];
   const table = LIVES_TABLE[kind] || (GENEROUS_KINDS.includes(kind) ? LIVES_TABLE.generous : LIVES_TABLE.default);
   // le calcul mental (palier 6, Volcan) emprunte le barème d'essais du
   // palier 5 : seul le minuteur continue de se resserrer au-delà.
@@ -351,7 +352,7 @@ const TIMER_SECONDS = {
   calc:         {3:28, 4:24, 5:22, 6:20},   // calcul abstrait : le plus généreux de tous
 };
 // jeux à plusieurs étapes : jamais de minuteur, quelle que soit la difficulté
-const NO_TIMER_KINDS = ['memory','simon','puzzle','calendar','shapes','planets','jigsaw','nesting','cubes','packs','shelf','share','recipe'];
+const NO_TIMER_KINDS = ['memory','simon','puzzle','calendar','shapes','planets','jigsaw','nesting','cubes','packs','shelf','share','recipe','rhythm','pitch'];
 function timerFor(kind, dd){
   if(NO_TIMER_KINDS.includes(kind)) return null;
   const table = TIMER_SECONDS[kind];
@@ -609,6 +610,47 @@ function recipeRound(dd){
   }, dd);
 }
 
+/* ---------------------------------------------------------------------
+   LE RYTHME MAGIQUE (Île de la Musique, saison 2) — écouter et reproduire un
+   rythme (éducation musicale, cycles 1 et 2) : coups courts ●, longs ▬, silences 🤫.
+     palier 1   3 coups tous pareils (tous courts ou tous longs), le rythme reste écrit
+     palier 2   4 coups, courts et longs, le rythme reste écrit
+     palier 3   5 symboles dont un silence ; le rythme se cache après l'écoute
+     palier 4   6 symboles dont un silence, caché après l'écoute
+     palier 5   6 symboles, deux silences : on lit le rythme écrit AVANT de l'entendre
+   Pas de minuteur.
+   --------------------------------------------------------------------- */
+function rhythmRound(dd){
+  return tierValue({
+    1:{ n:3, long:false, rests:0, hide:false, read:false },
+    2:{ n:4, long:true,  rests:0, hide:false, read:false },
+    3:{ n:5, long:true,  rests:1, hide:true,  read:false },
+    4:{ n:6, long:true,  rests:1, hide:true,  read:false },
+    5:{ n:6, long:true,  rests:2, hide:false, read:true },
+  }, dd);
+}
+
+/* ---------------------------------------------------------------------
+   GRAVE OU AIGU ? (Île de la Musique, saison 2) — la hauteur des sons. Les
+   notes sont prises dans une gamme pentatonique (do, ré, mi, sol, la) ;
+   `gap` : écart minimal entre deux notes voisines (en demi-tons).
+     palier 1   2 notes très éloignées : la plus aiguë (ou la plus grave)
+     palier 2   3 notes à ranger du grave à l'aigu
+     palier 3   4 notes plus proches
+     palier 4   5 notes proches
+     palier 5   5 notes, ou « la mélodie monte ou descend ? »
+   Pas de minuteur.
+   --------------------------------------------------------------------- */
+function pitchRound(dd){
+  return tierValue({
+    1:{ ask:'high',  n:2, gap:9 },
+    2:{ ask:'order', n:3, gap:5 },
+    3:{ ask:'order', n:4, gap:2, maxGap:7 },
+    4:{ ask:'order', n:5, gap:2, maxGap:5 },
+    5:{ ask:'order', n:5, gap:2, maxGap:5, melody:.4 },
+  }, dd);
+}
+
 function jigsawRound(dd){
   return tierValue({
     1:{cols:2, rows:2, ghost:.45},
@@ -623,7 +665,7 @@ export {
   CALC_MULT_TABLES, calcBounds, calendarUsesWeekdayOrder, calendarWeekdayCount, clockGranularity,
   clockOptions, compareCloseChance, compareEqualChance, compareRange, countRange,
   determinantsExtraDistractor, determinantsImageShown, determinantsPluralChance, diffMirrorChance,
-  cubesRound, diffTotal, jigsawRound, nestingRound, livesFor, packsRound, recipeRound, shareRound, shelfRound, mathBounds, memoryPairs, moneyDenoms, moneyPileSize, planetsTier,
+  cubesRound, diffTotal, jigsawRound, nestingRound, livesFor, packsRound, pitchRound, recipeRound, rhythmRound, shareRound, shelfRound, mathBounds, memoryPairs, moneyDenoms, moneyPileSize, planetsTier,
   puzzleCount, puzzleStartMax, puzzleVariants, readingOptions, readingWordOnly, sequencePatternLength,
   shapesRound, simonLength, solidOptions, timerFor, volumeAskLessChance, volumeContainerCount,
   volumeUsesCapacityCompare

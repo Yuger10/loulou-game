@@ -61,6 +61,8 @@ const PROGRESS_CHEERS = {
   shelf:        'Tu ranges l\'étagère magique de mieux en mieux !',
   share:        'Tu partages les gâteaux de mieux en mieux !',
   recipe:       'Tu mesures tes recettes de mieux en mieux !',
+  rhythm:       'Tu rejoues les rythmes de mieux en mieux !',
+  pitch:        'Ton oreille reconnaît le grave et l\'aigu de mieux en mieux !',
 };
 
 function gameMaxTier(key){ return GAME_TIER_MAX[key] || 5; }

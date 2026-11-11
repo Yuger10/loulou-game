@@ -406,6 +406,43 @@ const CHARACTERS = {
       "J'échange mes bonbons contre des sourires. Tu en as un pour moi ?",
       "Mes sucettes sont rangées par couleurs. Tu veux jouer ?",
     ]},
+  // ---- Saison 2, l'Île de la Musique (proposition retenue par la joueuse) ----
+  viola:{
+    emoji:'🎻', name:'Viola', title:'la violoniste, cheffe d\'orchestre', world:'musique',
+    gender:'f',
+    loot:['baguettechef','partition'],
+    texts:[
+      "Bienvenue sur mon île ! L'orchestre ne joue plus depuis que Grisou est passé… Tu nous aides ?",
+      "Un orchestre, c'est écouter les autres avant de jouer. On essaie ensemble ?",
+      "Chaque mission réussie, c'est une note qui revient. Allez, en musique !",
+    ]},
+  boumbo:{
+    emoji:'🥁', name:'Boumbo', title:'le petit tambour', world:'musique',
+    gender:'m',
+    loot:['grelotdore','partition'],
+    texts:[
+      "Boum, boum, bouuum ! Tu peux refaire mon rythme ?",
+      "Un coup court, un coup long, et chut… un silence. Le rythme, c'est magique !",
+      "Je tape, tu tapes ! On fait la musique à deux ?",
+    ]},
+  flutine:{
+    emoji:'🪈', name:'Flûtine', title:'la flûte enchantée', world:'musique',
+    gender:'f',
+    loot:['anche','clesol'],
+    texts:[
+      "Ma note la plus aiguë chante comme un oiseau, la plus grave ronronne comme un ours !",
+      "Grave ou aigu ? Écoute bien, et tu sauras toujours !",
+      "Tuu-tuu ! Tu veux ranger mes notes, de la plus grave à la plus aiguë ?",
+    ]},
+  piccolo:{
+    emoji:'🦜', name:'Piccolo', title:'le perroquet chanteur', world:'musique',
+    gender:'m',
+    loot:['clesol','grelotdore'],
+    texts:[
+      "Piccolo répète tout ! Piccolo répète tout !",
+      "Cuicui-bravo ! Tu chantes juste, toi !",
+      "J'ai entendu une jolie mélodie… elle montait, elle montait ! Tu joues ?",
+    ]},
 };
 
 function charsOf(world){
