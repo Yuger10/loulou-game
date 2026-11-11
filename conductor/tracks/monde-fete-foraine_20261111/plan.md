@@ -7,7 +7,7 @@ Spec : [spec.md](./spec.md). Workflow : [workflow.md](../../workflow.md).
 
 ## Phase 1 : L'île
 - [ ] Task: Entités de l'île
-    - [ ] Tests : `WORLDS.fete` (saison, niveau 30, position, thème) ; 4 personnages avec butin, 3 répliques et 2 objets préférés ; objets, recettes, décorations
+    - [ ] Tests : `WORLDS.fete` (saison, niveau 106, position, thème) ; 4 personnages avec butin, 3 répliques et 2 objets préférés ; objets, recettes, décorations
 - [ ] Task: Scène, thème et musique
     - [ ] Tests : `ISLE_SCENERY.fete`, thème `--world-*`, `MUSIC_THEMES.fete`
 - [ ] Task: Série de squishies « Fête foraine »

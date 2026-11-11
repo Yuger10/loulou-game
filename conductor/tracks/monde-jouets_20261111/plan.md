@@ -7,7 +7,7 @@ Spec : [spec.md](./spec.md). Workflow : [workflow.md](../../workflow.md).
 
 ## Phase 1 : L'île
 - [ ] Task: Entités de l'île
-    - [ ] Tests : `WORLDS.jouets` (saison, niveau 41, position, thème) ; 4 personnages avec butin, 3 répliques et 2 objets préférés ; objets, recettes, décorations
+    - [ ] Tests : `WORLDS.jouets` (saison, niveau 44, position, thème) ; 4 personnages avec butin, 3 répliques et 2 objets préférés ; objets, recettes, décorations
 - [ ] Task: Scène, thème et musique
     - [ ] Tests : `ISLE_SCENERY.jouets`, thème `--world-*`, `MUSIC_THEMES.jouets`
 - [ ] Task: Série de squishies « Jouets doux »

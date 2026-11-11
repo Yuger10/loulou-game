@@ -38,4 +38,4 @@ Donner envie d'apprendre (lecture, nombres, calcul, heure, formes, planètes…)
 - **Ne jamais rien perdre :** la progression est sauvegardée, migrée et transférable.
 
 ## Prochaines grandes étapes
-- Saison 2 « Le Ciel des Rêves », suite : 5 îles après les Boîtes, de 5 en 5 niveaux à partir du niveau 41 (Jouets Doux, Bonbons, Musique, Jardin des Fées, et les Licornes en grand final, où Grisou devient l'ami de tous), puis la saison 3 « La Grande Expédition » (5 îles : Nuages, Dinosaures, Fête Foraine, Bibliothèque, Étoiles), d'après les idées de la joueuse.
+- Saison 2 « Le Ciel des Rêves », suite : 5 îles après les Boîtes, de 8 en 8 niveaux à partir du niveau 44 (Jouets Doux, Bonbons, Musique, Jardin des Fées, et les Licornes en grand final, où Grisou devient l'ami de tous), puis la saison 3 « La Grande Expédition », de 10 en 10 niveaux à partir du niveau 86 (5 îles : Nuages, Dinosaures, Fête Foraine, Bibliothèque, Étoiles), d'après les idées de la joueuse.

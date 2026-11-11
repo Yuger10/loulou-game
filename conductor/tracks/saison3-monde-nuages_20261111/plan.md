@@ -7,9 +7,9 @@ Spec : [spec.md](./spec.md). Workflow : [workflow.md](../../workflow.md).
 
 ## Phase 1 : L'île
 - [ ] Task: Troisième carte et ouverture de la saison 3
-    - [ ] Tests : onglet « La Grande Expédition » verrouillé sous le niveau 20 ; écran d'ouverture une seule fois ; avion en papier ; îles dans le cadre ; carte de Zap en 5 morceaux dans le journal ; migration sans perte
+    - [ ] Tests : onglet « La Grande Expédition » verrouillé sous le niveau 86 ; écran d'ouverture une seule fois ; avion en papier ; îles dans le cadre ; carte de Zap en 5 morceaux dans le journal ; migration sans perte
 - [ ] Task: Entités de l'île
-    - [ ] Tests : `WORLDS.nuages` (saison, niveau 20, position, thème) ; 4 personnages avec butin, 3 répliques et 2 objets préférés ; objets, recettes, décorations
+    - [ ] Tests : `WORLDS.nuages` (saison, niveau 86, position, thème) ; 4 personnages avec butin, 3 répliques et 2 objets préférés ; objets, recettes, décorations
 - [ ] Task: Scène, thème et musique
     - [ ] Tests : `ISLE_SCENERY.nuages`, thème `--world-*`, `MUSIC_THEMES.nuages`
 - [ ] Task: Série de squishies « Ciel »

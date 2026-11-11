@@ -1,18 +1,18 @@
 # Spec : Le Monde des Licornes et la fin de la saison 2
 
 > Idée de la joueuse principale : « le monde des licornes ».
-> **Niveaux (décision du propriétaire, 11/11/2026) :** le Ciel des Rêves s'ouvre au **niveau 36**, après tout le Lagon Magique (et non au niveau 8, en parallèle). Les îles de la saison 2 gardent leur écart de 5 niveaux : 📦 Boîtes 36, 🧸 Jouets Doux 41, 🍭 Bonbons 46, 🎵 Musique 51, 🌸 Jardin des Fées 56, 🦄 Licornes 61.
+> **Niveaux (décision du propriétaire, 11/11/2026) :** les saisons se suivent, et chaque île demande plus de parties qu'en saison 1 (où les îles sont espacées de 2 à 4 niveaux, et un niveau vaut 5 victoires). Saison 2 « Le Ciel des Rêves », de 8 en 8 à partir du niveau 36 (après tout le Lagon) : 📦 Boîtes 36, 🧸 Jouets Doux 44, 🍭 Bonbons 52, 🎵 Musique 60, 🌸 Jardin des Fées 68, 🦄 Licornes 76. Saison 3 « La Grande Expédition », de 10 en 10 après le grand final de la saison 2 : ☁️ Nuages 86, 🦕 Dinosaures 96, 🎪 Fête Foraine 106, 📚 Bibliothèque 116, 🚀 Étoiles 126.
 > **Dépend de** `squishy-collection_20261109` (v53) et de `saison2-monde-boites_20261109` (v55).
 
 ## 1. Vue d'ensemble
-La **6ᵉ et dernière île du Ciel des Rêves** est le **Royaume Arc-en-ciel**, ouvert au **niveau 61**, après les Boîtes, les Jouets Doux, les Bonbons, la Musique et le Jardin des Fées. Grisou a privé la Reine Arc-en-ciel de ses couleurs. En aidant les licornes, l'enfant rend ses couleurs au ciel. Le chapitre est le **grand final de la saison 2** : Grisou devient tout coloré, s'excuse et devient l'ami de tous, avec une fête dans le ciel.
+La **6ᵉ et dernière île du Ciel des Rêves** est le **Royaume Arc-en-ciel**, ouvert au **niveau 76**, après les Boîtes, les Jouets Doux, les Bonbons, la Musique et le Jardin des Fées. Grisou a privé la Reine Arc-en-ciel de ses couleurs. En aidant les licornes, l'enfant rend ses couleurs au ciel. Le chapitre est le **grand final de la saison 2** : Grisou devient tout coloré, s'excuse et devient l'ami de tous, avec une fête dans le ciel.
 
 Il apporte 4 personnages, 2 nouveaux mini-jeux (**Les potions de couleurs** et **Le miroir magique**), une série de squishies « Licornes », et deux récompenses de fin : **Grisou devient un compagnon** et le squishy unique **✨ Grisou arc-en-ciel**.
 
 ## 2. Exigences fonctionnelles
 
 ### 2.1 L'île
-- `licornes` : `saison:2`, niveau 61, emoji 🦄, forme d'île en nuages avec une cascade arc-en-ciel, thème `--world-*` pastel irisé, scène en SVG et CSS (`js/features/island/island.js`).
+- `licornes` : `saison:2`, niveau 76, emoji 🦄, forme d'île en nuages avec une cascade arc-en-ciel, thème `--world-*` pastel irisé, scène en SVG et CSS (`js/features/island/island.js`).
 - **Personnages :**
   - 👑 **Reine Arc-en-ciel**, guide du chapitre ; elle n'a pas de mission
   - 🦄 **Étincelle**, la licorne du Lagon rentrée chez elle. C'est un personnage distinct d'Étincelle au Lagon (id différent), avec un butin propre et des répliques qui font le lien (« Tu m'as aidée au Lagon, tu te souviens ? »)
@@ -67,7 +67,7 @@ Il apporte 4 personnages, 2 nouveaux mini-jeux (**Les potions de couleurs** et *
 - Mobile 360 px, voix, aucun texte nécessaire à lire.
 
 ## 4. Critères d'acceptation
-1. Au niveau 61, le Royaume Arc-en-ciel s'ouvre dans le Ciel, avec l'écran « Nouvelle île » précédé de son chapitre.
+1. Au niveau 76, le Royaume Arc-en-ciel s'ouvre dans le Ciel, avec l'écran « Nouvelle île » précédé de son chapitre.
 2. Les 4 personnages, leurs butins, objets, recettes, décorations, la scène et le thème sont présents.
 3. Potions : les mélanges sont corrects (table de la spec), l'arc-en-ciel est dans le bon ordre, la difficulté suit l'âge et le palier, un autre mélange est proposé après une erreur, chaque couleur a un nom parlé et un repère non coloré.
 4. Miroir : la validation compare exactement au reflet attendu (axes vertical et horizontal), les erreurs clignotent avec un indice, nouveau motif après 2 erreurs, la taille suit le palier.
