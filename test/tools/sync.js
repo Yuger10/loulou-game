@@ -1,5 +1,5 @@
 /* ---------- Aligner index.html et sw.js sur le manifeste des slices ----------
-   node test/tools/sync.js   (ou npm run sync)
+   node test/tools/sync.js   (ou bun run sync)
 
    Réécrit les <link rel="stylesheet"> locales d'index.html (dans l'ordre de
    CSS_ORDER) et sa balise de script (un seul module, js/app/main.js, v54), et

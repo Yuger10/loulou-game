@@ -28,6 +28,6 @@ Remplacer `<ile>` par la clé de l'île (ex. `boites`).
 - [ ] Ses mini-jeux éventuels : voir [checklist-mini-jeu.md](./checklist-mini-jeu.md).
 
 ## 4. Brancher et vérifier
-- [ ] `npm run sync` si des fichiers ont été ajoutés ; un nom exposé s'ajoute à l'`index.js` de sa slice.
-- [ ] `npm test` vert.
+- [ ] `bun run sync` si des fichiers ont été ajoutés ; un nom exposé s'ajoute à l'`index.js` de sa slice.
+- [ ] `bun run check` vert.
 - [ ] Cache `sw.js` incrémenté, PRD et TODO à jour.

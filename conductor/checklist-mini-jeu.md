@@ -7,7 +7,7 @@ Remplacer `<cle>` par la clé du jeu (ex. `nesting`) et `<Jeu>` par son nom de f
 - [ ] `test/smoke.test.js` : le jeu s'ouvre, une bonne réponse avance, une mauvaise relance une **autre** question (anti-devinette), la difficulté suit le palier et l'âge.
 - [ ] `test/games.test.js` : le jeu est joué jusqu'à la victoire à chaque palier (ajouter son « solveur » s'il en faut un).
 - [ ] `test/companions.test.js` : ses indices sont vérifiés automatiquement (2 niveaux, anti-devinette, jeu gagnable après les indices).
-- [ ] `npm test` échoue pour la bonne raison.
+- [ ] `bun run check` échoue pour la bonne raison.
 
 ## 2. La slice du jeu
 - [ ] `js/features/minigames/<cle>/<cle>.js` : la fonction `<Jeu>()`. Elle utilise :
@@ -38,7 +38,7 @@ Remplacer `<cle>` par la clé du jeu (ex. `nesting`) et `<Jeu>` par son nom de f
   - `test/companions.test.js` parcourt chaque jeu inscrit : il échoue si le jeu n'a pas d'indices.
 
 ## 4. Brancher et vérifier
-- [ ] `npm run sync` : met à jour `index.html` et la liste des fichiers mis en cache par `sw.js` depuis le manifeste.
+- [ ] `bun run sync` : met à jour `index.html` et la liste des fichiers mis en cache par `sw.js` depuis le manifeste.
 - [ ] Si le jeu expose volontairement un nom à d'autres slices : l'exporter et l'ajouter à son `index.js`.
-- [ ] `npm test` vert : architecture et imports, vrais modules, test de fumée, tests de jeu.
+- [ ] `bun run check` vert : architecture et imports, vrais modules, test de fumée, tests de jeu.
 - [ ] Cache `sw.js` incrémenté, PRD et TODO à jour.

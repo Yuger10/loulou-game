@@ -5,7 +5,7 @@
   - `index.html` charge un seul `<script type="module" src="js/app/main.js">`.
   - Chaque fichier importe ce qu'il utilise ; aucune variable globale.
   - `js/package.json` déclare `"type": "module"` (pour Node).
-- **Servir en `http://localhost` ou `https://`** : ouvert depuis le disque (`file://`), le jeu ne charge pas ses modules, car les navigateurs l'interdisent. En local : `npm start`.
+- **Servir en `http://localhost` ou `https://`** : ouvert depuis le disque (`file://`), le jeu ne charge pas ses modules, car les navigateurs l'interdisent. En local : `bun run start`.
 - **Aucune dépendance d'exécution.** Les dessins sont en SVG et en emojis, les sons en Web Audio, la voix passe par `speechSynthesis`.
 - **Pause (v64) :** `js/features/rest/` : voile qui rend `#app` inerte quand `pauseDue()` (règle dans `features/parents`) ; `game:after` (fin de mission, moteur), `onViewChange` (shared/ui/views), cartes de l'espace parents par l'événement `parents:cards`.
 - **Navigation (v61) :** les Réglages sont une vue (`registerView('reglages')`, `js/features/settings/`) ouverte par l'avatar ; la barre du bas a une seule feuille de tailles, `js/shared/ui/nav.css` ; `setNavLabel` (shared/ui/views) permet à une feature de nommer un bouton de la barre.
@@ -21,7 +21,7 @@
   - **l'ordre des slices, de bas en haut** : une slice n'importe que celles placées avant elle ;
   - `CSS_ORDER`, l'ordre global de la cascade.
 
-  `index.html` et la liste `FILES` de `sw.js` en sont générés (`npm run sync`, ou `npm run sw`).
+  `index.html` et la liste `FILES` de `sw.js` en sont générés (`bun run sync`, ou `bun run sw`).
 - **API publique = l'`index.js` de chaque slice**, qui réexporte ce que les autres slices ont le droit d'importer.
 - **Règles vérifiées par `test/slices.test.js`, sur les `import`** :
   - entre slices, seulement l'`index.js` ;
@@ -39,11 +39,11 @@
 
 ## Plateforme
 - **PWA :** `manifest.json` et `sw.js`, avec un cache versionné `lagon-vNN`.
-  - Depuis la v66, le numéro vient de `APP_VERSION` (`js/shared/lib/version.js`) : `npm run sync` l'écrit dans `sw.js`. L'espace parents l'affiche, avec un bouton « Chercher une mise à jour » (`js/features/update`).
+  - Depuis la v66, le numéro vient de `APP_VERSION` (`js/shared/lib/version.js`) : `bun run sync` l'écrit dans `sw.js`. L'espace parents l'affiche, avec un bouton « Chercher une mise à jour » (`js/features/update`).
   - Stratégie : réseau d'abord, cache si pas de réseau. Les fichiers du jeu sont redemandés au site avec `cache:'no-cache'` (réponse 304 s'ils n'ont pas changé), et le précache de l'installation prend `cache:'reload'` : une nouvelle version ne garde jamais d'anciens modules du cache HTTP du navigateur.
-  - La liste `FILES` (tous les modules, leurs `index.js`, `main.js` et les feuilles de style, précachés pour le hors-ligne) est générée depuis le manifeste (`npm run sw`), et `test/slices.test.js` la vérifie.
+  - La liste `FILES` (tous les modules, leurs `index.js`, `main.js` et les feuilles de style, précachés pour le hors-ligne) est générée depuis le manifeste (`bun run sw`), et `test/slices.test.js` la vérifie.
   - La version (donc le cache) doit être incrémentée à chaque livraison.
-- Servi en local (`npm start` → `python3 -m http.server 8080`). En ligne sur GitHub Pages en `https://` (https://yuger10.github.io/loulou-game/), déployé depuis `main`.
+- Servi en local (`bun run start` → `python3 -m http.server 8080`). En ligne sur GitHub Pages en `https://` (https://yuger10.github.io/loulou-game/), déployé depuis `main`.
 
 ## Données
 - **`localStorage`**, une sauvegarde par profil (`profileSaveKey(id)`) et la liste des profils (`PROFILES_KEY`).
@@ -52,8 +52,9 @@
 - **Contenu de jeu** déclaratif dans les entités (`js/entities/item/items.js`, `character/characters.js`, `world/worlds.js`, `squishy/squishies.js`) et dans `js/features/story/` (`STORY`, `EPISODES`).
 
 ## Tests
-- **`npm test`** → `test/slices.test.js` (architecture et imports), `test/modules.test.js` (v54 : les vrais modules ES chargés dans Node, dans l'ordre du navigateur et en mode strict), `test/smoke.test.js` (test de fumée jsdom : parcours, sauvegarde, anti-devinette, CSS équilibré, aucune erreur JS) `test/games.test.js` (chaque mini-jeu joué jusqu'à la victoire) `test/squishies.test.js` (v53 : collection, tirage, chambre, rangement, marché), `test/saison2.test.js` (v55 : archipels, Monde des Boîtes, gigognes, cubes, histoire), `test/jouets.test.js` (v58 : le Coffre aux Jouets Doux, les paquets de jouets, l'étagère magique), `test/bonbons.test.js` (v60 : le Royaume des Bonbons, le gâteau partagé, la recette), `test/musique.test.js` (v62 : l'Île de la Musique, le rythme magique, grave ou aigu), `test/jardin.test.js` (v63 : le Jardin des Fées, de la graine à la fleur, les coccinelles), `test/update.test.js` (v66 : la version du jeu, le bouton de mise à jour, le service worker), `test/licornes.test.js` (v65 : le Monde des Licornes, les potions, le miroir, le grand final de la saison 2), `test/niveaux.test.js` (le tableau de référence `conductor/niveaux.md`, les niveaux de `WORLDS` et ceux des specs disent la même chose) et `test/companions.test.js` (v52 : indices de chaque mini-jeu, équipe, spécialités). La page de test est construite par `test/tools/page.js` : esbuild regroupe `js/app/main.js` en un script (mode strict, sans *tree shaking*), que jsdom exécute. Les tests lisent ainsi l'état du jeu par son nom (`state`, `playGame(…)`).
+- **`bun run check`** → `test/slices.test.js` (architecture et imports), `test/modules.test.js` (v54 : les vrais modules ES chargés dans Node, dans l'ordre du navigateur et en mode strict), `test/smoke.test.js` (test de fumée jsdom : parcours, sauvegarde, anti-devinette, CSS équilibré, aucune erreur JS) `test/games.test.js` (chaque mini-jeu joué jusqu'à la victoire) `test/squishies.test.js` (v53 : collection, tirage, chambre, rangement, marché), `test/saison2.test.js` (v55 : archipels, Monde des Boîtes, gigognes, cubes, histoire), `test/jouets.test.js` (v58 : le Coffre aux Jouets Doux, les paquets de jouets, l'étagère magique), `test/bonbons.test.js` (v60 : le Royaume des Bonbons, le gâteau partagé, la recette), `test/musique.test.js` (v62 : l'Île de la Musique, le rythme magique, grave ou aigu), `test/jardin.test.js` (v63 : le Jardin des Fées, de la graine à la fleur, les coccinelles), `test/update.test.js` (v66 : la version du jeu, le bouton de mise à jour, le service worker), `test/licornes.test.js` (v65 : le Monde des Licornes, les potions, le miroir, le grand final de la saison 2), `test/niveaux.test.js` (le tableau de référence `conductor/niveaux.md`, les niveaux de `WORLDS` et ceux des specs disent la même chose) et `test/companions.test.js` (v52 : indices de chaque mini-jeu, équipe, spécialités). La page de test est construite par `test/tools/page.js` : esbuild regroupe `js/app/main.js` en un script (mode strict, sans *tree shaking*), que jsdom exécute. Les tests lisent ainsi l'état du jeu par son nom (`state`, `playGame(…)`).
   - *Note du 2026-11-09 (v54) :* ajout d'`esbuild` (dépendance de développement, jamais chargée par le jeu) pour les tests, comme prévu par la track `refactor-esm-modules`. Ce regroupement change `const`/`let` en `var` : `test/modules.test.js` couvre donc l'ordre d'initialisation réel. Tests sous Node 22.
+- **Paquets et scripts : bun** (factory, phase 1 ; stack de référence cothon). Version épinglée par `packageManager` dans `package.json`, `bun.lock` commité, `bun install --frozen-lockfile` en CI. npm, yarn et pnpm sont refusés : `bun run check` échoue si leur lockfile réapparaît (`test/tools/lockfile.js`). Le **runtime reste Node** : les tests se lancent avec `node`. Mesures : `docs/factory/SPEED.md`.
 - Dépendances de développement : `jsdom` (exécuter le jeu), `esbuild` (regrouper les modules pour les tests, v54), `acorn` et `acorn-walk` (analyser le code : imports, inventaire, test de frontières). Aucune n'est chargée par le jeu.
   - *Note du 2026-11-09 :* ajout d'`acorn` pour la track `refactor-feature-slices` : un analyseur sans dépendance, plus fiable que des expressions régulières pour distinguer le code des textes.
 

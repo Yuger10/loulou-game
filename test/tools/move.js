@@ -10,7 +10,7 @@
 
    Outil de développement uniquement (refactor en feature slices, v51).
    Depuis la v54 (modules ES) : après un déplacement, mettre à jour les
-   `export { … }` et les `import` des deux fichiers ; npm test indique ce qui
+   `export { … }` et les `import` des deux fichiers ; bun run check indique ce qui
    manque (« utilisé sans import », « n'est pas exporté »). */
 const fs = require('fs');
 const acorn = require('acorn');

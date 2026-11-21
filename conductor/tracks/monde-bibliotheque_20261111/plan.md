@@ -1,7 +1,7 @@
 # Plan : 📚 La Bibliothèque Magique
 
 Spec : [spec.md](./spec.md). Workflow : [workflow.md](../../workflow.md).
-> **Architecture (feature slices v51, modules ES v54) :** nouvelles slices avec leur `index.js`, déclarées dans `js/slices.cjs`, puis `npm run sync`. Checklists : `conductor/checklist-ile.md`, `conductor/checklist-mini-jeu.md`.
+> **Architecture (feature slices v51, modules ES v54) :** nouvelles slices avec leur `index.js`, déclarées dans `js/slices.cjs`, puis `bun run sync`. Checklists : `conductor/checklist-ile.md`, `conductor/checklist-mini-jeu.md`.
 > **Numéro de version :** attribué à la livraison (le suivant sur `main`).
 > **À relire avec la joueuse avant de commencer** : noms, personnages, mini-jeux.
 
@@ -35,8 +35,8 @@ Spec : [spec.md](./spec.md). Workflow : [workflow.md](../../workflow.md).
 
 ## Phase 5 : Livraison
 - [ ] Task: Docs et intégration
-    - [ ] Numéro de version attribué à la livraison ; PRD (idée de la joueuse), TODO, cache `sw.js` incrémenté, `npm run sync`
+    - [ ] Numéro de version attribué à la livraison ; PRD (idée de la joueuse), TODO, cache `sw.js` incrémenté, `bun run sync`
 - [ ] Task: Vérification complète
-    - [ ] `npm test` vert ; parcours manuel à 360 px (ouverture de l'île, 4 personnages, 2 mini-jeux, chapitre, un épisode)
+    - [ ] `bun run check` vert ; parcours manuel à 360 px (ouverture de l'île, 4 personnages, 2 mini-jeux, chapitre, un épisode)
 - [ ] Task: Conductor - User Manual Verification 'Livraison' (Protocol in workflow.md)
 - [ ] Task: Branche, PR sur `main` (merge sur ordre du propriétaire)
