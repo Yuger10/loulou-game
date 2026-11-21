@@ -1,0 +1,20 @@
+  /* =====================================================================
+     Le miroir magique — Royaume Arc-en-ciel (saison 2)
+     ===================================================================== */
+  .mr-wrap{display:flex; justify-content:center; margin:0 auto 8px; padding:10px; max-width:330px;
+    border-radius:var(--radius-lg, 24px); background:linear-gradient(180deg, #FFF6FD, #E9F6FF); border:3px solid #fff;}
+  .mr-grid{position:relative; display:grid; grid-template-columns:repeat(var(--n), 1fr); gap:4px; width:min(300px, 82vw);}
+  .mr-cell{aspect-ratio:1; min-width:36px; border-radius:8px; border:2px solid #D9CCF2; background:#fff; display:flex; align-items:center; justify-content:center;
+    font-size:1rem; font-weight:800; color:#fff; padding:0;}
+  .mr-cell.src{background:#F4EDFF; border-style:dashed;}
+  .mr-cell.src.on, .mr-cell.tap.on{border-style:solid; border-color:#6A4FB3;}
+  .mr-cell.tap{cursor:pointer;}
+  .mr-cell.wrong{animation:mrBlink .35s ease-in-out 4; border-color:#E8344E;}
+  @keyframes mrBlink{0%,100%{box-shadow:none;} 50%{box-shadow:0 0 0 4px rgba(232,52,78,.55);}}
+  .mr-axis{position:absolute; pointer-events:none; background:repeating-linear-gradient(180deg, #FFD95A 0 6px, #FFB8E1 6px 12px); border-radius:3px;}
+  .axis-v .mr-axis{left:calc(50% - 3px); top:-6px; bottom:-6px; width:6px;}
+  .axis-h .mr-axis{top:calc(50% - 3px); left:-6px; right:-6px; height:6px; background:repeating-linear-gradient(90deg, #FFD95A 0 6px, #FFB8E1 6px 12px);}
+  .mr-key{margin:0 0 6px; font-weight:800; color:var(--ink);}
+  .mr-key span{display:inline-block; width:24px; height:24px; line-height:24px; border-radius:6px; color:#fff;}
+  .mr-done{margin-top:2px;}
+  @media (prefers-reduced-motion: reduce){ .mr-cell.wrong{animation:none; box-shadow:0 0 0 4px rgba(232,52,78,.55);} }

@@ -78,7 +78,7 @@ Registre des tracks Conductor, **dans l'ordre d'implémentation**. Feuille de ro
 
 ---
 
-- [ ] **Track: Saison 2, île 6 : 🦄 Monde des Licornes + grand final de la saison 2, niveau 62**
+- [x] **Track: Saison 2, île 6 : 🦄 Monde des Licornes + grand final de la saison 2, niveau 62 (v65)**
 *Link: [./tracks/monde-licornes_20261109/](./tracks/monde-licornes_20261109/)*
 
 ---

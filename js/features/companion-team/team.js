@@ -57,7 +57,9 @@ const TEAM_ROLES = {
   lili:   { home:'boites',   role:'Indices magiques', icon:'✨',
             say:['Bonjour, je suis Lili la fée !', 'Mes indices sont magiques : ils arrivent plus vite, avec des paillettes.'],
             demo:'<span class="tm-chip">💡✨</span><span class="tm-chip">🔎 Énigmes</span>' },
-  grisou: { home:'licornes', role:'Câlins',           icon:'☁️',
+  // Grisou ne se rencontre pas en visitant l'île : il rejoint l'équipe au grand
+  // final de la saison 2 (événement « season2:done », js/features/story/finale.js)
+  grisou: { home:'licornes', role:'Câlins',           icon:'☁️', after:'season2Done',
             say:['Coucou, je suis Grisou, un petit nuage tout doux.', 'Quand c\'est difficile, je te fais un câlin, et je te dis quand il est l\'heure de la pause.'],
             demo:'<span class="tm-chip">☁️ 🤗</span><span class="tm-chip">😴</span>' },
 };
@@ -87,8 +89,15 @@ function teamHomeOf(id){
 // un compagnon à rencontrer sur cette île (jamais le principal, ni un déjà rencontré)
 function teamEncounterOn(world){
   if(!teamIsOpen()) return null;
-  return teamKnownIds().find(id=> teamHomeOf(id) === world && !teamHasMet(id)) || null;
+  return teamKnownIds().find(id=> teamHomeOf(id) === world && !teamHasMet(id) && !TEAM_ROLES[id].after) || null;
 }
+// le grand final de la saison 2 : Grisou devient l'ami de tous, et rejoint l'équipe
+on('season2:done', ()=>{
+  const t = teamState();
+  if(!t.met.includes('grisou')) t.met.push('grisou');
+  save();
+  renderTeamHeads();
+});
 
 /* ---- les petites têtes : principal + équipiers (3 au maximum) ---- */
 function teamHeadsHTML(){

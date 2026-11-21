@@ -33,6 +33,7 @@ import { bindQuit, gameHeader, speakWrongHint } from '../screen/index.js';
 import { addStorySquishyBox, squishyBoxRewardHTML } from '../squishies/index.js';
 import { addCoins } from '../wallet/index.js';
 import { EPISODES, episodesSeen, openEpisode } from './episodes.js';
+import { openSeasonFinale } from './finale.js';
 import { grisouSVG } from './grisou.js';
 
 const STORY = {
@@ -300,6 +301,29 @@ const STORY = {
     success: "Bravo ! La cloche de verre se soulève, le jardin refleurit… et Grisou est presque tout coloré : il ne lui manque plus que les couleurs des licornes 🌈",
     reward: 14,
   },
+  // le grand final de la saison 2 suit la résolution de ce chapitre (finale.js)
+  licornes: {
+    guide: 'reine',
+    title: 'Les couleurs du ciel',
+    intro: [
+      "Bienvenue au Royaume Arc-en-ciel 🦄 C'est d'ici que partent toutes les couleurs du ciel.",
+      "Mais Grisou a emporté mes couleurs, les toutes dernières, et mon royaume est devenu tout pâle.",
+      "Résous mes devinettes de couleurs : chaque bonne réponse rend une couleur au ciel !",
+    ],
+    riddles: [
+      { q: "Je suis jaune, je brille dans le ciel, et je réchauffe tout le monde. Qui suis-je ?",
+        tip: 'On le voit le jour, jamais la nuit.',
+        opts: [{ e:'☀️', ok:true }, { e:'🌙' }, { e:'⭐' }] },
+      { q: "J'ai toutes les couleurs, et j'apparais quand il y a du soleil et de la pluie en même temps. Qui suis-je ?",
+        tip: 'Je dessine un grand pont coloré dans le ciel.',
+        opts: [{ e:'🌈', ok:true }, { e:'☁️' }, { e:'⚡' }] },
+      { q: "Je suis toute rouge et ronde, et je pousse sur un arbre. Qui suis-je ?",
+        tip: 'Un fruit qu\'on croque, rouge ou vert.',
+        opts: [{ e:'🍎', ok:true }, { e:'🍌' }, { e:'🫐' }] },
+    ],
+    success: "Bravo ! Les couleurs reviennent dans tout le royaume… Regarde, Grisou arrive !",
+    reward: 20,
+  },
 };
 
 /* Les prologues des saisons (v55) : lus à l'ouverture d'un archipel, avant le
@@ -457,7 +481,12 @@ function storyWin(world, onDone){
     </div>
     <button class="btn-primary" id="story-continue">Continuer l'aventure ✨</button>
   `);
-  document.getElementById('story-continue').onclick = ()=>{ playSound('tap'); closeModal(); if(onDone) onDone(); };
+  document.getElementById('story-continue').onclick = ()=>{
+    playSound('tap');
+    // le Royaume Arc-en-ciel : le grand final de la saison 2 suit son énigme (une seule fois)
+    if(world === 'licornes' && !state.season2Done){ openSeasonFinale(onDone); return; }
+    closeModal(); if(onDone) onDone();
+  };
 }
 
 function riddleHints(q){
@@ -492,10 +521,12 @@ function openStoryJournal(){
       ${ARCHIPELAGO_ORDER.map(saison=>{
         const a = ARCHIPELAGOS[saison], open = archipelagoUnlocked(saison), pr = STORY_PROLOGUES[saison];
         return `<section class="story-season ${a.sky ? 'sky' : ''}" data-saison="${saison}">
-          <h3>${open ? a.emoji : '🔒'} ${saison === 1 ? 'Saison 1 : ' : ''}${a.name}${open ? '' : ` <small>(niveau ${a.level})</small>`}</h3>
+          <h3>${open ? a.emoji : '🔒'} ${saison === 1 ? 'Saison 1 : ' : ''}${a.name}${open ? '' : ` <small>(niveau ${a.level})</small>`}${saison === 2 && state.season2Done ? ' <span class="done">✅</span>' : ''}</h3>
           ${pr && open ? `<button type="button" class="story-chap story-prologue" data-prologue="${saison}">
             <span class="story-chap-n">☁️</span><span class="story-chap-ico">📜</span><span class="story-chap-title">${pr.title}</span></button>` : ''}
           ${worldsOf(saison).map((id, i)=> storyChapterRow(id, i)).join('')}
+          ${saison === 2 && state.season2Done ? `<button type="button" class="story-chap story-prologue" data-finale>
+            <span class="story-chap-n">🌈</span><span class="story-chap-ico">☁️</span><span class="story-chap-title">Revoir le grand final</span></button>` : ''}
         </section>`;
       }).join('')}
     </div>
@@ -507,6 +538,8 @@ function openStoryJournal(){
       setTimeout(()=> openStoryChapter(b.dataset.world), 200);
     };
   });
+  const fin = document.querySelector('[data-finale]');
+  if(fin) fin.onclick = ()=>{ playSound('tap'); openSeasonFinale(openStoryJournal, { replay:true }); };
   document.querySelectorAll('[data-prologue]').forEach(b=>{
     b.onclick = ()=>{ playSound('tap'); openSeasonPrologue(Number(b.dataset.prologue), openStoryJournal); };
   });

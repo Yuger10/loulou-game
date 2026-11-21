@@ -480,6 +480,54 @@ const CHARACTERS = {
       "Sans les abeilles, les fleurs ne deviendraient pas des fruits. Bzz bzz !",
       "Tu veux goûter mon miel ? D'abord, un petit défi !",
     ]},
+  // ---- Saison 2, le Royaume Arc-en-ciel (idée de la joueuse : « le monde des licornes ») ----
+  // la Reine est le guide du chapitre : elle ne propose pas de mini-jeu (noGames)
+  reine:{
+    emoji:'👑', name:'La Reine', title:'Arc-en-ciel', world:'licornes',
+    gender:'f', noGames:true,
+    loot:['crinarc','nuagedoux'],
+    texts:[
+      "Bienvenue dans mon royaume, petit voyageur des nuages. Mes couleurs ont disparu…",
+      "Les licornes ont besoin de toi. Va les aider, et les couleurs reviendront une à une.",
+      "Merci d'être venu jusqu'ici. Un rêve partagé ne se perd jamais.",
+    ]},
+  // Étincelle, rentrée chez elle : un personnage distinct d'Étincelle du Lagon (id licorne)
+  etincelle:{
+    emoji:'🦄', name:'Étincelle', title:'la licorne du Lagon, rentrée chez elle', world:'licornes',
+    gender:'f',
+    loot:['cornescintillante','crinarc'],
+    texts:[
+      "Tu m'as aidée au Lagon, tu te souviens ? Maintenant, c'est mon royaume qui a besoin de toi !",
+      "Ici, c'est chez moi : les arcs-en-ciel poussent comme des fleurs… enfin, d'habitude.",
+      "Ma corne brille quand tu réussis. On joue ?",
+    ]},
+  biscotte:{
+    emoji:'🐴', name:'Biscotte', title:'le bébé licorne', world:'licornes',
+    gender:'m',
+    loot:['nuagedoux','ferastral'],
+    texts:[
+      "Oups ! Mon arc-en-ciel est tout tordu… Il lui manque des couleurs !",
+      "Je suis encore petit, mais je m'entraîne tous les jours. Tu m'aides ?",
+      "Hiii ! On fait la course jusqu'au nuage ?",
+    ]},
+  felix:{
+    emoji:'🧪', name:'Félix', title:'le licorne alchimiste', world:'licornes',
+    gender:'m',
+    loot:['fiolecouleur','cornescintillante'],
+    texts:[
+      "Rouge et jaune, ça fait… orange ! Mes potions de couleurs sont magiques !",
+      "Une goutte de bleu, une goutte de jaune, et hop : du vert !",
+      "Sans les couleurs, mes potions sont toutes grises. Tu m'aides à les retrouver ?",
+    ]},
+  mira:{
+    emoji:'🪞', name:'Mira', title:'la licorne coiffeuse des Écuries étoilées', world:'licornes',
+    gender:'f',
+    loot:['miroirargent','fiolecouleur'],
+    texts:[
+      "Mon miroir magique montre tout à l'envers… enfin, de l'autre côté !",
+      "Une mèche à gauche, une mèche à droite : c'est symétrique, c'est joli !",
+      "Viens, on coiffe les crinières devant le miroir ?",
+    ]},
 };
 
 function charsOf(world){

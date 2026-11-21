@@ -107,6 +107,16 @@ const ITEMS = {
   filaraignee:{emoji:'🕸️', name:'Fil d\'araignée', price:7, world:'jardin'},
   noisette:{emoji:'🌰', name:'Noisette', price:6, world:'jardin'},
   champimini:{emoji:'🍄', name:'Mini-champignon', price:7, world:'jardin'},
+  // Royaume Arc-en-ciel
+  cornescintillante:{emoji:'🦄', name:'Corne scintillante', price:8, world:'licornes'},
+  crinarc:{emoji:'🌈', name:'Crin arc-en-ciel', price:6, world:'licornes'},
+  ferastral:{emoji:'🧲', name:'Fer à cheval étoilé', price:7, world:'licornes'},
+  fiolecouleur:{emoji:'🧪', name:'Fiole de couleur', price:6, world:'licornes'},
+  miroirargent:{emoji:'🪞', name:'Miroir d\'argent', price:7, world:'licornes'},
+  nuagedoux:{emoji:'☁️', name:'Nuage doux', price:5, world:'licornes'},
+  etoilefilante:{emoji:'🌠', name:'Étoile filante', price:9, world:'licornes'},
+  paillettes:{emoji:'✨', name:'Pot de paillettes', price:6, world:'licornes'},
+  plumearc:{emoji:'🪶', name:'Plume irisée', price:8, world:'licornes'},
 };
 
 const CRAFTED = {
@@ -220,6 +230,11 @@ const CRAFTED = {
     recipe:{petalerose:2, rosee:1}},
   potmielfee:{emoji:'🍯', name:'Pot de miel des fées', price:20, world:'jardin',
     recipe:{pollen:2, noisette:1}},
+  // Royaume Arc-en-ciel
+  potionarc:{emoji:'⚗️', name:'Potion arc-en-ciel', price:24, world:'licornes',
+    recipe:{fiolecouleur:1, crinarc:1, paillettes:1}},
+  diademe:{emoji:'👑', name:'Diadème étoilé', price:22, world:'licornes',
+    recipe:{etoilefilante:1, cornescintillante:1}},
 };
 
 const ALL_ITEMS = Object.assign({}, ITEMS, CRAFTED);
@@ -342,6 +357,12 @@ const DECOS = {
   tournesolD:{emoji:'🌻', name:'Tournesol géant', price:18, world:'jardin'},
   rucheD:{emoji:'🐝', name:'Ruche dorée', price:14, world:'jardin'},
   fontaineroseeD:{emoji:'⛲', name:'Fontaine de rosée', price:12, world:'jardin'},
+  // Royaume Arc-en-ciel
+  arcD:{emoji:'🌈', name:'Arc-en-ciel du royaume', price:40, world:'licornes'},
+  chateaunuageD:{emoji:'🏰', name:'Château de nuages', price:30, world:'licornes'},
+  carrouselD:{emoji:'🎠', name:'Carrousel de licornes', price:18, world:'licornes'},
+  fontainearcD:{emoji:'⛲', name:'Fontaine irisée', price:14, world:'licornes'},
+  ecurieD:{emoji:'🛖', name:'Écurie étoilée', price:12, world:'licornes'},
 };
 
 const ALBUM_REWARD = 100;

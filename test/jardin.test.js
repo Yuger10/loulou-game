@@ -59,11 +59,11 @@ function startGame(key, tier, age){
     const css = page.manifestCss().map(f=> page.read(f)).join('\n');
     check('Le Jardin des Fées : saison 2, niveau 56 (conductor/niveaux.md), palier 6',
       ev('WORLDS.jardin.saison') === 2 && ev('WORLDS.jardin.level') === 56 && ev('WORLDS.jardin.diff') === 6 && ev('WORLDS.jardin.emoji') === '🌸');
-    check('c\'est la 5ᵉ île du Ciel des Rêves', json(ev('worldsOf(2)')) === json(['boites', 'jouets', 'bonbons', 'musique', 'jardin']));
-    // la carte du Ciel en serpentin : 6 places sans chevauchement, la 6ᵉ (18, 26) pour les Licornes
-    const pos = ev('worldsOf(2).map(id=> WORLDS[id].map)').concat([{ x:18, y:26 }]);
+    check('c\'est la 5ᵉ île du Ciel des Rêves', json(ev('worldsOf(2)').slice(0, 5)) === json(['boites', 'jouets', 'bonbons', 'musique', 'jardin']));
+    // la carte du Ciel en serpentin : 6 places sans chevauchement (la 6ᵉ, en haut à gauche, pour les Licornes)
+    const pos = ev('worldsOf(2).map(id=> WORLDS[id].map)');
     const clash = pos.some((a, i)=> pos.slice(i + 1).some(b=> Math.abs(a.x - b.x) < 24 && Math.abs(a.y - b.y) < 30));
-    check('la carte du Ciel garde une place libre pour les Licornes, sans chevauchement', !clash);
+    check('la carte du Ciel a la place de ses 6 îles, sans chevauchement', !clash && pos.length <= 6);
     check('son thème de couleurs (vert tendre, lilas, pêche)', css.includes('body[data-world="jardin"]{--world-sky'));
     check('son paysage (fleurs géantes, champignons-maisons, gouttes de rosée)', !!ev('ISLE_SCENERY.jardin') && /E8344E/.test(ev('ISLE_SCENERY.jardin(WORLDS.jardin)')));
     check('sa musique : une flûte légère et de petites cloches, à 76 battements par minute', ev('MUSIC_THEMES.jardin.lead') === 'flute' && ev('MUSIC_THEMES.jardin.bpm') === 76);

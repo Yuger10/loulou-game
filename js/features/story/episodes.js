@@ -133,6 +133,15 @@ const EPISODES = {
     { by:'miella', title:'Le miel arc-en-ciel', find:'🌈',
       lines:["Bzz ! Dans une fleur, j'ai trouvé un pollen de toutes les couleurs.", "Il vient du Royaume Arc-en-ciel, là où vivent les licornes. C'est là que tout va se jouer !"] },
   ],
+  // le Royaume prépare le grand final : les couleurs reviennent, Grisou hésite
+  licornes: [
+    { by:'biscotte', title:'Le premier arc-en-ciel', find:'🌈',
+      lines:["Hiii ! J'ai enfin réussi un arc-en-ciel, avec du rouge et du jaune dedans !", "Il en manque encore, mais les couleurs reviennent, une à une !"] },
+    { by:'felix', title:'La potion de Grisou', find:'🧪',
+      lines:["Grisou est venu voir mes potions. Il a regardé le violet très longtemps…", "Je crois qu'il hésite à rendre le tout dernier rêve. Il a peur de le perdre."] },
+    { by:'etincelle', title:'Une amie pour Grisou', find:'🤝',
+      lines:["J'ai parlé à Grisou, tout doucement. Je lui ai dit qu'un rêve partagé ne se perd jamais.", "Il a souri. Je crois qu'il va bientôt rendre ses couleurs au ciel…"] },
+  ],
 };
 
 function storyMissionsOn(world){ return (state.storyMissions || {})[world] || 0; }

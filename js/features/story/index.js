@@ -5,3 +5,4 @@ export {
 } from './story.js';
 export { maybeStoryEpisode, noteStoryMission, storyProgressHTML } from './episodes.js';
 export { grisouSVG } from './grisou.js';
+export { openSeasonFinale, season2Done } from './finale.js';

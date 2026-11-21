@@ -160,6 +160,33 @@ const INDEPENDENT = {
     if(mode === 'half') return Number(d.querySelector(sol[0]).dataset.v) * 2 === Number(stage.dataset.total);
     return Number(d.querySelector(sol[0]).dataset.v) === l + r && l === r;
   },
+  // potions : la table des mélanges de la peinture et l'ordre de l'arc-en-ciel, propres au test
+  potions(sol){
+    const MIX = { 'rouge+jaune':'orange', 'bleu+jaune':'vert', 'rouge+bleu':'violet', 'rouge+blanc':'rose', 'noir+blanc':'gris' };
+    const mix = (a, b)=> MIX[`${a}+${b}`] || MIX[`${b}+${a}`];
+    const RB = ['rouge','orange','jaune','vert','bleu','violet'];
+    const st = d.getElementById('po-stage'), mode = st.dataset.mode;
+    const picked = sol.map(s=> d.querySelector(s).dataset.c);
+    if(mode === 'name') return picked[0] === st.dataset.target;
+    if(mode === 'mix') return picked[0] === mix(st.dataset.a, st.dataset.b);
+    if(mode === 'inverse') return mix(st.dataset.a, picked[0]) === st.dataset.r;
+    const holes = [...st.querySelectorAll('.po-band.hole')].map(b=> RB[Number(b.dataset.i)]);
+    return picked.join() === holes.join();
+  },
+  // miroir : le reflet calculé par le test à partir des cases du modèle
+  mirror(sol){
+    const g = d.getElementById('mr-grid'), n = Number(g.dataset.size), axis = g.dataset.axis;
+    const want = {};
+    g.querySelectorAll('.mr-cell.src[data-src]').forEach(c=>{
+      const [r, k] = c.dataset.k.split('-').map(Number);
+      const m = axis === 'v' ? `${r}-${n - 1 - k}` : `${n - 1 - r}-${k}`;
+      want[m] = Number(c.dataset.src);
+    });
+    const taps = {};
+    sol.slice(0, -1).forEach(s=>{ const k = d.querySelector(s).dataset.k; taps[k] = (taps[k] || 0) + 1; });
+    return sol[sol.length - 1] === '#mirror-done' && Object.keys(want).length > 0
+      && Object.keys(want).every(k=> taps[k] === want[k]) && Object.keys(taps).every(k=> want[k] === taps[k]);
+  },
   // étagère : chaque case est à la croisée de la ligne de la couleur et de la colonne de la forme
   shelf(sol){
     const els = sol.map(s=> d.querySelector(s));
@@ -216,7 +243,7 @@ async function playToWin(key, tier){
     }
   }
   console.log(`  ${played} parties jouées`);
-  check('les 28 mini-jeux sont testés', games.length >= 28);
+  check('les 30 mini-jeux sont testés', games.length >= 30);
 
   /* ---- 2. une mauvaise réponse ne fait jamais gagner ---- */
   section('Une mauvaise réponse ne fait pas gagner');

@@ -27,8 +27,9 @@ const SQUISHY_SERIES = {
   bonbons:  { name:'Bonbons',   emoji:'🍬', world:'bonbons' },  // le Royaume des Bonbons
   instruments: { name:'Instruments', emoji:'🎺', world:'musique' }, // l'Île de la Musique
   petitesbetes: { name:'Petites bêtes', emoji:'🐞', world:'jardin' }, // le Jardin des Fées
+  licornes: { name:'Licornes', emoji:'🦄', world:'licornes' },     // le Royaume Arc-en-ciel
 };
-const SQUISHY_SERIES_ORDER = ['capy', 'desserts', 'animaux', 'boites', 'jouets', 'bonbons', 'instruments', 'petitesbetes'];
+const SQUISHY_SERIES_ORDER = ['capy', 'desserts', 'animaux', 'boites', 'jouets', 'bonbons', 'instruments', 'petitesbetes', 'licornes'];
 
 // les trois raretés, et leur chance au tirage (voir openSquishyBox)
 const SQUISHY_RARITY = {
@@ -95,6 +96,20 @@ const SQUISHIES = {
   'chenille':       { series:'petitesbetes', name:'Chenille',   say:'une chenille',   rarity:'commun', color:'vert',   shape:'ovale', size:'grand' },
   'pois':           { series:'petitesbetes', name:'Pois',       say:'Pois, la coccinelle', rarity:'rare', color:'orange', shape:'rond', size:'grand' },
   'papillon-irise': { series:'petitesbetes', name:'Papillon irisé', say:'un papillon irisé', rarity:'brille', color:'bleu', shape:'ovale', size:'grand' },
+  // 🦄 Licornes (saison 2, le Royaume Arc-en-ciel)
+  'licorne-nuage':  { series:'licornes', name:'Licorne nuage',  say:'une licorne nuage',  rarity:'commun', color:'bleu',   shape:'rond',  size:'grand' },
+  'licorne-fraise': { series:'licornes', name:'Licorne fraise', say:'une licorne fraise', rarity:'commun', color:'rose',   shape:'rond',  size:'petit' },
+  'licorne-dodo':   { series:'licornes', name:'Licorne dodo',   say:'une licorne dodo',   rarity:'commun', color:'violet', shape:'ovale', size:'grand' },
+  'bebe-licorne':   { series:'licornes', name:'Bébé licorne',   say:'un bébé licorne',    rarity:'commun', color:'jaune',  shape:'rond',  size:'petit' },
+  'biscotte':       { series:'licornes', name:'Biscotte',       say:'Biscotte, le bébé licorne', rarity:'rare', color:'orange', shape:'rond', size:'grand' },
+  'licorne-etoile': { series:'licornes', name:'Licorne étoile', say:'une licorne étoile', rarity:'brille', color:'violet', shape:'carre', size:'grand' },
+};
+
+// Les trésors : des squishies UNIQUES, jamais dans les boîtes ni à l'échange.
+// Ils ont leur case « Trésors » dans la chambre (js/features/squishies).
+const SQUISHY_TREASURES = {
+  'grisou-arc': { series:'tresors', name:'Grisou arc-en-ciel', say:'Grisou arc-en-ciel', rarity:'brille', color:'violet', shape:'rond', size:'grand',
+    how:'Termine la saison 2, au Royaume Arc-en-ciel' },
 };
 
 // La série gagnée en résolvant l'énigme d'une île (une seule fois par île)
@@ -102,7 +117,7 @@ const SQUISHY_ISLAND_SERIES = {
   lagon:'animaux', foret:'animaux', montagne:'animaux',
   chateau:'desserts', volcan:'desserts', squishy:'desserts',
   jungle:'capy', cite:'capy',
-  boites:'boites', jouets:'jouets', bonbons:'bonbons', musique:'instruments', jardin:'petitesbetes',
+  boites:'boites', jouets:'jouets', bonbons:'bonbons', musique:'instruments', jardin:'petitesbetes', licornes:'licornes',
 };
 
 function squishiesOf(series){ return Object.keys(SQUISHIES).filter(id=> SQUISHIES[id].series === series); }
@@ -118,5 +133,5 @@ const SQ_COLORS = {
 
 export {
   SQ_COLORS, SQUISHIES, squishiesOf, SQUISHY_ISLAND_SERIES, SQUISHY_RARITY, SQUISHY_SERIES,
-  SQUISHY_SERIES_ORDER
+  SQUISHY_SERIES_ORDER, SQUISHY_TREASURES
 };

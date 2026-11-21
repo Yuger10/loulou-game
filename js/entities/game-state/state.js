@@ -7,7 +7,7 @@ const MISSIONS_PER_LEVEL = 5;
 const SAVE_KEY = 'lagon-magique-save';
 
 /* ---------- État ---------- */
-const SAVE_VERSION = 8;
+const SAVE_VERSION = 9;
 
 const DEFAULT_STATE = {
   v: SAVE_VERSION,
@@ -44,6 +44,7 @@ const DEFAULT_STATE = {
   charsHelped: {},    // personnages déjà aidés au moins une fois (Sam le guide, v52)
   squishies: squishyFreshState(),   // la collection de squishies (js/features/squishies, v53)
   skyIntroSeen: false,  // l'ouverture du Ciel des Rêves (saison 2, v55) déjà montrée
+  season2Done: false,   // le grand final de la saison 2 (Royaume Arc-en-ciel) déjà joué
 };
 
 /* La collection de squishies (v53) : état neuf.
@@ -56,9 +57,11 @@ const DEFAULT_STATE = {
      fromStory  îles dont l'énigme a déjà donné sa boîte
      day        { date, bought, sorted } : achats et rangements du jour
      sorted     boîtes de rangement remplies, en tout
-     hello      la chambre a déjà été annoncée (première ouverture) */
+     hello      la chambre a déjà été annoncée (première ouverture)
+     treasures  les squishies uniques (case « Trésors »), jamais dans les boîtes :
+                ✨ Grisou arc-en-ciel, donné par le grand final de la saison 2 */
 function squishyFreshState(){
-  return { owned:{}, boxes:[], shelf:Array(12).fill(null), dry:0, done:{}, fromStory:{}, day:null, sorted:0, hello:false };
+  return { owned:{}, boxes:[], shelf:Array(12).fill(null), dry:0, done:{}, fromStory:{}, day:null, sorted:0, hello:false, treasures:[] };
 }
 
 // copie profonde : sinon inventory/seen/decos seraient partagés avec DEFAULT_STATE
@@ -101,6 +104,7 @@ let state = {
   charsHelped: {},
   squishies: squishyFreshState(),
   skyIntroSeen: false,
+  season2Done: false,
 };
 
 /* L'emplacement de sauvegarde : le joueur courant (entities/player, une couche
@@ -168,6 +172,12 @@ function migrate(saved){
     // une pause qui tient : le journal des pauses (activité choisie, tentatives)
     if(!saved.restLog || typeof saved.restLog !== 'object') saved.restLog = {};
     if(saved.restRecall === undefined) saved.restRecall = null;
+  }
+  if(v < 9){
+    // le Royaume Arc-en-ciel : le grand final de la saison 2 (une fois), et la
+    // case « Trésors » de la chambre à squishies
+    saved.season2Done = false;
+    if(saved.squishies && !Array.isArray(saved.squishies.treasures)) saved.squishies.treasures = [];
   }
   saved.v = SAVE_VERSION;
   return saved;

@@ -65,6 +65,8 @@ const PROGRESS_CHEERS = {
   pitch:        'Ton oreille reconnaît le grave et l\'aigu de mieux en mieux !',
   lifecycle:    'Tu connais de mieux en mieux la vie des plantes et des petites bêtes !',
   ladybugs:     'Tu trouves les doubles et les moitiés de mieux en mieux !',
+  potions:      'Tu connais les couleurs et leurs mélanges de mieux en mieux !',
+  mirror:       'Tu dessines les reflets du miroir de mieux en mieux !',
 };
 
 function gameMaxTier(key){ return GAME_TIER_MAX[key] || 5; }

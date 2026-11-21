@@ -12,6 +12,7 @@
    l'espace parents a aussi un interrupteur. Réglage : state.music. */
 import { state } from '../../entities/game-state/index.js';
 import { currentSeason } from '../../entities/season/index.js';
+import { on } from '../../shared/lib/index.js';
 import { currentWorld } from '../../entities/world/index.js';
 import { audioCtx, ensureAudioCtx, musicBusNode } from '../../shared/ui/index.js';
 
@@ -35,13 +36,20 @@ const MUSIC_THEMES = {
   musique:  { root:62, scale:[0,2,4,7,9],  bpm:100, lead:'marimba', prog:[0,5,9,7], tick:true },
   // une flûte légère et de petites cloches
   jardin:   { root:69, scale:[0,2,4,7,9],  bpm:76, lead:'flute',   prog:[0,9,5,7], tick:true },
+  // la harpe et les clochettes du Royaume ; la fête du grand final, plus joyeuse
+  licornes: { root:65, scale:[0,2,4,7,9],  bpm:84, lead:'harp',    prog:[0,9,5,7], tick:true },
+  'licornes-fete': { root:67, scale:[0,2,4,7,9], bpm:112, lead:'bell', prog:[0,5,7,0], shaker:true },
 };
 const MUSIC_VOLUME = 1.0;       // crête ≈ 0,11, bien sous les bruitages ; passe ensuite par le volume général du bus
 
 let music = { on:false, timer:null, nextTime:0, step:0, master:null, filter:null, last:7 };
 
+// un thème qui remplace un moment celui de l'île (la fête du grand final) :
+// emit('music:theme', 'licornes-fete'), puis emit('music:theme', null)
+let musicOverride = null;
+on('music:theme', (key)=>{ musicOverride = MUSIC_THEMES[key] ? key : null; });
 function musicTheme(){
-  const th = Object.assign({}, MUSIC_THEMES[currentWorld] || MUSIC_THEMES.lagon);
+  const th = Object.assign({}, MUSIC_THEMES[musicOverride || currentWorld] || MUSIC_THEMES.lagon);
   const season = currentSeason();
   if(season === 'noel') th.lead = 'bell';
   if(season === 'halloween'){ th.scale = [0,3,5,7,10]; th.minor = true; th.prog = [0,8,5,7]; }

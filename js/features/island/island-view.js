@@ -261,14 +261,15 @@ function openDialogue(charId){
       <h2>${c.name} ${c.title}${friendPoints(charId) ? friendHearts(charId) : ''}</h2>
     </div>
     ${speechBubble(text)}
-    <button class="btn-primary" id="btn-play">Choisir un jeu 🎮</button>
+    ${c.noGames ? '' : '<button class="btn-primary" id="btn-play">Choisir un jeu 🎮</button>'}
     ${'<button class="btn-craft gift-open" id="btn-gift">🎁 Offrir un objet</button>'}
-    <button class="btn-ghost" id="btn-random">🎲 Surprise</button>
+    ${c.noGames ? '' : '<button class="btn-ghost" id="btn-random">🎲 Surprise</button>'}
     <button class="btn-ghost" id="btn-close">Pas maintenant</button>
   `);
   bindSpeakButtons();
   speak(`${c.name} ${c.title} : ${text}`);
-  document.getElementById('btn-play').onclick = ()=> { playSound('tap'); emit('nav:game-picker', charId); };
+  const playBtn = document.getElementById('btn-play');
+  if(playBtn) playBtn.onclick = ()=> { playSound('tap'); emit('nav:game-picker', charId); };
   const pickBtn = document.getElementById('btn-random');
   if(pickBtn) pickBtn.onclick = ()=> { playSound('tap'); emit('game:start'); };
   const giftBtn = document.getElementById('btn-gift');

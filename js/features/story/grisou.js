@@ -8,11 +8,13 @@
 
 // sa couleur, du gris au mauve pastel, île après île
 const GRISOU_COLORS = ['#B9C2CE', '#C9C3E6', '#D8C6F2', '#E6CDF6', '#F3D7F5'];
-const GRISOU_RAINBOW = ['#FF8FB8', '#FFD95A', '#6ED38C', '#6FB8F5', '#BFA3EC'];
+const GRISOU_RAINBOW = ['#FF8FB8', '#FFD95A', '#6ED38C', '#6FB8F5', '#BFA3EC', '#FF6F61'];
 
 function grisouSVG(freed){
   const n = Math.max(0, Number(freed) || 0);
-  const body = GRISOU_COLORS[Math.min(n, GRISOU_COLORS.length - 1)];
+  // les 6 îles libérées (le grand final) : tout coloré, avec des étoiles
+  const full = n >= 6;
+  const body = full ? '#FFF0FB' : GRISOU_COLORS[Math.min(n, GRISOU_COLORS.length - 1)];
   const sad = n === 0;
   // l'arc-en-ciel, derrière le nuage : une bande de plus par île libérée
   const arcs = GRISOU_RAINBOW.slice(0, Math.min(n, GRISOU_RAINBOW.length)).map((c, i)=>
@@ -22,7 +24,7 @@ function grisouSVG(freed){
     : '<path d="M50 78 Q60 88 70 78" fill="none" stroke="#8C2F3F" stroke-width="3" stroke-linecap="round"/>';
   const tears = sad ? '<path d="M40 70 q-3 7 0 10 q3 -3 0 -10z M82 70 q-3 7 0 10 q3 -3 0 -10z" fill="#8FC8F2"/>' : '';
   const cheeks = sad ? '' : '<ellipse cx="38" cy="76" rx="6" ry="3.6" fill="#FF8FA3" opacity=".6"/><ellipse cx="82" cy="76" rx="6" ry="3.6" fill="#FF8FA3" opacity=".6"/>';
-  return `<svg class="grisou" viewBox="0 0 120 124" role="img" aria-label="Grisou, le petit nuage" data-freed="${n}" data-color="${body}">
+  return `<svg class="grisou${full ? ' full' : ''}" viewBox="0 0 120 124" role="img" aria-label="Grisou, le petit nuage" data-freed="${n}" data-color="${body}">
     ${arcs}
     <g fill="${body}" stroke="#7D8796" stroke-width="2.5" stroke-linejoin="round">
       <path d="M26 96 C10 96 6 76 20 70 C16 52 34 42 46 50 C50 32 76 28 84 46 C100 40 114 56 104 70 C116 76 110 98 94 96 Z"/>
@@ -32,6 +34,7 @@ function grisouSVG(freed){
     <circle cx="48.6" cy="65.5" r="1.6" fill="#fff"/><circle cx="74.6" cy="65.5" r="1.6" fill="#fff"/>
     ${sad ? '<path d="M39 61 Q45 56 52 57 M81 61 Q75 56 68 57" fill="none" stroke="#5B6474" stroke-width="2.4" stroke-linecap="round"/>' : ''}
     ${tears}${cheeks}${mouth}
+    ${full ? '<g class="grisou-stars" fill="#FFD95A"><path d="M12 30 l2 5 l5 1 l-4 3 l1 5 l-4 -2 l-4 2 l1 -5 l-4 -3 l5 -1z"/><path d="M106 22 l2 5 l5 1 l-4 3 l1 5 l-4 -2 l-4 2 l1 -5 l-4 -3 l5 -1z"/><path d="M104 108 l1.6 4 l4 .6 l-3 2.6 l.8 4 l-3.4 -1.8 l-3.4 1.8 l.8 -4 l-3 -2.6 l4 -.6z"/></g>' : ''}
   </svg>`;
 }
 
