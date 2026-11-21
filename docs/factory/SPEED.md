@@ -80,7 +80,7 @@ Temps CPU total : 41 s, contre 108 s de durée en série. L'essentiel était de 
 
 Corrigé : 52 `catch(e)` dont l'erreur ne servait pas (devenus `catch`), des imports et du code mort, 15 noms masqués (`no-shadow`), 3 expressions sans effet, et **2 vérifications du test de fumée qui passaient toujours** (`|| true`) : la course vérifie maintenant que chaque joueur part à 0.
 
-Règles désactivées, avec leur raison (aussi écrite dans `.oxlintrc.json`) :
+Règles désactivées **provisoirement**, avec leur raison (aussi écrite dans `.oxlintrc.json`). Amrou préfère corriger le code : la track `conductor/tracks/lint-regles-completes_20261121` les réactive une par une.
 
 | Règle | Occurrences | Raison |
 |---|---|---|

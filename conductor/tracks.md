@@ -105,3 +105,8 @@ Registre des tracks Conductor, **dans l'ordre d'implémentation**. Feuille de ro
 
 - [ ] **Track: Saison 3, île 5 : 🚀 La Station des Étoiles, niveau 102 (grand final de la saison 3)**
 *Link: [./tracks/monde-etoiles_20261111/](./tracks/monde-etoiles_20261111/)*
+
+---
+
+- [ ] **Track: Lint complet : réactiver les 5 règles oxlint désactivées, en corrigeant le code** (technique, factory)
+*Link: [./tracks/lint-regles-completes_20261121/](./tracks/lint-regles-completes_20261121/)*

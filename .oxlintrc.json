@@ -1,5 +1,6 @@
 {
   // Lint du projet (factory, phase 1 ; stack de référence cothon). Décisions : docs/factory/SPEED.md.
+  // Les règles "off" ci-dessous sont provisoires : la track conductor/tracks/lint-regles-completes_20261121 les réactive en corrigeant le code.
   "$schema": "./node_modules/oxlint/configuration_schema.json",
   "categories": { "correctness": "error", "suspicious": "error" },
   "env": { "browser": true, "node": true, "es2022": true },
