@@ -1,0 +1,113 @@
+/* ---------- La version du jeu et sa mise à jour (v66) ----------
+   Le jeu se met à jour tout seul quand il démarre avec Internet : le service
+   worker (sw.js) trouve la nouvelle version, l'installe, et la page se recharge
+   (js/app/init.js). Mais sur iPad, une app laissée en arrière-plan ne redémarre
+   pas : elle reprend l'ancienne page. Cette slice ajoute dans l'espace parents :
+   - la version du jeu (APP_VERSION, js/shared/lib/version.js) ;
+   - un bouton « Chercher une mise à jour », qui demande tout de suite au
+     service worker s'il y a du neuf, et redémarre le jeu si oui ;
+   - après ce redémarrage, un message « Le jeu est à jour : version N » (affiché
+     sur l'écran titre par js/app/init.js).
+   La progression n'est jamais touchée : elle est dans la sauvegarde, qui se
+   migre toute seule (js/entities/game-state). */
+import { APP_VERSION } from '../../shared/lib/index.js';
+import { playSound } from '../../shared/ui/index.js';
+
+// mémorisé juste avant le redémarrage, pour l'annoncer ensuite
+const UPDATE_FLAG = 'lagon-update-from';
+// si le nouveau service worker ne prend pas la main tout seul, on recharge quand même
+const UPDATE_RELOAD_AFTER = 20000;
+const UPDATE_MESSAGES = {
+  searching: '🔍 Recherche d\'une nouvelle version…',
+  offline:   '📴 Pas d\'Internet : le jeu se mettra à jour à la prochaine connexion.',
+  error:     '😕 Le site ne répond pas. Vérifiez Internet, puis réessayez dans un moment.',
+  uptodate:  `✅ Le jeu est à jour (version ${APP_VERSION}).`,
+  found:     '✨ Nouvelle version trouvée ! Le jeu redémarre dans quelques secondes…',
+  reload:    '🔄 Le jeu redémarre pour prendre la dernière version…',
+};
+
+// le plus grand numéro des caches `lagon-vNN` déjà installés (0 s'il n'y en a pas)
+async function installedVersion(){
+  try{
+    if(typeof caches === 'undefined') return 0;
+    const nums = (await caches.keys()).map(k=> Number((/^lagon-v(\d+)$/.exec(k) || [])[1]) || 0);
+    return Math.max(0, ...nums);
+  }catch(e){ return 0; }
+}
+
+/* Cherche une mise à jour. Réponses :
+   'offline'  : pas d'Internet ;
+   'error'    : le site n'a pas répondu ;
+   'found'    : une nouvelle version s'installe, le jeu va redémarrer ;
+   'reload'   : la nouvelle version est déjà là, il faut juste redémarrer
+                (ou il n'y a pas de service worker) ;
+   'uptodate' : rien de neuf. */
+async function checkForUpdate(){
+  if(navigator.onLine === false) return 'offline';
+  const sw = navigator.serviceWorker;
+  if(!sw || typeof sw.getRegistration !== 'function') return 'reload';
+  let reg;
+  try{
+    reg = await sw.getRegistration();
+    if(!reg) return 'reload';
+    // demande sw.js au site : s'il a changé, le nouveau s'installe aussitôt
+    await reg.update();
+  }catch(e){ return 'error'; }
+  if(reg.installing || reg.waiting){
+    if(reg.waiting) reg.waiting.postMessage('skipWaiting');
+    return 'found';
+  }
+  // un service worker plus récent que cette page est déjà installé
+  if(await installedVersion() > APP_VERSION) return 'reload';
+  return 'uptodate';
+}
+
+function reloadGame(){ location.reload(); }
+
+function rememberUpdate(){
+  try{ sessionStorage.setItem(UPDATE_FLAG, String(APP_VERSION)); }catch(e){}
+}
+
+// au démarrage : si le jeu vient de redémarrer pour une mise à jour, le message
+// à montrer (une seule fois), sinon null
+function announceUpdate(){
+  let from = null;
+  try{ from = sessionStorage.getItem(UPDATE_FLAG); sessionStorage.removeItem(UPDATE_FLAG); }catch(e){}
+  if(from === null) return null;
+  return Number(from) < APP_VERSION ? `✨ Le jeu est à jour : version ${APP_VERSION}` : `✅ Le jeu est à jour (version ${APP_VERSION})`;
+}
+
+/* ---- la carte de l'espace parents ---- */
+function updateCardHTML(){
+  return `<section class="bk-card ps-update"><h3>📲 Version du jeu</h3>
+    <p class="ps-version">Version <strong id="ps-version">${APP_VERSION}</strong></p>
+    <div class="ps-actions">
+      <button type="button" class="btn-small" id="ps-update">🔄 Chercher une mise à jour</button>
+    </div>
+    <p class="ps-update-msg" id="ps-update-msg" role="status" aria-live="polite"></p>
+    <p class="bk-help">Le jeu se met à jour tout seul quand il démarre avec Internet. Sur iPad, il peut rester ouvert en arrière-plan sans jamais redémarrer : ce bouton cherche tout de suite. La progression est gardée.</p>
+    <p class="bk-help">Une version qui vient de sortir peut mettre une dizaine de minutes à arriver.</p>
+  </section>`;
+}
+
+function bindUpdateCard(){
+  const btn = document.getElementById('ps-update'), msg = document.getElementById('ps-update-msg');
+  if(!btn || !msg) return;
+  btn.onclick = async ()=>{
+    playSound('tap');
+    btn.disabled = true;
+    msg.textContent = UPDATE_MESSAGES.searching;
+    const status = await checkForUpdate();
+    msg.textContent = UPDATE_MESSAGES[status];
+    msg.dataset.status = status;
+    if(status === 'found' || status === 'reload'){
+      // 'found' : js/app/init.js recharge dès que la nouvelle version prend la main
+      rememberUpdate();
+      setTimeout(reloadGame, status === 'reload' ? 900 : UPDATE_RELOAD_AFTER);
+    } else {
+      btn.disabled = false;
+    }
+  };
+}
+
+export { announceUpdate, bindUpdateCard, checkForUpdate, updateCardHTML };

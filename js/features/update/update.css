@@ -1,0 +1,6 @@
+/* ---------- Espace parents : la version du jeu et sa mise à jour (v66) ---------- */
+.ps-update .ps-version{font-size:1rem;}
+.ps-update .ps-version strong{font-size:1.15rem;}
+.ps-update-msg{min-height:1.4em; margin:10px 0 8px !important; font-weight:700;}
+.ps-update-msg:empty{min-height:0; margin:0 !important;}
+.ps-update-msg[data-status="offline"], .ps-update-msg[data-status="error"]{color:#A2361F !important;}

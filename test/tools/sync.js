@@ -4,7 +4,9 @@
    Réécrit les <link rel="stylesheet"> locales d'index.html (dans l'ordre de
    CSS_ORDER) et sa balise de script (un seul module, js/app/main.js, v54), et
    la liste des modules et feuilles de style mis en cache par sw.js (FILES). Le reste des fichiers est conservé
-   tel quel. test/slices.test.js vérifie ensuite que tout correspond. */
+   tel quel. Depuis la v66, il écrit aussi la version du jeu (APP_VERSION,
+   js/shared/lib/version.js) dans le nom du cache de sw.js (lagon-vNN).
+   test/slices.test.js et test/update.test.js vérifient ensuite que tout correspond. */
 const fs = require('fs');
 const path = require('path');
 const page = require('./page.js');
@@ -37,5 +39,9 @@ sw = sw.replace(/const FILES = \[[\s\S]*?\];/, (block)=>{
   for(let i = 0; i < all.length; i += 6) lines.push('  ' + all.slice(i, i + 6).map(f=> `'${f}'`).join(','));
   return 'const FILES = [\n' + lines.join(',\n') + '\n];';
 });
+// v66 : le cache porte la version du jeu (js/shared/lib/version.js)
+const version = (/const APP_VERSION = (\d+);/.exec(fs.readFileSync(file('js/shared/lib/version.js'), 'utf8')) || [])[1];
+if(!version) throw new Error('APP_VERSION introuvable dans js/shared/lib/version.js');
+sw = sw.replace(/const CACHE = 'lagon-v\d+';/, `const CACHE = 'lagon-v${version}';`);
 fs.writeFileSync(file('sw.js'), sw);
-console.log(`index.html et sw.js alignés : ${scripts.length} modules, ${css.length} feuilles de style`);
+console.log(`index.html et sw.js alignés : ${scripts.length} modules, ${css.length} feuilles de style, cache lagon-v${version}`);
