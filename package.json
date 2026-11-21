@@ -3,7 +3,8 @@
   "private": true,
   "packageManager": "bun@1.4.5",
   "scripts": {
-    "check": "node test/tools/lockfile.js && bun run test",
+    "check": "node test/tools/lockfile.js && bun run lint && bun run test",
+    "lint": "oxlint --deny-warnings js test",
     "start": "python3 -m http.server 8080",
     "test": "node test/tools/run.js",
     "inventaire": "node test/tools/globals.js $(node -e \"console.log(require('./js/slices.cjs').SLICES.flatMap(s=>s.files).join(' '))\")",
@@ -14,6 +15,7 @@
     "acorn": "^8.19.0",
     "acorn-walk": "^8.3.5",
     "esbuild": "^0.24.0",
-    "jsdom": "^26.0.0"
+    "jsdom": "^26.0.0",
+    "oxlint": "1.94.0"
   }
 }

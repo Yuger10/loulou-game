@@ -10,7 +10,7 @@
 import { avatarHTML, COMPANIONS, companionOf } from '../../entities/companion/index.js';
 import { save, state } from '../../entities/game-state/index.js';
 import { currentProfile, onProfileRefresh, profiles, switchProfile } from '../../entities/player/index.js';
-import { playSound, registerView, showToast, soundModeLabel, speak, switchView } from '../../shared/ui/index.js';
+import { playSound, registerView, showToast, soundModeLabel, speak } from '../../shared/ui/index.js';
 import { backupDue, openBackup } from '../backup/index.js';
 import { renderTeamHeads } from '../companion-team/index.js';
 import { openParentGate, openParents } from '../parents/index.js';
@@ -108,7 +108,7 @@ function bindSettings(el){
   el.querySelector('#rg-switch').onclick = ()=>{
     playSound('tap');
     const list = el.querySelector('#rg-players');
-    try{ list.scrollIntoView({ block:'center', behavior:'smooth' }); }catch(e){}
+    try{ list.scrollIntoView({ block:'center', behavior:'smooth' }); }catch{}
     speak('Touche le joueur qui va jouer.');
   };
   el.querySelectorAll('[data-player]').forEach(b=> b.onclick = ()=>{

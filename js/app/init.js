@@ -135,7 +135,7 @@ if('serviceWorker' in navigator && location.protocol!=='file:'){
       sw.addEventListener('statechange', ()=>{
         if(sw.state==='installed' && navigator.serviceWorker.controller){
           // une nouvelle version vient de s'installer : on l'active tout de suite
-          sw.postMessage('skipWaiting');
+          sw.postMessage('skipWaiting'); // oxlint-disable-line unicorn/require-post-message-target-origin -- service worker, pas une fenêtre
         }
       });
     });

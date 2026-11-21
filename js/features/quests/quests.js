@@ -20,7 +20,7 @@ const QUEST_TEMPLATES = [
   ()=>{ const c = pickRandom(availableChars()); const goal = 2;
         return {type:'char', target:c, goal, n:0, label:`Joue ${goal} fois avec ${CHARACTERS[c].name} ${CHARACTERS[c].emoji}`}; },
   ()=>{ const goal = 3; return {type:'win', target:null, goal, n:0, label:`Réussis ${goal} missions 🎮`}; },
-  ()=>{ const k = pickRandom(availableCrafted().filter(k=>CRAFTED[k].tier!==2));
+  ()=>{ const k = pickRandom(availableCrafted().filter(c=>CRAFTED[c].tier!==2));
         return {type:'craft', target:k, goal:1, n:0, label:`Fabrique un ${CRAFTED[k].name.toLowerCase()} ${CRAFTED[k].emoji}`}; },
   ()=>{ const goal = 2; return {type:'sell', target:null, goal, n:0, label:`Vends ${goal} objets au marché 🏪`}; },
   ()=>{ const goal = 2; return {type:'gift', target:null, goal, n:0, label:`Offre ${goal} objets à tes amis 🎁`}; },
@@ -69,7 +69,7 @@ function renderQuestBadge(){
 }
 
 function openQuestsModal(){
-  const q = ensureQuests();
+  ensureQuests();
   openModal(`
     ${gameHeader('📜 Mes missions du jour', questsDone() ? 'Tout est fait, ouvre le coffre !' : 'Termine-les pour ouvrir le coffre')}
     <div class="quests in-modal" id="quests-modal"></div>

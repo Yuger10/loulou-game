@@ -418,7 +418,7 @@ ART.azur=svg(
   `<path d="M54 28 Q48 12 40 14 Q36 18 42 20 M66 28 Q72 12 80 14 Q84 18 78 20" fill="none" stroke="${AI}" stroke-width="2.6" stroke-linecap="round"/>`+
   `<ellipse cx="60" cy="86" rx="9" ry="30" fill="#5A4A7A" ${O(2)}/>`+
   `<circle cx="60" cy="44" r="18" fill="#7B6AA8" ${O()}/>`+
-  `<g transform="translate(0 -18)">`+eyes(53,67,62,3.4,4.4)+`</g>`+`<path d="M55 50 Q60 54 65 50" fill="none" stroke="#FFB8C8" stroke-width="2.2" stroke-linecap="round"/>`);
+  `<g transform="translate(0 -18)">`+eyes(53,67,62,3.4,4.4)+`</g><path d="M55 50 Q60 54 65 50" fill="none" stroke="#FFB8C8" stroke-width="2.2" stroke-linecap="round"/>`);
 
 // Miella l'abeille : rayée jaune et brun, ailes transparentes, petit pot de miel
 ART.miella=svg(

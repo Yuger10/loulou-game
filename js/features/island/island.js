@@ -511,7 +511,7 @@ function bindDecoDrag(sc, el){
       if(Math.hypot(e.clientX - start.x, e.clientY - start.y) < 6) return;
       dragging = true;
       el.classList.add('dragging');
-      try{ el.setPointerCapture(e.pointerId); }catch(err){}
+      try{ el.setPointerCapture(e.pointerId); }catch{}
     }
     const r = sc.getBoundingClientRect();
     if(!r.width) return;

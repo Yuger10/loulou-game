@@ -5,10 +5,7 @@
 // en quelques secondes ; l'ordre des événements, lui, ne change pas.
 const { JSDOM } = require('jsdom');
 const { inShard } = require('./tools/shard.js');
-const fs = require('fs');
-const path = require('path');
 
-const root = path.join(__dirname, '..');
 // CSS et JS inlinés dans l'ordre du manifeste des slices (js/slices.cjs)
 const html = require('./tools/page.js').buildHtml();
 
@@ -110,7 +107,7 @@ const INDEPENDENT = {
     const el = d.querySelector(sol[0]), box = d.querySelector('.share-options'), stage = d.querySelector('.share-stage');
     const ask = box.dataset.ask, n = Number(box.dataset.n);
     // des parts égales : pour une tablette, toutes les bandes ont la même largeur
-    const equal = (o)=>{ const w = [...o.querySelectorAll('rect.share-part')].map(r=> Number(r.getAttribute('width'))); return w.every(x=> Math.abs(x - w[0]) < .2); };
+    const equal = (o)=>{ const widths = [...o.querySelectorAll('rect.share-part')].map(r=> Number(r.getAttribute('width'))); return widths.every(x=> Math.abs(x - widths[0]) < .2); };
     if(ask === 'fair') return el.dataset.equal === '1' && equal(el) && el.querySelectorAll('.share-part').length === n && [...box.querySelectorAll('.share-opt')].filter(o=> o.dataset.equal === '1').length === 1;
     if(ask === 'show') return el.dataset.equal === '1' && equal(el) && el.querySelectorAll('.share-part').length === n;
     if(ask === 'write') return el.dataset.v === `1/${stage.querySelectorAll('.share-part').length}`;

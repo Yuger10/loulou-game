@@ -15,7 +15,7 @@ const acorn = require('acorn');
 
 function parse(src, file){
   try{ return acorn.parse(src, { ecmaVersion:'latest', sourceType:'module', allowHashBang:true }); }
-  catch(e){ throw new Error(`${file} : ${e.message}`); }
+  catch(e){ throw new Error(`${file} : ${e.message}`, { cause: e }); }
 }
 
 // noms introduits par un motif de déclaration (x, {a, b:c}, [d, ...e], f = 1)

@@ -42,7 +42,7 @@ function buildModel(slices, root, modules){
 }
 
 // règles 1 à 3 : renvoie la liste des violations (vide = règles respectées)
-function importViolations(model, slices){
+function importViolations(model, _slices){
   const byFile = new Map(model.map(m=> [m.file, m]));
   const indexOf = (s)=> s.files.length ? path.posix.dirname(s.files[0]) + '/index.js' : null;
   const out = [];

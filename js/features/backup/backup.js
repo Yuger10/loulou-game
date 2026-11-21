@@ -29,14 +29,14 @@ const BACKUP_REMIND_DAYS = 14;
 
 function lsKeys(){
   const out = [];
-  try{ for(let i=0;i<localStorage.length;i++){ const k = localStorage.key(i); if(k) out.push(k); } }catch(e){}
+  try{ for(let i=0;i<localStorage.length;i++){ const k = localStorage.key(i); if(k) out.push(k); } }catch{}
   return out;
 }
 function backupMeta(){
-  try{ return JSON.parse(localStorage.getItem(BACKUP_META_KEY) || '{}') || {}; }catch(e){ return {}; }
+  try{ return JSON.parse(localStorage.getItem(BACKUP_META_KEY) || '{}') || {}; }catch{ return {}; }
 }
 function setBackupMeta(patch){
-  try{ localStorage.setItem(BACKUP_META_KEY, JSON.stringify(Object.assign(backupMeta(), patch))); }catch(e){}
+  try{ localStorage.setItem(BACKUP_META_KEY, JSON.stringify(Object.assign(backupMeta(), patch))); }catch{}
 }
 
 /* ---- construire / lire une sauvegarde ---- */
@@ -45,7 +45,7 @@ function buildBackup(){
   saveProfiles();
   const data = {};
   lsKeys().filter(k=>k.startsWith(BACKUP_PREFIX) && k!==BACKUP_META_KEY).forEach(k=>{
-    try{ data[k] = localStorage.getItem(k); }catch(e){}
+    try{ data[k] = localStorage.getItem(k); }catch{}
   });
   return { app:'lagon-magique', kind:'sauvegarde', v:1, at:new Date().toISOString(), data };
 }
@@ -58,11 +58,11 @@ function parseBackupObject(obj){
   if(!keys.length || !keys.every(k=>k.startsWith(BACKUP_PREFIX) && typeof obj.data[k]==='string'))
     return { ok:false, error:'Cette sauvegarde est incomplète ou abîmée.' };
   let prof = null;
-  try{ prof = JSON.parse(obj.data[PROFILES_KEY] || 'null'); }catch(e){}
-  for(const k of keys){ try{ JSON.parse(obj.data[k]); }catch(e){ return { ok:false, error:'Cette sauvegarde est abîmée (une partie est illisible).' }; } }
+  try{ prof = JSON.parse(obj.data[PROFILES_KEY] || 'null'); }catch{}
+  for(const k of keys){ try{ JSON.parse(obj.data[k]); }catch{ return { ok:false, error:'Cette sauvegarde est abîmée (une partie est illisible).' }; } }
   const players = (prof && Array.isArray(prof.list) ? prof.list : []).map(p=>{
     let missions = 0;
-    try{ missions = (JSON.parse(obj.data[profileSaveKey(p.id)] || '{}').missions) || 0; }catch(e){}
+    try{ missions = (JSON.parse(obj.data[profileSaveKey(p.id)] || '{}').missions) || 0; }catch{}
     return { name: p.name || 'Sans nom', avatar: p.avatar, missions };
   });
   if(!players.length && !obj.data[LEGACY_SAVE_KEY])
@@ -75,7 +75,7 @@ function parseBackupText(text){
   try{
     if(t.startsWith('LAGON1:')) return parseBackupObject(JSON.parse(b64ToUtf8(t.slice(7))));
     if(t.startsWith('{')) return parseBackupObject(JSON.parse(t));
-  }catch(e){ return { ok:false, error:'Ce code est incomplet : vérifiez qu\'il a été copié en entier.' }; }
+  }catch{ return { ok:false, error:'Ce code est incomplet : vérifiez qu\'il a été copié en entier.' }; }
   if(t.startsWith('LAGONZ1:')) return { ok:false, async:true };
   return { ok:false, error:"Ce n'est pas un code de sauvegarde du Lagon Magique." };
 }
@@ -83,9 +83,9 @@ function parseBackupText(text){
 /* ---- appliquer une sauvegarde (remplace la partie actuelle) ---- */
 function applyBackup(backup){
   // garde une copie de ce qu'on remplace, pour pouvoir revenir en arrière
-  try{ localStorage.setItem(BACKUP_UNDO_KEY, JSON.stringify(buildBackup())); }catch(e){}
-  lsKeys().filter(k=>k.startsWith(BACKUP_PREFIX) && k!==BACKUP_META_KEY).forEach(k=>{ try{ localStorage.removeItem(k); }catch(e){} });
-  Object.entries(backup.data).forEach(([k,v])=>{ try{ localStorage.setItem(k, v); }catch(e){} });
+  try{ localStorage.setItem(BACKUP_UNDO_KEY, JSON.stringify(buildBackup())); }catch{}
+  lsKeys().filter(k=>k.startsWith(BACKUP_PREFIX) && k!==BACKUP_META_KEY).forEach(k=>{ try{ localStorage.removeItem(k); }catch{} });
+  Object.entries(backup.data).forEach(([k,v])=>{ try{ localStorage.setItem(k, v); }catch{} });
   setBackupMeta({ restoredAt: new Date().toISOString(), lastBackupAt: backup.at || new Date().toISOString() });
   // recharge les joueurs et la partie sans recharger la page
   if(party.active) stopParty();
@@ -95,7 +95,7 @@ function applyBackup(backup){
   renderMap();
   renderBackupReminder();
 }
-function undoRestoreAvailable(){ try{ return !!localStorage.getItem(BACKUP_UNDO_KEY); }catch(e){ return false; } }
+function undoRestoreAvailable(){ try{ return !!localStorage.getItem(BACKUP_UNDO_KEY); }catch{ return false; } }
 
 /* ---- encodage du code de transfert ---- */
 // (repli sans TextEncoder pour les vieux navigateurs : même résultat)
@@ -122,7 +122,7 @@ async function backupToCode(backup){
       const stream = new Blob([json]).stream().pipeThrough(new CompressionStream('gzip'));
       const buf = new Uint8Array(await new Response(stream).arrayBuffer());
       return 'LAGONZ1:' + bytesToB64(buf);
-    }catch(e){}
+    }catch{}
   }
   return 'LAGON1:' + utf8ToB64(json);
 }
@@ -133,7 +133,7 @@ async function parseBackupCode(text){
   try{
     const stream = new Blob([b64ToBytes(t.slice(8))]).stream().pipeThrough(new DecompressionStream('gzip'));
     return parseBackupObject(JSON.parse(await new Response(stream).text()));
-  }catch(e){ return { ok:false, error:'Ce code est incomplet : vérifiez qu\'il a été copié en entier.' }; }
+  }catch{ return { ok:false, error:'Ce code est incomplet : vérifiez qu\'il a été copié en entier.' }; }
 }
 
 /* ---- stockage persistant ---- */
@@ -144,7 +144,7 @@ async function requestPersistentStorage(){
     const ok = await navigator.storage.persist();
     setBackupMeta({ persisted: !!ok });
     return ok;
-  }catch(e){ return null; }
+  }catch{ return null; }
 }
 
 /* ---- installation sur l'écran d'accueil ---- */
@@ -152,7 +152,7 @@ let deferredInstallPrompt = null;
 window.addEventListener('beforeinstallprompt', e=>{ e.preventDefault(); deferredInstallPrompt = e; renderInstallHint(); });
 window.addEventListener('appinstalled', ()=>{ deferredInstallPrompt = null; setBackupMeta({ installed:true }); renderInstallHint(); });
 function isInstalled(){
-  try{ return (window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone === true; }catch(e){ return false; }
+  try{ return (window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone === true; }catch{ return false; }
 }
 function isIOS(){
   const ua = navigator.userAgent || '';
@@ -256,7 +256,7 @@ function openBackup(){
     const code = await backupToCode(buildBackup());
     const out = $('bk-code-out'); out.value = code; out.hidden = false;
     try{ await navigator.clipboard.writeText(code); showToast('📋 Code copié'); setBackupMeta({ lastBackupAt: new Date().toISOString() }); renderBackupReminder(); }
-    catch(e){ out.focus(); out.select(); showToast('Sélectionnez le code puis copiez-le'); }
+    catch{ out.focus(); out.select(); showToast('Sélectionnez le code puis copiez-le'); }
   };
   const preview = async (result)=>{
     const box = $('bk-preview');
@@ -279,14 +279,14 @@ function openBackup(){
   const undo = $('bk-undo');
   if(undo) undo.onclick = ()=>{
     let r = { ok:false };
-    try{ r = parseBackupObject(JSON.parse(localStorage.getItem(BACKUP_UNDO_KEY))); }catch(e){}
+    try{ r = parseBackupObject(JSON.parse(localStorage.getItem(BACKUP_UNDO_KEY))); }catch{}
     if(r.ok) preview(r);
   };
   const inst = $('bk-install');
   if(inst) inst.onclick = async ()=>{
     if(!deferredInstallPrompt) return;
     deferredInstallPrompt.prompt();
-    try{ await deferredInstallPrompt.userChoice; }catch(e){}
+    try{ await deferredInstallPrompt.userChoice; }catch{}
     deferredInstallPrompt = null; const z = $('bk-install-zone'); if(z) z.innerHTML = installHelpHTML();
   };
   const ps = $('bk-persist');

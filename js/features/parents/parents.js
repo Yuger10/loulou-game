@@ -118,13 +118,13 @@ function openParentGate(onOk, onCancel, onWrong){
   document.getElementById('gate-ok').onclick = ok;
   input.addEventListener('keydown', e=>{ if(e.key==='Enter') ok(); });
   document.getElementById('gate-cancel').onclick = ()=>{ playSound('tap'); if(onCancel) onCancel(); else closeModal(); };
-  setTimeout(()=>{ try{ input.focus(); }catch(e){} }, 50);
+  setTimeout(()=>{ try{ input.focus(); }catch{} }, 50);
 }
 
 /* ---- l'espace parents ---- */
 function profileState(id){
   if(id === profiles.current) return state;
-  try{ return JSON.parse(localStorage.getItem(profileSaveKey(id)) || '{}') || {}; }catch(e){ return {}; }
+  try{ return JSON.parse(localStorage.getItem(profileSaveKey(id)) || '{}') || {}; }catch{ return {}; }
 }
 function minutesLabel(min){
   if(min < 1) return 'moins d\'1 min';
@@ -240,18 +240,18 @@ function openParentSpace(selectedId){
   });
   document.querySelectorAll('[data-music]').forEach(b=> b.onclick = ()=>{
     playSound('tap');
-    const on = b.dataset.music === '1';
-    if(p.id === profiles.current){ state.music = on; if(on){ state.sound = true; state.voice = true; } save(); renderSoundBtn(); }
-    else { st.music = on; try{ localStorage.setItem(profileSaveKey(p.id), JSON.stringify(st)); }catch(e){} }
+    const musicOn = b.dataset.music === '1';
+    if(p.id === profiles.current){ state.music = musicOn; if(musicOn){ state.sound = true; state.voice = true; } save(); renderSoundBtn(); }
+    else { st.music = musicOn; try{ localStorage.setItem(profileSaveKey(p.id), JSON.stringify(st)); }catch{} }
     document.querySelectorAll('[data-music]').forEach(x=>x.classList.toggle('on', x===b));
-    showToast(on ? '🎵 Musique d\'ambiance' : 'Pas de musique');
+    showToast(musicOn ? '🎵 Musique d\'ambiance' : 'Pas de musique');
   });
   const vol = document.getElementById('ps-volume');
   vol.oninput = ()=>{
     const v = Number(vol.value);
     document.getElementById('ps-volume-v').textContent = v + ' %';
     if(p.id === profiles.current){ state.soundVolume = v; save(); playSound('pop'); }   // une note pour entendre le nouveau volume
-    else { st.soundVolume = v; try{ localStorage.setItem(profileSaveKey(p.id), JSON.stringify(st)); }catch(e){} }
+    else { st.soundVolume = v; try{ localStorage.setItem(profileSaveKey(p.id), JSON.stringify(st)); }catch{} }
   };
   document.getElementById('ps-backup').onclick = ()=>{ playSound('tap'); openBackup(); };
   document.getElementById('ps-player').onclick = ()=>{ playSound('tap'); openPlayerSettings(p.id); };
@@ -261,7 +261,7 @@ function openParentSpace(selectedId){
       confirmLabel:'🔄 Recommencer', typeWord:'RECOMMENCER' });
     if(!ok) return;
     if(p.id === profiles.current){ resetState(); setCurrentWorld('lagon'); refreshAll(); }
-    else { try{ localStorage.removeItem(profileSaveKey(p.id)); }catch(e){} }
+    else { try{ localStorage.removeItem(profileSaveKey(p.id)); }catch{} }
     playSound('win');
     speak(`Nouvelle aventure pour ${p.name || 'toi'} !`);
     showToast('🔄 Nouvelle aventure !');

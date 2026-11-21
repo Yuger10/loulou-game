@@ -75,7 +75,7 @@ function speak(text, opts){
     u.onstart = ()=> setVoiceDuck(true);
     u.onend = u.onerror = ()=> setVoiceDuck(false);
     window.speechSynthesis.speak(u);
-  }catch(e){}
+  }catch{}
 }
 
 function bindSpeakButtons(){

@@ -81,9 +81,9 @@ check('aucun cycle d\'import entre slices (graphe d\'esbuild)', cycles.length ==
 // le regroupement des tests garde les noms : chaque nom de haut niveau est unique
 const owners = new Map();
 model.forEach(m=> m.defs.forEach(d=> (owners.get(d) || owners.set(d, []).get(d)).push(m.file)));
-const dup = [...owners].filter(([, fs])=> fs.length > 1);
+const dup = [...owners].filter(([, fls])=> fls.length > 1);
 check('chaque nom de haut niveau n\'est défini qu\'une fois (les tests les lisent par leur nom)', dup.length === 0,
-  dup.map(([n, fs])=> `${n} (${fs.join(', ')})`).join(' ; '));
+  dup.map(([n, fls])=> `${n} (${fls.join(', ')})`).join(' ; '));
 
 console.log('— Aucune variable globale');
 const writes = model.flatMap(m=> globalWrites(m.file, m.src));

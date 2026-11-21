@@ -59,7 +59,7 @@ function askConfirm(opts){
     if(input){ input.addEventListener('input', refresh); setTimeout(()=> input.focus(), 0); }
     else setTimeout(()=> no.focus(), 0);
     yes.onclick = ()=>{
-      if(!typed()){ speak(`Pour confirmer, écris ${word}.`); input && input.focus(); return; }
+      if(!typed()){ speak(`Pour confirmer, écris ${word}.`); if(input) input.focus(); return; }
       close(true);
     };
     no.onclick = ()=> close(false);

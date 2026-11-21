@@ -33,14 +33,13 @@ import { newlyUnlockedLookItems, WARDROBE } from '../wardrobe/index.js';
    documenté dans js/entities/difficulty/difficulty.js (fonction `livesFor`) — voir aussi
    ANALYSE-DIFFICULTE.md pour le détail académique. */
 
-let lives = Infinity, maxLives = Infinity, currentGameKind = null;
+let lives = Infinity, maxLives = Infinity;
 
 function triesFor(kind){
   return livesFor(kind, gameDiff());
 }
 
 function setupLives(kind){
-  currentGameKind = kind;
   maxLives = triesFor(kind);
   lives = maxLives;
 }
@@ -212,13 +211,14 @@ function stepOk(el){
   const spark = document.createElement('span');
   spark.className = 'step-spark';
   spark.textContent = pickRandom(['✨','⭐','💫','👍']);
-  el.appendChild ? el.appendChild(spark) : null;
+  if(el.appendChild) el.appendChild(spark);
   setTimeout(()=> spark.remove(), 800);
 }
 
 /* Pour les tests automatiques : chaque mini-jeu note ce qu'il faut toucher
    pour réussir — des sélecteurs CSS, dans l'ordre (test/games.test.js joue
    ainsi chaque jeu jusqu'à la victoire). Rien n'est montré à l'enfant. */
+// oxlint-disable-next-line no-unused-vars -- lu par les tests, par son nom (ev('gameSolution'))
 let gameSolution = null;
 function setSolution(steps){ gameSolution = steps; }
 function solSel(base, attr, v){ return `${base}[data-${attr}=${JSON.stringify(String(v))}]`; }

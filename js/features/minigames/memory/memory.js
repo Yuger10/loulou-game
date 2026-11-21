@@ -58,9 +58,9 @@ function renderMemory(){
           render();
           if(wasMatch){
             playSound('good');
-            document.querySelectorAll('.mcard.matched').forEach(el=>{
-              el.classList.add('ok-flash');
-              setTimeout(()=>el.classList.remove('ok-flash'), 600);
+            document.querySelectorAll('.mcard.matched').forEach(m=>{
+              m.classList.add('ok-flash');
+              setTimeout(()=>m.classList.remove('ok-flash'), 600);
             });
           } else {
             if(loseLife(null)) return;    // plus d'essais : mission ratée

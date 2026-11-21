@@ -1,8 +1,6 @@
 // Barre de navigation et écran Réglages : 4 boutons (pas de 5e), bouton Île
 // nommé, une seule règle de taille selon le support, Réglages ouverts en
 // touchant l'avatar et le prénom ; sections Son, Moi, Joueurs, Parents (protégé).
-const fs = require('fs');
-const path = require('path');
 const { JSDOM } = require('jsdom');
 const page = require('./tools/page.js');
 const html = page.buildHtml();

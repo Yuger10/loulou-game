@@ -35,7 +35,7 @@ function cubesBuildStack(dd, rng){
     if(total >= cfg.min && total <= cfg.max && towers >= 2) return { cfg, heights, total };
   }
   // repli sûr : une rangée de tours d'un cube
-  const heights = Array.from({ length: cfg.d }, (_, y)=> Array.from({ length: cfg.w }, (_, x)=> (y === 0 && x < cfg.min) ? 1 : 0));
+  const heights = Array.from({ length: cfg.d }, (_, y)=> Array.from({ length: cfg.w }, (_cell, x)=> (y === 0 && x < cfg.min) ? 1 : 0));
   return { cfg, heights, total: heights.flat().reduce((a, b)=> a + b, 0) };
 }
 // les cubes, un par un (x, y, z), dans l'ordre où on les dessine (du fond vers l'avant)
@@ -70,8 +70,7 @@ function cubesSVG(heights){
 }
 
 // trois réponses : la bonne et deux voisines, toutes différentes et au moins 1
-function cubesOptions(total, rng){
-  rng = rng || Math.random;
+function cubesOptions(total){
   const set = new Set([total]);
   const near = shuffle([-2, -1, 1, 2, 3]);
   for(const k of near){ if(set.size >= 3) break; if(total + k >= 1) set.add(total + k); }

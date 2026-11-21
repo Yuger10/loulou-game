@@ -16,7 +16,7 @@ import { addCoinsInFlight, renderCoins } from '../wallet/index.js';
 const GAIN_FLIGHT_MS = 720;
 
 function gainsReduced(){
-  try{ return !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches); }catch(e){ return false; }
+  try{ return !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches); }catch{ return false; }
 }
 function gainsCanAnimate(){
   return !gainsReduced() && typeof document.body.animate === 'function';

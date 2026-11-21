@@ -182,7 +182,7 @@ function playSound(kind){
     soundBus.master.gain.value = soundVolumeLevel();
     fn();
     return true;
-  }catch(e){ return false; }
+  }catch{ return false; }
 }
 
 // une note exacte (Simon) : pas de variation, pas d'anti-rafale
@@ -193,7 +193,7 @@ function playNote(freq, dur, vol){
     soundBus.master.gain.value = soundVolumeLevel();
     marimbaNote(freq, 0, vol || .18, Math.max(.3, dur || .45), true);
     return true;
-  }catch(e){ return false; }
+  }catch{ return false; }
 }
 
 function soundModeLabel(){

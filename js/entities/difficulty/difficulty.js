@@ -71,18 +71,13 @@
    js/entities (item, character, world)) : la pression temporelle n'a pas sa place avant le CP.
    ===================================================================== */
 
-// Les paliers eux-mêmes (texte + repère scolaire), utilisés pour l'affichage
-// (étoiles sur la carte) et pour la documentation ci-dessus.
-const DIFFICULTY_TIERS = [
-  { n:1, island:'lagon',    schoolLevel:'GS / début CP',  label:'Découverte' },
-  { n:2, island:'foret',    schoolLevel:'CP',              label:'Entraînement' },
-  { n:3, island:'montagne', schoolLevel:'fin CP / CE1',     label:'Fluence' },
-  { n:4, island:'chateau',  schoolLevel:'CE1',              label:'Consolidation' },
-  { n:5, island:'jungle',   schoolLevel:'fin CE1 / CE2',     label:'Perfectionnement' },
-  { n:5, island:'cite',     schoolLevel:'fin CE1 / CE2',     label:'Nouvelles compétences (temps)' },
-  { n:6, island:'volcan',   schoolLevel:'CE2',               label:'Calcul mental pur' },
-  { n:6, island:'squishy',  schoolLevel:'CE2',               label:'Formes, couleurs et polygones' },
-];
+// Les paliers eux-mêmes (repère scolaire), pour la documentation ci-dessus :
+//   palier 1  lagon               GS / début CP   Découverte
+//   palier 2  forêt               CP              Entraînement
+//   palier 3  montagne            fin CP / CE1    Fluence
+//   palier 4  château             CE1             Consolidation
+//   palier 5  jungle, cité        fin CE1 / CE2   Perfectionnement ; nouvelles compétences (temps)
+//   palier 6  volcan, squishy     CE2             Calcul mental pur ; formes, couleurs et polygones
 
 // Petit utilitaire : interpole/clampe un tableau de valeurs { 1:x, 2:y, ... }
 // sur les 5 paliers « historiques », pour éviter les lectures `|| valeur

@@ -65,7 +65,8 @@ function jigsawViewSVG(x, y, w, h, cls){
   return `<svg class="${cls || 'jg-svg'}" viewBox="${x} ${y} ${w} ${h}" preserveAspectRatio="none" aria-hidden="true"><use href="#jg-art" width="${JIGSAW_W}" height="${JIGSAW_H}"/></svg>`;
 }
 
-let jigsawState = null;   // pour les tests : { cols, rows, order }
+// oxlint-disable-next-line no-unused-vars -- lu par les tests, par son nom : { cols, rows, order }
+let jigsawState = null;
 
 function renderJigsaw(){
   setupLives('jigsaw');
@@ -154,7 +155,7 @@ function renderJigsaw(){
       if(pc.classList.contains('used') || (e.pointerType==='mouse' && e.button!==0)) return;
       const sx = e.clientX, sy = e.clientY;
       let ghost = null, box = null;
-      try{ pc.setPointerCapture(e.pointerId); }catch(err){}
+      try{ pc.setPointerCapture(e.pointerId); }catch{}
       const move = ev=>{
         if(!ghost && Math.hypot(ev.clientX - sx, ev.clientY - sy) > 8){
           box = pc.getBoundingClientRect();

@@ -274,7 +274,7 @@ function openDialogue(charId){
   if(pickBtn) pickBtn.onclick = ()=> { playSound('tap'); emit('game:start'); };
   const giftBtn = document.getElementById('btn-gift');
   if(giftBtn) giftBtn.onclick = ()=> { playSound('tap'); openGiftPicker(charId); };
-  document.getElementById('btn-close').onclick = ()=>{ window.speechSynthesis && speechSynthesis.cancel(); closeModal(); };
+  document.getElementById('btn-close').onclick = ()=>{ if(window.speechSynthesis) speechSynthesis.cancel(); closeModal(); };
 }
 
 registerView('ile', ()=> renderLagon());

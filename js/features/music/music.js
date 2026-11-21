@@ -150,7 +150,7 @@ function startMusic(){
     music.on = true;
     music.timer = setInterval(musicTick, 150);
     musicTick();
-  }catch(e){ music.on = false; }
+  }catch{ music.on = false; }
 }
 function stopMusic(){
   if(!music.on) return;
@@ -160,8 +160,8 @@ function stopMusic(){
   try{
     master.gain.cancelScheduledValues(audioCtx.currentTime);
     master.gain.setTargetAtTime(0, audioCtx.currentTime, .15);
-  }catch(e){}
-  setTimeout(()=>{ try{ master.disconnect(); filter.disconnect(); }catch(e){} }, 900);
+  }catch{}
+  setTimeout(()=>{ try{ master.disconnect(); filter.disconnect(); }catch{} }, 900);
 }
 // À appeler dès qu'un réglage ou la situation change
 function updateMusic(){ if(musicWanted()) startMusic(); else stopMusic(); }

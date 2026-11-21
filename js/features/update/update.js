@@ -32,7 +32,7 @@ async function installedVersion(){
     if(typeof caches === 'undefined') return 0;
     const nums = (await caches.keys()).map(k=> Number((/^lagon-v(\d+)$/.exec(k) || [])[1]) || 0);
     return Math.max(0, ...nums);
-  }catch(e){ return 0; }
+  }catch{ return 0; }
 }
 
 /* Cherche une mise à jour. Réponses :
@@ -52,9 +52,9 @@ async function checkForUpdate(){
     if(!reg) return 'reload';
     // demande sw.js au site : s'il a changé, le nouveau s'installe aussitôt
     await reg.update();
-  }catch(e){ return 'error'; }
+  }catch{ return 'error'; }
   if(reg.installing || reg.waiting){
-    if(reg.waiting) reg.waiting.postMessage('skipWaiting');
+    if(reg.waiting) reg.waiting.postMessage('skipWaiting'); // oxlint-disable-line unicorn/require-post-message-target-origin -- service worker, pas une fenêtre
     return 'found';
   }
   // un service worker plus récent que cette page est déjà installé
@@ -65,14 +65,14 @@ async function checkForUpdate(){
 function reloadGame(){ location.reload(); }
 
 function rememberUpdate(){
-  try{ sessionStorage.setItem(UPDATE_FLAG, String(APP_VERSION)); }catch(e){}
+  try{ sessionStorage.setItem(UPDATE_FLAG, String(APP_VERSION)); }catch{}
 }
 
 // au démarrage : si le jeu vient de redémarrer pour une mise à jour, le message
 // à montrer (une seule fois), sinon null
 function announceUpdate(){
   let from = null;
-  try{ from = sessionStorage.getItem(UPDATE_FLAG); sessionStorage.removeItem(UPDATE_FLAG); }catch(e){}
+  try{ from = sessionStorage.getItem(UPDATE_FLAG); sessionStorage.removeItem(UPDATE_FLAG); }catch{}
   if(from === null) return null;
   return Number(from) < APP_VERSION ? `✨ Le jeu est à jour : version ${APP_VERSION}` : `✅ Le jeu est à jour (version ${APP_VERSION})`;
 }

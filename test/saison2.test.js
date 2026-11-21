@@ -310,7 +310,7 @@ function startGame(key, tier, age){
   {
     const g0 = ev('grisouSVG(0)'), g1 = ev('grisouSVG(1)');
     const color = (s)=> (s.match(/data-color="([^"]+)"/) || [])[1];
-    check('Grisou est un nuage dessiné en SVG', /^<svg/.test(g0.trim()) && /Grisou/.test(g0));
+    check('Grisou est un nuage dessiné en SVG', g0.trim().startsWith('<svg') && /Grisou/.test(g0));
     check('il reprend des couleurs à chaque île libérée', color(g0) !== color(g1) && color(ev('grisouSVG(2)')) !== color(g1));
     check('triste au début (larmes), il sourit ensuite', /8FC8F2/.test(g0) && !/8FC8F2/.test(g1));
     check('il progresse avec les énigmes de la saison 2 résolues', (ev('state.storySolved = {}; save()'), ev('skyIslandsFreed()')) === 0 && (ev('state.storySolved = { boites:true }; save()'), ev('skyIslandsFreed()')) === 1);
