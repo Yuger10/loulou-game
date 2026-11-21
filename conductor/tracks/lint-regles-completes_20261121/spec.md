@@ -13,13 +13,34 @@ La PR oxlint (factory, phase 1, étape 3) a désactivé 5 règles de la catégor
 | `unicorn/no-array-sort` | 27 | `toSorted()` | Idem |
 | `unicorn/prefer-add-event-listener` | 195 | `addEventListener`, avec une façon unique d'éviter les doublons sur les éléments qui persistent (par exemple un `AbortController` par ouverture de fenêtre, annulé à la fermeture) | Le plus gros changement : risque de handlers en double. Il faut un helper partagé et un test qui ouvre deux fois chaque fenêtre réutilisée (confirmation, formulaire) |
 
+## Règles à ajouter (proposées le 21 novembre 2026)
+
+Principe : **une règle n'entre que si elle vise un vrai risque pour ce projet**, pas une préférence de style, et **sans alourdir les vérifications**. Coût mesuré de toute la sélection ci-dessous : le lint passe de 34,1 ms à 34,6 ms (hyperfine, 15 runs). Les catégories `pedantic`, `style` et `restriction` entières sont écartées : environ 19 000 signalements, presque tous de style (nombres magiques, noms courts, tri des clés), du bruit que les agents corrigeraient à la chaîne sans gain.
+
+| Règle | Cas | Pourquoi pour ce projet |
+|---|---|---|
+| `import/no-cycle` | 12 | Les modules ES s'initialisent dans l'ordre des imports : un cycle peut lire une valeur pas encore définie au démarrage. `test/slices.test.js` interdit déjà les cycles **entre** slices ; il en reste à l'intérieur (par exemple `entities/player` et `features/adaptive`) |
+| `eqeqeq` | 10 | `==` et `!=` font des conversions surprenantes. Exception possible : `x == null` (null ou undefined), si on la garde, elle s'écrit avec `"null": "ignore"` |
+| `no-use-before-define` (variables seulement) | 10 | Même risque d'ordre d'initialisation que les cycles |
+| `no-empty` | 34 | C'est l'anti-pattern 3 de l'audit (`catch {}` vide). Un bloc volontairement vide devra porter un commentaire qui dit pourquoi. **À faire dans la PR de l'anti-pattern 3** |
+| `no-param-reassign` | 40 | Par exemple `rng = rng \|\| Math.random` : lié à l'anti-pattern 2, une valeur par défaut s'écrit `rng = Math.random` dans la signature |
+| `no-console` (dans `js/`) | 1 | Rien ne doit s'afficher dans la console du jeu ; les tests (`test/`) restent libres |
+| `max-lines` à 800, puis abaissé | 0 aujourd'hui | Cliquet : aucun fichier ne doit grossir au-delà du plus gros actuel (`difficulty.js`, 752 lignes). Un agent travaille mieux sur des fichiers courts |
+
+Règles custom (dans `tools/lint-rules/`, chargées par `jsPlugins`), à écrire avec leur anti-pattern :
+- **échappement HTML** des données dans les templates (anti-pattern 1) ;
+- **`Math.random` interdit hors de `shared/lib`** (anti-pattern 2), via `no-restricted-properties` avant toute règle custom ;
+- **`setTimeout` à délai fixe dans la logique de jeu** (anti-pattern 4), après la mise en place d'un `delay()` central.
+
+Règle de conduite pour la suite : **quand une correction humaine revient deux fois, proposer la règle qui l'empêche** (playbook, « chaque correction devient un check »), avec son nombre de cas et son coût mesuré.
+
 ## Questions à trancher avant de commencer
 1. **Version minimale d'iOS ou de Safari à supporter ?** Si iOS 16 ou plus suffit, `toSorted` et `toReversed` passent tels quels. Sinon, il faut un petit polyfill dans `shared/lib`, chargé avant le reste, ou garder ces deux règles coupées pour cette raison précise.
 2. Pour `prefer-add-event-listener` : faut-il un helper unique (`on(el, 'click', fn, signal)`) imposé par une règle custom, ou `addEventListener` direct avec `{ signal }` ?
 
 ## Critères d'acceptation
-1. Les 5 règles sont actives en erreur dans `.oxlintrc.json`. Il ne reste aucune ligne `"off"`, sauf une règle gardée pour une contrainte écrite (question 1).
-2. `bun run check` passe, sans nouvelle exception `oxlint-disable`.
+1. Les 5 règles et les règles ajoutées retenues sont actives en erreur dans `.oxlintrc.json`. Il ne reste aucune ligne `"off"`, sauf une règle gardée pour une contrainte écrite (question 1).
+2. `bun run check` passe, sans nouvelle exception `oxlint-disable`, et le lint reste sous 100 ms (budget cothon : 3 s).
 3. Aucun changement de comportement. Un test vérifie qu'ouvrir deux fois la fenêtre de confirmation et le formulaire ne double aucun handler.
 4. `AGENTS.md` (ou la convention en place) décrit la façon unique d'attacher un handler.
 

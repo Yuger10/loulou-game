@@ -15,6 +15,11 @@ Spec : [spec.md](./spec.md). Une PR par règle, dans l'ordre du plus simple au p
 - [ ] Task: Helper ou convention retenue, puis migration des 195 `onclick =`, slice par slice
 - [ ] Task: Activer `unicorn/prefer-add-event-listener`, convention dans `AGENTS.md`
 
-## Phase 4 : livraison
+## Phase 4 : règles ajoutées
+- [ ] Task: Valider la sélection avec Amrou (tableau de la spec)
+- [ ] Task: Une PR par règle retenue : `import/no-cycle`, `eqeqeq`, `no-use-before-define`, `no-param-reassign`, `no-console`, `max-lines` (`no-empty` part avec l'anti-pattern 3)
+- [ ] Task: Mesurer le lint après chaque ajout (hyperfine), noter dans `docs/factory/SPEED.md`
+
+## Phase 5 : livraison
 - [ ] Task: `bun run check` vert, `docs/factory/SPEED.md` (règles désactivées : aucune), `tech-stack.md`
 - [ ] Task: Conductor - User Manual Verification 'Livraison' (Protocol in workflow.md)
