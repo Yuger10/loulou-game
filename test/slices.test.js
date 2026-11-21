@@ -56,7 +56,7 @@ check('index.html charge les feuilles de style du manifeste, dans le même ordre
 const sw = page.read('sw.js');
 const swFiles = [...sw.matchAll(/'\.\/([^']+\.(?:js|css))'/g)].map(m=> m[1]);
 const expected = [...CSS_ORDER, ...modules];
-check('sw.js met en cache exactement les modules et feuilles de style (npm run sw)',
+check('sw.js met en cache exactement les modules et feuilles de style (bun run sw)',
   same([...swFiles].sort(), [...expected].sort()),
   `en trop : ${diff(swFiles, expected)} ; manquants : ${diff(expected, swFiles)}`);
 

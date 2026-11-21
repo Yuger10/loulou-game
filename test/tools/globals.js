@@ -163,7 +163,7 @@ function analyzeFiles(files){
 module.exports = { analyze, analyzeFiles };
 
 // en ligne de commande : node test/tools/globals.js js/a.js js/b.js …
-// (npm run inventaire) : ce que chaque fichier définit, exporte et importe
+// (bun run inventaire) : ce que chaque fichier définit, exporte et importe
 if(require.main === module){
   const res = analyzeFiles(process.argv.slice(2));
   for(const r of res){

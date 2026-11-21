@@ -62,7 +62,7 @@
 - Le journal 📖 affiche « La Grande Expédition ✅ ». On peut revoir le final sans regagner les récompenses.
 
 ## 3. Exigences non fonctionnelles
-- Architecture en feature slices et modules ES : chaque mini-jeu dans `features/minigames/<jeu>/` avec son `index.js`, l'île dans les entités et features existantes ; déclaration dans `js/slices.cjs`, puis `npm run sync`.
+- Architecture en feature slices et modules ES : chaque mini-jeu dans `features/minigames/<jeu>/` avec son `index.js`, l'île dans les entités et features existantes ; déclaration dans `js/slices.cjs`, puis `bun run sync`.
 - Mobile 360 px, tout est lu à voix haute, choix de réponses en images (sauf les mini-jeux de lecture), pas de punition.
 - Les 2 mini-jeux respectent la checklist mini-jeu (difficulté, essais, minuteur, indices, compétence parents, tests de victoire dans `test/games.test.js`).
 - Une partie de la version précédente se charge sans perte (migration si l'état change).
@@ -72,7 +72,7 @@
 2. Les 4 personnages, leurs butins et répliques, les objets, recettes, décorations, la scène, le thème, la musique et la série de squishies sont présents.
 3. Les 2 mini-jeux suivent leurs paliers, relancent une autre question après une erreur, ont leurs 2 niveaux d'indice et leur niveau adaptatif, et sont joués jusqu'à la victoire à chaque palier par `test/games.test.js`.
 4. Le chapitre et les 3 épisodes se jouent au bon moment ; la récompense est donnée une seule fois.
-5. `npm test` passe, sans aucune erreur JS.
+5. `bun run check` passe, sans aucune erreur JS.
 
 ## 5. Hors périmètre
 - Les autres îles de la saison.

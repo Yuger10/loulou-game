@@ -1,5 +1,5 @@
 // La version du jeu et le bouton « Chercher une mise à jour » (v66) :
-// - un seul numéro (js/shared/lib/version.js), écrit par npm run sync dans le
+// - un seul numéro (js/shared/lib/version.js), écrit par bun run sync dans le
 //   cache du service worker (sw.js : lagon-vNN) ;
 // - le service worker ne mélange jamais anciens et nouveaux fichiers ;
 // - dans l'espace parents : la version, et le bouton qui répond dans chaque cas
@@ -27,11 +27,11 @@ const V = Number((/const APP_VERSION = (\d+);/.exec(fs.readFileSync(file('js/sha
 const SW = fs.readFileSync(file('sw.js'), 'utf8');
 check('js/shared/lib/version.js donne un numéro de version', V > 0, String(V));
 check('le cache du service worker porte ce numéro (lagon-vNN)', SW.includes(`const CACHE = 'lagon-v${V}';`), (/const CACHE = '([^']+)'/.exec(SW) || [])[1]);
-// npm run sync réécrit le nom du cache à partir de la version
+// bun run sync réécrit le nom du cache à partir de la version
 try{
   fs.writeFileSync(file('sw.js'), SW.replace(/const CACHE = 'lagon-v\d+';/, "const CACHE = 'lagon-v1';"));
   execFileSync('node', [file('test/tools/sync.js')], { stdio:'pipe' });
-  check('npm run sync écrit la version dans le cache de sw.js', fs.readFileSync(file('sw.js'), 'utf8') === SW);
+  check('bun run sync écrit la version dans le cache de sw.js', fs.readFileSync(file('sw.js'), 'utf8') === SW);
 } finally {
   fs.writeFileSync(file('sw.js'), SW);
 }

@@ -12,7 +12,7 @@
      n'importent que lui.
    - `css` : ses feuilles de style ; leur ordre global est CSS_ORDER.
    Tout est vérifié par test/slices.test.js. index.html et sw.js en sont
-   générés (npm run sync / npm run sw).
+   générés (bun run sync / bun run sw).
 
    Ce fichier n'est pas chargé par le jeu : seuls les outils et les tests le
    lisent (`require`), d'où l'extension .cjs (js/ est en modules ES). */
