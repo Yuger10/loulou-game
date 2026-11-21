@@ -25,6 +25,7 @@ bun install          # bun seulement (version épinglée dans package.json) ; np
 bun run check        # avant de terminer : architecture (imports, couches, aucun cycle), vrais modules ES, test de fumée,
                      # squishies, saison 2, Jouets Doux, Bonbons, Musique, Jardin, Licornes, niveaux (conductor/niveaux.md), chaque mini-jeu joué jusqu'à la victoire,
                      # compagnons
+bun install          # installe aussi le hook git (lefthook) : chaque commit lance oxlint sur les fichiers JS indexés
 bun run lint         # oxlint (33 ms), déjà inclus dans check ; règles dans .oxlintrc.json
 bun run test jardin  # seulement les suites dont le nom contient « jardin » (plusieurs filtres possibles)
 bun run sync         # après avoir ajouté/déplacé un fichier : index.html et sw.js depuis js/slices.cjs

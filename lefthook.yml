@@ -1,0 +1,9 @@
+# Hooks git (factory, phase 1, étape 4 ; skill cothon:wiring-fast-feedback).
+# Installés par `bun install` (script prepare). Rapides par construction :
+# seulement le lint des fichiers indexés (quelques dizaines de ms).
+# Les tests restent dans `bun run check`, trop longs pour chaque commit.
+pre-commit:
+  commands:
+    lint:
+      glob: "*.{js,cjs,mjs}"
+      run: ./node_modules/.bin/oxlint --deny-warnings {staged_files}

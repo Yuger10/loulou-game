@@ -90,3 +90,12 @@ Règles désactivées **provisoirement**, avec leur raison (aussi écrite dans `
 | `no-underscore-dangle` | 15 | Propriétés posées exprès sur des éléments du DOM |
 
 Pas encore de règle custom : l'échappement HTML (anti-pattern 1 de l'audit) aura sa propre PR, avec le nettoyage complet et sa règle (playbook 4.5).
+
+## Après l'étape 4 : retour rapide (21 novembre 2026)
+
+| Boucle | Outil | Temps | Budget |
+|---|---|---|---|
+| Agent, après chaque édition d'un fichier JS | hook `PostToolUse`, oxlint sur le fichier | **34 ms** (hyperfine, 20 runs) | < 300 ms |
+| Humain, à chaque commit | lefthook, oxlint sur les fichiers indexés | **30 ms** | |
+
+Vérifié en conditions réelles : une variable inutilisée écrite par l'agent lui est renvoyée aussitôt ; un commit qui contient la même erreur est refusé. Volontairement léger : pas de tests dans les hooks (pas de `pre-push`), ils restent dans `bun run check`.
