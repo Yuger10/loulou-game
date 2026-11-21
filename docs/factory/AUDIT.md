@@ -1,6 +1,6 @@
 # Audit du dépôt : Le Lagon Magique (phase 0 de la cuisine étoilée)
 
-> Référence : `software-factory-playbook.md`, section 3. Audit réalisé le 21 novembre 2026 sur `main` en v65.
+> Référence : playbook cothon (`software-factory-playbook.md` du plugin `cothon` 0.1.0), section 3. Audit réalisé le 21 novembre 2026 sur `main` en v65.
 > Cette phase ne modifie rien d'autre que ce fichier. La phase 1 attend les réponses d'Amrou (fin du document).
 
 ## 1. Stack détectée
@@ -121,6 +121,15 @@ Adaptations prévues :
   - screenshots Playwright comme preuves.
 - **Ignoré** : base éphémère (pas de base).
 
+## 10. Maturité et écarts à la stack de référence
+
+Projet **actif, de taille petite à moyenne** : migration progressive vers la stack de référence cothon, une PR par rôle. Le détail (mesures, budgets, décision par rôle, ordre des migrations) est dans [`SPEED.md`](SPEED.md). En résumé :
+- les tests sont hors budget (108 s en série, 35 s en parallèle, pour un budget de 30 s) ;
+- npm passe à bun ;
+- oxlint et oxfmt sont ajoutés ;
+- pas de typecheck ;
+- la CI arrive en phase 2.
+
 ## Questions pour Amrou
 
 1. **npm ou pnpm ?** Le playbook impose pnpm partout. Ici, une seule dépendance de dev et aucun monorepo : le passage coûte un lockfile. Je recommande **pnpm**, par cohérence avec tes autres projets.
@@ -138,9 +147,9 @@ Adaptations prévues :
 
 Principe transverse : **exécution rapide, le moins de ressources possible**. À chaque choix, l'option la plus légère.
 
-1. **pnpm**.
+1. ~~pnpm~~ **bun**, après lecture du playbook cothon : alignement sur la stack de référence (bun, oxlint, oxfmt).
 2. **Pas de typecheck** pour l'instant (option la plus légère). À reconsidérer seulement si une erreur de type passe les tests.
-3. **Biome** (lint et format, un seul binaire, rapide).
+3. ~~Biome~~ **oxlint et oxfmt** (stack de référence cothon).
 4. Top 5 validé : on commence par l'échappement, puis `Math.random`.
 5. **Phase 3 probable**, à décider selon les prochaines itérations.
 6. Merge **uniquement sur ordre explicite**, et bloqué si la CI est rouge.
