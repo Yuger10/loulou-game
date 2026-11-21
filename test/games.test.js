@@ -1,8 +1,10 @@
+// @shards 3
 // Chaque mini-jeu joué jusqu'à la victoire, à chaque palier ; la mémoire
 // jouée « pour de vrai » jusqu'au bout ; le bouton son.
 // Le temps du jeu est accéléré ×10 (minuteries du jeu) pour que tout tienne
 // en quelques secondes ; l'ordre des événements, lui, ne change pas.
 const { JSDOM } = require('jsdom');
+const { inShard } = require('./tools/shard.js');
 const fs = require('fs');
 const path = require('path');
 
@@ -233,7 +235,7 @@ async function playToWin(key, tier){
   const maxTier = { calc:6, shapes:6, planets:6 };
   const ROUNDS = 3;     // plusieurs tirages : les jeux changent de question et de variante
   let played = 0;
-  for(const key of games){
+  for(const key of inShard(games)){
     for(let tier = 1; tier <= (maxTier[key] || 5); tier++){
       for(let r = 0; r < (key === 'simon' || key === 'memory' ? 1 : ROUNDS); r++){
         const res = await playToWin(key, tier);
