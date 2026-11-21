@@ -53,6 +53,7 @@ test/                slices.test.js (architecture), modules.test.js (vrais modul
                      jardin.test.js (le Jardin des Fées), licornes.test.js (les Licornes et le grand final),
                      niveaux.test.js (le tableau des niveaux, le jeu et les specs),
                      games.test.js, companions.test.js (indices, équipe, spécialités),
+                     update.test.js (la version du jeu et le bouton « Chercher une mise à jour »),
                      tools/ (page de test regroupée par esbuild, analyse, synchronisation, déplacements)
 conductor/           specs, plans, checklists « ajouter un mini-jeu » et « ajouter une île », niveaux.md (le tableau des niveaux)
 docs/adr/            décisions d'architecture (ADR)

@@ -6,7 +6,8 @@
      les erreurs, le palier atteint, et un état simple (à l'aise / en cours /
      difficile / pas encore assez joué) ;
    - le réglage de la pause douce (après X minutes de jeu dans la journée) ;
-   - les réglages adultes : sauvegarde, réglages du joueur, remise à zéro.
+   - les réglages adultes : sauvegarde, réglages du joueur, remise à zéro ;
+   - la version du jeu et le bouton « Chercher une mise à jour » (v66, js/features/update).
 
    Données, dans la partie de chaque enfant (exportées par la sauvegarde) :
      state.skills[jeu]  = { wins, fails, errors, last, recent:[{t, e, ok}…10], hints }
@@ -32,6 +33,7 @@ import { openPlayers, openPlayerSettings } from '../players/index.js';
 import { renderSoundBtn } from '../profile/index.js';
 import { bindQuit, gameHeader } from '../screen/index.js';
 import { setSeasonPreview } from '../seasons/index.js';
+import { bindUpdateCard, updateCardHTML } from '../update/index.js';
 
 const SKILL_GROUPS = [
   { id:'lire',     emoji:'📖', name:'Lecture et langage',  games:['reading','determinants'] },
@@ -211,6 +213,7 @@ function openParentSpace(selectedId){
         <button class="btn-small ghost" id="ps-player">✏️ Prénom, âge, avatar, compagnon</button>
       </div>
     </section>
+    ${updateCardHTML()}
     <section class="bk-card ps-danger"><h3>⚠️ Zone sensible</h3>
       <p class="bk-help">Ces actions effacent une partie. Elles demandent une double confirmation.</p>
       <div class="ps-actions">
@@ -220,6 +223,7 @@ function openParentSpace(selectedId){
     </section>
   `);
   bindQuit();
+  bindUpdateCard();
   document.querySelectorAll('[data-ps]').forEach(b=> b.onclick = ()=>{ playSound('tap'); openParentSpace(b.dataset.ps); });
   document.querySelectorAll('[data-pause]').forEach(b=> b.onclick = ()=>{
     playSound('tap'); p.pauseMin = Number(b.dataset.pause);

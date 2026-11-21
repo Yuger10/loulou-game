@@ -1577,3 +1577,53 @@ Les deux sont proposés dès 5 ans, sans minuteur. Le jeu de l'île est les poti
   - pour les potions, une table des mélanges propre au test ;
   - pour le miroir, le reflet calculé par le test.
 - Cache `lagon-v65`.
+
+---
+
+# v66 — La version du jeu et le bouton « Chercher une mise à jour »
+
+> **Demande du propriétaire :** « est-ce que la version installée sur l'iPad reçoit la mise à jour automatiquement ? », puis « ajoute la version et le bouton de mise à jour ».
+
+## Le problème
+- Le jeu se met déjà à jour tout seul : à chaque démarrage avec Internet, le service worker cherche une nouvelle version, l'installe, et la page se recharge.
+- Mais sur iPad, une app ajoutée à l'écran d'accueil reste souvent **en pause en arrière-plan** : en la rouvrant, on reprend l'ancienne page, sans démarrage, donc sans mise à jour.
+- Rien ne disait quelle version tournait.
+
+## Ce qui change
+- **Dans l'espace parents, une carte « 📲 Version du jeu »** (sous les réglages) :
+  - « Version 66 » ;
+  - un bouton **« 🔄 Chercher une mise à jour »**, qui demande tout de suite au site s'il y a du neuf.
+- **Les réponses du bouton :**
+  - ✅ « Le jeu est à jour (version 66) » ;
+  - ✨ « Nouvelle version trouvée ! Le jeu redémarre dans quelques secondes… » : le jeu se recharge tout seul, en moins d'une seconde dans les essais ;
+  - 📴 « Pas d'Internet : le jeu se mettra à jour à la prochaine connexion » ;
+  - 😕 « Le site ne répond pas… réessayez dans un moment ».
+- **Une aide sous le bouton** explique que la progression est gardée, et qu'une version toute neuve peut mettre une dizaine de minutes à arriver (le délai de GitHub Pages).
+- **Après le redémarrage**, l'écran titre affiche « ✨ Le jeu est à jour : version N », jusqu'à « Jouer ». Le message ne s'affiche qu'une fois.
+- La progression n'est jamais touchée : elle est dans la sauvegarde, qui se migre toute seule.
+
+## Technique
+- **Un seul numéro de version :** `APP_VERSION` dans `js/shared/lib/version.js`. `npm run sync` l'écrit dans le cache du service worker (`lagon-v66`). `conductor/workflow.md` est mis à jour : à chaque livraison, on augmente `APP_VERSION`, puis `npm run sync`.
+- **Nouvelle slice `js/features/update`** : la carte, le bouton et `checkForUpdate()`.
+  - Le bouton s'appuie sur `registration.update()` du service worker.
+  - Si une version plus récente est déjà installée, il recharge simplement.
+- **Service worker plus sûr** :
+  - à l'installation, les fichiers sont pris sur le site (`cache:'reload'`), jamais dans le cache HTTP du navigateur ;
+  - ensuite, les fichiers du jeu sont toujours redemandés au site (`cache:'no-cache'`, réponse courte s'ils n'ont pas changé).
+  - Ainsi, une mise à jour ne mélange jamais d'anciens et de nouveaux modules.
+  - Les pages et les polices de Google gardent la requête d'origine, et le hors-ligne marche comme avant.
+
+## Tests
+- Nouveau `test/update.test.js` (23 vérifications), branché sur `npm test`. Il couvre :
+  - la version et le cache identiques, et `npm run sync` qui écrit le cache ;
+  - la stratégie du service worker ;
+  - la carte dans l'espace parents ;
+  - les 5 réponses du bouton, avec un faux service worker ;
+  - le rechargement, et le message sur l'écran titre, une seule fois.
+- **Vérifié dans Chromium avec un vrai service worker :**
+  1. v66 à jour ;
+  2. hors-ligne ;
+  3. une fausse v67 publiée sur le serveur local : elle est trouvée, le jeu redémarre en moins d'une seconde, l'écran titre dit « version 67 », le cache et tous les modules sont en v67 ;
+  4. puis « à jour (version 67) ».
+- Le jeu démarre toujours hors-ligne (244 fichiers en cache).
+- Cache `lagon-v66`.

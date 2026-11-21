@@ -12,6 +12,7 @@ import { maybeSkyOpening, renderIslandCard, renderLagon, renderLevelPill } from 
 import { renderMap } from '../features/map/index.js';
 import { updateMusic } from '../features/music/index.js';
 import { startPlayTimeTracker } from '../features/parents/index.js';
+import { announceUpdate } from '../features/update/index.js';
 import { renderRaceTrack, renderTurnBar } from '../features/party/index.js';
 import { closeWelcome, openWelcome, renderProfile, renderSoundBtn } from '../features/profile/index.js';
 import { ensureQuests, openQuestsModal } from '../features/quests/index.js';
@@ -19,7 +20,7 @@ import { initSeasons, maybeSeasonGift } from '../features/seasons/index.js';
 import { renderSquishyBadge, squishySessionHello } from '../features/squishies/index.js';
 import { openStoryJournal } from '../features/story/index.js';
 import { renderCoins } from '../features/wallet/index.js';
-import { playSound, requestCloseModal, speak, switchView } from '../shared/ui/index.js';
+import { playSound, requestCloseModal, showToast, speak, switchView } from '../shared/ui/index.js';
 
 loadProfiles();
 load();
@@ -66,6 +67,8 @@ function hideSplash(){
   requestPersistentStorage();
   const sp = document.getElementById('splash');
   playSound('win');
+  const note = document.getElementById('splash-note');
+  if(note) note.hidden = true;
   sp.classList.add('hiding');
   setTimeout(()=>{
     sp.classList.remove('show','hiding'); updateMusic();
@@ -111,6 +114,14 @@ showSplash();
 document.getElementById('avatar-pill').addEventListener('click', ()=>{ playSound('tap'); switchView('reglages'); });
 document.getElementById('btn-start').addEventListener('click', closeWelcome);
 document.getElementById('name-input').addEventListener('keydown', e=>{ if(e.key==='Enter') closeWelcome(); });
+// le jeu vient de redémarrer après « Chercher une mise à jour » (espace parents, v66) :
+// on le dit sur l'écran titre, où le message reste jusqu'à « Jouer »
+const updateNote = announceUpdate();
+if(updateNote){
+  const note = document.getElementById('splash-note');
+  if(note && document.getElementById('splash').classList.contains('show')){ note.textContent = updateNote; note.hidden = false; }
+  else setTimeout(()=> showToast(updateNote), 1200);
+}
 // Installe le service worker ET recharge automatiquement dès qu'une
 // nouvelle version est prête, pour que les nouveautés (nouveaux jeux,
 // nouvelle île…) soient toujours visibles sans manipulation.

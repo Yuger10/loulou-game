@@ -50,7 +50,7 @@
 6. Commit de checkpoint, puis noter `[checkpoint: <sha>]` sur le titre de la phase dans `plan.md`.
 
 ## Fin de track : livraison
-- Incrémenter le cache `sw.js` (`lagon-vNN`) ; `npm run sync` (ou `npm run sw`) pour `FILES` et `index.html`.
+- Incrémenter `APP_VERSION` (`js/shared/lib/version.js`), puis `npm run sync` (ou `npm run sw`) : il écrit le cache de `sw.js` (`lagon-vNN`), `FILES` et `index.html`. `test/update.test.js` vérifie que la version et le cache disent la même chose.
 - Si l'état change : incrémenter `SAVE_VERSION` et ajouter l'étape `migrate()`.
 - Mettre à jour `PRD-lagon-magique.md` (section de la version), `TODO.md` et `README.md` (structure).
 - Branche, puis PR sur `main`, `npm test` vert, puis merge.

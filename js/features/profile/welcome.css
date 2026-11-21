@@ -22,6 +22,13 @@
     background:rgba(255,255,255,.9); border-radius:999px; padding:8px 18px;
     font-weight:700; margin-bottom:18px; box-shadow:var(--shadow);
   }
+  /* v66 : après « Chercher une mise à jour », le jeu redémarre et le dit ici */
+  #splash .splash-note{
+    background:var(--ocean-deep, #123B4F); color:#fff; border-radius:999px; padding:8px 16px;
+    font-weight:700; font-size:.95rem; margin:-6px 0 18px; box-shadow:var(--shadow);
+    animation:pop .4s ease both;
+  }
+  #splash .splash-note[hidden]{display:none;}
   #splash .btn-primary{max-width:280px; font-size:1.2rem; animation:beat 1.6s ease-in-out infinite;}
   @keyframes beat{0%,100%{transform:scale(1);} 50%{transform:scale(1.05);}}
   #splash .waves{

@@ -17,7 +17,7 @@
    Ce fichier n'est pas chargé par le jeu : seuls les outils et les tests le
    lisent (`require`), d'où l'extension .cjs (js/ est en modules ES). */
 const SLICES = [
-  { id:'shared-lib',     layer:'shared',   files:['js/shared/lib/random.js','js/shared/lib/events.js'], css:[] },
+  { id:'shared-lib',     layer:'shared',   files:['js/shared/lib/random.js','js/shared/lib/events.js','js/shared/lib/version.js'], css:[] },
   { id:'shared-styles',  layer:'shared',   files:[], css:['js/shared/styles/base.css','js/shared/styles/interface-v12.css','js/shared/styles/pointer-v13.css','js/shared/styles/responsive-v14.css','js/shared/styles/design-system-v21.css','js/shared/styles/devices.css'] },
   { id:'shared-ui',      layer:'shared',   files:['js/shared/ui/icons.js','js/shared/ui/sound.js','js/shared/ui/voice.js',
                                                 'js/shared/ui/feedback.js','js/shared/ui/modal.js','js/shared/ui/confirm.js','js/shared/ui/form.js','js/shared/ui/views.js'], css:['js/shared/ui/views.css','js/shared/ui/nav.css','js/shared/ui/modal.css','js/shared/ui/form.css','js/shared/ui/feedback.css','js/shared/ui/icons.css'] },
@@ -86,6 +86,7 @@ const SLICES = [
   { id:'market', layer:'features', files:['js/features/market/market.js'], css:['js/features/market/market.css'] },
   { id:'backup', layer:'features', files:['js/features/backup/backup.js'], css:['js/features/backup/backup.css'] },
   { id:'players', layer:'features', files:['js/features/players/profiles-ui.js'], css:[] },
+  { id:'update', layer:'features', files:['js/features/update/update.js'], css:['js/features/update/update.css'] },
   { id:'parents', layer:'features', files:['js/features/parents/parents.js'], css:['js/features/parents/parents.css'] },
   { id:'rest', layer:'features', files:['js/features/rest/rest.js'], css:['js/features/rest/rest.css'] },
   { id:'settings', layer:'features', files:['js/features/settings/settings.js'], css:['js/features/settings/settings.css'] },
@@ -137,6 +138,7 @@ const CSS_ORDER = [
   'js/features/minigames/planets/planets.css',
   'js/features/backup/backup.css',
   'js/features/parents/parents.css',
+  'js/features/update/update.css',
   'js/features/adaptive/adaptive.css',
   'js/features/wardrobe/wardrobe.css',
   'js/shared/ui/icons.css',
