@@ -57,3 +57,14 @@ Rien n'est perdu : aucun outil existant n'est remplacé, sauf npm, et bun lit le
 4. **Hook de l'agent** et lefthook.
 5. **oxfmt** : PR de reformatage seule, une fois l'autre session mergée.
 6. **CI** : en phase 2.
+
+## Après l'étape 2 : tests en parallèle (21 novembre 2026)
+
+`test/tools/run.js` lance les suites en parallèle ; `games` et `companions` sont découpées en 3 morceaux (`// @shards 3`). La couverture est vérifiée : 439 parties de jeux et 306 parties d'indices, comme sans découpage.
+
+| Commande | Avant | Après |
+|---|---|---|
+| `bun run check`, 10 cœurs | 108 s | **18,4 s** (5 passages verts, 18,3 à 18,5 s) : **dans le budget de 30 s** |
+| idem, limité à 4 en parallèle (`TEST_JOBS=4`, taille d'un runner de CI) | | 34,4 s (3 passages verts) |
+
+Temps CPU total : 41 s, contre 108 s de durée en série. L'essentiel était de l'attente des minuteries du jeu. Pour aller plus loin, il faudrait réduire les délais fixes (anti-pattern 4 de l'audit).

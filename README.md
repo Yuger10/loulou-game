@@ -25,6 +25,7 @@ bun install          # bun seulement (version épinglée dans package.json) ; np
 bun run check        # avant de terminer : architecture (imports, couches, aucun cycle), vrais modules ES, test de fumée,
                      # squishies, saison 2, Jouets Doux, Bonbons, Musique, Jardin, Licornes, niveaux (conductor/niveaux.md), chaque mini-jeu joué jusqu'à la victoire,
                      # compagnons
+bun run test jardin  # seulement les suites dont le nom contient « jardin » (plusieurs filtres possibles)
 bun run sync         # après avoir ajouté/déplacé un fichier : index.html et sw.js depuis js/slices.cjs
 bun run sw           # (même chose) la liste des fichiers mis en cache hors-ligne
 bun run inventaire   # ce que chaque fichier définit, exporte et importe (analyse du code)

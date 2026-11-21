@@ -1,8 +1,10 @@
+// @shards 3
 // Les compagnons et leurs rôles (v52) : indices (bouton 💡, 2 niveaux,
 // anti-devinette, sans pénalité), équipe au niveau 10, rencontres, « Mon
 // équipe », spécialités. Même harnais que test/games.test.js : le temps du
 // jeu est accéléré ×10, la voix est notée au lieu d'être dite.
 const { JSDOM } = require('jsdom');
+const { inShard } = require('./tools/shard.js');
 const html = require('./tools/page.js').buildHtml();
 
 const SPEED = 0.1;
@@ -141,7 +143,7 @@ const wrongOf = (sel)=>{ const good = d.querySelector(ev('gameSolution')[0]); re
     if(missing.length) console.log('   sans indices :', missing.join(', '));
     const problems = [];
     let rounds = 0;
-    for(const key of games){
+    for(const key of inShard(games)){
       for(let tier = 1; tier <= (maxTier[key] || 5); tier++){
         for(let r = 0; r < 2; r++){
           rounds++;
