@@ -1,0 +1,59 @@
+# Vitesse des outils : Le Lagon Magique
+
+> Skill `cothon:auditing-tool-speed`, playbook cothon section 4.2. Mesures du 21 novembre 2026 sur un MacBook à 10 cœurs, Node 24.13, `main` en v65.
+> Outils de mesure : hyperfine 2.0.0, bun 1.4.5, oxlint 1.94.0, oxfmt 0.79.0 (lancés par `bunx`, rien d'installé dans le dépôt).
+
+## Maturité du projet
+
+**Actif, taille petite à moyenne.**
+- 2 mois d'âge (premier commit le 14 septembre 2026), 186 commits, 43 PR mergées.
+- 161 fichiers JS (16 900 lignes), un seul paquet, zéro dépendance de production.
+- Un humain et plusieurs sessions d'agents en parallèle.
+
+Règle du playbook pour ce profil : **migration progressive vers la stack de référence, une PR par rôle, dans l'ordre du gain mesuré.**
+
+## Mesures
+
+| Commande | Moyenne | Budget cothon | Verdict |
+|---|---|---|---|
+| `npm test` (17 suites en série) | **108 s** (3 runs, σ < 1 s) | `check` < 30 s | **Hors budget** |
+| 17 suites en parallèle (`xargs -P 10`) | **35 s** (3 runs, toutes vertes) | | 3,1 fois plus rapide, encore au-dessus |
+| `oxlint js` (tout le dépôt, via `bunx`) | 157 ms | < 3 s | OK |
+| `oxlint` sur un fichier (via `bunx`) | 138 ms | < 300 ms | OK (le coût est surtout le lancement de `bunx`) |
+| `oxfmt --check js` (via `bunx`) | 177 ms | | OK |
+| `npm ci`, cache chaud | 664 ms | install < 15 s | OK |
+| `bun install`, cache chaud | **18 ms** | | 37 fois plus rapide |
+| Typecheck | aucun | < 10 s | Pas de typecheck (décision d'Amrou) |
+
+Durée de chaque suite en série : compagnons 35,2 s, jeux 34,2 s, smoke 12,5 s, pause 9,6 s, les 13 autres moins de 3 s chacune. **La durée en parallèle est celle de la plus longue suite.** Pour passer sous 30 s, il faut découper `companions.test.js` et `games.test.js`, et réduire les attentes fixes (anti-pattern 4 de l'audit).
+
+Premier passage d'oxlint (configuration par défaut) : **0 erreur, 72 avertissements** :
+- 69 `no-unused-vars`, surtout des paramètres `e` de `catch` jamais utilisés (anti-pattern 3) ;
+- 3 `no-unused-expressions`.
+
+Premier passage d'oxfmt (réglages par défaut) : **232 fichiers** reformatés. C'est un gros diff mécanique.
+
+## Décision par rôle
+
+| Rôle | En place | Décision | Raison |
+|---|---|---|---|
+| Paquets et scripts | npm | **Migrer vers bun** (`cothon:migrating-to-bun`) | Référence ; install 37 fois plus rapide ; runtime Node conservé pour les tests et les outils |
+| Tests | scripts Node + jsdom, en série | **Garder le runner, lancer les suites en parallèle** | Gain mesuré de 73 s. Le script lit `test/*.test.js` : plus de liste à la main dans `package.json`, plus de conflit entre sessions. Vitest et `bun test` sont écartés : réécriture de 5 550 lignes sans gain prouvé |
+| Lint | aucun | **Ajouter oxlint** (`cothon:migrating-to-oxlint`, sans ESLint à migrer) | Référence ; 0,16 s ; les règles custom de l'audit iront dans `tools/lint-rules/` |
+| Format | aucun | **Ajouter oxfmt** (`cothon:migrating-to-oxfmt`) | Référence ; une PR isolée de reformatage, avec `.git-blame-ignore-revs`. Les réglages (`printWidth`, guillemets) suivront le style actuel pour limiter le diff. **Après la dernière livraison de l'autre session** |
+| Types | aucun | **Garder (aucun)** | Décision d'Amrou : le plus léger. Option future : TypeScript 7 `--checkJs` |
+| Git hooks | aucun | **Ajouter** le hook `PostToolUse` de l'agent, puis lefthook (`cothon:wiring-fast-feedback`) | Erreurs de lint vues juste après l'édition |
+| Orchestration des tâches | sans objet | Rien | Un seul paquet |
+| Base éphémère | sans objet | Rien | Pas de base ; à la place, des sauvegardes de référence pour les tests de migration (phase 2) |
+| CI | aucune | **Créer** en phase 2 (`cothon:speeding-up-ci`) | Jobs parallèles, `ci-ok` comme seul check obligatoire |
+
+Rien n'est perdu : aucun outil existant n'est remplacé, sauf npm, et bun lit le `package-lock.json` actuel.
+
+## Ordre des migrations (une PR chacune)
+
+1. **bun** : `packageManager`, `bun.lock`, scripts en `bun run`, `check` créé.
+2. **Tests en parallèle**, lancés depuis `check`. Ensuite, découpage des deux grosses suites pour passer sous 30 s.
+3. **oxlint** : configuration, correction des 72 avertissements, première règle custom (échappement HTML, anti-pattern 1).
+4. **Hook de l'agent** et lefthook.
+5. **oxfmt** : PR de reformatage seule, une fois l'autre session mergée.
+6. **CI** : en phase 2.
