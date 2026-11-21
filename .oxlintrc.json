@@ -1,0 +1,20 @@
+{
+  // Lint du projet (factory, phase 1 ; stack de référence cothon). Décisions : docs/factory/SPEED.md.
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "categories": { "correctness": "error", "suspicious": "error" },
+  "env": { "browser": true, "node": true, "es2022": true },
+  "rules": {
+    // un paramètre imposé par une signature mais inutile se préfixe par _
+    "no-unused-vars": ["error", { "argsIgnorePattern": "^_" }],
+    // `el.onclick = ...` est l'idiome du projet : réaffecté à chaque rendu, sans doublon de handler
+    "unicorn/prefer-add-event-listener": "off",
+    // toSorted et toReversed demandent Safari 16 : les tablettes des enfants sont souvent plus anciennes
+    "unicorn/no-array-sort": "off",
+    "unicorn/no-array-reverse": "off",
+    // style seulement, sans risque de bug
+    "unicorn/consistent-function-scoping": "off",
+    // propriétés posées exprès sur des éléments du DOM (el._last, el._t)
+    "no-underscore-dangle": "off"
+  },
+  "ignorePatterns": ["node_modules/**"]
+}

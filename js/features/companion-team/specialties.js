@@ -116,7 +116,7 @@ setHintPolicy({
   sparkle: ()=> specialtyOn('lili'),
   syllablesFirst: ()=> specialtyOn('perle'),
   onUse: ()=> teamHintSpoken(),
-  onError: (kind)=>{
+  onError: ()=>{
     grisouErrors++;
     if(grisouErrors >= 2 && specialtyOn('grisou')){
       grisouErrors = 0;

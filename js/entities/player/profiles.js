@@ -21,25 +21,25 @@ function currentSaveKey(){
 function newId(){ return 'p' + Date.now().toString(36) + Math.floor(Math.random()*1000); }
 
 function saveProfiles(){
-  try{ localStorage.setItem(PROFILES_KEY, JSON.stringify(profiles)); }catch(e){}
+  try{ localStorage.setItem(PROFILES_KEY, JSON.stringify(profiles)); }catch{}
 }
 
 function loadProfiles(){
   try{
     const raw = localStorage.getItem(PROFILES_KEY);
     if(raw) profiles = JSON.parse(raw);
-  }catch(e){}
+  }catch{}
   if(!profiles || !Array.isArray(profiles.list)) profiles = { list: [], current: null };
   profiles.list.forEach(p=>{ p.avatar = fixAvatar(p.avatar); });
 
   // migration : une ancienne partie unique devient le premier joueur
   if(!profiles.list.length){
     let legacy = null;
-    try{ legacy = JSON.parse(localStorage.getItem(LEGACY_SAVE_KEY) || 'null'); }catch(e){}
+    try{ legacy = JSON.parse(localStorage.getItem(LEGACY_SAVE_KEY) || 'null'); }catch{}
     const id = newId();
     profiles.list = [{ id, name: (legacy && legacy.name) || '', avatar: (legacy && legacy.avatar) || '👧' }];
     profiles.current = id;
-    if(legacy){ try{ localStorage.setItem(profileSaveKey(id), JSON.stringify(legacy)); }catch(e){} }
+    if(legacy){ try{ localStorage.setItem(profileSaveKey(id), JSON.stringify(legacy)); }catch{} }
     saveProfiles();
   }
   if(!profiles.current || !profiles.list.some(p=>p.id===profiles.current)){
@@ -93,7 +93,7 @@ function addProfile(name, avatar, age, gender, companion){
 function deleteProfile(id){
   if(profiles.list.length <= 1) return false;
   profiles.list = profiles.list.filter(p=>p.id!==id);
-  try{ localStorage.removeItem(profileSaveKey(id)); }catch(e){}
+  try{ localStorage.removeItem(profileSaveKey(id)); }catch{}
   party.players = party.players.filter(pid=>pid!==id);
   if(profiles.current === id){
     profiles.current = profiles.list[0].id;

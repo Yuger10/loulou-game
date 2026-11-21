@@ -80,7 +80,7 @@ function bindForm({ initial, current, required, onSave, onCancel }){
     el.addEventListener('input', ()=>{ el.classList.remove('form-missing'); refresh(); });
     el.addEventListener('change', refresh);
     // le champ actif reste visible au-dessus du clavier et de la barre d'actions
-    el.addEventListener('focus', ()=>{ try{ el.scrollIntoView({ block:'center' }); }catch(e){} });
+    el.addEventListener('focus', ()=>{ try{ el.scrollIntoView({ block:'center' }); }catch{} });
     if(el.tagName === 'INPUT') el.addEventListener('keydown', e=>{ if(e.key === 'Enter'){ e.preventDefault(); save(); } });
   });
   primary.onclick = ()=>{ playSound('tap'); save(); };

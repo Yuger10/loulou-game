@@ -9,7 +9,7 @@ import {
   addProfile, AVATARS, currentPlayerAge, currentProfile, party, partyCurrent, profiles,
   profileSaveKey, saveProfiles, switchProfile
 } from '../../entities/player/index.js';
-import { currentWorld, worldGame, WORLDS } from '../../entities/world/index.js';
+import { currentWorld, worldGame } from '../../entities/world/index.js';
 import { on, pickRandom, shuffle } from '../../shared/lib/index.js';
 import { bindForm, closeModal, confetti, formSheet, openModal, playSound, showToast, speak, switchView } from '../../shared/ui/index.js';
 import { pickPracticeGame } from '../adaptive/index.js';
@@ -114,7 +114,7 @@ function playerSummary(id){
     const s = JSON.parse(raw);
     const lvl = levelOf(s.missions);
     return `⭐ niveau ${lvl} · 🪙 ${s.coins||0} · 🎮 ${s.missions||0} missions`;
-  }catch(e){ return ''; }
+  }catch{ return ''; }
 }
 
 function ageSelector(sel){

@@ -84,7 +84,7 @@ const fundamentals = (list)=> list.filter((o, i, a)=> !a.some(p=> p !== o && p.s
     ev('state.sound = false');
     check('en silence, playSound ne joue rien', ev('playSound("win")') === false && ev('window.__audio.oscs.length') === 0);
     ev('state.sound = true; delete window.AudioContext; delete window.webkitAudioContext; audioCtx = null; soundBus = null');
-    let ok = true; try{ ev('playSound("win")'); }catch(e){ ok = false; }
+    let ok = true; try{ ev('playSound("win")'); }catch{ ok = false; }
     check('sans Web Audio, aucune erreur', ok && errs.length === 0);
   }
 

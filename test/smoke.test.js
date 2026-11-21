@@ -1,9 +1,6 @@
 // Test de fumée : charge le HTML dans jsdom et parcourt tout le cycle de jeu.
 const { JSDOM } = require('jsdom');
-const fs = require('fs');
-const path = require('path');
 
-const root = path.join(__dirname, '..');
 // Le jeu est découpé en plusieurs fichiers : on inline CSS et JS pour jsdom,
 // dans l'ordre du manifeste des slices (js/slices.cjs)
 const page = require('./tools/page.js');
@@ -236,7 +233,7 @@ setTimeout(()=>{
   const shownNums = [...d.querySelectorAll('.puzzle-btn')].map(b=>Number(b.dataset.n)).sort((a,b)=>a-b);
   const descending = d.querySelector('.puzzle-hint span').textContent.includes('envers');
   (descending ? shownNums.slice().reverse() : shownNums)
-    .forEach(n=> d.querySelector(`.puzzle-btn[data-n="${n}"]`).click());
+    .forEach(num=> d.querySelector(`.puzzle-btn[data-n="${num}"]`).click());
 
   setTimeout(async ()=>{
     check('puzzle : victoire (missions=4)', ev('state.missions')===4);
@@ -566,8 +563,7 @@ setTimeout(()=>{
 
     // ---- Mixité ----
     check('avatars mixtes proposés', ev('AVATARS').includes('👦') && ev('AVATARS').includes('🦸‍♂️') && ev('AVATARS').includes('🏴‍☠️'));
-    check('un personnage masculin par île',
-      ev('WORLD_ORDER').every(w=> ev(`charsOf(${JSON.stringify('X')})`) || true) &&
+    check('des personnages masculins (pirate, loup, robot, chevalier)',
       ['pirate','loup','robotmontagne','chevalier'].every(k=> ev(`!!CHARACTERS[${JSON.stringify(k)}]`)));
     ev(`profiles.list.find(p=>p.id===${JSON.stringify(p2)}).gender='m'; switchProfile(${JSON.stringify(p2)}, true)`);
     check('accord au masculin', ev("ac('fort')")==='fort' && ev("ac('champion','championne')")==='champion');
@@ -620,7 +616,7 @@ setTimeout(()=>{
 
     ev(`startRace([${JSON.stringify(p1)}, ${JSON.stringify(p2)}])`);
     check('course lancée', ev('race.active')===true && ev("party.mode")==='race');
-    check('course : tout le monde à 0', ev('race.players').every(id=>ev(`race.pos[${JSON.stringify('X')}]`)!==undefined || true) && ev(`race.pos[${JSON.stringify(p1)}]`)===0);
+    check('course : tout le monde à 0', ev('race.players').every(id=> ev(`race.pos[${JSON.stringify(id)}]`)===0));
     check('course : piste affichée', !d.getElementById('race-track').hidden && d.querySelectorAll('.race-lane').length===2);
     check('course : joueur de 6 ans → difficulté 2', ev('gameDiff()')===2);
     ev('currentWorld="chateau"');
@@ -684,7 +680,7 @@ setTimeout(()=>{
 
     // ---- Palier 5 (Jungle) : un vrai niveau supplémentaire ----
     check('mémoire : 7 paires au palier 5 (contre 6 au palier 4)', ev('memoryPairs(5)')===7 && ev('memoryPairs(4)')===6);
-    check('intrus : progression régulière (+2 images par palier)', [1,2,3,4,5].map(d=>ev(`diffTotal(${d})`)).join()==='6,8,10,12,14');
+    check('intrus : progression régulière (+2 images par palier)', [1,2,3,4,5].map(t=>ev(`diffTotal(${t})`)).join()==='6,8,10,12,14');
     check('opérations : plafond 30 au palier 5 (contre 20 au palier 4)', ev('mathBounds(5).max')===30 && ev('mathBounds(4).max')===20);
     check('comparer : nombres proches plus fréquents au palier 5', ev('compareCloseChance(5)')>ev('compareCloseChance(3)'));
     check("monnaie : jusqu'à 5 pièces à empiler au palier 5", ev('moneyPileSize(5).max')===5);
@@ -692,8 +688,8 @@ setTimeout(()=>{
 
     // ---- Correctif : le puzzle ne doit plus doubler la variante "start" ----
     check('puzzle : chaque variante apparaît une seule fois (palier 2)', ev('puzzleVariants(2)').join()==='from1,start');
-    check('puzzle : pas de doublon à aucun palier', [1,2,3,4,5].every(d=>{
-      const v = ev(`puzzleVariants(${d})`);
+    check('puzzle : pas de doublon à aucun palier', [1,2,3,4,5].every(t=>{
+      const v = ev(`puzzleVariants(${t})`);
       return new Set(v).size===v.length;
     }));
 
@@ -701,8 +697,8 @@ setTimeout(()=>{
     check('minuteur : absent aux paliers 1-2 (compter)', ev('timerFor("count",1)')===null && ev('timerFor("count",2)')===null);
     check('minuteur : présent à partir du palier 3 (compter)', ev('timerFor("count",3)')===20);
     check('minuteur : jamais sur les jeux à plusieurs étapes', ev('timerFor("memory",5)')===null && ev('timerFor("simon",5)')===null && ev('timerFor("puzzle",5)')===null);
-    check('minuteur : durée généreuse et jamais punitive (≥12s partout)', ['count','diff','sequence','reading','math','money','determinants','volume','compare'].every(k=>[3,4,5].every(d=>{
-      const t = ev(`timerFor("${k}",${d})`);
+    check('minuteur : durée généreuse et jamais punitive (≥12s partout)', ['count','diff','sequence','reading','math','money','determinants','volume','compare'].every(k=>[3,4,5].every(tier=>{
+      const t = ev(`timerFor("${k}",${tier})`);
       return t===null || t>=12;
     })));
 
@@ -798,7 +794,7 @@ setTimeout(()=>{
     // ---- Sauvegarde et restauration (Phase 1 : ne rien perdre) ----
     {
       ev('closeModal(); save(); saveProfiles()');
-      const before = ev('JSON.stringify({coins: state.coins, missions: state.missions, names: profiles.list.map(p=>p.name)})');
+      const saved = ev('JSON.stringify({coins: state.coins, missions: state.missions, names: profiles.list.map(p=>p.name)})');
       const backup = ev('JSON.stringify(buildBackup())');
       const B = JSON.parse(backup);
       check('sauvegarde : contient les joueurs et chaque partie', !!B.data['lagon-magique-profiles'] && Object.keys(B.data).some(k=>k.startsWith('lagon-magique-save:')));
@@ -806,7 +802,7 @@ setTimeout(()=>{
       // on abîme la partie, puis on restaure : tout revient
       ev('state.coins = 999; state.missions = 0; save()');
       ev(`applyBackup(JSON.parse(${JSON.stringify(backup)}))`);
-      check('restauration : la partie revient à l\'identique', ev('JSON.stringify({coins: state.coins, missions: state.missions, names: profiles.list.map(p=>p.name)})')===before);
+      check('restauration : la partie revient à l\'identique', ev('JSON.stringify({coins: state.coins, missions: state.missions, names: profiles.list.map(p=>p.name)})')===saved);
       check('restauration : une copie de la partie remplacée est gardée', ev('undoRestoreAvailable()')===true);
       // code de transfert simple (sans compression)
       const code = 'LAGON1:' + ev(`utf8ToB64(${JSON.stringify(backup)})`);

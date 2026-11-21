@@ -71,7 +71,7 @@ function renderMirror(){
     ${livesBar()}
     <div class="mr-wrap">
       <div class="mr-grid axis-${axis}" id="mr-grid" data-axis="${axis}" data-size="${size}" style="--n:${size}">
-        ${Array.from({ length: size }, (_, rr)=> Array.from({ length: size }, (_, cc)=> cellHTML(rr, cc)).join('')).join('')}
+        ${Array.from({ length: size }, (_, rr)=> Array.from({ length: size }, (_cell, cc)=> cellHTML(rr, cc)).join('')).join('')}
         <span class="mr-axis" aria-hidden="true"></span>
       </div>
     </div>

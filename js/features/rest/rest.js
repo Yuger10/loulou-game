@@ -15,7 +15,7 @@
 import { charFace } from '../../entities/character/index.js';
 import { COMPANIONS, companionSVG, currentCompanion } from '../../entities/companion/index.js';
 import { save, state } from '../../entities/game-state/index.js';
-import { currentProfile, onProfileRefresh, party, profiles } from '../../entities/player/index.js';
+import { onProfileRefresh, party, profiles } from '../../entities/player/index.js';
 import { on, pickRandom } from '../../shared/lib/index.js';
 import { closeModal, onModalClose, onViewChange, playSound, showToast, speak, switchView } from '../../shared/ui/index.js';
 import { todayKey } from '../adaptive/index.js';
@@ -90,10 +90,10 @@ function veilEl(){
   return el;
 }
 function restActive(){ const el = document.getElementById('rest-veil'); return !!el && !el.hidden; }
-function setAppInert(on){
+function setAppInert(inert){
   const app = document.getElementById('app');
-  if(app){ app.inert = on; if(on) app.setAttribute('inert', ''); else app.removeAttribute('inert'); }
-  document.body.classList.toggle('resting', on);
+  if(app){ app.inert = inert; if(inert) app.setAttribute('inert', ''); else app.removeAttribute('inert'); }
+  document.body.classList.toggle('resting', inert);
 }
 
 // le compagnon qui annonce la pause (Grisou s'il est dans l'équipe, v52)
@@ -149,7 +149,7 @@ function renderVeil(stageName, extra){
   }
   bindVeil(el);
   const first = el.querySelector('button');
-  if(first) setTimeout(()=>{ try{ first.focus(); }catch(e){} }, 0);
+  if(first) setTimeout(()=>{ try{ first.focus(); }catch{} }, 0);
 }
 
 function restIntroLine(){

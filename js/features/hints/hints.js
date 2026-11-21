@@ -98,7 +98,6 @@ function setHintQuestion(kind, q, opts){
   armHintIdle();
   if(hint.on && hintPolicy.onShow) hintPolicy.onShow(kind);
 }
-function hintActive(){ return hint.on; }
 function hintSyllablesFirst(){ return !!hintPolicy.syllablesFirst(); }
 // un mot écrit découpé en syllabes colorées (lecture)
 function hintSyllablesHTML(syl){ return syl.map(x=> `<span class="hint-syl">${x}</span>`).join(''); }

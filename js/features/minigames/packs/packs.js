@@ -32,8 +32,7 @@ function packsBuildRound(dd, rng){
 
 // trois réponses : la bonne et deux pièges plausibles (un paquet de plus ou
 // de moins, le jouet seul oublié, un de plus), toutes différentes et ≥ 1
-function packsOptions(r, rng){
-  rng = rng || Math.random;
+function packsOptions(r){
   const set = new Set([r.total]);
   const traps = shuffle([r.total - r.size, r.total + r.size, r.extra ? r.total - 1 : r.total + 1, r.total - 1, r.total + 2, r.n + r.size]);
   for(const k of traps){ if(set.size >= 3) break; if(k >= 1) set.add(k); }

@@ -118,7 +118,7 @@ function save(){
   try{
     localStorage.setItem(saveSlot.key(), JSON.stringify(state));
     saveSlot.afterSave();
-  }catch(e){}
+  }catch{}
 }
 
 // Migre une sauvegarde d'une ancienne version vers la structure courante

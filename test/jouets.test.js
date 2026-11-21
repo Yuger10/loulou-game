@@ -128,7 +128,7 @@ function startGame(key, tier, age){
     const sol = ev('gameSolution');
     check('le dessin compte autant de jouets que la bonne réponse', d.querySelectorAll('.packs-stage .pack-toy').length === Number(d.querySelector(sol[0]).dataset.v));
     check('les jouets sont rangés en paquets', d.querySelectorAll('.packs-stage .pack').length >= 2);
-    const before = d.querySelector('.packs-stage').outerHTML, q0 = ev('hint.q');
+    const q0 = ev('hint.q');
     [...d.querySelectorAll('.pack-opt')].find(b=> b !== d.querySelector(sol[0])).click();
     await waitFor(()=> ev('hint.q') !== q0, 600);
     check('une mauvaise réponse : une autre collection de paquets', ev('hint.q') !== q0 && !!d.querySelector('.packs-stage'));

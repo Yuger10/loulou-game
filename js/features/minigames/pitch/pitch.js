@@ -47,7 +47,7 @@ function pitchBuildRound(dd, rng){
   return { cfg, ask:'order', notes: PITCH_NOTES.slice(0, cfg.n).reverse(), sorted: PITCH_NOTES.slice(0, cfg.n) };
 }
 
-function bellSVG(m, i){
+function bellSVG(m){
   const c = BELL_COLORS[PITCH_NOTES.indexOf(m) % BELL_COLORS.length];
   return `<svg class="bell-svg" viewBox="0 0 60 66" style="width:${bellSize(m)}px" aria-hidden="true">
     <path d="M30 4 C30 4 34 4 34 8 C46 11 50 24 50 38 L50 48 L56 56 L4 56 L10 48 L10 38 C10 24 14 11 26 8 C26 4 30 4 30 4Z" fill="${c}" stroke="#2B2F6B" stroke-width="3" stroke-linejoin="round"/>

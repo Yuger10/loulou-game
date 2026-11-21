@@ -343,10 +343,7 @@ const STORY_PROLOGUES = {
 // Grisou reprend des couleurs à chaque île du Ciel libérée
 function skyIslandsFreed(){ return worldsOf(2).filter(storySolved).length; }
 
-function storyChapter(world){ return STORY[world] || null; }
 function storySolved(world){ return !!(state.storySolved && state.storySolved[world]); }
-function storyChaptersCount(){ return Object.keys(STORY).length; }
-function storySolvedCount(){ return Object.keys(STORY).filter(storySolved).length; }
 
 // Relance programmée après une mauvaise réponse à une énigme : annulable
 // (mêmes raisons que `scheduleRetry` dans js/features/minigame-engine/engine.js et
@@ -428,7 +425,6 @@ function renderStoryRiddle(world, idx, onDone){
   const ch = STORY[world];
   const r = ch.riddles[idx % ch.riddles.length];
   const opts = shuffle(r.opts);
-  const say = r.q.replace(/"/g, '&quot;');
   openModal(`
     ${gameHeader('🔎 ' + ch.title, r.q, r.q)}
     <div class="story-options">

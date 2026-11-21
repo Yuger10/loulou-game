@@ -68,3 +68,25 @@ Rien n'est perdu : aucun outil existant n'est remplacé, sauf npm, et bun lit le
 | idem, limité à 4 en parallèle (`TEST_JOBS=4`, taille d'un runner de CI) | | 34,4 s (3 passages verts) |
 
 Temps CPU total : 41 s, contre 108 s de durée en série. L'essentiel était de l'attente des minuteries du jeu. Pour aller plus loin, il faudrait réduire les délais fixes (anti-pattern 4 de l'audit).
+
+## Après l'étape 3 : oxlint (21 novembre 2026)
+
+`.oxlintrc.json` : `correctness` et `suspicious` en erreur, `--deny-warnings`, lancé en premier dans `bun run check`.
+
+| Commande | Temps |
+|---|---|
+| `bun run lint` (tout `js/` et `test/`) | **33 ms** (budget 3 s) |
+| oxlint sur un fichier | **28 ms** (budget 300 ms) |
+
+Corrigé : 52 `catch(e)` dont l'erreur ne servait pas (devenus `catch`), des imports et du code mort, 15 noms masqués (`no-shadow`), 3 expressions sans effet, et **2 vérifications du test de fumée qui passaient toujours** (`|| true`) : la course vérifie maintenant que chaque joueur part à 0.
+
+Règles désactivées, avec leur raison (aussi écrite dans `.oxlintrc.json`) :
+
+| Règle | Occurrences | Raison |
+|---|---|---|
+| `unicorn/prefer-add-event-listener` | 195 | `el.onclick =` est l'idiome du projet : réaffecté à chaque rendu, sans doublon de handler |
+| `unicorn/no-array-sort`, `unicorn/no-array-reverse` | 33 | `toSorted` et `toReversed` demandent Safari 16 |
+| `unicorn/consistent-function-scoping` | 50 | Style seulement |
+| `no-underscore-dangle` | 15 | Propriétés posées exprès sur des éléments du DOM |
+
+Pas encore de règle custom : l'échappement HTML (anti-pattern 1 de l'audit) aura sa propre PR, avec le nettoyage complet et sa règle (playbook 4.5).

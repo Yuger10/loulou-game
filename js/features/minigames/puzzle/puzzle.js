@@ -18,7 +18,6 @@ function renderPuzzle(){
   setupLives('puzzle');
   const dd = gameDiff();
   const count = puzzleCount(dd);
-  const lvl = dd;
   const variants = puzzleVariants(dd);
   const variant = pickRandom(variants);
 

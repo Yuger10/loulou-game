@@ -29,7 +29,7 @@ function inSeasonRange(d, from, to){
   return a <= b ? (md >= a && md <= b) : (md >= a || md <= b);
 }
 
-function seasonPreview(){ try{ return sessionStorage.getItem(SEASON_PREVIEW_KEY) || null; }catch(e){ return null; } }
+function seasonPreview(){ try{ return sessionStorage.getItem(SEASON_PREVIEW_KEY) || null; }catch{ return null; } }
 
 function isBirthday(profile, d){ return !!(profile && profile.birthday && profile.birthday === seasonMMDD(d || new Date())); }
 

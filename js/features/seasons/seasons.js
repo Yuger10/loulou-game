@@ -29,7 +29,7 @@ import { addCoins } from '../wallet/index.js';
 import { currentLook, WARDROBE, wearLook } from '../wardrobe/index.js';
 
 function setSeasonPreview(id){
-  try{ if(id) sessionStorage.setItem(SEASON_PREVIEW_KEY, id); else sessionStorage.removeItem(SEASON_PREVIEW_KEY); }catch(e){}
+  try{ if(id) sessionStorage.setItem(SEASON_PREVIEW_KEY, id); else sessionStorage.removeItem(SEASON_PREVIEW_KEY); }catch{}
   applySeason(true);
 }
 
@@ -185,7 +185,7 @@ function maybeSeasonGift(){
 try{
   const q = new URLSearchParams(location.search).get('saison');
   if(q && (FETES[q] || q === SEASON_NONE)) sessionStorage.setItem(SEASON_PREVIEW_KEY, q);
-}catch(e){}
+}catch{}
 function initSeasons(){ applySeason(true); }
 
 // chapeau de fête des compagnons (js/entities/companion)
