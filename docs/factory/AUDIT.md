@@ -133,3 +133,18 @@ Adaptations prévues :
 8. **Conductor :** je propose de le garder comme format de spec et de plan (au lieu de créer des skills concurrents `spec-writer` et `implement`). D'accord ?
 9. **Zones sensibles (section 8) :** la liste te convient-elle ? Faut-il ajouter quelque chose ?
 10. **Session parallèle :** une autre session livre les îles. Les phases 1 et 2 touchent `package.json`, l'outillage et beaucoup de fichiers (nettoyages). Faut-il la mettre en pause pendant les PR de nettoyage pour éviter les conflits ?
+
+## Décisions d'Amrou (21 novembre 2026)
+
+Principe transverse : **exécution rapide, le moins de ressources possible**. À chaque choix, l'option la plus légère.
+
+1. **pnpm**.
+2. **Pas de typecheck** pour l'instant (option la plus légère). À reconsidérer seulement si une erreur de type passe les tests.
+3. **Biome** (lint et format, un seul binaire, rapide).
+4. Top 5 validé : on commence par l'échappement, puis `Math.random`.
+5. **Phase 3 probable**, à décider selon les prochaines itérations.
+6. Merge **uniquement sur ordre explicite**, et bloqué si la CI est rouge.
+7. **Pas de Sentry** ; un journal d'erreurs local dans l'espace parents, si besoin.
+8. **Conductor** reste le format de spec et de plan.
+9. Zones sensibles validées telles que proposées.
+10. L'autre session a **une dernière livraison** en cours : les PR de nettoyage attendent qu'elle soit mergée.
