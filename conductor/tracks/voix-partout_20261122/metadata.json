@@ -4,5 +4,6 @@
   "status": "new",
   "created_at": "2026-11-22T00:00:00Z",
   "updated_at": "2026-11-22T00:00:00Z",
-  "description": "Assistance vocale partout : tout texte montré à l'enfant est lu à l'ouverture ou s'écoute au doigt (appui long ou bouton 🔈), file de parole sans coupure, exception des jeux de lecture, et un garde qui parcourt les écrans rendus et échoue si un texte visible n'a pas de voix."
+  "description": "Assistance vocale partout : tout texte montré à l'enfant est lu à l'ouverture ou s'écoute au doigt (appui long ou bouton 🔈), file de parole sans coupure, exception des jeux de lecture, et un garde qui parcourt les écrans rendus et échoue si un texte visible n'a pas de voix.",
+  "epic": "Voix"
 }

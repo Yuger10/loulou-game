@@ -1,11 +1,11 @@
 # cothon dans ce projet
 
-Version : 0.8.0
+Version : 0.9.3
 Appliqué le : 2026-11-22
 Profil : petit projet, script, jeu HTML (playbook 9) ; étapes 3 à 5 hors profil (ADR 0006)
 Étapes installées : 0, 1, 2
 Étapes écartées : 3, 4, 5
-Fichiers copiés de cothon : `test/tools/check-docs.sh` (de `setting-up-docs`, version 0.4.0, inchangé en 0.7.0), `.claude/hooks/lint-edited-file.sh` (de `wiring-fast-feedback`, complété par `tsc`), gabarits `conductor/templates/spec.md` et `plan.md` (de `setting-up-docs`, adoptés dans Conductor)
+Fichiers copiés de cothon : `test/tools/check-docs.sh` (de `setting-up-docs`, version 0.8.1), `.claude/hooks/lint-edited-file.sh` (de `wiring-fast-feedback`, complété par `tsc`), gabarits `conductor/templates/spec.md` et `plan.md` (de `setting-up-docs`, adoptés dans Conductor)
 
 `Version` = la dernière version de cothon dont toutes les actions du `CHANGELOG.md` sont faites ou en exception. Retour d'expérience envoyé à la session qui maintient cothon le 2026-11-22.
 
@@ -40,6 +40,13 @@ Faites :
 - `0.6.1-1` : « Require branches to be up to date before merging » activé sur `main` par Amrou (la protection de `main` est une ressource protégée), vérifié : `strict: true`, `ci-ok` toujours obligatoire. Une PR en retard sur `main` se met à jour avant le merge par `gh pr update-branch N` (un commit de fusion, sans push forcé), puis attend son `ci-ok`.
 
 Autres vérifications faites à la mise à jour : `check-docs.sh` identique à celui de cothon 0.7.0 et son `--selftest` ajouté à `bun run selftest` ; gabarits `spec.md` et `plan.md` identiques (à notre en-tête près) ; commande des métriques corrigée (elle pointait vers le cache de cothon 0.3.0) et bloc recalculé.
+
+## Actions 0.8.0 à 0.9.3
+
+Faites :
+- `0.8.1-1` : `test/tools/check-docs.sh` remplacé par la version de cothon 0.8.1 (ADR `ADR-NNN-titre.md` acceptés, liens des blocs de code ignorés) ; `--selftest` et `bun run docs` passent. Aucune exception à retirer : ce projet n'en avait pas sur ces deux points.
+- `0.8.3-1` : champ `epic` dans le `metadata.json` des 14 tracks ouverts : « Saison 3 » (ouverture et 5 îles), « Voix » (voix-partout, voix-naturelle), « Mieux apprendre » (aller-plus-loin, erreurs-expliquees, revision-espacee, bilan-parents), « Squishies » (squishy-boites), « Factory » (typescript-checkjs).
+- `0.8.0`, `0.8.2`, `0.9.0` à `0.9.3` : rien à faire dans le projet (tableau de bord, côté cothon).
 
 ## Exceptions
 
