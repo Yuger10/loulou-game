@@ -17,6 +17,13 @@
 | Données | `localStorage` sur l'appareil, pas de serveur, pas de base de données |
 | Déploiement | **GitHub Pages en mode legacy, depuis la racine de `main`** : chaque merge sur `main` part directement en production |
 
+## 1 bis. Cible d'exécution (ajouté le 22 novembre 2026, cothon 0.4.0-5)
+
+**Tous les navigateurs encore en usage sur les appareils d'une famille, y compris de vieilles tablettes.** Décision d'Amrou : « je préfère une version qui fonctionne partout, c'est pour ça que j'ai choisi HTML ». Aucune version minimale fixée : une API récente ne s'utilise qu'avec un repli. Conséquences :
+- les règles de lint qui imposent des API récentes restent coupées (`toSorted`, `toReversed` : Safari 16) ;
+- `setHandler` garde la propriété `onX` quand un objet n'a pas `addEventListener` ;
+- l'audio a un repli `webkitAudioContext`, la voix et le stockage échouent sans planter le jeu.
+
 ## 2. Commandes existantes
 
 | Rôle | Commande | État |

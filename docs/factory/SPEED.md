@@ -124,3 +124,24 @@ Le reformatage est un commit purement mécanique, listé dans `.git-blame-ignore
 ## Track lint : règles ajoutées (22 novembre 2026)
 
 7 règles de plus, toutes à 0 cas (`eqeqeq`, `no-use-before-define`, `no-console`, `max-lines`, `no-param-reassign`, `import/no-cycle`, `no-underscore-dangle` réactivée) : `bun run lint` passe de 33 à **36 ms**. Restent coupées : `no-array-sort` et `no-array-reverse` (version minimale d'iOS à décider), `prefer-add-event-listener` (helper à décider), `consistent-function-scoping` (raison écrite dans `.oxlintrc.json`).
+
+## Règles de lint : décision par règle (cothon 0.4.0-5, playbook 4.4)
+
+Catégories `correctness` et `suspicious` en erreur, `--deny-warnings`. Toute règle coupée ou ajoutée, avec sa raison (aussi écrite dans `.oxlintrc.json`) :
+
+| Règle | Cas trouvés | Décision | Raison |
+|---|---|---|---|
+| `unicorn/no-array-sort` | 27 | Coupée | Impose `toSorted` (Safari 16) : contraire à la cible d'exécution (audit, 1 bis) |
+| `unicorn/no-array-reverse` | 6 | Coupée | Impose `toReversed` (Safari 16) : même raison |
+| `unicorn/consistent-function-scoping` | 50 | Coupée | Sortir ces fonctions créerait des noms de haut niveau en double (5 `key`, 4 `ok`), interdits par `test/slices.test.js` ; gain de style seulement |
+| `import/no-unassigned-import` | 100+ | Coupée | `main.js` charge les slices par import à effet (ADR 0002) |
+| `unicorn/prefer-add-event-listener` | 197 | Réactivée | Corrigé par `setHandler` (v66.5) |
+| `no-underscore-dangle` | 15 | Réactivée | État posé sur des fonctions rendu explicite (v66.3) |
+| `no-restricted-properties` (`Math.random`, `localStorage.setItem` et `removeItem`) | 77 et 11 | Ajoutée | Anti-patterns 2 et 3 : une source de hasard rejouable, des écritures qui signalent leur échec |
+| `no-empty` | 34 | Ajoutée | Anti-pattern 3 : un bloc vide dit pourquoi |
+| `eqeqeq` (`null` permis) | 10 | Ajoutée | `x == null` est l'idiome du projet, le reste en `===` |
+| `no-use-before-define` (même portée) | 0 avec ce réglage | Ajoutée | Les vrais risques d'ordre d'initialisation des modules |
+| `no-console` (hors `test/`) | 1 | Ajoutée | Révélait une sauvegarde illisible passée en silence |
+| `max-lines` (1 250, hors `test/`) | 0 | Ajoutée | Cliquet : à abaisser vers 800 en découpant les 3 plus gros fichiers |
+| `no-param-reassign` | 40 | Ajoutée | Valeurs par défaut dans la signature, variables locales quand `0` ou `null` comptent |
+| `import/no-cycle` | 12 (5 cycles) | Ajoutée | Un cycle peut lire une valeur pas encore définie au démarrage des modules ES |

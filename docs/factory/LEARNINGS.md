@@ -15,5 +15,6 @@ Boucle d'amélioration du playbook cothon (7.3). Après chaque correction d'Amro
 | 2026-11-22 | L'agent a voulu poser lui-même l'étiquette `human:approved` sur sa PR, sur délégation (refusé par le garde-fou) | Confusion entre « vérifier » et « approuver » | L'étiquette est posée par un humain, jamais par l'agent, même sur délégation (`AGENTS.md`) | ✅ garde-fou de l'agent ; la CI exige l'étiquette |
 | 2026-11-22 | « ok go » et « Oui » n'ont pas suffi à autoriser un merge | Un merge exige un ordre explicite | Demander « merge la PR N » | ✅ garde-fou de l'agent |
 | 2026-11-22 | Une PR qui mélangeait du code et une ligne de CI (`.github/`) est restée bloquée par le garde des zones sensibles (#61) | La zone protégée bloque toute la PR | Toute modification de zone protégée dans sa propre PR | ✅ le garde la sépare de fait ; consigne dans le REX cothon |
+| 2026-11-22 | La garde des ressources a refusé une commande qui citait seulement une commande dangereuse dans un texte (description de PR) | Le hook lit le texte brut de la commande | Passer les textes par un fichier (`--body-file`) ; signalé à cothon, intégré au playbook 5.4 | ✅ garde-fou, contournement documenté |
 
 Les lignes ⏳ sont des candidates : si elles reviennent, elles deviennent un check (script, test ou règle).

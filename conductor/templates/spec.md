@@ -1,10 +1,18 @@
-<!-- Gabarit cothon 0.3.0 (setting-up-docs), adopté dans Conductor (cothon 0.2.0-2) : une nouvelle track part de ce fichier. -->
+---
+status: brouillon        # brouillon | validée | faite ; « validée » est posé par l'humain
+issue: 0
+size: S                  # S | M ; L se découpe
+migration: false
+sensitive: false         # touche une zone sensible du projet
+files: []                # fichiers probables
+taster: { facts: 0, decisions: 0, rounds: 0 }   # résultat du dernier testeur à blanc
+---
+
+<!-- Gabarit cothon 0.4.0 (setting-up-docs), adopté dans Conductor (cothon 0.2.0-2 et 0.4.0-6) : une nouvelle track part de ce fichier. -->
+
 # Spec : titre de la feature
 
-- Statut : draft | approved | done
-- Issue : #NNN
 - Nouveau projet : oui | non
-- Testeur à blanc : faits 0 · décisions 0 en N tours
 
 ## Problème
 

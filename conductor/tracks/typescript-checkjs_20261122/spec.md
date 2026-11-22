@@ -1,3 +1,13 @@
+---
+status: validée         # posé par Amrou : « ok » à l'option 1 de l'ADR 0003
+issue: 0
+size: M
+migration: false
+sensitive: true          # touche la sauvegarde (js/entities/game-state/) en mode strict
+files: [tsconfig.json, types/dom.d.ts, js/shared/**, js/entities/**, js/features/**, js/app/**]
+taster: { facts: 0, decisions: 0, rounds: 0 }
+---
+
 # Spec : TypeScript en vérification du JavaScript (ADR 0003)
 
 ## Objectif
