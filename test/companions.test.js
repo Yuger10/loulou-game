@@ -27,7 +27,7 @@ const dom = new JSDOM(html, {
       getVoices: () => [],
       speak(u) {
         spoken.push(u.text);
-        win.__rate = u.rate;
+        win.lastSpeechRate = u.rate;
       },
     };
   },
@@ -560,7 +560,7 @@ const wrongOf = (sel) => {
     !!d.querySelector('#modal-body .btn-reread svg[data-buddy="perle"]'),
   );
   d.querySelector('#modal-body .btn-reread').click();
-  check('Relire : la phrase est relue plus lentement', w.__rate < 0.8 && spoken[spoken.length - 1].length > 5);
+  check('Relire : la phrase est relue plus lentement', w.lastSpeechRate < 0.8 && spoken[spoken.length - 1].length > 5);
   startGame('count', 1);
   await wait(20);
   check("consigne d'un mini-jeu : « 🔁 Relire »", !!d.querySelector('.puzzle-hint .btn-reread'));

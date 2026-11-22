@@ -14,8 +14,7 @@
     "unicorn/no-array-reverse": "off",
     // style seulement, sans risque de bug
     "unicorn/consistent-function-scoping": "off",
-    // propriétés posées exprès sur des éléments du DOM (el._last, el._t)
-    "no-underscore-dangle": "off",
+    "no-underscore-dangle": "error",
     // anti-pattern 2 : tout tirage passe par random() de js/shared/lib (graine fixable en test)
     "no-restricted-properties": [
       "error",
@@ -25,11 +24,22 @@
       { "object": "localStorage", "property": "removeItem", "message": "Utiliser storageRemove() de js/shared/lib : elle signale un échec." }
     ],
     // anti-pattern 3 : un bloc vide dit pourquoi, dans un commentaire (catch { /* raison */ })
-    "no-empty": "error"
+    "no-empty": "error",
+    // track lint-regles-completes : règles ajoutées pour ce projet (coût mesuré : < 1 ms)
+    // `x == null` (null ou undefined) reste permis, c'est l'idiome du projet
+    "eqeqeq": ["error", "always", { "null": "ignore" }],
+    // seulement les vrais risques d'ordre d'initialisation des modules (même portée)
+    "no-use-before-define": ["error", { "functions": false, "classes": false, "variables": false }],
+    // rien dans la console du jeu (les tests restent libres, voir overrides)
+    "no-console": "error",
+    // cliquet : aucun fichier ne dépasse le plus gros actuel ; à abaisser vers 800
+    "max-lines": ["error", { "max": 1250 }]
   },
   "overrides": [
     // la seule source de hasard, et les tests qui forcent un tirage en remplaçant Math.random
-    { "files": ["js/shared/lib/random.js", "js/shared/lib/storage.js", "test/**"], "rules": { "no-restricted-properties": "off" } }
+    { "files": ["js/shared/lib/random.js", "js/shared/lib/storage.js", "test/**"], "rules": { "no-restricted-properties": "off" } },
+    // les tests affichent leurs résultats, et la suite de fumée est longue par nature
+    { "files": ["test/**"], "rules": { "no-console": "off", "max-lines": "off" } }
   ],
   "ignorePatterns": ["node_modules/**"]
 }
