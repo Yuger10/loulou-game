@@ -84,6 +84,8 @@ Les agents copient ce qu'ils voient. Chaque point est mesuré sur `js/`.
 3. **`catch` vides** : 32 dans 13 fichiers (par exemple `js/features/music/music.js:163-164`, `js/features/settings/settings.js:111`). Certains sont légitimes (audio iOS), mais rien ne les distingue d'une erreur avalée par paresse.
 
    Règle proposée : `no-empty` avec commentaire obligatoire, ou un helper `ignoreError(reason, fn)`.
+
+   **Corrigé le 22 novembre 2026** (décision d'Amrou : prévenir un adulte) : les 11 écritures de la sauvegarde passent par `storageWrite` et `storageRemove` (`js/shared/lib/storage.js`) qui signalent un échec (message à l'enfant une fois par session, carte dans l'espace parents, restauration incomplète annoncée) ; les 23 autres blocs vides disent pourquoi en commentaire ; règles oxlint `no-empty` et `no-restricted-properties` sur `localStorage`. `test/stockage.test.js`.
 4. **Délais fixes `setTimeout`** : 105 dans 52 fichiers, mêlés à la logique de jeu (par exemple `setTimeout(onMissionWin, 400)`). C'est ce qui couple les tests au temps réel (110 s de suite, attentes à durée fixe).
 
    Règle proposée : un `delay()` central, réglable par les tests (le facteur `SPEED` de `rest.test.js` le fait déjà pour une slice).

@@ -1,5 +1,5 @@
 /* ---------- État de la partie du joueur courant : sauvegarde, migrations, niveau ---------- */
-import { cleanName } from '../../shared/lib/index.js';
+import { cleanName, storageWrite } from '../../shared/lib/index.js';
 import { setAudioPrefsSource } from '../../shared/ui/index.js';
 import { SQUISHY_ISLAND_SERIES } from '../squishy/index.js';
 
@@ -129,10 +129,8 @@ function setSaveSlot(slot) {
 }
 
 function save() {
-  try {
-    localStorage.setItem(saveSlot.key(), JSON.stringify(state));
-    saveSlot.afterSave();
-  } catch {}
+  // un échec (mémoire pleine…) est signalé par storageWrite : message et espace parents
+  if (storageWrite(saveSlot.key(), JSON.stringify(state))) saveSlot.afterSave();
 }
 
 // Migre une sauvegarde d'une ancienne version vers la structure courante

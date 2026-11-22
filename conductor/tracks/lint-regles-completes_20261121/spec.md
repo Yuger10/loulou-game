@@ -22,7 +22,7 @@ Principe : **une règle n'entre que si elle vise un vrai risque pour ce projet**
 | `import/no-cycle` | 12 | Les modules ES s'initialisent dans l'ordre des imports : un cycle peut lire une valeur pas encore définie au démarrage. `test/slices.test.js` interdit déjà les cycles **entre** slices ; il en reste à l'intérieur (par exemple `entities/player` et `features/adaptive`) |
 | `eqeqeq` | 10 | `==` et `!=` font des conversions surprenantes. Exception possible : `x == null` (null ou undefined), si on la garde, elle s'écrit avec `"null": "ignore"` |
 | `no-use-before-define` (variables seulement) | 10 | Même risque d'ordre d'initialisation que les cycles |
-| `no-empty` | 34 | C'est l'anti-pattern 3 de l'audit (`catch {}` vide). Un bloc volontairement vide devra porter un commentaire qui dit pourquoi. **À faire dans la PR de l'anti-pattern 3** |
+| `no-empty` | 34 | **Fait** avec l'anti-pattern 3 (22 novembre 2026) |
 | `no-param-reassign` | 40 | Par exemple `rng = rng \|\| Math.random` : lié à l'anti-pattern 2, une valeur par défaut s'écrit `rng = Math.random` dans la signature |
 | `no-console` (dans `js/`) | 1 | Rien ne doit s'afficher dans la console du jeu ; les tests (`test/`) restent libres |
 | `max-lines` en cliquet | 3 au-delà de 800 | Depuis le formatage oxfmt (étape 5), les plus gros fichiers sont `squishy-room.js` (1 215 lignes), `characters-art.js` (996) et `difficulty.js` (947). Cliquet : seuil à 1 250 pour qu'aucun fichier ne grossisse au-delà, puis découper ces 3 fichiers et abaisser à 800. Un agent travaille mieux sur des fichiers courts |

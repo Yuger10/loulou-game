@@ -99,7 +99,9 @@ function bindForm({ initial, current, required, onSave, onCancel }) {
     el.addEventListener('focus', () => {
       try {
         el.scrollIntoView({ block: 'center' });
-      } catch {}
+      } catch {
+        // vieux navigateurs sans scrollIntoView : le champ reste accessible
+      }
     });
     if (el.tagName === 'INPUT')
       el.addEventListener('keydown', (e) => {

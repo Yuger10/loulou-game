@@ -31,7 +31,9 @@ function switchView(name) {
   try {
     if (document.scrollingElement) document.scrollingElement.scrollTop = 0;
     else document.documentElement.scrollTop = 0;
-  } catch {}
+  } catch {
+    // défilement impossible (vue cachée) : rien de grave
+  }
 
   (viewRenderers[name] || []).forEach((fn) => fn({ sacTab }));
   viewChangeHooks.forEach((fn) => fn(name));

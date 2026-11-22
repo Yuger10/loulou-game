@@ -22,7 +22,7 @@ import {
   saveProfiles,
 } from '../../entities/player/index.js';
 import { setCurrentWorld } from '../../entities/world/index.js';
-import { cleanName, on } from '../../shared/lib/index.js';
+import { cleanName, on, storageRemove, storageWrite } from '../../shared/lib/index.js';
 import { closeModal, openModal, playSound, showToast } from '../../shared/ui/index.js';
 import { renderMap } from '../map/index.js';
 import { stopParty } from '../party/index.js';
@@ -40,7 +40,9 @@ function lsKeys() {
       const k = localStorage.key(i);
       if (k) out.push(k);
     }
-  } catch {}
+  } catch {
+    // stockage bloqué : aucune clé à lister
+  }
   return out;
 }
 function backupMeta() {
@@ -51,9 +53,7 @@ function backupMeta() {
   }
 }
 function setBackupMeta(patch) {
-  try {
-    localStorage.setItem(BACKUP_META_KEY, JSON.stringify(Object.assign(backupMeta(), patch)));
-  } catch {}
+  storageWrite(BACKUP_META_KEY, JSON.stringify(Object.assign(backupMeta(), patch)));
 }
 
 /* ---- construire / lire une sauvegarde ---- */
@@ -66,7 +66,9 @@ function buildBackup() {
     .forEach((k) => {
       try {
         data[k] = localStorage.getItem(k);
-      } catch {}
+      } catch {
+        // clé illisible : elle manque dans la sauvegarde, les autres y sont
+      }
     });
   return { app: 'lagon-magique', kind: 'sauvegarde', v: 1, at: new Date().toISOString(), data };
 }
@@ -81,7 +83,9 @@ function parseBackupObject(obj) {
   let prof = null;
   try {
     prof = JSON.parse(obj.data[PROFILES_KEY] || 'null');
-  } catch {}
+  } catch {
+    // liste des joueurs abîmée : traitée juste après comme « aucun joueur »
+  }
   for (const k of keys) {
     try {
       JSON.parse(obj.data[k]);
@@ -93,7 +97,9 @@ function parseBackupObject(obj) {
     let missions = 0;
     try {
       missions = JSON.parse(obj.data[profileSaveKey(p.id)] || '{}').missions || 0;
-    } catch {}
+    } catch {
+      // partie illisible : on affiche 0 mission dans l'aperçu
+    }
     return { name: cleanName(p.name) || 'Sans nom', avatar: p.avatar, missions };
   });
   if (!players.length && !obj.data[LEGACY_SAVE_KEY])
@@ -116,21 +122,14 @@ function parseBackupText(text) {
 /* ---- appliquer une sauvegarde (remplace la partie actuelle) ---- */
 function applyBackup(backup) {
   // garde une copie de ce qu'on remplace, pour pouvoir revenir en arrière
-  try {
-    localStorage.setItem(BACKUP_UNDO_KEY, JSON.stringify(buildBackup()));
-  } catch {}
+  storageWrite(BACKUP_UNDO_KEY, JSON.stringify(buildBackup()));
   lsKeys()
     .filter((k) => k.startsWith(BACKUP_PREFIX) && k !== BACKUP_META_KEY)
     .forEach((k) => {
-      try {
-        localStorage.removeItem(k);
-      } catch {}
+      storageRemove(k);
     });
-  Object.entries(backup.data).forEach(([k, v]) => {
-    try {
-      localStorage.setItem(k, v);
-    } catch {}
-  });
+  // chaque écriture ratée (mémoire pleine…) est comptée : l'écran le dira
+  const failed = Object.entries(backup.data).filter(([k, v]) => !storageWrite(k, v)).length;
   setBackupMeta({ restoredAt: new Date().toISOString(), lastBackupAt: backup.at || new Date().toISOString() });
   // recharge les joueurs et la partie sans recharger la page
   if (party.active) stopParty();
@@ -140,6 +139,7 @@ function applyBackup(backup) {
   refreshAll();
   renderMap();
   renderBackupReminder();
+  return { failed };
 }
 function undoRestoreAvailable() {
   try {
@@ -184,7 +184,9 @@ async function backupToCode(backup) {
       const stream = new Blob([json]).stream().pipeThrough(new CompressionStream('gzip'));
       const buf = new Uint8Array(await new Response(stream).arrayBuffer());
       return 'LAGONZ1:' + bytesToB64(buf);
-    } catch {}
+    } catch {
+      // compression indisponible : on revient au code non compressé ci-dessous
+    }
   }
   return 'LAGON1:' + utf8ToB64(json);
 }
@@ -375,10 +377,14 @@ function openBackup() {
       <p>La partie actuelle de cet appareil sera remplacée (une copie est gardée).</p>
       <button class="btn-craft danger" id="bk-apply">Remplacer par cette sauvegarde</button></div>`;
     $('bk-apply').onclick = () => {
-      applyBackup(result.backup);
-      playSound('win');
+      const { failed } = applyBackup(result.backup);
+      playSound(failed ? 'tap' : 'win');
       closeModal();
-      showToast('✅ Partie restaurée');
+      showToast(
+        failed
+          ? `⚠️ Restauration incomplète : ${failed} partie${failed > 1 ? 's' : ''} non enregistrée${failed > 1 ? 's' : ''} (mémoire pleine ?)`
+          : '✅ Partie restaurée',
+      );
     };
   };
   $('bk-file').onchange = (e) => {
@@ -399,7 +405,9 @@ function openBackup() {
       let r = { ok: false };
       try {
         r = parseBackupObject(JSON.parse(localStorage.getItem(BACKUP_UNDO_KEY)));
-      } catch {}
+      } catch {
+        // copie de secours absente ou abîmée : pas de retour arrière proposé
+      }
       if (r.ok) preview(r);
     };
   const inst = $('bk-install');
@@ -409,7 +417,9 @@ function openBackup() {
       deferredInstallPrompt.prompt();
       try {
         await deferredInstallPrompt.userChoice;
-      } catch {}
+      } catch {
+        // l'adulte a fermé la demande d'installation : rien à faire
+      }
       deferredInstallPrompt = null;
       const z = $('bk-install-zone');
       if (z) z.innerHTML = installHelpHTML();

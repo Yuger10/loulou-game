@@ -189,7 +189,9 @@ function renderJigsaw() {
         box = null;
       try {
         pc.setPointerCapture(e.pointerId);
-      } catch {}
+      } catch {
+        // capture du pointeur refusée par certains navigateurs : le glisser marche quand même
+      }
       const move = (ev) => {
         if (!ghost && Math.hypot(ev.clientX - sx, ev.clientY - sy) > 8) {
           box = pc.getBoundingClientRect();

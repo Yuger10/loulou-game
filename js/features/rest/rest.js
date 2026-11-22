@@ -220,7 +220,9 @@ function renderVeil(stageName, extra) {
     setTimeout(() => {
       try {
         first.focus();
-      } catch {}
+      } catch {
+        // le focus peut échouer si le voile vient d'être retiré : rien de grave
+      }
     }, 0);
 }
 

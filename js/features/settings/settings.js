@@ -129,7 +129,9 @@ function bindSettings(el) {
     const list = el.querySelector('#rg-players');
     try {
       list.scrollIntoView({ block: 'center', behavior: 'smooth' });
-    } catch {}
+    } catch {
+      // vieux navigateurs sans défilement doux : la liste reste à l'écran
+    }
     speak('Touche le joueur qui va jouer.');
   };
   el.querySelectorAll('[data-player]').forEach(

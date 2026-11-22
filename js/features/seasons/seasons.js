@@ -41,7 +41,9 @@ function setSeasonPreview(id) {
   try {
     if (id) sessionStorage.setItem(SEASON_PREVIEW_KEY, id);
     else sessionStorage.removeItem(SEASON_PREVIEW_KEY);
-  } catch {}
+  } catch {
+    // session bloquée : l'aperçu de la fête ne sera pas gardé, rien de grave
+  }
   applySeason(true);
 }
 
@@ -226,7 +228,9 @@ function maybeSeasonGift() {
 try {
   const q = new URLSearchParams(location.search).get('saison');
   if (q && (FETES[q] || q === SEASON_NONE)) sessionStorage.setItem(SEASON_PREVIEW_KEY, q);
-} catch {}
+} catch {
+  // adresse ou session illisible : pas d'aperçu de fête
+}
 function initSeasons() {
   applySeason(true);
 }
