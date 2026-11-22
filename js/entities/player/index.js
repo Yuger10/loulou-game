@@ -2,7 +2,7 @@
    n'importent que ce fichier (vérifié par test/slices.test.js). */
 // ses types aussi : les autres slices les lisent ici, par import('…/player/index.js')
 /** @typedef {import('./profiles.js').Profile} Profile */
-export { AVATARS } from './avatars.js';
+export { AVATARS, fixAvatar } from './avatars.js';
 export {
   ac,
   addProfile,

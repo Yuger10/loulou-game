@@ -12,6 +12,7 @@
 import { avatarHTML } from '../../entities/companion/index.js';
 import { load, save, state } from '../../entities/game-state/index.js';
 import {
+  fixAvatar,
   LEGACY_SAVE_KEY,
   loadProfiles,
   party,
@@ -144,11 +145,14 @@ function parseBackupObject(obj) {
     } catch {
       // partie illisible : on affiche 0 mission dans l'aperçu
     }
-    return { name: cleanName(p.name) || 'Sans nom', avatar: p.avatar, missions };
+    return { name: cleanName(p.name) || 'Sans nom', avatar: fixAvatar(p.avatar), missions };
   });
   if (!players.length && !obj.data[LEGACY_SAVE_KEY])
     return { ok: false, error: 'Cette sauvegarde ne contient aucun joueur.' };
-  return { ok: true, backup: /** @type {Backup} */ (obj), players }; // app et data vérifiés ci-dessus
+  // la date sert à l'aperçu et au rappel de sauvegarde : une date illisible est écartée
+  const at = typeof obj.at === 'string' || typeof obj.at === 'number' ? new Date(obj.at) : null;
+  const backup = { ...obj, at: at && !isNaN(at.getTime()) ? at.toISOString() : undefined };
+  return { ok: true, backup: /** @type {Backup} */ (backup), players }; // app et data vérifiés ci-dessus
 }
 /**
  * @param {string} text
