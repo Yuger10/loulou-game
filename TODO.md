@@ -160,6 +160,7 @@ Chaque mini-jeu a maintenant son propre niveau pour chaque enfant (`js/adaptive.
 | v66.13 | une partie importée ne fait plus planter l'espace parents |
 | v66.14 | en multijoueur, une paire ratée ou le temps écoulé passent la main |
 | v66.15 | au rythme magique, Boumbo joue tout le rythme avant la victoire |
+| v66.16 | dessins et paliers de la saison 2 dans leurs fichiers, max-lines 800 |
 
 ---
 

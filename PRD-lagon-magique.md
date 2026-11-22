@@ -1740,3 +1740,9 @@ Les deux sont proposés dès 5 ans, sans minuteur. Le jeu de l'île est les poti
 - **Ce que voit l'enfant :** au rythme magique, palier de lecture, une fois le rythme lu et joué, Boumbo le joue enfin **en entier** (chaque symbole s'allume avec son son), puis la victoire arrive. Avant, elle coupait la musique après la première note.
 - **Pour le code :** `play()` renvoie le moment où finit sa dernière note ; la victoire attend ce moment plus 400 ms (`READ_END_PAUSE`), au lieu d'un délai fixe de 900 ms. Révélé par TypeScript strict (66.11). `test/rythme-lecture.test.js`, écrit avant la correction.
 - Cache `lagon-v66.15`.
+
+# v66.16 : dessins et paliers de la saison 2 dans leurs fichiers, max-lines 800
+
+- **Ce que voit l'enfant :** rien ne change (les 57 dessins de personnages sont identiques, vérifié).
+- **Pour le code :** les deux derniers fichiers trop longs sont découpés, en déplaçant le code tel quel. `characters-art.js` (1 055 lignes) : les 25 mascottes de la saison 2 passent dans `characters-art-s2.js`, qui reçoit les outils de dessin en paramètre (type `ArtKit`). `difficulty.js` (1 014) : les paliers des 13 mini-jeux de la saison 2 et de l'image à assembler passent dans `difficulty-s2.js`. Le cliquet `max-lines` descend à **800**, la cible de la track `lint-regles-completes`.
+- Cache `lagon-v66.16`.
