@@ -27,6 +27,8 @@ import {
 } from '../../minigame-engine/index.js';
 import { bindQuit, gameHeader } from '../../screen/index.js';
 
+/** @typedef {{ heights: number[][], total: number, hidden: boolean }} CubesQuestion */
+
 const CUBE_COLORS = [
   ['#FFD1E6', '#F4A9CE', '#D97BA8'],
   ['#C9E7FB', '#8EC6F0', '#5B9FD4'],
@@ -37,6 +39,7 @@ const CUBE_COLORS = [
 
 /* Une pile : les hauteurs (heights[y][x]) dans les limites du palier, avec au
    moins deux tours (sinon on compterait une seule tour). */
+/** @param {number} dd le palier de difficulté */
 function cubesBuildStack(dd, rng = random) {
   const cfg = cubesRound(dd);
   for (let tries = 0; tries < 400; tries++) {
@@ -48,13 +51,16 @@ function cubesBuildStack(dd, rng = random) {
     if (total >= cfg.min && total <= cfg.max && towers >= 2) return { cfg, heights, total };
   }
   // repli sûr : une rangée de tours d'un cube
+  /** @type {number[][]} */
   const heights = Array.from({ length: cfg.d }, (_, y) =>
     Array.from({ length: cfg.w }, (_cell, x) => (y === 0 && x < cfg.min ? 1 : 0)),
   );
   return { cfg, heights, total: heights.flat().reduce((a, b) => a + b, 0) };
 }
 // les cubes, un par un (x, y, z), dans l'ordre où on les dessine (du fond vers l'avant)
+/** @param {number[][]} heights les hauteurs, heights[y][x] */
 function cubesList(heights) {
+  /** @type {Array<{ x: number, y: number, z: number }>} */
   const out = [];
   heights.forEach((row, y) =>
     row.forEach((h, x) => {
@@ -65,13 +71,16 @@ function cubesList(heights) {
 }
 
 // Le dessin isométrique : chaque cube a son dessus (clair) et ses deux côtés
+/** @param {number[][]} heights */
 function cubesSVG(heights) {
   const A = 22,
     B = 12.7,
     C = 25;
   const cubes = cubesList(heights);
-  const pts = (arr) => arr.map((p) => p.map((v) => v.toFixed(1)).join(',')).join(' ');
+  const pts = (/** @type {number[][]} */ arr) => arr.map((p) => p.map((v) => v.toFixed(1)).join(',')).join(' ');
+  /** @type {number[]} */
   const xs = [],
+    /** @type {number[]} */
     ys = [];
   const shapes = cubes.map((c) => {
     const ox = (c.x - c.y) * A,
@@ -114,6 +123,7 @@ function cubesSVG(heights) {
 }
 
 // trois réponses : la bonne et deux voisines, toutes différentes et au moins 1
+/** @param {number} total */
 function cubesOptions(total) {
   const set = new Set([total]);
   const near = shuffle([-2, -1, 1, 2, 3]);
@@ -123,7 +133,8 @@ function cubesOptions(total) {
   }
   return shuffle([...set]);
 }
-const cubeDots = (n) => `<span class="cube-dots" aria-hidden="true">${'<i></i>'.repeat(n)}</span>`;
+const cubeDots = (/** @type {number} */ n) =>
+  `<span class="cube-dots" aria-hidden="true">${'<i></i>'.repeat(n)}</span>`;
 
 // la pile précédente : une relance en tire toujours une AUTRE (anti-devinette)
 let cubesLast = '';
@@ -134,6 +145,7 @@ function renderCubes() {
   for (let k = 0; k < 8 && JSON.stringify(stack.heights) === cubesLast; k++) stack = cubesBuildStack(dd);
   cubesLast = JSON.stringify(stack.heights);
   const opts = cubesOptions(stack.total);
+  /** @type {CubesQuestion} */
   const q = { heights: stack.heights, total: stack.total, hidden: stack.cfg.d > 1 };
   const say = 'Combien y a-t-il de cubes dans la pile ?';
   openModal(`
@@ -163,7 +175,9 @@ function renderCubes() {
 
 // Indices (v52) : 1. compter tour par tour (et ceux qui sont cachés dessous) ;
 // 2. une tour qui brille, avec son nombre de cubes : il reste à ajouter les autres.
+/** @param {CubesQuestion} q */
 function cubesHints(q) {
+  /** @type {Array<{ x: number, y: number, h: number }>} */
   const towers = [];
   q.heights.forEach((row, y) =>
     row.forEach((h, x) => {

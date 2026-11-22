@@ -32,6 +32,16 @@ import {
 } from '../../minigame-engine/index.js';
 import { bindQuit, gameHeader } from '../../screen/index.js';
 
+/**
+ * Une question ; `options` : les fioles proposées.
+ * @typedef {{ cfg: ReturnType<typeof potionsRound>, options: string[], target?: string, holes?: number[], missing?: string[], a?: string, b?: string, r?: string } & (
+ *   | { mode: 'name', target: string }
+ *   | { mode: 'rainbow', holes: number[], missing: string[] }
+ *   | { mode: 'inverse' | 'mix', a: string, b: string, r: string })} PotionsRound
+ */
+/** @typedef {{ mode: 'rainbow' } | { mode: 'name', target: string } | { mode: 'inverse' | 'mix', a: string, b: string, r: string }} PotionsQuestion */
+
+/** @type {Record<string, { fill: string, mark: string, ink: string, like: string }>} */
 const POTION_COLORS = {
   rouge: { fill: '#E8344E', mark: 'R', ink: '#fff', like: 'une fraise 🍓' },
   orange: { fill: '#FF9A3C', mark: 'O', ink: '#2B2140', like: 'une orange 🍊' },
@@ -55,10 +65,20 @@ const COLOR_MIXES = [
 // l'arc-en-ciel, de l'extérieur (en haut) à l'intérieur ; l'indigo est laissé de côté
 const RAINBOW = ['rouge', 'orange', 'jaune', 'vert', 'bleu', 'violet'];
 
+/**
+ * @param {number} dd le palier de difficulté
+ * @returns {PotionsRound}
+ */
 function potionsBuildRound(dd, rng = random) {
   const cfg = potionsRound(dd);
+  /**
+   * @template T
+   * @param {T[]} arr
+   * @returns {T}
+   */
   const pick = (arr) => arr[Math.floor(rng() * arr.length)];
   const mode = pick(cfg.modes);
+  /** @type {(exclude: string[], n: number) => string[]} */
   const others = (exclude, n) => shuffle(Object.keys(POTION_COLORS).filter((c) => !exclude.includes(c))).slice(0, n);
   if (mode === 'name') {
     const target = pick(['rouge', 'jaune', 'bleu', 'vert', 'orange', 'violet', 'rose']);
@@ -77,6 +97,7 @@ function potionsBuildRound(dd, rng = random) {
 }
 
 // une fiole : la couleur, et son initiale par-dessus (repère non coloré)
+/** @param {string} c la couleur */
 function potionSVG(c) {
   const p = POTION_COLORS[c];
   return `<svg class="po-svg" viewBox="0 0 60 72" aria-hidden="true">
@@ -87,16 +108,18 @@ function potionSVG(c) {
     <text x="30" y="58" text-anchor="middle" font-size="${p.mark.length > 1 ? 15 : 18}" font-weight="800" fill="${p.ink}" font-family="Fredoka, Nunito, sans-serif">${p.mark}</text>
   </svg>`;
 }
+/** @type {(c: string, k?: number) => string} */
 const potionBtn = (c, k) =>
   `<button class="po-opt" data-c="${c}"${k != null ? ` data-k="${k}"` : ''} aria-label="${c}">${potionSVG(c)}<span class="po-name">${c}</span></button>`;
-const potionShow = (c) => `<span class="po-show" data-c="${c}">${potionSVG(c)}<span class="po-name">${c}</span></span>`;
+const potionShow = (/** @type {string} */ c) =>
+  `<span class="po-show" data-c="${c}">${potionSVG(c)}<span class="po-name">${c}</span></span>`;
 
 let potionsLast = '';
 function renderPotions() {
   setupLives('potions');
   const dd = gameDiff();
   let r = potionsBuildRound(dd);
-  const key = (x) => JSON.stringify([x.mode, x.target, x.a, x.b, x.holes, x.options]);
+  const key = (/** @type {PotionsRound} */ x) => JSON.stringify([x.mode, x.target, x.a, x.b, x.holes, x.options]);
   for (let k = 0; k < 8 && key(r) === potionsLast; k++) r = potionsBuildRound(dd);
   potionsLast = key(r);
   const ok = () => {
@@ -191,6 +214,7 @@ function renderPotions() {
 
 // Indices (v52) : 1. ce que l'on fait (écouter, mélanger, l'ordre) ; 2. un
 // repère (un objet de cette couleur, ce qui n'est pas la réponse). Jamais la couleur.
+/** @param {PotionsQuestion} q */
 function potionsHints(q) {
   if (q.mode === 'name')
     return [

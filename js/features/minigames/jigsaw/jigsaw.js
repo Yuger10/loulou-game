@@ -39,6 +39,10 @@ const JIGSAW_W = 480,
   JIGSAW_H = 360;
 
 // L'image : ciel, paysage de l'île (js/features/island/island.js), et un compagnon en grand.
+/**
+ * @param {string} worldId
+ * @param {string} compId
+ */
 function jigsawPicture(worldId, compId) {
   const w = WORLDS[worldId] || WORLDS.lagon;
   const draw = ISLE_SCENERY[w.shape] || ISLE_SCENERY[worldId] || isleGenericScenery;
@@ -72,10 +76,18 @@ const JIGSAW_DETAILS = `
     <path d="M-20 2 C-20 -16 20 -16 20 2 Z" fill="#E5484D"/><circle cx="-8" cy="-6" r="3" fill="#fff"/><circle cx="6" cy="-9" r="2.6" fill="#fff"/><circle cx="12" cy="-2" r="2.2" fill="#fff"/></g>`;
 
 // Un morceau (ou l'image entière) : une fenêtre sur le symbole #jg-art
+/**
+ * @param {number} x
+ * @param {number} y
+ * @param {number} w
+ * @param {number} h
+ * @param {string} [cls]
+ */
 function jigsawViewSVG(x, y, w, h, cls) {
   return `<svg class="${cls || 'jg-svg'}" viewBox="${x} ${y} ${w} ${h}" preserveAspectRatio="none" aria-hidden="true"><use href="#jg-art" width="${JIGSAW_W}" height="${JIGSAW_H}"/></svg>`;
 }
 
+/** @type {{ cols: number, rows: number, order: number[] } | null} */
 // oxlint-disable-next-line no-unused-vars -- lu par les tests, par son nom : { cols, rows, order }
 let jigsawState = null;
 
@@ -94,7 +106,7 @@ function renderJigsaw() {
   let order = shuffle(Array.from({ length: n }, (_, i) => i));
   if (order.every((p, i) => p === i)) order = order.slice(1).concat(order[0]);
   jigsawState = { cols: r.cols, rows: r.rows, order };
-  const piece = (i) => jigsawViewSVG((i % r.cols) * pw, Math.floor(i / r.cols) * ph, pw, ph);
+  const piece = (/** @type {number} */ i) => jigsawViewSVG((i % r.cols) * pw, Math.floor(i / r.cols) * ph, pw, ph);
   const hint = r.ghost ? 'Remets les morceaux à leur place' : "Refais l'image du modèle";
   // réserve compacte : tous les morceaux tiennent sur 1 ou 2 rangées sous le cadre
   const tcols = n <= 4 ? n : Math.ceil(n / 2);
@@ -123,12 +135,16 @@ function renderJigsaw() {
   setHintQuestion('jigsaw', { cols: r.cols, rows: r.rows, ghost: !!r.ghost });
 
   let placed = 0,
-    selected = null,
+    selected = /** @type {HTMLButtonElement | null} */ (null),
     justDragged = false;
   const clearSel = () => {
     if (selected) selected.classList.remove('sel');
     selected = null;
   };
+  /**
+   * @param {HTMLButtonElement} pieceEl
+   * @param {HTMLElement | null} slotEl
+   */
   const tryPlace = (pieceEl, slotEl) => {
     if (!pieceEl || !slotEl || slotEl.classList.contains('filled') || pieceEl.classList.contains('used')) return;
     const p = Number(pieceEl.dataset.p),
@@ -146,7 +162,7 @@ function renderJigsaw() {
       if (prog) prog.innerHTML = progressDots(placed, n);
       stepOk(slotEl);
       if (placed >= n) {
-        document.querySelector('.jg-board').classList.add('done');
+        /** @type {HTMLElement} */ (document.querySelector('.jg-board')).classList.add('done');
         flashModal('ok');
         winSoon(WIN_DELAY_LONG);
       }
@@ -165,7 +181,7 @@ function renderJigsaw() {
       }
     });
   });
-  document.querySelectorAll('.jg-piece').forEach((pc) => {
+  /** @type {NodeListOf<HTMLButtonElement>} */ (document.querySelectorAll('.jg-piece')).forEach((pc) => {
     setHandler(pc, 'click', () => {
       if (justDragged) {
         justDragged = false;
@@ -186,17 +202,18 @@ function renderJigsaw() {
       if (pc.classList.contains('used') || (e.pointerType === 'mouse' && e.button !== 0)) return;
       const sx = e.clientX,
         sy = e.clientY;
-      let ghost = null,
-        box = null;
+      let ghost = /** @type {HTMLElement | null} */ (null),
+        box = /** @type {DOMRect | null} */ (null);
       try {
         pc.setPointerCapture(e.pointerId);
       } catch {
         // capture du pointeur refusée par certains navigateurs : le glisser marche quand même
       }
+      /** @param {PointerEvent} ev */
       const move = (ev) => {
         if (!ghost && Math.hypot(ev.clientX - sx, ev.clientY - sy) > 8) {
           box = pc.getBoundingClientRect();
-          ghost = pc.cloneNode(true);
+          ghost = /** @type {HTMLElement} */ (pc.cloneNode(true));
           ghost.classList.add('jg-drag');
           ghost.classList.remove('sel');
           ghost.style.width = box.width + 'px';
@@ -206,10 +223,12 @@ function renderJigsaw() {
           clearSel();
         }
         if (ghost) {
-          ghost.style.left = ev.clientX - box.width / 2 + 'px';
-          ghost.style.top = ev.clientY - box.height / 2 + 'px';
+          // box est mesurée en même temps que le fantôme
+          ghost.style.left = ev.clientX - /** @type {DOMRect} */ (box).width / 2 + 'px';
+          ghost.style.top = ev.clientY - /** @type {DOMRect} */ (box).height / 2 + 'px';
         }
       };
+      /** @param {PointerEvent} ev */
       const end = (ev) => {
         pc.removeEventListener('pointermove', move);
         pc.removeEventListener('pointerup', end);
@@ -235,6 +254,7 @@ function renderJigsaw() {
 
 // Indices (v52) : 1. commencer par les coins et regarder les bords ; 2. une
 // case vide à remplir en premier (la case, jamais le morceau).
+/** @param {{ cols: number, rows: number, ghost: boolean }} q */
 function jigsawHints(q) {
   const empty = document.querySelector('.jg-slot:not(.filled)');
   const s = empty ? Number(empty.dataset.s) : 0;
@@ -248,7 +268,7 @@ function jigsawHints(q) {
     },
     {
       say: `Commence par cette case, ${corner}. Quel morceau a le même dessin ?`,
-      fx: { glow: empty ? solSel('.jg-slot', 's', s) : null },
+      fx: { glow: empty ? solSel('.jg-slot', 's', s) : undefined },
     },
   ];
 }

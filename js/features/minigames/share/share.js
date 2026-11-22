@@ -28,12 +28,14 @@ import {
 } from '../../minigame-engine/index.js';
 import { bindQuit, gameHeader } from '../../screen/index.js';
 
+/** @type {Record<number, { word: string, sym: string }>} */
 const SHARE_FRACS = {
   2: { word: 'la moitié', sym: '½' },
   3: { word: 'le tiers', sym: '⅓' },
   4: { word: 'le quart', sym: '¼' },
 };
 // parts inégales (en fractions du gâteau) : bien différentes, puis plus proches
+/** @type {Record<'far' | 'near', Record<number, number[][]>>} */
 const SHARE_UNEQUAL = {
   far: {
     2: [
@@ -71,10 +73,26 @@ const SHARE_WHOLE = [
   { key: 'moities-entier', say: 'Combien de moitiés faut-il pour faire le gâteau entier ?', ans: 2, show: [2] },
   { key: 'tiers-entier', say: 'Combien de tiers faut-il pour faire le gâteau entier ?', ans: 3, show: [3] },
 ];
-const equalParts = (n) => Array.from({ length: n }, () => 1 / n);
+/** @typedef {{ parts: number[], equal: boolean, n?: number, k: number, shaded: number }} ShareOpt un gâteau proposé */
+/**
+ * Une question ; les champs absents d'une sorte sont `undefined` (shareKey les lit tous).
+ * @typedef {{ cfg: ReturnType<typeof shareRound>, shape: 'rond' | 'carre', n: number }
+ *   & ({ ask: 'fair', opts: ShareOpt[], whole?: undefined }
+ *     | { ask: 'show', opts: ShareOpt[], whole?: undefined }
+ *     | { ask: 'whole', whole: typeof SHARE_WHOLE[number], opts?: undefined }
+ *     | { ask: 'write', opts?: undefined, whole?: undefined })} ShareRound
+ */
+/** @typedef {{ ask: ShareRound['ask'], n: number, whole: string | null, trap: boolean }} ShareQuestion */
+
+const equalParts = (/** @type {number} */ n) => Array.from({ length: n }, () => 1 / n);
 
 /* Un gâteau (SVG 100×100). parts : fractions du gâteau (somme 1) ;
    shaded : la part colorée (-1 : aucune). Chaque part a la classe share-part. */
+/**
+ * @param {string} shape 'rond' ou 'carre'
+ * @param {number[]} parts
+ * @param {number} shaded
+ */
 function shareCakeSVG(shape, parts, shaded) {
   const cream = '#FFF1D6',
     pink = '#FF8FB8',
@@ -87,7 +105,7 @@ function shareCakeSVG(shape, parts, shaded) {
     let a = -90;
     parts.forEach((f, i) => {
       const a2 = a + f * 360;
-      const p = (deg) =>
+      const p = (/** @type {number} */ deg) =>
         [cx + r * Math.cos((deg * Math.PI) / 180), cy + r * Math.sin((deg * Math.PI) / 180)]
           .map((v) => v.toFixed(1))
           .join(' ');
@@ -114,12 +132,21 @@ function shareCakeSVG(shape, parts, shaded) {
   return `<svg class="share-cake" viewBox="0 0 100 100" aria-hidden="true">${body}</svg>`;
 }
 
+/**
+ * @param {number} dd le palier de difficulté
+ * @returns {ShareRound}
+ */
 function shareBuildRound(dd, rng = random) {
   const cfg = shareRound(dd);
+  /**
+   * @template T
+   * @param {T[]} arr
+   * @returns {T}
+   */
   const pick = (arr) => arr[Math.floor(rng() * arr.length)];
   const shape = rng() < 0.5 ? 'rond' : 'carre';
   if (cfg.ask === 'fair') {
-    const n = pick(cfg.parts);
+    const n = pick(/** @type {number[]} */ (cfg.parts)); // les paliers « fair » ont toujours `parts`
     const pool = shuffle(SHARE_UNEQUAL[cfg.near ? 'near' : 'far'][n].slice());
     // même forme que les options des autres questions (n est absent ici) : le type de r.opts reste unique
     /** @type {Array<{ parts: number[], equal: boolean, n?: number }>} */
@@ -131,8 +158,9 @@ function shareBuildRound(dd, rng = random) {
     return { cfg, ask: 'fair', shape, n, opts: opts.map((o, k) => Object.assign(o, { k, shaded: -1 })) };
   }
   if (cfg.ask === 'show') {
-    const n = pick(cfg.fracs);
+    const n = pick(/** @type {number[]} */ (cfg.fracs)); // les paliers « show » ont toujours `fracs`
     const others = shuffle([2, 3, 4].filter((x) => x !== n));
+    /** @type {Array<{ parts: number[], n: number, equal: boolean, shaded?: number }>} */
     const list = [
       { parts: equalParts(n), n, equal: true },
       { parts: equalParts(others[0]), n: others[0], equal: true },
@@ -146,14 +174,14 @@ function shareBuildRound(dd, rng = random) {
     return { cfg, ask: 'show', shape, n, opts };
   }
   // palier 5 : l'écriture, ou « combien de… pour faire… ? »
-  if (rng() < cfg.whole) {
+  if (rng() < /** @type {number} */ (cfg.whole)) {
     const w = pick(SHARE_WHOLE);
     return { cfg, ask: 'whole', shape, whole: w, n: w.ans };
   }
-  const n = pick(cfg.fracs);
+  const n = pick(/** @type {number[]} */ (cfg.fracs));
   return { cfg, ask: 'write', shape, n };
 }
-const shareKey = (r) =>
+const shareKey = (/** @type {ShareRound} */ r) =>
   `${r.ask}-${r.n}-${r.shape}-${r.whole ? r.whole.key : ''}-${(r.opts || []).map((o) => o.parts.join(',')).join('|')}`;
 
 let shareLast = '';
@@ -163,6 +191,7 @@ function renderShare() {
   let r = shareBuildRound(dd);
   for (let k = 0; k < 8 && shareKey(r) === shareLast; k++) r = shareBuildRound(dd);
   shareLast = shareKey(r);
+  /** @type {ShareQuestion} */
   const q = { ask: r.ask, n: r.n, whole: r.whole ? r.whole.key : null, trap: !!r.cfg.trap };
   let title,
     say,
@@ -178,7 +207,7 @@ function renderShare() {
           `<button class="share-opt" data-k="${o.k}" data-equal="${o.equal ? 1 : 0}" data-n="${o.parts.length}" aria-label="Gâteau ${o.k + 1}">${shareCakeSVG(r.shape, o.parts, -1)}</button>`,
       )
       .join('');
-    good = r.opts.find((o) => o.equal).k;
+    good = /** @type {ShareOpt} */ (r.opts.find((o) => o.equal)).k; // un gâteau est toujours juste
   } else if (r.ask === 'show') {
     const fr = SHARE_FRACS[r.n];
     title = `Sur quel gâteau la part rose est-elle ${fr.word} ?`;
@@ -189,7 +218,7 @@ function renderShare() {
           `<button class="share-opt" data-k="${o.k}" data-equal="${o.equal ? 1 : 0}" data-n="${o.parts.length}" aria-label="Gâteau ${o.k + 1}">${shareCakeSVG(r.shape, o.parts, o.shaded)}</button>`,
       )
       .join('');
-    good = r.opts.find((o) => o.equal && o.n === r.n).k;
+    good = /** @type {ShareOpt} */ (r.opts.find((o) => o.equal && o.n === r.n)).k;
   } else if (r.ask === 'write') {
     title = 'Quelle écriture montre la part rose ?';
     say = 'Quelle écriture montre la part rose du gâteau ?';
@@ -236,6 +265,7 @@ function renderShare() {
 
 // Indices (v52) : 1. ce que veut dire « parts égales » ou « le quart » ;
 // 2. ce qu'il faut regarder ou compter. Jamais le bon gâteau ni le nombre.
+/** @param {ShareQuestion} q */
 function shareHints(q) {
   if (q.ask === 'fair')
     return [
@@ -270,6 +300,7 @@ function shareHints(q) {
         fx: { glow: '.share-stage' },
       },
     ];
+  /** @type {Record<string, string>} */
   const tips = {
     'quarts-moitie': 'Coupe la moitié en deux dans ta tête : chaque petite part est un quart. Combien y en a-t-il ?',
     'quarts-entier': "Un quart, c'est une part d'un gâteau coupé en parts égales. Compte toutes les parts du gâteau.",
@@ -282,7 +313,7 @@ function shareHints(q) {
       say: "Un quart, c'est une part d'un gâteau coupé en 4 ; une moitié, une part d'un gâteau coupé en 2.",
       fx: { glow: '.share-stage' },
     },
-    { say: tips[q.whole] || tips['quarts-entier'], fx: { glow: '.share-stage' } },
+    { say: (q.whole && tips[q.whole]) || tips['quarts-entier'], fx: { glow: '.share-stage' } },
   ];
 }
 

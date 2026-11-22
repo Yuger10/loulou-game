@@ -82,6 +82,7 @@ function renderVolume() {
 }
 
 // paliers 1-2 : quel récipient contient le plus (ou le moins) ?
+/** @param {number} dd le palier de difficulté */
 function renderCapacityCompare(dd) {
   const pairIdx = Math.floor(random() * CONTAINER_PAIRS.length);
   const [small, big] = CONTAINER_PAIRS[pairIdx];
@@ -122,6 +123,7 @@ function renderCapacityCompare(dd) {
 }
 
 // paliers 3-5 : reconnaître la forme en volume (solide) d'un objet du quotidien
+/** @param {number} dd le palier de difficulté */
 function renderSolidShape(dd) {
   const solid = pickRandom(SOLIDS);
   const item = pickRandom(solid.items);
@@ -157,6 +159,11 @@ function renderSolidShape(dd) {
 // 2. penser à ce qu'on verse dedans. Solides : 1. roule-t-il ? a-t-il des
 // coins ? ; 2. une propriété du bon solide, et (avec 4 choix ou plus) un
 // solide qui roule écarté s'il ne roule pas, ou l'inverse.
+/** @typedef {typeof SOLIDS[number]} Solid */
+/**
+ * La question, pour les indices : comparer des contenances, ou reconnaître un solide.
+ * @param {{ kind: 'capacity', askMore: boolean } | { kind: 'solid', solid: Solid, options: Solid[] }} q
+ */
 function volumeHints(q) {
   if (q.kind === 'capacity')
     return [
@@ -177,7 +184,10 @@ function volumeHints(q) {
       say: "Regarde la forme de l'objet : est-ce qu'il peut rouler ? A-t-il des coins ?",
       fx: { glow: '.vol-shape-box' },
     },
-    { say: q.solid.tip, fx: { glow: '.vol-shape-box', dim: wrong ? solSel('.vol-opt-btn', 'v', wrong.name) : null } },
+    {
+      say: q.solid.tip,
+      fx: { glow: '.vol-shape-box', dim: wrong ? solSel('.vol-opt-btn', 'v', wrong.name) : undefined },
+    },
   ];
 }
 

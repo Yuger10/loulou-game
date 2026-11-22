@@ -76,7 +76,7 @@ function renderSequence() {
     setHandler(btn, 'click', () => {
       if (btn.dataset.v === answer) {
         clearActiveTimer();
-        const q = document.querySelector('.seq-row .q');
+        const q = /** @type {HTMLElement} */ (document.querySelector('.seq-row .q'));
         q.textContent = answer;
         q.style.border = 'none';
         q.classList.add('filled');
@@ -90,6 +90,7 @@ function renderSequence() {
 
 // Indices (v52) : 1. trouver le petit groupe qui se répète ; 2. chaque image
 // numérotée selon sa place dans le motif (1, 2, 3, 1, 2, 3…).
+/** @param {{ pattern: string[], shown: number }} q */
 function sequenceHints(q) {
   const L = q.pattern.length;
   return [

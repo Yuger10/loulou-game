@@ -19,18 +19,25 @@ import {
 } from '../../minigame-engine/index.js';
 import { bindQuit, gameHeader } from '../../screen/index.js';
 
+/** @typedef {{ id: number, emoji: string, flipped: boolean, matched: boolean }} MemoryCard */
+/** @typedef {{ cards: MemoryCard[] }} MemoryQuestion la question, pour les indices */
+
 function renderMemory() {
   setupLives('memory');
   const dd = gameDiff();
   const pairs = memoryPairs(dd);
   const pool = shuffle(Object.values(ALL_ITEMS).map((i) => i.emoji)).slice(0, pairs);
+  /** @type {MemoryCard[]} */
   const cards = shuffle([...pool, ...pool]).map((e, i) => ({ id: i, emoji: e, flipped: false, matched: false }));
+  /** @type {MemoryCard | null} */
   let first = null,
     lock = false;
   const cols3 = pairs === 3;
+  /** @type {MemoryQuestion} */
   const q = { cards }; // la question, pour les indices
   // tests : les paires, deux cartes à la fois
   {
+    /** @type {Record<string, number[]>} */
     const by = {};
     cards.forEach((c) => (by[c.emoji] = by[c.emoji] || []).push(c.id));
     setSolution(
@@ -54,7 +61,7 @@ function renderMemory() {
     document.querySelectorAll('.mcard').forEach((el) => {
       setHandler(el, 'click', () => {
         const id = Number(el.dataset.id);
-        const card = cards.find((c) => c.id === id);
+        const card = /** @type {MemoryCard} */ (cards.find((c) => c.id === id)); // la carte touchée existe toujours
         if (lock || card.flipped || card.matched) return;
         playSound('tap');
         card.flipped = true;
@@ -69,11 +76,12 @@ function renderMemory() {
         setTimeout(
           () => {
             const wasMatch = isMatch;
+            // verrouillé (lock) : la première carte est encore posée
             if (isMatch) {
-              first.matched = true;
+              /** @type {MemoryCard} */ (first).matched = true;
               second.matched = true;
             } else {
-              first.flipped = false;
+              /** @type {MemoryCard} */ (first).flipped = false;
               second.flipped = false;
             }
             first = null;
@@ -104,6 +112,7 @@ function renderMemory() {
 /* Indices (v52) : 1. retourner une carte et chercher sa jumelle, en
    retenant les places ; 2. si une carte est retournée : sa jumelle est parmi
    3 cartes qui brillent ; sinon, une carte se montre un instant (à retenir). */
+/** @param {MemoryQuestion} q */
 function memoryHints(q) {
   const hidden = q.cards.filter((c) => !c.matched && !c.flipped);
   const up = q.cards.filter((c) => c.flipped && !c.matched);
@@ -111,7 +120,7 @@ function memoryHints(q) {
   let two;
   if (first) {
     const twin = q.cards.find((c) => c !== first && c.emoji === first.emoji);
-    const i = hidden.indexOf(twin);
+    const i = hidden.indexOf(/** @type {MemoryCard} */ (twin)); // une paire a toujours sa jumelle
     const start = Math.max(0, Math.min(i - Math.floor(random() * 3), hidden.length - 3));
     const group = hidden.slice(start, start + 3);
     two = {
@@ -123,6 +132,7 @@ function memoryHints(q) {
     two = {
       say: 'Je te montre une carte un petit instant : retiens-la bien !',
       fx: {
+        /** @param {HTMLElement} root */
         run(root) {
           const el = peek && root.querySelector(solSel('.mcard', 'id', peek.id));
           if (!el) return;

@@ -26,6 +26,10 @@ import {
 import { bindQuit, gameHeader } from '../../screen/index.js';
 
 // construit une pile de pièces au hasard et renvoie sa valeur
+/**
+ * @param {number[]} denoms les pièces possibles
+ * @param {number} size le nombre de pièces
+ */
 function randomPile(denoms, size) {
   const pile = [];
   for (let i = 0; i < size; i++) pile.push(pickRandom(denoms));
@@ -88,8 +92,9 @@ function renderMoney() {
 
 // Indices (v52) : 1. additionner les pièces de chaque pile ; 2. le début de
 // chaque addition est écrit (jamais le total d'une pile).
+/** @param {{ target: number, piles: ReturnType<typeof randomPile>[] }} q */
 function moneyHints(q) {
-  const start = (pile) =>
+  const start = (/** @type {number[]} */ pile) =>
     pile.length >= 3 ? `${pile[0]}+${pile[1]}=${pile[0] + pile[1]}…` : pile.length === 2 ? `${pile[0]}+…` : '';
   return [
     {

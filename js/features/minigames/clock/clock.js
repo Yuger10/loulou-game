@@ -23,6 +23,10 @@ import {
 } from '../../minigame-engine/index.js';
 import { bindQuit, gameHeader } from '../../screen/index.js';
 
+/**
+ * @param {number} hour
+ * @param {number} minute
+ */
 function clockAngles(hour, minute) {
   // aiguille des heures : 30° par heure + un peu selon les minutes
   const hourAngle = ((hour % 12) + minute / 60) * 30;
@@ -30,6 +34,10 @@ function clockAngles(hour, minute) {
   return { hourAngle, minuteAngle };
 }
 
+/**
+ * @param {number} hour
+ * @param {number} minute
+ */
 function clockFaceHtml(hour, minute) {
   const { hourAngle, minuteAngle } = clockAngles(hour, minute);
   const ticks = Array.from({ length: 12 }, (_, i) => {
@@ -45,6 +53,10 @@ function clockFaceHtml(hour, minute) {
     </div>`;
 }
 
+/**
+ * @param {number} hour
+ * @param {number} minute
+ */
 function timeLabel(hour, minute) {
   const h = hour === 0 ? 12 : hour;
   if (minute === 0) return `${h} h`;
@@ -99,6 +111,7 @@ function renderClock() {
 // minutes ; 2. les nombres apparaissent autour de l'horloge, la petite
 // aiguille brille ; « en bas sur le 6, c'est la demie »… Avec 4 choix, une
 // heure aux minutes impossibles est écartée.
+/** @type {Record<number, string>} */
 const CLOCK_MINUTE_TIPS = {
   0: "La grande aiguille est tout en haut, sur le 12 : c'est l'heure pile.",
   30: "La grande aiguille est tout en bas, sur le 6 : c'est la demie, 30 minutes.",
@@ -112,8 +125,9 @@ function clockNumbersSVG() {
     return `<text x="${(50 + 37 * Math.cos(a)).toFixed(1)}" y="${(50 + 37 * Math.sin(a) + 4).toFixed(1)}" text-anchor="middle">${n}</text>`;
   }).join('')}</svg>`;
 }
+/** @param {{ hour: number, minute: number, answer: string, options: string[] }} q */
 function clockHints(q) {
-  const mins = (label) => (label.match(/h (\d+)/) || [0, '0'])[1];
+  const mins = (/** @type {string} */ label) => (label.match(/h (\d+)/) || [0, '0'])[1];
   const wrong =
     q.options.find((o) => o !== q.answer && mins(o) !== mins(q.answer)) || q.options.find((o) => o !== q.answer);
   return [
@@ -122,7 +136,8 @@ function clockHints(q) {
       say: `J'écris les nombres autour de l'horloge. Sur quel nombre est la petite aiguille ? ${CLOCK_MINUTE_TIPS[q.minute] || ''}`,
       fx: {
         glow: '.clock-hand-h',
-        dim: wrong ? solSel('.clock-opt-btn', 'v', wrong) : null,
+        dim: wrong ? solSel('.clock-opt-btn', 'v', wrong) : undefined,
+        /** @param {HTMLElement} root */
         run(root) {
           const face = root.querySelector('.clock-face');
           if (face && !face.querySelector('.clock-nums')) face.insertAdjacentHTML('beforeend', clockNumbersSVG());

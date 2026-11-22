@@ -33,6 +33,34 @@ const BACKUP_META_KEY = 'lagon-magique-meta';
 const BACKUP_UNDO_KEY = 'lagon-avant-restauration'; // hors préfixe : jamais exportée
 const BACKUP_REMIND_DAYS = 14;
 
+/** @typedef {import('../../entities/player/index.js').Profile} Profile */
+/**
+ * Une sauvegarde : `data` = les clés du stockage (préfixe « lagon-magique ») et
+ * leur texte JSON. Lue depuis un fichier ou un code, c'est une entrée non fiable :
+ * parseBackupObject vérifie `app`, `data` et que chaque valeur est un texte JSON.
+ * @typedef {{ app: string, kind?: string, v?: number, at?: string, data: Record<string, string> }} Backup
+ */
+/** @typedef {{ name: string, avatar: string, missions: number }} BackupPlayer un joueur, dans l'aperçu */
+/**
+ * Le verdict sur une sauvegarde lue ; `async` : un code compressé, à lire par parseBackupCode.
+ * (`error?: undefined` côté réussite : sans strictNullChecks, `!result.ok` ne distingue pas les deux cas)
+ * @typedef {{ ok: true, backup: Backup, players: BackupPlayer[], error?: undefined } | { ok: false, error?: string, async?: boolean }} BackupCheck
+ */
+/**
+ * Les repères de sauvegarde de l'appareil (clé BACKUP_META_KEY).
+ * @typedef {{
+ *   lastBackupAt?: string,
+ *   restoredAt?: string,
+ *   persisted?: boolean,
+ *   installed?: boolean,
+ *   installHintDismissed?: boolean,
+ * }} BackupMeta
+ */
+/**
+ * L'invitation à installer (Chrome, Edge) : absente des types du DOM.
+ * @typedef {Event & { prompt: () => Promise<void>, userChoice: Promise<{ outcome: string }> }} InstallPromptEvent
+ */
+
 function lsKeys() {
   const out = [];
   try {
@@ -45,6 +73,7 @@ function lsKeys() {
   }
   return out;
 }
+/** @returns {BackupMeta} */
 function backupMeta() {
   try {
     return JSON.parse(localStorage.getItem(BACKUP_META_KEY) || '{}') || {};
@@ -52,20 +81,23 @@ function backupMeta() {
     return {};
   }
 }
+/** @param {BackupMeta} patch */
 function setBackupMeta(patch) {
   storageWrite(BACKUP_META_KEY, JSON.stringify(Object.assign(backupMeta(), patch)));
 }
 
 /* ---- construire / lire une sauvegarde ---- */
+/** @returns {Backup} */
 function buildBackup() {
   save();
   saveProfiles();
+  /** @type {Record<string, string>} */
   const data = {};
   lsKeys()
     .filter((k) => k.startsWith(BACKUP_PREFIX) && k !== BACKUP_META_KEY)
     .forEach((k) => {
       try {
-        data[k] = localStorage.getItem(k);
+        data[k] = /** @type {string} */ (localStorage.getItem(k)); // la clé vient d'être listée
       } catch {
         // clé illisible : elle manque dans la sauvegarde, les autres y sont
       }
@@ -74,12 +106,22 @@ function buildBackup() {
 }
 
 // renvoie { ok:true, backup, players:[{name, avatar, missions}] } ou { ok:false, error }
+/**
+ * @param {Partial<Backup> | null | undefined} obj du JSON lu tel quel (entrée non fiable)
+ * @returns {BackupCheck}
+ */
 function parseBackupObject(obj) {
   if (!obj || obj.app !== 'lagon-magique' || typeof obj.data !== 'object' || !obj.data)
     return { ok: false, error: "Ce n'est pas une sauvegarde du Lagon Magique." };
   const keys = Object.keys(obj.data);
-  if (!keys.length || !keys.every((k) => k.startsWith(BACKUP_PREFIX) && typeof obj.data[k] === 'string'))
+  if (
+    !keys.length ||
+    !keys.every(
+      (k) => k.startsWith(BACKUP_PREFIX) && typeof (/** @type {Record<string, unknown>} */ (obj.data)[k]) === 'string',
+    )
+  )
     return { ok: false, error: 'Cette sauvegarde est incomplète ou abîmée.' };
+  /** @type {{ list?: Profile[] } | null} JSON lu tel quel : seul `list` est vérifié (un tableau) */
   let prof = null;
   try {
     prof = JSON.parse(obj.data[PROFILES_KEY] || 'null');
@@ -96,7 +138,9 @@ function parseBackupObject(obj) {
   const players = (prof && Array.isArray(prof.list) ? prof.list : []).map((p) => {
     let missions = 0;
     try {
-      missions = JSON.parse(obj.data[profileSaveKey(p.id)] || '{}').missions || 0;
+      // obj.data : vérifié plus haut (des textes JSON)
+      missions =
+        JSON.parse(/** @type {Record<string, string>} */ (obj.data)[profileSaveKey(p.id)] || '{}').missions || 0;
     } catch {
       // partie illisible : on affiche 0 mission dans l'aperçu
     }
@@ -104,8 +148,12 @@ function parseBackupObject(obj) {
   });
   if (!players.length && !obj.data[LEGACY_SAVE_KEY])
     return { ok: false, error: 'Cette sauvegarde ne contient aucun joueur.' };
-  return { ok: true, backup: obj, players };
+  return { ok: true, backup: /** @type {Backup} */ (obj), players }; // app et data vérifiés ci-dessus
 }
+/**
+ * @param {string} text
+ * @returns {BackupCheck}
+ */
 function parseBackupText(text) {
   const t = String(text || '').trim();
   if (!t) return { ok: false, error: 'Le code est vide.' };
@@ -120,6 +168,7 @@ function parseBackupText(text) {
 }
 
 /* ---- appliquer une sauvegarde (remplace la partie actuelle) ---- */
+/** @param {Backup} backup */
 function applyBackup(backup) {
   // garde une copie de ce qu'on remplace, pour pouvoir revenir en arrière
   storageWrite(BACKUP_UNDO_KEY, JSON.stringify(buildBackup()));
@@ -151,13 +200,20 @@ function undoRestoreAvailable() {
 
 /* ---- encodage du code de transfert ---- */
 // (repli sans TextEncoder pour les vieux navigateurs : même résultat)
+/** @param {string} s */
 function utf8ToB64(s) {
   if (typeof TextEncoder !== 'function') return btoa(unescape(encodeURIComponent(s)));
   const bytes = new TextEncoder().encode(s);
   let bin = '';
-  for (let i = 0; i < bytes.length; i += 0x8000) bin += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000));
+  // apply accepte un tableau typé (ES5) ; ses types ne veulent que des tableaux
+  for (let i = 0; i < bytes.length; i += 0x8000)
+    bin += String.fromCharCode.apply(
+      null,
+      /** @type {number[]} */ (/** @type {unknown} */ (bytes.subarray(i, i + 0x8000))),
+    );
   return btoa(bin);
 }
+/** @param {string} b */
 function b64ToUtf8(b) {
   const bin = atob(b.replace(/\s+/g, ''));
   if (typeof TextDecoder !== 'function') return decodeURIComponent(escape(bin));
@@ -165,11 +221,17 @@ function b64ToUtf8(b) {
   for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
   return new TextDecoder().decode(bytes);
 }
+/** @param {Uint8Array} bytes */
 function bytesToB64(bytes) {
   let bin = '';
-  for (let i = 0; i < bytes.length; i += 0x8000) bin += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000));
+  for (let i = 0; i < bytes.length; i += 0x8000)
+    bin += String.fromCharCode.apply(
+      null,
+      /** @type {number[]} */ (/** @type {unknown} */ (bytes.subarray(i, i + 0x8000))),
+    );
   return btoa(bin);
 }
+/** @param {string} b */
 function b64ToBytes(b) {
   const bin = atob(b.replace(/\s+/g, ''));
   const out = new Uint8Array(bin.length);
@@ -177,6 +239,7 @@ function b64ToBytes(b) {
   return out;
 }
 // code compressé (gzip) quand le navigateur sait le faire, sinon code simple
+/** @param {Backup} backup */
 async function backupToCode(backup) {
   const json = JSON.stringify(backup);
   if (typeof CompressionStream === 'function') {
@@ -190,6 +253,10 @@ async function backupToCode(backup) {
   }
   return 'LAGON1:' + utf8ToB64(json);
 }
+/**
+ * @param {string} text
+ * @returns {Promise<BackupCheck>}
+ */
 async function parseBackupCode(text) {
   const t = String(text || '').trim();
   if (!t.startsWith('LAGONZ1:')) return parseBackupText(t);
@@ -217,10 +284,11 @@ async function requestPersistentStorage() {
 }
 
 /* ---- installation sur l'écran d'accueil ---- */
+/** @type {InstallPromptEvent | null} */
 let deferredInstallPrompt = null;
 window.addEventListener('beforeinstallprompt', (e) => {
   e.preventDefault();
-  deferredInstallPrompt = e;
+  deferredInstallPrompt = /** @type {InstallPromptEvent} */ (e);
   renderInstallHint();
 });
 window.addEventListener('appinstalled', () => {
@@ -230,7 +298,12 @@ window.addEventListener('appinstalled', () => {
 });
 function isInstalled() {
   try {
-    return (window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone === true;
+    // TypeScript croit matchMedia toujours là ; les vieux navigateurs ne l'ont pas
+    return (
+      (/** @type {Window['matchMedia'] | undefined} */ (window.matchMedia) &&
+        matchMedia('(display-mode: standalone)').matches) ||
+      navigator.standalone === true
+    );
   } catch {
     return false;
   }
@@ -288,7 +361,7 @@ async function exportBackupFile() {
       return 'shared';
     }
   } catch (e) {
-    if (e && e.name === 'AbortError') return 'cancelled';
+    if (e && /** @type {Error} */ (e).name === 'AbortError') return 'cancelled';
   }
   const url = URL.createObjectURL(new Blob([json], { type: 'application/json' }));
   const a = document.createElement('a');
@@ -335,6 +408,7 @@ function openBackup() {
     </section>
   `);
   bindQuit();
+  /** @param {string} id */
   const $ = (id) => document.getElementById(id);
   setHandler($('bk-export'), 'click', async () => {
     playSound('tap');
@@ -363,8 +437,9 @@ function openBackup() {
       showToast('Sélectionnez le code puis copiez-le');
     }
   });
+  /** @param {BackupCheck} result */
   const preview = async (result) => {
-    const box = $('bk-preview');
+    const box = /** @type {HTMLElement} */ ($('bk-preview'));
     if (!result.ok) {
       box.innerHTML = `<p class="bk-err">${result.error}</p>`;
       return;
@@ -403,9 +478,11 @@ function openBackup() {
   const undo = $('bk-undo');
   if (undo)
     setHandler(undo, 'click', () => {
+      /** @type {BackupCheck} */
       let r = { ok: false };
       try {
-        r = parseBackupObject(JSON.parse(localStorage.getItem(BACKUP_UNDO_KEY)));
+        // pas de copie : JSON.parse(null) donne null, que parseBackupObject refuse
+        r = parseBackupObject(JSON.parse(/** @type {string} */ (localStorage.getItem(BACKUP_UNDO_KEY))));
       } catch {
         // copie de secours absente ou abîmée : pas de retour arrière proposé
       }

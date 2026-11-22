@@ -80,7 +80,7 @@ function openPlayers() {
 
     document.querySelectorAll('[data-pick]').forEach((b) => {
       setHandler(b, 'click', () => {
-        const id = b.dataset.pick;
+        const id = /** @type {string} */ (b.dataset.pick);
         if (sel.has(id)) sel.delete(id);
         else sel.add(id);
         playSound('tap');
@@ -90,7 +90,7 @@ function openPlayers() {
     document.querySelectorAll('[data-edit]').forEach((b) => {
       setHandler(b, 'click', () => {
         playSound('tap');
-        openPlayerSettings(b.dataset.edit);
+        openPlayerSettings(/** @type {string} */ (b.dataset.edit));
       });
     });
     setHandler(document.getElementById('btn-add-player'), 'click', () => {
@@ -101,7 +101,7 @@ function openPlayers() {
       playSound('tap');
       const id = [...sel][0] || profiles.current;
       if (party.active) stopParty();
-      switchProfile(id, true);
+      switchProfile(/** @type {string} */ (id), true); // un joueur courant existe toujours (loadProfiles)
       closeModal();
       renderProfile();
       renderLagon();
@@ -149,6 +149,7 @@ function openPlayers() {
   render();
 }
 
+/** @param {string} id */
 function playerSummary(id) {
   try {
     const raw = localStorage.getItem(profileSaveKey(id));
@@ -161,13 +162,14 @@ function playerSummary(id) {
   }
 }
 
+/** @param {number | null} sel l'âge choisi */
 function ageSelector(sel) {
   const ages = [4, 5, 6, 7, 8, 9, 10, 11, 12];
   return `<label class="mini-label">🎂 Quel âge ?</label>
     <div class="age-grid">
       ${ages.map((a) => `<button class="age-opt ${Number(sel) === a ? 'sel' : ''}" data-age="${a}">${a}</button>`).join('')}
     </div>
-    <p class="mode-hint" id="age-hint">${sel ? `Défi adapté : ${'⭐'.repeat(ageToDiff(sel))}` : 'Sert à adapter la difficulté en course 🏁'}</p>`;
+    <p class="mode-hint" id="age-hint">${sel ? `Défi adapté : ${'⭐'.repeat(/** @type {number} */ (ageToDiff(sel)))}` : 'Sert à adapter la difficulté en course 🏁'}</p>`;
 }
 
 /* --- Formulaires des joueurs (modèle commun de js/shared/ui/form.js) --- */
@@ -183,8 +185,22 @@ function backFromPlayerForm() {
 const NAME_INPUT_ATTRS =
   'type="text" maxlength="12" placeholder="Prénom" autocomplete="off" autocapitalize="words" autocorrect="off" spellcheck="false" enterkeyhint="done"';
 const NAME_REQUIRED = "Écris d'abord un prénom, en haut.";
+/** @param {string} v */
 const escAttr = (v) => String(v || '').replace(/"/g, '&quot;');
+/**
+ * Ce que montre un formulaire de joueur ; `nameId` = l'id du champ du prénom.
+ * @typedef {{
+ *   nameId: string,
+ *   name: string,
+ *   age: number | null,
+ *   av: string,
+ *   gen: string,
+ *   comp: string,
+ *   allBuddies: boolean,
+ * }} PlayerFormValues
+ */
 // les sections communes : Moi (prénom, âge), Mon avatar, Mon compagnon
+/** @param {PlayerFormValues} o */
 function playerFormSections(o) {
   return [
     {
@@ -204,9 +220,9 @@ function playerFormSections(o) {
 /* --- Nouveau joueur --- */
 function openNewPlayer() {
   let av = pickRandom(AVATARS);
-  let age = null,
+  let age = /** @type {number | null} */ (null),
     gen = '',
-    comp = null,
+    comp = /** @type {string | null} */ (null),
     allBuddies = false,
     name = '';
   const snap = () => ({ name: name.trim(), av, age, gen, comp });
@@ -234,7 +250,7 @@ function openNewPlayer() {
     });
     document.querySelectorAll('.avatar-opt').forEach((b) => {
       setHandler(b, 'click', () => {
-        av = b.dataset.av;
+        av = /** @type {string} */ (b.dataset.av);
         playSound('tap');
         render();
       });
@@ -248,7 +264,7 @@ function openNewPlayer() {
     });
     document.querySelectorAll('.gender-opt').forEach((b) => {
       setHandler(b, 'click', () => {
-        gen = b.dataset.gender;
+        gen = /** @type {string} */ (b.dataset.gender);
         playSound('tap');
         if (comp && !allBuddies && !companionsFor(gen).includes(comp)) comp = null;
         render();
@@ -286,6 +302,7 @@ function openNewPlayer() {
 
 /* --- Réglages d'un joueur : prénom, âge, avatar, compagnon, anniversaire ---
    (recommencer et supprimer sont dans l'espace parents, zone sensible) */
+/** @param {string} id */
 function openPlayerSettings(id) {
   const p = profiles.list.find((x) => x.id === id);
   if (!p) return;
@@ -348,7 +365,7 @@ function openPlayerSettings(id) {
     });
     document.querySelectorAll('.avatar-opt').forEach((b) => {
       setHandler(b, 'click', () => {
-        av = b.dataset.av;
+        av = /** @type {string} */ (b.dataset.av);
         playSound('tap');
         render();
       });
@@ -362,7 +379,7 @@ function openPlayerSettings(id) {
     });
     document.querySelectorAll('.gender-opt').forEach((b) => {
       setHandler(b, 'click', () => {
-        gen = b.dataset.gender;
+        gen = /** @type {string} */ (b.dataset.gender);
         playSound('tap');
         render();
       });
@@ -378,7 +395,9 @@ function openPlayerSettings(id) {
         render();
       },
     );
-    ['pe-bday-d', 'pe-bday-m'].forEach((k) => document.getElementById(k).addEventListener('change', readBday));
+    ['pe-bday-d', 'pe-bday-m'].forEach((k) =>
+      /** @type {HTMLElement} */ (document.getElementById(k)).addEventListener('change', readBday),
+    );
     bindForm({
       initial,
       current: snap,
@@ -421,6 +440,7 @@ const GAME_PICKER_SIZE = 2;
 //    compteur personnel `state.gameCounts`) : les jeux jamais faits
 //    remontent toujours en premier, pour forcer la variété (égalités
 //    départagées au hasard).
+/** @param {number} n */
 function pickPickerChoices(n) {
   const allowed = new Set(gameTypesForAge(currentPlayerAge()));
   const pool = GAME_LIST.filter((g) => allowed.has(g.key));
@@ -441,11 +461,13 @@ function pickPickerChoices(n) {
         : choices[0] === ownGame
           ? -1
           : 0;
-    if (slot >= 0) choices[slot] = pool.find((g) => g.key === practice);
+    // practice vient des clés de pool : il s'y trouve
+    if (slot >= 0) choices[slot] = /** @type {(typeof pool)[number]} */ (pool.find((g) => g.key === practice));
   }
   return choices;
 }
 
+/** @param {string} [charId] */
 function openGamePicker(charId) {
   if (charId) setCurrentChar(charId);
   const who = party.active ? partyCurrent() || currentProfile() : currentProfile();
@@ -470,7 +492,7 @@ function openGamePicker(charId) {
   document.querySelectorAll('[data-game]').forEach((b) => {
     setHandler(b, 'click', () => {
       playSound('tap');
-      const k = b.dataset.game;
+      const k = /** @type {string} */ (b.dataset.game); // le sélecteur garantit data-game
       if (k === 'random') startMinigame();
       else playGame(k);
     });

@@ -5,3 +5,4 @@ export { emit, on } from './events.js';
 export { APP_LABEL, APP_PATCH, APP_VERSION, versionBuild } from './version.js';
 export { cleanName } from './text.js';
 export { reportUnreadable, storageErrors, storageRemove, storageWrite } from './storage.js';
+/** @typedef {import('./storage.js').StorageError} StorageError */

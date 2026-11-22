@@ -50,9 +50,9 @@ switchView('carte');
 
 /* Écran titre : sert aussi à débloquer le son et la voix (geste utilisateur requis sur iOS) */
 function showSplash() {
-  const sp = document.getElementById('splash');
+  const sp = /** @type {HTMLElement} */ (document.getElementById('splash'));
   const season = currentSeason();
-  document.getElementById('splash-hello').textContent = season
+  /** @type {HTMLElement} */ (document.getElementById('splash-hello')).textContent = season
     ? `${FETES[season].greet(state.name)} ${FETES[season].emoji}`
     : state.name
       ? `Coucou ${state.name} ${avatarText(state.avatar)} !`
@@ -73,7 +73,7 @@ function showSplash() {
 }
 function hideSplash() {
   requestPersistentStorage();
-  const sp = document.getElementById('splash');
+  const sp = /** @type {HTMLElement} */ (document.getElementById('splash'));
   playSound('win');
   const note = document.getElementById('splash-note');
   if (note) note.hidden = true;
@@ -105,51 +105,52 @@ function hideSplash() {
   }
 }
 // navigation secondaire
-document.getElementById('btn-back-map').addEventListener('click', () => {
+/** @type {HTMLElement} */ (document.getElementById('btn-back-map')).addEventListener('click', () => {
   playSound('tap');
   switchView('carte');
 });
 document.querySelectorAll('[data-sactab]').forEach((b) => {
   b.addEventListener('click', () => {
     playSound('tap');
-    setSacTab(b.dataset.sactab);
+    setSacTab(/** @type {string} */ (b.dataset.sactab));
   });
 });
-document.getElementById('quests-btn').addEventListener('click', () => {
+/** @type {HTMLElement} */ (document.getElementById('quests-btn')).addEventListener('click', () => {
   playSound('tap');
   openQuestsModal();
 });
-document.getElementById('story-btn').addEventListener('click', () => {
+/** @type {HTMLElement} */ (document.getElementById('story-btn')).addEventListener('click', () => {
   playSound('tap');
   openStoryJournal();
 });
 
 // fermeture facile des fenêtres : croix, poignée, clic à côté, touche Échap
-document.getElementById('modal-close').addEventListener('click', () => {
+/** @type {HTMLElement} */ (document.getElementById('modal-close')).addEventListener('click', () => {
   playSound('tap');
   requestCloseModal();
 });
-document.getElementById('modal-handle').addEventListener('click', () => {
+/** @type {HTMLElement} */ (document.getElementById('modal-handle')).addEventListener('click', () => {
   playSound('tap');
   requestCloseModal();
 });
-document.getElementById('overlay').addEventListener('click', (e) => {
+/** @type {HTMLElement} */ (document.getElementById('overlay')).addEventListener('click', (e) => {
   if (/** @type {HTMLElement} */ (e.target).id === 'overlay') requestCloseModal();
 });
 document.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape' && document.getElementById('overlay').classList.contains('show')) requestCloseModal();
+  if (e.key === 'Escape' && /** @type {HTMLElement} */ (document.getElementById('overlay')).classList.contains('show'))
+    requestCloseModal();
 });
 
-document.getElementById('btn-splash-play').addEventListener('click', hideSplash);
+/** @type {HTMLElement} */ (document.getElementById('btn-splash-play')).addEventListener('click', hideSplash);
 showSplash();
 // la pastille en haut ouvre le panneau des joueurs (profils, solo / chacun son tour)
 // toucher l'avatar et le prénom ouvre les Réglages (pas de 5e bouton dans la barre du bas)
-document.getElementById('avatar-pill').addEventListener('click', () => {
+/** @type {HTMLElement} */ (document.getElementById('avatar-pill')).addEventListener('click', () => {
   playSound('tap');
   switchView('reglages');
 });
-document.getElementById('btn-start').addEventListener('click', closeWelcome);
-document.getElementById('name-input').addEventListener('keydown', (e) => {
+/** @type {HTMLElement} */ (document.getElementById('btn-start')).addEventListener('click', closeWelcome);
+/** @type {HTMLElement} */ (document.getElementById('name-input')).addEventListener('keydown', (e) => {
   if (e.key === 'Enter') closeWelcome();
 });
 // le jeu vient de redémarrer après « Chercher une mise à jour » (espace parents, v66) :
@@ -157,7 +158,7 @@ document.getElementById('name-input').addEventListener('keydown', (e) => {
 const updateNote = announceUpdate();
 if (updateNote) {
   const note = document.getElementById('splash-note');
-  if (note && document.getElementById('splash').classList.contains('show')) {
+  if (note && /** @type {HTMLElement} */ (document.getElementById('splash')).classList.contains('show')) {
     note.textContent = updateNote;
     note.hidden = false;
   } else setTimeout(() => showToast(updateNote), 1200);

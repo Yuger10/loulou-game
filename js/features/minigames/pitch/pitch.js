@@ -32,11 +32,23 @@ import { bindQuit, gameHeader } from '../../screen/index.js';
 
 // gamme pentatonique, du do grave au do aigu (notes MIDI) : jamais de fausse note
 const PITCH_NOTES = [60, 62, 64, 67, 69, 72, 74, 76, 79, 81, 84];
-const pitchHz = (m) => 440 * Math.pow(2, (m - 69) / 12);
+/**
+ * Une question ; `notes` : notes MIDI, dans l'ordre affiché.
+ * @typedef {{ cfg: ReturnType<typeof pitchRound> } & (
+ *   | { ask: 'melody', up: boolean, notes: number[] }
+ *   | { ask: 'high' | 'low' | 'order', notes: number[], sorted: number[] })} PitchRound
+ */
+/** @typedef {{ ask: PitchRound['ask'], replay: () => void }} PitchQuestion */
+
+const pitchHz = (/** @type {number} */ m) => 440 * Math.pow(2, (m - 69) / 12);
 const BELL_COLORS = ['#FFD95A', '#5CC6CC', '#FF8FB8', '#BFA3EC', '#6ED38C', '#FFAE5C'];
 // la taille de la cloche suit la note : grande et grave, petite et aiguë
-const bellSize = (m) => Math.round(36 + ((84 - m) / 24) * 48);
+const bellSize = (/** @type {number} */ m) => Math.round(36 + ((84 - m) / 24) * 48);
 
+/**
+ * @param {number} dd le palier de difficulté
+ * @returns {PitchRound}
+ */
 function pitchBuildRound(dd, rng = random) {
   const cfg = pitchRound(dd);
   if (rng() < (cfg.melody || 0)) {
@@ -58,6 +70,7 @@ function pitchBuildRound(dd, rng = random) {
   return { cfg, ask: 'order', notes: PITCH_NOTES.slice(0, cfg.n).reverse(), sorted: PITCH_NOTES.slice(0, cfg.n) };
 }
 
+/** @param {number} m la note (MIDI) */
 function bellSVG(m) {
   const c = BELL_COLORS[PITCH_NOTES.indexOf(m) % BELL_COLORS.length];
   return `<svg class="bell-svg" viewBox="0 0 60 66" style="width:${bellSize(m)}px" aria-hidden="true">
@@ -77,6 +90,7 @@ function renderPitch() {
   pitchLast = `${r.ask}${r.notes.join()}`;
   const token = ++pitchToken;
   const alive = () => token === pitchToken && !!document.getElementById('pitch-stage');
+  /** @type {Record<PitchRound['ask'], string[]>} */
   const asks = {
     high: [
       'Quelle cloche sonne le plus aigu ?',
@@ -118,6 +132,7 @@ function renderPitch() {
   startTimerIfNeeded('pitch');
 
   // écouter : les cloches (ou les notes de la mélodie) de gauche à droite
+  /** @param {boolean} slow */
   function listen(slow) {
     const step = slow ? 900 : 620;
     r.notes.forEach((m, i) =>
@@ -138,6 +153,7 @@ function renderPitch() {
   setHandler(document.getElementById('pitch-listen'), 'click', () => listen(false));
   if (r.ask === 'melody') listen(false);
 
+  /** @type {PitchQuestion} */
   const q = {
     ask: r.ask,
     replay() {
@@ -177,7 +193,7 @@ function renderPitch() {
       pos++;
       if (r.ask === 'order') {
         b.classList.add('done');
-        b.querySelector('.bell-n').textContent = String(pos);
+        /** @type {HTMLElement} */ (b.querySelector('.bell-n')).textContent = String(pos);
         const p = document.getElementById('pitch-progress');
         if (p) p.innerHTML = progressDots(pos, target.length);
       }
@@ -192,6 +208,7 @@ function renderPitch() {
 
 // Indices (v52) : 1. grave et aigu (le gros ours, le petit oiseau ; la grande
 // et la petite cloche) ; 2. écouter encore, deux par deux. Jamais la cloche.
+/** @param {PitchQuestion} q */
 function pitchHints(q) {
   if (q.ask === 'melody')
     return [

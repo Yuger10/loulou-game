@@ -23,6 +23,7 @@ import {
 } from '../../minigame-engine/index.js';
 import { bindQuit, gameHeader } from '../../screen/index.js';
 
+/** @param {number} dd le palier de difficulté */
 function makeCalcProblem(dd) {
   const { max, terms, allowMinus, allowMulti } = calcBounds(dd);
   const useMulti = allowMulti && random() < 0.3;
@@ -110,9 +111,14 @@ function renderCalc() {
 // Indices (v52) : 1. la méthode (partir du premier nombre, avancer ou
 // reculer ; compter de 2 en 2…) ; 2. la première étape seulement, jamais le
 // résultat (ex. « 23 + 10 = 33, il reste 4 à ajouter »).
+/**
+ * @param {number} a le nombre de départ
+ * @param {string} sign '+' ou '−'
+ * @param {number} n
+ */
 function calcStepHint(a, sign, n) {
   const plus = sign === '+',
-    step = (x) => (plus ? a + x : a - x);
+    step = (/** @type {number} */ x) => (plus ? a + x : a - x);
   const tens = Math.floor(n / 10) * 10,
     units = n % 10;
   const verb = plus ? 'ajoute' : 'enlève';
@@ -126,6 +132,7 @@ function calcStepHint(a, sign, n) {
   if (n >= 3) return `Pars de ${a} et ${plus ? 'avance' : 'recule'} de ${n} : ${step(1)}, ${step(2)}… Continue !`;
   return `Pars de ${a} et ${plus ? 'avance' : 'recule'} de ${n} pas.`;
 }
+/** @param {ReturnType<typeof makeCalcProblem>} q */
 function calcHints(q) {
   if (q.mult) {
     const { a, b } = q.mult;

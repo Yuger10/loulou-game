@@ -97,6 +97,7 @@ function renderDiff() {
 
 // Indices (v52) : 1. regarder chaque image, une par une (ou dans quel sens
 // elle regarde) ; 2. l'intrus est dans la moitié qui brille (au moins 3 images).
+/** @param {{ mirror: boolean, total: number, oddPos: number }} q */
 function diffHints(q) {
   const half = Math.ceil(q.total / 2);
   const inFirst = q.oddPos < half;

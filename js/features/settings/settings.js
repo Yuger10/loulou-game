@@ -17,7 +17,15 @@ import { openParentGate, openParents } from '../parents/index.js';
 import { openNewPlayer, openPlayers, openPlayerSettings } from '../players/index.js';
 import { renderProfile, renderSoundBtn } from '../profile/index.js';
 
+/** @typedef {'sound' | 'voice' | 'music'} SoundKey un interrupteur du son (un champ de l'état) */
+
 // un interrupteur lisible au doigt : libellé, état, et désactivé si besoin
+/**
+ * @param {SoundKey} key
+ * @param {string} label
+ * @param {boolean} on
+ * @param {boolean} [disabled]
+ */
 function rgSwitch(key, label, on, disabled) {
   return `<button type="button" class="rg-switch" role="switch" data-sound="${key}" aria-checked="${on}"${disabled ? ' aria-disabled="true"' : ''}>
     <span class="rg-switch-label">${label}</span><span class="rg-switch-track" aria-hidden="true"><span class="rg-switch-knob"></span></span>
@@ -84,6 +92,7 @@ function renderSettings() {
   bindSettings(el);
 }
 
+/** @param {SoundKey} key */
 function setSound(key) {
   if (key === 'sound') {
     state.sound = !state.sound;
@@ -103,6 +112,7 @@ function setSound(key) {
   showToast(soundModeLabel());
 }
 
+/** @param {HTMLElement} el */
 function bindSettings(el) {
   el.querySelectorAll('[data-sound]').forEach((b) =>
     setHandler(b, 'click', () => {
@@ -110,24 +120,24 @@ function bindSettings(el) {
         speak("Allume d'abord les bruitages.");
         return;
       }
-      setSound(b.dataset.sound);
+      setSound(/** @type {SoundKey} */ (b.dataset.sound));
       renderSettings();
     }),
   );
-  const vol = el.querySelector('#rg-volume');
+  const vol = /** @type {HTMLInputElement} */ (el.querySelector('#rg-volume'));
   setHandler(vol, 'input', () => {
     state.soundVolume = Number(vol.value);
     save();
-    el.querySelector('#rg-volume-v').textContent = vol.value + ' %';
+    /** @type {HTMLElement} */ (el.querySelector('#rg-volume-v')).textContent = vol.value + ' %';
     playSound('pop'); // une note pour entendre le nouveau volume
   });
   setHandler(el.querySelector('#rg-edit'), 'click', () => {
     playSound('tap');
-    openPlayerSettings(profiles.current);
+    openPlayerSettings(/** @type {string} */ (profiles.current)); // un joueur courant existe toujours (loadProfiles)
   });
   setHandler(el.querySelector('#rg-switch'), 'click', () => {
     playSound('tap');
-    const list = el.querySelector('#rg-players');
+    const list = /** @type {HTMLElement} */ (el.querySelector('#rg-players'));
     try {
       list.scrollIntoView({ block: 'center', behavior: 'smooth' });
     } catch {
@@ -138,7 +148,7 @@ function bindSettings(el) {
   el.querySelectorAll('[data-player]').forEach((b) =>
     setHandler(b, 'click', () => {
       if (b.dataset.player === profiles.current) return;
-      switchProfile(b.dataset.player);
+      switchProfile(/** @type {string} */ (b.dataset.player));
       renderProfile();
       renderSettings();
     }),

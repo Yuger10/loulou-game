@@ -8,11 +8,13 @@
 import { on, storageErrors } from '../../shared/lib/index.js';
 import { showToast, speak } from '../../shared/ui/index.js';
 
+/** @typedef {import('../../shared/lib/index.js').StorageError} StorageError */
+
 const CHILD_MESSAGE = "La partie n'a pas pu être enregistrée. Demande à un adulte.";
 let warned = false;
 
 const UNREADABLE_MESSAGE = "L'ancienne partie n'a pas pu être relue. Demande à un adulte.";
-on('storage:error', (err) => {
+on('storage:error', (/** @type {StorageError} */ err) => {
   if (warned) return;
   warned = true;
   const msg = err && err.op === 'lecture' ? UNREADABLE_MESSAGE : CHILD_MESSAGE;
@@ -23,6 +25,7 @@ on('storage:error', (err) => {
 on('parents:cards', () => {
   const errs = storageErrors();
   if (!errs.length) return '';
+  /** @param {string} iso */
   const time = (iso) => new Date(iso).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
   return `<section class="bk-card ps-storage"><h3>⚠️ Enregistrement</h3>
     <p>Un problème d'enregistrement est arrivé ${errs.length} fois pendant cette session : ce qui a été gagné peut être perdu.</p>

@@ -57,10 +57,12 @@ import { newlyUnlockedLookItems, WARDROBE } from '../wardrobe/index.js';
 let lives = Infinity,
   maxLives = Infinity;
 
+/** @param {string} kind le type de mini-jeu */
 function triesFor(kind) {
   return livesFor(kind, gameDiff());
 }
 
+/** @param {string} kind le type de mini-jeu */
 function setupLives(kind) {
   maxLives = triesFor(kind);
   lives = maxLives;
@@ -93,6 +95,7 @@ function renderLives() {
 // la fenêtre se ferme ou change avant d'avoir eu lieu — sinon une
 // question en retard pourrait réapparaître par-dessus un autre jeu déjà
 // lancé (même principe que `clearActiveTimer` pour le minuteur).
+/** @type {ReturnType<typeof setTimeout> | null} */
 let pendingRetryTimeout = null;
 function clearPendingRetry() {
   if (pendingRetryTimeout) {
@@ -100,6 +103,7 @@ function clearPendingRetry() {
     pendingRetryTimeout = null;
   }
 }
+/** @param {() => void} fn */
 function scheduleRetry(fn) {
   clearPendingRetry();
   pendingRetryTimeout = setTimeout(() => {
@@ -109,12 +113,25 @@ function scheduleRetry(fn) {
   }, 900);
 }
 
-function loseLife(el, opts = {}) {
+/**
+ * @typedef {object} LoseLifeOptions
+ * @property {boolean} [disable] false : le bouton fautif reste cliquable
+ * @property {() => void} [onRetry] une nouvelle question plutôt que la même (anti-devinette)
+ */
+/**
+ * Une erreur : le bouton fautif (ou rien, temps écoulé) et les options du jeu.
+ * @param {EventTarget | null} target le bouton fautif (souvent `e.currentTarget` d'un handler)
+ * @param {LoseLifeOptions} [opts]
+ * @returns {boolean} true si la mission est ratée (plus d'essais)
+ */
+function loseLife(target, opts = {}) {
+  const el = /** @type {HTMLElement | null} */ (target);
   buddyReact('oops', 1300);
   hintNudge(true); // le bouton 💡 se propose (js/features/hints/hints.js)
   // multijoueur : la règle reste « une erreur = on passe la main »
   if (party.active) {
-    wrongFeedback(el);
+    // el vaut null pour une erreur sans bouton (temps écoulé, mémoire) : wrongFeedback attend un élément
+    wrongFeedback(/** @type {HTMLElement} */ (el));
     return false;
   }
   noteAnswerError(); // pour l'espace parents
@@ -180,6 +197,7 @@ function loseLife(el, opts = {}) {
      (voir les appels à `clearActiveTimer()` dans openModal/closeModal,
      js/shared/ui.js) : aucun minuteur ne continue à tourner « dans le vide ».
    ===================================================================== */
+/** @type {ReturnType<typeof setInterval> | null} */
 let activeTimerInterval = null;
 
 function clearActiveTimer() {
@@ -193,6 +211,7 @@ function clearActiveTimer() {
 // décompte. `kind` = type de jeu (sert à lire la durée adaptée dans
 // TIMER_SECONDS) ; appelé par chaque jeu « une question = une réponse »
 // juste après son propre openModal(...).
+/** @param {string} kind le type de mini-jeu */
 function startTimerIfNeeded(kind) {
   clearActiveTimer();
   // en multijoueur (chacun son tour / course), on garde l'expérience
@@ -233,6 +252,7 @@ function startTimerIfNeeded(kind) {
 // bouton fautif puisque l'enfant n'a rien cliqué de faux. Si la mission
 // n'est pas ratée, on redonne simplement un nouveau temps complet sur
 // la même question — aucune pénalité au-delà de l'essai perdu.
+/** @param {string} kind le type de mini-jeu */
 function onResponseTimeout(kind) {
   showToast('⏰ Temps écoulé ! On réessaie 👀');
   const failed = loseLife(null);
@@ -240,6 +260,7 @@ function onResponseTimeout(kind) {
 }
 
 // petit flash coloré sur tout le deck
+/** @param {'ok' | 'ko'} kind */
 function flashModal(kind) {
   const m = document.getElementById('modal');
   if (!m) return;
@@ -250,7 +271,9 @@ function flashModal(kind) {
 }
 
 // bonne étape : pastille verte + petite étoile qui monte
-function stepOk(el) {
+/** @param {EventTarget | null} [target] l'élément réussi (souvent `e.currentTarget` d'un handler) */
+function stepOk(target) {
+  const el = /** @type {HTMLElement | null | undefined} */ (target);
   playSound('good');
   if (hintPolicy.onGood) hintPolicy.onGood();
   buddyReact('wow', 900);
@@ -267,36 +290,53 @@ function stepOk(el) {
 /* Pour les tests automatiques : chaque mini-jeu note ce qu'il faut toucher
    pour réussir — des sélecteurs CSS, dans l'ordre (test/games.test.js joue
    ainsi chaque jeu jusqu'à la victoire). Rien n'est montré à l'enfant. */
+/** @type {string[] | null} */
 // oxlint-disable-next-line no-unused-vars -- lu par les tests, par son nom (ev('gameSolution'))
 let gameSolution = null;
+/** @param {string[]} steps les sélecteurs à toucher, dans l'ordre */
 function setSolution(steps) {
   gameSolution = steps;
 }
+/**
+ * @param {string} base sélecteur de l'élément
+ * @param {string} attr nom de l'attribut, sans `data-`
+ * @param {string | number} v valeur attendue
+ */
 function solSel(base, attr, v) {
   return `${base}[data-${attr}=${JSON.stringify(String(v))}]`;
 }
 // Phrase à retenir (vraie et vérifiée) qu'un jeu peut faire afficher et dire
 // sur l'écran de victoire, ex. le quiz des planètes. Utilisée une seule fois.
+/** @type {string | null} */
 let missionFact = null;
+/** @param {string} f */
 function setMissionFact(f) {
   missionFact = f;
 }
 // Registre des mini-jeux : chaque jeu s'inscrit avec registerGame(clé, rendu)
 // (js/features/minigames/<jeu>/). Le moteur ne connaît pas la liste des jeux.
 // Résolu au moment de l'appel : tous les jeux sont inscrits avant le premier.
+/** @typedef {() => void} GameRenderer affiche le mini-jeu (sa première question) */
+/** @type {Record<string, GameRenderer>} */
 const GAME_RENDERERS = {};
+/**
+ * @param {string} key le type de mini-jeu
+ * @param {GameRenderer} render
+ */
 function registerGame(key, render) {
   GAME_RENDERERS[key] = render;
 }
 // les indices (js/features/hints) ne comptent que ceux des mini-jeux inscrits
 setHintCountable((key) => !!GAME_RENDERERS[key]);
+/** @param {string} key */
 function gameRenderer(key) {
   return GAME_RENDERERS[key] || GAME_RENDERERS.memory;
 }
 
 // lancer un jeu à la demande d'une feature : l'île (« Surprise »), Zap (défi)
 on('game:start', () => startMinigame());
-on('game:bonus', (key) => startBonusChallenge(key));
+on('game:bonus', (/** @type {string} */ key) => startBonusChallenge(key));
+/** @param {string} key */
 function startBonusChallenge(key) {
   beginBonusChallenge(key);
   playGame(key);
@@ -304,6 +344,7 @@ function startBonusChallenge(key) {
 
 // Lance un type de jeu précis, en comptant le coup pour ce joueur
 // (utilisé pour proposer en priorité les jeux les moins essayés).
+/** @param {string} key le type de mini-jeu */
 function playGame(key) {
   // pause douce réglée par les parents : plus de nouveau défi aujourd'hui
   // (l'espace parents répond true et montre l'écran de pause)
@@ -327,6 +368,10 @@ function startMinigame() {
   playGame(type);
 }
 
+/**
+ * @param {number} done étapes réussies
+ * @param {number} total
+ */
 function progressDots(done, total) {
   return `<div class="game-progress">${Array.from({ length: total }, (_, i) => `<i class="${i < done ? 'on' : ''}"></i>`).join('')}</div>`;
 }
@@ -339,7 +384,7 @@ function onMissionFail() {
   missionFact = null;
   forgetSpokenHint();
   lives = 0;
-  const c = CHARACTERS[currentChar] || CHARACTERS.sirene;
+  const c = (currentChar && CHARACTERS[currentChar]) || CHARACTERS.sirene;
   const who = hello();
   playSound('wrong');
   vibrate([120, 60, 120]);
@@ -356,7 +401,7 @@ function onMissionFail() {
       <h2>Raté !</h2>
       <div class="speech">${msg}</div>
       <div class="speech" style="background:#FFF1EC;">
-        ${charFace(currentChar)} <strong>${c.name}</strong> t'attend pour un nouvel essai !
+        ${charFace(currentChar || '')} <strong>${c.name}</strong> t'attend pour un nouvel essai !
       </div>
     </div>
     <button class="btn-primary" id="btn-retry">🔁 Réessayer</button>
@@ -395,7 +440,7 @@ function onMissionWin() {
   partyScore();
   // course : on avance d'une case ; si la ligne d'arrivée est franchie, l'écran de victoire s'affiche
   if (partyAfterWin()) return;
-  const c = CHARACTERS[currentChar] || CHARACTERS.sirene;
+  const c = (currentChar && CHARACTERS[currentChar]) || CHARACTERS.sirene;
   markHelped(currentChar); // ❤️ sur l'île
   const prevLevel = level();
   state.missions += 1;
@@ -406,7 +451,7 @@ function onMissionWin() {
   const bonus = random() < 0.2 ? pickRandom(availableItems()) : null;
   // défi bonus de Zap réussi : la récompense est doublée
   const boost = inBonusChallenge() ? 2 : 1;
-  if (boost > 1) bonusChallenge.won = true;
+  if (boost > 1 && bonusChallenge) bonusChallenge.won = true;
   addItem(key, boost);
   markSeen(key);
   if (bonus) {

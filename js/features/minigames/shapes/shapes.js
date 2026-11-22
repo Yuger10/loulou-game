@@ -25,12 +25,20 @@ import {
 } from '../../minigame-engine/index.js';
 import { bindQuit, gameHeader } from '../../screen/index.js';
 
+/** @type {Record<string, string[]>} */
 const SQ_SIZES = {
   grand: ['grand', 'grands', 'grande', 'grandes'],
   petit: ['petit', 'petits', 'petite', 'petites'],
 };
 
 // régulier : n sommets sur un cercle de rayon r, premier sommet à l'angle a0 (degrés)
+/**
+ * @param {number} n
+ * @param {number} r
+ * @param {number} cx
+ * @param {number} cy
+ * @param {number} a0
+ */
 function sqPolygon(n, r, cx, cy, a0) {
   return Array.from({ length: n }, (_, i) => {
     const a = ((a0 + (i * 360) / n) * Math.PI) / 180;
@@ -46,6 +54,19 @@ function sqStar() {
 }
 
 // g : genre du nom (accords) ; sides / vertices : pour les paliers 5-6 ; face : centre du visage
+/**
+ * @typedef {{
+ *   g: 'm' | 'f',
+ *   s: string,
+ *   p: string,
+ *   sides: number,
+ *   vertices: number,
+ *   face: number[],
+ *   el: string,
+ * }} SqShape
+ */
+/** @typedef {{ shape: string, color: string, size: string }} SqItem un squishy du plateau */
+/** @type {Record<string, SqShape>} */
 const SQ_SHAPES = {
   rond: {
     g: 'm',
@@ -141,9 +162,14 @@ const SQ_SHAPES = {
 
 /* Un squishy : la forme, un reflet, un petit visage. `plain` = silhouette
    sans visage (pour la consigne). */
+/**
+ * @param {string} shape
+ * @param {string | null} color null : silhouette grise
+ * @param {boolean} [plain]
+ */
 function squishySVG(shape, color, plain) {
   const sh = SQ_SHAPES[shape],
-    c = SQ_COLORS[color] || { fill: '#E4ECF0', edge: '#7C8E99' };
+    c = (color && SQ_COLORS[color]) || { fill: '#E4ECF0', edge: '#7C8E99' };
   const [fx, fy] = sh.face;
   const face = plain
     ? ''
@@ -161,12 +187,26 @@ function squishySVG(shape, color, plain) {
 
 /* Une manche : la consigne (dite et écrite), son image, et les squishies
    du plateau (dont exactement `targets` répondent à la consigne). */
+/** @param {number} dd le palier de difficulté */
 function shapesBuildRound(dd) {
-  const cfg = shapesRound(dd);
+  // le palier est borné de 1 à 6 : jamais la case vide (null) du tableau
+  const cfg = /** @type {NonNullable<ReturnType<typeof shapesRound>>} */ (shapesRound(dd));
+  /**
+   * @template T
+   * @param {T[]} a
+   * @returns {T}
+   */
   const pick = (a) => a[Math.floor(random() * a.length)];
+  /**
+   * @param {string[]} forms
+   * @param {string} g
+   * @param {boolean} plural
+   */
   const agree = (forms, g, plural) => forms[(g === 'f' ? 2 : 0) + (plural ? 1 : 0)];
-  const tous = (g) => (g === 'f' ? 'toutes' : 'tous');
-  let test, say, icon;
+  const tous = (/** @type {string} */ g) => (g === 'f' ? 'toutes' : 'tous');
+  /** @type {(it: SqItem) => boolean} */
+  let test;
+  let say, icon;
   if (cfg.criterion === 'color') {
     const col = pick(cfg.colors);
     test = (it) => it.color === col;
@@ -193,7 +233,7 @@ function shapesBuildRound(dd) {
     say = `Touche ${tous(S.g)} les ${agree(SQ_SIZES[size], S.g, true)} ${S.p}`;
     icon = `<span class="sq-hint-shape ${size === 'petit' ? 'is-small' : ''}">${squishySVG(sh, null, true)}</span>`;
   } else {
-    const key = cfg.criterion; // 'sides' ou 'vertices'
+    const key = /** @type {'sides' | 'vertices'} */ (cfg.criterion); // 'sides' ou 'vertices'
     const counts = [...new Set(cfg.shapes.map((s) => SQ_SHAPES[s][key]).filter((n) => n >= 3))];
     const n = pick(counts);
     test = (it) => SQ_SHAPES[it.shape][key] === n;
@@ -258,9 +298,11 @@ function renderShapes() {
     </div>
   `);
   bindQuit();
-  setSolution(r.items.map((it, i) => (it.ok ? solSel('.sq-item', 'i', i) : null)).filter(Boolean));
+  setSolution(
+    /** @type {string[]} */ (r.items.map((it, i) => (it.ok ? solSel('.sq-item', 'i', i) : null)).filter(Boolean)),
+  );
   setHintQuestion('shapes', q, { choices: '.sq-item' });
-  document.querySelectorAll('.sq-item').forEach((/** @type {HTMLButtonElement} */ btn) => {
+  /** @type {NodeListOf<HTMLButtonElement>} */ (document.querySelectorAll('.sq-item')).forEach((btn) => {
     setHandler(btn, 'click', () => {
       const it = r.items[Number(btn.dataset.i)];
       btn.classList.remove('squish');
@@ -287,6 +329,7 @@ function renderShapes() {
 // Indices (v52) : 1. sur quoi porter son regard (la couleur, la forme, les
 // deux, compter les côtés…) ; 2. combien il en reste, et la partie du plateau
 // où se cache l'un d'eux (au moins 3 squishies qui brillent).
+/** @type {Record<string, string>} */
 const SHAPES_TIPS = {
   color: 'Regarde seulement la couleur, pas la forme.',
   shape: 'Regarde seulement la forme, pas la couleur.',
@@ -295,10 +338,12 @@ const SHAPES_TIPS = {
   sides: 'Compte les côtés de chaque forme avec ton doigt : les bords tout droits.',
   vertices: 'Compte les sommets de chaque forme : les pointes, là où deux côtés se touchent.',
 };
+/** @param {{ r: ReturnType<typeof shapesBuildRound>, found: number }} q */
 function shapesHints(q) {
   const items = [.../** @type {NodeListOf<HTMLButtonElement>} */ (document.querySelectorAll('.sq-board .sq-item'))];
   const left = items.filter((b) => !b.disabled && q.r.items[Number(b.dataset.i)].ok);
   const n = Math.max(0, q.r.targets - q.found);
+  /** @type {HTMLButtonElement[]} */
   let group = [];
   if (left.length) {
     const at = items.indexOf(pickRandom(left));
@@ -312,7 +357,7 @@ function shapesHints(q) {
     },
     {
       say: `Il en reste ${n} à trouver. Regarde bien ceux qui brillent : il y en a un !`,
-      fx: { glow: group.map((b) => solSel('.sq-item', 'i', b.dataset.i)).join(', ') },
+      fx: { glow: group.map((b) => solSel('.sq-item', 'i', /** @type {string} */ (b.dataset.i))).join(', ') },
     },
   ];
 }

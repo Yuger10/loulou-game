@@ -30,6 +30,7 @@ import {
 import { bindQuit, gameHeader } from '../../screen/index.js';
 
 // les étapes : un dessin (SVG simple, ou un emoji bien connu) et un nom à dire
+/** @type {Record<string, { name: string, svg?: string, emoji?: string }>} */
 const LC_STAGES = {
   graine: {
     name: 'la graine',
@@ -62,20 +63,45 @@ const LC_STAGES = {
   poussin: { name: 'le poussin', emoji: '🐥' },
   poule: { name: 'la poule', emoji: '🐔' },
 };
+/** @type {Record<string, { name: string, stages: string[] }>} */
 const LC_CYCLES = {
   plante: { name: 'la plante', stages: ['graine', 'pousse', 'bouton', 'fleur', 'fruit'] },
   papillon: { name: 'le papillon', stages: ['oeuf', 'chenille', 'chrysalide', 'papillon'] },
   poule: { name: 'la poule', stages: ['oeuf', 'poussinoeuf', 'poussin', 'poule'] },
 };
-const stageArt = (s) =>
+/**
+ * Une question ; les champs absents d'une sorte sont `undefined` (lcKey les lit tous).
+ * @typedef {{ cfg: ReturnType<typeof lifecycleRound>, cycle: string, order: string[] } & (
+ *   | { mode: 'order' | 'mixed', cards: string[], options?: undefined, gap?: undefined, at?: undefined }
+ *   | { mode: 'missing', gap: number, options: string[], cards?: undefined, at?: undefined }
+ *   | { mode: 'next', at: number, options: string[], cards?: undefined, gap?: undefined })} LifecycleRound
+ */
+/**
+ * Ce que les indices savent de la question.
+ * @typedef {{ mode: 'missing', prev: string, next: string }
+ *   | { mode: 'next', cur: string }
+ *   | { mode: 'order' | 'mixed', cycle: string, first: string }} LifecycleQuestion
+ */
+
+const stageArt = (/** @type {string} */ s) =>
   LC_STAGES[s].svg
     ? `<svg class="lc-svg" viewBox="0 0 60 60" aria-hidden="true">${LC_STAGES[s].svg}</svg>`
     : `<span class="lc-emoji" aria-hidden="true">${LC_STAGES[s].emoji}</span>`;
+/** @type {(s: string, extra?: string) => string} */
 const stageCard = (s, extra) =>
   `<button class="lc-card" data-s="${s}" aria-label="${LC_STAGES[s].name}"${extra || ''}>${stageArt(s)}<span class="lc-name">${LC_STAGES[s].name.replace(/^(la |le |l')/, '')}</span></button>`;
 
+/**
+ * @param {number} dd le palier de difficulté
+ * @returns {LifecycleRound}
+ */
 function lifecycleBuildRound(dd, rng = random) {
   const cfg = lifecycleRound(dd);
+  /**
+   * @template T
+   * @param {T[]} arr
+   * @returns {T}
+   */
   const pick = (arr) => arr[Math.floor(rng() * arr.length)];
   const mode = pick(cfg.modes);
   if (mode === 'mixed') {
@@ -113,7 +139,8 @@ function lifecycleBuildRound(dd, rng = random) {
   }
   return { cfg, mode: 'order', cycle, order: stages, cards: shuffle(stages.slice()) };
 }
-const lcKey = (r) => `${r.mode}-${r.cycle}-${(r.cards || r.options || []).join()}-${r.gap}-${r.at}`;
+const lcKey = (/** @type {LifecycleRound} */ r) =>
+  `${r.mode}-${r.cycle}-${(r.cards || r.options || []).join()}-${r.gap}-${r.at}`;
 
 let lifecycleLast = '';
 function renderLifecycle() {
@@ -133,19 +160,22 @@ function renderLifecycle() {
   if (r.mode === 'missing' || r.mode === 'next') {
     const missing = r.mode === 'missing';
     const title = missing ? 'Quelle étape manque ?' : 'Que se passe-t-il ensuite ?';
-    const say = missing
-      ? `Voici la vie de ${cyc.name}, mais une étape manque. Laquelle ?`
-      : `Voici ${LC_STAGES[r.order[r.at]].name}. Que se passe-t-il ensuite ?`;
-    const strip = missing
-      ? r.order
-          .map((s, i) =>
-            i === r.gap
-              ? '<span class="lc-slot" aria-label="une étape manque">?</span>'
-              : `<span class="lc-step" data-s="${s}">${stageArt(s)}</span>`,
-          )
-          .join(arrow)
-      : `<span class="lc-step" data-s="${r.order[r.at]}">${stageArt(r.order[r.at])}</span>${arrow}<span class="lc-slot">?</span>`;
-    const good = missing ? r.order[r.gap] : r.order[r.at + 1];
+    // r.mode plutôt que `missing` là où r.gap ou r.at sont lus : TypeScript en déduit leur type
+    const say =
+      r.mode === 'missing'
+        ? `Voici la vie de ${cyc.name}, mais une étape manque. Laquelle ?`
+        : `Voici ${LC_STAGES[r.order[r.at]].name}. Que se passe-t-il ensuite ?`;
+    const strip =
+      r.mode === 'missing'
+        ? r.order
+            .map((s, i) =>
+              i === r.gap
+                ? '<span class="lc-slot" aria-label="une étape manque">?</span>'
+                : `<span class="lc-step" data-s="${s}">${stageArt(s)}</span>`,
+            )
+            .join(arrow)
+        : `<span class="lc-step" data-s="${r.order[r.at]}">${stageArt(r.order[r.at])}</span>${arrow}<span class="lc-slot">?</span>`;
+    const good = r.mode === 'missing' ? r.order[r.gap] : r.order[r.at + 1];
     openModal(`
       ${gameHeader('🌱 De la graine à la fleur', title, say)}
       ${livesBar()}
@@ -155,9 +185,11 @@ function renderLifecycle() {
     bindQuit();
     startTimerIfNeeded('lifecycle');
     setSolution([solSel('.lc-card', 's', good)]);
-    const q = missing
-      ? { mode: 'missing', prev: r.order[r.gap - 1], next: r.order[r.gap + 1] }
-      : { mode: 'next', cur: r.order[r.at] };
+    /** @type {LifecycleQuestion} */
+    const q =
+      r.mode === 'missing'
+        ? { mode: 'missing', prev: r.order[r.gap - 1], next: r.order[r.gap + 1] }
+        : { mode: 'next', cur: r.order[r.at] };
     setHintQuestion('lifecycle', q, { choices: '.lc-card' });
     document.querySelectorAll('.lc-card').forEach((b) =>
       setHandler(b, 'click', () => {
@@ -202,7 +234,8 @@ function renderLifecycle() {
       stepOk(b);
       b.classList.add('done');
       const slot = document.querySelectorAll('#lc-strip .lc-slot')[0];
-      if (slot) slot.outerHTML = `<span class="lc-step found" data-s="${b.dataset.s}">${stageArt(b.dataset.s)}</span>`;
+      if (slot)
+        slot.outerHTML = `<span class="lc-step found" data-s="${b.dataset.s}">${stageArt(/** @type {string} */ (b.dataset.s))}</span>`;
       pos++;
       const p = document.getElementById('lc-progress');
       if (p) p.innerHTML = progressDots(pos, r.order.length);
@@ -213,6 +246,7 @@ function renderLifecycle() {
 
 // Indices (v52) : 1. par où commencer, ce qui grandit ; 2. le voisinage de
 // l'étape à trouver. Jamais l'étape elle-même.
+/** @param {LifecycleQuestion} q */
 function lifecycleHints(q) {
   if (q.mode === 'missing')
     return [

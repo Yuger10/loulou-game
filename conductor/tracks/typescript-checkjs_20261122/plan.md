@@ -10,9 +10,9 @@ Spec : [spec.md](./spec.md). Une PR par couche. Mesure de départ du mode strict
 ## Phase 2 : mode strict, couche par couche
 - [x] Task: `js/shared/` en strict : 161 erreurs → 0, en JSDoc seulement (aucun `any`), `tsconfig.strict.json` (include de la couche), `bun run typecheck` lance les deux modes ; 2 annotations dans `features` rendues nécessaires par les types de `shared` (`share.js`, `music.js`)
 - [x] Task: `js/entities/` en strict (dont la sauvegarde) : 299 → 0, types de la partie (`GameState`…) ; a révélé la perte de `decoPos` au chargement
-- [~] Task: `js/features/` en strict, par lots de bas en haut (ordre du manifeste) : lot 1 fait (8 slices, 402 → 0) ; lots 2 (`story` → `map`), 3 (moteur et mini-jeux), 4 (`market` → `settings`)
-- [ ] Task: `js/app/` en strict (après `features` : `app` les importe toutes), puis `strict: true` dans `tsconfig.json`
+- [x] Task: `js/features/` en strict, par lots de bas en haut (ordre du manifeste) : lot 1 (8 slices, 402 → 0, 66.9), lot 2 (`story` → `map`, 304 → 0, 66.10), lots 3a et 3b (moteur et mini-jeux, 517 → 0) et 4 (`market` → `settings`, 142 → 0), faits en parallèle par trois agents puis réunis (66.11)
+- [x] Task: `js/app/` en strict (19 → 0), puis `strict: true` dans `tsconfig.json` ; `tsconfig.strict.json` supprimé, `bun run typecheck` = `tsc -p .` (0,1 s)
 
 ## Phase 3 : livraison
-- [ ] Task: `AGENTS.md` (types obligatoires), `tech-stack.md`, `docs/factory/SPEED.md`
+- [x] Task: `AGENTS.md` (types obligatoires), `tech-stack.md`, `docs/factory/SPEED.md`, ADR 0003
 - [ ] Task: Conductor - User Manual Verification 'Livraison' (Protocol in workflow.md)
