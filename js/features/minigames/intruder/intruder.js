@@ -1,7 +1,7 @@
 /* Jeu 3 : trouver l'intrus (discrimination visuelle — voir
    js/entities/difficulty/difficulty.js § diffTotal / diffMirrorChance) */
 import { diffMirrorChance, diffTotal } from '../../../entities/difficulty/index.js';
-import { pickRandom } from '../../../shared/lib/index.js';
+import { pickRandom, random } from '../../../shared/lib/index.js';
 import { openModal } from '../../../shared/ui/index.js';
 import { gameDiff } from '../../adaptive/index.js';
 import { registerHints, setHintQuestion } from '../../hints/index.js';
@@ -48,7 +48,7 @@ function renderDiff() {
         ];
 
   // au-delà du palier 1 : chance croissante que ce soit la variante miroir
-  const mirrorMode = Math.random() < diffMirrorChance(dd);
+  const mirrorMode = random() < diffMirrorChance(dd);
   let base, odd, items, hint;
   if (mirrorMode) {
     base = pickRandom(MIRRORABLE);
@@ -60,7 +60,7 @@ function renderDiff() {
     hint = "Touche celui qui n'est pas comme les autres";
     items = Array(total - 1).fill(base);
   }
-  const oddPos = Math.floor(Math.random() * total);
+  const oddPos = Math.floor(random() * total);
   if (!mirrorMode) items.splice(oddPos, 0, odd);
 
   openModal(`

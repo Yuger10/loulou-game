@@ -8,7 +8,7 @@
    parlé ; à la 2ᵉ erreur, nouvelle série de boîtes (relance annulable, celle
    du moteur). On touche, on ne fait pas glisser. */
 import { nestingRound } from '../../../entities/difficulty/index.js';
-import { shuffle } from '../../../shared/lib/index.js';
+import { random, shuffle } from '../../../shared/lib/index.js';
 import { openModal, speak } from '../../../shared/ui/index.js';
 import { gameDiff } from '../../adaptive/index.js';
 import { registerHints, setHintQuestion } from '../../hints/index.js';
@@ -50,7 +50,7 @@ function nestBoxSVG(color) {
 /* Une série : les tailles (du plus petit au plus grand), l'ordre demandé et
    les boîtes mélangées sur le plateau. */
 function nestingBuildRound(dd, rng) {
-  rng = rng || Math.random;
+  rng = rng || random;
   const cfg = nestingRound(dd);
   const reverse = rng() < cfg.reverse;
   const colors = shuffle(NEST_COLORS.slice()).slice(0, cfg.n);

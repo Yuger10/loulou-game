@@ -12,7 +12,7 @@ import {
   volumeContainerCount,
   volumeUsesCapacityCompare,
 } from '../../../entities/difficulty/index.js';
-import { pickRandom, shuffle } from '../../../shared/lib/index.js';
+import { pickRandom, random, shuffle } from '../../../shared/lib/index.js';
 import { openModal } from '../../../shared/ui/index.js';
 import { gameDiff } from '../../adaptive/index.js';
 import { registerHints, setHintQuestion } from '../../hints/index.js';
@@ -83,14 +83,14 @@ function renderVolume() {
 
 // paliers 1-2 : quel récipient contient le plus (ou le moins) ?
 function renderCapacityCompare(dd) {
-  const pairIdx = Math.floor(Math.random() * CONTAINER_PAIRS.length);
+  const pairIdx = Math.floor(random() * CONTAINER_PAIRS.length);
   const [small, big] = CONTAINER_PAIRS[pairIdx];
   const nContainers = volumeContainerCount(dd);
   // palier 2 : un 3e contenant de taille intermédiaire, pour forcer un
   // vrai classement (petit/moyen/grand) plutôt qu'un simple duel
   const containers = nContainers >= 3 ? [small, CONTAINER_MID[pairIdx], big] : [small, big];
 
-  const askMore = Math.random() > volumeAskLessChance(dd);
+  const askMore = random() > volumeAskLessChance(dd);
   const answer = askMore ? big : small;
   const options = shuffle(containers);
   const question = askMore ? 'Touche celui qui contient LE PLUS' : 'Touche celui qui contient LE MOINS';

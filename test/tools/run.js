@@ -6,6 +6,9 @@
      (voir test/tools/shard.js).
    - Filtre : `bun run test jardin licornes` ne lance que ces suites.
    - Affiche une ligne par suite, puis la sortie complète des suites en échec.
+   - Hasard rejouable : une graine est tirée à chaque passage (ou TEST_SEED=n)
+     et transmise aux suites ; en cas d'échec, la commande pour rejouer
+     exactement le même passage est affichée.
    Le code de sortie est 1 si une suite échoue ou si aucune ne correspond. */
 const { spawn } = require('child_process');
 const fs = require('fs');
@@ -15,6 +18,10 @@ const path = require('path');
 const dir = path.join(__dirname, '..');
 const filters = process.argv.slice(2);
 const jobsMax = Number(process.env.TEST_JOBS) || os.availableParallelism();
+const seed =
+  Number.isInteger(Number(process.env.TEST_SEED)) && process.env.TEST_SEED !== ''
+    ? Number(process.env.TEST_SEED)
+    : Math.floor(Math.random() * 100000);
 
 const files = fs
   .readdirSync(dir)
@@ -48,7 +55,7 @@ function start() {
     running++;
     let out = '';
     const p = spawn(process.execPath, [path.join(dir, j.f)], {
-      env: { ...process.env, TEST_SHARD: `${j.k}/${j.n}` },
+      env: { ...process.env, TEST_SHARD: `${j.k}/${j.n}`, TEST_SEED: String(seed) },
     });
     p.stdout.on('data', (c) => (out += c));
     p.stderr.on('data', (c) => (out += c));
@@ -67,8 +74,9 @@ function done() {
   const s = ((Date.now() - t0) / 1000).toFixed(1);
   console.log(
     failures.length
-      ? `\n❌ ${failures.length} suite(s) en échec sur ${jobs.length} (${s} s)`
-      : `\n✅ ${jobs.length} suites vertes en ${s} s (${jobsMax} en parallèle)`,
+      ? `\n❌ ${failures.length} suite(s) en échec sur ${jobs.length} (${s} s, graine ${seed})\n` +
+          `   rejouer le même passage : TEST_SEED=${seed} bun run test ${[...new Set(failures.map(({ j }) => j.f.replace('.test.js', '')))].join(' ')}`
+      : `\n✅ ${jobs.length} suites vertes en ${s} s (${jobsMax} en parallèle, graine ${seed})`,
   );
   process.exit(failures.length ? 1 : 0);
 }

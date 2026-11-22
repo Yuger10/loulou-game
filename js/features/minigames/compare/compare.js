@@ -7,7 +7,7 @@
    peut rester trivial même au palier maximal (comparer 3 et 97 ne
    demande aucune réflexion sur l'ordre de grandeur réel). */
 import { compareCloseChance, compareEqualChance, compareRange } from '../../../entities/difficulty/index.js';
-import { shuffle } from '../../../shared/lib/index.js';
+import { random, shuffle } from '../../../shared/lib/index.js';
 import { openModal } from '../../../shared/ui/index.js';
 import { gameDiff } from '../../adaptive/index.js';
 import { registerHints, setHintQuestion } from '../../hints/index.js';
@@ -30,16 +30,16 @@ function renderCompare() {
   setupLives('compare');
   const dd = gameDiff();
   const max = compareRange(dd);
-  let a = 1 + Math.floor(Math.random() * max);
+  let a = 1 + Math.floor(random() * max);
   let b;
-  if (Math.random() < compareCloseChance(dd)) {
+  if (random() < compareCloseChance(dd)) {
     // nombre voisin de a (écart de 1 à 5), toujours dans les bornes
-    const delta = 1 + Math.floor(Math.random() * 5);
-    b = Math.random() < 0.5 ? Math.max(1, a - delta) : Math.min(max, a + delta);
+    const delta = 1 + Math.floor(random() * 5);
+    b = random() < 0.5 ? Math.max(1, a - delta) : Math.min(max, a + delta);
   } else {
-    b = 1 + Math.floor(Math.random() * max);
+    b = 1 + Math.floor(random() * max);
   }
-  if (Math.random() < compareEqualChance(dd)) b = a; // teste aussi l'égalité
+  if (random() < compareEqualChance(dd)) b = a; // teste aussi l'égalité
   const answer = a < b ? '<' : a > b ? '>' : '=';
   const options = shuffle(['<', '>', '=']);
 

@@ -9,7 +9,7 @@
    Le gâteau est rond (parts en secteurs) ou rectangulaire (une tablette,
    parts en bandes). Anti-devinette : une erreur relance un AUTRE gâteau. */
 import { shareRound } from '../../../entities/difficulty/index.js';
-import { shuffle } from '../../../shared/lib/index.js';
+import { random, shuffle } from '../../../shared/lib/index.js';
 import { openModal } from '../../../shared/ui/index.js';
 import { gameDiff } from '../../adaptive/index.js';
 import { registerHints, setHintQuestion } from '../../hints/index.js';
@@ -115,7 +115,7 @@ function shareCakeSVG(shape, parts, shaded) {
 }
 
 function shareBuildRound(dd, rng) {
-  rng = rng || Math.random;
+  rng = rng || random;
   const cfg = shareRound(dd);
   const pick = (arr) => arr[Math.floor(rng() * arr.length)];
   const shape = rng() < 0.5 ? 'rond' : 'carre';

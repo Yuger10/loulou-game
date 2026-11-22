@@ -30,7 +30,7 @@ import { save, state } from '../../entities/game-state/index.js';
 import { addItem, ITEMS } from '../../entities/item/index.js';
 import { ac, currentPlayerAge, onProfileRefresh, party, race } from '../../entities/player/index.js';
 import { availableItems, currentWorld, WORLD_ORDER, WORLDS, worldUnlocked } from '../../entities/world/index.js';
-import { emit, on, pickRandom } from '../../shared/lib/index.js';
+import { emit, on, pickRandom, random } from '../../shared/lib/index.js';
 import { bindSpeakButtons, onModalOpen, playSound, speak, switchView } from '../../shared/ui/index.js';
 import { bonusChallenge, needsPractice, todayKey } from '../adaptive/index.js';
 import { markSeen } from '../bag/index.js';
@@ -342,7 +342,7 @@ function teamWinExtras() {
     teamDay().tom = true;
     let text;
     const items = availableItems().filter((k) => (ITEMS[k].world || 'lagon') === currentWorld);
-    if (items.length && Math.random() < 0.5) {
+    if (items.length && random() < 0.5) {
       const k = pickRandom(items);
       addItem(k, 1);
       markSeen(k);

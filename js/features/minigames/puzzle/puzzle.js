@@ -4,7 +4,7 @@
    corrige un bug où la variante « start » était comptée deux fois dans
    la liste de tirage (probabilité doublée par erreur). */
 import { puzzleCount, puzzleStartMax, puzzleVariants } from '../../../entities/difficulty/index.js';
-import { pickRandom, shuffle } from '../../../shared/lib/index.js';
+import { pickRandom, random, shuffle } from '../../../shared/lib/index.js';
 import { openModal } from '../../../shared/ui/index.js';
 import { gameDiff } from '../../adaptive/index.js';
 import { hintOrderStep, registerHints, setHintQuestion } from '../../hints/index.js';
@@ -35,11 +35,11 @@ function renderPuzzle() {
     hint = `Touche les nombres dans l'ordre : 1 → ${count}`;
   } else if (variant === 'start') {
     const maxStart = puzzleStartMax(dd);
-    const start = 2 + Math.floor(Math.random() * (maxStart - 1));
+    const start = 2 + Math.floor(random() * (maxStart - 1));
     seq = Array.from({ length: count }, (_, i) => start + i);
     hint = `Touche les nombres dans l'ordre : ${seq[0]} → ${seq[seq.length - 1]}`;
   } else if (variant === 'desc') {
-    const start = count + 1 + Math.floor(Math.random() * 6);
+    const start = count + 1 + Math.floor(random() * 6);
     seq = Array.from({ length: count }, (_, i) => start - i);
     hint = `À l'envers ! Du plus grand au plus petit : ${seq[0]} → ${seq[seq.length - 1]}`;
   } else {

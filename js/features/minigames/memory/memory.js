@@ -2,7 +2,7 @@
    js/entities/difficulty/difficulty.js § « MINUTEUR » pour la justification). */
 import { memoryPairs } from '../../../entities/difficulty/index.js';
 import { ALL_ITEMS } from '../../../entities/item/index.js';
-import { pickRandom, shuffle } from '../../../shared/lib/index.js';
+import { pickRandom, random, shuffle } from '../../../shared/lib/index.js';
 import { openModal, playSound } from '../../../shared/ui/index.js';
 import { gameDiff } from '../../adaptive/index.js';
 import { registerHints, setHintQuestion } from '../../hints/index.js';
@@ -112,7 +112,7 @@ function memoryHints(q) {
   if (first) {
     const twin = q.cards.find((c) => c !== first && c.emoji === first.emoji);
     const i = hidden.indexOf(twin);
-    const start = Math.max(0, Math.min(i - Math.floor(Math.random() * 3), hidden.length - 3));
+    const start = Math.max(0, Math.min(i - Math.floor(random() * 3), hidden.length - 3));
     const group = hidden.slice(start, start + 3);
     two = {
       say: 'Sa jumelle se cache parmi les cartes qui brillent !',

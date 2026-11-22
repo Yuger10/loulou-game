@@ -74,13 +74,25 @@ function bundle() {
   return bundleCache;
 }
 
+// TEST_SEED défini : Math.random de la page devient un générateur à graine
+// (mulberry32), posé avant le jeu. Le jeu tire tout par random(), qui appelle
+// Math.random : un passage des tests se rejoue alors à l'identique.
+function seedScript() {
+  const seed = Number(process.env.TEST_SEED);
+  if (!Number.isInteger(seed)) return '';
+  return `<script>(() => { let a = ${seed} >>> 0; Math.random = function () {
+    a = (a + 0x6d2b79f5) | 0; let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; })();</script>\n`;
+}
+
 function buildHtml() {
   let html = read('index.html');
   const css = manifestCss()
     .map((f) => '<style>' + read(f) + '</style>')
     .join('\n');
   // un « </script> » dans le code fermerait la balise trop tôt
-  const js = '<script>"use strict";\n' + bundle().code.replace(/<\/script/gi, '<\\/script') + '</script>';
+  const js =
+    seedScript() + '<script>"use strict";\n' + bundle().code.replace(/<\/script/gi, '<\\/script') + '</script>';
   let cssDone = false,
     jsDone = false;
   html = html.replace(LOCAL_CSS, () => {

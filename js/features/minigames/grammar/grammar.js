@@ -12,7 +12,7 @@ import {
   determinantsPluralChance,
 } from '../../../entities/difficulty/index.js';
 import { WORDS_CP } from '../../../entities/words/index.js';
-import { pickRandom, shuffle } from '../../../shared/lib/index.js';
+import { pickRandom, random, shuffle } from '../../../shared/lib/index.js';
 import { openModal } from '../../../shared/ui/index.js';
 import { gameDiff } from '../../adaptive/index.js';
 import { registerHints, setHintQuestion } from '../../hints/index.js';
@@ -39,10 +39,10 @@ const DET_FAMILIES = {
 function renderDeterminants() {
   setupLives('determinants');
   const dd = gameDiff();
-  const family = Math.random() < 0.5 ? 'defini' : 'indefini';
+  const family = random() < 0.5 ? 'defini' : 'indefini';
   const dets = DET_FAMILIES[family];
   const noun = pickRandom(WORDS_CP);
-  const plural = Math.random() < determinantsPluralChance(dd);
+  const plural = random() < determinantsPluralChance(dd);
   const shown = plural ? noun.plural : noun.word;
   const answer = dets[plural ? 'p' : noun.gender];
 

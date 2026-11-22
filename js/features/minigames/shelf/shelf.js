@@ -10,7 +10,7 @@
    Anti-devinette : une mauvaise case relance une AUTRE étagère. */
 import { shelfRound } from '../../../entities/difficulty/index.js';
 import { SQ_COLORS } from '../../../entities/squishy/index.js';
-import { shuffle } from '../../../shared/lib/index.js';
+import { random, shuffle } from '../../../shared/lib/index.js';
 import { openModal, speak } from '../../../shared/ui/index.js';
 import { gameDiff } from '../../adaptive/index.js';
 import { registerHints, setHintQuestion } from '../../hints/index.js';
@@ -75,7 +75,7 @@ function shelfToySVG(shape, color, plain) {
 const GIFT = '<span class="shelf-gift" aria-hidden="true">🎁</span>';
 
 function shelfBuildRound(dd, rng) {
-  rng = rng || Math.random;
+  rng = rng || random;
   const cfg = shelfRound(dd);
   const rows = shuffle(SHELF_COLORS.slice()).slice(0, cfg.size);
   const cols = shuffle(Object.keys(SHELF_SHAPES)).slice(0, cfg.size);

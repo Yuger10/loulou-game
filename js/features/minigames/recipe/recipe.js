@@ -10,7 +10,7 @@
               50 en 50, seuls quelques traits portent un nombre)
    Anti-devinette : une erreur relance une AUTRE recette. */
 import { recipeRound } from '../../../entities/difficulty/index.js';
-import { shuffle } from '../../../shared/lib/index.js';
+import { random, shuffle } from '../../../shared/lib/index.js';
 import { openModal } from '../../../shared/ui/index.js';
 import { gameDiff } from '../../adaptive/index.js';
 import { registerHints, setHintQuestion } from '../../hints/index.js';
@@ -47,7 +47,7 @@ const unitSay = (v, unit) =>
 const unitShort = (v, unit) => (unit === 'verres' ? `${v} verre${v > 1 ? 's' : ''}` : `${v} ${unit}`);
 
 function recipeBuildRound(dd, rng) {
-  rng = rng || Math.random;
+  rng = rng || random;
   const cfg = recipeRound(dd);
   const pick = (arr) => arr[Math.floor(rng() * arr.length)];
   const ask = pick(cfg.asks);

@@ -7,7 +7,7 @@
    Dessin en SVG, sans image : chaque squishy tient dans un carré 100×100. */
 import { shapesRound } from '../../../entities/difficulty/index.js';
 import { SQ_COLORS } from '../../../entities/squishy/index.js';
-import { pickRandom, shuffle } from '../../../shared/lib/index.js';
+import { pickRandom, random, shuffle } from '../../../shared/lib/index.js';
 import { openModal } from '../../../shared/ui/index.js';
 import { gameDiff } from '../../adaptive/index.js';
 import { registerHints, setHintQuestion } from '../../hints/index.js';
@@ -163,7 +163,7 @@ function squishySVG(shape, color, plain) {
    du plateau (dont exactement `targets` répondent à la consigne). */
 function shapesBuildRound(dd) {
   const cfg = shapesRound(dd);
-  const pick = (a) => a[Math.floor(Math.random() * a.length)];
+  const pick = (a) => a[Math.floor(random() * a.length)];
   const agree = (forms, g, plural) => forms[(g === 'f' ? 2 : 0) + (plural ? 1 : 0)];
   const tous = (g) => (g === 'f' ? 'toutes' : 'tous');
   let test, say, icon;

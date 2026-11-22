@@ -1,4 +1,4 @@
-import { pickRandom } from '../lib/index.js';
+import { pickRandom, random } from '../lib/index.js';
 import { playSound } from './sound.js';
 
 function showToast(msg) {
@@ -42,11 +42,11 @@ function confetti() {
   for (let i = 0; i < 50; i++) {
     const p = document.createElement('div');
     p.className = 'confetti-piece';
-    p.style.left = Math.random() * 100 + '%';
+    p.style.left = random() * 100 + '%';
     p.style.background = pickRandom(colors);
-    p.style.animationDuration = 1.4 + Math.random() * 1.2 + 's';
-    p.style.animationDelay = Math.random() * 0.4 + 's';
-    p.style.transform = `rotate(${Math.random() * 360}deg)`;
+    p.style.animationDuration = 1.4 + random() * 1.2 + 's';
+    p.style.animationDelay = random() * 0.4 + 's';
+    p.style.transform = `rotate(${random() * 360}deg)`;
     box.appendChild(p);
     setTimeout(() => p.remove(), 3200);
   }

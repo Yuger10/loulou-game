@@ -12,6 +12,7 @@
    tout se met à jour d'un coup. */
 import { onModalChange, playSound } from '../../shared/ui/index.js';
 import { addCoinsInFlight, renderCoins } from '../wallet/index.js';
+import { random } from '../../shared/lib/index.js';
 
 const GAIN_FLIGHT_MS = 720;
 
@@ -64,7 +65,7 @@ function flyEmoji(emoji, from, to, opts) {
   const dx = to.x - from.x,
     dy = to.y - from.y;
   const lift = opts.lift != null ? opts.lift : Math.min(160, 60 + Math.abs(dx) * 0.25);
-  const jx = opts.jitter ? (Math.random() - 0.5) * opts.jitter : 0;
+  const jx = opts.jitter ? (random() - 0.5) * opts.jitter : 0;
   const anim = el.animate(
     [
       { transform: 'translate(-50%,-50%) translate(0,0) scale(1)', opacity: 1 },

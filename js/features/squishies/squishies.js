@@ -25,6 +25,7 @@ import {
 import { worldUnlocked } from '../../entities/world/index.js';
 import { todayKey } from '../adaptive/index.js';
 import { addCoins } from '../wallet/index.js';
+import { random } from '../../shared/lib/index.js';
 
 const SQ_BOX_PRICE = 15; // pièces, à la boutique du marché
 const SQ_BUY_MAX = 3; // achats par jour et par joueur
@@ -154,7 +155,7 @@ function squishyRollRarity(rng) {
   return 'brille';
 }
 function openSquishyBox(rng) {
-  rng = rng || Math.random;
+  rng = rng || random;
   const sq = sqState();
   if (!sq.boxes.length) return null;
   let series = sq.boxes.shift();
@@ -315,7 +316,7 @@ function sortSay(criteria) {
    encore. `avoid` : la consigne précédente (après 2 erreurs, on en change).
    Renvoie { criteria, say, level, items:[8 ids], targets } */
 function makeSortingTask(owned, age, rng, opts) {
-  rng = rng || Math.random;
+  rng = rng || random;
   opts = opts || {};
   const models = Object.keys(owned || {}).filter((id) => SQUISHIES[id] && owned[id] > 0);
   if (models.length < SQ_SORT_MIN_MODELS) return null;

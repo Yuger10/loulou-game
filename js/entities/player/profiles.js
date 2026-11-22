@@ -1,5 +1,5 @@
 /* ---------- Joueurs : profils et leur stockage ---------- */
-import { cleanName } from '../../shared/lib/index.js';
+import { cleanName, random } from '../../shared/lib/index.js';
 import { playSound, showToast, speak } from '../../shared/ui/index.js';
 import { avatarText, defaultCompanionFor } from '../companion/index.js';
 import { freshState, load, replaceState, save, setSaveSlot, state } from '../game-state/index.js';
@@ -22,7 +22,7 @@ function currentSaveKey() {
 }
 
 function newId() {
-  return 'p' + Date.now().toString(36) + Math.floor(Math.random() * 1000);
+  return 'p' + Date.now().toString(36) + Math.floor(random() * 1000);
 }
 
 function saveProfiles() {

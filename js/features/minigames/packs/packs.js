@@ -7,7 +7,7 @@
    5 » s'écrit sous l'image.
    Anti-devinette : une mauvaise réponse relance une AUTRE collection. */
 import { packsRound } from '../../../entities/difficulty/index.js';
-import { shuffle } from '../../../shared/lib/index.js';
+import { random, shuffle } from '../../../shared/lib/index.js';
 import { openModal } from '../../../shared/ui/index.js';
 import { gameDiff } from '../../adaptive/index.js';
 import { registerHints, setHintQuestion } from '../../hints/index.js';
@@ -31,7 +31,7 @@ const PACK_WORDS = { 2: 'deux', 5: 'cinq', 10: 'dix' };
 
 // Une collection : `n` paquets de `size` jouets, et peut-être un jouet tout seul
 function packsBuildRound(dd, rng) {
-  rng = rng || Math.random;
+  rng = rng || random;
   const cfg = packsRound(dd);
   const size = cfg.sizes[Math.floor(rng() * cfg.sizes.length)];
   const n = cfg.min + Math.floor(rng() * (cfg.max - cfg.min + 1));

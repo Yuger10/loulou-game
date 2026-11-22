@@ -15,7 +15,16 @@
     // style seulement, sans risque de bug
     "unicorn/consistent-function-scoping": "off",
     // propriétés posées exprès sur des éléments du DOM (el._last, el._t)
-    "no-underscore-dangle": "off"
+    "no-underscore-dangle": "off",
+    // anti-pattern 2 : tout tirage passe par random() de js/shared/lib (graine fixable en test)
+    "no-restricted-properties": [
+      "error",
+      { "object": "Math", "property": "random", "message": "Utiliser random() (ou pickRandom, shuffle) de js/shared/lib : une seule source de hasard, rejouable en test." }
+    ]
   },
+  "overrides": [
+    // la seule source de hasard, et les tests qui forcent un tirage en remplaçant Math.random
+    { "files": ["js/shared/lib/random.js", "test/**"], "rules": { "no-restricted-properties": "off" } }
+  ],
   "ignorePatterns": ["node_modules/**"]
 }

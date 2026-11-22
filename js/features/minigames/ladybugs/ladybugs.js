@@ -10,7 +10,7 @@
      half      le total est donné : combien par aile ?
    Anti-devinette : une erreur relance une AUTRE coccinelle. */
 import { ladybugsRound } from '../../../entities/difficulty/index.js';
-import { shuffle } from '../../../shared/lib/index.js';
+import { random, shuffle } from '../../../shared/lib/index.js';
 import { openModal } from '../../../shared/ui/index.js';
 import { gameDiff } from '../../adaptive/index.js';
 import { registerHints, setHintQuestion } from '../../hints/index.js';
@@ -45,7 +45,7 @@ const LB_SPOTS = [
 ];
 
 function ladybugsBuildRound(dd, rng) {
-  rng = rng || Math.random;
+  rng = rng || random;
   const cfg = ladybugsRound(dd);
   const mode = cfg.modes[Math.floor(rng() * cfg.modes.length)];
   const n = cfg.min + Math.floor(rng() * (cfg.max - cfg.min + 1));

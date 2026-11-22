@@ -4,7 +4,7 @@
    soustraction, et à partir du palier 5, multiplication (tables de 2, 5,
    10) et expressions à 3 termes. Bornes dans js/entities/difficulty/difficulty.js (calcBounds). */
 import { CALC_MULT_TABLES, calcBounds } from '../../../entities/difficulty/index.js';
-import { pickRandom, shuffle } from '../../../shared/lib/index.js';
+import { pickRandom, random, shuffle } from '../../../shared/lib/index.js';
 import { openModal } from '../../../shared/ui/index.js';
 import { gameDiff } from '../../adaptive/index.js';
 import { registerHints, setHintQuestion } from '../../hints/index.js';
@@ -25,32 +25,32 @@ import { bindQuit, gameHeader } from '../../screen/index.js';
 
 function makeCalcProblem(dd) {
   const { max, terms, allowMinus, allowMulti } = calcBounds(dd);
-  const useMulti = allowMulti && Math.random() < 0.3;
+  const useMulti = allowMulti && random() < 0.3;
 
   if (useMulti) {
     const table = pickRandom(CALC_MULT_TABLES);
-    const factor = 1 + Math.floor(Math.random() * 10);
+    const factor = 1 + Math.floor(random() * 10);
     const a = table,
       b = factor;
     return { text: `${a} × ${b}`, result: a * b, mult: { a, b } };
   }
 
   // construit une expression à 2 ou 3 termes, toujours positive à chaque étape
-  const nTerms = terms >= 3 && Math.random() < 0.5 ? 3 : 2;
-  let value = 1 + Math.floor(Math.random() * Math.floor(max / 2));
+  const nTerms = terms >= 3 && random() < 0.5 ? 3 : 2;
+  let value = 1 + Math.floor(random() * Math.floor(max / 2));
   let text = `${value}`;
   const first = value,
     ops = []; // pour les indices (v52)
   for (let i = 1; i < nTerms; i++) {
-    const isMinus = allowMinus && Math.random() < 0.5 && value > 1;
+    const isMinus = allowMinus && random() < 0.5 && value > 1;
     if (isMinus) {
-      const b = 1 + Math.floor(Math.random() * Math.min(value - 1, max));
+      const b = 1 + Math.floor(random() * Math.min(value - 1, max));
       value -= b;
       text += ` − ${b}`;
       ops.push({ sign: '−', n: b });
     } else {
       const room = Math.max(1, max - value);
-      const b = 1 + Math.floor(Math.random() * Math.min(room, max));
+      const b = 1 + Math.floor(random() * Math.min(room, max));
       value += b;
       text += ` + ${b}`;
       ops.push({ sign: '+', n: b });
@@ -67,7 +67,7 @@ function renderCalc() {
 
   let options = new Set([result]);
   while (options.size < 3) {
-    const delta = Math.floor(Math.random() * 7) - 3;
+    const delta = Math.floor(random() * 7) - 3;
     options.add(Math.max(0, result + (delta === 0 ? 1 : delta)));
   }
   options = shuffle([...options]);

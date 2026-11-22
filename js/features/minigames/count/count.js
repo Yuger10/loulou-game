@@ -1,6 +1,6 @@
 /* Jeu 2 : compter (dénombrement — voir js/entities/difficulty/difficulty.js § countRange) */
 import { countRange } from '../../../entities/difficulty/index.js';
-import { pickRandom, shuffle } from '../../../shared/lib/index.js';
+import { pickRandom, random, shuffle } from '../../../shared/lib/index.js';
 import { emojiWord, openModal } from '../../../shared/ui/index.js';
 import { gameDiff } from '../../adaptive/index.js';
 import { registerHints, setHintQuestion } from '../../hints/index.js';
@@ -24,10 +24,10 @@ function renderCount() {
   const emoji = pickRandom(['⭐', '🐚', '🌸', '🦪', '🐠', '🦋']);
   const dd = gameDiff();
   const { min, max } = countRange(dd);
-  const n = min + Math.floor(Math.random() * (max - min + 1));
+  const n = min + Math.floor(random() * (max - min + 1));
   let options = new Set([n]);
   while (options.size < 3) {
-    options.add(Math.max(1, n + (Math.floor(Math.random() * 5) - 2)));
+    options.add(Math.max(1, n + (Math.floor(random() * 5) - 2)));
   }
   options = shuffle([...options]);
 

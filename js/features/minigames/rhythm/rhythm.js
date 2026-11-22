@@ -8,7 +8,7 @@
    On peut toucher les boutons pendant l'écoute : rien n'est bloqué.
    Anti-devinette : une erreur relance un AUTRE rythme. */
 import { rhythmRound } from '../../../entities/difficulty/index.js';
-import { shuffle } from '../../../shared/lib/index.js';
+import { random, shuffle } from '../../../shared/lib/index.js';
 import { openModal, playNote } from '../../../shared/ui/index.js';
 import { gameDiff } from '../../adaptive/index.js';
 import { registerHints, setHintQuestion } from '../../hints/index.js';
@@ -35,7 +35,7 @@ const RHYTHM_BEATS = {
 const RHYTHM_UNIT = 420; // ms par temps
 
 function rhythmBuildRound(dd, rng) {
-  rng = rng || Math.random;
+  rng = rng || random;
   const cfg = rhythmRound(dd);
   for (let t = 0; t < 300; t++) {
     // palier 1 : des coups tous pareils (tous courts, ou tous longs)

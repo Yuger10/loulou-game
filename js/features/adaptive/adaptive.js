@@ -25,7 +25,7 @@
      (« Tu lis de mieux en mieux ! »). */
 import { state } from '../../entities/game-state/index.js';
 import { party } from '../../entities/player/index.js';
-import { pickRandom } from '../../shared/lib/index.js';
+import { pickRandom, random } from '../../shared/lib/index.js';
 import { lastGame } from './session.js';
 import { SKILL_ERR_TOLERANCE, skillStatus } from './skills.js';
 
@@ -127,7 +127,7 @@ function needsPractice(key) {
 // Un jeu à travailler parmi ceux proposés (jamais celui qu'on vient de
 // jouer), une fois sur deux ; sinon null.
 function pickPracticeGame(keys) {
-  if (inGroupPlay() || Math.random() >= PRACTICE_CHANCE) return null;
+  if (inGroupPlay() || random() >= PRACTICE_CHANCE) return null;
   const last = lastGame;
   const list = keys.filter((k) => k !== last && needsPractice(k));
   return list.length ? pickRandom(list) : null;
