@@ -130,7 +130,11 @@ const SLICES = [
   {
     id: 'squishies',
     layer: 'features',
-    files: ['js/features/squishies/squishies.js', 'js/features/squishies/squishy-room.js'],
+    files: [
+      'js/features/squishies/squishies.js',
+      'js/features/squishies/squishy-art.js',
+      'js/features/squishies/squishy-room.js',
+    ],
     css: ['js/features/squishies/squishies.css'],
   },
   {

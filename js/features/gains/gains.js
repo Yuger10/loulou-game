@@ -16,9 +16,26 @@ import { random } from '../../shared/lib/index.js';
 
 const GAIN_FLIGHT_MS = 720;
 
+/** @typedef {{ x: number, y: number }} Point un point de l'écran, en pixels */
+/**
+ * Le vol d'un emoji : `onLand` à l'arrivée, `lift` = hauteur de l'arc,
+ * `jitter` = écart au hasard du départ, `endScale` = taille à l'arrivée.
+ * @typedef {{
+ *   onLand?: () => void,
+ *   coin?: boolean,
+ *   size?: string,
+ *   lift?: number,
+ *   jitter?: number,
+ *   endScale?: number,
+ *   duration?: number,
+ *   delay?: number,
+ * }} FlyOptions
+ */
+
 function gainsReduced() {
   try {
-    return !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
+    // typeof plutôt qu'un test de vérité : TypeScript croit matchMedia toujours là (vieux navigateurs)
+    return !!(typeof window.matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches);
   } catch {
     return false;
   }
@@ -26,6 +43,10 @@ function gainsReduced() {
 function gainsCanAnimate() {
   return !gainsReduced() && typeof document.body.animate === 'function';
 }
+/**
+ * @param {Element | null | undefined} el
+ * @returns {Point}
+ */
 function gainCenter(el) {
   if (!el || !el.getBoundingClientRect) return { x: innerWidth / 2, y: innerHeight / 2 };
   const r = el.getBoundingClientRect();
@@ -48,6 +69,12 @@ function gainLayer() {
 }
 
 // un emoji qui vole en arc de `from` à `to` ; onLand est appelé à l'arrivée
+/**
+ * @param {string} emoji
+ * @param {Point} from
+ * @param {Point} to
+ * @param {FlyOptions} [opts]
+ */
 function flyEmoji(emoji, from, to, opts = {}) {
   const onLand = opts.onLand || (() => {});
   if (!gainsCanAnimate()) {
@@ -96,6 +123,10 @@ function flyEmoji(emoji, from, to, opts = {}) {
 }
 
 // petit rebond de la cible + anneau qui s'élargit
+/**
+ * @param {HTMLElement | null | undefined} target
+ * @param {boolean} ring
+ */
 function gainLand(target, ring) {
   if (!target) return;
   target.classList.remove('gain-land');
@@ -113,6 +144,11 @@ function gainLand(target, ring) {
   }
 }
 // « +5 » / « −6 » qui s'envole près du compteur
+/**
+ * @param {string} text
+ * @param {Element | null} target
+ * @param {boolean} [minus]
+ */
 function gainLabel(text, target, minus) {
   if (!gainsCanAnimate() || !target) return;
   const c = gainCenter(target);
@@ -131,12 +167,20 @@ function bagTarget() {
   return b ? b.querySelector('.icon') || b : null;
 }
 // fromEl : un élément, ou un point {x, y} déjà mesuré
+/**
+ * @param {Array<string | null | undefined>} emojis
+ * @param {Element | Point | null | undefined} fromEl
+ * @param {number} [baseDelay]
+ */
 function gainItems(emojis, fromEl, baseDelay) {
-  const list = (emojis || []).filter(Boolean);
+  // filter(Boolean) retire les emojis absents
+  const list = /** @type {string[]} */ ((emojis || []).filter(Boolean));
   if (!list.length) return;
   const bag = bagTarget();
   const badge = document.getElementById('sac-badge');
-  const from = fromEl && fromEl.x != null ? fromEl : gainCenter(fromEl);
+  // un point déjà mesuré a un `x`, un élément non
+  const pt = /** @type {Point | null | undefined} */ (fromEl);
+  const from = pt && pt.x != null ? pt : gainCenter(/** @type {Element | null | undefined} */ (fromEl));
   const to = gainCenter(bag);
   list.forEach((e, i) => {
     flyEmoji(e, from, to, {
@@ -162,10 +206,15 @@ function coinTarget() {
   const p = document.getElementById('coin-pill');
   return p ? p.querySelector('.icon') || p : null;
 }
+/** @param {number} amount */
 function coinSprites(amount) {
   return Math.max(1, Math.min(8, Math.abs(amount)));
 }
 
+/**
+ * @param {number} amount
+ * @param {Element | null | undefined} fromEl
+ */
 function gainCoins(amount, fromEl) {
   if (!amount) return;
   const pill = document.getElementById('coin-pill');
@@ -174,6 +223,7 @@ function gainCoins(amount, fromEl) {
   addCoinsInFlight(amount);
   renderCoins();
   let left = amount;
+  /** @param {number} share */
   const land = (share) => {
     if (left <= 0) return;
     const s = Math.min(share, left);
@@ -212,6 +262,10 @@ function gainCoins(amount, fromEl) {
   setTimeout(() => land(left), 620 + n * 90 + 1200);
 }
 
+/**
+ * @param {number} amount
+ * @param {HTMLElement | null | undefined} toEl
+ */
 function spendCoins(amount, toEl) {
   if (!amount) return;
   const pill = document.getElementById('coin-pill');
@@ -223,6 +277,7 @@ function spendCoins(amount, toEl) {
   addCoinsInFlight(-amount);
   renderCoins();
   let left = amount;
+  /** @param {number} share */
   const leave = (share) => {
     if (left <= 0) return;
     const s = Math.min(share, left);
@@ -253,6 +308,10 @@ function spendCoins(amount, toEl) {
   });
   setTimeout(() => leave(left), n * 80 + 1000);
 }
+/**
+ * @param {number} amount
+ * @param {number} n
+ */
 function splitAmount(amount, n) {
   const a = Math.abs(amount),
     base = Math.floor(a / n),
@@ -261,9 +320,12 @@ function splitAmount(amount, n) {
 }
 
 /* ---- gains d'une fenêtre de récompense : partent à sa fermeture ---- */
+/** @type {{ items: string[], coins: number } | null} */
 let pendingGain = null;
+/** @param {{ items?: Array<string | null | undefined>, coins?: number }} g */
 function queueGain(g) {
-  pendingGain = { items: (g.items || []).filter(Boolean), coins: g.coins || 0 };
+  // filter(Boolean) retire les objets absents
+  pendingGain = { items: /** @type {string[]} */ ((g.items || []).filter(Boolean)), coins: g.coins || 0 };
   // le compteur garde l'ancienne valeur tant que les pièces ne sont pas arrivées
   if (pendingGain.coins) {
     addCoinsInFlight(pendingGain.coins);

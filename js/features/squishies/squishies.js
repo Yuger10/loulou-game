@@ -40,13 +40,33 @@ const SQ_SORT_REWARD = 5; // pièces par boîte bien remplie…
 const SQ_SORT_PAID_MAX = 3; // … pour les 3 premières du jour
 const SQ_SORT_MAX_ERRORS = 2; // erreurs avant une nouvelle consigne
 
+/** @typedef {import('../../entities/game-state/index.js').GameState['squishies']} SquishyState */
+/** Un critère de rangement (« les roses », « les ronds »…).
+ * @typedef {{ type: 'color' | 'shape' | 'size', value: string }} SortCriterion */
+/**
+ * Une boîte de rangement : `key` identifie la consigne, `targets` = combien
+ * des `items` proposés vont dans la boîte.
+ * @typedef {{
+ *   criteria: SortCriterion[],
+ *   key: string,
+ *   say: string,
+ *   level: number,
+ *   items: string[],
+ *   targets: number,
+ * }} SortingTask
+ */
+/** @typedef {() => number} Rng un hasard entre 0 et 1, injectable pour les tests */
+
 // L'état de la collection, complété si une clé manque (sauvegarde ancienne)
 function sqState() {
   const fresh = squishyFreshState();
   if (!state.squishies || typeof state.squishies !== 'object') state.squishies = fresh;
   const sq = state.squishies;
+  // parcours clé par clé : les deux états vus comme de simples tables
+  const sqKeys = /** @type {Record<string, unknown>} */ (sq),
+    freshKeys = /** @type {Record<string, unknown>} */ (fresh);
   Object.keys(fresh).forEach((k) => {
-    if (sq[k] === undefined || (sq[k] === null && k !== 'day')) sq[k] = fresh[k];
+    if (sqKeys[k] === undefined || (sqKeys[k] === null && k !== 'day')) sqKeys[k] = freshKeys[k];
   });
   if (!Array.isArray(sq.shelf) || sq.shelf.length !== SQ_SHELF_SLOTS) {
     sq.shelf = Array.from({ length: SQ_SHELF_SLOTS }, (_, i) => (Array.isArray(sq.shelf) && sq.shelf[i]) || null);
@@ -61,6 +81,7 @@ function sqDay() {
   return sq.day;
 }
 
+/** @param {string} id */
 function squishyCount(id) {
   return sqState().owned[id] || 0;
 }
@@ -70,16 +91,19 @@ function squishyOwnedIds() {
 function squishyBoxCount() {
   return sqState().boxes.length;
 }
+/** @param {string} series */
 function squishySeriesProgress(series) {
   const ids = squishiesOf(series);
   return { have: ids.filter((id) => squishyCount(id) > 0).length, total: ids.length };
 }
+/** @param {string} series */
 function squishySeriesComplete(series) {
   const p = squishySeriesProgress(series);
   return p.have === p.total;
 }
 // Une série liée à une île (`world`, saison 2) n'apparaît qu'une fois l'île
 // ouverte : ni dans la chambre, ni dans les boîtes mystère, ni au marché.
+/** @param {string} series */
 function squishySeriesAvailable(series) {
   const s = SQUISHY_SERIES[series];
   return !!s && (!s.world || worldUnlocked(s.world));
@@ -87,6 +111,7 @@ function squishySeriesAvailable(series) {
 function availableSeries() {
   return SQUISHY_SERIES_ORDER.filter(squishySeriesAvailable);
 }
+/** @param {string} [series] une série, ou toutes celles ouvertes */
 function squishyMissing(series) {
   const ids = series ? squishiesOf(series) : availableSeries().flatMap(squishiesOf);
   return ids.filter((id) => !squishyCount(id));
@@ -94,7 +119,9 @@ function squishyMissing(series) {
 
 /* ---- gagner des boîtes ---- */
 // Les écrans (pastille 🧸…) s'inscrivent ici pour se mettre à jour.
+/** @type {Array<() => void>} */
 const squishyChangeHooks = [];
+/** @param {() => void} fn */
 function onSquishyChange(fn) {
   squishyChangeHooks.push(fn);
 }
@@ -103,6 +130,7 @@ function squishyChanged() {
 }
 
 // series : id d'une série, ou null pour une boîte « mystère »
+/** @param {string | null | undefined} series */
 function addSquishyBox(series) {
   const sq = sqState();
   sq.boxes.push(series && SQUISHY_SERIES[series] ? series : null);
@@ -112,6 +140,7 @@ function addSquishyBox(series) {
 }
 // Énigme d'histoire résolue : la boîte de la série de l'île, une seule fois.
 // Renvoie { series } (null : boîte mystère), ou null si déjà donnée.
+/** @param {string} world */
 function addStorySquishyBox(world) {
   const sq = sqState();
   if (sq.fromStory[world]) return null;
@@ -145,15 +174,38 @@ function buySquishyBox() {
    double y est inévitable, il ne compte pas comme une boîte « sans
    nouveauté ».
    Renvoie { id, isNew, count, series, seriesCompleted, rarity } ou null. */
+/**
+ * @template T
+ * @param {T[]} list
+ * @param {Rng} rng
+ * @returns {T}
+ */
 function sqPick(list, rng) {
   return list[Math.min(list.length - 1, Math.floor(rng() * list.length))];
 }
+/** @param {Rng} rng */
 function squishyRollRarity(rng) {
   const r = rng();
   if (r < SQUISHY_RARITY.commun.chance) return 'commun';
   if (r < SQUISHY_RARITY.commun.chance + SQUISHY_RARITY.rare.chance) return 'rare';
   return 'brille';
 }
+/**
+ * Une boîte ouverte : `count` = exemplaires après l'ouverture, `seriesCompleted`
+ * = la série vient d'être complétée (bonus versé).
+ * @typedef {{
+ *   id: string,
+ *   isNew: boolean,
+ *   count: number,
+ *   series: string,
+ *   seriesCompleted: boolean,
+ *   rarity: string,
+ * }} OpenedBox
+ */
+/**
+ * @param {Rng} [rng]
+ * @returns {OpenedBox | null}
+ */
 function openSquishyBox(rng = random) {
   const sq = sqState();
   if (!sq.boxes.length) return null;
@@ -189,6 +241,7 @@ function openSquishyBox(rng = random) {
   };
 }
 // Une série vient d'être complétée : 20 pièces, une seule fois par série
+/** @param {string} series */
 function squishyCheckSeriesDone(series) {
   const sq = sqState();
   if (sq.done[series] || !squishySeriesComplete(series)) return false;
@@ -205,6 +258,7 @@ function squishyDuplicates() {
   const owned = sqState().owned;
   return Object.keys(owned).reduce((n, id) => n + Math.max(0, (owned[id] || 0) - 1), 0);
 }
+/** @param {string} id le squishy manquant voulu */
 function tradeDuplicatesFor(id) {
   const sq = sqState();
   if (!SQUISHIES[id] || squishyCount(id) > 0 || squishyDuplicates() < SQ_TRADE_COST) return { ok: false };
@@ -222,10 +276,15 @@ function tradeDuplicatesFor(id) {
 }
 
 /* ---- l'étagère : 12 emplacements libres, purement décoratifs ---- */
+/** @param {string} id */
 function squishyShelfCount(id) {
   return sqState().shelf.filter((x) => x === id).length;
 }
 // on ne pose pas plus d'exemplaires qu'on n'en a
+/**
+ * @param {number} slot
+ * @param {string} id
+ */
 function shelfPlace(slot, id) {
   const sq = sqState();
   if (slot < 0 || slot >= SQ_SHELF_SLOTS || !SQUISHIES[id]) return false;
@@ -234,6 +293,7 @@ function shelfPlace(slot, id) {
   save();
   return true;
 }
+/** @param {number} slot */
 function shelfRemove(slot) {
   const sq = sqState();
   if (!sq.shelf[slot]) return false;
@@ -253,42 +313,60 @@ function shelfRemove(slot) {
    choix ; 3 = deux critères. Elle suit l'âge (moins de 6 ans ou sans âge :
    1 ; 6-7 ans : 2 ; 8 ans et plus : 3) et le niveau adaptatif de l'enfant
    (state.skills.rangement.lvl), sans jamais dépasser le plafond de l'âge. */
+/** @type {Record<string, { s: string, p: string }>} le mot au singulier et au pluriel */
 const SQ_SORT_SHAPES = {
   rond: { s: 'rond', p: 'ronds' },
   ovale: { s: 'ovale', p: 'ovales' },
   carre: { s: 'carré', p: 'carrés' },
 };
+/** @type {Record<string, { s: string, p: string }>} */
 const SQ_SORT_SIZES = { petit: { s: 'petit', p: 'petits' }, grand: { s: 'grand', p: 'grands' } };
 
+/** @param {unknown} age un nombre, une chaîne ou rien : lu par Number */
 function sortLevelCap(age) {
   const a = Number(age);
   if (!a || a < 6) return 1;
   if (a < 8) return 2;
   return 3;
 }
+/** @param {unknown} age */
 function sortLevelFor(age) {
   const cap = sortLevelCap(age);
   const s = (state.skills || {}).rangement;
   return Math.max(1, Math.min(cap, (s && s.lvl) || cap));
 }
 
+/**
+ * @param {string} id
+ * @param {SortCriterion[]} criteria
+ */
 function sortMatches(id, criteria) {
   const m = SQUISHIES[id];
   return criteria.every((c) => m[c.type] === c.value);
 }
 // tous les exemplaires de la collection (un double apparaît deux fois)
+/** @param {Record<string, number> | null | undefined} owned */
 function sortCopies(owned) {
-  return Object.keys(owned || {})
-    .filter((id) => SQUISHIES[id] && owned[id] > 0)
-    .flatMap((id) => Array(owned[id]).fill(id));
+  return (
+    Object.keys(owned || {})
+      // owned existe ici : sans lui, Object.keys n'a rien donné
+      .filter((id) => SQUISHIES[id] && /** @type {Record<string, number>} */ (owned)[id] > 0)
+      .flatMap((id) => /** @type {string[]} */ (Array(/** @type {Record<string, number>} */ (owned)[id]).fill(id)))
+  );
 }
+/**
+ * @param {number} level
+ * @returns {SortCriterion[][]}
+ */
 function sortCandidates(level) {
+  /** @param {SortCriterion['type']} type */
   const values = (type) => [...new Set(Object.values(SQUISHIES).map((m) => m[type]))].map((value) => ({ type, value }));
   const colors = values('color'),
     shapes = values('shape'),
     sizes = values('size');
   if (level <= 1) return colors.map((c) => [c]);
   if (level === 2) return [...colors, ...shapes, ...sizes].map((c) => [c]);
+  /** @type {SortCriterion[][]} */
   const pairs = [];
   colors.forEach((c) => {
     shapes.forEach((s) => pairs.push([c, s]));
@@ -297,12 +375,17 @@ function sortCandidates(level) {
   shapes.forEach((s) => sizes.forEach((z) => pairs.push([z, s])));
   return pairs;
 }
+/**
+ * @param {string[]} copies
+ * @param {SortCriterion[]} criteria
+ */
 function sortFeasible(copies, criteria) {
   const ok = copies.filter((id) => sortMatches(id, criteria)).length;
   return ok >= SQ_SORT_SLOTS && copies.length - ok >= 2;
 }
 
 // La phrase de la consigne : « Range les petits squishies roses ! »
+/** @param {SortCriterion[]} criteria */
 function sortSay(criteria) {
   const size = criteria.find((c) => c.type === 'size');
   const adj = criteria
@@ -314,14 +397,26 @@ function sortSay(criteria) {
 /* Prépare une boîte de rangement, ou null si la collection ne le permet pas
    encore. `avoid` : la consigne précédente (après 2 erreurs, on en change).
    Renvoie { criteria, say, level, items:[8 ids], targets } */
+/**
+ * @param {Record<string, number> | null | undefined} owned
+ * @param {unknown} age
+ * @param {Rng} [rng]
+ * @param {{ level?: number, avoid?: string }} [opts]
+ * @returns {SortingTask | null}
+ */
 function makeSortingTask(owned, age, rng = random, opts = {}) {
-  const models = Object.keys(owned || {}).filter((id) => SQUISHIES[id] && owned[id] > 0);
+  // owned existe dans le filtre : sans lui, Object.keys n'a rien donné
+  const models = Object.keys(owned || {}).filter(
+    (id) => SQUISHIES[id] && /** @type {Record<string, number>} */ (owned)[id] > 0,
+  );
   if (models.length < SQ_SORT_MIN_MODELS) return null;
   const copies = sortCopies(owned);
+  /** @param {SortCriterion[]} cr */
   const key = (cr) => cr.map((c) => c.type + ':' + c.value).join('+');
   const wanted = opts.level || sortLevelFor(age);
   // deux critères impossibles avec cette collection : un seul, en attendant
   let level = wanted,
+    /** @type {SortCriterion[][]} */
     pool = [];
   for (; level >= 1; level--) {
     pool = sortCandidates(level).filter((cr) => sortFeasible(copies, cr));
@@ -331,10 +426,16 @@ function makeSortingTask(owned, age, rng = random, opts = {}) {
   if (opts.avoid && pool.length > 1) pool = pool.filter((cr) => key(cr) !== opts.avoid);
   const criteria = sqPick(pool, rng);
   // le plateau : 4 ou 5 qui vont dans la boîte, le reste non (au moins 2)
+  /**
+   * @param {string[]} list
+   * @param {number} n
+   */
   const take = (list, n) => {
     const bag = shuffleWith(list.slice(), rng),
+      /** @type {string[]} */
       out = [];
-    while (out.length < n && bag.length) out.push(bag.shift());
+    // bag.length vérifié : shift donne un id
+    while (out.length < n && bag.length) out.push(/** @type {string} */ (bag.shift()));
     let i = 0;
     while (out.length < n && list.length) out.push(list[i++ % list.length]); // collection trop petite : on répète
     return out;
@@ -364,6 +465,11 @@ function makeSortingTask(owned, age, rng = random, opts = {}) {
     targets: items.filter((id) => sortMatches(id, criteria)).length,
   };
 }
+/**
+ * @template T
+ * @param {T[]} a mélangé sur place
+ * @param {Rng} rng
+ */
 function shuffleWith(a, rng) {
   for (let i = a.length - 1; i > 0; i--) {
     const j = Math.floor(rng() * (i + 1));
@@ -374,9 +480,18 @@ function shuffleWith(a, rng) {
 
 // L'indice parlé quand un squishy ne va pas dans la boîte :
 // « Lui, il est bleu. On cherche des roses ! »
+/**
+ * @param {string} id
+ * @param {SortCriterion[]} criteria
+ */
 function sortWrongHint(id, criteria) {
   const m = SQUISHIES[id];
   const bad = criteria.find((c) => m[c.type] !== c.value) || criteria[0];
+  /**
+   * @param {SortCriterion['type']} type
+   * @param {string} value
+   * @param {boolean} plural
+   */
   const word = (type, value, plural) => {
     if (type === 'color') return SQ_COLORS[value].adj[plural ? 1 : 0];
     if (type === 'shape') return SQ_SORT_SHAPES[value][plural ? 'p' : 's'];
@@ -391,6 +506,12 @@ function sortWrongHint(id, criteria) {
    2 erreurs (nouvelle consigne) comptent comme une boîte ratée. On
    redescend d'un cran après 2 ratées sur les 3 dernières, on remonte après
    2 réussites d'affilée avec au plus 1 erreur, jusqu'au plafond de l'âge. */
+/**
+ * @param {boolean} ok
+ * @param {number} errors
+ * @param {number} level
+ * @param {unknown} age
+ */
 function recordSorting(ok, errors, level, age) {
   if (!state.skills) state.skills = {};
   const s =
@@ -420,6 +541,11 @@ function recordSorting(ok, errors, level, age) {
 }
 // Une boîte bien remplie : 5 pièces pour les 3 premières du jour.
 // Renvoie le nombre de pièces gagnées.
+/**
+ * @param {number} errors
+ * @param {number} level
+ * @param {unknown} age
+ */
 function sortingDone(errors, level, age) {
   const sq = sqState(),
     day = sqDay();
@@ -442,10 +568,12 @@ function squishyTreasures() {
   if (!Array.isArray(sq.treasures)) sq.treasures = [];
   return sq.treasures;
 }
+/** @param {string} id */
 function squishyTreasureOwned(id) {
   return squishyTreasures().includes(id);
 }
 // donne un trésor (une seule fois) ; vrai s'il est nouveau
+/** @param {string} id */
 function grantSquishyTreasure(id) {
   if (!SQUISHY_TREASURES[id] || squishyTreasureOwned(id)) return false;
   squishyTreasures().push(id);

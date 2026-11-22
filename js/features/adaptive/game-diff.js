@@ -43,12 +43,14 @@ function gameDiff() {
 // on ne joue jamais au-dessus de ce qui est acquis dans CE jeu.
 // Défi bonus de Zap (v52) : un cran au-dessus du niveau du jeu, sans jamais
 // dépasser le plafond de l'âge ni le palier maximal du jeu.
+/** @param {number} base */
 function adaptedDiff(base) {
   const t = adaptTier(base);
   if (!inBonusChallenge()) return t;
   const p = currentProfile();
   const ageCap = (p && ageToDiff(p.age)) || 6;
-  return Math.max(t, Math.min(t + 1, ageCap, gameMaxTier(lastGame)));
+  // un défi bonus en cours vaut pour le jeu en cours : lastGame est connu
+  return Math.max(t, Math.min(t + 1, ageCap, gameMaxTier(/** @type {string} */ (lastGame))));
 }
 
 export { gameDiff, gameDiffIsland };

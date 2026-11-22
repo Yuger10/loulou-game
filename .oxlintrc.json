@@ -36,8 +36,8 @@
     "no-use-before-define": ["error", { "functions": false, "classes": false, "variables": false }],
     // rien dans la console du jeu (les tests restent libres, voir overrides)
     "no-console": "error",
-    // cliquet : aucun fichier ne dépasse le plus gros actuel ; à abaisser vers 800
-    "max-lines": ["error", { "max": 1250 }],
+    // cliquet : aucun fichier ne dépasse le plus gros actuel (1 055 lignes) ; à abaisser vers 800
+    "max-lines": ["error", { "max": 1100 }],
     // une valeur par défaut s'écrit dans la signature (rng = random), ou dans une variable locale
     "no-param-reassign": "error",
     // un cycle d'imports peut lire une valeur pas encore définie au démarrage des modules ES

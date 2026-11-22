@@ -1698,3 +1698,9 @@ Les deux sont proposés dès 5 ans, sans minuteur. Le jeu de l'île est les poti
 - **Ce que voit l'enfant :** **une décoration qu'elle a fait glisser sur son île reste à sa place quand elle relance le jeu** (avant : la place était enregistrée, puis perdue au redémarrage). De même, la bulle ❤️ d'un personnage déjà aidé aujourd'hui et l'astuce « fais glisser tes décorations » déjà vue survivent au redémarrage.
 - **Pour le code :** bug révélé par les types de la partie (TypeScript strict sur `entities`, v66.7) : `load()` ne garde que les champs de `DEFAULT_STATE`, et `decoPos`, `helped`, `tipDragDeco` (posés par l'île) n'y étaient pas. Ils y sont, avec leurs valeurs par défaut (aucune migration nécessaire : une vieille partie reçoit ces valeurs). La copie de `DEFAULT_STATE` écrite à la main pour l'état initial, qui avait oublié ces champs, est remplacée par `freshState()`. Test : `test/redemarrage.test.js` (joue, enregistre, recharge dans une nouvelle page ; mutation vérifiée).
 - Cache `lagon-v66.8`.
+
+# v66.9 : TypeScript strict sur 8 slices de features, dessins des squishies dans leur fichier
+
+- **Ce que voit l'enfant :** rien ne change.
+- **Pour le code :** TypeScript **strict** sur le lot 1 de `features` (`wallet`, `gains`, `screen`, `hints`, `adaptive`, `music`, `party`, `squishies`) : 402 erreurs ramenées à 0, en JSDoc, sans `any`. `squishy-room.js` atteignait la limite `max-lines` (1 250) ; plutôt que de tasser ses annotations, ses dessins (corps, visages, modèles, boîtes surprises) passent tels quels dans `squishy-art.js` (590 lignes de dessin vérifiées identiques). Cliquet `max-lines` abaissé à 1 100. Restent 3 lots (973 erreurs) et `app`.
+- Cache `lagon-v66.9`.

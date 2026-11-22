@@ -5,6 +5,9 @@ import { onWrongFeedback, playSound, showToast, speak, vibrate } from '../../sha
 import { raceAdvance, stopRace } from './race.js';
 import { onTurnStop, renderTurnBar } from './turn-bar.js';
 
+/** @typedef {import('../../entities/player/index.js').Profile} Profile */
+
+/** @param {string[]} ids les joueurs, dans l'ordre */
 function startParty(ids) {
   if (ids.length < 2) return false;
   setParty({ active: true, mode: 'turns', players: ids.slice(), turn: 0, scores: {}, lastWinner: null });
@@ -12,7 +15,8 @@ function startParty(ids) {
   switchProfile(ids[0], true);
   renderTurnBar();
   playSound('win');
-  const p = partyCurrent();
+  // le premier joueur vient d'être choisi dans la liste : il existe
+  const p = /** @type {Profile} */ (partyCurrent());
   speak(`Mode chacun son tour ! ${p.name || 'Joueur 1'} commence.`);
   showToast(`🎲 ${avatarText(p.avatar)} ${p.name || 'Joueur 1'} commence !`);
   return true;
@@ -30,6 +34,7 @@ function stopParty() {
 }
 
 // passe la main au joueur suivant (erreur dans un mini-jeu, ou fin de manche)
+/** @param {string} [reason] 'wrong' après une erreur */
 function passTurn(reason) {
   if (!party.active) return;
   party.turn = (party.turn + 1) % party.players.length;
@@ -37,13 +42,19 @@ function passTurn(reason) {
     race.turn = party.turn;
     race.rounds++;
   }
-  const p = partyCurrent();
+  // un joueur supprimé quitte la partie (party-state.js) : celui du tour existe
+  const p = /** @type {Profile} */ (partyCurrent());
   switchProfile(p.id, true);
   renderTurnBar();
   showTurnOverlay(p, reason);
 }
 
-let turnOverlayTimer = null; // l'annonce « À toi de jouer » disparaît 1,6 s après
+/** @type {ReturnType<typeof setTimeout> | undefined} */
+let turnOverlayTimer; // l'annonce « À toi de jouer » disparaît 1,6 s après
+/**
+ * @param {Profile} p
+ * @param {string} [reason]
+ */
 function showTurnOverlay(p, reason) {
   const el = document.getElementById('turn-overlay');
   if (!el) return;

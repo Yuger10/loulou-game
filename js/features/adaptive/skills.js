@@ -10,6 +10,7 @@ import { gameDiff } from './game-diff.js';
 import { skillStatus } from './skill-status.js';
 import { inBonusChallenge, lastGame } from './session.js';
 
+/** @param {Date} [dArg] le jour, par défaut aujourd'hui */
 function todayKey(dArg) {
   const d = dArg || new Date();
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
@@ -22,12 +23,17 @@ function resetMissionErrors() {
   missionErrors = 0;
 }
 
+/**
+ * @typedef {{ key: string, lvl: number | undefined, up: boolean }} MissionProgress
+ */
+/** @type {MissionProgress | null} */
 let missionProgress = null; // progrès de la dernière mission, pour l'écran de victoire
 
 function noteAnswerError() {
   missionErrors++;
 }
 
+/** @param {boolean} ok */
 function recordMission(ok) {
   const key = lastGame;
   // à plusieurs (chacun son tour, course), une erreur passe la main au

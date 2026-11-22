@@ -15,11 +15,5 @@ export {
   squishyTreasureOwned,
   tradeDuplicatesFor,
 } from './squishies.js';
-export {
-  openSquishyRoom,
-  renderSquishyBadge,
-  squishyArtSVG,
-  squishyBoxRewardHTML,
-  squishyBoxSVG,
-  squishySessionHello,
-} from './squishy-room.js';
+export { openSquishyRoom, renderSquishyBadge, squishySessionHello } from './squishy-room.js';
+export { squishyArtSVG, squishyBoxRewardHTML, squishyBoxSVG } from './squishy-art.js';

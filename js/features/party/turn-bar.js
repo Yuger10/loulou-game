@@ -6,7 +6,9 @@ import { avatarHTML } from '../../entities/companion/index.js';
 import { party, partyPlayers, race } from '../../entities/player/index.js';
 import { playSound, setHandler } from '../../shared/ui/index.js';
 
+/** @type {() => void} */
 let turnStop = () => {};
+/** @param {() => void} fn */
 function onTurnStop(fn) {
   turnStop = fn;
 }
@@ -22,7 +24,8 @@ function renderTurnBar() {
   bar.hidden = false;
   const isRace = party.mode === 'race';
   bar.innerHTML =
-    partyPlayers()
+    // filter(Boolean) dans partyPlayers a retiré les joueurs absents
+    /** @type {import('../../entities/player/index.js').Profile[]} */ (partyPlayers())
       .map(
         (p, i) => `
     <span class="turn-chip ${i === party.turn ? 'on' : ''}">

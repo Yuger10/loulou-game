@@ -38,21 +38,57 @@ const HINT_LEVELS = 2;
 const HINT_MIN_CHOICES = 4; // pas d'élimination en dessous
 const HINT_MIN_LEFT = 3; // choix qui restent toujours, au minimum
 
+/**
+ * Les effets d'un niveau d'indice (détail en tête de fichier).
+ * @typedef {{
+ *   glow?: string,
+ *   marks?: Array<{ sel: string, text: string }>,
+ *   strike?: string,
+ *   dim?: string,
+ *   html?: string,
+ *   run?: (root: HTMLElement) => void,
+ * }} HintFx
+ */
+/** @typedef {{ say: string, fx: HintFx }} Hint un niveau d'indice, au format commun */
+/** @typedef {{ say?: string, fx?: HintFx } | null | undefined} HintIn un niveau tel qu'un jeu le donne */
+/**
+ * Les indices d'une question ; chaque jeu a sa forme de question.
+ * @template Q
+ * @typedef {(question: Q) => HintIn[] | null | undefined} HintProvider
+ */
+
+/** @type {Record<string, HintProvider<unknown>>} */
 const HINT_PROVIDERS = {};
+/**
+ * @template Q
+ * @param {string} key
+ * @param {HintProvider<Q>} fn
+ */
 function registerHints(key, fn) {
-  HINT_PROVIDERS[key] = fn;
+  // rangé sans sa forme de question : seul le jeu qui pose la question la relit
+  HINT_PROVIDERS[key] = /** @type {HintProvider<unknown>} */ (fn);
 }
+/** @param {string} key */
 function hasHints(key) {
   return !!HINT_PROVIDERS[key];
 }
 
 // Les deux niveaux d'indice d'une question, toujours au même format
+/**
+ * @param {string} type
+ * @param {unknown} question
+ * @returns {Hint[]}
+ */
 function hintsFor(type, question) {
   const fn = HINT_PROVIDERS[type];
   if (!fn) return [];
   return (fn(question) || []).slice(0, HINT_LEVELS).map((h) => ({ say: (h && h.say) || '', fx: (h && h.fx) || {} }));
 }
 // Règle anti-devinette : écarter une réponse est-il permis ?
+/**
+ * @param {number} level
+ * @param {number} nChoices
+ */
 function hintMayEliminate(level, nChoices) {
   return level === HINT_LEVELS && nChoices >= HINT_MIN_CHOICES && nChoices - 1 >= HINT_MIN_LEFT;
 }
@@ -60,6 +96,13 @@ function hintMayEliminate(level, nChoices) {
 /* Indices d'une suite à toucher dans l'ordre (puzzle des nombres, jours de la
    semaine, planètes) : 1. la méthode ; 2. le chemin déjà fait, avec un « ? »
    pour le suivant. Rien n'est écarté : chaque choix servira plus tard. */
+/**
+ * @template T
+ * @param {T[]} done les étapes déjà touchées
+ * @param {string} say
+ * @param {(x: T) => string} [label] le texte d'une étape, par défaut la valeur elle-même
+ * @returns {Hint}
+ */
 function hintOrderStep(done, say, label) {
   return {
     say,
@@ -78,14 +121,14 @@ function hintOrderStep(done, say, label) {
    10 s, et rien en mode course (pour rester équitable). */
 /** Comportement des indices, réglé par les spécialités de l'équipe (setHintPolicy).
  * @type {{
- *   giver: (kind?: string, level?: number) => string,
- *   idleMs: (kind?: string) => number,
- *   sparkle: (kind?: string) => boolean,
+ *   giver: (kind?: string | null, level?: number) => string,
+ *   idleMs: (kind?: string | null) => number,
+ *   sparkle: (kind?: string | null) => boolean,
  *   enabled: (kind?: string) => boolean,
  *   syllablesFirst: () => boolean,
  *   onUse: ((kind: string, level: number) => void) | null,
  *   onShow: ((kind: string) => void) | null,
- *   onError: ((kind: string) => void) | null,
+ *   onError: ((kind: string | null) => void) | null,
  *   onGood: (() => void) | null,
  *   onMission: ((kind: string) => void) | null,
  * }} */
@@ -101,23 +144,44 @@ const hintPolicy = {
   onGood: null, // une bonne étape
   onMission: null, // (kind) une nouvelle mission commence
 };
+/** @param {Partial<typeof hintPolicy>} part */
 function setHintPolicy(part) {
   Object.assign(hintPolicy, part);
 }
 
+/**
+ * La question en cours : `kind` = le jeu, `q` = la question (sa forme dépend du
+ * jeu), `choices` = sélecteur des réponses, `idle` = minuteur de la proposition.
+ * @type {{
+ *   kind: string | null,
+ *   q: unknown,
+ *   level: number,
+ *   choices: string | null,
+ *   on: boolean,
+ *   idle: ReturnType<typeof setTimeout> | undefined,
+ *   nudged: boolean,
+ *   carry: boolean,
+ *   noCount: boolean,
+ * }}
+ */
 let hint = {
   kind: null,
   q: null,
   level: 0,
   choices: null,
   on: false,
-  idle: null,
+  idle: undefined,
   nudged: false,
   carry: false,
   noCount: false,
 };
 
 // Une question s'affiche (après openModal) : le bouton 💡 apparaît dans l'en-tête.
+/**
+ * @param {string} kind
+ * @param {unknown} q
+ * @param {{ choices?: string, noCount?: boolean }} [opts]
+ */
 function setHintQuestion(kind, q, opts = {}) {
   if (hint.q !== q || hint.kind !== kind) {
     hint.level = 0;
@@ -137,6 +201,7 @@ function hintSyllablesFirst() {
   return !!hintPolicy.syllablesFirst();
 }
 // un mot écrit découpé en syllabes colorées (lecture)
+/** @param {string[]} syl */
 function hintSyllablesHTML(syl) {
   return syl.map((x) => `<span class="hint-syl">${x}</span>`).join('');
 }
@@ -179,11 +244,12 @@ function renderHintButton() {
 /* ---- la proposition douce ---- */
 function armHintIdle() {
   clearTimeout(hint.idle);
-  hint.idle = null;
+  hint.idle = undefined;
   if (!hint.on || hint.level >= HINT_LEVELS) return;
   hint.idle = setTimeout(() => hintNudge(), hintPolicy.idleMs(hint.kind));
 }
 // fromError : la relance qui suit gardera le bouton brillant
+/** @param {boolean} [fromError] */
 function hintNudge(fromError) {
   if (fromError) {
     hint.carry = true;
@@ -213,35 +279,45 @@ function useHint() {
     buddyReact('cheer', 1200);
     return null;
   }
-  const levels = hintsFor(hint.kind, hint.q);
+  // hint.on : la question a des indices inscrits, donc son jeu est connu
+  const kind = /** @type {string} */ (hint.kind);
+  const levels = hintsFor(kind, hint.q);
   const h = levels[hint.level];
   if (!h) return null;
   hint.level++;
   hint.nudged = false;
   clearTimeout(hint.idle);
   showHint(h, hint.level);
-  countHint(hint.kind);
+  countHint(kind);
   buddyReact(hint.level >= HINT_LEVELS ? 'cheer' : 'think', 1400);
   renderHintButton();
-  if (hintPolicy.onUse) hintPolicy.onUse(hint.kind, hint.level);
+  if (hintPolicy.onUse) hintPolicy.onUse(kind, hint.level);
   return h;
 }
 
 // Montre l'indice 1 de lui-même (Léo, avant un jeu en soutien) : pas compté.
+/** @param {string} giver le compagnon qui montre l'indice */
 function hintShowFirst(giver) {
   if (!hint.on || hint.level > 0) return false;
-  const h = hintsFor(hint.kind, hint.q)[0];
+  // hint.on : la question a des indices inscrits, donc son jeu est connu
+  const kind = /** @type {string} */ (hint.kind);
+  const h = hintsFor(kind, hint.q)[0];
   if (!h) return false;
   hint.level = 1;
   hint.nudged = false;
   showHint(h, 1, giver);
   renderHintButton();
   armHintIdle();
-  if (hintPolicy.onUse) hintPolicy.onUse(hint.kind, 1);
+  if (hintPolicy.onUse) hintPolicy.onUse(kind, 1);
   return true;
 }
 
 // la bulle de l'indice sous la consigne, et l'effet visuel
+/**
+ * @param {Hint} h
+ * @param {number} level
+ * @param {string} [giverOverride]
+ */
 function showHint(h, level, giverOverride) {
   const body = document.getElementById('modal-body');
   if (!body) return;
@@ -256,7 +332,7 @@ function showHint(h, level, giverOverride) {
     else body.prepend(bub);
   }
   const who = giverOverride || hintPolicy.giver(hint.kind, level);
-  bub.dataset.level = level;
+  bub.dataset.level = String(level);
   // espaces insécables avant « : ! ? » (typographie française, pas de « : » seul en début de ligne)
   const text = h.say.replace(/ ([:;!?»])/g, '\u00a0$1').replace(/« /g, '«\u00a0');
   bub.innerHTML = `<span class="hint-bface" aria-hidden="true">${companionSVG(who, 'think')}</span>
@@ -270,13 +346,18 @@ function showHint(h, level, giverOverride) {
 
 function hintChoicesLeft() {
   if (!hint.choices) return 0;
-  return [...document.querySelectorAll(`#modal-body ${hint.choices}`)].filter(
-    (/** @type {HTMLButtonElement} */ el) =>
-      !el.disabled && !el.classList.contains('hint-dim') && !el.classList.contains('done'),
-  ).length;
+  const choices = /** @type {HTMLButtonElement[]} */ ([...document.querySelectorAll(`#modal-body ${hint.choices}`)]);
+  return choices.filter((el) => !el.disabled && !el.classList.contains('hint-dim') && !el.classList.contains('done'))
+    .length;
 }
+/**
+ * @param {HintFx} fx
+ * @param {number} level
+ */
 function applyHintFx(fx, level) {
-  const root = document.getElementById('modal-body');
+  // appelé par showHint, qui a déjà trouvé la fenêtre
+  const root = /** @type {HTMLElement} */ (document.getElementById('modal-body'));
+  /** @param {string | undefined} sel */
   const all = (sel) => (sel ? [...root.querySelectorAll(sel)] : []);
   const sparkle = level === HINT_LEVELS && hintPolicy.sparkle(hint.kind);
   all(fx.glow).forEach((el) => {
@@ -305,6 +386,10 @@ function applyHintFx(fx, level) {
   if (fx.dim) hintEliminate(fx.dim, level);
 }
 // écarte UNE mauvaise réponse, seulement si la règle anti-devinette le permet
+/**
+ * @param {string} sel
+ * @param {number} level
+ */
 function hintEliminate(sel, level) {
   const el = /** @type {HTMLButtonElement} */ (document.querySelector(`#modal-body ${sel}`));
   if (!el || el.disabled || !hintMayEliminate(level, hintChoicesLeft())) return false;
@@ -320,9 +405,11 @@ function hintEliminate(sel, level) {
 // avec setHintCountable, v54 : les indices sont une couche sous le moteur)
 /** @type {(kind: string) => boolean} */
 let hintCountable = () => false;
+/** @param {(kind: string) => boolean} fn */
 function setHintCountable(fn) {
   hintCountable = fn;
 }
+/** @param {string} kind */
 function countHint(kind) {
   if (hint.noCount || party.active || !hintCountable(kind)) return;
   if (!state.skills) state.skills = {};
@@ -338,7 +425,7 @@ onModalChange(() => {
   hint.on = false;
   hint.nudged = false;
   clearTimeout(hint.idle);
-  hint.idle = null;
+  hint.idle = undefined;
 });
 
 export {
