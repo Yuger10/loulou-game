@@ -4,7 +4,8 @@
   "packageManager": "bun@1.4.5",
   "scripts": {
     "check": "node test/tools/lockfile.js && bun run lint && bun run test",
-    "lint": "oxlint --deny-warnings js test",
+    "lint": "oxlint --deny-warnings js test && oxfmt --check js test",
+    "format": "oxfmt js test",
     "start": "python3 -m http.server 8080",
     "test": "node test/tools/run.js",
     "inventaire": "node test/tools/globals.js $(node -e \"console.log(require('./js/slices.cjs').SLICES.flatMap(s=>s.files).join(' '))\")",
@@ -18,6 +19,7 @@
     "esbuild": "^0.24.0",
     "jsdom": "^26.0.0",
     "lefthook": "2.2.2",
+    "oxfmt": "0.79.0",
     "oxlint": "1.94.0"
   }
 }
