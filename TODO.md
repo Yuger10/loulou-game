@@ -146,6 +146,7 @@ Chaque mini-jeu a maintenant son propre niveau pour chaque enfant (`js/adaptive.
 | v65 | Saison 2, île 6 : le Monde des Licornes (niveau 62), les potions de couleurs, le miroir magique ; grand final : Grisou compagnon, ✨ Grisou arc-en-ciel (Trésors), « Le Ciel des Rêves ✅ » |
 | v66 | Espace parents : version du jeu et bouton « Chercher une mise à jour » ; version unique (`APP_VERSION`) écrite dans le cache par `npm run sync` ; service worker sans mélange d'anciens et de nouveaux fichiers |
 | v66.1 | Cuisine étoilée (factory) : bun, tests en parallèle (18 s), oxlint et oxfmt, hooks, `AGENTS.md` ; prénoms nettoyés, hasard rejouable, enregistrement raté signalé à l'enfant et aux parents ; versions 66.x pour les livraisons sans track |
+| v66.2 | Une seule fin de mission (`winSoon`, délais nommés) au lieu de 6 délais copiés-collés dans 33 mini-jeux |
 
 ---
 

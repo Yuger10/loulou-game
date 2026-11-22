@@ -89,6 +89,8 @@ Les agents copient ce qu'ils voient. Chaque point est mesuré sur `js/`.
 4. **Délais fixes `setTimeout`** : 105 dans 52 fichiers, mêlés à la logique de jeu (par exemple `setTimeout(onMissionWin, 400)`). C'est ce qui couple les tests au temps réel (110 s de suite, attentes à durée fixe).
 
    Règle proposée : un `delay()` central, réglable par les tests (le facteur `SPEED` de `rest.test.js` le fait déjà pour une slice).
+
+   **Corrigé le 22 novembre 2026, après mesure.** Le vrai défaut était la fin de mission : 33 mini-jeux la programmaient eux-mêmes avec 6 délais différents (350 à 700 ms), copiés-collés. Elle passe par `winSoon()` du moteur (`WIN_DELAY` 400 ms, `WIN_DELAY_LONG` 700 ms), et `test/gardes.test.js` refuse le retour. Les 74 autres délais servent aux animations et au rythme de l'interface : ils restent, ils sont légitimes. Le coût en temps de test qui motivait l'idée d'un `delay()` central est déjà réglé (tests en parallèle, 18 s), d'où l'abandon de ce remplacement mécanique.
 5. **Rituel de livraison à la main dans 7 endroits** : cache de `sw.js`, PRD, TODO, `tech-stack.md`, `product.md`, plan, registre, plus la liste des tests dans `package.json`. C'est la source de presque tous les conflits de rebase entre sessions parallèles (v63, v64, v65).
 
    Proposition : un script `npm run release` et un check CI « le cache de `sw.js` a changé si le code a changé ».
