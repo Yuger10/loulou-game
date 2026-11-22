@@ -27,9 +27,11 @@ Remplacer `<cle>` par la clé du jeu (ex. `nesting`) et `<Jeu>` par son nom de f
 - [ ] `js/slices.cjs` : une slice `minigame-<cle>` (couche `features`), placée avec les autres mini-jeux, après le moteur. Sa feuille de style va dans `css` **et** dans `CSS_ORDER` (en fin de liste, avant `island.css`).
 
 ## 3. Les entités et features à compléter
-> `js/entities/` est vérifié en TypeScript strict (`tsconfig.strict.json`, [ADR 0003](../docs/adr/0003-typescript.md)) : la fonction de palier du jeu (`<cle>Round`) et toute table ajoutée dans `difficulty.js` ou `game-types.js` sont typées en JSDoc (`@param`, `@returns`, `@typedef` de l'objet renvoyé). Jamais `any` ni `@ts-ignore`.
+> Le code est vérifié en TypeScript strict couche par couche (`tsconfig.strict.json`, qui grandit jusqu'à tout `js/` : [ADR 0003](../docs/adr/0003-typescript.md)). Le nouveau jeu s'écrit donc strictement typé, sa slice comprise ; en particulier la fonction de palier du jeu (`<cle>Round`) et toute table ajoutée dans `difficulty.js` ou `game-types.js` sont typées en JSDoc (`@param`, `@returns`, `@typedef` de l'objet renvoyé). Jamais `any` ni `@ts-ignore`.
+- [ ] `tsconfig.strict.json` : suivre la règle de `conductor/checklist-ile.md` (section 2) : le glob du jeu n'entre dans `include` que si `bun run typecheck` reste vert ; aujourd'hui un mini-jeu importe `minigame-engine`, qui n'est pas strict, donc il n'y entre pas encore. Le jeu est typé à la main quand même.
 
 - [ ] `js/entities/difficulty/game-types.js` : la clé dans `GAME_TYPES`, et dans les tranches d'âge de `AGE_GAME_TYPES` où le jeu est proposé.
+- [ ] Taille des fichiers : voir `conductor/checklist-ile.md`, section 2 bis (`difficulty.js` est presque plein ; les jeux de la saison 3 mettent leur fonction de palier dans `js/entities/difficulty/rounds-saison3.js`).
 - [ ] `js/entities/difficulty/difficulty.js` : ses paramètres par palier (une fonction `<cle>Round(dd)` ou équivalent), ses essais dans `LIVES_TABLE`, et `NO_TIMER_KINDS` s'il ne doit pas avoir de minuteur.
 - [ ] `js/features/adaptive/adaptive.js` : sa phrase de progrès dans `PROGRESS_CHEERS`, et `GAME_TIER_MAX` s'il va au-delà du palier 5.
 - [ ] `js/features/parents/parents.js` : le jeu dans un groupe de `SKILL_GROUPS` (compétence de l'espace parents).

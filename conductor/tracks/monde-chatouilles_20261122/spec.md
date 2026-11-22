@@ -14,7 +14,9 @@ files:
   - js/features/island/tickle.js
   - js/features/island/island.js
   - js/features/island/island-view.js
-  - js/entities/difficulty/difficulty.js
+  - js/entities/difficulty/difficulty.js            # LIVES_TABLE, GENEROUS_KINDS, NO_TIMER_KINDS seulement
+  - js/entities/difficulty/rounds-saison3.js        # codingRound, sentenceRound et leurs types
+  - js/features/island/island.css
   - js/entities/difficulty/index.js
   - js/app/main.js
   - js/entities/difficulty/game-types.js
@@ -24,20 +26,20 @@ files:
   - js/shared/styles/design-system-v21.css
   - js/entities/world/worlds.js
   - js/entities/character/characters.js
-  - js/entities/character/characters-art.js
+  - js/entities/character/characters-art-saison3.js   # table ART_S3, préparée par saison3-ouverture
   - js/entities/item/items.js
   - js/entities/squishy/squishies.js
-  - js/features/squishies/squishy-room.js
-  - js/features/squishies/squishy-art.js          # créé par la phase 0 de squishy-boites
+  - js/features/squishies/squishy-art.js
   - js/features/story/story.js
   - js/features/story/episodes.js
   - js/features/music/music.js
   - js/slices.cjs
+  - tsconfig.strict.json
   - test/chatouilles.test.js
   - test/games.test.js
   - test/smoke.test.js
   - test/sounds.test.js
-taster: { facts: 0, decisions: 0, rounds: 4 }
+taster: { facts: 7, decisions: 0, rounds: 5 }
 ---
 
 <!-- Gabarit cothon 0.4.0 (setting-up-docs), adopté dans Conductor (cothon 0.2.0-2 et 0.4.0-6) : une nouvelle track part de ce fichier. -->
@@ -47,7 +49,7 @@ taster: { facts: 0, decisions: 0, rounds: 4 }
 - Nouveau projet : non
 - **L'île :** `chatouilles`, emoji 🪶, niveau d'ouverture **94**. Règle et tableau de tous les niveaux : `conductor/niveaux.md`.
 - Idée de la joueuse : un monde de plumes, de rires et de guilis, où les habitants sont chatouilleux et rient pour un rien.
-- Prérequis de la phase 3 (l'île) : la track `saison3-ouverture` (troisième archipel, `refreshArchipelagos()`, `shownArchipelagos()`, la carte de Zap) est sur `main`, **et** la phase 0 de la track `squishy-boites` (dessins des squishies déplacés dans `js/features/squishies/squishy-art.js`) est sur `main`, **et** l'île précédente de la saison, `coffres`, est dans `WORLDS` (ordre de livraison : crayons, dumplings, coffres, chatouilles, concert). Les phases 1 et 2 (les deux mini-jeux) n'ont aucun prérequis. Les tests d'onglets de la carte (3 onglets) appartiennent à la track Crayons, pas à celle-ci.
+- Prérequis de la phase 3 (l'île) : la track `saison3-ouverture` (troisième archipel, `refreshArchipelagos()`, `shownArchipelagos()`, la carte de Zap) est sur `main`, **et** l'île précédente de la saison, `coffres`, est dans `WORLDS` (ordre de livraison : crayons, dumplings, coffres, chatouilles, concert). Les phases 1 et 2 (les deux mini-jeux) n'ont aucun prérequis. Les tests d'onglets de la carte (3 onglets) appartiennent à la track Crayons, pas à celle-ci.
 - Références à suivre en entier : [checklist-mini-jeu](../../checklist-mini-jeu.md) (phases 1 et 2), [checklist-ile](../../checklist-ile.md) (phase 3), [product-guidelines](../../product-guidelines.md).
 
 ## Problème
@@ -113,7 +115,7 @@ La joueuse veut un monde où l'on chatouille et où tout le monde rit. Elle a 6 
 44. Étant donné l'envie, quand l'enfant touche le bouton pour la `tickle.max`-ième fois, alors le personnage ne rit pas, la bulle et la voix disent sa phrase `stop`, le bouton disparaît et le personnage passe au repos.
 45. Étant donné un personnage passé au repos, quand 60 s (`TICKLE_REST_MS`) se sont écoulées, alors il rit de nouveau au toucher et son dialogue repropose le bouton ; rien de tout cela n'est sauvegardé.
 46. Étant donné le chapitre `STORY.chatouilles`, quand il se joue, alors il a le guide, le titre, les 3 phrases, les 2 énigmes (avec `tip`), le succès et la récompense de la table I8 ; avec `state.storySolved = { crayons: true, dumplings: true, coffres: true }`, il montre `.story-zapmap svg.zap-map[data-found="3"]`.
-46b. Étant donné `state.coins = 0`, `state.storySolved = { crayons: true, dumplings: true, coffres: true }` et `storyWin('chatouilles')`, quand on le joue, alors on gagne 16 pièces et une boîte de la série `guilis`, `zapMapPieces() === 4`, la fenêtre montre `.story-zapmap.happy svg.zap-map[data-found="4"]` et la voix dit le `success` suivi de `zapMapSay(4)` ; un second `storyWin('chatouilles')` ne redonne pas la boîte. Le morceau est gagné parce que `state.storySolved.chatouilles` est vrai : rien d'autre n'est stocké.
+46b. Étant donné `state.coins = 0`, `state.storySolved = { crayons: true, dumplings: true, coffres: true }` et `storyWin('chatouilles')`, quand on le joue, alors on gagne 16 pièces et une boîte de la série `guilis`, `zapMapPieces() === 4`, la fenêtre montre `.story-zapmap.happy svg.zap-map[data-found="4"]` et la voix dit exactement `toSpoken` de « Bravo ! L'arbre à plumes rit si fort qu'il laisse tomber le quatrième morceau de la carte de Zap ! 🗺️ Tu gagnes 16 pièces et une boîte surprise de squishies. La carte de Zap : tu as trouvé 4 morceaux sur 5. » (dans cet ordre : le `success`, la phrase existante de `js/features/story/story.js:582`, puis `zapMapSay(4)`, séparés par une espace, comme le comportement 29 de `saison3-ouverture`) ; un second `storyWin('chatouilles')` ne redonne pas la boîte. Le morceau est gagné parce que `state.storySolved.chatouilles` est vrai : rien d'autre n'est stocké.
 47. Étant donné une mauvaise réponse à une énigme, quand elle est touchée, alors l'autre énigme est proposée (comportement existant de `story.js`).
 48. Étant donné 2, 4 puis 7 missions réussies sur l'île, quand l'écran de victoire se ferme, alors les épisodes de la table I9 arrivent dans l'ordre, racontés par Guili, Lulu puis Pic (jamais par Plumette).
 
@@ -135,15 +137,16 @@ La joueuse veut un monde où l'on chatouille et où tout le monde rit. Elle a 6 
 | D12 | Les deux jeux : pas de minuteur, barème d'essais `generous` | Politique commune (pas de minuteur dans les nouveaux jeux) ; jeux à réflexion comme le miroir | `js/entities/difficulty/difficulty.js:360-369` (`LIVES_TABLE`), `:385-407` (`GENEROUS_KINDS`), `:446-466` (`NO_TIMER_KINDS`) |
 | D13 | Proposés à partir de 6 ans | Le codage d'un déplacement et la lecture d'une phrase sont au programme du CP ; `sentence` demande de lire | D2 ; `js/entities/difficulty/game-types.js` (`AGE_GAME_TYPES`) ; défaut du rédacteur pour `coding`, à juger à la revue |
 | D14 | Jeu favori : `coding` avant 7 ans, `sentence` à 7 ans et plus (et sans âge) | Forme des îles de la saison 2 ; pour une lectrice débutante, le jeu sans lecture d'abord | `js/entities/world/worlds.js:223` ; `js/entities/world/worlds.js:352-355` |
-| D15 | Le rire : son `giggle` construit sur `soundGlide` comme le `pouic`, animation inspirée de `sqPress` | S'appuyer sur ce qui existe | `js/shared/ui/sound.js:206-222`, `:280-288` ; `js/features/squishies/squishy-room.js:715-722` |
+| D15 | Le rire : son `giggle` construit sur `soundGlide` comme le `pouic`, animation inspirée de `sqPress` | S'appuyer sur ce qui existe | `js/shared/ui/sound.js:206-222`, `:280-288` ; `js/features/squishies/squishy-room.js:105-112` (`squishyPress`) |
 | D16b | Toucher un personnage sur la scène fait un « rire de bonjour », pas une chatouille ; les chatouilles passent seulement par le bouton « 🪶 Des chatouilles ? » | Le message reste cohérent : on ne chatouille jamais quelqu'un sans lui demander | défaut de Claude, à juger à la revue par Amrou (testeur à blanc, tour 2) |
 | D16 | Le consentement : un bouton « Des chatouilles ? », une envie tirée par dialogue, un « stop » au bout de `max` touchers, 60 s de repos | Demande d'Amrou : on chatouille ceux qui en ont envie, on s'arrête au stop, sans leçon de morale | brief de cette track ; valeurs : défaut du rédacteur, à juger à la revue |
 | D17 | Rien n'est sauvegardé pour les chatouilles ; aucun nouveau champ d'état | Les progrès d'histoire et de squishies sont déjà rangés par clé d'île ou de série | `js/features/story/episodes.js:12-13` ; `js/features/story/story.js:581` |
 | D18 | Personnages, noms, objets, squishies, textes : propositions du rédacteur | La joueuse les juge à la revue (S20) | brief de la saison 3 (politique « Noms et personnages ») |
-| D19 | Les dessins SVG des 4 nouveaux personnages sont demandés explicitement par cette spec, sans toucher aux dessins existants | Zone à demande explicite | `AGENTS.md` (Interdits, `characters-art.js`) ; brief de la saison 3 |
+| D19 | Les dessins SVG des 4 nouveaux personnages sont demandés explicitement par cette spec, sans toucher aux dessins existants ; ils vont dans la table `ART_S3` de `js/entities/character/characters-art-saison3.js` (avec les aides de `characters-art-kit.js`), préparés par `saison3-ouverture` : `characters-art.js` (1 055 lignes, `max-lines` 1 100) n'est pas modifié | Zone à demande explicite | `AGENTS.md` (Interdits, `characters-art.js`) ; brief de la saison 3 |
 | D20 | Position sur la carte : `{ x: 82, y: 26 }`, définitive | Positions des cinq îles de la saison 3 fixées ensemble (crayons `{ x: 18, y: 78 }`, dumplings `{ x: 50, y: 74 }`, coffres `{ x: 82, y: 70 }`, chatouilles `{ x: 82, y: 26 }`, concert `{ x: 50, y: 22 }`), vérifiées contre la règle de chevauchement | décision de coordination de la saison 3 du 22/11/2026 ; `test/smoke.test.js:1866-1882` |
 | D21 | Récompense du chapitre : 16 pièces | Les îles de la saison 2 donnent 14 ; un cran de plus pour la saison 3 | `js/features/story/story.js:350` ; défaut du rédacteur, à juger à la revue |
-| D23 | Types stricts : `js/entities` et `js/shared` sont vérifiés en strict (`tsconfig.strict.json`). Cette track étend deux `@typedef` : `World` gagne `giggly?: boolean` ; `Character` gagne `tickle?: CharacterTickle`, avec le nouveau `@typedef {{ want: number, max: number, laughs: string[], stop: string, no: string }} CharacterTickle` écrit dans `characters.js` juste avant `Character`. Les autres ajouts entrent dans des types existants sans les changer (`Item`, `CraftedItem`, `SquishySeries`, `Squishy`, `SOUND_FAMILY` dont `sfam` prend les clés). Les fonctions nouvelles de `js/entities/difficulty/difficulty.js` sont typées strictement : `@typedef {{ size: number, mode: 'abs' \| 'rel', len: [number, number], turns: [number, number], rocks: number, slots: number, startUp: boolean }} CodingRound`, `@typedef {{ n: number, pic: boolean }} SentenceRound`, `@param {number} dd`, `@returns {CodingRound}` ou `{SentenceRound}`. Jamais `any` ni `@ts-ignore` ; `bun run typecheck` vert | Règle des types stricts de la checklist | `js/entities/world/worlds.js:6-25` (`World`), `js/entities/character/characters.js:2-15` (`Character`), `js/entities/item/items.js:4-12`, `js/entities/squishy/squishies.js:6-22` ; [checklist-mini-jeu](../../checklist-mini-jeu.md), [checklist-ile](../../checklist-ile.md) |
+| D23 | Types stricts : `js/entities` et `js/shared` sont vérifiés en strict (`tsconfig.strict.json`). Cette track étend deux `@typedef` : `World` gagne `giggly?: boolean` ; `Character` gagne `tickle?: CharacterTickle`, avec le nouveau `@typedef {{ want: number, max: number, laughs: string[], stop: string, no: string }} CharacterTickle` écrit dans `characters.js` juste avant `Character`. Les autres ajouts entrent dans des types existants sans les changer (`Item`, `CraftedItem`, `SquishySeries`, `Squishy`, `SOUND_FAMILY` dont `sfam` prend les clés). Les fonctions nouvelles de `js/entities/difficulty/rounds-saison3.js` sont typées strictement : `@typedef {{ size: number, mode: 'abs' \| 'rel', len: [number, number], turns: [number, number], rocks: number, slots: number, startUp: boolean }} CodingRound`, `@typedef {{ n: number, pic: boolean }} SentenceRound`, `@param {number} dd`, `@returns {CodingRound}` ou `{SentenceRound}`. Tout nouveau code de cette track, quelle que soit sa slice (`coding.js`, `sentence.js`, `tickle.js`, les ajouts à `island.js`, `island-view.js`, `story.js`, `episodes.js`, `music.js`, `squishy-art.js`, `sound.js`), s'écrit strictement typé : `@param` et `@returns` sur chaque fonction, `@typedef` des objets renvoyés (`CodingGrid` pour G0, `CodingBuild = { cfg: CodingRound, grid: CodingGrid, best: CodingBest \| null, tries: number, fallback: boolean }`, `CodingBest = { len: number, turns: number, prog: string[] }`, `CodingRunResult = { path: { r: number, c: number, dir: number }[], end: 'goal' \| 'rock' \| 'edge' \| 'stop' \| 'empty', at: number }`, `SentenceEntry = { t: string, pic?: string, ok?: string[] }`), indices au contrat `HintProvider` de `js/features/hints/hints.js:57`, phrases de progrès dans `PROGRESS_CHEERS` (`Record<string, string>`, `adaptive.js:40-41`). Contrôle strict (règle des checklists, `checklist-mini-jeu.md` section 3) : une nouvelle slice entre dans `include` de `tsconfig.strict.json` seulement si `bun run typecheck` reste vert avec elle ; on ajoute le glob, on lance `bun run typecheck`, et si des erreurs apparaissent hors des fichiers de la track, on retire le glob et on le note au journal du plan. Résultat attendu aujourd'hui : `coding` et `sentence` importent `minigame-engine`, qui n'est pas strict, donc elles n'y entrent pas. Les slices existantes pas encore strictes (`island`, dont le nouveau `tickle.js`, `story`, `parents`) n'y sont pas ajoutées. Dans tous les cas, le nouveau code est typé à la main. Jamais `any` ni `@ts-ignore` ; `bun run typecheck` vert | Règle des types stricts de la checklist | `js/entities/world/worlds.js:6-25` (`World`), `js/entities/character/characters.js:2-15` (`Character`), `js/entities/item/items.js:4-12`, `js/entities/squishy/squishies.js:6-22` ; [checklist-mini-jeu](../../checklist-mini-jeu.md), [checklist-ile](../../checklist-ile.md) |
+| D24 | Taille des fichiers (`max-lines` 1 100, `checklist-ile.md` section « 2 bis ») : estimations des nouveaux fichiers : `coding.js` environ 450 lignes, `coding.css` 130, `sentence.js` 340 (dont 50 de banque), `sentence.css` 100, `tickle.js` 130, `rounds-saison3.js` environ 45 lignes de plus pour cette track, `characters-art-saison3.js` +110 (4 dessins). Aucun n'approche le plafond ; si `coding.js` dépassait 1 100 lignes, la génération et `codingRun` iraient dans un fichier frère `coding-grid.js` de la même slice, déclaré dans `js/slices.cjs` | Règle commune de la saison 3 | `conductor/checklist-ile.md` (section 2 bis), `.oxlintrc.json:40` |
 | D22 | Emojis limités à Unicode 13 ou avant (🪶 et 🥸 au plus récent) | Le jeu doit marcher sur d'anciens appareils | `AGENTS.md` (Compatibilité) ; `js/entities/item/items.js:129` (🪶 déjà utilisé) |
 
 ## Politiques
@@ -164,12 +167,12 @@ La joueuse veut un monde où l'on chatouille et où tout le monde rit. Elle a 6 
   - `coding` : la grille du miroir (`js/features/minigames/mirror/mirror.js`, `mirror.css`), cases d'au moins 56 px à 360 px de large pour 4 × 4 et 5 × 5, 48 px pour 6 × 6. Palette en bas, boutons d'au moins 64 px.
   - `sentence` : les étiquettes ressemblent aux boutons de mots de la lecture (`js/features/minigames/reading/reading.css`, `.reading-word-btn`), la ligne de phrase est une rangée de cases pointillées qui passe à la ligne.
   - Scène et thème de l'île : comme `ISLE_SCENERY.musique` (`js/features/island/island.js:340`).
-- **Textes.** Tous les textes montrés ou dits sont écrits ci-dessous. Un texte dit et montré est le même. Les emojis d'un texte ne sont pas lus (`toSpoken` de `voice.js` s'en charge déjà).
+- **Textes.** Tous les textes montrés ou dits sont écrits ci-dessous. Un texte dit et montré est le même. La voix passe par `toSpoken` (`js/shared/ui/voice.js:55-68`) : un emoji connu de `EMOJI_WORDS` devient un mot (🎁 devient « cadeau »), les autres disparaissent, les espaces avant la ponctuation sont retirées, et `elide` contracte « de, que, le, la, ne, se, je, me, te » devant une voyelle ou un h (`voice.js:50-52`). Les tests comparent la voix à `toSpoken(texte)`. Les emojis des textes dits de cette spec (🪶, 👋, 🗺️) ne sont pas dans `EMOJI_WORDS` : ils disparaissent. Relecture faite par le rédacteur (script appliquant `toSpoken` à chaque texte) : aucun texte ne subit d'élision fautive ; « le hoquet », « le hérisson » et « une île où » ont été reformulés. Une phrase ajoutée plus tard se relit de la même façon.
 - **Détails non écrits.** L'agent prend le défaut de la référence (le miroir pour `coding`, la lecture pour `sentence`, la Musique pour l'île) ou l'option la plus simple, le note dans le journal de décisions du plan, et l'humain juge à la revue.
 
 ### Données et textes de « Le chemin de la plume » (`coding`)
 
-**T1 : `codingRound(dd)`** (dans `js/entities/difficulty/difficulty.js`, avec `tierValue`)
+**T1 : `codingRound(dd)`** (dans `js/entities/difficulty/rounds-saison3.js`, réexporté par `js/entities/difficulty/index.js`, avec `tierValue` importé de `difficulty.js` ; `difficulty.js` fait 1 014 lignes sous un plafond de 1 100 : il ne reçoit que les lignes de `LIVES_TABLE`, `GENEROUS_KINDS` et `NO_TIMER_KINDS`)
 
 | Palier | `size` | `mode` | `len` (instructions du plus court programme) | `turns` (virages) | `rocks` (cactus) | `slots` | Départ |
 |---|---|---|---|---|---|---|---|
@@ -185,7 +188,7 @@ La joueuse veut un monde où l'on chatouille et où tout le monde rit. Elle a 6 
 - G3 : mode `rel` : `F` avance d'une case dans la direction de la plume ; `TL` tourne d'un quart de tour à gauche sur place (direction + 3, modulo 4) ; `TR` à droite (direction + 1, modulo 4). Un virage = une instruction `TL` ou `TR`.
 - G0 : **forme d'une grille** (objet `grille`) : `{ size, mode, start: [r, c], dir, goal: [r, c], rocks: [[r, c], …], friend: { e, name } }`. `mode` vaut `'abs'` ou `'rel'`. `dir` est la direction de départ (G1) ; en mode `abs`, elle vaut toujours 1 (la plume pointe vers la droite au départ, elle n'a pas d'effet sur les flèches). Exemple (secours du palier 2) : `{ size: 4, mode: 'rel', start: [3, 0], dir: 0, goal: [1, 2], rocks: [[3, 1]], friend: { e: '🐧', name: 'Guili' } }`.
 - G4 : le plus court programme = le moins d'instructions, puis, à égalité, le moins de virages. Plusieurs programmes peuvent avoir la même longueur et les mêmes virages : `codingBest` en renvoie un, sans ordre imposé, et **aucun test ne compare `prog` mot pour mot** ; les tests comparent `len` et `turns`, et vérifient que `codingRun(grille, best.prog).end === 'goal'` (recherche en largeur sur les états case et direction, exposée en `codingBest(grille)` qui renvoie `{ len, turns, prog }`, ou `null` si l'ami est inatteignable). Exemple : la grille de G0 donne `len: 5`, `turns: 1` (par exemple `prog: ['F', 'F', 'TR', 'F', 'F']`, ici le seul possible).
-- G5 : génération (`codingBuildRound(dd, rng = random)`) : à chaque essai, mélanger toutes les cases ; la 1ʳᵉ est la plume, la 2ᵉ l'ami, les `rocks` suivantes les cactus ; direction de départ selon T1. Garder la grille si G4 trouve un programme dont `len` et `turns` sont dans T1, et, si `rocks > 0`, si au moins un cactus est dans le rectangle plume-ami. Retour : `{ cfg, grid, best, tries, fallback }` (`cfg = codingRound(dd)`, `grid` au format G0, `best = codingBest(grid)`, `tries` = nombre d'essais faits, de 1 à 500, `fallback` = `true` seulement si la grille de secours a été prise). L'ami est tiré avec `rng` dans `CODING_FRIENDS` après la grille. Au plus 500 essais ; sinon la grille de secours T2 (essai du rédacteur : 0 échec sur 2 000 générations par palier, au plus 138 essais).
+- G5 : génération (`codingBuildRound(dd, rng = random)`, `@param {number} dd`, `@param {() => number} [rng]` qui rend des valeurs dans [0, 1), `@returns {CodingBuild}`) : le mélange est un Fisher-Yates local écrit dans `coding.js`, qui tire avec `rng` (`shuffle` de `js/shared/lib` ne prend pas de générateur) ; le test passe un générateur à graine écrit dans le test (par exemple un mulberry32 initialisé par la graine du lanceur, donc rejouable par `TEST_SEED`). Puis à chaque essai, mélanger toutes les cases ; la 1ʳᵉ est la plume, la 2ᵉ l'ami, les `rocks` suivantes les cactus ; direction de départ selon T1. Garder la grille si G4 trouve un programme dont `len` et `turns` sont dans T1, et, si `rocks > 0`, si au moins un cactus est dans le rectangle plume-ami. Retour : `{ cfg, grid, best, tries, fallback }` (`cfg = codingRound(dd)`, `grid` au format G0, `best = codingBest(grid)`, `tries` = nombre d'essais faits, de 1 à 500, `fallback` = `true` seulement si la grille de secours a été prise). L'ami est tiré avec `rng` dans `CODING_FRIENDS` après la grille. Au plus 500 essais ; sinon la grille de secours T2 (essai du rédacteur : 0 échec sur 2 000 générations par palier, au plus 138 essais).
 - G7 : **`codingRun(grille, prog)`** (pure, sans DOM) joue `prog` (tableau de `'U' | 'R' | 'D' | 'L' | 'F' | 'TL' | 'TR'`) et renvoie `{ path, end, at }` : `path` = les états `{ r, c, dir }`, le départ d'abord puis un état après chaque instruction jouée sans heurt ; `end` = `'goal'` (entrée chez l'ami, les instructions suivantes ne sont pas jouées), `'rock'` ou `'edge'` (l'instruction `at` mènerait sur un cactus ou hors de la grille : elle n'est pas jouée), `'stop'` (programme fini ailleurs) ou `'empty'` (programme vide) ; `at` = index de l'instruction qui entre chez l'ami ou qui heurte, `-1` pour `'stop'` et `'empty'`. Le trajet animé (ligne 9) suit `path` ; les marques des lignes 11 et 12 suivent `end` et `at`. Exemples sur la grille de G0 : `['F', 'F', 'TR', 'F', 'F']` donne `end: 'goal', at: 4`, `path` de 6 états ; `['TR', 'F']` donne `end: 'rock', at: 1`, `path` de 2 états ; `['TL', 'F']` donne `end: 'edge', at: 1` ; `['F', 'TR', 'F']` donne `end: 'stop', at: -1`, dernier état `{ r: 2, c: 1, dir: 1 }` ; `[]` donne `end: 'empty', at: -1`.
 - G6 : la même grille (mêmes plume, ami, cactus) ne revient pas deux fois de suite (comme `mirrorLast`).
 
@@ -203,9 +206,10 @@ La joueuse veut un monde où l'on chatouille et où tout le monde rit. Elle a 6 
 
 **Le rendu.**
 - `#cd-grid` porte `data-size`, `data-mode`, `data-dir` (direction de départ) ; chaque case est `.cd-cell` avec `data-r`, `data-c`, et la classe `start`, `goal` (l'ami) ou `rock` (🌵).
-- La plume est un SVG (une plume dont la pointe montre la direction), tournée par `transform: rotate(0, 90, 180 ou 270 deg)`, déplacée en 300 ms par une transition.
+- La plume est `#cd-feather`, un SVG (une plume dont la pointe montre la direction) posé dans la grille, avec `data-r`, `data-c`, `data-dir` mis à jour à chaque instruction jouée ; tournée par `transform: rotate(0, 90, 180 ou 270 deg)`, déplacée en 300 ms par une transition (le test lit les `data-*`, jamais la position).
 - Palette `#cd-pal` : boutons `.cd-op` avec `data-op` (`U`, `R`, `D`, `L` en mode `abs` ; `F`, `TL`, `TR` en mode `rel`) ; libellés ⬆️ ➡️ ⬇️ ⬅️, ou ⬆️ ↰ ↱. Chaque bouton a un `aria-label` égal au mot dit (ligne 4 ou 5).
-- Programme `#cd-prog` : `slots` cases ; une instruction posée est un bouton `.cd-step` avec `data-i`.
+- Programme `#cd-prog` : `slots` cases ; une instruction posée est un bouton `.cd-step` avec `data-i` et `data-op`.
+- **Contrat DOM lu par les tests** : instruction en cours pendant le trajet : `.cd-step.on` (une seule à la fois) ; instruction fautive : `.cd-step.ko` ; plume qui tremble : `#cd-feather.cd-bump` ; case d'arrêt : `.cd-cell.cd-stop` ; l'ami qui rit : l'emoji `.cd-cell.goal .cd-friend` reçoit `giggle-wiggle` ; pendant le trajet, `.cd-op`, `.cd-step` et `#cd-go` ont `disabled`. Les classes `on`, `ko`, `cd-bump`, `cd-stop` s'effacent à la modification suivante du programme ou au Go suivant.
 - Bouton `#cd-go` « ▶️ Go ».
 
 **Textes de `coding`** (C1 à C11 ; `{nom}` = l'ami ; « lui » ou « elle » selon l'ami : Guili lui, Plumette et Lulu elle)
@@ -295,7 +299,7 @@ La comparaison garde la ponctuation et les majuscules : l'étiquette du dernier 
 | 7 | La tortue gagne la course des lapins. | | |
 | 7 | Le gros chien chatouille la souris grise. | | |
 
-**Le rendu.** `#st-pic` (paliers 1 et 2, emojis en grand) ; `#st-line` : `n` cases `.st-slot` ; `#st-reserve` : les étiquettes `.st-tile` avec `data-i` (rang du mot dans `t`, de 0 à `n - 1`) ; une étiquette garde sa place dans la réserve quand elle en sort (place vide) ; bouton `#st-read` « 🔊 Lis ma phrase ».
+**Le rendu.** `#st-pic` (paliers 1 et 2, emojis en grand) ; `#st-line` : `n` cases `.st-slot` ; `#st-reserve` : les étiquettes `.st-tile` avec `data-i` (rang du mot dans `t`, de 0 à `n - 1`) ; une étiquette garde sa place dans la réserve quand elle en sort (place vide `.st-gap`, sans la classe `st-tile`) ; bouton `#st-read` « 🔊 Lis ma phrase ». **Contrat DOM lu par les tests** : une étiquette posée est dans `#st-line .st-slot` ; à la victoire, toutes les `.st-tile` prennent la classe `lit` ; à l'erreur, `#st-line` reçoit `giggle-wiggle` ; à la 2ᵉ erreur, la nouvelle phrase remplace `#st-line` et `#st-reserve`.
 
 **Textes de `sentence`** (S1 à S5)
 
@@ -326,6 +330,8 @@ La comparaison garde la ponctuation et les majuscules : l'étiquette du dernier 
 **T5 : `SOUND_PALETTE.giggle`** (dans `js/shared/ui/sound.js`) : trois `soundGlide` sinus, aux délais 0 s, 0,14 s et 0,28 s, volume `0.11 * sfam('giggle')` ; points `[[0, 820], [0.06, 1250], [0.11, 900]]` pour les deux premiers, `[[0, 900], [0.06, 1400], [0.12, 1000]]` pour le troisième. `SOUND_FAMILY.giggle = 0.9`.
 
 **`.giggle-wiggle`** (dans `js/shared/styles/design-system-v21.css`) : animation `giggleWiggle` de 0,9 s, `transform-origin: 50% 90%` ; étapes : 0 % `rotate(0) scale(1)`, 15 % `rotate(-10deg) scale(1.08, 0.94)`, 30 % `rotate(9deg)`, 45 % `rotate(-8deg) scale(1.06, 0.96)`, 60 % `rotate(6deg)`, 75 % `rotate(-3deg)`, 100 % `rotate(0) scale(1)`. Sous `@media (prefers-reduced-motion: reduce)` : pas d'animation. Le code retire la classe puis la remet (`void el.offsetWidth`) comme `squishyPress`.
+- **Sur la scène**, `.giggle-wiggle` seule ne suffit pas : `#scene.live-isle .isle-char .emoji` a déjà une animation infinie plus spécifique (`isleCharBob`, `js/features/island/island.css:273-279`). La phase 3 ajoute donc à `island.css` la règle `#scene.live-isle .isle-char .emoji.giggle-wiggle { animation: giggleWiggle 0.9s ease-in-out 1; }` (plus spécifique d'une classe), placée après la règle existante, et ajoute `#scene.live-isle .isle-char .emoji.giggle-wiggle` à la liste du bloc `prefers-reduced-motion` existant (`island.css:501-518`, `animation: none`). Après 900 ms la classe est retirée et le balancement reprend.
+- **Dans le dialogue**, `.char-header .emoji` et `#modal .char-header .emoji` n'ont pas d'animation (`js/shared/styles/design-system-v21.css:566-578`) : la règle partagée `.giggle-wiggle` suffit.
 
 ### L'île (phase 3)
 
@@ -357,7 +363,7 @@ La comparaison garde la ponctuation et les majuscules : l'étiquette du dernier 
 | `plumette` | 🦚 | Plumette | la paonne aux plumes chatouilleuses | f | `plumeguili`, `chaussettes` | guide du chapitre |
 | `guili` | 🐧 | Guili | le petit manchot chatouilleux | m | `plumeguili`, `yoyofarceur` | présente « Le chemin de la plume » |
 | `lulu` | 🦦 | Lulu | la loutre qui adore les blagues | f | `nezclown`, `boiterires` | présente « La phrase rigolote » |
-| `pic` | 🦔 | Pic | le hérisson un peu timide | m | `chaussettes`, `nezclown` | n'aime pas toujours les chatouilles |
+| `pic` | 🦔 | Pic | le petit hérisson timide | m | `chaussettes`, `nezclown` | n'aime pas toujours les chatouilles |
 
 La colonne « Rôle » est une intention de narration, portée seulement par les répliques : `characters.js` n'a aucun champ qui lie un personnage à un jeu (ses champs sont `emoji`, `name`, `title`, `world`, `gender`, `loot`, `texts`, `noGames`, plus `tickle` ajouté ici). Le guide est désigné par `STORY.chatouilles.guide` ; « Choisir un jeu » propose tous les jeux, comme sur les autres îles.
 
@@ -367,14 +373,14 @@ Répliques (`texts`, 3 chacun) :
 - Lulu : « Mes mots se sont tout mélangés ! Tu m'aides à refaire ma phrase ? » ; « Une phrase en désordre, c'est rigolo. Une phrase en ordre, ça veut dire quelque chose ! » ; « On invente une phrase rigolote ensemble ? »
 - Pic : « Bonjour… Moi, je n'aime pas toujours les chatouilles. Mais j'adore jouer ! » ; « Quand je dis stop, mes amis s'arrêtent. Alors je joue tranquille. » ; « Mes piquants sont tout doux aujourd'hui. On fait un jeu ? »
 
-Dessins (`CHAR_ART`, même style que les personnages de la Musique) : Plumette, une paonne bleue et verte, roue de plumes roses et jaunes ; Guili, un manchot noir et blanc avec une plume rose sur la tête ; Lulu, une loutre marron clair aux moustaches, un nez rouge de clown sur le front ; Pic, un hérisson aux piquants arrondis couleur noisette, joues roses, l'air timide. Tous ont des yeux souriants.
+Dessins (table `ART_S3` de `characters-art-saison3.js`, fusionnée dans `CHAR_ART` ; même style que les personnages de la Musique) : Plumette, une paonne bleue et verte, roue de plumes roses et jaunes ; Guili, un manchot noir et blanc avec une plume rose sur la tête ; Lulu, une loutre marron clair aux moustaches, un nez rouge de clown sur le front ; Pic, un hérisson aux piquants arrondis couleur noisette, joues roses, l'air timide. Tous ont des yeux souriants.
 
 **I3 : la fiche `tickle` de chaque personnage**
 
 | Clé | `want` | `max` | `laughs` | `stop` | `no` |
 |---|---|---|---|---|---|
 | `plumette` | 0.8 | 4 | « Hi hi hi ! Mes plumes ! » ; « Ha ha ha, ça chatouille ! » ; « Hou hou hou, mes plumes frissonnent ! » | « Stop ! J'ai assez ri pour l'instant. Merci d'avoir arrêté ! » | « Pas maintenant, merci. On se fait un coucou à la place ? 👋 » |
-| `guili` | 0.9 | 5 | « Guili guili ! Hi hi hi ! » ; « Ha ha ha, je suis tout chatouilleux ! » ; « Hi hi, ma plume rigole aussi ! » | « Stop, stop ! J'ai le hoquet de rire. Merci d'avoir arrêté ! » | « Pas maintenant, je suis tout essoufflé. On joue plutôt ? » |
+| `guili` | 0.9 | 5 | « Guili guili ! Hi hi hi ! » ; « Ha ha ha, je suis tout chatouilleux ! » ; « Hi hi, ma plume rigole aussi ! » | « Stop, stop ! J'ai trop ri, je n'ai plus de souffle. Merci d'avoir arrêté ! » | « Pas maintenant, je suis tout essoufflé. On joue plutôt ? » |
 | `lulu` | 0.8 | 3 | « Ha ha ha ! Ça chatouille mes moustaches ! » ; « Hi hi hi, ma queue rigole ! » | « Stop ! Mon ventre a trop ri. Merci d'avoir arrêté ! » | « Pas maintenant, merci. Je te raconte une blague à la place ? » |
 | `pic` | 0.4 | 2 | « Hi… hi hi ! Tout doucement, alors. » | « Stop, ça suffit pour moi. Merci d'avoir arrêté tout de suite ! » | « Non merci, pas de chatouilles aujourd'hui. Mais je veux bien un sourire ! » |
 
@@ -418,10 +424,10 @@ Objets donnés par personne : `lunettesrigolotes`, `bonbonpetillant`, `sifflet` 
 | `guili` | Guili | Guili, le petit manchot | rare | violet | ovale | petit | ventre blanc, petit bec jaune, plume rose sur la tête |
 | `plumette-doree` | Plumette dorée | Plumette dorée, la paonne | brille | jaune | rond | grand | roue de plumes dorées derrière, couronne de trois points |
 
-**Dessins des 6 squishies (`SQ_ART`).** Le dessin d'un squishy vient de la table `SQ_ART` (aujourd'hui `js/features/squishies/squishy-room.js:108`) ; `squishyArtSVG` (`squishy-room.js:630`) ne dessine rien sans entrée. Chaque modèle de I5 reçoit une entrée `SQ_ART['<clé>'] = { body, face: {}, faceY?, back?, front? }` sur le modèle de `'tambour-mochi'` (`squishy-room.js:448-456`) : `body` vaut `'rond'`, `'ovale-v'`, `'ovale-h'` ou `'carre'` selon `shape` (ovale : `'ovale-v'` pour `plume-rose` et `chaussette-pois`, `'ovale-h'` pour `guili`) ; `back` et `front` reçoivent la couleur `c` et dessinent ce que dit la colonne « Dessin ». Les 6 entrées vont dans la table `SQ_ART` de `js/features/squishies/squishy-art.js`, créé par la phase 0 de la track `squishy-boites` (prérequis de la phase 3). Si ce fichier n'existe pas au moment d'implémenter la phase 3, l'agent s'arrête et signale le prérequis manquant : il ne crée aucun autre fichier et n'écrit pas dans `squishy-room.js`.
+**Dessins des 6 squishies (`SQ_ART`).** Le dessin d'un squishy vient de la table `SQ_ART` de `js/features/squishies/squishy-art.js:55` (type `SqArt`, `squishy-art.js:10`) ; `squishyArtSVG` (`squishy-art.js:579`) ne dessine rien sans entrée. Chaque modèle de I5 reçoit une entrée `SQ_ART['<clé>'] = { body, face: {}, faceY?, back?, front? }` (forme `SqArt`, `back` et `front` de type `(c: SqColor) => string`) sur le modèle de `'tambour-mochi'` (`squishy-art.js:395-403`) : `body` vaut `'rond'`, `'ovale-v'`, `'ovale-h'` ou `'carre'` selon `shape` (ovale : `'ovale-v'` pour `plume-rose` et `chaussette-pois`, `'ovale-h'` pour `guili`) ; `back` et `front` reçoivent la couleur `c` et dessinent ce que dit la colonne « Dessin ». Les 6 entrées vont dans cette table (`squishy-art.js` existe déjà sur `main` ; `squishy-room.js` n'est pas modifié).
 - Test : chaque modèle de la série `guilis` a `squishyArtSVG(id) !== ''` (ligne 36).
 
-**I6 : musique** : `chatouilles: { root: 67, scale: [0, 2, 4, 7, 9], bpm: 108, lead: 'bubble', prog: [0, 9, 5, 7], shaker: true }`, commentaire « des bulles qui rebondissent, comme des rires ».
+**I6 : musique** (forme `MusicTheme`, `js/features/music/music.js:19-30` ; `lead: 'bubble'` est une chaîne, le type ne change pas) : `chatouilles: { root: 67, scale: [0, 2, 4, 7, 9], bpm: 108, lead: 'bubble', prog: [0, 9, 5, 7], shaker: true }`, commentaire « des bulles qui rebondissent, comme des rires ».
 
 **I7 : thème** : `body[data-world="chatouilles"] { --world-sky: #fff0f6; --world-sea: #ffb3d1; --world-deep: #8a3d6b; --world-scene-top: #fff7fb; --world-scene-floor: #fff1b8; }`.
 
@@ -436,14 +442,14 @@ Objets donnés par personne : `lunettesrigolotes`, `bonbonpetillant`, `sifflet` 
 - `riddles` :
   1. `q` : « Je suis toute légère, je vole au vent, et je chatouille le bout du nez. Qui suis-je ? » ; `tip` : « Les oiseaux en ont plein sur le dos. » ; `opts` : 🪶 (juste), 🪨, 🔨.
   2. `q` : « On me met aux pieds, une à droite, une à gauche, et parfois j'ai des pois. Qui suis-je ? » ; `tip` : « On me met avant les chaussures. » ; `opts` : 🧦 (juste), 🧤, 🎩.
-- `success` : « Bravo ! L'arbre à plumes rit si fort qu'il laisse tomber le quatrième morceau de la carte de Zap 🗺️ » (la track `saison3-ouverture` ajoute ensuite `zapMapSay(4)` à la voix).
+- `success` : « Bravo ! L'arbre à plumes rit si fort qu'il laisse tomber le quatrième morceau de la carte de Zap ! 🗺️ » (la track `saison3-ouverture` ajoute ensuite `zapMapSay(4)` à la voix).
 - `reward` : 16 (et la boîte surprise `guilis`, par le mécanisme existant).
-- Le morceau 4 de la carte de Zap : `chatouilles` est le 4ᵉ id de `ZAP_MAP_PIECES` ; le morceau est gagné quand `state.storySolved.chatouilles` est vrai. Le chapitre et la victoire montrent la carte par `zapMapSVG(n, { fresh: 'chatouilles' })` dans `.story-zapmap` (mécanisme de `saison3-ouverture`, rien à coder ici sauf les tests 46 et 46b).
+- Le morceau 4 de la carte de Zap : `chatouilles` est le 4ᵉ id de `ZAP_MAP_PIECES` ; le morceau est gagné quand `state.storySolved.chatouilles` est vrai. Le chapitre et la victoire montrent la carte par `zapMapSVG(zapMapFound())` (chapitre) et `zapMapSVG(zapMapFound(), { fresh: 'chatouilles' })` (victoire) dans `.story-zapmap` (mécanisme de `saison3-ouverture`, rien à coder ici sauf les tests 46 et 46b).
 
 **I9 : épisodes `EPISODES.chatouilles`**
 1. `by: 'guili'`, `title: 'La plume qui file'`, `find: '🪶'`, `lines` : « J'ai lancé une plume dans le vent, et elle a fait trois virages avant de se poser ! » ; « Elle s'est posée sur le nez de Pic. Il a fait atchoum, et on a tous ri ! »
 2. `by: 'lulu'`, `title: 'La blague de Lulu'`, `find: '📜'`, `lines` : « J'ai trouvé une blague : pourquoi les poissons n'aiment pas jouer au tennis ? Parce qu'ils ont peur du filet ! » ; « Hi hi ! Même Pic a ri, et pourtant il est très sérieux ! »
-3. `by: 'pic'`, `title: 'La musique au loin'`, `find: '🎼'`, `lines` : « Chut… Écoute. Très loin, derrière les nuages, on entend de la musique. » ; « Elle vient d'une île où se prépare un grand concert. Le dernier morceau de la carte y est peut-être ! »
+3. `by: 'pic'`, `title: 'La musique au loin'`, `find: '🎼'`, `lines` : « Chut… Écoute. Très loin, derrière les nuages, on entend de la musique. » ; « Elle vient d'une île lointaine, qui prépare un grand concert. Le dernier morceau de la carte y est peut-être ! »
 
 ## Hors périmètre
 
@@ -459,7 +465,7 @@ Objets donnés par personne : `lunettesrigolotes`, `bonbonpetillant`, `sifflet` 
 | Contrat | Forme (ou lien) | Propriétaire | Consommateurs |
 |---|---|---|---|
 | Archipel 3 | `WORLDS.chatouilles.saison = 3` ; `refreshArchipelagos()` et `shownArchipelagos()` | `entities/world` (track `saison3-ouverture`) | cette track (phase 3, tests) |
-| `ZAP_MAP_PIECES`, `zapMapPieces()`, `zapMapSVG(n, { fresh: id })`, `zapMapSay(n)`, `.story-zapmap` | définis par la track `saison3-ouverture` (ses comportements 22 à 29) ; `chatouilles` est le 4ᵉ morceau | `features/story` | ce chapitre (lignes 46 et 46b) |
+| `ZAP_MAP_PIECES`, `zapMapFound()`, `zapMapPieces()`, `zapMapSVG(zapMapFound(), { fresh: id })`, `zapMapSay(n)`, `.story-zapmap` | définis par la track `saison3-ouverture` (ses comportements 22 à 29) ; `chatouilles` est le 4ᵉ morceau | `features/story` | ce chapitre (lignes 46 et 46b) |
 | Son `giggle` | `playSound('giggle')` | cette track (phase 1) | `coding`, `sentence`, l'île |
 | Classe `giggle-wiggle` | CSS partagée, 0,9 s | cette track (phase 1) | `coding`, `sentence`, l'île |
 | `WORLDS[id].giggly` | `World.giggly?: boolean` (D23) | cette track (phase 3) | `island.js`, `tickle.js` |

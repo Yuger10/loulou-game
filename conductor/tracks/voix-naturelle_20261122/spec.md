@@ -5,7 +5,7 @@ size: M
 migration: false
 sensitive: true          # PWA (sw.js), espace parents, outil de développement qui appelle un service payant
 files: [test/tools/voix.js, test/tools/voix-phrases.js, test/tools/sync.js, js/shared/ui/voice.js, js/shared/ui/voice-clips.js, js/shared/lib/spoken.js, js/features/parents/voice-card.js, js/slices.cjs, sw.js, voix/voix.json, voix/*.mp3, js/features/parents/parents.js, test/voix-clips.test.js, test/voix-lecteur.test.js, test/tools/fake-voice.js, docs/adr/0007-voix-enregistree.md, package.json, AGENTS.md]
-taster: { facts: 0, decisions: 0, rounds: 8 }
+taster: { facts: 1, decisions: 0, rounds: 9 }
 ---
 
 <!-- Gabarit cothon 0.4.0 (setting-up-docs), adopté dans Conductor. -->
@@ -55,6 +55,7 @@ Génération (phase 3)
 | `voix` | `voice-clips.js` présent avec un export qui n'est pas un littéral | « ❌ voix : js/shared/ui/voice-clips.js illisible : <export> » | 1 |
 | `voix --essai` | aucun service complet | message de la ligne 2 | 2 |
 | `voix --essai` | toutes les réponses 200 | chemin de `ecoute.html` | 0 |
+| `voix --essai` | un service à moitié posé (ignoré, ligne 2) et l'autre complet, toutes ses réponses 200 | l'avertissement de la ligne 2, puis le chemin de `ecoute.html` | 0 (un avertissement ne compte pas dans le code ; seuls les cas de cette table à 1 ou 2 comptent) |
 | `voix --essai` | une voix refusée (400 ou 404) | « ⚠️ voix : voix inconnue : <voix> » ; les autres voix et services continuent ; `ecoute.html` liste ce qui a été obtenu | 1 |
 | `voix --essai` | un service en 401 ou 403, ou 3e tentative ratée | « ⛔ voix : <service> injoignable ou clé refusée (<cause>) » ; ce service s'arrête, l'autre continue ; `ecoute.html` est écrit | 2 |
 | `voix --selftest` | tous les cas attendus | « ✅ voix : selftest, <n> cas » | 0 |
@@ -214,10 +215,10 @@ Pour Google : `{ "service": "google", "voice": "fr-FR-Chirp3-HD-Aoede", "style":
 
 - **Règles d'extraction (D8)**, appliquées par `test/tools/voix-phrases.js` (module partagé par le script et la garde) à chaque fichier de `js/**/*.js` sauf `js/shared/ui/voice-clips.js` :
   - R1 : premier argument d'un appel `speak(…)` ou `speechBubble(…)` ;
-  - R2 : appel `gameHeader(titre, consigne, dite)` : le 3e argument s'il existe, sinon le 2e (c'est ce que `bindQuit` dit, `js/features/screen/screen.js:27-58`) ;
+  - R2 : appel `gameHeader(titre, consigne, dite)` : le 3e argument s'il existe, sinon le 2e (c'est ce que `bindQuit` dit, `js/features/screen/screen.js:32-67`) ;
   - R3 : valeur de toute propriété nommée `say` (`say: '…'`), où qu'elle soit ;
   - R4 : valeur de tout attribut `data-say="…"` écrit en dur dans une chaîne ou un gabarit, sans `${` dedans (`&quot;` décodé) ;
-  - R5 : chaque élément chaîne d'un tableau, et chaque valeur chaîne d'un objet (récursivement), dont la déclaration est précédée de la ligne `// voix: phrases` (à poser sur `WRONG_HINTS`, `js/features/screen/screen.js:14`, `HINT_CHEERS`, `js/features/hints/hints.js:207`, `PROGRESS_CHEERS`, `js/features/adaptive/adaptive.js:39`, et sur toute table de répliques fixes qu'on veut entendre avec la belle voix).
+  - R5 : chaque élément chaîne d'un tableau, et chaque valeur chaîne d'un objet (récursivement), dont la déclaration est précédée de la ligne `// voix: phrases` (à poser sur `WRONG_HINTS`, `js/features/screen/screen.js:14`, `HINT_CHEERS`, `js/features/hints/hints.js:273`, `PROGRESS_CHEERS`, `js/features/adaptive/adaptive.js:41`, et sur toute table de répliques fixes qu'on veut entendre avec la belle voix).
   - Une valeur compte si c'est un littéral chaîne ou un gabarit **sans** `${…}` ; tout le reste est ignoré (dit par Web Speech). Puis la clé = `toSpoken(valeur)` ; rejetée si elle contient un chiffre, est vide, ou dépasse 400 caractères.
   - Les phrases des jeux de lecture (`reading`, `grammar`, futur `sentence`) suivent les mêmes règles : un clip ne dit que ce que Web Speech aurait dit (l'exception « ne pas dire le mot à lire » est tenue par voix-partout, dans les appels).
 - **Arbitrages** :
@@ -266,7 +267,7 @@ export const VOICE_CLIPS = {
 | `voix/voix.json` | forme ci-dessus | Amrou (choix à l'écoute) | script seulement (la carte parents lit `VOICE_SERVICE`, ci-dessous) |
 | File de parole | `speak(text, opts)`, `stopSpeech()`, lecteur interne `playItem(item, done) → stop` avec `item = { text, key, rate, demand, el }` (forme figée par voix-partout, contrat « `playItem` » ; `el` vient de `speak(text, { el })` et le lecteur de clips le surligne comme Web Speech, `voix-lu` de `playing` à `done()`) | voix-partout | cette track choisit clip ou Web Speech dans `playItem` d'après `item.key` et `item.rate`, appelle `done()` une seule fois à la fin, et rend `stop()` |
 | Réexports de `js/shared/ui/index.js` | ajouts de cette track : `export { VOICE_SERVICE } from './voice-clips.js';` et `voiceOfflineState` dans la ligne d'export de `./voice.js` (avec `stopSpeech`, `newVoiceScene` ajoutés par voix-partout). `VOICE_CLIPS`, `VOICE_UNLOCK` et `setVoiceClips` ne sont pas réexportés : seul `voice.js`, dans la slice, les lit (les tests passent par `ev`, la garde lit le fichier par `fs.readFileSync` puis `acorn`, comme le script (politique « Lecture de `voice-clips.js` »)) | cette track | carte « Voix » : `import { VOICE_SERVICE, voiceOfflineState } from '../../shared/ui/index.js';` et `import { on } from '../../shared/lib/index.js';` |
-| Types (JSDoc strict, `js/shared/`) | `voice-clips.js` : les trois `@type` ci-dessus. `voice.js` : `/** @typedef {{ cached: number \| null, total: number, full: boolean, offline: boolean, saveData: boolean }} VoiceOfflineState */` ; `voiceOfflineState(): VoiceOfflineState` ; `setVoiceClips(table: Record<string, string>, unlock: string): void`. `playItem` garde la signature et le `SpeechItem` de voix-partout (contrat « Types »), sans `any` ni `@ts-ignore`. `js/features/parents/voice-card.js` (couche features, pas encore stricte) : typé de même (`@param` de l'écouteur de `parents:cards`, `@returns {string}`) | cette track | `voice.js`, carte, garde |
+| Types (JSDoc strict, `js/shared/`) | `voice-clips.js` : les trois `@type` ci-dessus. `voice.js` : `/** @typedef {{ cached: number \| null, total: number, full: boolean, offline: boolean, saveData: boolean }} VoiceOfflineState */` ; `voiceOfflineState(): VoiceOfflineState` ; `setVoiceClips(table: Record<string, string>, unlock: string): void`. `playItem` garde la signature et le `SpeechItem` de voix-partout (contrat « Types »), sans `any` ni `@ts-ignore`. `js/features/parents/voice-card.js` : typé strictement comme tout code nouveau, quelle que soit sa slice (règle des deux checklists, même si `parents` n'est pas encore dans `tsconfig.strict.json`) (`@param` de l'écouteur de `parents:cards`, `@returns {string}`) | cette track | `voice.js`, carte, garde |
 | État hors ligne | `voiceOfflineState() → { cached: number \| null, total, full, offline, saveData }` et `emit('voice:offline', même objet)` | cette track | carte « Voix » (parents) |
 
 ## Surface d'attaque

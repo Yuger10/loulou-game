@@ -3,27 +3,35 @@ status: brouillon
 issue: 0
 size: M                  # quatre PR livrables seules : 1a, 1b, 2, 3 (L découpé)
 migration: false
-sensitive: false
+sensitive: true
 files:
-  - js/features/minigames/problems/problems.js
+  - js/features/minigames/problems/problems.js          # environ 450 lignes
+  - js/features/minigames/problems/problems-bank.js     # environ 250 lignes
+  - js/features/minigames/problems/problems-draw.js     # environ 200 lignes
+  - js/features/minigames/problems/problems-schema.js   # environ 300 lignes
+  - js/features/minigames/problems/problems-hints.js    # environ 150 lignes
   - js/features/minigames/problems/problems.css
   - js/features/minigames/problems/index.js
-  - js/features/minigames/code/code.js
+  - js/features/minigames/code/code.js                  # environ 450 lignes
   - js/features/minigames/code/code.css
   - js/features/minigames/code/index.js
   - js/slices.cjs
   - js/app/main.js
+  - tsconfig.strict.json   # peut changer : procédure d'include de Y1 (aujourd'hui, aucun ajout attendu)
   - js/entities/difficulty/index.js
+  - js/entities/difficulty/rounds-saison3.js   # problemsRound, codeRound et leurs types ; créé par la première PR qui en a besoin
   - js/entities/difficulty/game-types.js
   - js/entities/difficulty/difficulty.js
   - js/features/adaptive/adaptive.js
   - js/features/parents/parents.js
   - js/entities/world/worlds.js
   - js/entities/character/characters.js
-  - js/entities/character/characters-art.js
+  - js/entities/character/characters-art-saison3.js   # 4 dessins dans ART_S3 (fichier préparé par saison3-ouverture)
+  - index.html                       # régénéré par bun run sync (zone sensible)
+  - sw.js                            # régénéré par bun run sync et release (zone sensible)
   - js/entities/item/items.js
   - js/entities/squishy/squishies.js
-  - js/features/squishies/squishy-art.js   # créé par la phase 0 de squishy-boites ; 6 entrées SQ_ART
+  - js/features/squishies/squishy-art.js   # 6 entrées SQ_ART (fichier déjà sur main)
   - js/features/story/story.js
   - js/features/story/episodes.js
   - js/features/music/music.js
@@ -35,7 +43,7 @@ files:
   - test/games.test.js               # INDEPENDENT.problems et INDEPENDENT.code
   - test/companions.test.js          # lu, pas modifié : sa boucle générique couvre les deux jeux
   - test/smoke.test.js
-taster: { facts: 0, decisions: 0, rounds: 10 }
+taster: { facts: 5, decisions: 0, rounds: 11 }
 ---
 
 <!-- Gabarit cothon 0.4.0 (setting-up-docs), adopté dans Conductor (cothon 0.2.0-2 et 0.4.0-6) : une nouvelle track part de ce fichier. -->
@@ -44,7 +52,7 @@ taster: { facts: 0, decisions: 0, rounds: 10 }
 
 - Nouveau projet : non
 
-L'île : `coffres`, emoji 🗝️, niveau d'ouverture **86**. Règle et tableau de tous les niveaux : `conductor/niveaux.md`. Idée de la joueuse. Prérequis de la phase 3 (l'île) : la track `saison3-ouverture` (troisième onglet, `ARCHIPELAGOS[3]`, `refreshArchipelagos()`, carte de Zap `ZAP_MAP_PIECES`) est sur `main`, l'île précédente de la saison (`dumplings`, track `monde-dumplings`) est déjà dans `WORLDS`, et la phase 0 de la track `squishy-boites` (dessins des squishies déplacés à l'identique dans `js/features/squishies/squishy-art.js`) est livrée. Ordre de livraison des îles : crayons, dumplings, coffres, chatouilles, concert. Les phases 1 et 2 (les deux mini-jeux) n'ont pas ce prérequis.
+L'île : `coffres`, emoji 🗝️, niveau d'ouverture **86**. Règle et tableau de tous les niveaux : `conductor/niveaux.md`. Idée de la joueuse. Prérequis de la phase 3 (l'île) : la track `saison3-ouverture` (troisième onglet, `ARCHIPELAGOS[3]`, `refreshArchipelagos()`, carte de Zap `ZAP_MAP_PIECES`) est sur `main`, l'île précédente de la saison (`dumplings`, track `monde-dumplings`) est déjà dans `WORLDS`, (les dessins des squishies sont déjà dans `js/features/squishies/squishy-art.js` sur `main`). Ordre de livraison des îles : crayons, dumplings, coffres, chatouilles, concert. Les phases 1 et 2 (les deux mini-jeux) n'ont pas ce prérequis.
 
 ## Problème
 
@@ -63,7 +71,7 @@ La joueuse veut « une île des coffres ». Le parent demande « plus de maths �
 7. Étant donné la représentation `concret-barre` (palier 2), alors elle fait exactement les gestes de `concret` (critères 5 et 6), puis, au clic qui termine Dessiner, les objets du coffre se rangent en barres (animation seulement visuelle) et le schéma F1 de son type apparaît rempli selon L1 ; vient ensuite le choix de l'opération (critère 9), puis Calculer. Le test vérifie que le schéma est montré, que ses étiquettes sont dans les cases de L1 et que les largeurs suivent la règle des longueurs.
 8. Étant donné la représentation `barres` (lignes 3 et 4 de `problemsRound`), quand l'étape Dessiner commence, alors le schéma vide de la table F1 s'affiche (chaque barre, celle du « ? » comprise, a sa vraie longueur, écrite en `style.width` selon la règle des longueurs de F1, ce que jsdom lit ; chaque barre de comparaison porte l'emoji de son personnage, table locale de B1) avec trois étiquettes (`.pb-label[data-l="n1|n2|q"]`, table L1) ; l'enfant touche une étiquette puis une case (`.pb-slot[data-s]`) ; une étiquette posée dans la bonne case s'y fixe (les deux parties d'un parties-tout sont interchangeables) ; une étiquette posée dans une mauvaise case est une erreur (critère 12).
 9. Étant donné les représentations `concret-barre` et `barres`, quand le schéma est rempli, alors l'enfant choisit l'opération (`.pb-sign[data-v="+"]` ou `[data-v="-"]`) : ➕ si l'on cherche le tout ou le plus grand (reunion, ajout, compPlus, étape 1 de deuxEtapes), ➖ si l'on cherche une partie, l'écart ou le plus petit (retrait, partie, ajoutInconnu, compEcart, compMoinsPlus, étape 2 de deuxEtapes) ; une mauvaise opération est une erreur. Au palier 4, au clic du bon signe, l'égalité s'écrit sous le schéma dans `B .pb-eq-text` (B : le bloc de l'étape, G1) : les deux nombres de l'étape en chiffres (1 compris), dans l'« ordre Q » de L1, le signe `+` ou `−` (U+2212, comme `js/features/minigames/math/math.js`), puis ` = ?`, séparés par des espaces ; après le bon résultat, le `?` devient ce résultat. Exemples au palier 4 : retrait a = 30, b = 12 : « 30 − 12 = ? » ; partie t = 40, a = 15 : « 40 − 15 = ? » ; ajoutInconnu a = 15, t = 40 : « 40 − 15 = ? » ; compPlus a = 23, b = 9 : « 23 + 9 = ? » ; compEcart a = 17, g = 35 : « 35 − 17 = ? » ; compMoinsPlus t = 44, b = 1 : « 44 − 1 = ? » ; deuxEtapes a = 20, b = 14, c = 9 : étape 1 « 20 + 14 = ? », étape 2 « 34 − 9 = ? » ; possible : pas d'égalité. Le test lit `textContent` de `.pb-eq-text` et le compare à cette forme.
-10. Étant donné la représentation `egalite` (palier 5), quand l'étape Dessiner commence, alors aucun schéma n'est montré : l'enfant remplit `□ ○ □ = ?` en touchant les deux nombres (`.pb-eq-num[data-k]`, les deux nombres de l'étape et eux seuls, table L1 ; ils remplissent les cases dans l'ordre) et le signe. L'égalité est jugée une seule fois, au toucher du signe, quand les deux cases sont pleines : addition juste dans les deux ordres, soustraction juste seulement grand moins petit. Un signe touché avant que les deux cases soient pleines ne fait rien ; un nombre touché quand les deux cases sont pleines ne fait rien. Une égalité fausse est une erreur (critère 12) : une erreur notée, un essai perdu, un nouveau problème. Exemple au palier 5 (3 essais), `partie` t = 63, a = 18 : l'enfant touche 18, puis 63, puis ➖ : une erreur, il reste 2 essais, un autre problème arrive ; s'il avait touché ➖ après le seul 63, rien ne se passait, puis 18 et ➖ donnaient une égalité juste (63 − 18), sans erreur.
+10. Étant donné la représentation `egalite` (palier 5), quand l'étape Dessiner commence, alors aucun schéma n'est montré : l'enfant remplit `□ ○ □ = ?` en touchant les deux nombres (`.pb-eq-num[data-k]`, les deux nombres de l'étape et eux seuls, table L1 ; ils remplissent les cases dans l'ordre) et le signe. L'égalité est jugée une seule fois, au toucher du signe, quand les deux cases sont pleines : elle est juste si et seulement si le signe est l'opération de l'étape (colonne « Opération » de T1 ; deuxEtapes : ➕ à l'étape 1, ➖ à l'étape 2) et, pour ➖, le grand nombre est d'abord ; pour ➕, les deux ordres sont justes. Tout autre signe est une erreur notée. Un signe touché avant que les deux cases soient pleines ne fait rien ; un nombre touché quand les deux cases sont pleines ne fait rien. Une égalité fausse est une erreur (critère 12) : une erreur notée, un essai perdu, un nouveau problème. Exemple au palier 5 (3 essais), `partie` t = 63, a = 18 : l'enfant touche 18, puis 63, puis ➖ : une erreur, il reste 2 essais, un autre problème arrive ; s'il avait touché ➖ après le seul 63, rien ne se passait, puis 18 et ➖ donnaient une égalité juste (63 − 18), sans erreur ; 63, 18, puis ➕ est une erreur (`partie` demande ➖).
 11. Étant donné l'étape Calculer, quand elle commence, alors `choices` nombres (champ de la ligne de `problemsRound`, R1 : 3 aux lignes 1 et 2, 4 aux lignes 3 à 5) sont proposés (`.pb-num[data-v]`) selon la règle R1 ; le bon choix allume l'étape Répondre ; un mauvais choix est une erreur.
 12. Étant donné une erreur à n'importe quelle étape notée, alors le moteur l'enregistre (`loseLife(el, { onRetry })`) et relance un **autre** problème (nouveau tirage selon X2, même mode d'exemple) : jamais le même à finir par élimination. Une erreur pendant le problème jumeau (mode `n = 0`) relance un nouveau jumeau seul (même type, nouveaux nombres selon X2), sans rejouer l'exemple résolu ; pendant la mission, le mode reste `n = 0` tant que le jumeau n'est pas réussi. Si les essais s'épuisent, l'échec est enregistré comme une mission jouée, comme pour tous les jeux (`recordMission(false)`, qui ajoute une entrée à `atLvl`) ; E1 ne change pas, donc la mission suivante peut avoir `n = 1` sans qu'aucun jumeau ait été réussi (le compagnon y fait encore Comprendre, les indices restent disponibles). Défauts de Claude, à juger à la revue par Amrou (D25, D31).
 13. Étant donné l'étape Répondre, quand l'enfant touche le « ? » (`.pb-answer`), alors il devient le nombre trouvé, la phrase réponse de la banque B1 est dite et écrite, et la mission est gagnée (`winSoon()`).
@@ -92,7 +100,7 @@ La joueuse veut « une île des coffres ». Le parent demande « plus de maths �
 
 31. Étant donné les prérequis livrés, quand on lit `WORLDS.coffres`, alors il existe avec `saison: 3`, `diff: 6`, `level: 86`, `map: { x: 82, y: 70 }`, `worldsOf(3).slice(0, 3)` vaut `['crayons', 'dumplings', 'coffres']` (donc `worldsOf(3).indexOf('coffres') === 2`, vrai aussi après les îles suivantes), et l'île est sur la carte de la saison 3 sans chevaucher une autre île (règle de `test/smoke.test.js`).
 32. Étant donné l'île ouverte pour la première fois, alors le chapitre C1 « Le troisième morceau de la carte » est lu par Clémence avant l'écran « Nouvelle île », et il montre `.story-zapmap svg.zap-map` (pas `.story-grisou`).
-33. Étant donné `state.coins = 0`, `state.storySolved = { crayons: true, dumplings: true }` et `storyWin('coffres')`, quand on le joue, alors on gagne 16 pièces et une boîte de la série `coffres`, `state.storySolved.coffres === true`, `zapMapPieces() === 3`, la fenêtre montre `.story-zapmap.happy svg.zap-map[data-found="3"]` (dessinée par `zapMapSVG(3, { fresh: 'coffres' })`), et la voix ajoute `zapMapSay(3)` (« La carte de Zap : tu as trouvé 3 morceaux sur 5. ») à la phrase de victoire ; un second `storyWin('coffres')` ne redonne pas la boîte. Rien d'autre n'est stocké.
+33. Étant donné `state.coins = 0`, `state.storySolved = { crayons: true, dumplings: true }` et `storyWin('coffres')`, quand on le joue, alors on gagne 16 pièces et une boîte de la série `coffres`, `state.storySolved.coffres === true`, `zapMapPieces() === 3`, la fenêtre montre `.story-zapmap.happy svg.zap-map[data-found="3"]` (dessinée par `zapMapSVG(zapMapFound(), { fresh: 'coffres' })`), et la voix ajoute `zapMapSay(3)` (« La carte de Zap : tu as trouvé 3 morceaux sur 5. ») à la phrase de victoire ; un second `storyWin('coffres')` ne redonne pas la boîte. Rien d'autre n'est stocké.
 34. Étant donné une mauvaise réponse à une énigme, alors une **autre** énigme de l'île est posée (mécanisme existant : l'énigme suivante de la liste, `js/features/story/story.js:565` ; avec 3 énigmes, elle diffère toujours de la précédente).
 35. Étant donné les 2ᵉ, 4ᵉ et 7ᵉ missions réussies sur l'île, alors les épisodes P1, P2, P3 se jouent, racontés par Kadi, Grignote et Pinçou, jamais par Clémence.
 36. Étant donné l'île, alors ses 4 personnages (table K1), ses 8 objets (O1), ses 2 recettes (R2), ses 5 décorations (D1), son paysage, son thème de couleurs, sa musique (M1) et sa série de 6 squishies (Q1) sont présents ; chaque personnage a `world: 'coffres'` et 2 objets préférés (`favoritesOf`), tous deux des objets de l'île (`ITEMS[k].world === 'coffres'`).
@@ -102,7 +110,7 @@ La joueuse veut « une île des coffres ». Le parent demande « plus de maths �
 
 ### T1. « Le trésor raconté » par palier (`problemsRound(dd)`)
 
-Livraison en deux PR (D30) : la PR 1a livre les lignes 1 à 3 (critères 1 à 9 sans l'égalité du palier 4, 11 à 13, 16 à 20 ; S1, S2, S4, S7 sur ce contenu) ; la PR 1b ajoute les lignes 4 et 5 (critères 10, 14, 15, l'égalité du critère 9 ; S1, S2, S4 sur toute la table). Entre les deux, les paliers 4 et 5 jouent la ligne 3 : `tierValue` renvoie l'entrée de la plus grande clé présente (`js/entities/difficulty/difficulty.js:92-106`), un état correct pour l'enfant et pour `test/games.test.js`.
+Livraison en deux PR (D30) : la PR 1a livre les lignes 1 à 3 (critères 1 à 9 sans l'égalité du palier 4, 11 à 13, 16 à 20 ; S1, S2, S4, S7 sur ce contenu) ; la PR 1b ajoute les lignes 4 et 5 (critères 10, 14, 15, l'égalité du critère 9 ; S1, S2, S4 sur toute la table). Entre les deux, les paliers 4 et 5 jouent la ligne 3 : `tierValue` renvoie l'entrée de la plus grande clé présente (`js/entities/difficulty/difficulty.js:92-105`), un état correct pour l'enfant et pour `test/games.test.js`.
 
 `min` et `max` : bornes du tout (ou du plus grand nombre de l'histoire). `ecart` : écart maximal des comparaisons.
 
@@ -176,6 +184,20 @@ Toujours présents : `data-type` (le type), `data-a`, `data-b`, `data-c`, `data-
 | deuxEtapes | a | b | c | vide | a + b − c ; `data-r1` = a + b |
 | possible | a | b | vide | vide | `oui` si b ≤ a, sinon `non` |
 
+### Z1. Fichiers de la slice `minigame-problems` (`max-lines` à 1100)
+
+`problems` est découpé en fichiers frères dans `js/features/minigames/problems/`, tous déclarés dans `files` de la slice `minigame-problems` de `js/slices.cjs` (ordre : banque, tirage, schéma, indices, puis `problems.js`), puis `bun run sync`. Chaque fichier importe ses frères directement (même slice) ; seul `index.js` est importé par les autres slices.
+
+| Fichier | Contenu | Taille estimée |
+|---|---|---|
+| `problems-bank.js` | `PB_PEOPLE`, objets de B1, gabarits B1 et phrases réponses, règle du nombre 1, textes N1, phrases d'étape | 250 lignes |
+| `problems-draw.js` | tirage T1 (nombres, poids, exclusions X2, mémoire du dernier type et des tuples), choix R1 et table « autre opération », attributs A1 | 200 lignes |
+| `problems-schema.js` | schémas F1 et étiquettes L1, règle des longueurs, égalité (`.pb-eq-text`, `.pb-eq-num`), vignettes V1, objets à toucher | 300 lignes |
+| `problems-hints.js` | table H0, textes H1, `registerHints('problems', …)` | 150 lignes |
+| `problems.js` | fenêtre, étapes, modes E1, exemple et jumeau, `gameSolution` G1, erreurs et relances, `registerGame` | 450 lignes |
+
+PR 1a : les cinq fichiers, contenu des paliers 1 à 3 ; PR 1b : ajouts dans les mêmes fichiers (environ 150 lignes en tout), chacun reste sous 600 lignes. `code` tient dans `code.js` (environ 450 lignes : fabrication, solveur, fenêtre, indices) ; s'il dépassait 1000 lignes, la fabrication passe dans `code-make.js`, même règle.
+
 ### P0. Ce que chaque phase suppose déjà présent
 
 Un jeu livré avant son île ne dépend d'aucune entité de l'île (personnages, objets, squishies, thème, musique, histoire) : `problems` a ses personnages (B1) et ses objets (emojis 🪙 🔑 💎 🐚 💍, table B1) en local ; `code` a ses symboles (S2) et ses couleurs de roues (T2) en local. Les deux n'importent que des slices déjà sur `main` : moteur des mini-jeux, `screen`, `hints`, `adaptive`, `entities/difficulty`, `shared/lib`, `shared/ui` (`speak`, `toSpoken`, `setHandler`), et le compagnon du joueur (`entities/companion`) pour l'exemple résolu et les indices.
@@ -185,11 +207,11 @@ Un jeu livré avant son île ne dépend d'aucune entité de l'île (personnages,
 | 1a | le jeu actuel seulement (slices ci-dessus) |
 | 1b | 1a |
 | 2 | le jeu actuel seulement (indépendante de 1a et 1b) |
-| 3 | 1a, 1b et 2 (le jeu favori `problems` et les répliques de Kadi et Grignote parlent des deux jeux) ; `saison3-ouverture` ; phase 0 de `squishy-boites` (`squishy-art.js`) ; `WORLDS.dumplings` (`monde-dumplings`) |
+| 3 | 1a, 1b et 2 (le jeu favori `problems` et les répliques de Kadi et Grignote parlent des deux jeux) ; `saison3-ouverture` ; `WORLDS.dumplings` (`monde-dumplings`) |
 
 ### G1. `gameSolution` de « Le trésor raconté » et harnais de test
 
-Les deux boucles génériques (`test/games.test.js:305-322`, `test/companions.test.js:278-286`) font `d.querySelector(sel).click()` pour chaque sélecteur, dans l'ordre, 5 ms réelles entre deux clics (minuteries du jeu ×0,1, donc 50 ms de jeu), puis attendent `.win-box` 3000 ms (2000 ms dans `companions`). D'où ces règles :
+Les deux boucles génériques (`test/games.test.js:306-322`, `test/companions.test.js:277-286`) font `d.querySelector(sel).click()` pour chaque sélecteur, dans l'ordre, 5 ms réelles entre deux clics (minuteries du jeu ×0,1, donc 50 ms de jeu), puis attendent `.win-box` 3000 ms (2000 ms dans `companions`). D'où ces règles :
 - tout se branche par `setHandler(el, 'click', fn)` ; objets, étiquettes et cases se touchent, rien ne se glisse ;
 - un clic fait passer l'étape tout de suite (état changé dans le gestionnaire, avant toute animation) ; gestes du compagnon et animations (objets qui volent, barres qui se rangent, au plus 600 ms de jeu) sont seulement visuels ; un clic pendant un geste le termine aussitôt ; la voix ne bloque jamais un bouton ;
 - la victoire passe par `winSoon()` (400 ms de jeu, 40 ms réelles), sous les 2000 ms du harnais ; aucune relance (`scheduleRetry`) sur le chemin de la solution.
@@ -371,12 +393,12 @@ Phrases des étapes (dites au début de chaque étape, quand l'enfant la fait) :
 Au début de chaque mission, avec `s = state.skills.problems` et `tier = gameDiff()` :
 définition totale, règles lues dans cet ordre, la première qui s'applique gagne :
 1. partie à plusieurs (`party.active`) : `n = 2` ;
-2. pas de `s`, ou `s.lvl` absent ou nul (une entrée créée par un indice, `countHint` dans `js/features/hints/hints.js:326-333`, ou par `recordMission` avant `adaptAfterMission`, `js/features/adaptive/skills.js:40-42`, n'a pas de `lvl`) : `n = 0` ;
+2. pas de `s`, ou `s.lvl` absent ou nul (une entrée créée par un indice, `countHint` dans `js/features/hints/hints.js:413-420`, ou par `recordMission` avant `adaptAfterMission`, `js/features/adaptive/skills.js:46-48`, n'a pas de `lvl`) : `n = 0` ;
 3. `tier > s.lvl` : `n = 0` ;
 4. `tier < s.lvl` : `n = 2` ;
 5. `tier === s.lvl` : `n = Math.min(2, (s.atLvl || []).length)`.
 
-Rien de nouveau n'est enregistré : `atLvl` est déjà tenu par `adaptAfterMission` (`js/features/adaptive/adaptive.js:103`) et remis à zéro à chaque changement de niveau du jeu (lignes 109 et 115), ce qui redonne un exemple résolu au nouveau palier.
+Rien de nouveau n'est enregistré : `atLvl` est déjà tenu par `adaptAfterMission` (`js/features/adaptive/adaptive.js:129`) et remis à zéro à chaque changement de niveau du jeu (lignes 135 et 141), ce qui redonne un exemple résolu au nouveau palier.
 
 ### N1. Ce que dit le compagnon quand il résout
 
@@ -526,7 +548,7 @@ Répliques (`texts`) :
 - Grignote : « Je compte tout : les pièces, les clés, les coffres ! Tu m'aides ? » ; « Une histoire, un dessin, un calcul… et hop, le trésor est trouvé ! » ; « Écoute bien mon histoire. La réponse se cache dedans ! »
 - Pinçou : « Avec mes pinces, j'ouvre les serrures… enfin, j'essaie ! » ; « Clic-clic ! On joue avant que je referme mes pinces ? » ; « Le sable est plein de trésors. On cherche ensemble ? »
 
-Dessins (`CHAR_ART`, demande explicite de cette spec ; aucun dessin existant n'est touché) : Clémence (`human`) : cheveux bruns en tresse, robe bleu canard, un gros trousseau de clés dorées à la ceinture ; Kadi (`svg`) : un cadenas doré tout rond, l'anse en haut, une molette à chiffres sur le ventre, yeux et joues comme Boumbo ; Grignote (`svg`) : une souris grise aux grandes oreilles roses, lunettes rondes, une pièce d'or dans les pattes ; Pinçou (`svg`) : un crabe orange, deux grosses pinces, une petite clé tenue dans une pince.
+Dessins (demande explicite de cette spec ; aucun dessin existant n'est touché) : dans la table `ART_S3` de `js/entities/character/characters-art-saison3.js`, que `characters-art.js` fusionne dans `CHAR_ART`, avec les aides (`svg`, `human`…) importées de `js/entities/character/characters-art-kit.js` ; ces deux fichiers sont préparés par la track `saison3-ouverture` (prérequis de la phase 3, règle « 2 bis » de `conductor/checklist-ile.md`) : Clémence (`human`) : cheveux bruns en tresse, robe bleu canard, un gros trousseau de clés dorées à la ceinture ; Kadi (`svg`) : un cadenas doré tout rond, l'anse en haut, une molette à chiffres sur le ventre, yeux et joues comme Boumbo ; Grignote (`svg`) : une souris grise aux grandes oreilles roses, lunettes rondes, une pièce d'or dans les pattes ; Pinçou (`svg`) : un crabe orange, deux grosses pinces, une petite clé tenue dans une pince.
 
 ### O1, R2, D1. Objets, recettes, décorations (`js/entities/item/items.js`, `world: 'coffres'`)
 
@@ -563,7 +585,7 @@ Paysage (`ISLE_SCENERY.coffres`, SVG 480 × 360 comme `musique` à `js/features/
 
 `SQUISHY_SERIES.coffres = { name: 'Coffres', emoji: '🔐', world: 'coffres' }`, `SQUISHY_ISLAND_SERIES.coffres = 'coffres'`, et `'coffres'` ajouté en fin de `SQUISHY_SERIES_ORDER`.
 
-Les 6 dessins sont des entrées `SQ_ART` écrites dans `js/features/squishies/squishy-art.js` (créé par la phase 0 de `squishy-boites`), sur le modèle de l'entrée `'lyre-doree'` (`body`, `face`, `faceY`, `back`, `front`), aujourd'hui à `js/features/squishies/squishy-room.js:491`. Si `squishy-art.js` n'existe pas au moment d'implémenter la phase 3, l'agent s'arrête et signale le prérequis manquant ; il ne crée aucun autre fichier et n'écrit pas dans `squishy-room.js`.
+Les 6 dessins sont des entrées `SQ_ART` (type `SqArt`, `js/features/squishies/squishy-art.js:10`) ajoutées à la table `SQ_ART` de `js/features/squishies/squishy-art.js:55`, sur le modèle de l'entrée `'lyre-doree'` (`body`, `face`, `faceY`, `back`, `front`, `js/features/squishies/squishy-art.js:438`) ; `squishyArtSVG` (`:579`) les dessine. `SQ_BOX_COLORS` (`:604`) n'est pas touché.
 
 Champs de chaque modèle, comme `'lyre-doree'` (`js/entities/squishy/squishies.js:449-457`) : `series: 'coffres'`, `name`, `say`, `rarity`, `color`, `shape`, `size`.
 
@@ -642,10 +664,10 @@ Aucun `@typedef` existant n'est étendu : toutes les entrées de l'île tiennent
 | `SQUISHY_SERIES` | `SquishySeries` (`js/entities/squishy/squishies.js:22`) | `coffres` avec `world` |
 | `SQUISHIES` | `Squishy` (`js/entities/squishy/squishies.js:26`) | 6 modèles, sans `how` |
 | `SQUISHY_ISLAND_SERIES`, `SQUISHY_SERIES_ORDER` | `Record<string, string>`, `string[]` | une clé, un id |
-| `LIVES_TABLE` | `Record<string, Record<number, number>>` (`js/entities/difficulty/difficulty.js:359`) | `problems: { 2: 4, 3: 4, 4: 3, 5: 3 }` |
-| `state.skills.problems` | `SkillRecord` (`js/entities/game-state/state.js:23`, `lvl?`, `atLvl?`) | lu seulement (E1) ; aucun champ de sauvegarde nouveau |
+| `LIVES_TABLE` | `Record<string, Record<number, number>>` (`js/entities/difficulty/difficulty.js:360`) | `problems: { 2: 4, 3: 4, 4: 3, 5: 3 }` |
+| `state.skills.problems` | `SkillRecord` (`js/entities/game-state/state.js:22-35`, `lvl?`, `atLvl?`) | lu seulement (E1) ; aucun champ de sauvegarde nouveau |
 
-Nouvelles fonctions de `js/entities/difficulty/difficulty.js`, typées strictement, sur le modèle de `rhythmRound` (`js/entities/difficulty/difficulty.js:817`) et de `tierValue` (`:88-90`) :
+Nouvelles fonctions, dans `js/entities/difficulty/rounds-saison3.js` (et non dans `difficulty.js`, presque plein : règle « 2 bis » de `conductor/checklist-ile.md`), typées strictement, sur le modèle de `rhythmRound` (`js/entities/difficulty/difficulty.js:818`) et de `tierValue` (`js/entities/difficulty/difficulty.js:92-105`) :
 
 ```js
 /** @typedef {'concret' | 'concret-barre' | 'barres' | 'egalite'} ProblemsRep */
@@ -667,7 +689,7 @@ function problemsRound(dd) { /* tierValue sur les objets littéraux de R1 */ }
 function codeRound(dd) { /* tierValue sur les objets littéraux ci-dessous */ }
 ```
 
-Objets littéraux de `codeRound` (T2) : `1: { wheels: 2, palette: 4, types: ['est', 'absent'], maxEst: 1, maxClues: 3 }`, `2: { wheels: 3, palette: 4, types: ['est', 'pas', 'absent'], maxEst: 1, maxClues: 4 }`, `3: { wheels: 3, palette: 5, types: ['est', 'pas', 'absent', 'voisins'], maxEst: 1, maxClues: 4 }`, `4: { wheels: 4, palette: 5, types: ['est', 'pas', 'absent', 'voisins'], maxEst: 1, maxClues: 5 }`, `5: { wheels: 4, palette: 6, types: ['pas', 'absent', 'voisins', 'bout'], maxEst: 0, maxClues: 6 }`. Les objets de `problemsRound` sont ceux de R1. Les deux sont ré-exportés par `js/entities/difficulty/index.js`. Le code des mini-jeux (`js/features/minigames/problems/`, `code/`) est vérifié par `tsc -p .` (non strict) et suit les conventions JSDoc d'`AGENTS.md` (`PB_PEOPLE`, symboles S2 et indices I2 typés à leur déclaration).
+Objets littéraux de `codeRound` (T2) : `1: { wheels: 2, palette: 4, types: ['est', 'absent'], maxEst: 1, maxClues: 3 }`, `2: { wheels: 3, palette: 4, types: ['est', 'pas', 'absent'], maxEst: 1, maxClues: 4 }`, `3: { wheels: 3, palette: 5, types: ['est', 'pas', 'absent', 'voisins'], maxEst: 1, maxClues: 4 }`, `4: { wheels: 4, palette: 5, types: ['est', 'pas', 'absent', 'voisins'], maxEst: 1, maxClues: 5 }`, `5: { wheels: 4, palette: 6, types: ['pas', 'absent', 'voisins', 'bout'], maxEst: 0, maxClues: 6 }`. Les objets de `problemsRound` sont ceux de R1. Les deux sont ré-exportés par `js/entities/difficulty/index.js`. `rounds-saison3.js` est créé par la première PR de la saison 3 qui en a besoin ; s'il n'existe pas encore, la PR 1a (ou la PR 2 si elle passe avant) le crée et le déclare dans `js/slices.cjs`, slice `difficulty`. `LIVES_TABLE`, `GENEROUS_KINDS` et `NO_TIMER_KINDS` restent dans `difficulty.js` (une ligne par jeu). `rounds-saison3.js` importe `tierValue` de `difficulty.js`, qui l'exporte pour cela (une ligne ajoutée à son `export`, par la première PR qui crée `rounds-saison3.js`). Tout nouveau code de cette track s'écrit strictement typé, quelle que soit sa slice (règle des deux checklists) : `problems.js` et `code.js` comme les ajouts aux slices `story`, `island`, `squishies`, `music`. Chaque fonction a `@param` et `@returns` ; chaque table a son `@type` ou son `@typedef` (`PB_PEOPLE` : `Record<string, { name: string, gender: 'f' | 'm', emoji: string }>` ; objets de B1 : `Record<string, { emoji: string, one: string, many: string, gender: 'f' | 'm' }>` ; symboles S2 : `Record<string, { emoji: string, name: string, of: string }>` ; un indice I2 : `{ t: 'est' | 'pas' | 'absent' | 'voisins' | 'bout', s: string, s2?: string, w?: number }`). Les types existants des slices de `main` suffisent, sans extension : les indices des deux jeux n'utilisent que les champs de `HintFx` (`glow`, `html`, `js/features/hints/hints.js:40-50`) et s'inscrivent par `registerHints` avec un `HintProvider<Q>` (`:55-57`, `:67`), où `Q` est le type de la question propre au jeu (`ProblemsHintQ = { moment: string, problem: object }` typé précisément dans `problems.js`, `CodeHintQ = { clues: object[] }` de même dans `code.js`) ; `setHintQuestion(kind, q, { choices })` garde sa signature (`:180-185`) ; procédure d'`include` (règle de `conductor/checklist-mini-jeu.md` section 3 et `conductor/checklist-ile.md` section 2) : la PR qui crée une slice essaie d'ajouter son glob à `include` de `tsconfig.strict.json` et lance `bun run typecheck` ; si des erreurs apparaissent hors des fichiers de la track, elle retire le glob et le note au journal de décisions du plan. Résultat attendu aujourd'hui : `"js/features/minigames/problems/**/*.js"` (PR 1a) et `"js/features/minigames/code/**/*.js"` (PR 2) n'y entrent pas, car un mini-jeu importe `minigame-engine`, qui n'est pas strict ; les slices existantes non strictes que la phase 3 touche (`story`, `island`) ne sont pas ajoutées. Dans tous les cas, le nouveau code est typé à la main ; le thème `MUSIC_THEMES.coffres` tient dans `MusicTheme` (`js/features/music/music.js:20-31`) ; les 6 dessins tiennent dans `SqArt`. Jamais `any` ni `@ts-ignore`.
 
 ## Décisions
 
@@ -680,11 +702,11 @@ Objets littéraux de `codeRound` (T2) : `1: { wheels: 2, palette: 4, types: ['es
 | D5 | Le schéma en barres est l'outil de modélisation | Schémas pour soutenir la modélisation | même PDF ; https://eld.bl.uk/catalog/100072653733_0x000001 (fourni par le brief, non relu : serveur injoignable) |
 | D6 | Vignettes sans décor : seulement les personnages et objets de l'histoire | Les illustrations qui portent une information inutile gênent | https://link.springer.com/article/10.1007/s10649-017-9802-3 (fourni par le brief, non relu : accès refusé) |
 | D7 | Exemple résolu puis estompé (E1) | Effet des exemples résolus et de l'estompage | https://link.springer.com/content/pdf/10.1007/s10648-023-09745-1.pdf (fourni par le brief, non relu : accès refusé) |
-| D8 | Le mode d'exemple se lit dans `state.skills.problems.atLvl`, sans nouveau champ de sauvegarde | `atLvl` existe, est par jeu et se vide à chaque changement de niveau | `js/features/adaptive/adaptive.js:100`, `:103`, `:109`, `:115` |
+| D8 | Le mode d'exemple se lit dans `state.skills.problems.atLvl`, sans nouveau champ de sauvegarde | `atLvl` existe, est par jeu et se vide à chaque changement de niveau | `js/features/adaptive/adaptive.js:126`, `:129`, `:135`, `:141` |
 | D9 | Toutes les étapes et le jumeau sont dans une seule fenêtre ouverte dès le départ | Le test joue `gameSolution` et refuse un sélecteur absent à l'ouverture | `test/games.test.js:310`, `:314` |
 | D10 | Une erreur relance un autre problème ou un autre cadenas | Anti-devinette du moteur | `js/features/minigame-engine/engine.js:112` (`loseLife`, `onRetry`), `conductor/product-guidelines.md:7` |
 | D11 | `problems` ne double pas `math`, `calc`, `money`, `share` | `math` illustre `a ± b` sans histoire, `calc` est sans image, `money` compose une somme, `share` travaille les fractions | `js/features/minigames/math/math.js:1`, `calc/calc.js:1`, `money/money.js:1`, `share/share.js:1` |
-| D12 | Essais de `problems` : `{ 2: 4, 3: 4, 4: 3, 5: 3 }` ; `code` dans les jeux généreux | Plusieurs étapes notées par mission : un essai de plus que le barème généreux | `js/entities/difficulty/difficulty.js:360`, `:346` |
+| D12 | Essais de `problems` : `{ 2: 4, 3: 4, 4: 3, 5: 3 }` ; `code` dans les jeux généreux | Plusieurs étapes notées par mission : un essai de plus que le barème généreux | `js/entities/difficulty/difficulty.js:360`, `:385` |
 | D13 | Pas de minuteur sur les deux jeux | Politique commune des nouveaux jeux | `js/entities/difficulty/difficulty.js:446`, brief de la saison 3 |
 | D14 | `problems` dans `calcul`, `code` dans `logique` | Décision d'Amrou (tableau de la saison 3) | `js/features/parents/parents.js:45`, `:55` |
 | D15 | Les deux jeux sont proposés dès 6 ans, pas avant (aucun ajout dans `AGE_GAME_TYPES`) | Dès 6 ans tous les jeux sont ouverts ; la compréhension orale d'un énoncé et la déduction à plusieurs indices sont du CP. Défaut du rédacteur, à juger à la revue | `js/entities/difficulty/game-types.js:100` |
@@ -693,17 +715,18 @@ Objets littéraux de `codeRound` (T2) : `1: { wheels: 2, palette: 4, types: ['es
 | D18 | Un cadenas par mission, palier 1 à 2 roues et 4 symboles (12 codes) | Le test exige tous les éléments à l'ouverture ; 12 codes rendent le hasard peu payant, et une erreur change de cadenas | `test/games.test.js:310`, `js/features/minigame-engine/engine.js:112` |
 | D19 | Aucun indice n'écarte de choix (`fx.dim`) | Règle : au plus une, au niveau 2, avec 4 choix ou plus ; plus simple de n'en écarter aucune | `js/features/hints/hints.js:37`, `:38` |
 | D20 | Récompense du chapitre : 16 pièces | Entre la Musique (14) et le grand final des Licornes (20). Défaut du rédacteur, à juger à la revue | `js/features/story/story.js:350`, `:408` |
-| D21 | Le morceau 3 de la carte : gagné quand `state.storySolved.coffres` est vrai, rien d'autre n'est stocké ; carte et voix par `zapMapPieces()`, `zapMapSVG(n, { fresh: id })`, `zapMapSay(n)` | Contrat fixé par la track `saison3-ouverture` (`ZAP_MAP_PIECES = ['crayons', 'dumplings', 'coffres', 'chatouilles', 'concert']`) | spec de `saison3-ouverture`, comportements 22 à 25 et 29, « Contrats partagés » |
+| D21 | Le morceau 3 de la carte : gagné quand `state.storySolved.coffres` est vrai, rien d'autre n'est stocké ; carte et voix par `zapMapFound()`, `zapMapPieces()`, `zapMapSVG(zapMapFound(), { fresh: id })`, `zapMapSay(n)` | Contrat fixé par la track `saison3-ouverture` (`ZAP_MAP_PIECES = ['crayons', 'dumplings', 'coffres', 'chatouilles', 'concert']`) | spec de `saison3-ouverture`, comportements 22 à 25 et 29, « Contrats partagés » |
 | D22 | Position `{ x: 82, y: 70 }` sur la carte de la saison 3 | Positions des cinq îles fixées ensemble et vérifiées contre la règle de chevauchement : crayons `{ x: 18, y: 78 }`, dumplings `{ x: 50, y: 74 }`, coffres `{ x: 82, y: 70 }`, chatouilles `{ x: 82, y: 26 }`, concert `{ x: 50, y: 22 }` | décision de coordination de la saison 3 (22/11/2026) ; même place que les Bonbons dans la saison 2, `js/entities/world/worlds.js:206` |
-| D23 | Thème de musique `pluck` et `tick` | Instruments déjà disponibles | `js/features/music/music.js:25`, `:36` |
+| D23 | Thème de musique `pluck` et `tick` | Instruments déjà disponibles | `js/features/music/music.js:38`, `:49` |
 | D25 | Erreur pendant le jumeau : nouveau jumeau seul, `n = 0` tant qu'aucun jumeau n'est réussi | Ne pas faire revoir l'exemple à chaque erreur. Défaut de Claude, à juger à la revue par Amrou | tour 1 du testeur à blanc ; E1 |
 | D26 | Un symbole posé sur une seconde roue quitte la première | Jamais de doublon, aucune erreur « bête ». Défaut de Claude, à juger à la revue par Amrou | tour 1 du testeur à blanc ; critère 25 |
 | D27 | Brancher un mini-jeu touche aussi `js/app/main.js` (import de la slice) et `js/entities/difficulty/index.js` (ré-export de `<cle>Round`) | Comme `nesting` | `js/app/main.js:55`, `js/entities/difficulty/index.js:30` |
 | D28 | Barre « ? » à sa vraie longueur, échelle = plus grand nombre du schéma ; leurres à au plus 3 (paliers 1 à 3) ou 10 (paliers 4 et 5) du résultat | Un schéma montre les relations entre quantités, et estimer l'ordre de grandeur fait partie de l'apprentissage (« est-ce possible ? ») ; des leurres proches empêchent de répondre à la seule largeur. Défaut de Claude, à juger à la revue par Amrou | tour 2 du testeur à blanc ; F1, R1 |
-| D29 | Les dessins des squishies vont dans `js/features/squishies/squishy-art.js`, créé par la phase 0 de `squishy-boites` (prérequis de la phase 3) | Règle commune des cinq îles de la saison 3 ; `squishyArtSVG` renvoie une chaîne vide sans entrée `SQ_ART` | `js/features/squishies/squishy-room.js:108`, `:491` ; décision de coordination du 22/11/2026 |
-| D30 | `problems` livré en deux PR : 1a (paliers 1 à 3), puis 1b (paliers 4 et 5 : égalité, `compMoinsPlus`, `deuxEtapes`, `possible`) ; `bun run release patch` pour 1a, 1b et 2, `bun run release track` pour 3 | Une PR par morceau livrable ; avant 1b, `tierValue` sert la table du palier 3 aux paliers 4 et 5 | `js/entities/difficulty/difficulty.js:92-106` ; décision de coordination du 22/11/2026 ; `conductor/workflow.md:57-58` |
-| D31 | Essais épuisés : échec enregistré (`recordMission(false)`) comme pour tous les jeux, E1 inchangé (la mission suivante peut avoir `n = 1` sans jumeau réussi) | Même règle pour tous les jeux. Défaut de Claude, à juger à la revue par Amrou | tour 7 du testeur à blanc ; `js/features/adaptive/skills.js:31` |
-| D32 | Types : aucun `@typedef` existant étendu ; `ProblemsRound` et `CodeRound` nouveaux, `problemsRound` et `codeRound` typés strictement | `js/entities` est en TypeScript strict ; les entrées de l'île tiennent dans `World`, `Character`, `Item`, `CraftedItem`, `SquishySeries`, `Squishy` | table Y1 ; `conductor/checklist-mini-jeu.md:30`, `conductor/checklist-ile.md:10` |
+| D29 | Les dessins des 6 squishies vont dans `SQ_ART` de `js/features/squishies/squishy-art.js` | Les dessins y vivent déjà sur `main` ; `squishyArtSVG` renvoie une chaîne vide sans entrée `SQ_ART` | `js/features/squishies/squishy-art.js:55`, `:438`, `:579` |
+| D30 | `problems` livré en deux PR : 1a (paliers 1 à 3), puis 1b (paliers 4 et 5 : égalité, `compMoinsPlus`, `deuxEtapes`, `possible`) ; `bun run release patch` pour 1a, 1b et 2, `bun run release track` pour 3 | Une PR par morceau livrable ; avant 1b, `tierValue` sert la table du palier 3 aux paliers 4 et 5 | `js/entities/difficulty/difficulty.js:92-105` ; décision de coordination du 22/11/2026 ; `conductor/workflow.md:57-58` |
+| D31 | Essais épuisés : échec enregistré (`recordMission(false)`) comme pour tous les jeux, E1 inchangé (la mission suivante peut avoir `n = 1` sans jumeau réussi) | Même règle pour tous les jeux. Défaut de Claude, à juger à la revue par Amrou | tour 7 du testeur à blanc ; `js/features/adaptive/skills.js:37` |
+| D32 | Types : aucun `@typedef` existant étendu ; `ProblemsRound` et `CodeRound` nouveaux, `problemsRound` et `codeRound` typés strictement ; tout le nouveau code typé à la main ; les deux slices de mini-jeux n'entrent dans `tsconfig.strict.json` que si `bun run typecheck` reste vert (pas aujourd'hui : `minigame-engine` n'est pas strict) | `js/entities` est en TypeScript strict ; les entrées de l'île tiennent dans `World`, `Character`, `Item`, `CraftedItem`, `SquishySeries`, `Squishy` | table Y1 ; `conductor/checklist-mini-jeu.md:30`, `conductor/checklist-ile.md:10` |
+| D33 | Taille : `problems` en 5 fichiers frères (Z1) ; `problemsRound` et `codeRound` dans `rounds-saison3.js` ; dessins dans `characters-art-saison3.js` (`ART_S3`) | `max-lines` à 1100 ; `difficulty.js` et `characters-art.js` presque pleins | `.oxlintrc.json` ; `conductor/checklist-ile.md` section « 2 bis » |
 | D24 | Noms des personnages proposés par Claude, jugés par la joueuse | Politique commune | brief de la saison 3 ; `conductor/product-guidelines.md:19` |
 
 ## Politiques
@@ -729,11 +752,12 @@ Objets littéraux de `codeRound` (T2) : `1: { wheels: 2, palette: 4, types: ['es
 | Contrat | Forme (ou lien) | Propriétaire | Consommateurs |
 |---|---|---|---|
 | Archipel de la saison 3 | `ARCHIPELAGOS[3]`, `refreshArchipelagos()`, `shownArchipelagos()` | `saison3-ouverture` (`entities/world`) | `WORLDS.coffres.saison = 3`, `test/coffres.test.js` |
-| Carte de Zap | `ZAP_MAP_PIECES` (coffres au rang 3), `zapMapPieces()`, `zapMapSVG(n, { fresh: id })`, `zapMapSay(n)`, `.story-zapmap` ; morceau gagné si `state.storySolved.coffres` | `saison3-ouverture` (`features/story`) | chapitre C1 (critères 32 et 33) |
+| Dessins de la saison 3 | `ART_S3` de `js/entities/character/characters-art-saison3.js`, aides de `characters-art-kit.js` | `saison3-ouverture` | K1 (4 dessins) |
+| Carte de Zap | `ZAP_MAP_PIECES` (coffres au rang 3), `zapMapFound()`, `zapMapPieces()`, `zapMapSVG(zapMapFound(), { fresh: id })`, `zapMapSay(n)`, `.story-zapmap` ; morceau gagné si `state.storySolved.coffres` | `saison3-ouverture` (`features/story`) | chapitre C1 (critères 32 et 33) |
 | Île précédente | `WORLDS.dumplings` présent avant `WORLDS.coffres` | `monde-dumplings` | `worldsOf(3)`, critère 31 |
 | Mode d'exemple | `state.skills.problems.lvl` et `.atLvl` (lecture seule) | slice `adaptive` | `problems` (E1) |
 | `gameSolution` | liste ordonnée de sélecteurs, tous présents à l'ouverture | moteur des mini-jeux | `test/games.test.js`, `test/companions.test.js` |
-| Types de difficulté | `ProblemsRound`, `CodeRound` (table Y1) | cette track (`entities/difficulty`) | `problems.js`, `code.js`, tests |
+| Types de difficulté | `ProblemsRound`, `CodeRound` (table Y1), dans `js/entities/difficulty/rounds-saison3.js` | première PR de la saison 3 qui crée ce fichier (`entities/difficulty`) | `problems.js`, `code.js`, tests |
 | Données de la fenêtre | `#pb-root[data-type][data-a][data-b][data-c][data-t][data-r]` ; `#code-root[data-wheels][data-palette][data-code][data-clues]` (table A2) | cette track | `INDEPENDENT.problems` et `INDEPENDENT.code` de `test/games.test.js` |
 
 ## Surface d'attaque
@@ -742,7 +766,12 @@ Aucune : aucune entrée de texte, aucun import, aucune donnée extérieure. Les 
 
 ## Zones sensibles touchées
 
-Aucune : pas de champ de sauvegarde, pas d'import, pas de pause ni de parents (seul `SKILL_GROUPS` reçoit deux clés, une donnée), pas de PWA écrite à la main (`index.html` et `sw.js` régénérés par `bun run sync` et `bun run release`), pas de dépendance, garde d'architecture inchangée (deux slices ajoutées dans `js/slices.cjs` selon la checklist, sans assouplir la garde).
+Relecture humaine demandée dans chaque PR :
+- `js/features/parents/parents.js` (espace parents) : `SKILL_GROUPS` reçoit `problems` (groupe `calcul`, PR 1a) et `code` (groupe `logique`, PR 2), une donnée seulement ;
+- PWA : `index.html` et `sw.js` régénérés par `bun run sync` (nouveaux fichiers des slices) et `bun run release` (cache), jamais écrits à la main ;
+- garde d'architecture : deux slices ajoutées dans `js/slices.cjs` selon la checklist, et les fichiers frères de `problems` déclarés dans sa slice, sans assouplir la garde.
+
+Pas de champ de sauvegarde, pas d'import, pas de pause, pas de dépendance.
 
 ## Smoke test
 

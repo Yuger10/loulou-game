@@ -4,8 +4,8 @@ issue: 0
 size: M                  # S | M ; L se découpe (ici en phases, une PR chacune)
 migration: false
 sensitive: false         # moteur, indices et mini-jeux : aucune zone sensible
-files: [js/features/hints/hints.js, js/features/hints/index.js, js/features/hints/hints.css, js/features/minigame-engine/engine.js, js/features/minigame-engine/index.js, js/features/companion-team/specialties.js, js/features/minigames/count/count.js, js/features/minigames/compare/compare.js, js/features/minigames/math/math.js, js/features/minigames/calc/calc.js, js/features/minigames/clock/clock.js, js/features/minigames/puzzle/puzzle.js, js/features/minigames/money/money.js, js/features/minigames/packs/packs.js, js/features/minigames/share/share.js, js/features/minigames/ladybugs/ladybugs.js, test/explications.test.js, conductor/checklist-mini-jeu.md]
-taster: { facts: 0, decisions: 0, rounds: 5 }
+files: [js/features/hints/hints.js, js/features/hints/index.js, js/features/hints/hints.css, js/features/minigame-engine/engine.js, js/features/minigame-engine/index.js, js/features/companion-team/specialties.js, js/features/minigames/count/count.js, js/features/minigames/compare/compare.js, js/features/minigames/math/math.js, js/features/minigames/calc/calc.js, js/features/minigames/clock/clock.js, js/features/minigames/puzzle/puzzle.js, js/features/minigames/money/money.js, js/features/minigames/packs/packs.js, js/features/minigames/share/share.js, js/features/minigames/ladybugs/ladybugs.js, test/explications.test.js, test/companions.test.js, conductor/checklist-mini-jeu.md, PRD-lagon-magique.md]
+taster: { facts: 3, decisions: 0, rounds: 7 }
 ---
 
 <!-- Gabarit cothon 0.4.0 (setting-up-docs), adopté dans Conductor (cothon 0.2.0-2 et 0.4.0-6) : une nouvelle track part de ce fichier. -->
@@ -55,7 +55,7 @@ Vocabulaire : une **explication** est l'objet `{ say, fx }` qu'un jeu renvoie po
 
 ## Le contrat `registerExplain`
 
-Nommé d'après `registerHints` (`js/features/hints/hints.js:41-44`), dans la même slice : il réutilise la question déjà connue des indices (`setHintQuestion`) et leurs effets visuels (`applyHintFx`).
+Nommé d'après `registerHints` (`js/features/hints/hints.js:61-70`), dans la même slice : il réutilise la question déjà connue des indices (`setHintQuestion`) et leurs effets visuels (`applyHintFx`).
 
 ```js
 // à la fin du fichier du jeu, à côté de registerHints
@@ -69,13 +69,16 @@ loseLife(btn, { onRetry: renderMath, wrong: Number(btn.dataset.v) });
 
 - `wrong(q, v)` renvoie `{ say, fx }` ou `null` (pas d'explication pour ce cas : comportement d'avant).
 - `fx` accepte les clés des indices `glow`, `marks`, `strike`, `html`, `run`, plus `fill: { sel, text }` (écrit `text` dans l'élément et lui ajoute `filled explain-fill`). `dim` est interdit (le test le refuse).
+- Formats, ceux de `HintFx` (`js/features/hints/hints.js:41-51`) : `glow` est **une chaîne** de sélecteurs (`applyHintFx` la passe telle quelle à `querySelectorAll`, `hints.js:357-367`), sélecteurs joints par `, ` (virgule, espace) : d'abord ceux de la colonne `fx` de la table, dans l'ordre, puis celui de la bonne réponse en dernier, sauf s'il y figure déjà (pas de doublon) ; `marks` est `[{ sel, text }]` avec `text` une chaîne (`String(...)`, comme `count.js:74-77`) ; `fill` est `{ sel, text }`, `text` chaîne ; `strike` et `html` sont des chaînes ; `run` est une fonction.
+- La ligne 14 compare `fx` par **égalité profonde** à l'objet attendu, l'ordre des clés étant indifférent (comparaison des JSON aux clés triées) ; `run` est retiré avant la comparaison et vérifié seulement par sa présence (`typeof fx.run === 'function'`) quand la table en prévoit un.
+- **Types stricts** (`hints.js` est dans `tsconfig.strict.json`) : `/** @typedef {Omit<HintFx, 'dim'> & { fill?: { sel: string, text: string } }} ExplainFx */` ; `/** @typedef {{ say: string, fx: ExplainFx }} Explain */` ; `/** @template Q, V @typedef {{ wrong: (question: Q, v: V) => Explain | null, right?: (question: Q) => string | null }} ExplainProvider */` ; registre `/** @type {Record<string, ExplainProvider<unknown, unknown>>} */` ; `registerExplain<Q, V>(key: string, p: ExplainProvider<Q, V>): void` (même conversion que `registerHints`, `hints.js:61-70`) ; `hasExplain(kind: string): boolean` ; `explainFor(kind: string, q: unknown, v: unknown): Explain | null` ; `explainShow(v: unknown): boolean` ; `explainClear(): void` ; `strategyLine(): string | null` ; `hintPolicy` gagne `onExplain: ((kind: string) => void) | null` dans son type (`hints.js:122-133`). Côté moteur et jeux (règle des checklists : tout nouveau code est typé strictement) : `EXPLAIN_MS` `number` ; `scheduleRetry(fn: () => void, delay?: number): void` ; l'option `wrong?: unknown` dans le type des options de `loseLife` ; `winPraises(who: string): string[]` ; chaque jeu déclare le type de sa question et de sa mauvaise réponse (ex. `/** @typedef {{ n: number, emoji: string }} CountQuestion */`, `ExplainProvider<CountQuestion, number>`). Jamais `any` ni `@ts-ignore`.
 - Les étiquettes posées par `fx.marks` reçoivent les classes `hint-mark explain-mark`.
 - `right(q)` renvoie une phrase de 3 à 10 mots, au passé composé, qui décrit ce que l'enfant a fait.
 - API ajoutée à `js/features/hints/index.js` : `registerExplain`, `hasExplain(kind)`, `explainFor(kind, q, v)` (pur, pour les tests), `explainShow(v)` (montre l'explication de la question courante, renvoie `true` si elle a été montrée), `explainClear()` (retire bulle, étiquettes `.explain-mark`, classe `explaining`, réactive les boutons qu'elle a désactivés ; appelé par le moteur à la fin d'une question continuée, et par `hints` dans son `onModalChange`), `strategyLine()` (phrase `right` de la question courante, ou `null`). `hintPolicy` reçoit un champ `onExplain: null`.
 
 ## La bulle
 
-Structure exacte, insérée après `#challenge-timer`, sinon `.puzzle-hint`, sinon `.game-head` (même ancrage que `showHint`, `hints.js:245-257`) :
+Structure exacte, insérée après `#challenge-timer`, sinon `.puzzle-hint`, sinon `.game-head` (même ancrage que `showHint`, `hints.js:321-333`) :
 
 ```html
 <div class="explain-bubble" role="status">
@@ -85,10 +88,10 @@ Structure exacte, insérée après `#challenge-timer`, sinon `.puzzle-hint`, sin
 </div>
 ```
 
-- Aucune espace insécable n'est ajoutée (contrairement à `showHint`, `hints.js:261`) : `.explain-text` contient `say` exactement, et c'est ce que le test compare. `fx.html` va dans son propre `.hint-extra`, hors de `.explain-text`.
+- Aucune espace insécable n'est ajoutée (contrairement à `showHint`, `hints.js:337`) : `.explain-text` contient `say` exactement, et c'est ce que le test compare. `fx.html` va dans son propre `.hint-extra`, hors de `.explain-text`.
 - `speak(say)` reçoit `say` brut.
 - La classe `explaining` posée sur `#modal-body` est un **simple marqueur** (lu par les tests, aucune règle CSS). Elle est posée par `explainShow` et retirée par `explainClear`.
-- **Propriétaire des minuteries : le moteur.** Il programme la relance (`scheduleRetry`), l'écran « Raté ! » et, pour une question continuée, l'appel à `explainClear()` après `EXPLAIN_MS` ; son `onModalChange` (`engine.js:513-516`) les annule toutes. `hints` n'a aucune minuterie d'explication : son `onModalChange` (`hints.js:337-342`) appelle seulement `explainClear()`.
+- **Propriétaire des minuteries : le moteur.** Il programme la relance (`scheduleRetry`), l'écran « Raté ! » et, pour une question continuée, l'appel à `explainClear()` après `EXPLAIN_MS` ; son `onModalChange` (`engine.js:513-516`) les annule toutes. `hints` n'a aucune minuterie d'explication : son `onModalChange` (`hints.js:424-429`) appelle seulement `explainClear()`.
 
 ## Le déroulé dans le moteur (`loseLife`)
 
@@ -214,7 +217,7 @@ Dans les bandes, les signes s'affichent comme dans le jeu (`+`, `−` U+2212, `�
 
 | Erreur | `say` | `fx` |
 |---|---|---|
-| `v < target` | `Cette pile fait {v} : c'est moins que {target}.` | `marks` : la pile touchée (`solSel('.money-pile-btn','v',v)`) reçoit `{pièces jointes par +}={v}` ; la bonne pile reçoit `{pièces jointes par +}={target}` (piles lues dans `q.piles`) |
+| `v < target` | `Cette pile fait {v} : c'est moins que {target}.` | `marks` : la pile touchée (`solSel('.money-pile-btn','v',v)`) reçoit `pile.join(' + ') + ' = ' + v` (ex. `5 + 2 + 2 = 9`) ; la bonne pile reçoit `pile.join(' + ') + ' = ' + target` (ex. `5 + 2 + 1 = 8`) ; piles lues dans `q.piles` (la première de total v) |
 | `v > target` | `Cette pile fait {v} : c'est plus que {target}.` | idem |
 
 ### `packs` (`wrong` : le nombre touché ; `{T}` = `{n} paquets de {size} : {total}` sans jouet seul, `{n} paquets de {size} et 1 : {total}` avec ; bonne réponse `solSel('.pack-opt','v',total)`)
@@ -234,7 +237,7 @@ Dans les bandes, les signes s'affichent comme dans le jeu (`+`, `−` U+2212, `�
 | `fair` | toute | `Ces parts ne sont pas pareilles : une est plus grosse.` | `glow` `.share-opt[data-equal="1"]` |
 | `show` | gâteau aux parts égales mais `w.n !== q.n` | `Ce gâteau a {w.n} parts. {Part}, c'est {q.n} parts égales.` | `glow` `.share-opt[data-equal="1"][data-n="{q.n}"]` |
 | `show` | gâteau piège (`equal` faux) | `Ces parts ne sont pas égales : ce n'est pas {part}.` | idem |
-| `write` | toute | `Le gâteau a {q.n} parts égales : c'est {un}.` | `glow` `.share-stage` et `solSel('.share-opt','k',q.n)` ; `html` : `<span class="hint-strip"><i>½ ou ⅓ ou ¼ (celui de q.n)</i></span>` |
+| `write` | toute | `Le gâteau a {q.n} parts égales : c'est {un}.` | `glow` `.share-stage` et `solSel('.share-opt','k',q.n)` ; `html` : q.n = 2 `<span class="hint-strip"><i>½</i></span>`, q.n = 3 `<span class="hint-strip"><i>⅓</i></span>`, q.n = 4 `<span class="hint-strip"><i>¼</i></span>` |
 | `whole` `quarts-moitie` | toute | `Deux quarts font une moitié.` | `glow` `.share-stage` et la bonne réponse |
 | `whole` `quarts-entier` | toute | `Quatre quarts font le gâteau entier.` | idem |
 | `whole` `moities-entier` | toute | `Deux moitiés font le gâteau entier.` | idem |
@@ -325,6 +328,23 @@ Quand les 8 retirages ont tous donné la cible de la question ratée, à partir 
 
 Exemple (palier 1, `denoms = [1, 2]`, piles de 2 pièces) : la question ratée valait 3 ; le 9ᵉ tirage donne encore `correct = [2, 1]` (3), distracteurs `[2, 2]` (4) et `[1, 1]` (2). Étape 1 : la première pièce 2 est la dernière valeur de `denoms`, elle devient 1 : `[1, 1]`. Étape 2 : `target = 2`. Étape 3 : `[2, 2]` (4) est gardé, `[1, 1]` (2) est retiré. Étape 4 : un tirage `[2, 1]` (3) est accepté. Choix affichés : piles de 2 (bonne), 4 et 3.
 
+### Exemples littéraux (un par jeu, repris par la ligne 14)
+
+`G1` = `.math-illustration .math-group:first-child`, `G2` = `.math-illustration .math-group:last-child` (écrits en entier dans le code et le test).
+
+| Jeu | `q`, `v` | `{ say, fx }` attendu |
+|---|---|---|
+| `count` | `{ n: 5, emoji: '⭐' }`, 4 | `{ say: "Il ne faut en oublier aucun. Il y en a 5.", fx: { marks: [{ sel: '.count-row span:nth-child(1)', text: '1' }, { sel: '.count-row span:nth-child(2)', text: '2' }, { sel: '.count-row span:nth-child(3)', text: '3' }, { sel: '.count-row span:nth-child(4)', text: '4' }, { sel: '.count-row span:nth-child(5)', text: '5' }], glow: '.num-btn[data-v="5"]' } }` |
+| `compare` | `{ a: 42, b: 47, answer: '<' }`, `'>'` | `{ say: "47 est plus grand que 42 : la bouche s'ouvre vers 47.", fx: { fill: { sel: '.cmp-q', text: '<' }, glow: '.cmp-equation .cmp-num:last-child, .cmp-btn[data-v="<"]' } }` |
+| `math` | `{ a: 4, b: 3, op: '+', result: 7, emoji: '🐚' }`, 6 | `{ say: "Il en manque. Je pars de 4 et j'avance de 3 : 7.", fx: { fill: { sel: '.eq-q', text: '7' }, marks: [{ sel: 'G1 span:last-child', text: '4' }, { sel: 'G2 span:nth-child(1)', text: '5' }, { sel: 'G2 span:nth-child(2)', text: '6' }, { sel: 'G2 span:nth-child(3)', text: '7' }], glow: '.num-btn[data-v="7"]' } }` |
+| `calc` | `{ text: '23 + 14', result: 37, first: 23, ops: [{ sign: '+', n: 14 }] }`, 38 | `{ say: "D'abord les dizaines : 33. Puis les unités : 37.", fx: { fill: { sel: '.eq-q', text: '37' }, html: '<span class="hint-strip"><i>23 + 10 = 33</i><i>33 + 4 = 37</i></span>', glow: '.num-btn[data-v="37"]' } }` |
+| `clock` | `{ hour: 3, minute: 30, answer: '3 h 30', options: [...] }`, `'4 h 30'` | `{ say: "La petite aiguille est sur le 3 : il est 3 heures 30.", fx: { glow: '.clock-hand-h, .clock-opt-btn[data-v="3 h 30"]', run: (fonction qui ajoute clockNumbersSVG() au cadran s'il n'y est pas) } }` |
+| `puzzle` | `{ seq: [3, 4, 5, 6, 7], idx: 2, variant: 'start' }`, 6 | `{ say: "6 vient plus tard. Quel nombre vient juste après 4 ?", fx: { glow: '.puzzle-btn.done' } }` |
+| `money` | `{ target: 8, piles: [{ pile: [5, 2, 2], total: 9 }, { pile: [5, 2, 1], total: 8 }, { pile: [2, 2, 1], total: 5 }] }`, 9 | `{ say: "Cette pile fait 9 : c'est plus que 8.", fx: { marks: [{ sel: '.money-pile-btn[data-v="9"]', text: '5 + 2 + 2 = 9' }, { sel: '.money-pile-btn[data-v="8"]', text: '5 + 2 + 1 = 8' }], glow: '.money-pile-btn[data-v="8"]' } }` |
+| `packs` | `{ size: 5, n: 3, extra: 0, label: false, total: 15 }`, 10 | `{ say: "Il manque un paquet. 3 paquets de 5 : 15.", fx: { marks: [{ sel: '.pack[data-pack="0"]', text: '5' }, { sel: '.pack[data-pack="1"]', text: '10' }, { sel: '.pack[data-pack="2"]', text: '15' }], glow: '.pack-opt[data-v="15"]' } }` |
+| `share` | `{ ask: 'write', n: 3, whole: null, trap: false }`, `{ equal: false, n: NaN, k: '4' }` | `{ say: "Le gâteau a 3 parts égales : c'est un tiers.", fx: { glow: '.share-stage, .share-opt[data-k="3"]', html: '<span class="hint-strip"><i>⅓</i></span>' } }` |
+| `ladybugs` | `{ mode: 'double', n: 4, total: 8 }`, 4 | `{ say: "Tu as compté une seule aile. 4 plus 4, ça fait 8.", fx: { glow: '#lb-stage, .lb-opt[data-v="8"]', html: '<span class="hint-strip"><i>4 + 4 = 8</i></span>' } }` |
+
 ### Où est la bonne réponse (ligne 6), jeu par jeu et mode par mode
 
 | Jeu, mode | Élément qui porte la bonne réponse | Ce que la ligne 6 exige |
@@ -349,7 +369,7 @@ Exemple (palier 1, `denoms = [1, 2]`, piles de 2 pièces) : la question ratée v
 - **Exemptés pour toujours** (`EXPLAIN_NEVER`) : `memory` (une erreur est le jeu lui-même, `loseLife(null)` sans réponse touchée, `memory.js:89`) et `simon` (le jeu rejoue déjà la séquence après une erreur, `simon.js:114-121`).
 - **Exemptés en attente** (`EXPLAIN_EXEMPT`, 18 jeux, `EXPLAIN_EXEMPT_MAX = 18` à la fin de cette track ; la liste ne peut que diminuer, chaque suite qui écrit les explications d'un jeu l'en retire et baisse le maximum) : `diff`, `sequence`, `reading`, `determinants`, `volume`, `calendar`, `shapes`, `planets`, `jigsaw`, `nesting`, `cubes`, `shelf`, `recipe`, `rhythm`, `pitch`, `lifecycle`, `potions`, `mirror`. C'est la liste après la phase 2 : la phase 1 y ajoute provisoirement `puzzle`, `money`, `packs`, `share`, `ladybugs` (23 jeux, `EXPLAIN_EXEMPT_MAX = 23`), que la phase 2 retire.
 - **Règles d'écriture**, communes à tous les jeux : une phrase de 3 à 12 mots qui dit **pourquoi** la réponse touchée ne va pas (ce qu'elle est, ou la règle qu'elle ne suit pas), puis, si la question est remplacée, la bonne réponse ; un geste sur ce qui est déjà à l'écran (`glow`, `marks`, `strike`, `fill`, `html` court) ; jamais d'animation nouvelle ; jamais « non », « faux », « raté » ; tutoiement, présent. En lecture (`reading`), on ne lit pas à voix haute le mot cible à la place de l'enfant tant que la question continue ; ici elle est remplacée, donc l'explication peut nommer l'image et montrer la première lettre des deux mots.
-- **Suites** (hors de cette track, voir « Hors périmètre ») : chaque suite écrit sa table selon les règles ci-dessus avant le code, retire ses jeux de `EXPLAIN_EXEMPT` et baisse `EXPLAIN_EXEMPT_MAX`. Pour `nesting` et `mirror`, l'explication remplace la phrase précise existante (`nesting.js:116-119`, `mirror.js:132`).
+- **Suites** (hors de cette track, voir « Hors périmètre ») : chaque suite écrit sa table selon les règles ci-dessus avant le code, retire ses jeux de `EXPLAIN_EXEMPT` et baisse `EXPLAIN_EXEMPT_MAX`. Pour `nesting` et `mirror`, l'explication remplace la phrase précise existante (`nesting.js:116-119`, `mirror.js:134`).
 - **Nouveaux jeux** (saison 3 et suivants) : jamais exemptés. Ils ont leurs explications dès leur PR (ligne ajoutée à la checklist). Si un nouveau jeu est déjà sur `main` quand la phase 1 de cette track est livrée, la phase 1 écrit ses explications selon les règles ci-dessus.
 
 ## Ordre de livraison avec `revision-espacee`
@@ -359,16 +379,25 @@ Règle en miroir de [la spec de revision-espacee](../revision-espacee_20261122/s
 - **Cas 1 : `revision-espacee` n'est pas livrée (sa phase 2) sur `main` quand cette track est implémentée.** Rien à câbler : `loseLife` n'a pas de mode manche. `revision-espacee` câblera `explainShow` dans ce mode à sa livraison.
 - **Cas 2 : `revision-espacee` phase 2 est déjà livrée (le moteur exporte `setRoundHandlers`).** La phase 1 de cette track ajoute, dans la branche manche de `loseLife` : `const shown = el !== null && opts.wrong !== undefined && explainShow(opts.wrong)` ; si `shown`, la bonne réponse de repli ne brille pas, la phrase « Regarde, c'était celle-ci. » n'est pas dite, et `onWrong` est appelé `EXPLAIN_MS` après l'erreur (au lieu de `REVIEW_SHOW_MS`) ; sinon, la branche de repli inchangée. Test ajouté à `test/explications.test.js` : une question de souvenirs de `math` ratée montre `.explain-bubble`, ne dit pas la phrase de repli, et passe à la suite `EXPLAIN_MS` après ; une question de `reading` (exempté) garde le repli.
 
+## Tests existants touchés (règle « Tests existants touchés par un changement voulu », `conductor/workflow.md`)
+
+| Assertion | Pourquoi elle casse | Réécriture, même force |
+|---|---|---|
+| `test/companions.test.js`, section « Proposition douce », `await waitFor(() => ev('hint.q') && !d.querySelector('.num-btn.ko'), 400)` avant « la relance remet les indices à zéro, le bouton brille encore » (vers la ligne 164) | Sur `count`, la relance arrive après `EXPLAIN_MS` (400 ms avec le temps ×0,1), à la limite du délai | Garder la question avant l'erreur (`const qAvant = ev('hint.q')`) et attendre la condition `ev('hint.q') !== qAvant && !d.querySelector('.num-btn.ko')`, avec pour délai maximal `ev('EXPLAIN_MS') * 0.1 + 200` (lu sur la constante, pas un nombre en dur) ; l'assertion qui suit ne change pas |
+| `test/companions.test.js`, section « Grisou : les câlins », « une seule erreur : Grisou ne dit rien » et « 2 erreurs d'affilée : Grisou console » (vers les lignes 587-596), sur `count` | Sur `count`, l'explication vide la file de l'équipe (D9) : Grisou ne parlerait plus | Même scénario sur `simon` (dans `EXPLAIN_NEVER` pour toujours) : `startGame('simon', 1)`, attendre « À toi » comme le parcours des indices du même fichier, toucher deux fois une mauvaise pastille ; mêmes deux assertions, mêmes textes attendus |
+
+Les autres tests qui attendent après une erreur sur un jeu des phases 1 et 2 (`test/smoke.test.js`, `test/games.test.js`, `test/saison2.test.js`) ont été relus par le testeur à blanc : ils restent justes (aucun n'attend une relance dans un délai plus court que `EXPLAIN_MS`, ni la phrase générique). Aucune autre modification de test existant.
+
 ## Décisions
 
 | Id | Décision | Pourquoi | Source |
 |---|---|---|---|
-| D1 | Le contrat s'appelle `registerExplain` et vit dans la slice `hints` | Même forme que `registerHints`, même question (`hint.q`), mêmes effets (`applyHintFx`) ; le moteur importe déjà `hints` | `js/features/hints/hints.js:17-29`, `:41-44`, `:278-306` ; `engine.js:43` |
+| D1 | Le contrat s'appelle `registerExplain` et vit dans la slice `hints` | Même forme que `registerHints`, même question (`hint.q`), mêmes effets (`applyHintFx`) ; le moteur importe déjà `hints` | `js/features/hints/hints.js:17-29`, `:61-70`, `:357-391` ; `engine.js:43` |
 | D2 | La mauvaise réponse est passée explicitement (`loseLife(el, { wrong })`) | Le moteur ne connaît que le bouton ; `share` a besoin de trois données du bouton | `engine.js:112` ; `share.js:178`, `:230` |
 | D3 | L'explication montre la bonne réponse de la question **ratée** quand cette question est remplacée | Donner la bonne réponse avec l'explication est plus efficace que « faux » seul (0,49 et 0,32 contre 0,05) ; aucune devinette possible, la question disparaît ; chez les petits, l'effet du rappel dépend d'un retour immédiat | https://people.acer.org/en/publications/effects-of-feedback-in-a-computer-based-learning-environment-on-s/ ; https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6110808/ |
 | D4 | Jamais la réponse quand la question continue (`puzzle`) | La règle des indices : la réponse n'est jamais donnée tant qu'il faut la trouver | `hints.js:8-12` |
 | D5 | La question suivante n'est jamais identique à la ratée | Sinon l'explication donnerait la réponse de la question suivante ; `count`, `math`, `compare`, `calc`, `clock`, `money` peuvent aujourd'hui retirer la même | `count.js:27`, `math.js:50`, `compare.js:33-42`, `calc.js:65`, `clock.js:60-62`, `money.js:41-43` ; modèle `packs.js:79-87` |
-| D6 | `EXPLAIN_MS = 4000`, `say` de 3 à 12 mots | Le brief fixe 4 s au plus ; la voix parle à 0,92 et `speak` coupe la phrase précédente quand la consigne suivante est lue | brief du parent ; `js/shared/ui/voice.js:125-128` ; `screen.js:50-58` |
+| D6 | `EXPLAIN_MS = 4000`, `say` de 3 à 12 mots | Le brief fixe 4 s au plus ; la voix parle à 0,92 et `speak` coupe la phrase précédente quand la consigne suivante est lue | brief du parent ; `js/shared/ui/voice.js:125-128` ; `screen.js:57-67` |
 | D7 | Pendant l'explication, tous les boutons de la fenêtre sont désactivés (sauf 🔈) | Aujourd'hui, pendant les 0,9 s, la bonne réponse reste touchable ; avec 4 s et la réponse qui brille, ce serait une victoire gratuite | `engine.js:103-110`, `:141-144` |
 | D8 | Aucun effet visuel nouveau : seulement `hint-glow`, `hint-mark`, `hint-strike`, une case remplie et la bulle | Les détails décoratifs nuisent à l'apprentissage | https://news.wsu.edu/2020/03/19/seductive-details-inhibit-learning/ ; `hints.css:204`, `:218`, `:246` |
 | D9 | L'explication vide la file de paroles de l'équipe (`hintPolicy.onExplain` branché sur `teamSayClear`) | Une seule voix : `teamHintSpoken` reprendrait la bulle après `HINT_HOLD_MS` (3500 ms), avant la fin des 4 s, et `speak` couperait l'explication ; la consolation de Grisou (2 erreurs d'affilée) est donc abandonnée quand une explication est dite | `specialties.js:61-62`, `:108-129`, `:141-154` ; `voice.js:125` |
@@ -380,15 +409,15 @@ Règle en miroir de [la spec de revision-espacee](../revision-espacee_20261122/s
 | D15 | Les énigmes d'histoire gardent la phrase générique | Hors des mini-jeux, hors de cette track | `js/features/story/story.js:557` |
 | D16 | Pas de bouton « passer » pendant les 4 s | Moins d'éléments à l'écran ; défaut du rédacteur, à juger à la revue (ligne S12) | défaut |
 | D18 | Cette track livre les phases 1, 2 et 3 en trois PR (`release patch`, `release patch`, `release track`) ; les autres jeux sont des suites hors périmètre | Garder une track de taille M, livrable par morceaux | défaut de Claude, à juger à la revue par Amrou |
-| D19 | Aucune couche stricte touchée : tous les fichiers de la track sont dans `js/features` (vérifiés par `tsc -p .`, pas par `tsconfig.strict.json`). Le champ `onExplain` s'ajoute au type JSDoc de `hintPolicy` (`onExplain: ((kind: string) => void) \| null`) ; `bun run typecheck` reste vert | Les règles de types de la checklist s'appliquent quand même au JavaScript vérifié | `tsconfig.strict.json` ; `js/features/hints/hints.js:79-92` ; `conductor/checklist-mini-jeu.md` |
-| D17 | La bulle d'explication est un élément distinct `.explain-bubble`, au même endroit que la bulle d'indice, avec la même apparence | `showHint` cherche `.hint-bubble` : une classe distincte évite qu'un indice réécrive l'explication | `hints.js:245-269` ; `hints.css:116-160` |
+| D19 | `hints.js` et `screen.js` sont vérifiés en strict ; le reste de la track (`minigame-engine`, `companion-team`, mini-jeux) s'écrit aussi strictement typé (règle des checklists). Types : section « Le contrat `registerExplain` » ; `bun run typecheck` reste vert | Tout nouveau code est typé strictement, quelle que soit sa slice | `tsconfig.strict.json` ; `js/features/hints/hints.js:41-58`, `:122-133` ; `conductor/checklist-mini-jeu.md` |
+| D17 | La bulle d'explication est un élément distinct `.explain-bubble`, au même endroit que la bulle d'indice, avec la même apparence | `showHint` cherche `.hint-bubble` : une classe distincte évite qu'un indice réécrive l'explication | `hints.js:321-345` ; `hints.css:116-160` |
 
 ## Politiques
 
-- **Arbitrages** : l'explication passe avant la phrase générique (jamais les deux) ; l'anti-devinette gagne toujours (question remplacée après l'explication, jamais la même, aucune réponse touchable pendant) ; un indice déjà affiché est retiré de l'écran pendant l'explication (`.hint-bubble` supprimée) et le niveau d'indice repart à zéro avec la nouvelle question, comme aujourd'hui (`hints.js:121-126`) ; les essais se comptent comme avant (une explication ne coûte ni ne rend d'essai) ; le minuteur s'arrête pendant l'explication et repart avec la question suivante (`startTimerIfNeeded` du rendu).
+- **Arbitrages** : l'explication passe avant la phrase générique (jamais les deux) ; l'anti-devinette gagne toujours (question remplacée après l'explication, jamais la même, aucune réponse touchable pendant) ; un indice déjà affiché est retiré de l'écran pendant l'explication (`.hint-bubble` supprimée) et le niveau d'indice repart à zéro avec la nouvelle question, comme aujourd'hui (`hints.js:185-190`) ; les essais se comptent comme avant (une explication ne coûte ni ne rend d'essai) ; le minuteur s'arrête pendant l'explication et repart avec la question suivante (`startTimerIfNeeded` du rendu).
 - **Défauts** : constantes `EXPLAIN_MS = 4000`, `EXPLAIN_EXEMPT_MAX = 18` ; pas de réglage parent ; aucune dépendance ; une explication qui lève une exception est ignorée (`try`/`catch` dans `explainShow`, avec commentaire, puis comportement d'avant) ; les nombres sont écrits en chiffres dans `say` (la voix les lit) ; les signes `+ − × =` n'apparaissent que dans `fx.html` et `fx.marks`.
 - **Référence visuelle** : la bulle reprend l'apparence de `.hint-bubble` (tête du compagnon `think`, texte), sans le numéro « 💡 n » ; règle CSS partagée `.hint-bubble, .explain-bubble` dans `js/features/hints/hints.css`. Les étiquettes, la brillance et le barré sont ceux des indices (`hints.css:204-260`). La case remplie `.eq-q.filled` reprend le style de la bonne réponse trouvée (`math.js:95-98`).
-- **Textes** : tous écrits dans les tables ci-dessus ; les jeux des phases 4 à 7 suivent les règles d'écriture de la section « Politique et phasage ».
+- **Textes** : tous écrits dans les tables ci-dessus ; les jeux des suites suivent les règles d'écriture de la section « Politique pour les autres jeux ».
 - **Détails non écrits** : l'agent prend l'option la plus simple, la note dans le journal de décisions du plan, l'humain juge à la revue.
 
 ## Hors périmètre
@@ -406,7 +435,7 @@ Règle en miroir de [la spec de revision-espacee](../revision-espacee_20261122/s
 | `registerExplain(key, { wrong, right })` | section « Le contrat » | slice `hints` | chaque mini-jeu |
 | `loseLife(el, { onRetry, disable, wrong })` | `wrong` : la mauvaise réponse, forme propre à chaque jeu (tables) | `minigame-engine` | chaque mini-jeu |
 | `explainShow`, `explainClear`, `strategyLine`, `EXPLAIN_MS` | section « Le déroulé » | `hints`, `minigame-engine` | moteur ; track `revision-espacee` |
-| `hintPolicy.onExplain(kind)` | `hints.js:92-103` + un champ | `hints` | `companion-team` |
+| `hintPolicy.onExplain(kind)` | `hints.js:135-146` + un champ | `hints` | `companion-team` |
 | `winPraises(who)` | tableau de 6 phrases | `minigame-engine` | écran de victoire, test |
 
 ## Surface d'attaque
@@ -429,7 +458,7 @@ Aucune.
 | S4 | 🤖 | `count` au palier 5 (1 essai) : une erreur ; en phase 2, `puzzle` au palier 5 | « Raté ! » après 4 s, pas avant | test-verified |
 | S5 | 🤖 | `party.active = true` ; temps écoulé | aucune bulle | test-verified |
 | S6 | 🤖 | jeu exempté (`reading`) : erreur | phrase générique possible, relance à 900 ms | test-verified |
-| S7 | 🤖 | garde : jeu sans explication ni exemption ; exempté qui en a | le test échoue avec le nom du jeu (essai à la main, puis annulé) | test-verified |
+| S7 | 🤖 | garde : la fonction du garde (`explainGuard(games, explained, exempt, never, legacy, max)`, pure, dans le test) est appelée avec des listes construites en mémoire : un jeu sans explication ni exemption ; un exempté qui a des explications ; un exempté hors de `LEGACY_GAMES` ; une liste plus longue que le maximum | chaque cas renvoie une erreur qui nomme le jeu ; les vraies listes n'en renvoient aucune ; aucun fichier édité, rien à annuler | test-verified |
 | S8 | 🤖 | victoire dans chaque jeu de la phase 3 | `.win-how` avec la phrase de la table, dite après l'éloge | test-verified |
 | S9 | 🤖 | `bun run check` | vert | test-verified |
 | S10 | 👤 | téléphone, voix de l'appareil : 5 erreurs en `math` et `clock` | la phrase est dite en entier avant la consigne suivante | runtime-verified |

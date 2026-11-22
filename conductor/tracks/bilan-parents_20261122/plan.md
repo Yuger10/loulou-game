@@ -14,7 +14,7 @@ Une seule phase, une seule PR : la carte n'a de sens qu'entière (bilan et conse
 - [ ] 3. Ajouter le fichier à la slice `parents` dans `js/slices.cjs` (liste `files`), `import './bilan.js';` dans `parents.js` avant `storage-alert.js` pour que la carte vienne avant les autres, puis `bun run sync`.
 - [ ] 4. `js/features/parents/parents.css` : `.ps-bilan`, `.bilan-tip` (teinte douce, lisible sur téléphone).
 - [ ] 5. `conductor/checklist-mini-jeu.md`, section 3 : la ligne « son conseil sans écran dans `BILAN_TIPS` (`js/features/parents/bilan.js`) » (D8).
-- [ ] 6. Annotations JSDoc de `bilan.js` selon D16 ; `bun run typecheck` et `bun run check` passent ; `bun run test bilan` passe avec deux graines (`TEST_SEED`).
+- [ ] 6. Annotations JSDoc de `bilan.js` selon D16 (`BilanSkill` = le `SkillRecord` de `state.js`, copie avec `errors: 0` et `hints: 0`, passée à `skillStatus` sans cast) ; test de la règle « Réponse d'erreur » : un écouteur qui renvoie `undefined`, un autre `42`, un autre `"  "`, puis `"Confond 6 et 9"` : seule la dernière est affichée ; `bun run typecheck` et `bun run check` passent ; `bun run test bilan` passe avec deux graines (`TEST_SEED`).
 - [ ] 7. Livraison : rebase sur `main`, `bun run release track "bilan de la semaine pour les parents"`, compléter la section du PRD (dire « idée de Claude »), mettre à jour la ligne du `TODO.md` sur les statistiques de l'espace parents si elle est couverte en partie, PR (zone sensible : espace parents).
 
 ## Preuves
