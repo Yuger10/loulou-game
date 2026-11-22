@@ -1,8 +1,8 @@
 {
   // ADR 0003, étape 2 : le mode strict, couche par couche, du bas vers le haut.
-  // Une couche entre dans `include` quand elle est propre ; à la fin, `strict: true`
+  // Une couche entre dans `include` quand elle est propre (app en dernier : elle importe features) ; à la fin, `strict: true`
   // passe dans tsconfig.json et ce fichier disparaît (track typescript-checkjs).
   "extends": "./tsconfig.json",
   "compilerOptions": { "strict": true },
-  "include": ["js/shared/**/*.js", "types/**/*.d.ts"]
+  "include": ["js/shared/**/*.js", "js/entities/**/*.js", "types/**/*.d.ts"]
 }
