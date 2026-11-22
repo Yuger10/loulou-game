@@ -7,7 +7,7 @@
    (sw.js : `lagon-v66.1`), et l'espace parents l'affiche.
    test/update.test.js vérifie que sw.js et ce fichier disent la même chose. */
 const APP_VERSION = 66;
-const APP_PATCH = 12;
+const APP_PATCH = 13;
 const APP_LABEL = APP_PATCH ? `${APP_VERSION}.${APP_PATCH}` : String(APP_VERSION);
 
 // « 66 », « 66.1 » ou « lagon-v66.1 » → un nombre à comparer (66.1 → 66001) ;

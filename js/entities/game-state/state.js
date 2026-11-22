@@ -21,14 +21,15 @@ const SAVE_VERSION = 9;
 /** @typedef {{ date: string, list: Quest[], claimed: boolean }} DailyQuests */
 /**
  * Le suivi d'un mini-jeu (js/features/adaptive) : `lvl`, `atLvl` et `support`
- * n'apparaissent qu'une fois le niveau du jeu adapté.
+ * n'apparaissent qu'une fois le niveau du jeu adapté ; `hints` manque dans des
+ * parties réelles (v66.2, holdout) : il se lit `s.hints || 0`.
  * @typedef {{
  *   wins: number,
  *   fails: number,
  *   errors: number,
  *   last: string | null,
  *   recent: Array<{ t: number, e: number, ok: boolean }>,
- *   hints: number,
+ *   hints?: number,
  *   lvl?: number,
  *   atLvl?: Array<{ ok: boolean, e: number }>,
  *   support?: boolean,
@@ -280,6 +281,94 @@ function migrate(saved) {
   return saved;
 }
 
+/* ---- lire une partie enregistrée : la porte d'entrée unique ----
+   Une partie peut venir d'une sauvegarde importée (entrée non fiable) : elle passe
+   par ici pour jouer (load) comme pour l'espace parents (autre joueur). */
+/** @param {unknown} v @returns {number} un compteur : nombre fini positif, sinon 0 */
+const savedCount = (v) => (typeof v === 'number' && isFinite(v) && v > 0 ? v : 0);
+/**
+ * Le suivi des mini-jeux, remis en forme : des nombres, des listes, du texte
+ * (il s'affiche dans l'espace parents et nourrit le niveau adapté). Les
+ * compteurs et `recent` existent toujours (sans eux, l'espace parents plante).
+ * @param {unknown} raw
+ * @returns {GameState['skills']}
+ */
+function cleanSkills(raw) {
+  /** @type {GameState['skills']} */
+  const out = {};
+  if (!raw || typeof raw !== 'object') return out;
+  for (const [k, v] of Object.entries(raw)) {
+    if (!v || typeof v !== 'object') continue;
+    const s = /** @type {Record<string, unknown>} */ (v);
+    /** @type {SkillRecord} */
+    const r = {
+      wins: savedCount(s.wins),
+      fails: savedCount(s.fails),
+      errors: savedCount(s.errors),
+      last: typeof s.last === 'string' ? s.last : null,
+      recent: (Array.isArray(s.recent) ? s.recent : [])
+        .filter((x) => x && typeof x === 'object')
+        .map((x) => ({ t: savedCount(x.t), e: savedCount(x.e), ok: x.ok === true })),
+    };
+    // un champ absent reste absent (une partie réelle est relue telle quelle, holdout)
+    if ('hints' in s) r.hints = savedCount(s.hints);
+    if (savedCount(s.lvl)) r.lvl = savedCount(s.lvl);
+    if (Array.isArray(s.atLvl))
+      r.atLvl = s.atLvl
+        .filter((x) => x && typeof x === 'object')
+        .map((x) => ({ ok: x.ok === true, e: savedCount(x.e) }));
+    if (s.support === true) r.support = true;
+    out[k] = r;
+  }
+  return out;
+}
+/**
+ * Le journal des pauses, remis en forme : une heure HH:MM, un nom d'activité
+ * (js/features/rest vérifie qu'elle existe), un nombre de tentatives.
+ * @param {unknown} raw
+ * @returns {GameState['restLog']}
+ */
+function cleanRestLog(raw) {
+  /** @type {GameState['restLog']} */
+  const out = {};
+  if (!raw || typeof raw !== 'object') return out;
+  for (const [k, v] of Object.entries(raw)) {
+    if (!v || typeof v !== 'object') continue;
+    const d = /** @type {Record<string, unknown>} */ (v);
+    out[k] = {
+      at: typeof d.at === 'string' && /^\d{2}:\d{2}$/.test(d.at) ? d.at : null,
+      activity: typeof d.activity === 'string' && /^[a-z-]+$/.test(d.activity) ? d.activity : null,
+      skipped: d.skipped === true,
+      attempts: savedCount(d.attempts),
+    };
+  }
+  return out;
+}
+/**
+ * Une partie enregistrée (texte JSON) devenue une partie jouable : migrée vers
+ * la forme actuelle, réduite aux champs connus, prénom, avatar, suivi des jeux
+ * et journal des pauses vérifiés. Lève une erreur si le JSON est illisible.
+ * @param {string} raw
+ * @returns {GameState}
+ */
+function readSave(raw) {
+  const saved = migrate(JSON.parse(raw));
+  // ne garde que les clés connues : une sauvegarde ancienne ou corrompue ne casse pas le jeu
+  // (une clé absente garde la valeur par défaut de freshState, qui est une
+  // COPIE : sinon deux joueurs partageraient le même objet, ex. skills)
+  /** @type {Record<string, unknown>} */
+  const clean = {};
+  Object.keys(DEFAULT_STATE).forEach((k) => {
+    if ((saved[k] !== undefined && saved[k] !== null) || k === 'quests') clean[k] = saved[k];
+  });
+  const st = freshState(/** @type {Partial<GameState>} */ (clean));
+  st.name = cleanName(st.name); // porte d'entrée : partie enregistrée ou importée
+  st.skills = cleanSkills(st.skills);
+  st.restLog = cleanRestLog(st.restLog);
+  saveSlot.afterLoad(st);
+  return st;
+}
+
 function load() {
   try {
     const key = saveSlot.key();
@@ -288,18 +377,7 @@ function load() {
       state = freshState();
       return;
     }
-    const saved = migrate(JSON.parse(raw));
-    // ne garde que les clés connues : une sauvegarde ancienne ou corrompue ne casse pas le jeu
-    // (une clé absente garde la valeur par défaut de freshState, qui est une
-    // COPIE : sinon deux joueurs partageraient le même objet, ex. skills)
-    /** @type {Record<string, unknown>} */
-    const clean = {};
-    Object.keys(DEFAULT_STATE).forEach((k) => {
-      if ((saved[k] !== undefined && saved[k] !== null) || k === 'quests') clean[k] = saved[k];
-    });
-    state = freshState(/** @type {Partial<GameState>} */ (clean));
-    state.name = cleanName(state.name); // porte d'entrée : partie enregistrée ou importée
-    saveSlot.afterLoad(state);
+    state = readSave(raw);
     save();
   } catch (e) {
     reportUnreadable(saveSlot.key(), e); // la progression est perdue : un adulte doit le savoir
@@ -384,6 +462,7 @@ export {
   missionsForLevel,
   MISSIONS_PER_LEVEL,
   missionsUntil,
+  readSave,
   replaceState,
   resetState,
   save,
