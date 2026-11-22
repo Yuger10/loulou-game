@@ -99,3 +99,17 @@ Pas encore de règle custom : l'échappement HTML (anti-pattern 1 de l'audit) au
 | Humain, à chaque commit | lefthook, oxlint sur les fichiers indexés | **30 ms** | |
 
 Vérifié en conditions réelles : une variable inutilisée écrite par l'agent lui est renvoyée aussitôt ; un commit qui contient la même erreur est refusé. Volontairement léger : pas de tests dans les hooks (pas de `pre-push`), ils restent dans `bun run check`.
+
+## Après l'étape 5 : oxfmt (22 novembre 2026)
+
+`.oxfmtrc.json` : largeur 120 (le moins de diff parmi 100, 120, 160 et 200 à lisibilité correcte), guillemets simples en JS, doubles en CSS, `sw.js` et `index.html` exclus (générés).
+
+| Mesure | Avant | Après |
+|---|---|---|
+| Lignes de `js/` | 17 037 | 24 469 (+44 %) : le style compact devient le style Prettier |
+| Poids de `js/` (non compressé / gzip) | 977 Ko / 282 Ko | 1 028 Ko / 287 Ko (+5 % / +1,7 %) |
+| `bun run lint` (oxlint puis `oxfmt --check`) | 33 ms | **125 ms** (budget 3 s) |
+| Hook de l'agent (oxfmt puis oxlint sur un fichier) | 34 ms | **118 ms** (budget 300 ms) |
+| `bun run check` | 18,6 s | 18,3 s |
+
+Le reformatage est un commit purement mécanique, listé dans `.git-blame-ignore-revs`. Seule adaptation : 7 vérifications de thème de monde lisaient le CSS à l'octet près ; elles tolèrent maintenant espaces et guillemets (commit séparé, avant le reformatage).

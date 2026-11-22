@@ -1,0 +1,6 @@
+# Commits purement mécaniques, ignorés par git blame :
+#   git config blame.ignoreRevsFile .git-blame-ignore-revs
+# (GitHub les ignore tout seul.)
+
+# Reformatage oxfmt (factory, phase 1, étape 5)
+6e868bef4b17af6e91bdf0bf62de14a8ae9f5742
