@@ -1,6 +1,6 @@
 # ADR 0003 : Passer à TypeScript, par la vérification du JavaScript (TypeScript 7, `checkJs`), sans build
 
-- **Statut :** acceptée le 2026-11-22 (option 1) ; étape 1 livrée (mode souple, zéro erreur), étape 2 suivie par la track `typescript-checkjs`
+- **Statut :** acceptée le 2026-11-22 (option 1) ; étape 1 livrée (mode souple, zéro erreur, 66.3), étape 2 livrée (mode strict sur tout le jeu, 2 663 erreurs ramenées à 0, 66.11)
 - **Date :** 2026-11-22
 - **Décideur :** Amrou
 - **Liens :** [ADR 0002](./0002-modules-es-natifs.md) (modules ES natifs, sans build) ; playbook cothon, section 4.2 (stack de référence : TypeScript 7) ; skill `cothon:migrating-to-tsgo` ; `docs/factory/SPEED.md`

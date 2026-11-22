@@ -113,5 +113,5 @@ Registre des tracks Conductor, **dans l'ordre d'implémentation**. Feuille de ro
 
 ---
 
-- [~] **Track: TypeScript en vérification du JavaScript (ADR 0003) : mode souple livré (66.3), strict couche par couche** (technique, factory)
+- [~] **Track: TypeScript en vérification du JavaScript (ADR 0003) : mode souple livré (66.3), strict sur tout le jeu (66.11) ; reste la vérification d'Amrou** (technique, factory)
 *Link: [./tracks/typescript-checkjs_20261122/](./tracks/typescript-checkjs_20261122/)*

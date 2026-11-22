@@ -120,6 +120,7 @@ Le reformatage est un commit purement mécanique, listé dans `.git-blame-ignore
 |---|---|---|
 | `bun run typecheck` (`tsc -p .`, 167 modules) | **93 ms** | < 10 s |
 | Hook de l'agent (oxfmt, oxlint, tsc) | **211 ms** | < 300 ms |
+| `bun run typecheck` en mode strict (66.11, 171 modules) | **100 ms** | < 10 s |
 
 ## Track lint : règles ajoutées (22 novembre 2026)
 

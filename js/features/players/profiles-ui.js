@@ -492,7 +492,7 @@ function openGamePicker(charId) {
   document.querySelectorAll('[data-game]').forEach((b) => {
     setHandler(b, 'click', () => {
       playSound('tap');
-      const k = b.dataset.game;
+      const k = /** @type {string} */ (b.dataset.game); // le sélecteur garantit data-game
       if (k === 'random') startMinigame();
       else playGame(k);
     });

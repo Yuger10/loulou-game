@@ -6,7 +6,7 @@
     "check": "node test/tools/check.js",
     "lint": "oxlint --deny-warnings js test && oxfmt --check js test",
     "format": "oxfmt js test",
-    "typecheck": "tsc -p . && tsc -p tsconfig.strict.json",
+    "typecheck": "tsc -p .",
     "docs": "bash test/tools/check-docs.sh",
     "start": "python3 -m http.server 8080",
     "test": "node test/tools/run.js",

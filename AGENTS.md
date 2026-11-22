@@ -9,7 +9,7 @@ Jeu éducatif en français pour une enfant de 6 ans (mathématiques, lecture, lo
 - Tests ciblés : `bun run test jardin` (filtre sur le nom des suites).
 - Avant une PR : `bun run verify` (`check` puis les tests holdout de `test/holdout/`). La CI GitHub lance la même chose ; `ci-ok` doit être vert pour merger.
 - Contrat de sortie de `check`, `verify` et des scripts : `0` réussi, `1` échec, `2` bloqué (un outil n'a pas pu tourner) ; bloqué n'est jamais une réussite. Les scripts non triviaux ont un `--selftest` (`bun run selftest`).
-- Types : `bun run typecheck` (TypeScript 7 vérifie le JavaScript, [ADR 0003](docs/adr/0003-typescript.md), 0,1 s), déjà dans `check` et dans le hook de l'agent.
+- Types : `bun run typecheck` (TypeScript 7 vérifie le JavaScript en mode **strict**, [ADR 0003](docs/adr/0003-typescript.md), 0,1 s), déjà dans `check` et dans le hook de l'agent.
 - Mettre en forme : `bun run format` (le hook de l'agent et le commit le font déjà).
 - Après un ajout ou un déplacement de fichier : `bun run sync` (régénère `index.html` et `sw.js`).
 - Lancer en local : `bun run start`, puis `http://localhost:8080` (jamais `file://`, les modules ES ne chargent pas).
