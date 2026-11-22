@@ -23,6 +23,10 @@ Le playbook cothon décrit une factory complète (phases 0 à 5). Ce dépôt est
 | Evals (phase 4) | Elles mesurent un pipeline, qui n'existe pas |
 | Modèles économiques, DeepSeek (étape 5) | Supposent le pipeline ; et des API hébergées en Chine sont exclues pour un dépôt lié à une enfant |
 
+## Vérification
+
+Aucun check : la décision est de ne pas installer ces étapes, il n'y a rien à faire respecter dans le code. Côté cothon, `make fleet` signale toute action du `CHANGELOG.md` ni faite ni notée en exception dans `docs/factory/COTHON.md`.
+
 ## Conséquences
 - Positif : une factory proportionnée, qui tient dans `bun run check` (19 s) et une CI d'une minute.
 - Revoir cet ADR si : plusieurs issues par semaine sont confiées à des agents, ou un bug visuel ou de production passe la CI.

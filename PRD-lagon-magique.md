@@ -1728,3 +1728,21 @@ Les deux sont proposés dès 5 ans, sans minuteur. Le jeu de l'île est les poti
 - **Ce que voit l'enfant :** rien, sauf avec une sauvegarde abîmée ou piégée : l'espace parents s'ouvre au lieu de planter, et le rappel « Hier, on a fait… » se tait si l'activité est inconnue.
 - **Pour le code :** `readSave()` (`js/entities/game-state`) devient la porte unique de lecture d'une partie, pour jouer comme pour l'espace parents (qui lisait la partie d'un autre joueur sans migration). Elle remet en forme le suivi des jeux (nombres, listes) et le journal des pauses (heure HH:MM, nom d'activité, tentatives), qui s'insèrent dans le HTML de l'espace parents ; un champ absent d'une partie réelle reste absent (holdout). `rest` ignore une activité inconnue. Révélé par TypeScript strict (66.11). `test/parties-importees.test.js` (15 vérifications), écrit avant la correction.
 - Cache `lagon-v66.13`.
+
+# v66.14 : en multijoueur, une paire ratée ou le temps écoulé passent la main
+
+- **Ce que voit l'enfant :** en mode chacun son tour, une paire ratée au jeu de mémoire, ou le temps écoulé, passe la main au joueur suivant (avec l'écran de changement de joueur) ; avant, le jeu se bloquait sur le même joueur.
+- **Pour le code :** `wrongFeedback` accepte une erreur sans bouton fautif (`null`) : le son, la vibration et le passage de main restent, le tremblement du bouton seulement s'il y en a un. Révélé par TypeScript strict (66.11). `test/multijoueur.test.js` (9 vérifications), écrit avant la correction.
+- Cache `lagon-v66.14`.
+
+# v66.15 : au rythme magique, Boumbo joue tout le rythme avant la victoire
+
+- **Ce que voit l'enfant :** au rythme magique, palier de lecture, une fois le rythme lu et joué, Boumbo le joue enfin **en entier** (chaque symbole s'allume avec son son), puis la victoire arrive. Avant, elle coupait la musique après la première note.
+- **Pour le code :** `play()` renvoie le moment où finit sa dernière note ; la victoire attend ce moment plus 400 ms (`READ_END_PAUSE`), au lieu d'un délai fixe de 900 ms. Révélé par TypeScript strict (66.11). `test/rythme-lecture.test.js`, écrit avant la correction.
+- Cache `lagon-v66.15`.
+
+# v66.16 : dessins et paliers de la saison 2 dans leurs fichiers, max-lines 800
+
+- **Ce que voit l'enfant :** rien ne change (les 57 dessins de personnages sont identiques, vérifié).
+- **Pour le code :** les deux derniers fichiers trop longs sont découpés, en déplaçant le code tel quel. `characters-art.js` (1 055 lignes) : les 25 mascottes de la saison 2 passent dans `characters-art-s2.js`, qui reçoit les outils de dessin en paramètre (type `ArtKit`). `difficulty.js` (1 014) : les paliers des 13 mini-jeux de la saison 2 et de l'image à assembler passent dans `difficulty-s2.js`. Le cliquet `max-lines` descend à **800**, la cible de la track `lint-regles-completes`.
+- Cache `lagon-v66.16`.

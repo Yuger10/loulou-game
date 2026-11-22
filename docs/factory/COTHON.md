@@ -2,10 +2,12 @@
 
 Version : 0.4.0
 Appliqué le : 2026-11-22
-Étapes installées : 1 et 2 (playbook 9.1) ; 3 à 5 écartées (ADR 0006)
-Fichiers copiés de cothon : `test/tools/check-docs.sh` (de `setting-up-docs`, version 0.4.0), `.claude/hooks/lint-edited-file.sh` (de `wiring-fast-feedback`, complété par `tsc`), gabarits `conductor/templates/spec.md` et `plan.md` (de `setting-up-docs`, adoptés dans Conductor)
+Profil : petit projet, script, jeu HTML (playbook 9) ; étapes 3 à 5 hors profil (ADR 0006)
+Étapes installées : 0, 1, 2
+Étapes écartées : 3, 4, 5
+Fichiers copiés de cothon : `test/tools/check-docs.sh` (de `setting-up-docs`, version 0.4.0, inchangé en 0.7.0), `.claude/hooks/lint-edited-file.sh` (de `wiring-fast-feedback`, complété par `tsc`), gabarits `conductor/templates/spec.md` et `plan.md` (de `setting-up-docs`, adoptés dans Conductor)
 
-`Version` = la dernière version de cothon dont toutes les actions du `CHANGELOG.md` sont faites ou en exception. Retour d'expérience envoyé à la session qui maintient cothon le 2026-11-22.
+`Version` = la dernière version de cothon dont toutes les actions du `CHANGELOG.md` sont faites ou en exception. Mise à jour vers 0.7.0 en cours : la version reste 0.4.0 tant que `0.6.0-1` et `0.6.1-1` ne sont ni faites ni en exception (voir « Actions 0.5.0 à 0.7.0 »). Retour d'expérience envoyé à la session qui maintient cothon le 2026-11-22.
 
 ## Actions faites
 
@@ -26,6 +28,19 @@ Fichiers copiés de cothon : `test/tools/check-docs.sh` (de `setting-up-docs`, v
 - `0.4.0-5` : cible d'exécution dans `AUDIT.md` (1 bis : « marcher partout »), tableau « règle, cas, décision, raison » dans `SPEED.md`.
 - `0.4.0-6` : gabarits `conductor/templates/` en 0.4.0 ; en-tête YAML posé sur la seule spec en cours (`typescript-checkjs`). Les tracks de la saison 3, pas commencées, le recevront à leur démarrage.
 - `0.4.0-7` : déjà fait (`bun run release patch|track`, ADR 0005).
+
+## Actions 0.5.0 à 0.7.0
+
+Faites :
+- `0.5.0-1` : `.cothon/` dans `.gitignore`. Les hooks `PreCompact` et `SessionStart` du plugin (passation avant `/compact`) agissent à partir de la session qui suit le rechargement de cothon.
+- `0.6.0-2` : section « Vérification » dans les 6 ADR. Deux décisions sans check, dites telles quelles : « jamais `any` » (ADR 0003, relecture) et « lancer `release` à chaque livraison » (ADR 0005, risque déjà noté).
+- `0.7.0-1` : étapes au format strict ci-dessus (`Étapes installées`, `Étapes écartées`).
+
+À faire :
+- `0.6.0-1` : lister les besoins d'architecture à l'audit, puis une RFC par besoin dans `docs/rfc/` (skill `proposing-architecture`). En attente d'une décision d'Amrou : le faire (une track), ou l'écarter en exception (l'architecture est déjà décidée et vérifiée : ADR 0001 et 0002, `test/slices.test.js`).
+- `0.6.1-1` : activer « Require branches to be up to date before merging » sur `main`. Action d'Amrou : la protection de `main` est une ressource protégée, l'agent n'y touche pas.
+
+Autres vérifications faites à la mise à jour : `check-docs.sh` identique à celui de cothon 0.7.0 et son `--selftest` ajouté à `bun run selftest` ; gabarits `spec.md` et `plan.md` identiques (à notre en-tête près) ; commande des métriques corrigée (elle pointait vers le cache de cothon 0.3.0) et bloc recalculé.
 
 ## Exceptions
 

@@ -27,8 +27,9 @@ import {
 } from '../../minigame-engine/index.js';
 import { bindQuit, gameHeader } from '../../screen/index.js';
 
-// en lecture, la dernière note jouée doit finir avant l'écran de victoire
-const READ_END_DELAY = 900;
+// en lecture, l'écran de victoire attend la fin du rythme joué par Boumbo
+// (il remplace le jeu et couperait la musique), plus ce petit temps
+const READ_END_PAUSE = 400;
 
 /** @typedef {'court' | 'long' | 'silence'} RhythmBeat un coup du rythme */
 /** @typedef {{ n: number, rests: number, read: boolean, replay: () => void }} RhythmQuestion */
@@ -113,6 +114,7 @@ function renderRhythm() {
   /**
    * @param {boolean} slow
    * @param {(() => void) | null} then
+   * @returns {number} le moment où finit la dernière note (ms après l'appel)
    */
   function play(slow, then) {
     const unit = RHYTHM_UNIT * (slow ? 1.6 : 1);
@@ -134,6 +136,7 @@ function renderRhythm() {
     setTimeout(() => {
       if (alive() && then) then();
     }, t + 250);
+    return t;
   }
   const yourTurn = () => {
     if (cfg.hide) {
@@ -187,8 +190,8 @@ function renderRhythm() {
         const s = document.getElementById('rh-score');
         if (s) s.classList.remove('covered');
         // au palier de lecture : Boumbo joue enfin le rythme que l'enfant a lu
-        if (cfg.read) play(false, null);
-        winSoon(cfg.read ? READ_END_DELAY : undefined);
+        if (cfg.read) winSoon(play(false, null) + READ_END_PAUSE);
+        else winSoon();
       }
     });
   });

@@ -1,7 +1,7 @@
 /* ---------- Mini-jeu : La recette (Royaume des Bonbons, saison 2) ----------
    Mesurer en cuisine : comparer des quantités, compter des cuillères, lire
    un verre doseur gradué.
-   Quatre façons de jouer, selon le palier (`recipeRound`, js/entities/difficulty/difficulty.js) :
+   Quatre façons de jouer, selon le palier (`recipeRound`, js/entities/difficulty/difficulty-s2.js) :
      bowls    « Quel bol a le plus (le moins) de sucre ? » (3 bols)
      balance  « Quel sac est le plus lourd (léger) ? » (la balance penche)
      spoons   mettre le bon nombre de cuillères (jusqu'à 10), puis « C'est prêt ! »

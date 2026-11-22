@@ -26,7 +26,7 @@ const SENSITIVE = [
   /^(package\.json|bun\.lock|bunfig\.toml)$/, // dépendances et chaîne d'approvisionnement
   /^(\.claude\/|\.mcp\.json$|\.vscode\/)/, // config de l'agent et de l'éditeur (cothon 0.4.0-4)
   /^test\/tools\/sensitive\.js$/, // ce garde lui-même
-  /^js\/entities\/character\/characters-art\.js$/, // dessins des personnages
+  /^js\/entities\/character\/characters-art(-s2)?\.js$/, // dessins des personnages (saison 2 : characters-art-s2.js)
 ];
 const PROTECTED = [/^test\/holdout\//, /^\.github\//];
 
@@ -51,6 +51,11 @@ if (process.argv.includes('--selftest')) {
       { s: 3, p: 0, b: false },
     ],
     ['le garde lui-même est sensible', classify(['test/tools/sensitive.js'], []), { s: 1, p: 0, b: false }],
+    [
+      'les dessins des personnages sont sensibles (les deux fichiers)',
+      classify(['js/entities/character/characters-art.js', 'js/entities/character/characters-art-s2.js'], []),
+      { s: 2, p: 0, b: false },
+    ],
   ];
   let ok = true;
   for (const [name, got, want] of cases) {

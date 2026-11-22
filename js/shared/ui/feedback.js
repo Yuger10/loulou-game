@@ -25,20 +25,22 @@ function shakeEl(el) {
 }
 
 // fonctions appelées après chaque retour d'erreur (voir onWrongFeedback)
-/** @type {Array<(el: HTMLElement) => void>} */
+/** @type {Array<(el: HTMLElement | null) => void>} */
 const wrongFeedbackHooks = [];
-/** @param {(el: HTMLElement) => void} fn */
+/** @param {(el: HTMLElement | null) => void} fn */
 function onWrongFeedback(fn) {
   wrongFeedbackHooks.push(fn);
 }
 
-/** @param {HTMLElement} el */
+/** @param {HTMLElement | null} el le bouton fautif, ou null pour une erreur sans bouton (paire ratée, temps écoulé) */
 function wrongFeedback(el) {
   playSound('wrong');
   vibrate(80);
-  shakeEl(el);
-  el.style.opacity = '0.4';
-  setTimeout(() => (el.style.opacity = '1'), 400);
+  if (el) {
+    shakeEl(el);
+    el.style.opacity = '0.4';
+    setTimeout(() => (el.style.opacity = '1'), 400);
+  }
   // abonnés (par exemple le mode chacun son tour, qui passe la main)
   wrongFeedbackHooks.forEach((fn) => fn(el));
 }
