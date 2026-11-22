@@ -11,3 +11,11 @@ interface ParentNode {
 interface Element {
   closest(selectors: string): HTMLElement | null;
 }
+
+// API propres à Safari : l'app ajoutée à l'écran d'accueil, et l'audio des vieux iPad
+interface Navigator {
+  standalone?: boolean;
+}
+interface Window {
+  webkitAudioContext?: typeof AudioContext;
+}

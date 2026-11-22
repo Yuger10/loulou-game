@@ -25,7 +25,7 @@ import { archipelagoUnlocked } from '../../entities/world/index.js';
 import { confetti, onModalChange, openModal, playSound, showToast, speak, vibrate } from '../../shared/ui/index.js';
 import { gainCoins } from '../gains/index.js';
 import { hintNudge, registerHints, setHintQuestion } from '../hints/index.js';
-import { bindQuit, gameHeader } from '../screen/index.js';
+import { bindQuit, gameHeader, rememberSpokenHint } from '../screen/index.js';
 import {
   makeSortingTask,
   onSquishyChange,
@@ -682,11 +682,11 @@ function renderSquishyBadge() {
   [
     ['squishy-badge', true],
     ['sq-room-link-n', false],
-  ].forEach(([elId, pulse]) => {
+  ].forEach((/** @type {[string, boolean]} */ [elId, pulse]) => {
     const b = document.getElementById(elId);
     if (!b) return;
     b.hidden = !n;
-    b.textContent = n;
+    b.textContent = String(n);
     if (pulse) b.classList.toggle('ready', n > 0);
   });
 }
@@ -873,7 +873,7 @@ function squishyPopDue(popRng) {
   return (popRng || random)() < SQ_POP_CHANCE;
 }
 function squishyOpenAnimated(popRng) {
-  const btn = document.getElementById('sq-open'),
+  const btn = /** @type {HTMLButtonElement} */ (document.getElementById('sq-open')),
     stage = document.getElementById('sq-stage');
   if (!btn || !stage || btn.disabled) return;
   const res = openSquishyBox();
@@ -919,7 +919,7 @@ function squishyReveal(res) {
   if (ht) ht.textContent = head.hint;
   if (hs) {
     hs.dataset.say = head.say;
-    bindQuit._last = head.say;
+    rememberSpokenHint(head.say);
   }
   const say = m.say.charAt(0).toUpperCase() + m.say.slice(1);
   speak(

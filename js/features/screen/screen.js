@@ -37,14 +37,24 @@ function gameHeader(title, hint, spoken) {
 }
 
 // branche les boutons « écouter » et lit la consigne à voix haute
+// la consigne déjà lue à voix haute pour ce mini-jeu (pour ne pas la relire à
+// chaque rendu) ; le moteur l'oublie à chaque nouvelle mission
+let lastSpokenHint = null;
+function forgetSpokenHint() {
+  lastSpokenHint = null;
+}
+function rememberSpokenHint(say) {
+  lastSpokenHint = say;
+}
+
 function bindQuit() {
   bindSpeakButtons();
   // lit la consigne une seule fois par mini-jeu (le mémo se re-rend à chaque clic)
   const hint = document.querySelector('.puzzle-hint [data-say]');
-  if (hint && hint.dataset.say !== bindQuit._last) {
-    bindQuit._last = hint.dataset.say;
+  if (hint && hint.dataset.say !== lastSpokenHint) {
+    lastSpokenHint = hint.dataset.say;
     speak(hint.dataset.say);
   }
 }
 
-export { bindQuit, gameHeader, speakWrongHint };
+export { bindQuit, forgetSpokenHint, gameHeader, rememberSpokenHint, speakWrongHint };

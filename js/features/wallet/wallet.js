@@ -19,7 +19,7 @@ function addCoinsInFlight(n) {
 }
 
 function renderCoins() {
-  document.getElementById('coin-count').textContent = state.coins - (coinsInFlight || 0);
+  document.getElementById('coin-count').textContent = String(state.coins - (coinsInFlight || 0));
 }
 
 // changement de joueur : ses pièces

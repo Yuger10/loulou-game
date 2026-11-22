@@ -65,12 +65,12 @@ function renderCalc() {
   const problem = makeCalcProblem(dd);
   const { text, result } = problem;
 
-  let options = new Set([result]);
-  while (options.size < 3) {
+  const choices = new Set([result]);
+  while (choices.size < 3) {
     const delta = Math.floor(random() * 7) - 3;
-    options.add(Math.max(0, result + (delta === 0 ? 1 : delta)));
+    choices.add(Math.max(0, result + (delta === 0 ? 1 : delta)));
   }
-  options = shuffle([...options]);
+  const options = shuffle([...choices]);
 
   openModal(`
     ${gameHeader('🌋 Calcul mental', `${text} = ?`, `Combien ça fait, ${text.replace('×', 'fois').replace('−', 'moins').replace('+', 'plus')} ?`)}
@@ -94,7 +94,7 @@ function renderCalc() {
         clearActiveTimer();
         const q = document.querySelector('.eq-q');
         if (q) {
-          q.textContent = result;
+          q.textContent = String(result);
           q.classList.add('filled');
         }
         stepOk(btn);

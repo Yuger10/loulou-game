@@ -1,12 +1,13 @@
 import { pickRandom, random } from '../lib/index.js';
 import { playSound } from './sound.js';
 
+let toastTimer = null; // le message en cours disparaît 1,6 s après le dernier
 function showToast(msg) {
   const t = document.getElementById('toast');
   t.textContent = msg;
   t.classList.add('show');
-  clearTimeout(showToast._t);
-  showToast._t = setTimeout(() => t.classList.remove('show'), 1600);
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 1600);
 }
 
 function vibrate(pattern) {

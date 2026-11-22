@@ -427,7 +427,7 @@ function renderPlanets() {
   bindQuit();
   setSolution([solSel('.pl-opt', 'v', q.answer)]);
   setHintQuestion('planets', q, { choices: '.pl-opt' });
-  document.querySelectorAll('.pl-opt').forEach((btn) => {
+  document.querySelectorAll('.pl-opt').forEach((/** @type {HTMLButtonElement} */ btn) => {
     btn.onclick = () => {
       if (btn.dataset.v === q.answer) {
         stepOk(btn);
@@ -460,7 +460,7 @@ function renderPlanetOrder(q) {
   bindQuit();
   setSolution(seq.map((id) => solSel('.pl-opt', 'v', id)));
   setHintQuestion('planets', q, { choices: '.pl-opt' });
-  document.querySelectorAll('.pl-opt').forEach((btn) => {
+  document.querySelectorAll('.pl-opt').forEach((/** @type {HTMLButtonElement} */ btn) => {
     btn.onclick = () => {
       if (btn.dataset.v === seq[q.next]) {
         q.next++;

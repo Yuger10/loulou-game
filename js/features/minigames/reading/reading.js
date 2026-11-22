@@ -92,7 +92,9 @@ function readingHints(q) {
     syl = q.correct.syl || [w];
   // une mauvaise réponse à écarter (avec 4 choix ou plus), de préférence une
   // qui ne commence pas par la même lettre
-  const wrong = q.options.filter((o) => o.word !== w).sort((a, b) => (a.word[0] === w[0]) - (b.word[0] === w[0]))[0];
+  const wrong = q.options
+    .filter((o) => o.word !== w)
+    .sort((a, b) => Number(a.word[0] === w[0]) - Number(b.word[0] === w[0]))[0];
   const dim = wrong ? solSel('.reading-opt', 'w', wrong.word) : null;
   const cut =
     syl.length > 1

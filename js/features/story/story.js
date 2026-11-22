@@ -545,7 +545,7 @@ function renderStoryRiddle(world, idx, onDone) {
   `);
   bindQuit();
   setHintQuestion('riddle', { r }, { choices: '.story-opt' });
-  document.querySelectorAll('.story-opt').forEach((el, i) => {
+  document.querySelectorAll('.story-opt').forEach((/** @type {HTMLButtonElement} */ el, i) => {
     el.onclick = () => {
       const o = opts[i];
       if (o.ok) {

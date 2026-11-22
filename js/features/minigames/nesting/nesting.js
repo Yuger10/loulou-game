@@ -89,7 +89,7 @@ function renderNesting() {
   bindQuit();
   setSolution(r.order.map((b) => solSel('.nest-btn', 'i', b.i)));
   setHintQuestion('nesting', q, { choices: '.nest-btn' });
-  document.querySelectorAll('.nest-btn').forEach((btn) => {
+  document.querySelectorAll('.nest-btn').forEach((/** @type {HTMLButtonElement} */ btn) => {
     btn.onclick = () => {
       if (btn.disabled) return;
       const want = r.order[q.idx];

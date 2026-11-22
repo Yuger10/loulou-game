@@ -55,7 +55,7 @@ function askConfirm(opts) {
   speak(String(o.text).replace(/<[^>]+>/g, ''));
   const yes = el.querySelector('[data-confirm="yes"]'),
     no = el.querySelector('[data-confirm="no"]');
-  const input = el.querySelector('#confirm-input');
+  const input = /** @type {HTMLInputElement} */ (el.querySelector('#confirm-input'));
   const typed = () => !word || (input && input.value.trim().toLowerCase() === word.toLowerCase());
   const refresh = () => yes.setAttribute('aria-disabled', typed() ? 'false' : 'true');
   refresh();

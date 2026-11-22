@@ -3,9 +3,10 @@
   "private": true,
   "packageManager": "bun@1.4.5",
   "scripts": {
-    "check": "node test/tools/lockfile.js && bun run lint && bun run docs && bun run test",
+    "check": "node test/tools/lockfile.js && bun run lint && bun run typecheck && bun run docs && bun run test",
     "lint": "oxlint --deny-warnings js test && oxfmt --check js test",
     "format": "oxfmt js test",
+    "typecheck": "tsc -p .",
     "docs": "bash test/tools/check-docs.sh",
     "start": "python3 -m http.server 8080",
     "test": "node test/tools/run.js",

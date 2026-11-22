@@ -76,6 +76,19 @@ function hintOrderStep(done, say, label) {
    paillettes… : réglé par l'équipe des compagnons (js/features/companion-team),
    qui s'inscrit ici avec setHintPolicy. Par défaut : le compagnon du joueur,
    10 s, et rien en mode course (pour rester équitable). */
+/** Comportement des indices, réglé par les spécialités de l'équipe (setHintPolicy).
+ * @type {{
+ *   giver: (kind?: string, level?: number) => string,
+ *   idleMs: (kind?: string) => number,
+ *   sparkle: (kind?: string) => boolean,
+ *   enabled: (kind?: string) => boolean,
+ *   syllablesFirst: () => boolean,
+ *   onUse: ((kind: string, level: number) => void) | null,
+ *   onShow: ((kind: string) => void) | null,
+ *   onError: ((kind: string) => void) | null,
+ *   onGood: (() => void) | null,
+ *   onMission: ((kind: string) => void) | null,
+ * }} */
 const hintPolicy = {
   giver: () => currentCompanion(),
   idleMs: () => HINT_IDLE_MS,
@@ -135,7 +148,7 @@ function hintLevel() {
 function renderHintButton() {
   const head = document.querySelector('#modal-body .game-head');
   if (!head) return;
-  let b = head.querySelector('.hint-btn');
+  let b = /** @type {HTMLButtonElement} */ (head.querySelector('.hint-btn'));
   if (!hint.on) {
     if (b) b.remove();
     return;
@@ -157,7 +170,7 @@ function renderHintButton() {
     (done ? '<span class="hint-cando">Tu peux le faire !</span>' : '');
   b.classList.toggle('done', done);
   b.classList.toggle('nudge', hint.nudged && !done);
-  b.dataset.level = hint.level;
+  b.dataset.level = String(hint.level);
   b.setAttribute(
     'aria-label',
     done ? 'Tu peux le faire !' : `Un indice de ${COMPANIONS[who] ? COMPANIONS[who].name : 'ton compagnon'}`,
@@ -186,7 +199,7 @@ if (typeof document !== 'undefined')
   document.addEventListener(
     'pointerdown',
     (e) => {
-      if (hint.on && !hint.nudged && e.target && e.target.closest && e.target.closest('#modal')) armHintIdle();
+      if (hint.on && !hint.nudged && e.target && /** @type {HTMLElement} */ (e.target).closest('#modal')) armHintIdle();
     },
     true,
   );
@@ -259,7 +272,8 @@ function showHint(h, level, giverOverride) {
 function hintChoicesLeft() {
   if (!hint.choices) return 0;
   return [...document.querySelectorAll(`#modal-body ${hint.choices}`)].filter(
-    (el) => !el.disabled && !el.classList.contains('hint-dim') && !el.classList.contains('done'),
+    (/** @type {HTMLButtonElement} */ el) =>
+      !el.disabled && !el.classList.contains('hint-dim') && !el.classList.contains('done'),
   ).length;
 }
 function applyHintFx(fx, level) {
@@ -293,7 +307,7 @@ function applyHintFx(fx, level) {
 }
 // écarte UNE mauvaise réponse, seulement si la règle anti-devinette le permet
 function hintEliminate(sel, level) {
-  const el = document.querySelector(`#modal-body ${sel}`);
+  const el = /** @type {HTMLButtonElement} */ (document.querySelector(`#modal-body ${sel}`));
   if (!el || el.disabled || !hintMayEliminate(level, hintChoicesLeft())) return false;
   if (document.querySelector('#modal-body .hint-dim')) return false; // une seule fois par question
   el.classList.add('hint-dim');
@@ -305,6 +319,7 @@ function hintEliminate(sel, level) {
 // compté pour l'espace parents, jamais comme une erreur (niveau adaptatif inchangé)
 // Quels indices compter : ceux des mini-jeux inscrits au moteur (qui le dit
 // avec setHintCountable, v54 : les indices sont une couche sous le moteur)
+/** @type {(kind: string) => boolean} */
 let hintCountable = () => false;
 function setHintCountable(fn) {
   hintCountable = fn;

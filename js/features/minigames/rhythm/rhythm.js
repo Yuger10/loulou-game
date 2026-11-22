@@ -43,6 +43,7 @@ function rhythmBuildRound(dd, rng) {
   for (let t = 0; t < 300; t++) {
     // palier 1 : des coups tous pareils (tous courts, ou tous longs)
     const same = !cfg.long ? (rng() < 0.5 ? 'court' : 'long') : null;
+    /** @type {('court' | 'long' | 'silence')[]} */
     const seq = Array.from({ length: cfg.n }, () => same || (rng() < 0.45 ? 'long' : 'court'));
     // les silences : jamais au début ni à la fin, jamais deux de suite
     let rests = 0;

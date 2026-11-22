@@ -90,7 +90,7 @@ function teamSayNext() {
   teamSayTimer = setTimeout(teamSayNext, TEAM_SAY_MS);
 }
 function teamSayEl() {
-  let el = document.getElementById('team-say');
+  let el = /** @type {HTMLButtonElement} */ (document.getElementById('team-say'));
   if (!el) {
     el = document.createElement('button');
     el.type = 'button';

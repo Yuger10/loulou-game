@@ -43,7 +43,7 @@ import { hintNudge, hintPolicy, setHintCountable } from '../hints/index.js';
 import { checkNewIsland, currentChar, markHelped, renderLagon } from '../island/index.js';
 import { partyAfterWin, partyScore, passTurn } from '../party/index.js';
 import { questProgress } from '../quests/index.js';
-import { bindQuit, speakWrongHint } from '../screen/index.js';
+import { forgetSpokenHint, speakWrongHint } from '../screen/index.js';
 import { maybeStoryEpisode, noteStoryMission, storyProgressHTML } from '../story/index.js';
 import { newlyUnlockedLookItems, WARDROBE } from '../wardrobe/index.js';
 
@@ -103,7 +103,7 @@ function scheduleRetry(fn) {
   clearPendingRetry();
   pendingRetryTimeout = setTimeout(() => {
     pendingRetryTimeout = null;
-    bindQuit._last = null;
+    forgetSpokenHint();
     fn();
   }, 900);
 }
@@ -337,7 +337,7 @@ function onMissionFail() {
   emit('game:after', { win: false }); // fin naturelle : la pause peut venir ensuite (js/features/rest)
   endBonusChallenge();
   missionFact = null;
-  bindQuit._last = null;
+  forgetSpokenHint();
   lives = 0;
   const c = CHARACTERS[currentChar] || CHARACTERS.sirene;
   const who = hello();
@@ -391,7 +391,7 @@ function winSoon(delay = WIN_DELAY) {
 function onMissionWin() {
   recordMission(true); // avant le mode course, qui s'arrête plus bas
   emit('game:after', { win: true }); // fin naturelle : la pause peut venir ensuite (js/features/rest)
-  bindQuit._last = null;
+  forgetSpokenHint();
   partyScore();
   // course : on avance d'une case ; si la ligne d'arrivée est franchie, l'écran de victoire s'affiche
   if (partyAfterWin()) return;
@@ -515,7 +515,7 @@ onModalChange(() => {
   clearPendingRetry();
 });
 onModalClose(() => {
-  bindQuit._last = null;
+  forgetSpokenHint();
 });
 
 export {
