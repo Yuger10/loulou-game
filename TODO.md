@@ -158,6 +158,7 @@ Chaque mini-jeu a maintenant son propre niveau pour chaque enfant (`js/adaptive.
 | v66.11 | TypeScript strict sur tout le jeu |
 | v66.12 | un avatar importé ne peut plus injecter de HTML |
 | v66.13 | une partie importée ne fait plus planter l'espace parents |
+| v66.14 | en multijoueur, une paire ratée ou le temps écoulé passent la main |
 
 ---
 
