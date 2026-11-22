@@ -1692,3 +1692,9 @@ Les deux sont proposés dès 5 ans, sans minuteur. Le jeu de l'île est les poti
 - **Ce que voit l'enfant :** rien ne change.
 - **Pour le code :** la couche `js/entities/` passe en TypeScript **strict** (ADR 0003) : 299 erreurs ramenées à 0, en JSDoc seulement, sans `any`. La forme de la partie est maintenant décrite champ par champ (`GameState`, `Profile`, `Companion`, `World`, `Item`, `Squishy`…), réexportée par l'`index.js` de chaque slice. Dessins des personnages et sauvegarde : annotations seulement (vérifié : aucune ligne de dessin ni de migration modifiée, holdout vert). Ricochet : 3 annotations dans `features` et un `String()` explicite dans les quêtes. Ces types ont révélé un vrai bug, traité à part : la position des décorations déplacées était perdue au redémarrage.
 - Cache `lagon-v66.7`.
+
+# v66.8 : La place des décorations survit au redémarrage
+
+- **Ce que voit l'enfant :** **une décoration qu'elle a fait glisser sur son île reste à sa place quand elle relance le jeu** (avant : la place était enregistrée, puis perdue au redémarrage). De même, la bulle ❤️ d'un personnage déjà aidé aujourd'hui et l'astuce « fais glisser tes décorations » déjà vue survivent au redémarrage.
+- **Pour le code :** bug révélé par les types de la partie (TypeScript strict sur `entities`, v66.7) : `load()` ne garde que les champs de `DEFAULT_STATE`, et `decoPos`, `helped`, `tipDragDeco` (posés par l'île) n'y étaient pas. Ils y sont, avec leurs valeurs par défaut (aucune migration nécessaire : une vieille partie reçoit ces valeurs). La copie de `DEFAULT_STATE` écrite à la main pour l'état initial, qui avait oublié ces champs, est remplacée par `freshState()`. Test : `test/redemarrage.test.js` (joue, enregistre, recharge dans une nouvelle page ; mutation vérifiée).
+- Cache `lagon-v66.8`.
