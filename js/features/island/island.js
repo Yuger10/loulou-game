@@ -21,11 +21,10 @@ import { DECOS, decosOf } from '../../entities/item/index.js';
 import { playerGender } from '../../entities/player/index.js';
 import { currentSeason } from '../../entities/season/index.js';
 import { currentWorld, WORLDS } from '../../entities/world/index.js';
-import { on } from '../../shared/lib/index.js';
+import { emit } from '../../shared/lib/index.js';
 import { playSound, speak } from '../../shared/ui/index.js';
 import { ensureQuests } from '../quests/index.js';
 import { seasonSceneSVG } from '../seasons/index.js';
-import { openDecoShop, openDialogue } from './island-view.js';
 
 // Places en coordonnées du DESSIN (viewBox 480×360), converties à l'affichage
 // selon la taille réelle de la scène : un personnage reste sur la plage et
@@ -550,7 +549,7 @@ function renderLiveIsland(sc) {
   sc.querySelectorAll('.isle-char').forEach((btn) => {
     btn.addEventListener('click', () => {
       playSound('tap');
-      openDialogue(btn.dataset.char);
+      emit('nav:dialogue', btn.dataset.char); // island-view.js ouvre le dialogue
     });
   });
   sc.querySelectorAll('.deco[data-deco-key]').forEach((el) => bindDecoDrag(sc, el));
@@ -558,7 +557,7 @@ function renderLiveIsland(sc) {
   if (b)
     b.onclick = () => {
       playSound('tap');
-      openDecoShop();
+      emit('nav:deco-shop'); // island-view.js ouvre la boutique
     };
 }
 
@@ -632,6 +631,5 @@ setInterval(() => {
 }, 60000);
 
 // revenir au dialogue d'un personnage (après un cadeau, js/features/gifts)
-on('nav:dialogue', openDialogue);
 
 export { ISLE_SCENERY, isleGenericScenery, markHelped, renderLiveIsland };
