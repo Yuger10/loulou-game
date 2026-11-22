@@ -48,6 +48,11 @@ En mode strict, les erreurs viennent surtout des paramètres sans type (1 166 TS
 - **Maturité :** TypeScript 7 stable depuis juillet 2026 ; aucun outil du projet n'utilise l'API JavaScript de TypeScript (seul cas qui obligerait à garder TypeScript 6, selon le skill `migrating-to-tsgo`).
 - **Coût de migration :** progressif, sans build, sans toucher au déploiement ni à l'ADR 0002. L'option 2 change la chaîne de production pour un gain de syntaxe seulement.
 
+## Vérification
+
+- `bun run typecheck` (`tsc -p .`, mode strict depuis 66.11) dans `bun run check`, la CI et le hook de l'agent après chaque modification.
+- « Jamais `any` ni `@ts-ignore` » : **aucun check**, une consigne d'`AGENTS.md` vérifiée à la relecture (une recherche dans le code). À ajouter si un cas passe.
+
 ## Conséquences
 
 - **Positif :** les agents reçoivent une erreur de type en 0,12 s au lieu de la découvrir en test, ou pas du tout ; les signatures documentent le code (paramètres des mini-jeux, forme de la sauvegarde).

@@ -22,6 +22,12 @@ Le dépôt n'avait ni lint, ni format, ni CI ; les 17 suites de tests tournaient
 - pnpm et Biome : premier choix d'Amrou, abandonné pour la stack de référence (plus rapide, une seule convention entre projets).
 - Vitest ou `bun test` : réécriture de toute la suite sans gain prouvé.
 
+## Vérification
+
+- `test/tools/lockfile.js` (première étape de `bun run check`) échoue si un lockfile de npm, yarn ou pnpm apparaît.
+- oxlint et oxfmt : `bun run check`, la CI, le hook git (lefthook, posé par `prepare`) et le hook de l'agent.
+- Le contrat de sortie `0/1/2` des scripts : leur `--selftest`, lancé par `bun run selftest` dans `check`.
+
 ## Conséquences
 - Positif : `bun run check` en 19 s (lint 33 ms, types 93 ms) ; un agent voit ses erreurs 0,2 s après chaque édition.
 - Risque : oxfmt est en beta, et les plugins JS d'oxlint en alpha (non utilisés ici) ; versions exactes épinglées.
