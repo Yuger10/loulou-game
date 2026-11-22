@@ -10,6 +10,110 @@ const SAVE_KEY = 'lagon-magique-save';
 /* ---------- État ---------- */
 const SAVE_VERSION = 9;
 
+/* Les types de la partie : ils décrivent DEFAULT_STATE, champ par champ.
+   Les tables (inventaire, amitiés…) sont indexées par un id d'objet, de
+   personnage, d'île ou de jour (AAAA-MM-JJ). */
+
+/**
+ * Une quête du jour (js/features/quests) : `target` null = n'importe lequel.
+ * @typedef {{ type: string, target: string | null, goal: number, n: number, label: string }} Quest
+ */
+/** @typedef {{ date: string, list: Quest[], claimed: boolean }} DailyQuests */
+/**
+ * Le suivi d'un mini-jeu (js/features/adaptive) : `lvl`, `atLvl` et `support`
+ * n'apparaissent qu'une fois le niveau du jeu adapté.
+ * @typedef {{
+ *   wins: number,
+ *   fails: number,
+ *   errors: number,
+ *   last: string | null,
+ *   recent: Array<{ t: number, e: number, ok: boolean }>,
+ *   hints: number,
+ *   lvl?: number,
+ *   atLvl?: Array<{ ok: boolean, e: number }>,
+ *   support?: boolean,
+ * }} SkillRecord
+ */
+/** @typedef {{ date: string, min: number }} PauseExtra */
+/** Ce que porte l'avatar (js/features/wardrobe) : un id d'habit par emplacement, ou null.
+ * @typedef {{ tete: string | null, visage: string | null, tenue: string | null, cape: string | null }} Look */
+/** La pause d'un jour (js/features/rest) : `at` est l'heure HH:MM.
+ * @typedef {{ at: string | null, activity: string | null, skipped: boolean, attempts: number }} RestDay */
+/** Les compteurs du jour de l'équipe : `zap` par île, `tom` une fois.
+ * @typedef {{ date: string, zap: Record<string, boolean>, tom: boolean }} TeamDay */
+/** @typedef {{ open: boolean, met: string[], mates: string[], day: TeamDay | null }} TeamState */
+/**
+ * La collection de squishies (détail des champs dans squishyFreshState).
+ * @typedef {{
+ *   owned: Record<string, number>,
+ *   boxes: Array<string | null>,
+ *   shelf: Array<string | null>,
+ *   dry: number,
+ *   done: Record<string, boolean>,
+ *   fromStory: Record<string, boolean>,
+ *   day: { date: string, bought: number, sorted: number } | null,
+ *   sorted: number,
+ *   hello: boolean,
+ *   treasures: string[],
+ * }} SquishyState
+ */
+/**
+ * La partie d'un joueur, telle que sauvegardée (exactement les clés de DEFAULT_STATE).
+ * @typedef {{
+ *   v: number,
+ *   coins: number,
+ *   inventory: Record<string, number>,
+ *   missions: number,
+ *   sound: boolean,
+ *   voice: boolean,
+ *   newItems: number,
+ *   decos: string[],
+ *   name: string,
+ *   avatar: string,
+ *   seen: Record<string, boolean>,
+ *   quests: DailyQuests | null,
+ *   albumReward: boolean,
+ *   visited: string[],
+ *   gameCounts: Record<string, number>,
+ *   storySolved: Record<string, boolean>,
+ *   skills: Record<string, SkillRecord>,
+ *   playTime: Record<string, number>,
+ *   pauseExtra: PauseExtra | null,
+ *   wardrobe: string[],
+ *   look: Look,
+ *   seasonGifts: Record<string, boolean>,
+ *   music: boolean,
+ *   soundVolume: number,
+ *   restLog: Record<string, RestDay>,
+ *   restRecall: string | null,
+ *   storyMissions: Record<string, number>,
+ *   storyEpisodes: Record<string, number>,
+ *   friends: Record<string, number>,
+ *   friendRewards: Record<string, boolean>,
+ *   team: TeamState,
+ *   charsHelped: Record<string, boolean>,
+ *   squishies: SquishyState,
+ *   skyIntroSeen: boolean,
+ *   season2Done: boolean,
+ * }} GameState
+ */
+/**
+ * Des champs que des features posent sur `state` sans qu'ils soient dans
+ * DEFAULT_STATE (js/features/island) : load() ne garde que les clés connues,
+ * ils ne survivent donc pas à un rechargement.
+ * @typedef {{
+ *   helped?: { date: string, ids: Record<string, number> },
+ *   decoPos?: Record<string, { x: number, y: number }>,
+ *   tipDragDeco?: boolean,
+ * }} TransientState
+ */
+/**
+ * Une sauvegarde lue du stockage, avant migration : n'importe quelle version,
+ * donc des champs connus peut-être absents et peut-être d'autres clés.
+ * @typedef {Partial<GameState> & Record<string, unknown>} SavedGame
+ */
+
+/** @type {GameState} */
 const DEFAULT_STATE = {
   v: SAVE_VERSION,
   coins: 5,
@@ -61,6 +165,7 @@ const DEFAULT_STATE = {
      hello      la chambre a déjà été annoncée (première ouverture)
      treasures  les squishies uniques (case « Trésors »), jamais dans les boîtes :
                 ✨ Grisou arc-en-ciel, donné par le grand final de la saison 2 */
+/** @returns {SquishyState} */
 function squishyFreshState() {
   return {
     owned: {},
@@ -77,10 +182,15 @@ function squishyFreshState() {
 }
 
 // copie profonde : sinon inventory/seen/decos seraient partagés avec DEFAULT_STATE
+/**
+ * @param {Partial<GameState>} [extra]
+ * @returns {GameState}
+ */
 function freshState(extra) {
   return Object.assign(JSON.parse(JSON.stringify(DEFAULT_STATE)), extra || {});
 }
 
+/** @type {GameState & TransientState} */
 let state = {
   v: SAVE_VERSION,
   coins: 5,
@@ -123,8 +233,10 @@ let state = {
    au-dessus) y branche sa clé, et ce qu'il faut faire après chaque
    sauvegarde (recopier prénom et avatar dans sa fiche) et chaque chargement
    (corriger un ancien avatar). Sans joueur : l'ancienne clé unique. */
-/** @type {{ key: () => string, afterSave: () => void, afterLoad: (state: object) => void }} */
+/** @typedef {{ key: () => string, afterSave: () => void, afterLoad: (state: GameState) => void }} SaveSlot */
+/** @type {SaveSlot} */
 const saveSlot = { key: () => SAVE_KEY, afterSave: () => {}, afterLoad: () => {} };
+/** @param {Partial<SaveSlot>} slot */
 function setSaveSlot(slot) {
   Object.assign(saveSlot, slot);
 }
@@ -135,6 +247,10 @@ function save() {
 }
 
 // Migre une sauvegarde d'une ancienne version vers la structure courante
+/**
+ * @param {SavedGame} saved
+ * @returns {SavedGame}
+ */
 function migrate(saved) {
   const v = saved.v || 0;
   if (v < 1) {
@@ -167,7 +283,7 @@ function migrate(saved) {
     // de l'île) par énigme d'histoire déjà résolue, à ouvrir.
     const sq = saved.squishies || squishyFreshState();
     Object.keys(saved.storySolved || {})
-      .filter((w) => saved.storySolved[w])
+      .filter((w) => /** @type {Record<string, boolean>} */ (saved.storySolved)[w])
       .forEach((w) => {
         if (sq.fromStory[w]) return;
         sq.fromStory[w] = true;
@@ -212,11 +328,12 @@ function load() {
     // ne garde que les clés connues : une sauvegarde ancienne ou corrompue ne casse pas le jeu
     // (une clé absente garde la valeur par défaut de freshState, qui est une
     // COPIE : sinon deux joueurs partageraient le même objet, ex. skills)
+    /** @type {Record<string, unknown>} */
     const clean = {};
     Object.keys(DEFAULT_STATE).forEach((k) => {
       if ((saved[k] !== undefined && saved[k] !== null) || k === 'quests') clean[k] = saved[k];
     });
-    state = freshState(clean);
+    state = freshState(/** @type {Partial<GameState>} */ (clean));
     state.name = cleanName(state.name); // porte d'entrée : partie enregistrée ou importée
     saveSlot.afterLoad(state);
     save();
@@ -226,6 +343,7 @@ function load() {
 }
 
 // Remplacer toute la partie (nouveau joueur) : seul ce fichier réaffecte `state`
+/** @param {GameState} next */
 function replaceState(next) {
   state = next;
 }
@@ -243,10 +361,12 @@ function resetState() {
 // Compteur de défis joués, par joueur (stocké dans sa sauvegarde) : permet
 // de proposer en priorité les types de mini-jeux les moins essayés, pour
 // que chaque joueur finisse par toutes les découvrir.
+/** @param {string} key */
 function gameCount(key) {
   return (state.gameCounts && state.gameCounts[key]) || 0;
 }
 
+/** @param {string} key */
 function trackGamePlayed(key) {
   if (!state.gameCounts) state.gameCounts = {};
   state.gameCounts[key] = gameCount(key) + 1;
@@ -258,14 +378,17 @@ function trackGamePlayed(key) {
    WORLDS (js/entities/world) ; le tableau de référence est conductor/niveaux.md.
    Ces fonctions sont les seules à faire le calcul (niveau, missions qui
    restent), pour que la carte, l'île et les profils disent la même chose. */
+/** @param {unknown} missions un nombre, ou ce qu'un vieux profil a gardé (converti par Number) */
 function levelOf(missions) {
   return 1 + Math.floor((Number(missions) || 0) / MISSIONS_PER_LEVEL);
 }
 // missions réussies qu'il faut pour atteindre le niveau `lvl`
+/** @param {number} lvl */
 function missionsForLevel(lvl) {
   return (Math.max(1, lvl) - 1) * MISSIONS_PER_LEVEL;
 }
 // missions qu'il reste à réussir pour atteindre le niveau `lvl` (0 si atteint)
+/** @param {number} lvl */
 function missionsUntil(lvl) {
   return Math.max(0, missionsForLevel(lvl) - state.missions);
 }

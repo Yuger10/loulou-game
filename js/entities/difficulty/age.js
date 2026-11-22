@@ -10,12 +10,14 @@ const AGE_DIFF = [
   { max: 99, diff: 5, label: '10 ans et +' },
 ];
 
+/** @param {unknown} age un nombre, une chaîne ou rien (âge non renseigné) : lu par Number */
 function ageToDiff(age) {
   const a = Number(age);
   if (!a) return null; // âge non renseigné → difficulté de l'île
   return (AGE_DIFF.find((r) => a <= r.max) || AGE_DIFF[AGE_DIFF.length - 1]).diff;
 }
 
+/** @param {unknown} age un nombre, une chaîne ou rien (âge non renseigné) : lu par Number */
 function ageLabel(age) {
   const a = Number(age);
   if (!a) return 'âge non précisé';

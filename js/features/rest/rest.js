@@ -229,7 +229,7 @@ function renderVeil(stageName, extra) {
 
 function restIntroLine() {
   const id = restBuddyId(),
-    c = COMPANIONS[id] || {};
+    c = COMPANIONS[id] || /** @type {Partial<import('../../entities/companion/index.js').Companion>} */ ({});
   if (id === pauseAnnouncer())
     return "Viens, on respire tout doucement, comme un petit nuage… On a bien joué aujourd'hui ! Avant de dormir, tu choisis une activité avec moi ?";
   const tired = c.group === 'f' ? 'toute fatiguée' : 'tout fatigué';

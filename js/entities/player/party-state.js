@@ -2,6 +2,31 @@
 import { setCompanionPlayerSource } from '../companion/index.js';
 import { currentProfile, onProfileDelete, profiles } from './profiles.js';
 
+/**
+ * Une partie « chacun son tour » : `players` = ids des joueurs, dans l'ordre ;
+ * `scores` par id de joueur.
+ * @typedef {{
+ *   active: boolean,
+ *   mode: string | null,
+ *   players: string[],
+ *   turn: number,
+ *   scores: Record<string, number>,
+ *   lastWinner: string | null,
+ * }} Party
+ */
+/**
+ * Une course : `pos` = la case de chaque joueur (par id), `goal` = cases à parcourir.
+ * @typedef {{
+ *   active: boolean,
+ *   players: string[],
+ *   pos: Record<string, number>,
+ *   turn: number,
+ *   goal: number,
+ *   winner: string | null,
+ *   rounds: number,
+ * }} Race
+ */
+/** @type {Party} */
 let party = { active: false, mode: null, players: [], turn: 0, scores: {}, lastWinner: null };
 
 function partyPlayers() {
@@ -33,13 +58,16 @@ function currentPlayerAge() {
 const RACE_STEPS = 6; // cases à parcourir pour gagner
 
 // démarrer ou arrêter une partie à plusieurs : seul ce fichier réaffecte `party` et `race`
+/** @param {Party} p */
 function setParty(p) {
   party = p;
 }
+/** @param {Race} r */
 function setRace(r) {
   race = r;
 }
 
+/** @type {Race} */
 let race = { active: false, players: [], pos: {}, turn: 0, goal: RACE_STEPS, winner: null, rounds: 0 };
 
 function raceCurrent() {

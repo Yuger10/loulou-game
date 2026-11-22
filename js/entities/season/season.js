@@ -8,6 +8,21 @@
    Il sert aussi à la musique, à la garde-robe et à l'île. */
 import { currentProfile } from '../player/index.js';
 
+/**
+ * Une fête : `from` et `to` = [mois, jour] de début et de fin, toujours ensemble
+ * (absents pour l'anniversaire, qui dépend du joueur) ; `hat` = id du chapeau de
+ * saison, `gift` = pièces offertes, `fx` = l'effet du décor.
+ * @typedef {{
+ *   name: string,
+ *   emoji: string,
+ *   hat: string,
+ *   gift: number,
+ *   fx: string,
+ *   hatGift: string,
+ *   greet: (who?: string) => string,
+ * } & ({ from: [number, number], to: [number, number] } | { from?: undefined, to?: undefined })} Fete
+ */
+/** @type {Record<string, Fete>} */
 const FETES = {
   halloween: {
     name: 'Halloween',
@@ -46,10 +61,16 @@ const SEASON_PREVIEW_KEY = 'lagon-magique-saison'; // sessionStorage : aperçu c
 
 const SEASON_NONE = 'aucune'; // aperçu « pas de saison » (tests, comparaison)
 
+/** @param {Date} d */
 function seasonMMDD(d) {
   return `${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 }
 
+/**
+ * @param {Date} d
+ * @param {[number, number]} from
+ * @param {[number, number]} to
+ */
 function inSeasonRange(d, from, to) {
   const md = (d.getMonth() + 1) * 100 + d.getDate();
   const a = from[0] * 100 + from[1],
@@ -65,11 +86,19 @@ function seasonPreview() {
   }
 }
 
+/**
+ * @param {{ birthday?: string } | null | undefined} profile
+ * @param {Date} [d]
+ */
 function isBirthday(profile, d) {
   return !!(profile && profile.birthday && profile.birthday === seasonMMDD(d || new Date()));
 }
 
 // La saison du moment pour le joueur courant (ou null)
+/**
+ * @param {Date} [date]
+ * @returns {string | null}
+ */
 function currentSeason(date) {
   const prev = seasonPreview();
   if (prev === SEASON_NONE) return null;

@@ -27,7 +27,9 @@ function rgSwitch(key, label, on, disabled) {
 function renderSettings() {
   const el = document.getElementById('reglages-content');
   if (!el) return;
+  /** @type {Partial<import('../../entities/player/index.js').Profile>} */
   const p = currentProfile() || {};
+  /** @type {Partial<import('../../entities/companion/index.js').Companion>} */
   const comp = COMPANIONS[companionOf(p)] || {};
   const vol = typeof state.soundVolume === 'number' ? state.soundVolume : 80;
   el.innerHTML = `

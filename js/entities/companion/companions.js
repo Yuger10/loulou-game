@@ -13,11 +13,44 @@ import { playSound, setHandler } from '../../shared/ui/index.js';
 // avatars. Ce sont des features : elles fournissent leurs fonctions ici avec
 // setCompanionDressing, l'entité ne les appelle jamais directement.
 
+/** @typedef {Partial<import('../game-state/index.js').Look>} LookLike une tenue, entière ou en partie */
+/**
+ * Ce que les features fournissent : le chapeau de la saison (ou null), les
+ * couleurs et les accessoires d'une tenue, et si un avatar emoji peut la porter.
+ * @typedef {{
+ *   seasonHat: (() => string | null) | null,
+ *   lookColors: ((look: LookLike) => Partial<Companion>) | null,
+ *   lookAccessoriesSVG: ((look: LookLike) => string) | null,
+ *   lookFits: ((av: string) => boolean) | null,
+ * }} CompanionDressing
+ */
+/** @type {CompanionDressing} */
 const companionDressing = { seasonHat: null, lookColors: null, lookAccessoriesSVG: null, lookFits: null };
+/** @param {Partial<CompanionDressing>} part */
 function setCompanionDressing(part) {
   Object.assign(companionDressing, part);
 }
 
+/**
+ * Un compagnon : `group` = le profil à qui il est proposé d'abord ('f', 'm' ou
+ * '' pour tous), `style` = son dessin dans buddyParts, `unlock` = le champ de la
+ * sauvegarde qui le débloque. Grisou (style 'cloud') n'a ni cheveux ni tenue.
+ * @typedef {{
+ *   name: string,
+ *   title: string,
+ *   group: string,
+ *   skin: string,
+ *   style: string,
+ *   hair?: string,
+ *   hairDark?: string,
+ *   outfit?: string,
+ *   outfitDark?: string,
+ *   cape?: string,
+ *   capeDark?: string,
+ *   unlock?: keyof import('../game-state/index.js').GameState,
+ * }} Companion
+ */
+/** @type {Record<string, Companion>} */
 const COMPANIONS = {
   perle: {
     name: 'Perle',
@@ -111,6 +144,7 @@ const COMPANIONS = {
 };
 const COMPANION_ORDER = ['perle', 'rose', 'lili', 'tom', 'leo', 'sam', 'zap', 'grisou'];
 // un compagnon se choisit s'il n'a pas de condition, ou si elle est remplie
+/** @param {string} id */
 function companionUnlocked(id) {
   const c = COMPANIONS[id];
   return !!c && (!c.unlock || !!state[c.unlock]);
@@ -121,14 +155,25 @@ const INK = '#2B2140';
 const MOUTH = '#8C2F3F';
 
 /* ---- visage : yeux, sourcils, bouche selon l'humeur ---- */
+/**
+ * @param {Companion} c
+ * @param {string} mood
+ */
 function buddyFace(c, mood) {
   const brow = c.hairDark;
+  /**
+   * @param {number} x
+   * @param {boolean} [big]
+   */
   const eye = (x, big) => `<ellipse cx="${x}" cy="61" rx="${big ? 6.4 : 5.4}" ry="${big ? 8.2 : 7}" fill="${INK}"/>
       <circle cx="${x + 2}" cy="${big ? 57 : 57.5}" r="${big ? 2.6 : 2.2}" fill="#fff"/><circle cx="${x - 2}" cy="64.5" r="1.1" fill="#fff"/>`;
+  /** @param {number} x */
   const shut = (x) =>
     `<path d="M${x - 6} 62 Q${x} 55 ${x + 6} 62" fill="none" stroke="${INK}" stroke-width="3" stroke-linecap="round"/>`;
+  /** @param {number} x */
   const asleep = (x) =>
     `<path d="M${x - 6} 60 Q${x} 65 ${x + 6} 60" fill="none" stroke="${INK}" stroke-width="3" stroke-linecap="round"/>`;
+  /** @param {string} d */
   const browPath = (d) => `<path d="${d}" fill="none" stroke="${brow}" stroke-width="3" stroke-linecap="round"/>`;
   let eyes, brows, mouth;
   switch (mood) {
@@ -181,6 +226,10 @@ const HAIR_SHORT_FRONT =
 
 // o.noHat : un chapeau de la garde-robe remplace le couvre-chef d'origine ;
 // o.noMask : des lunettes ou un masque de la garde-robe remplacent celui de Zap.
+/**
+ * @param {Companion} c
+ * @param {{ noHat?: boolean, noMask?: boolean }} [o]
+ */
 function buddyParts(c, o = {}) {
   const back = [],
     front = [],
@@ -321,6 +370,14 @@ function buddyParts(c, o = {}) {
 /* SVG complet d'un compagnon. mood ∈ BUDDY_MOODS */
 // opts.look : la tenue choisie dans la garde-robe (js/features/wardrobe/wardrobe.js), pour
 // l'avatar dessiné du joueur — { tete, visage, tenue }.
+/**
+ * @typedef {{ look?: LookLike | null, label?: string }} BuddyOptions
+ */
+/**
+ * @param {string} id
+ * @param {string} mood
+ * @param {BuddyOptions | null} [opts]
+ */
 function companionSVG(id, mood, opts) {
   if (id === 'grisou') return grisouBuddySVG(BUDDY_MOODS.includes(mood) ? mood : 'happy', opts);
   let look = (opts && opts.look) || null;
@@ -352,6 +409,10 @@ function companionSVG(id, mood, opts) {
 
 /* Grisou en compagnon : le petit nuage, tout coloré depuis le grand final,
    avec son arc-en-ciel ; son visage suit l'humeur (comme les autres). */
+/**
+ * @param {string} m
+ * @param {BuddyOptions | null} [opts]
+ */
 function grisouBuddySVG(m, opts) {
   const label = (opts && opts.label) || 'Grisou le petit nuage';
   const eyes =
@@ -360,7 +421,7 @@ function grisouBuddySVG(m, opts) {
       : m === 'think'
         ? '<ellipse cx="47" cy="64" rx="4.6" ry="6" fill="#2B2140"/><ellipse cx="73" cy="64" rx="4.6" ry="6" fill="#2B2140"/><circle cx="48.5" cy="60.5" r="1.8" fill="#fff"/><circle cx="74.5" cy="60.5" r="1.8" fill="#fff"/>'
         : '<ellipse cx="47" cy="66" rx="4.6" ry="6" fill="#2B2140"/><ellipse cx="73" cy="66" rx="4.6" ry="6" fill="#2B2140"/><circle cx="48.6" cy="63.5" r="1.7" fill="#fff"/><circle cx="74.6" cy="63.5" r="1.7" fill="#fff"/>';
-  const mouth = {
+  const mouth = /** @type {Record<string, string>} */ ({
     happy: '<path d="M50 78 Q60 88 70 78" fill="none" stroke="#8C2F3F" stroke-width="3" stroke-linecap="round"/>',
     cheer: '<path d="M48 76 Q60 94 72 76Z" fill="#8C2F3F"/><path d="M53 84 Q60 89 67 84" fill="#FF8FA3"/>',
     wow: '<ellipse cx="60" cy="82" rx="5.5" ry="7" fill="#8C2F3F"/>',
@@ -369,7 +430,7 @@ function grisouBuddySVG(m, opts) {
     oops: '<path d="M50 82 Q55 78 60 82 Q65 86 70 82" fill="none" stroke="#8C2F3F" stroke-width="3" stroke-linecap="round"/><path d="M38 56 L52 59 M82 56 L68 59" stroke="#5B6474" stroke-width="2.4" stroke-linecap="round"/>',
     sleepy:
       '<path d="M55 82 Q60 85 65 82" fill="none" stroke="#8C2F3F" stroke-width="2.6" stroke-linecap="round"/><path d="M92 36 h8 l-8 8 h8" fill="none" stroke="#7B5CC0" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>',
-  }[m];
+  })[m];
   const sparkle =
     m === 'cheer' || m === 'wow'
       ? '<g fill="#FFD95A"><path d="M14 30 l2 5 l5 1 l-4 3 l1 5 l-4 -2 l-4 2 l1 -5 l-4 -3 l5 -1z"/><path d="M104 66 l1.6 4 l4 .6 l-3 2.6 l.8 4 l-3.4 -1.8 l-3.4 1.8 l.8 -4 l-3 -2.6 l4 -.6z"/></g>'
@@ -389,17 +450,31 @@ function grisouBuddySVG(m, opts) {
 }
 
 /* ---- quel compagnon pour quel joueur ---- */
+/**
+ * Le joueur, vu par le compagnon : son compagnon choisi et son genre.
+ * @typedef {{ companion?: string, gender?: string }} CompanionOwner
+ */
+/** @param {string | undefined} gender */
 function defaultCompanionFor(gender) {
   return gender === 'm' ? 'tom' : gender === 'f' ? 'perle' : 'perle';
 }
+/**
+ * @param {CompanionOwner | null | undefined} profile
+ * @returns {string}
+ */
 function companionOf(profile) {
   if (!profile) return defaultCompanionFor('');
-  return COMPANIONS[profile.companion] ? profile.companion : defaultCompanionFor(profile.gender);
+  // un id absent ne trouve aucun compagnon (COMPANIONS[undefined] vaut undefined) : la conversion est sûre
+  return COMPANIONS[/** @type {string} */ (profile.companion)]
+    ? /** @type {string} */ (profile.companion)
+    : defaultCompanionFor(profile.gender);
 }
 // le compagnon du joueur dont c'est le tour (solo, chacun son tour ou course).
 // Le joueur courant vient d'entities/player (une couche au-dessus), qui
 // branche sa fonction ici (v54).
+/** @type {() => CompanionOwner | null | undefined} */
 let companionPlayerSource = () => null;
+/** @param {() => CompanionOwner | null | undefined} fn */
 function setCompanionPlayerSource(fn) {
   companionPlayerSource = fn;
 }
@@ -407,6 +482,7 @@ function currentCompanion() {
   return companionOf(companionPlayerSource());
 }
 // compagnons proposés en premier selon le profil ; '' = tous
+/** @param {string | undefined} gender */
 function companionsFor(gender) {
   if (gender === 'f' || gender === 'm')
     return COMPANION_ORDER.filter((k) => COMPANIONS[k].group === gender && companionUnlocked(k));
@@ -414,7 +490,12 @@ function companionsFor(gender) {
 }
 
 /* ---- le compagnon réagit dans la fenêtre de jeu ---- */
+/** @type {number | null} */
 let buddyTimer = null;
+/**
+ * @param {string} mood
+ * @param {number} [holdMs] 0 : garde l'humeur ; absent : 1,1 s
+ */
 function buddyReact(mood, holdMs) {
   const slots = document.querySelectorAll('#modal-body .buddy-slot');
   if (!slots.length) return;
@@ -425,7 +506,7 @@ function buddyReact(mood, holdMs) {
     s.classList.remove('react');
     void s.offsetWidth;
     s.classList.add('react');
-    clearTimeout(buddyTimer);
+    clearTimeout(/** @type {number | undefined} */ (buddyTimer)); // null (aucun minuteur) : sans effet, comme undefined
     if (holdMs !== 0) {
       buddyTimer = setTimeout(() => {
         if (!s.isConnected) return;
@@ -435,12 +516,21 @@ function buddyReact(mood, holdMs) {
     }
   });
 }
+/**
+ * @param {string} [mood]
+ * @param {string} [extraClass]
+ */
 function buddySlot(mood, extraClass) {
   const m = mood || 'happy';
   return `<span class="buddy-slot ${extraClass || ''}" data-mood="${m}" aria-hidden="true">${companionSVG(currentCompanion(), m)}</span>`;
 }
 
 /* ---- sélecteur de compagnon (accueil, nouveau joueur, réglages) ---- */
+/**
+ * @param {string} sel
+ * @param {string | undefined} gender
+ * @param {boolean} [showAll]
+ */
 function companionSelector(sel, gender, showAll) {
   const all = COMPANION_ORDER.filter(companionUnlocked);
   const list = showAll ? all : companionsFor(gender);
@@ -461,11 +551,16 @@ function companionSelector(sel, gender, showAll) {
     ${others > 0 ? `<button type="button" class="buddy-more" data-buddy-more>＋ Voir les autres compagnons</button>` : ''}`;
 }
 // branche les boutons du sélecteur ; onPick(id) / onMore()
+/**
+ * @param {ParentNode | null | undefined} root
+ * @param {(id: string) => void} onPick
+ * @param {() => void} onMore
+ */
 function bindCompanionSelector(root, onPick, onMore) {
   (root || document).querySelectorAll('.buddy-opt').forEach((b) => {
     setHandler(b, 'click', () => {
       playSound('tap');
-      onPick(b.dataset.buddy);
+      onPick(/** @type {string} */ (b.dataset.buddy)); // chaque .buddy-opt porte data-buddy (companionSelector)
     });
   });
   const more = (root || document).querySelector('[data-buddy-more]');
@@ -481,6 +576,7 @@ function bindCompanionSelector(root, onPick, onMore) {
    dessiné (ex. « art:zap », le super-héros). avatarHTML l'affiche en image
    partout où l'avatar est affiché ; avatarText le remplace par un emoji
    dans le texte simple (notifications, voix). */
+/** @type {Record<string, string>} */
 const AVATAR_ART_EMOJI = {
   zap: '🦸‍♂️',
   perle: '🧜‍♀️',
@@ -491,10 +587,15 @@ const AVATAR_ART_EMOJI = {
   sam: '🧭',
   grisou: '☁️',
 };
+/** @param {unknown} av */
 function isArtAvatar(av) {
   return typeof av === 'string' && av.startsWith('art:') && !!COMPANIONS[av.slice(4)];
 }
 // look (facultatif) : chapeau, lunettes, couleurs choisis dans la garde-robe
+/**
+ * @param {string} av
+ * @param {LookLike | null} [look]
+ */
 function avatarHTML(av, look) {
   const hasLook = look && (look.tete || look.visage || look.tenue);
   if (!isArtAvatar(av)) {
@@ -512,6 +613,7 @@ function avatarHTML(av, look) {
     c = COMPANIONS[id];
   return `<span class="av-art" role="img" aria-label="${c.name} ${c.title}">${companionSVG(id, 'happy', hasLook ? { look } : null)}</span>`;
 }
+/** @param {string} av */
 function avatarText(av) {
   if (!isArtAvatar(av)) return av || '👧';
   return AVATAR_ART_EMOJI[av.slice(4)] || '🙂';

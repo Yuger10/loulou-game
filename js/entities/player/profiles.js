@@ -10,8 +10,32 @@ const PROFILES_KEY = 'lagon-magique-profiles';
 
 const LEGACY_SAVE_KEY = 'lagon-magique-save';
 
+/**
+ * La fiche d'un joueur. Les champs facultatifs manquent aux fiches anciennes ou
+ * migrées : `age` (null = non précisé), `gender` ('f', 'm' ou '' neutre),
+ * `companion` (id), `pauseMin` (durée de pause choisie par un adulte),
+ * `birthday` ('MM-JJ' ou ''), `look` (copie de state.look, pour dessiner l'avatar).
+ * @typedef {{
+ *   id: string,
+ *   name: string,
+ *   avatar: string,
+ *   age?: number | null,
+ *   gender?: string,
+ *   companion?: string,
+ *   pauseMin?: number,
+ *   birthday?: string,
+ *   look?: import('../game-state/index.js').Look | null,
+ * }} Profile
+ */
+/**
+ * Les joueurs : `current` = id du joueur courant, `familyPause` = la dernière
+ * durée de pause choisie par un adulte (pour les nouveaux joueurs).
+ * @typedef {{ list: Profile[], current: string | null, familyPause?: number }} Profiles
+ */
+/** @type {Profiles} */
 let profiles = { list: [], current: null };
 
+/** @param {string} id */
 function profileSaveKey(id) {
   return LEGACY_SAVE_KEY + ':' + id;
 }
@@ -43,6 +67,7 @@ function loadProfiles() {
 
   // migration : une ancienne partie unique devient le premier joueur
   if (!profiles.list.length) {
+    /** @type {{ name?: string, avatar?: string } | null} une ancienne partie (JSON lu tel quel) */
     let legacy = null;
     try {
       legacy = JSON.parse(localStorage.getItem(LEGACY_SAVE_KEY) || 'null');
@@ -86,6 +111,10 @@ setSaveSlot({
   },
 });
 
+/**
+ * @param {string} id
+ * @param {boolean} [silent]
+ */
 function switchProfile(id, silent) {
   if (id === profiles.current) return;
   save(); // sauvegarde le joueur courant
@@ -102,6 +131,13 @@ function switchProfile(id, silent) {
   }
 }
 
+/**
+ * @param {string} name
+ * @param {string} avatar
+ * @param {number | null} age
+ * @param {string} gender
+ * @param {string} companion
+ */
 function addProfile(name, avatar, age, gender, companion) {
   const id = newId();
   // la pause du nouveau joueur : le réglage familial (la dernière durée choisie par un adulte)
@@ -127,10 +163,12 @@ function addProfile(name, avatar, age, gender, companion) {
 // un point d'accroche plutôt qu'un import, pour éviter un cycle profiles ↔ party-state
 /** @type {((id: string) => void)[]} */
 const profileDeleteHooks = [];
+/** @param {(id: string) => void} fn */
 function onProfileDelete(fn) {
   profileDeleteHooks.push(fn);
 }
 
+/** @param {string} id */
 function deleteProfile(id) {
   if (profiles.list.length <= 1) return false;
   profiles.list = profiles.list.filter((p) => p.id !== id);
@@ -149,7 +187,9 @@ function deleteProfile(id) {
 // Après un changement de joueur (ou une restauration), tout ce qui affiche
 // ses données doit se redessiner. Les features concernées s'inscrivent avec
 // onProfileRefresh : l'entité ne les connaît pas.
+/** @type {(() => void)[]} */
 const profileRefreshHooks = [];
+/** @param {() => void} fn */
 function onProfileRefresh(fn) {
   profileRefreshHooks.push(fn);
 }
@@ -165,6 +205,10 @@ function playerGender() {
 }
 
 // ac('fort') -> 'fort' / 'forte' ; ac('champion','championne')
+/**
+ * @param {string} masc
+ * @param {string} [fem]
+ */
 function ac(masc, fem) {
   const g = playerGender();
   if (g === 'f') return fem || masc + 'e';

@@ -117,7 +117,7 @@ function renderQuestBadge() {
   const left = q.list.filter((i) => i.n < i.goal).length;
   const ready = questsDone() && !q.claimed;
   el.hidden = false;
-  el.textContent = ready ? '🎁' : left || '✓';
+  el.textContent = ready ? '🎁' : String(left || '✓'); // textContent attend du texte (le nombre y était converti de toute façon)
   el.classList.toggle('ready', ready);
 }
 

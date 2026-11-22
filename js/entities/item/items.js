@@ -1,6 +1,16 @@
 /* ---------- Données ---------- */
 import { save, state } from '../game-state/index.js';
 
+/**
+ * Un objet (récolté, fabriqué ou décoration) : `world` absent = le Lagon.
+ * @typedef {{ emoji: string, name: string, price: number, world?: string }} Item
+ */
+/**
+ * Un objet fabriqué : sa recette (ingrédient → quantité) ; `tier: 2` = fabriqué
+ * à partir d'autres objets fabriqués.
+ * @typedef {Item & { recipe: Record<string, number>, tier?: number }} CraftedItem
+ */
+/** @type {Record<string, Item>} */
 const ITEMS = {
   coquillage: { emoji: '🐚', name: 'Coquillage', price: 2 },
   perle: { emoji: '🦪', name: 'Perle', price: 3 },
@@ -119,6 +129,7 @@ const ITEMS = {
   plumearc: { emoji: '🪶', name: 'Plume irisée', price: 8, world: 'licornes' },
 };
 
+/** @type {Record<string, CraftedItem>} */
 const CRAFTED = {
   collier: { emoji: '📿', name: 'Collier magique', price: 10, recipe: { coquillage: 2, ruban: 1 } },
   bouquet: { emoji: '💐', name: 'Bouquet enchanté', price: 8, recipe: { perle: 2, fleur: 1 } },
@@ -397,12 +408,18 @@ const CRAFTED = {
   },
 };
 
+/** @type {Record<string, Item>} */
 const ALL_ITEMS = Object.assign({}, ITEMS, CRAFTED);
 
+/**
+ * @param {string} world
+ * @returns {Array<[string, Item]>}
+ */
 function decosOf(world) {
   return Object.entries(DECOS).filter(([, d]) => (d.world || 'lagon') === world);
 }
 
+/** @type {Record<string, Item>} */
 const DECOS = {
   palmier: { emoji: '🌴', name: 'Palmier', price: 8 },
   poisson: { emoji: '🐠', name: 'Poisson clown', price: 10 },
@@ -527,16 +544,25 @@ const DECOS = {
 
 const ALBUM_REWARD = 100;
 
+/**
+ * @param {string} key
+ * @param {number} [qty]
+ */
 function addItem(key, qty = 1) {
   state.inventory[key] = (state.inventory[key] || 0) + qty;
   save();
 }
 
+/**
+ * @param {string} key
+ * @param {number} [qty]
+ */
 function removeItem(key, qty = 1) {
   state.inventory[key] = Math.max(0, (state.inventory[key] || 0) - qty);
   save();
 }
 
+/** @param {string} key */
 function countItem(key) {
   return state.inventory[key] || 0;
 }

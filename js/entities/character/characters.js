@@ -1,4 +1,19 @@
 /* ---------- Personnages des îles ---------- */
+/**
+ * Un personnage d'une île : `world` absent = le Lagon (les premiers personnages
+ * datent d'avant les autres mondes), `noGames` = guide sans mini-jeu.
+ * @typedef {{
+ *   emoji: string,
+ *   name: string,
+ *   title: string,
+ *   gender: string,
+ *   loot: string[],
+ *   texts: string[],
+ *   world?: string,
+ *   noGames?: boolean,
+ * }} Character
+ */
+/** @type {Record<string, Character>} */
 const CHARACTERS = {
   sirene: {
     emoji: '🧜‍♀️',
@@ -755,6 +770,10 @@ const CHARACTERS = {
   },
 };
 
+/**
+ * @param {string} world
+ * @returns {Array<[string, Character]>}
+ */
 function charsOf(world) {
   return Object.entries(CHARACTERS).filter(([, c]) => (c.world || 'lagon') === world);
 }
@@ -764,6 +783,10 @@ function charsOf(world) {
 // joueur — sans jamais en retirer : chaque île garde ses 4 personnages
 // et leur butin, seul l'ORDRE d'affichage change. Un joueur sans genre
 // renseigné (ou « neutre ») garde l'ordre d'origine (inchangé).
+/**
+ * @param {string} world
+ * @param {string | null | undefined} gender
+ */
 function charsOfForPlayer(world, gender) {
   const list = charsOf(world);
   if (gender !== 'f' && gender !== 'm') return list;
