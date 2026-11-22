@@ -120,3 +120,7 @@ Le reformatage est un commit purement mécanique, listé dans `.git-blame-ignore
 |---|---|---|
 | `bun run typecheck` (`tsc -p .`, 167 modules) | **93 ms** | < 10 s |
 | Hook de l'agent (oxfmt, oxlint, tsc) | **211 ms** | < 300 ms |
+
+## Track lint : règles ajoutées (22 novembre 2026)
+
+7 règles de plus, toutes à 0 cas (`eqeqeq`, `no-use-before-define`, `no-console`, `max-lines`, `no-param-reassign`, `import/no-cycle`, `no-underscore-dangle` réactivée) : `bun run lint` passe de 33 à **36 ms**. Restent coupées : `no-array-sort` et `no-array-reverse` (version minimale d'iOS à décider), `prefer-add-event-listener` (helper à décider), `consistent-function-scoping` (raison écrite dans `.oxlintrc.json`).

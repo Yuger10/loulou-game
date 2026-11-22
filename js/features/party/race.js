@@ -16,7 +16,7 @@ import { closeModal, confetti, openModal, playSound, showToast, speak, vibrate }
 import { gameDiffIsland } from '../adaptive/index.js';
 import { queueGain } from '../gains/index.js';
 import { addCoins } from '../wallet/index.js';
-import { renderTurnBar } from './party.js';
+import { renderTurnBar } from './turn-bar.js';
 
 const RACE_PRIZE = 50; // pièces pour le vainqueur
 

@@ -65,8 +65,7 @@ let teamSayQueue = [],
   teamSaying = null,
   teamSayTimer = null,
   teamHold = null;
-function teamSay(id, text, opts) {
-  opts = opts || {};
+function teamSay(id, text, opts = {}) {
   if (!COMPANIONS[id]) return;
   teamSayQueue.push({ id, text, onTap: opts.onTap || null });
   if (!teamSaying && !teamHold) teamSayNext();
@@ -404,6 +403,8 @@ onProfileRefresh(() => {
   teamSayClear();
   renderTeamHelpers();
 });
+// l'île vient d'être redessinée (après les têtes de l'équipe, dessinées par team.js)
+on('lagon:rendered', renderTeamHelpers);
 
 // Rose : dans le Sac, l'Album et « Mon look » (événement du Sac)
 on('bag:tab', roseTip);

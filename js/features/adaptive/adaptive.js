@@ -27,7 +27,7 @@ import { state } from '../../entities/game-state/index.js';
 import { party } from '../../entities/player/index.js';
 import { pickRandom, random } from '../../shared/lib/index.js';
 import { lastGame } from './session.js';
-import { SKILL_ERR_TOLERANCE, skillStatus } from './skills.js';
+import { SKILL_ERR_TOLERANCE, skillStatus } from './skill-status.js';
 
 const GAME_TIER_MAX = { calc: 6, shapes: 6, planets: 6 };
 const ADAPT_UP_STREAK = 2; // réussites d'affilée pour monter d'un cran
@@ -86,8 +86,8 @@ function placementTier(base) {
 
 // Niveau réellement joué pour ce jeu, à partir du palier de l'île (déjà
 // plafonné par l'âge). Appelé par gameDiff() en solo.
-function adaptTier(base, key) {
-  key = key || lastGame;
+function adaptTier(base, keyArg) {
+  const key = keyArg || lastGame;
   if (!key || inGroupPlay()) return base;
   const s = skillOf(key);
   const lvl = s && s.lvl ? s.lvl : placementTier(base);

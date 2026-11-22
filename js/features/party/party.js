@@ -1,8 +1,9 @@
 /* ---------- Mode chacun son tour : passer la main, scores ---------- */
 import { avatarHTML, avatarText } from '../../entities/companion/index.js';
-import { party, partyCurrent, partyPlayers, race, setParty, switchProfile } from '../../entities/player/index.js';
+import { party, partyCurrent, race, setParty, switchProfile } from '../../entities/player/index.js';
 import { onWrongFeedback, playSound, showToast, speak, vibrate } from '../../shared/ui/index.js';
 import { raceAdvance, stopRace } from './race.js';
+import { onTurnStop, renderTurnBar } from './turn-bar.js';
 
 function startParty(ids) {
   if (ids.length < 2) return false;
@@ -61,34 +62,6 @@ function showTurnOverlay(p, reason) {
   turnOverlayTimer = setTimeout(() => el.classList.remove('show'), 1600);
 }
 
-function renderTurnBar() {
-  const bar = document.getElementById('turn-bar');
-  if (!bar) return;
-  if (!party.active) {
-    bar.hidden = true;
-    bar.innerHTML = '';
-    return;
-  }
-  bar.hidden = false;
-  const isRace = party.mode === 'race';
-  bar.innerHTML =
-    partyPlayers()
-      .map(
-        (p, i) => `
-    <span class="turn-chip ${i === party.turn ? 'on' : ''}">
-      <b>${avatarHTML(p.avatar, p.look)}</b> ${p.name || 'Joueur ' + (i + 1)}
-      <i>${isRace ? (race.pos[p.id] || 0) + '/' + race.goal + ' ⛵' : (party.scores[p.id] || 0) + ' 🏅'}</i>
-    </span>`,
-      )
-      .join('') + `<button class="turn-stop" id="turn-stop">✖️</button>`;
-  const st = document.getElementById('turn-stop');
-  if (st)
-    st.onclick = () => {
-      playSound('tap');
-      stopParty();
-    };
-}
-
 // appelé quand un mini-jeu est réussi
 function partyScore() {
   if (!party.active) return;
@@ -114,4 +87,7 @@ onWrongFeedback(() => {
   if (party.active) setTimeout(() => passTurn('wrong'), 420);
 });
 
-export { partyAfterWin, partyScore, passTurn, renderTurnBar, startParty, stopParty };
+// le bouton ✖️ de la barre des tours arrête la partie
+onTurnStop(stopParty);
+
+export { partyAfterWin, partyScore, passTurn, startParty, stopParty };

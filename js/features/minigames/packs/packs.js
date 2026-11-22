@@ -30,8 +30,7 @@ const PACK_TOYS = ['🧸', '🪀', '⚽', '🎈', '🧩', '🪁', '🎲', '🚗'
 const PACK_WORDS = { 2: 'deux', 5: 'cinq', 10: 'dix' };
 
 // Une collection : `n` paquets de `size` jouets, et peut-être un jouet tout seul
-function packsBuildRound(dd, rng) {
-  rng = rng || random;
+function packsBuildRound(dd, rng = random) {
   const cfg = packsRound(dd);
   const size = cfg.sizes[Math.floor(rng() * cfg.sizes.length)];
   const n = cfg.min + Math.floor(rng() * (cfg.max - cfg.min + 1));

@@ -114,8 +114,7 @@ function shareCakeSVG(shape, parts, shaded) {
   return `<svg class="share-cake" viewBox="0 0 100 100" aria-hidden="true">${body}</svg>`;
 }
 
-function shareBuildRound(dd, rng) {
-  rng = rng || random;
+function shareBuildRound(dd, rng = random) {
   const cfg = shareRound(dd);
   const pick = (arr) => arr[Math.floor(rng() * arr.length)];
   const shape = rng() < 0.5 ? 'rond' : 'carre';

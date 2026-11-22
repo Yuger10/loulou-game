@@ -112,6 +112,43 @@ function storageFull(on, onlyKey) {
   storageFull(false);
   check("applyBackup dit combien de parties n'ont pas été écrites", res && res.failed >= 1, JSON.stringify(res));
 
+  section('Une partie enregistrée abîmée');
+  {
+    const said = [];
+    const d2 = new JSDOM(page.buildHtml(), {
+      runScripts: 'dangerously',
+      pretendToBeVisual: true,
+      url: 'http://localhost/?saison=aucune',
+      beforeParse(win) {
+        win.SpeechSynthesisUtterance = function (text) {
+          this.text = text;
+        };
+        win.speechSynthesis = { speaking: false, cancel() {}, getVoices: () => [], speak: (u) => said.push(u.text) };
+        win.localStorage.setItem(
+          'lagon-magique-profiles',
+          JSON.stringify({ list: [{ id: 'p1', name: 'Zoé' }], current: 'p1' }),
+        );
+        win.localStorage.setItem('lagon-magique-save:p1', '{ abîmée');
+      },
+    });
+    await wait(300);
+    const ev2 = (code) => d2.window.eval(code);
+    const e2 = ev2('storageErrors()');
+    check(
+      'la sauvegarde illisible est notée, avec sa cause',
+      e2.length === 1 && /illisible/.test(e2[0].cause),
+      JSON.stringify(e2),
+    );
+    check(
+      "l'enfant entend qu'il faut un adulte",
+      said.some((t) => /pas pu être relue/.test(t)),
+      said.join(' | '),
+    );
+    const cards2 = ev2("emit('parents:cards', { st: state, p: currentProfile() }).filter(Boolean).join('')");
+    check('la carte des parents le dit', /illisible/.test(cards2));
+    d2.window.close();
+  }
+
   check('aucune erreur JS', errs.length === 0, errs.join(' | '));
   console.log(`\n${failed ? '❌' : '✅'} stockage : ${passed} vérifications réussies, ${failed} en échec`);
   process.exit(failed ? 1 : 0);

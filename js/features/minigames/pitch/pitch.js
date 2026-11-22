@@ -37,8 +37,7 @@ const BELL_COLORS = ['#FFD95A', '#5CC6CC', '#FF8FB8', '#BFA3EC', '#6ED38C', '#FF
 // la taille de la cloche suit la note : grande et grave, petite et aiguë
 const bellSize = (m) => Math.round(36 + ((84 - m) / 24) * 48);
 
-function pitchBuildRound(dd, rng) {
-  rng = rng || random;
+function pitchBuildRound(dd, rng = random) {
   const cfg = pitchRound(dd);
   if (rng() < (cfg.melody || 0)) {
     const up = rng() < 0.5;

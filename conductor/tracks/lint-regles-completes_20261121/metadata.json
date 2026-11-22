@@ -1,7 +1,7 @@
 {
   "track_id": "lint-regles-completes_20261121",
   "type": "chore",
-  "status": "new",
+  "status": "in_progress",
   "created_at": "2026-11-21T00:00:00Z",
   "updated_at": "2026-11-21T00:00:00Z",
   "description": "Réactiver les 5 règles oxlint désactivées à l'étape 3 de la factory, en corrigeant le code au lieu de couper les règles."

@@ -46,8 +46,7 @@ const unitSay = (v, unit) =>
   unit === 'verres' ? `${v} verre${v > 1 ? 's' : ''}` : unit === 'g' ? `${v} grammes` : `${v} centilitres`;
 const unitShort = (v, unit) => (unit === 'verres' ? `${v} verre${v > 1 ? 's' : ''}` : `${v} ${unit}`);
 
-function recipeBuildRound(dd, rng) {
-  rng = rng || random;
+function recipeBuildRound(dd, rng = random) {
   const cfg = recipeRound(dd);
   const pick = (arr) => arr[Math.floor(rng() * arr.length)];
   const ask = pick(cfg.asks);

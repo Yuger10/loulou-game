@@ -44,8 +44,7 @@ const LB_SPOTS = [
   [36, 158],
 ];
 
-function ladybugsBuildRound(dd, rng) {
-  rng = rng || random;
+function ladybugsBuildRound(dd, rng = random) {
   const cfg = ladybugsRound(dd);
   const mode = cfg.modes[Math.floor(rng() * cfg.modes.length)];
   const n = cfg.min + Math.floor(rng() * (cfg.max - cfg.min + 1));

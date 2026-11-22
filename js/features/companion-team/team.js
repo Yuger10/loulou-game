@@ -39,7 +39,6 @@ import {
   speechBubble,
 } from '../../shared/ui/index.js';
 import { bindQuit, gameHeader } from '../screen/index.js';
-import { renderTeamHelpers } from './specialties.js';
 
 const TEAM_LEVEL = 10;
 const TEAM_MATES_MAX = 2;
@@ -250,8 +249,8 @@ const teamLater = {};
 function teamNewVisit() {
   teamVisit++;
 }
-function maybeTeamEncounter(world) {
-  world = world || currentWorld;
+function maybeTeamEncounter(worldArg) {
+  const world = worldArg || currentWorld;
   if (party.active || race.active) return false;
   if (document.getElementById('overlay').classList.contains('show')) return false;
   const id = teamEncounterOn(world);
@@ -442,10 +441,7 @@ onProfileRefresh(renderTeamHeads);
 
 // l'île prévient : on arrive sur une île, ou elle vient d'être redessinée
 on('world:changed', teamOnTravel);
-on('lagon:rendered', () => {
-  renderTeamHeads();
-  renderTeamHelpers();
-});
+on('lagon:rendered', renderTeamHeads); // les aides (Sam, Zap) : specialties.js écoute aussi
 
 export {
   maybeTeamOpening,

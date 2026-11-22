@@ -1668,3 +1668,9 @@ Les deux sont proposés dès 5 ans, sans minuteur. Le jeu de l'île est les poti
 - **Ce que voit l'enfant :** rien ne change (aucun changement de comportement).
 - **Pour le code :** TypeScript 7 vérifie tout le JavaScript, sans build ni fichiers `.ts` ([ADR 0003](docs/adr/0003-typescript.md), option 1 choisie par Amrou). Mode souple : 284 erreurs ramenées à 0 (types du DOM du jeu, annotations JSDoc, état partagé rendu explicite). `bun run typecheck` (93 ms) dans `check`, la CI et le hook de l'agent (211 ms en tout). Une incohérence laissée par un agent attrapée au passage (un appel qui n'avait pas suivi le retrait d'un paramètre). Le mode strict viendra couche par couche (track `typescript-checkjs`).
 - Cache `lagon-v66.3`.
+
+# v66.4 : Lint complet : 7 règles de plus, 5 cycles d'imports cassés, sauvegarde illisible signalée
+
+- **Ce que voit l'enfant :** si la partie enregistrée est abîmée au démarrage, le jeu ne repart plus de zéro en silence : « L'ancienne partie n'a pas pu être relue. Demande à un adulte. », et la carte « ⚠️ Enregistrement » de l'espace parents l'explique (c'était un simple message dans la console, que personne ne voyait).
+- **Pour le code :** track `lint-regles-completes`. `no-underscore-dangle` réactivée ; ajoutées et à 0 cas : `eqeqeq` (`x == null` permis), `no-use-before-define`, `no-console`, `max-lines` (1 250), `no-param-reassign` (40 valeurs par défaut réécrites), `import/no-cycle` (5 cycles d'imports cassés : barre des tours dans son fichier, événements `nav:dialogue` et `nav:deco-shop`, `lagon:rendered`, point d'accroche `onProfileDelete`, `skill-status.js`). `consistent-function-scoping` reste coupée, raison écrite. Lint : 36 ms.
+- Cache `lagon-v66.4`.

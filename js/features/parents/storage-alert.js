@@ -11,11 +11,13 @@ import { showToast, speak } from '../../shared/ui/index.js';
 const CHILD_MESSAGE = "La partie n'a pas pu être enregistrée. Demande à un adulte.";
 let warned = false;
 
-on('storage:error', () => {
+const UNREADABLE_MESSAGE = "L'ancienne partie n'a pas pu être relue. Demande à un adulte.";
+on('storage:error', (err) => {
   if (warned) return;
   warned = true;
-  showToast('⚠️ ' + CHILD_MESSAGE);
-  speak(CHILD_MESSAGE);
+  const msg = err && err.op === 'lecture' ? UNREADABLE_MESSAGE : CHILD_MESSAGE;
+  showToast('⚠️ ' + msg);
+  speak(msg);
 });
 
 on('parents:cards', () => {
@@ -23,7 +25,7 @@ on('parents:cards', () => {
   if (!errs.length) return '';
   const time = (iso) => new Date(iso).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
   return `<section class="bk-card ps-storage"><h3>⚠️ Enregistrement</h3>
-    <p>La partie n'a pas pu être enregistrée ${errs.length} fois pendant cette session : ce qui a été gagné depuis peut être perdu.</p>
+    <p>Un problème d'enregistrement est arrivé ${errs.length} fois pendant cette session : ce qui a été gagné peut être perdu.</p>
     <ul>${errs
       .slice(-5)
       .map((e) => `<li><strong>${time(e.at)}</strong> · ${e.op} · ${e.cause}</li>`)

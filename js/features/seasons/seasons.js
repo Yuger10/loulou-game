@@ -168,8 +168,8 @@ function seasonSceneSVG(id) {
 }
 
 /* ---- le cadeau de la saison (une fois par saison et par enfant) ---- */
-function seasonGiftKey(id, d) {
-  d = d || new Date();
+function seasonGiftKey(id, dArg) {
+  const d = dArg || new Date();
   // Noël déborde sur janvier : c'est la saison de l'année de décembre
   const y = id === 'noel' && d.getMonth() === 0 ? d.getFullYear() - 1 : d.getFullYear();
   return `${id}-${y}`;

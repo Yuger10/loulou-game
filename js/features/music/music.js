@@ -72,7 +72,8 @@ function musicWanted() {
 }
 
 /* ---- les instruments ---- */
-function mNote(freq, t, dur, kind, vol) {
+function mNote(freq, t, durArg, kind, vol) {
+  let dur = durArg;
   const ctx = audioCtx,
     o = ctx.createOscillator(),
     g = ctx.createGain();

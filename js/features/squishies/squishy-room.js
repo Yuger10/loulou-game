@@ -71,8 +71,7 @@ const SQ_BODIES = {
 
 // le visage : yeux, joues, bouche (o.sleep : yeux fermés ; o.capy : museau ;
 // o.beak : un bec à la place de la bouche ; o.noEyes : yeux dessinés à part)
-function sqFace(fx, fy, o) {
-  o = o || {};
+function sqFace(fx, fy, o = {}) {
   const ey = o.capy ? fy - 8 : fy;
   const eyes = o.noEyes
     ? ''
@@ -619,8 +618,7 @@ const SQ_SPARKLE = (x, y, s) =>
 
 /* Le dessin d'un squishy. opts.silhouette : gris, sans visage (un modèle
    pas encore trouvé). */
-function squishyArtSVG(id, opts) {
-  opts = opts || {};
+function squishyArtSVG(id, opts = {}) {
   const m = SQUISHIES[id] || SQUISHY_TREASURES[id],
     art = SQ_ART[id];
   if (!m || !art) return '';
@@ -738,7 +736,8 @@ const SQ_TABS = [
   { id: 'ranger', icon: '📦', name: 'Ranger' },
 ];
 
-function openSquishyRoom(tab, opts) {
+function openSquishyRoom(tabArg, opts) {
+  let tab = tabArg;
   tab = SQ_TABS.some((t) => t.id === tab) ? tab : sqRoomTab || 'collection';
   sqRoomTab = tab;
   sqShelfSel = null;
@@ -1045,8 +1044,7 @@ function squishyShelfTap(slot, btn) {
 
 /* ---- 📦 Ranger : les boîtes de rangement à consigne ---- */
 let sqSort = null; // { task, filled, errors, age }
-function sqSortTask(opts) {
-  opts = opts || {};
+function sqSortTask(opts = {}) {
   const age = currentPlayerAge();
   return makeSortingTask(sqState().owned, age, random, { avoid: opts.avoid });
 }

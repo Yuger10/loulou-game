@@ -83,8 +83,8 @@ function tickPlayTime(seconds) {
   while (keys.length > 60) delete state.playTime[keys.shift()];
   save();
 }
-function playMinutesToday(st) {
-  st = st || state;
+function playMinutesToday(stArg) {
+  const st = stArg || state;
   return Math.floor(((st.playTime || {})[todayKey()] || 0) / 60);
 }
 function startPlayTimeTracker() {

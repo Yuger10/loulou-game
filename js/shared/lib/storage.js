@@ -14,8 +14,8 @@ function causeOf(e) {
   if (e && e.name === 'SecurityError') return 'stockage bloqué (navigation privée ?)';
   return 'erreur inconnue';
 }
-function fail(op, key, e) {
-  const err = { at: new Date().toISOString(), op, key, cause: causeOf(e) };
+function fail(op, key, e, cause = causeOf(e)) {
+  const err = { at: new Date().toISOString(), op, key, cause };
   errors.push(err);
   if (errors.length > 20) errors.shift();
   emit('storage:error', err);
@@ -38,8 +38,13 @@ function storageRemove(key) {
     return fail('suppression', key, e);
   }
 }
+// une partie enregistrée qu'on ne peut pas relire (abîmée) : signalée comme un
+// échec d'écriture (message à l'enfant, carte dans l'espace parents)
+function reportUnreadable(key, e) {
+  return fail('lecture', key, e, 'sauvegarde illisible : la partie repart de zéro');
+}
 function storageErrors() {
   return errors.slice();
 }
 
-export { storageRemove, storageErrors, storageWrite };
+export { reportUnreadable, storageErrors, storageRemove, storageWrite };

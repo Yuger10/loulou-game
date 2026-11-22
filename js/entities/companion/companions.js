@@ -181,8 +181,7 @@ const HAIR_SHORT_FRONT =
 
 // o.noHat : un chapeau de la garde-robe remplace le couvre-chef d'origine ;
 // o.noMask : des lunettes ou un masque de la garde-robe remplacent celui de Zap.
-function buddyParts(c, o) {
-  o = o || {};
+function buddyParts(c, o = {}) {
   const back = [],
     front = [],
     hat = [],

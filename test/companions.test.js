@@ -27,7 +27,7 @@ const dom = new JSDOM(html, {
       getVoices: () => [],
       speak(u) {
         spoken.push(u.text);
-        win.__rate = u.rate;
+        win.lastSpeechRate = u.rate;
       },
     };
   },
@@ -67,8 +67,7 @@ const shown = (sel) => d.getElementById('overlay').classList.contains('show') &&
 
 const ISLAND_FOR_TIER = { 1: 'lagon', 2: 'foret', 3: 'montagne', 4: 'chateau', 5: 'jungle', 6: 'volcan' };
 // un jeu au palier voulu (comme test/games.test.js), en solo
-function startGame(key, tier, opts) {
-  opts = opts || {};
+function startGame(key, tier, opts = {}) {
   ev(`closeModal(); party.active = false; race.active = false; currentProfile().age = 0;
       state.missions = ${opts.missions || 200}; currentWorld = ${JSON.stringify(ISLAND_FOR_TIER[tier || 1])};
       state.skills = { ${key}: { wins:0, fails:0, errors:0, last:null, recent:[], lvl:${tier || 1} } };
@@ -560,7 +559,7 @@ const wrongOf = (sel) => {
     !!d.querySelector('#modal-body .btn-reread svg[data-buddy="perle"]'),
   );
   d.querySelector('#modal-body .btn-reread').click();
-  check('Relire : la phrase est relue plus lentement', w.__rate < 0.8 && spoken[spoken.length - 1].length > 5);
+  check('Relire : la phrase est relue plus lentement', w.lastSpeechRate < 0.8 && spoken[spoken.length - 1].length > 5);
   startGame('count', 1);
   await wait(20);
   check("consigne d'un mini-jeu : « 🔁 Relire »", !!d.querySelector('.puzzle-hint .btn-reread'));

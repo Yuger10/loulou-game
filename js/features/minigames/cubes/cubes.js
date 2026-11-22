@@ -37,8 +37,7 @@ const CUBE_COLORS = [
 
 /* Une pile : les hauteurs (heights[y][x]) dans les limites du palier, avec au
    moins deux tours (sinon on compterait une seule tour). */
-function cubesBuildStack(dd, rng) {
-  rng = rng || random;
+function cubesBuildStack(dd, rng = random) {
   const cfg = cubesRound(dd);
   for (let tries = 0; tries < 400; tries++) {
     const heights = Array.from({ length: cfg.d }, () =>

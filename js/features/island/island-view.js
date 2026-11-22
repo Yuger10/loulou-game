@@ -369,6 +369,10 @@ registerView('ile', () => renderLagon());
 // changement de joueur : son île (en dernier : elle s'appuie sur le reste)
 onProfileRefresh(() => renderLagon());
 
+// demandés par island.js (personnages et bouton 🛍️ de l'île) et gifts.js
+on('nav:dialogue', openDialogue);
+on('nav:deco-shop', openDecoShop);
+
 export {
   checkNewIsland,
   maybeSkyOpening,

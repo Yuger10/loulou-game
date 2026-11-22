@@ -33,7 +33,7 @@ const dom = new JSDOM(html, {
     };
     // un confirm() du navigateur ne doit plus jamais être appelé
     win.confirm = () => {
-      win.__confirmCalled = true;
+      win.confirmCalledInTest = true;
       return true;
     };
   },
@@ -338,7 +338,7 @@ function key(el, k) {
     );
     check('aucun appel à confirm() dans js/', offenders.length === 0);
     if (offenders.length) console.log('   ', offenders.join(', '));
-    check('aucun confirm() appelé pendant ces parcours', !w.__confirmCalled);
+    check('aucun confirm() appelé pendant ces parcours', !w.confirmCalledInTest);
   }
 
   check('aucune erreur JS', errs.length === 0);
