@@ -1674,3 +1674,9 @@ Les deux sont proposés dès 5 ans, sans minuteur. Le jeu de l'île est les poti
 - **Ce que voit l'enfant :** si la partie enregistrée est abîmée au démarrage, le jeu ne repart plus de zéro en silence : « L'ancienne partie n'a pas pu être relue. Demande à un adulte. », et la carte « ⚠️ Enregistrement » de l'espace parents l'explique (c'était un simple message dans la console, que personne ne voyait).
 - **Pour le code :** track `lint-regles-completes`. `no-underscore-dangle` réactivée ; ajoutées et à 0 cas : `eqeqeq` (`x == null` permis), `no-use-before-define`, `no-console`, `max-lines` (1 250), `no-param-reassign` (40 valeurs par défaut réécrites), `import/no-cycle` (5 cycles d'imports cassés : barre des tours dans son fichier, événements `nav:dialogue` et `nav:deco-shop`, `lagon:rendered`, point d'accroche `onProfileDelete`, `skill-status.js`). `consistent-function-scoping` reste coupée, raison écrite. Lint : 36 ms.
 - Cache `lagon-v66.4`.
+
+# v66.5 : Handlers sans doublon (setHandler), compatibilité partout écrite
+
+- **Ce que voit l'enfant :** rien ne change : les boutons répondent comme avant, une seule fois par toucher.
+- **Pour le code :** fin de la track `lint-regles-completes`. Les 197 handlers `el.onclick = …` (et `oninput`, `onload`…) passent par `setHandler(el, type, fn)` (`js/shared/ui/handlers.js`) : `addEventListener`, mais le handler précédent du même type est retiré, donc jamais de doublon quand un écran se redessine ; repli sur la propriété `onX` pour un objet sans `addEventListener` (vieux navigateurs). Migration faite par analyse du code (acorn), `test/handlers.test.js` (fenêtre de confirmation ouverte 4 fois : un seul écouteur). Règle `prefer-add-event-listener` réactivée. Décision d'Amrou écrite : le jeu doit marcher partout, donc pas de `toSorted` ni `toReversed` (Safari 16).
+- Cache `lagon-v66.5`.

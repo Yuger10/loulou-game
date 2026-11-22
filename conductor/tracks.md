@@ -108,7 +108,7 @@ Registre des tracks Conductor, **dans l'ordre d'implémentation**. Feuille de ro
 
 ---
 
-- [~] **Track: Lint complet : réactiver les 5 règles oxlint désactivées en corrigeant le code, et ajouter les règles utiles au projet** (technique, factory)
+- [x] **Track: Lint complet : réactiver les 5 règles oxlint désactivées en corrigeant le code, et ajouter les règles utiles au projet** (technique, factory)
 *Link: [./tracks/lint-regles-completes_20261121/](./tracks/lint-regles-completes_20261121/)*
 
 ---
