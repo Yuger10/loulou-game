@@ -13,7 +13,9 @@
     // toSorted et toReversed demandent Safari 16 : les tablettes des enfants sont souvent plus anciennes
     "unicorn/no-array-sort": "off",
     "unicorn/no-array-reverse": "off",
-    // style seulement, sans risque de bug
+    // gardée coupée (décision écrite, track lint-regles-completes) : sortir les 50 petites fonctions
+    // internes créerait des noms de haut niveau en double (5 `key`, 4 `ok`), interdits par
+    // test/slices.test.js parce que les tests lisent le jeu par nom ; gain de style seulement
     "unicorn/consistent-function-scoping": "off",
     "no-underscore-dangle": "error",
     // anti-pattern 2 : tout tirage passe par random() de js/shared/lib (graine fixable en test)
