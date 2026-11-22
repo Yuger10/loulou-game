@@ -19,13 +19,13 @@ import {
   flashModal,
   livesBar,
   loseLife,
-  onMissionWin,
   registerGame,
   setSolution,
   setupLives,
   solSel,
   startTimerIfNeeded,
   stepOk,
+  winSoon,
 } from '../../minigame-engine/index.js';
 import { bindQuit, gameHeader } from '../../screen/index.js';
 
@@ -115,7 +115,7 @@ function renderRecipe() {
   const ok = () => {
     clearActiveTimer();
     flashModal('ok');
-    setTimeout(onMissionWin, 450);
+    winSoon();
   };
   const retry = (el, o) => loseLife(el, Object.assign({ onRetry: renderRecipe }, o || {}));
 

@@ -1656,3 +1656,9 @@ Les deux sont proposés dès 5 ans, sans minuteur. Le jeu de l'île est les poti
 ## Tests
 - `test/prenoms.test.js`, `test/hasard.test.js`, `test/stockage.test.js`, et `test/update.test.js` (versions 66.x).
 - Cache `lagon-v66.1`.
+
+# v66.2 : une seule fin de mission
+
+- **Ce que voit l'enfant :** l'écran de victoire arrive toujours au même rythme après la bonne réponse (400 ms, 700 ms pour le puzzle qui finit sur une animation), au lieu de 6 délais différents selon le mini-jeu (350 à 700 ms).
+- **Pour le code :** `winSoon()` dans le moteur des mini-jeux (anti-pattern 4 de `docs/factory/AUDIT.md`), 33 minuteries remplacées, garde dans `test/gardes.test.js`.
+- Cache `lagon-v66.2`.

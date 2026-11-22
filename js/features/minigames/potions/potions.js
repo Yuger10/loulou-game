@@ -21,7 +21,6 @@ import {
   flashModal,
   livesBar,
   loseLife,
-  onMissionWin,
   progressDots,
   registerGame,
   setSolution,
@@ -29,6 +28,7 @@ import {
   solSel,
   startTimerIfNeeded,
   stepOk,
+  winSoon,
 } from '../../minigame-engine/index.js';
 import { bindQuit, gameHeader } from '../../screen/index.js';
 
@@ -103,7 +103,7 @@ function renderPotions() {
   const ok = () => {
     clearActiveTimer();
     flashModal('ok');
-    setTimeout(onMissionWin, 450);
+    winSoon();
   };
 
   if (r.mode === 'rainbow') {

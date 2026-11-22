@@ -40,7 +40,6 @@ import {
   flashModal,
   livesBar,
   loseLife,
-  onMissionWin,
   progressDots,
   registerGame,
   setMissionFact,
@@ -48,6 +47,7 @@ import {
   setupLives,
   solSel,
   stepOk,
+  winSoon,
 } from '../../minigame-engine/index.js';
 import { bindQuit, gameHeader } from '../../screen/index.js';
 
@@ -481,7 +481,7 @@ function renderPlanetOrder(q) {
 // la bonne réponse : on montre et on dit une phrase vraie, puis la victoire
 function planetWin(q) {
   setMissionFact(q.fact);
-  setTimeout(onMissionWin, 450);
+  winSoon();
 }
 
 /* Indices (v52) : 1. regarder chaque dessin (couleurs, anneaux, taches) ou

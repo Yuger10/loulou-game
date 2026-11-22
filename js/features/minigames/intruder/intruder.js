@@ -10,12 +10,12 @@ import {
   flashModal,
   livesBar,
   loseLife,
-  onMissionWin,
   registerGame,
   setSolution,
   setupLives,
   startTimerIfNeeded,
   stepOk,
+  winSoon,
 } from '../../minigame-engine/index.js';
 import { bindQuit, gameHeader } from '../../screen/index.js';
 
@@ -89,7 +89,7 @@ function renderDiff() {
         clearActiveTimer();
         stepOk(el);
         flashModal('ok');
-        setTimeout(onMissionWin, 350);
+        winSoon();
       } else loseLife(el, { onRetry: renderDiff });
     };
   });

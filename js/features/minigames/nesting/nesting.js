@@ -16,13 +16,13 @@ import {
   flashModal,
   livesBar,
   loseLife,
-  onMissionWin,
   progressDots,
   registerGame,
   setSolution,
   setupLives,
   solSel,
   stepOk,
+  winSoon,
 } from '../../minigame-engine/index.js';
 import { bindQuit, gameHeader } from '../../screen/index.js';
 
@@ -102,7 +102,7 @@ function renderNesting() {
         document.querySelectorAll('.game-progress i').forEach((d, i) => d.classList.toggle('on', i < q.idx));
         if (q.idx === r.order.length) {
           flashModal('ok');
-          setTimeout(onMissionWin, 450);
+          winSoon();
         }
         return;
       }

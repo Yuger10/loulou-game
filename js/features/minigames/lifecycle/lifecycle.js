@@ -18,7 +18,6 @@ import {
   flashModal,
   livesBar,
   loseLife,
-  onMissionWin,
   progressDots,
   registerGame,
   setSolution,
@@ -26,6 +25,7 @@ import {
   solSel,
   startTimerIfNeeded,
   stepOk,
+  winSoon,
 } from '../../minigame-engine/index.js';
 import { bindQuit, gameHeader } from '../../screen/index.js';
 
@@ -128,7 +128,7 @@ function renderLifecycle() {
   const ok = () => {
     clearActiveTimer();
     flashModal('ok');
-    setTimeout(onMissionWin, 450);
+    winSoon();
   };
 
   if (r.mode === 'missing' || r.mode === 'next') {

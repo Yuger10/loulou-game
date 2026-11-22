@@ -10,12 +10,12 @@ import {
   flashModal,
   livesBar,
   loseLife,
-  onMissionWin,
   progressDots,
   registerGame,
   setSolution,
   setupLives,
   solSel,
+  winSoon,
 } from '../../minigame-engine/index.js';
 import { bindQuit, gameHeader } from '../../screen/index.js';
 
@@ -90,7 +90,7 @@ function renderMemory() {
             }
             if (cards.every((c) => c.matched)) {
               flashModal('ok');
-              setTimeout(onMissionWin, 350);
+              winSoon();
             }
           },
           isMatch ? 350 : 700,

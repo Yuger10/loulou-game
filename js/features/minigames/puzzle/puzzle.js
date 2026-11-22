@@ -12,13 +12,13 @@ import {
   flashModal,
   livesBar,
   loseLife,
-  onMissionWin,
   progressDots,
   registerGame,
   setSolution,
   setupLives,
   solSel,
   stepOk,
+  winSoon,
 } from '../../minigame-engine/index.js';
 import { bindQuit, gameHeader } from '../../screen/index.js';
 
@@ -73,7 +73,7 @@ function renderPuzzle() {
         document.querySelectorAll('.game-progress i').forEach((d, i) => d.classList.toggle('on', i < q.idx));
         if (q.idx === seq.length) {
           flashModal('ok');
-          setTimeout(onMissionWin, 350);
+          winSoon();
         }
       } else {
         loseLife(btn, { disable: false }); // le bon nombre reste cliquable ensuite

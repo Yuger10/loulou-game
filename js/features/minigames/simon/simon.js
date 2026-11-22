@@ -11,12 +11,12 @@ import {
   flashModal,
   livesBar,
   loseLife,
-  onMissionWin,
   progressDots,
   registerGame,
   setSolution,
   setupLives,
   solSel,
+  winSoon,
 } from '../../minigame-engine/index.js';
 import { bindQuit, gameHeader } from '../../screen/index.js';
 
@@ -108,7 +108,7 @@ function renderSimon() {
         document.querySelectorAll('.game-progress i').forEach((dd, i) => dd.classList.toggle('on', i < pos));
         if (pos === seq.length) {
           flashModal('ok');
-          setTimeout(onMissionWin, 350);
+          winSoon();
         }
       } else {
         if (loseLife(btn, { disable: false })) return;

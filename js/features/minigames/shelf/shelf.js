@@ -19,7 +19,6 @@ import {
   flashModal,
   livesBar,
   loseLife,
-  onMissionWin,
   progressDots,
   registerGame,
   setSolution,
@@ -27,6 +26,7 @@ import {
   solSel,
   startTimerIfNeeded,
   stepOk,
+  winSoon,
 } from '../../minigame-engine/index.js';
 import { bindQuit, gameHeader } from '../../screen/index.js';
 
@@ -157,7 +157,7 @@ function renderShelf() {
             cell.innerHTML = shelfToySVG(t.shape, t.color);
             cell.classList.add('filled');
           }
-          setTimeout(onMissionWin, 450);
+          winSoon();
         } else loseLife(btn, { onRetry: renderShelf });
       };
     });
@@ -211,7 +211,7 @@ function renderShelf() {
       if (i >= r.steps.length) {
         clearActiveTimer();
         flashModal('ok');
-        setTimeout(onMissionWin, 450);
+        winSoon();
         return;
       }
       const next = document.querySelector(`.shelf-todo[data-i="${i}"]`);
