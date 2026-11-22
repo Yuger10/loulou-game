@@ -13,6 +13,7 @@
 /package.json                     @Yuger10
 /bun.lock                         @Yuger10
 /js/entities/character/characters-art.js @Yuger10
+/js/entities/character/characters-art-s2.js @Yuger10
 /test/holdout/                    @Yuger10
 /.github/                         @Yuger10
 /bunfig.toml                      @Yuger10
