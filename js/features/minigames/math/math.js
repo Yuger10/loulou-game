@@ -5,7 +5,7 @@
    js/entities/difficulty/difficulty.js — voir aussi ANALYSE-DIFFICULTE.md. */
 import { mathBounds } from '../../../entities/difficulty/index.js';
 import { pickRandom, random, shuffle } from '../../../shared/lib/index.js';
-import { emojiWord, openModal } from '../../../shared/ui/index.js';
+import { emojiWord, openModal, setHandler } from '../../../shared/ui/index.js';
 import { gameDiff } from '../../adaptive/index.js';
 import { registerHints, setHintQuestion } from '../../hints/index.js';
 import {
@@ -89,7 +89,7 @@ function renderMath() {
   setSolution([solSel('.num-btn', 'v', result)]);
   setHintQuestion('math', { a, b, op, result, emoji }, { choices: '.num-btn' });
   document.querySelectorAll('.num-btn').forEach((btn) => {
-    btn.onclick = () => {
+    setHandler(btn, 'click', () => {
       if (Number(btn.dataset.v) === result) {
         clearActiveTimer();
         const q = document.querySelector('.eq-q');
@@ -103,7 +103,7 @@ function renderMath() {
       } else {
         loseLife(btn, { onRetry: renderMath });
       }
-    };
+    });
   });
 }
 

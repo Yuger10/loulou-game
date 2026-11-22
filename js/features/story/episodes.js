@@ -17,7 +17,15 @@ import { save, state } from '../../entities/game-state/index.js';
 import { party } from '../../entities/player/index.js';
 import { currentWorld } from '../../entities/world/index.js';
 import { emit } from '../../shared/lib/index.js';
-import { bindSpeakButtons, closeModal, openModal, playSound, speak, speechBubble } from '../../shared/ui/index.js';
+import {
+  bindSpeakButtons,
+  closeModal,
+  openModal,
+  playSound,
+  setHandler,
+  speak,
+  speechBubble,
+} from '../../shared/ui/index.js';
 import { gainCoins } from '../gains/index.js';
 import { addCoins } from '../wallet/index.js';
 
@@ -496,7 +504,7 @@ function openEpisode(world, k, line, fresh) {
     playSound('coin');
     gainCoins(EPISODE_REWARD, document.querySelector('.ep-find-emoji'));
   }
-  document.getElementById('ep-next').onclick = () => {
+  setHandler(document.getElementById('ep-next'), 'click', () => {
     playSound('tap');
     if (!last) {
       openEpisode(world, k, line + 1, fresh);
@@ -504,7 +512,7 @@ function openEpisode(world, k, line, fresh) {
     }
     closeModal();
     emit('ui:lagon');
-  };
+  });
 }
 
 export { EPISODES, episodesSeen, maybeStoryEpisode, noteStoryMission, openEpisode, storyProgressHTML };

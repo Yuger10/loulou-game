@@ -7,7 +7,7 @@
    Pas de minuteur sur ce jeu (voir NO_TIMER_KINDS dans difficulty.js). */
 import { calendarUsesWeekdayOrder, calendarWeekdayCount } from '../../../entities/difficulty/index.js';
 import { pickRandom, random, shuffle } from '../../../shared/lib/index.js';
-import { openModal, speak } from '../../../shared/ui/index.js';
+import { openModal, setHandler, speak } from '../../../shared/ui/index.js';
 import { gameDiff } from '../../adaptive/index.js';
 import { hintOrderStep, registerHints, setHintQuestion } from '../../hints/index.js';
 import {
@@ -66,13 +66,13 @@ function renderSeasonGuess() {
   setSolution([solSel('.season-btn', 'v', correct.name)]);
   setHintQuestion('calendar', { kind: 'season', correct }, { choices: '.season-btn' });
   document.querySelectorAll('.season-btn').forEach((btn) => {
-    btn.onclick = () => {
+    setHandler(btn, 'click', () => {
       if (btn.dataset.v === correct.name) {
         stepOk(btn);
         flashModal('ok');
         winSoon();
       } else loseLife(btn, { onRetry: renderSeasonGuess });
-    };
+    });
   });
 }
 
@@ -97,7 +97,7 @@ function renderWeekdayOrder(dd) {
   setSolution(seq.map((w) => solSel('.weekday-btn', 'w', w)));
   setHintQuestion('calendar', q, { choices: '.weekday-btn' });
   document.querySelectorAll('.weekday-btn').forEach((btn) => {
-    btn.onclick = () => {
+    setHandler(btn, 'click', () => {
       const w = btn.dataset.w;
       if (btn.classList.contains('done')) return;
       if (w === seq[q.idx]) {
@@ -112,7 +112,7 @@ function renderWeekdayOrder(dd) {
       } else {
         loseLife(btn, { disable: false });
       }
-    };
+    });
   });
 }
 

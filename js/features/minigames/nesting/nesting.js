@@ -9,7 +9,7 @@
    du moteur). On touche, on ne fait pas glisser. */
 import { nestingRound } from '../../../entities/difficulty/index.js';
 import { random, shuffle } from '../../../shared/lib/index.js';
-import { openModal, speak } from '../../../shared/ui/index.js';
+import { openModal, setHandler, speak } from '../../../shared/ui/index.js';
 import { gameDiff } from '../../adaptive/index.js';
 import { registerHints, setHintQuestion } from '../../hints/index.js';
 import {
@@ -89,7 +89,7 @@ function renderNesting() {
   setSolution(r.order.map((b) => solSel('.nest-btn', 'i', b.i)));
   setHintQuestion('nesting', q, { choices: '.nest-btn' });
   document.querySelectorAll('.nest-btn').forEach((/** @type {HTMLButtonElement} */ btn) => {
-    btn.onclick = () => {
+    setHandler(btn, 'click', () => {
       if (btn.disabled) return;
       const want = r.order[q.idx];
       if (Number(btn.dataset.i) === want.i) {
@@ -117,7 +117,7 @@ function renderNesting() {
           : 'Celle-ci est trop petite : regarde bien les tailles.';
       if (q.errors >= 2) loseLife(btn, { disable: false, onRetry: renderNesting });
       else if (!loseLife(btn, { disable: false })) speak(tip); // (sauf si la mission est perdue)
-    };
+    });
   });
 }
 

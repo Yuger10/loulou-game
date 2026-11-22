@@ -13,6 +13,7 @@
      « Garder tes changements ? », où ne rien choisir ramène au formulaire) ;
    - primaryYes : le « oui » est l'action principale (bouton mis en avant). */
 import { speak } from './voice.js';
+import { setHandler } from './handlers.js';
 
 let confirmClose = null;
 
@@ -83,18 +84,18 @@ function askConfirm(opts) {
       input.addEventListener('input', refresh);
       setTimeout(() => input.focus(), 0);
     } else setTimeout(() => no.focus(), 0);
-    yes.onclick = () => {
+    setHandler(yes, 'click', () => {
       if (!typed()) {
         speak(`Pour confirmer, écris ${word}.`);
         if (input) input.focus();
         return;
       }
       close(true);
-    };
-    no.onclick = () => close(false);
-    el.onclick = (e) => {
+    });
+    setHandler(no, 'click', () => close(false));
+    setHandler(el, 'click', (e) => {
       if (e.target === el) close(o.dismissValue);
-    };
+    });
   });
 }
 

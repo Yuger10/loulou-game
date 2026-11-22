@@ -9,7 +9,7 @@
    Anti-devinette : une mauvaise réponse relance une AUTRE pile. */
 import { cubesRound } from '../../../entities/difficulty/index.js';
 import { random, shuffle } from '../../../shared/lib/index.js';
-import { openModal } from '../../../shared/ui/index.js';
+import { openModal, setHandler } from '../../../shared/ui/index.js';
 import { gameDiff } from '../../adaptive/index.js';
 import { registerHints, setHintQuestion } from '../../hints/index.js';
 import {
@@ -150,14 +150,14 @@ function renderCubes() {
   setSolution([solSel('.cube-opt', 'v', stack.total)]);
   setHintQuestion('cubes', q, { choices: '.cube-opt' });
   document.querySelectorAll('.cube-opt').forEach((btn) => {
-    btn.onclick = () => {
+    setHandler(btn, 'click', () => {
       if (Number(btn.dataset.v) === stack.total) {
         clearActiveTimer();
         stepOk(btn);
         flashModal('ok');
         winSoon();
       } else loseLife(btn, { onRetry: renderCubes });
-    };
+    });
   });
 }
 

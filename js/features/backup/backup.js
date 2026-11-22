@@ -23,7 +23,7 @@ import {
 } from '../../entities/player/index.js';
 import { setCurrentWorld } from '../../entities/world/index.js';
 import { cleanName, on, storageRemove, storageWrite } from '../../shared/lib/index.js';
-import { closeModal, openModal, playSound, showToast } from '../../shared/ui/index.js';
+import { closeModal, openModal, playSound, setHandler, showToast } from '../../shared/ui/index.js';
 import { renderMap } from '../map/index.js';
 import { stopParty } from '../party/index.js';
 import { bindQuit, gameHeader } from '../screen/index.js';
@@ -336,7 +336,7 @@ function openBackup() {
   `);
   bindQuit();
   const $ = (id) => document.getElementById(id);
-  $('bk-export').onclick = async () => {
+  setHandler($('bk-export'), 'click', async () => {
     playSound('tap');
     const r = await exportBackupFile();
     if (r !== 'cancelled') {
@@ -345,8 +345,8 @@ function openBackup() {
       if (l) l.textContent = lastBackupText();
       renderBackupReminder();
     }
-  };
-  $('bk-code').onclick = async () => {
+  });
+  setHandler($('bk-code'), 'click', async () => {
     playSound('tap');
     const code = await backupToCode(buildBackup());
     const out = /** @type {HTMLTextAreaElement} */ ($('bk-code-out'));
@@ -362,7 +362,7 @@ function openBackup() {
       out.select();
       showToast('Sélectionnez le code puis copiez-le');
     }
-  };
+  });
   const preview = async (result) => {
     const box = $('bk-preview');
     if (!result.ok) {
@@ -376,7 +376,7 @@ function openBackup() {
       <ul>${result.players.map((p) => `<li>${avatarHTML(p.avatar)} <b>${p.name}</b> — ${p.missions} mission${p.missions > 1 ? 's' : ''}</li>`).join('')}</ul>
       <p>La partie actuelle de cet appareil sera remplacée (une copie est gardée).</p>
       <button class="btn-craft danger" id="bk-apply">Remplacer par cette sauvegarde</button></div>`;
-    $('bk-apply').onclick = () => {
+    setHandler($('bk-apply'), 'click', () => {
       const { failed } = applyBackup(result.backup);
       playSound(failed ? 'tap' : 'win');
       closeModal();
@@ -385,24 +385,24 @@ function openBackup() {
           ? `⚠️ Restauration incomplète : ${failed} partie${failed > 1 ? 's' : ''} non enregistrée${failed > 1 ? 's' : ''} (mémoire pleine ?)`
           : '✅ Partie restaurée',
       );
-    };
+    });
   };
-  $('bk-file').onchange = (e) => {
+  setHandler($('bk-file'), 'change', (e) => {
     const files = /** @type {HTMLInputElement} */ (e.target).files;
     const f = files && files[0];
     if (!f) return;
     const rd = new FileReader();
-    rd.onload = () => preview(parseBackupText(String(rd.result || '')));
-    rd.onerror = () => preview({ ok: false, error: 'Impossible de lire ce fichier.' });
+    setHandler(rd, 'load', () => preview(parseBackupText(String(rd.result || ''))));
+    setHandler(rd, 'error', () => preview({ ok: false, error: 'Impossible de lire ce fichier.' }));
     rd.readAsText(f);
-  };
-  $('bk-paste-go').onclick = async () => {
+  });
+  setHandler($('bk-paste-go'), 'click', async () => {
     playSound('tap');
     preview(await parseBackupCode(/** @type {HTMLTextAreaElement} */ ($('bk-paste')).value));
-  };
+  });
   const undo = $('bk-undo');
   if (undo)
-    undo.onclick = () => {
+    setHandler(undo, 'click', () => {
       let r = { ok: false };
       try {
         r = parseBackupObject(JSON.parse(localStorage.getItem(BACKUP_UNDO_KEY)));
@@ -410,10 +410,10 @@ function openBackup() {
         // copie de secours absente ou abîmée : pas de retour arrière proposé
       }
       if (r.ok) preview(r);
-    };
+    });
   const inst = $('bk-install');
   if (inst)
-    inst.onclick = async () => {
+    setHandler(inst, 'click', async () => {
       if (!deferredInstallPrompt) return;
       deferredInstallPrompt.prompt();
       try {
@@ -424,7 +424,7 @@ function openBackup() {
       deferredInstallPrompt = null;
       const z = $('bk-install-zone');
       if (z) z.innerHTML = installHelpHTML();
-    };
+    });
   const ps = $('bk-persist');
   if (navigator.storage && navigator.storage.persisted) {
     navigator.storage
@@ -443,15 +443,15 @@ function openBackup() {
 function initBackup() {
   const hint = document.getElementById('install-hint');
   if (hint) {
-    hint.querySelector('[data-install-how]').onclick = () => {
+    setHandler(hint.querySelector('[data-install-how]'), 'click', () => {
       playSound('tap');
       openBackup();
-    };
-    hint.querySelector('[data-install-close]').onclick = () => {
+    });
+    setHandler(hint.querySelector('[data-install-close]'), 'click', () => {
       playSound('tap');
       setBackupMeta({ installHintDismissed: true });
       renderInstallHint();
-    };
+    });
   }
   renderInstallHint();
   renderBackupReminder();

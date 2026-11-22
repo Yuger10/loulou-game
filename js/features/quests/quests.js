@@ -5,7 +5,16 @@ import { addItem, CRAFTED, ITEMS } from '../../entities/item/index.js';
 import { onProfileRefresh } from '../../entities/player/index.js';
 import { availableChars, availableCrafted, availableItems } from '../../entities/world/index.js';
 import { emit, pickRandom, random, shuffle } from '../../shared/lib/index.js';
-import { closeModal, confetti, openModal, playSound, showToast, speak, vibrate } from '../../shared/ui/index.js';
+import {
+  closeModal,
+  confetti,
+  openModal,
+  playSound,
+  setHandler,
+  showToast,
+  speak,
+  vibrate,
+} from '../../shared/ui/index.js';
 import { markSeen, renderBadge } from '../bag/index.js';
 import { queueGain } from '../gains/index.js';
 import { bindQuit, gameHeader } from '../screen/index.js';
@@ -144,7 +153,7 @@ function renderQuests(target) {
     ${questsDone() && !q.claimed ? `<button class="btn-chest" id="btn-chest">🎁 Ouvrir le coffre !</button>` : ''}
   `;
   const b = el.querySelector('#btn-chest');
-  if (b) b.onclick = openChest;
+  if (b) setHandler(b, 'click', openChest);
 }
 
 function openChest() {
@@ -183,11 +192,11 @@ function openChest() {
     <button class="btn-primary" id="btn-yay">Merci ! 🎉</button>
   `);
   queueGain({ items: [ITEMS[gift].emoji], coins: bonusCoins });
-  document.getElementById('btn-yay').onclick = () => {
+  setHandler(document.getElementById('btn-yay'), 'click', () => {
     playSound('tap');
     closeModal();
     emit('ui:lagon');
-  };
+  });
   renderQuests();
 }
 

@@ -29,7 +29,7 @@ import {
 import { setCurrentWorld } from '../../entities/world/index.js';
 import { currentSeason, FETES, seasonPreview } from '../../entities/season/index.js';
 import { emit, on, random, storageRemove, storageWrite } from '../../shared/lib/index.js';
-import { askConfirm, closeModal, openModal, playSound, showToast, speak } from '../../shared/ui/index.js';
+import { askConfirm, closeModal, openModal, playSound, setHandler, showToast, speak } from '../../shared/ui/index.js';
 import { SKILL_STATUS, skillStatus, todayKey } from '../adaptive/index.js';
 import { openBackup } from '../backup/index.js';
 import { openPlayers, openPlayerSettings } from '../players/index.js';
@@ -152,15 +152,15 @@ function openParentGate(onOk, onCancel, onWrong) {
       if (onWrong) onWrong();
     }
   };
-  document.getElementById('gate-ok').onclick = ok;
+  setHandler(document.getElementById('gate-ok'), 'click', ok);
   input.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') ok();
   });
-  document.getElementById('gate-cancel').onclick = () => {
+  setHandler(document.getElementById('gate-cancel'), 'click', () => {
     playSound('tap');
     if (onCancel) onCancel();
     else closeModal();
-  };
+  });
   setTimeout(() => {
     try {
       input.focus();
@@ -297,57 +297,53 @@ function openParentSpace(selectedId) {
   `);
   bindQuit();
   bindUpdateCard();
-  document.querySelectorAll('[data-ps]').forEach(
-    (b) =>
-      (b.onclick = () => {
-        playSound('tap');
-        openParentSpace(b.dataset.ps);
-      }),
+  document.querySelectorAll('[data-ps]').forEach((b) =>
+    setHandler(b, 'click', () => {
+      playSound('tap');
+      openParentSpace(b.dataset.ps);
+    }),
   );
-  document.querySelectorAll('[data-pause]').forEach(
-    (b) =>
-      (b.onclick = () => {
-        playSound('tap');
-        p.pauseMin = Number(b.dataset.pause);
-        profiles.familyPause = p.pauseMin; // les nouveaux joueurs recevront ce réglage
-        saveProfiles();
-        document.querySelectorAll('[data-pause]').forEach((x) => x.classList.toggle('on', x === b));
-        showToast(p.pauseMin ? `😴 Pause après ${p.pauseMin} min` : 'Pas de pause');
-      }),
+  document.querySelectorAll('[data-pause]').forEach((b) =>
+    setHandler(b, 'click', () => {
+      playSound('tap');
+      p.pauseMin = Number(b.dataset.pause);
+      profiles.familyPause = p.pauseMin; // les nouveaux joueurs recevront ce réglage
+      saveProfiles();
+      document.querySelectorAll('[data-pause]').forEach((x) => x.classList.toggle('on', x === b));
+      showToast(p.pauseMin ? `😴 Pause après ${p.pauseMin} min` : 'Pas de pause');
+    }),
   );
-  document.querySelectorAll('[data-season-preview]').forEach(
-    (b) =>
-      (b.onclick = () => {
-        playSound('tap');
-        setSeasonPreview(b.dataset.seasonPreview || null);
-        document.querySelectorAll('[data-season-preview]').forEach((x) => x.classList.toggle('on', x === b));
-        const s = currentSeason();
-        showToast(s ? `${FETES[s].emoji} Aperçu : ${FETES[s].name}` : "Pas de fête aujourd'hui");
-      }),
+  document.querySelectorAll('[data-season-preview]').forEach((b) =>
+    setHandler(b, 'click', () => {
+      playSound('tap');
+      setSeasonPreview(b.dataset.seasonPreview || null);
+      document.querySelectorAll('[data-season-preview]').forEach((x) => x.classList.toggle('on', x === b));
+      const s = currentSeason();
+      showToast(s ? `${FETES[s].emoji} Aperçu : ${FETES[s].name}` : "Pas de fête aujourd'hui");
+    }),
   );
-  document.querySelectorAll('[data-music]').forEach(
-    (b) =>
-      (b.onclick = () => {
-        playSound('tap');
-        const musicOn = b.dataset.music === '1';
-        if (p.id === profiles.current) {
-          state.music = musicOn;
-          if (musicOn) {
-            state.sound = true;
-            state.voice = true;
-          }
-          save();
-          renderSoundBtn();
-        } else {
-          st.music = musicOn;
-          storageWrite(profileSaveKey(p.id), JSON.stringify(st));
+  document.querySelectorAll('[data-music]').forEach((b) =>
+    setHandler(b, 'click', () => {
+      playSound('tap');
+      const musicOn = b.dataset.music === '1';
+      if (p.id === profiles.current) {
+        state.music = musicOn;
+        if (musicOn) {
+          state.sound = true;
+          state.voice = true;
         }
-        document.querySelectorAll('[data-music]').forEach((x) => x.classList.toggle('on', x === b));
-        showToast(musicOn ? "🎵 Musique d'ambiance" : 'Pas de musique');
-      }),
+        save();
+        renderSoundBtn();
+      } else {
+        st.music = musicOn;
+        storageWrite(profileSaveKey(p.id), JSON.stringify(st));
+      }
+      document.querySelectorAll('[data-music]').forEach((x) => x.classList.toggle('on', x === b));
+      showToast(musicOn ? "🎵 Musique d'ambiance" : 'Pas de musique');
+    }),
   );
   const vol = /** @type {HTMLInputElement} */ (document.getElementById('ps-volume'));
-  vol.oninput = () => {
+  setHandler(vol, 'input', () => {
     const v = Number(vol.value);
     document.getElementById('ps-volume-v').textContent = v + ' %';
     if (p.id === profiles.current) {
@@ -359,16 +355,16 @@ function openParentSpace(selectedId) {
       st.soundVolume = v;
       storageWrite(profileSaveKey(p.id), JSON.stringify(st));
     }
-  };
-  document.getElementById('ps-backup').onclick = () => {
+  });
+  setHandler(document.getElementById('ps-backup'), 'click', () => {
     playSound('tap');
     openBackup();
-  };
-  document.getElementById('ps-player').onclick = () => {
+  });
+  setHandler(document.getElementById('ps-player'), 'click', () => {
     playSound('tap');
     openPlayerSettings(p.id);
-  };
-  document.getElementById('ps-reset').onclick = async () => {
+  });
+  setHandler(document.getElementById('ps-reset'), 'click', async () => {
     playSound('tap');
     const ok = await askConfirm({
       text: `Tout recommencer à zéro pour ${p.name || 'ce joueur'} ? Pièces, objets, îles et niveau seront perdus.`,
@@ -387,10 +383,10 @@ function openParentSpace(selectedId) {
     speak(`Nouvelle aventure pour ${p.name || 'toi'} !`);
     showToast('🔄 Nouvelle aventure !');
     openParentSpace(p.id);
-  };
+  });
   const del = document.getElementById('ps-delete');
   if (del)
-    del.onclick = async () => {
+    setHandler(del, 'click', async () => {
       playSound('tap');
       const word = (p.name || 'SUPPRIMER').trim();
       const ok = await askConfirm({
@@ -403,7 +399,7 @@ function openParentSpace(selectedId) {
       playSound('tap');
       showToast('Joueur supprimé');
       openParentSpace();
-    };
+    });
 }
 // volume d'un joueur (0 à 100), 80 % s'il n'a jamais été réglé
 function psVolumeOf(st) {

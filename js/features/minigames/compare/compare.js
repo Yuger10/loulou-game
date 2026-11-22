@@ -8,7 +8,7 @@
    demande aucune réflexion sur l'ordre de grandeur réel). */
 import { compareCloseChance, compareEqualChance, compareRange } from '../../../entities/difficulty/index.js';
 import { random, shuffle } from '../../../shared/lib/index.js';
-import { openModal } from '../../../shared/ui/index.js';
+import { openModal, setHandler } from '../../../shared/ui/index.js';
 import { gameDiff } from '../../adaptive/index.js';
 import { registerHints, setHintQuestion } from '../../hints/index.js';
 import {
@@ -60,7 +60,7 @@ function renderCompare() {
   setSolution([solSel('.cmp-btn', 'v', answer)]);
   setHintQuestion('compare', { a, b, answer }, { choices: '.cmp-btn' });
   document.querySelectorAll('.cmp-btn').forEach((btn) => {
-    btn.onclick = () => {
+    setHandler(btn, 'click', () => {
       if (btn.dataset.v === answer) {
         clearActiveTimer();
         const q = document.querySelector('.cmp-q');
@@ -74,7 +74,7 @@ function renderCompare() {
       } else {
         loseLife(btn, { onRetry: renderCompare });
       }
-    };
+    });
   });
 }
 

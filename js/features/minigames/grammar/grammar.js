@@ -13,7 +13,7 @@ import {
 } from '../../../entities/difficulty/index.js';
 import { WORDS_CP } from '../../../entities/words/index.js';
 import { pickRandom, random, shuffle } from '../../../shared/lib/index.js';
-import { openModal } from '../../../shared/ui/index.js';
+import { openModal, setHandler } from '../../../shared/ui/index.js';
 import { gameDiff } from '../../adaptive/index.js';
 import { registerHints, setHintQuestion } from '../../hints/index.js';
 import {
@@ -74,14 +74,14 @@ function renderDeterminants() {
   setSolution([solSel('.det-btn', 'v', answer)]);
   setHintQuestion('determinants', { noun, plural, shown, family, answer, options }, { choices: '.det-btn' });
   document.querySelectorAll('.det-btn').forEach((btn) => {
-    btn.onclick = () => {
+    setHandler(btn, 'click', () => {
       if (btn.dataset.v === answer) {
         clearActiveTimer();
         stepOk(btn);
         flashModal('ok');
         winSoon();
       } else loseLife(btn, { onRetry: renderDeterminants });
-    };
+    });
   });
 }
 

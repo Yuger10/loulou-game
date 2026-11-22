@@ -36,6 +36,7 @@ import {
   onModalChange,
   openModal,
   playSound,
+  setHandler,
   shakeEl,
   speak,
   speechBubble,
@@ -480,7 +481,7 @@ function renderStoryIntro(world, idx, onDone) {
   `);
   bindSpeakButtons();
   speak(line);
-  document.getElementById('story-next').onclick = () => {
+  setHandler(document.getElementById('story-next'), 'click', () => {
     playSound('tap');
     if (!last) {
       renderStoryIntro(world, idx + 1, onDone);
@@ -492,13 +493,13 @@ function renderStoryIntro(world, idx, onDone) {
       return;
     }
     renderStoryRiddle(world, 0, onDone);
-  };
+  });
   const skip = document.getElementById('story-skip');
   if (skip)
-    skip.onclick = () => {
+    setHandler(skip, 'click', () => {
       playSound('tap');
       renderStoryIntro(world, ch.intro.length - 1, onDone);
-    };
+    });
 }
 
 // Le prologue d'une saison (v55) : récit lu ligne à ligne, avec Grisou.
@@ -522,7 +523,7 @@ function openSeasonPrologue(saison, onDone, idxArg) {
   `);
   bindSpeakButtons();
   speak(line);
-  document.getElementById('story-next').onclick = () => {
+  setHandler(document.getElementById('story-next'), 'click', () => {
     playSound('tap');
     if (!last) {
       openSeasonPrologue(saison, onDone, idx + 1);
@@ -530,7 +531,7 @@ function openSeasonPrologue(saison, onDone, idxArg) {
     }
     closeModal();
     if (onDone) onDone();
-  };
+  });
 }
 
 function renderStoryRiddle(world, idx, onDone) {
@@ -546,7 +547,7 @@ function renderStoryRiddle(world, idx, onDone) {
   bindQuit();
   setHintQuestion('riddle', { r }, { choices: '.story-opt' });
   document.querySelectorAll('.story-opt').forEach((/** @type {HTMLButtonElement} */ el, i) => {
-    el.onclick = () => {
+    setHandler(el, 'click', () => {
       const o = opts[i];
       if (o.ok) {
         storyWin(world, onDone);
@@ -563,7 +564,7 @@ function renderStoryRiddle(world, idx, onDone) {
         // jamais les mêmes choix à éliminer un par un.
         storyScheduleRetry(() => renderStoryRiddle(world, idx + 1, onDone));
       }
-    };
+    });
   });
 }
 
@@ -593,7 +594,7 @@ function storyWin(world, onDone) {
     </div>
     <button class="btn-primary" id="story-continue">Continuer l'aventure ✨</button>
   `);
-  document.getElementById('story-continue').onclick = () => {
+  setHandler(document.getElementById('story-continue'), 'click', () => {
     playSound('tap');
     // le Royaume Arc-en-ciel : le grand final de la saison 2 suit son énigme (une seule fois)
     if (world === 'licornes' && !state.season2Done) {
@@ -602,7 +603,7 @@ function storyWin(world, onDone) {
     }
     closeModal();
     if (onDone) onDone();
-  };
+  });
 }
 
 function riddleHints(q) {
@@ -670,30 +671,30 @@ function openStoryJournal() {
   `);
   bindQuit();
   document.querySelectorAll('.story-chap[data-world]').forEach((b) => {
-    b.onclick = () => {
+    setHandler(b, 'click', () => {
       playSound('tap');
       closeModal();
       setTimeout(() => openStoryChapter(b.dataset.world), 200);
-    };
+    });
   });
   const fin = document.querySelector('[data-finale]');
   if (fin)
-    fin.onclick = () => {
+    setHandler(fin, 'click', () => {
       playSound('tap');
       openSeasonFinale(openStoryJournal, { replay: true });
-    };
+    });
   document.querySelectorAll('[data-prologue]').forEach((b) => {
-    b.onclick = () => {
+    setHandler(b, 'click', () => {
       playSound('tap');
       openSeasonPrologue(Number(b.dataset.prologue), openStoryJournal);
-    };
+    });
   });
   document.querySelectorAll('[data-ep]').forEach((b) => {
-    b.onclick = () => {
+    setHandler(b, 'click', () => {
       playSound('tap');
       const [w, k] = b.dataset.ep.split(':');
       openEpisode(w, Number(k), 0, false);
-    };
+    });
   });
 }
 

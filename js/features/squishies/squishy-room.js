@@ -22,7 +22,16 @@ import {
   SQUISHY_TREASURES,
 } from '../../entities/squishy/index.js';
 import { archipelagoUnlocked } from '../../entities/world/index.js';
-import { confetti, onModalChange, openModal, playSound, showToast, speak, vibrate } from '../../shared/ui/index.js';
+import {
+  confetti,
+  onModalChange,
+  openModal,
+  playSound,
+  setHandler,
+  showToast,
+  speak,
+  vibrate,
+} from '../../shared/ui/index.js';
 import { gainCoins } from '../gains/index.js';
 import { hintNudge, registerHints, setHintQuestion } from '../hints/index.js';
 import { bindQuit, gameHeader, rememberSpokenHint } from '../screen/index.js';
@@ -756,10 +765,10 @@ function openSquishyRoom(tabArg, opts) {
     <div class="sq-room" id="sq-room" data-tab="${tab}"></div>
   `);
   document.querySelectorAll('[data-sqtab]').forEach((b) => {
-    b.onclick = () => {
+    setHandler(b, 'click', () => {
       playSound('tap');
       openSquishyRoom(b.dataset.sqtab);
-    };
+    });
   });
   bindQuit();
   if (tab === 'collection') renderSquishyCollection();
@@ -838,28 +847,28 @@ function renderSquishyCollection() {
     }`;
   sqBindPress(el);
   const open = document.getElementById('sq-open');
-  if (open) open.onclick = () => squishyOpenAnimated();
+  if (open) setHandler(open, 'click', () => squishyOpenAnimated());
 }
 function sqBindPress(el) {
   el.querySelectorAll('.sq-cell[data-sq]').forEach((b) => {
-    b.onclick = () => {
+    setHandler(b, 'click', () => {
       const id = b.dataset.sq,
         n = squishyCount(id);
       squishyPress(b);
       speak(`${(SQUISHIES[id] || SQUISHY_TREASURES[id]).name}${n > 1 ? `. Tu en as ${n}.` : ' !'}`);
-    };
+    });
   });
   el.querySelectorAll('.sq-cell[data-treasure]').forEach((b) => {
-    b.onclick = () => {
+    setHandler(b, 'click', () => {
       playSound('tap');
       speak(`Un trésor unique ! ${SQUISHY_TREASURES[b.dataset.treasure].how}.`);
-    };
+    });
   });
   el.querySelectorAll('.sq-cell[data-miss]').forEach((b) => {
-    b.onclick = () => {
+    setHandler(b, 'click', () => {
       playSound('tap');
       speak("Celui-là, tu ne l'as pas encore. Ouvre des boîtes surprises pour le trouver !");
-    };
+    });
   });
 }
 
@@ -946,11 +955,11 @@ function squishyReveal(res) {
     }, 700);
   }
   const big = box.querySelector('.sq-cell[data-sq]');
-  if (big) big.onclick = () => squishyPress(big);
-  document.getElementById('sq-next').onclick = () => {
+  if (big) setHandler(big, 'click', () => squishyPress(big));
+  setHandler(document.getElementById('sq-next'), 'click', () => {
     playSound('tap');
     openSquishyRoom('collection');
-  };
+  });
 }
 
 /* ---- 🗄️ Étagère ---- */
@@ -987,7 +996,7 @@ function renderSquishyShelf() {
         .join('')}
     </div>`;
   el.querySelectorAll('[data-pick]').forEach((b) => {
-    b.onclick = () => {
+    setHandler(b, 'click', () => {
       const id = b.dataset.pick;
       squishyPress(b);
       if (squishyCount(id) - squishyShelfCount(id) <= 0) {
@@ -997,19 +1006,19 @@ function renderSquishyShelf() {
       sqShelfSel = sqShelfSel && sqShelfSel.slot == null && sqShelfSel.id === id ? null : { id };
       if (sqShelfSel) speak(`${SQUISHIES[id].name}. Touche une place sur l'étagère !`);
       renderSquishyShelf();
-    };
+    });
   });
   el.querySelectorAll('[data-slot]').forEach((b) => {
-    b.onclick = () => squishyShelfTap(Number(b.dataset.slot), b);
+    setHandler(b, 'click', () => squishyShelfTap(Number(b.dataset.slot), b));
   });
   const rm = document.getElementById('sq-shelf-remove');
   if (rm)
-    rm.onclick = () => {
+    setHandler(rm, 'click', () => {
       playSound('tap');
       if (sqShelfSel && sqShelfSel.slot != null) shelfRemove(sqShelfSel.slot);
       sqShelfSel = null;
       renderSquishyShelf();
-    };
+    });
 }
 function squishyShelfTap(slot, btn) {
   const sq = sqState(),
@@ -1089,10 +1098,10 @@ function renderSquishySorting(task) {
     speak(msg);
     const go = document.getElementById('sr-go-open');
     if (go)
-      go.onclick = () => {
+      setHandler(go, 'click', () => {
         playSound('tap');
         openSquishyRoom('collection');
-      };
+      });
     return;
   }
   sqSort = { task, filled: 0, errors: 0, age: currentPlayerAge() };
@@ -1106,7 +1115,7 @@ function renderSquishySorting(task) {
   const q = { task };
   setHintQuestion('rangement', q, { choices: '.sr-item', noCount: true });
   el.querySelectorAll('.sr-item').forEach((b) => {
-    b.onclick = () => squishySortTap(b, q);
+    setHandler(b, 'click', () => squishySortTap(b, q));
   });
 }
 function squishySortTap(btn, q) {
@@ -1163,10 +1172,10 @@ function squishySortWin(run) {
   if (coins) gainCoins(coins, crate);
   const again = document.getElementById('sr-again');
   if (again)
-    again.onclick = () => {
+    setHandler(again, 'click', () => {
       playSound('tap');
       openSquishyRoom('ranger');
-    };
+    });
 }
 
 // Indices du compagnon (v52) : 1. sur quoi porter son regard ; 2. combien

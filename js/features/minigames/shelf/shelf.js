@@ -11,7 +11,7 @@
 import { shelfRound } from '../../../entities/difficulty/index.js';
 import { SQ_COLORS } from '../../../entities/squishy/index.js';
 import { random, shuffle } from '../../../shared/lib/index.js';
-import { openModal, speak } from '../../../shared/ui/index.js';
+import { openModal, setHandler, speak } from '../../../shared/ui/index.js';
 import { gameDiff } from '../../adaptive/index.js';
 import { registerHints, setHintQuestion } from '../../hints/index.js';
 import {
@@ -146,7 +146,7 @@ function renderShelf() {
     setSolution([solSel('.shelf-opt', 'k', `${t.color}-${t.shape}`)]);
     setHintQuestion('shelf', q, { choices: '.shelf-opt' });
     document.querySelectorAll('.shelf-opt').forEach((btn) => {
-      btn.onclick = () => {
+      setHandler(btn, 'click', () => {
         if (btn.dataset.k === `${t.color}-${t.shape}`) {
           clearActiveTimer();
           stepOk(btn);
@@ -158,7 +158,7 @@ function renderShelf() {
           }
           winSoon();
         } else loseLife(btn, { onRetry: renderShelf });
-      };
+      });
     });
     return;
   }
@@ -189,7 +189,7 @@ function renderShelf() {
     );
   ask();
   document.querySelectorAll('.shelf-cell:not([disabled])').forEach((cell) => {
-    cell.onclick = () => {
+    setHandler(cell, 'click', () => {
       const t = r.steps[i];
       if (!t || cell.classList.contains('filled')) return;
       if (cell.dataset.cell !== `${t.color}-${t.shape}`) {
@@ -218,7 +218,7 @@ function renderShelf() {
       document.getElementById('shelf-ask').textContent = stepAsk(r, i);
       speak(stepAsk(r, i));
       ask();
-    };
+    });
   });
 }
 

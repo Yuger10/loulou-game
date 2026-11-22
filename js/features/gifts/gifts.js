@@ -16,7 +16,15 @@ import { hello, save, state } from '../../entities/game-state/index.js';
 import { ALL_ITEMS, countItem, ITEMS, removeItem } from '../../entities/item/index.js';
 import { ac } from '../../entities/player/index.js';
 import { emit, pickRandom } from '../../shared/lib/index.js';
-import { bindSpeakButtons, confetti, openModal, playSound, speak, speechBubble } from '../../shared/ui/index.js';
+import {
+  bindSpeakButtons,
+  confetti,
+  openModal,
+  playSound,
+  setHandler,
+  speak,
+  speechBubble,
+} from '../../shared/ui/index.js';
 import { gainCoins } from '../gains/index.js';
 import { questProgress } from '../quests/index.js';
 import { addCoins } from '../wallet/index.js';
@@ -106,18 +114,17 @@ function openGiftPicker(charId) {
       ? `Que veux-tu offrir à ${c.name} ? ${c.name} adore ${favs.map((k) => ITEMS[k].name).join(' et ')}.`
       : `Ton sac est vide.`,
   );
-  document.getElementById('gift-back').onclick = () => {
+  setHandler(document.getElementById('gift-back'), 'click', () => {
     playSound('tap');
     emit('nav:dialogue', charId);
-  };
-  document.querySelectorAll('[data-gift]').forEach(
-    (b) =>
-      (b.onclick = () => {
-        const key = b.dataset.gift;
-        const from = b.querySelector('.gi-emoji').getBoundingClientRect();
-        const res = giveGift(charId, key);
-        if (res) showGiftThanks(charId, key, res, from);
-      }),
+  });
+  document.querySelectorAll('[data-gift]').forEach((b) =>
+    setHandler(b, 'click', () => {
+      const key = b.dataset.gift;
+      const from = b.querySelector('.gi-emoji').getBoundingClientRect();
+      const res = giveGift(charId, key);
+      if (res) showGiftThanks(charId, key, res, from);
+    }),
   );
 }
 
@@ -175,14 +182,14 @@ function showGiftThanks(charId, key, res, fromRect) {
   }
   const more = document.getElementById('gift-more');
   if (more)
-    more.onclick = () => {
+    setHandler(more, 'click', () => {
       playSound('tap');
       openGiftPicker(charId);
-    };
-  document.getElementById('gift-play').onclick = () => {
+    });
+  setHandler(document.getElementById('gift-play'), 'click', () => {
     playSound('tap');
     emit('nav:game-picker', charId);
-  };
+  });
 }
 
 export { favoritesOf, friendHearts, friendPoints, openGiftPicker };

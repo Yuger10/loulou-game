@@ -10,7 +10,7 @@
    Anti-devinette : une erreur relance un AUTRE cycle. */
 import { lifecycleRound } from '../../../entities/difficulty/index.js';
 import { random, shuffle } from '../../../shared/lib/index.js';
-import { openModal } from '../../../shared/ui/index.js';
+import { openModal, setHandler } from '../../../shared/ui/index.js';
 import { gameDiff } from '../../adaptive/index.js';
 import { registerHints, setHintQuestion } from '../../hints/index.js';
 import {
@@ -159,18 +159,17 @@ function renderLifecycle() {
       ? { mode: 'missing', prev: r.order[r.gap - 1], next: r.order[r.gap + 1] }
       : { mode: 'next', cur: r.order[r.at] };
     setHintQuestion('lifecycle', q, { choices: '.lc-card' });
-    document.querySelectorAll('.lc-card').forEach(
-      (b) =>
-        (b.onclick = () => {
-          if (b.dataset.s === good) {
-            stepOk(b);
-            const slot = document.querySelector('.lc-slot');
-            if (slot) {
-              slot.outerHTML = `<span class="lc-step found" data-s="${good}">${stageArt(good)}</span>`;
-            }
-            ok();
-          } else loseLife(b, { onRetry: renderLifecycle });
-        }),
+    document.querySelectorAll('.lc-card').forEach((b) =>
+      setHandler(b, 'click', () => {
+        if (b.dataset.s === good) {
+          stepOk(b);
+          const slot = document.querySelector('.lc-slot');
+          if (slot) {
+            slot.outerHTML = `<span class="lc-step found" data-s="${good}">${stageArt(good)}</span>`;
+          }
+          ok();
+        } else loseLife(b, { onRetry: renderLifecycle });
+      }),
     );
     return;
   }
@@ -193,24 +192,22 @@ function renderLifecycle() {
   setSolution(r.order.map((s) => solSel('.lc-card', 's', s)));
   setHintQuestion('lifecycle', { mode: r.mode, cycle: r.cycle, first: r.order[0] }, { choices: '.lc-card' });
   let pos = 0;
-  document.querySelectorAll('.lc-card').forEach(
-    (b) =>
-      (b.onclick = () => {
-        if (b.classList.contains('done')) return;
-        if (b.dataset.s !== r.order[pos]) {
-          loseLife(b, { onRetry: renderLifecycle, disable: false });
-          return;
-        }
-        stepOk(b);
-        b.classList.add('done');
-        const slot = document.querySelectorAll('#lc-strip .lc-slot')[0];
-        if (slot)
-          slot.outerHTML = `<span class="lc-step found" data-s="${b.dataset.s}">${stageArt(b.dataset.s)}</span>`;
-        pos++;
-        const p = document.getElementById('lc-progress');
-        if (p) p.innerHTML = progressDots(pos, r.order.length);
-        if (pos === r.order.length) ok();
-      }),
+  document.querySelectorAll('.lc-card').forEach((b) =>
+    setHandler(b, 'click', () => {
+      if (b.classList.contains('done')) return;
+      if (b.dataset.s !== r.order[pos]) {
+        loseLife(b, { onRetry: renderLifecycle, disable: false });
+        return;
+      }
+      stepOk(b);
+      b.classList.add('done');
+      const slot = document.querySelectorAll('#lc-strip .lc-slot')[0];
+      if (slot) slot.outerHTML = `<span class="lc-step found" data-s="${b.dataset.s}">${stageArt(b.dataset.s)}</span>`;
+      pos++;
+      const p = document.getElementById('lc-progress');
+      if (p) p.innerHTML = progressDots(pos, r.order.length);
+      if (pos === r.order.length) ok();
+    }),
   );
 }
 

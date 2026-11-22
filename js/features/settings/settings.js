@@ -10,7 +10,7 @@
 import { avatarHTML, COMPANIONS, companionOf } from '../../entities/companion/index.js';
 import { save, state } from '../../entities/game-state/index.js';
 import { currentProfile, onProfileRefresh, profiles, switchProfile } from '../../entities/player/index.js';
-import { playSound, registerView, showToast, soundModeLabel, speak } from '../../shared/ui/index.js';
+import { playSound, registerView, setHandler, showToast, soundModeLabel, speak } from '../../shared/ui/index.js';
 import { backupDue, openBackup } from '../backup/index.js';
 import { renderTeamHeads } from '../companion-team/index.js';
 import { openParentGate, openParents } from '../parents/index.js';
@@ -102,29 +102,28 @@ function setSound(key) {
 }
 
 function bindSettings(el) {
-  el.querySelectorAll('[data-sound]').forEach(
-    (b) =>
-      (b.onclick = () => {
-        if (b.getAttribute('aria-disabled') === 'true') {
-          speak("Allume d'abord les bruitages.");
-          return;
-        }
-        setSound(b.dataset.sound);
-        renderSettings();
-      }),
+  el.querySelectorAll('[data-sound]').forEach((b) =>
+    setHandler(b, 'click', () => {
+      if (b.getAttribute('aria-disabled') === 'true') {
+        speak("Allume d'abord les bruitages.");
+        return;
+      }
+      setSound(b.dataset.sound);
+      renderSettings();
+    }),
   );
   const vol = el.querySelector('#rg-volume');
-  vol.oninput = () => {
+  setHandler(vol, 'input', () => {
     state.soundVolume = Number(vol.value);
     save();
     el.querySelector('#rg-volume-v').textContent = vol.value + ' %';
     playSound('pop'); // une note pour entendre le nouveau volume
-  };
-  el.querySelector('#rg-edit').onclick = () => {
+  });
+  setHandler(el.querySelector('#rg-edit'), 'click', () => {
     playSound('tap');
     openPlayerSettings(profiles.current);
-  };
-  el.querySelector('#rg-switch').onclick = () => {
+  });
+  setHandler(el.querySelector('#rg-switch'), 'click', () => {
     playSound('tap');
     const list = el.querySelector('#rg-players');
     try {
@@ -133,32 +132,31 @@ function bindSettings(el) {
       // vieux navigateurs sans défilement doux : la liste reste à l'écran
     }
     speak('Touche le joueur qui va jouer.');
-  };
-  el.querySelectorAll('[data-player]').forEach(
-    (b) =>
-      (b.onclick = () => {
-        if (b.dataset.player === profiles.current) return;
-        switchProfile(b.dataset.player);
-        renderProfile();
-        renderSettings();
-      }),
+  });
+  el.querySelectorAll('[data-player]').forEach((b) =>
+    setHandler(b, 'click', () => {
+      if (b.dataset.player === profiles.current) return;
+      switchProfile(b.dataset.player);
+      renderProfile();
+      renderSettings();
+    }),
   );
-  el.querySelector('#rg-add').onclick = () => {
+  setHandler(el.querySelector('#rg-add'), 'click', () => {
     playSound('tap');
     openNewPlayer();
-  };
-  el.querySelector('#rg-modes').onclick = () => {
+  });
+  setHandler(el.querySelector('#rg-modes'), 'click', () => {
     playSound('tap');
     openPlayers();
-  };
-  el.querySelector('#rg-parents').onclick = () => {
+  });
+  setHandler(el.querySelector('#rg-parents'), 'click', () => {
     playSound('tap');
     openParents();
-  };
-  el.querySelector('#rg-backup').onclick = () => {
+  });
+  setHandler(el.querySelector('#rg-backup'), 'click', () => {
     playSound('tap');
     openParentGate(() => openBackup());
-  };
+  });
 }
 
 registerView('reglages', () => renderSettings());

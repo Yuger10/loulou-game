@@ -22,7 +22,7 @@ import { playerGender } from '../../entities/player/index.js';
 import { currentSeason } from '../../entities/season/index.js';
 import { currentWorld, WORLDS } from '../../entities/world/index.js';
 import { emit } from '../../shared/lib/index.js';
-import { playSound, speak } from '../../shared/ui/index.js';
+import { playSound, setHandler, speak } from '../../shared/ui/index.js';
 import { ensureQuests } from '../quests/index.js';
 import { seasonSceneSVG } from '../seasons/index.js';
 
@@ -555,10 +555,10 @@ function renderLiveIsland(sc) {
   sc.querySelectorAll('.deco[data-deco-key]').forEach((el) => bindDecoDrag(sc, el));
   const b = document.getElementById('btn-deco');
   if (b)
-    b.onclick = () => {
+    setHandler(b, 'click', () => {
       playSound('tap');
       emit('nav:deco-shop'); // island-view.js ouvre la boutique
-    };
+    });
 }
 
 /* ---- glisser une décoration ---- */

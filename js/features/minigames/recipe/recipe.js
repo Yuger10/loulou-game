@@ -11,7 +11,7 @@
    Anti-devinette : une erreur relance une AUTRE recette. */
 import { recipeRound } from '../../../entities/difficulty/index.js';
 import { random, shuffle } from '../../../shared/lib/index.js';
-import { openModal } from '../../../shared/ui/index.js';
+import { openModal, setHandler } from '../../../shared/ui/index.js';
 import { gameDiff } from '../../adaptive/index.js';
 import { registerHints, setHintQuestion } from '../../hints/index.js';
 import {
@@ -131,14 +131,13 @@ function renderRecipe() {
     startTimerIfNeeded('recipe');
     setSolution([solSel('.recipe-opt', 'v', best)]);
     setHintQuestion('recipe', { ask: 'bowls', most: r.most }, { choices: '.recipe-opt' });
-    document.querySelectorAll('.recipe-opt').forEach(
-      (b) =>
-        (b.onclick = () => {
-          if (Number(b.dataset.v) === best) {
-            stepOk(b);
-            ok();
-          } else retry(b);
-        }),
+    document.querySelectorAll('.recipe-opt').forEach((b) =>
+      setHandler(b, 'click', () => {
+        if (Number(b.dataset.v) === best) {
+          stepOk(b);
+          ok();
+        } else retry(b);
+      }),
     );
     return;
   }
@@ -160,14 +159,13 @@ function renderRecipe() {
     startTimerIfNeeded('recipe');
     setSolution([solSel('.recipe-opt', 'v', good)]);
     setHintQuestion('recipe', { ask: 'balance', heaviest: r.heaviest }, { choices: '.recipe-opt' });
-    document.querySelectorAll('.recipe-opt').forEach(
-      (b) =>
-        (b.onclick = () => {
-          if (b.dataset.v === good) {
-            stepOk(b);
-            ok();
-          } else retry(b);
-        }),
+    document.querySelectorAll('.recipe-opt').forEach((b) =>
+      setHandler(b, 'click', () => {
+        if (b.dataset.v === good) {
+          stepOk(b);
+          ok();
+        } else retry(b);
+      }),
     );
     return;
   }
@@ -194,24 +192,24 @@ function renderRecipe() {
     const draw = () => {
       box.innerHTML = Array.from({ length: count }, () => spoonIcon(r.ing.fill)).join('');
     };
-    document.getElementById('recipe-add').onclick = () => {
+    setHandler(document.getElementById('recipe-add'), 'click', () => {
       if (count < 12) {
         count++;
         draw();
       }
-    };
-    document.getElementById('recipe-undo').onclick = () => {
+    });
+    setHandler(document.getElementById('recipe-undo'), 'click', () => {
       if (count > 0) {
         count--;
         draw();
       }
-    };
-    document.getElementById('recipe-done').onclick = (e) => {
+    });
+    setHandler(document.getElementById('recipe-done'), 'click', (e) => {
       if (count === r.n) {
         stepOk(e.currentTarget);
         ok();
       } else retry(e.currentTarget, { disable: false });
-    };
+    });
     return;
   }
 
@@ -247,15 +245,14 @@ function renderRecipe() {
     { ask: 'cup', step: scale.step, label: scale.label, unit: scale.unit, target },
     { choices: '.cup-mark' },
   );
-  document.querySelectorAll('.cup-mark').forEach(
-    (b) =>
-      (b.onclick = () => {
-        document.getElementById('cup-liquid').style.height = `${pct(Number(b.dataset.v))}%`;
-        if (Number(b.dataset.v) === target) {
-          stepOk(b);
-          ok();
-        } else retry(b, { disable: false });
-      }),
+  document.querySelectorAll('.cup-mark').forEach((b) =>
+    setHandler(b, 'click', () => {
+      document.getElementById('cup-liquid').style.height = `${pct(Number(b.dataset.v))}%`;
+      if (Number(b.dataset.v) === target) {
+        stepOk(b);
+        ok();
+      } else retry(b, { disable: false });
+    }),
   );
 }
 

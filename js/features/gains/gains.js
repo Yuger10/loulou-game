@@ -10,7 +10,7 @@
                                       gains partent quand on la ferme
    Sans animation possible (vieux navigateur, « réduire les animations »),
    tout se met à jour d'un coup. */
-import { onModalChange, playSound } from '../../shared/ui/index.js';
+import { onModalChange, playSound, setHandler } from '../../shared/ui/index.js';
 import { addCoinsInFlight, renderCoins } from '../wallet/index.js';
 import { random } from '../../shared/lib/index.js';
 
@@ -90,7 +90,7 @@ function flyEmoji(emoji, from, to, opts = {}) {
     el.remove();
     onLand();
   };
-  anim.onfinish = finish;
+  setHandler(anim, 'finish', finish);
   // filet de sécurité (onglet en arrière-plan, animation annulée…)
   setTimeout(finish, (opts.duration || GAIN_FLIGHT_MS) + (opts.delay || 0) + 900);
 }

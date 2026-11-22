@@ -11,7 +11,7 @@
    Anti-devinette : une erreur relance une AUTRE coccinelle. */
 import { ladybugsRound } from '../../../entities/difficulty/index.js';
 import { random, shuffle } from '../../../shared/lib/index.js';
-import { openModal } from '../../../shared/ui/index.js';
+import { openModal, setHandler } from '../../../shared/ui/index.js';
 import { gameDiff } from '../../adaptive/index.js';
 import { registerHints, setHintQuestion } from '../../hints/index.js';
 import {
@@ -115,22 +115,22 @@ function renderLadybugs() {
           .map(([x, y]) => `<circle class="lb-dot" data-w="r" cx="${120 - x}" cy="${y}" r="6.5"/>`)
           .join('');
     };
-    document.getElementById('lb-add').onclick = () => {
+    setHandler(document.getElementById('lb-add'), 'click', () => {
       if (added < max) {
         added++;
         draw();
       }
-    };
-    document.getElementById('lb-undo').onclick = () => {
+    });
+    setHandler(document.getElementById('lb-undo'), 'click', () => {
       if (added > 0) {
         added--;
         draw();
       }
-    };
-    document.getElementById('lb-done').onclick = (e) => {
+    });
+    setHandler(document.getElementById('lb-done'), 'click', (e) => {
       if (added === r.n) ok(e.currentTarget);
       else loseLife(e.currentTarget, { onRetry: renderLadybugs, disable: false });
-    };
+    });
     return;
   }
 
@@ -152,12 +152,11 @@ function renderLadybugs() {
   startTimerIfNeeded('ladybugs');
   setSolution([solSel('.lb-opt', 'v', answer)]);
   setHintQuestion('ladybugs', q, { choices: '.lb-opt' });
-  document.querySelectorAll('.lb-opt').forEach(
-    (b) =>
-      (b.onclick = () => {
-        if (Number(b.dataset.v) === answer) ok(b);
-        else loseLife(b, { onRetry: renderLadybugs });
-      }),
+  document.querySelectorAll('.lb-opt').forEach((b) =>
+    setHandler(b, 'click', () => {
+      if (Number(b.dataset.v) === answer) ok(b);
+      else loseLife(b, { onRetry: renderLadybugs });
+    }),
   );
 }
 

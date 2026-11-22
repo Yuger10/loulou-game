@@ -31,7 +31,7 @@ import { buddyReact, COMPANIONS, companionSVG, currentCompanion } from '../../en
 import { save, state } from '../../entities/game-state/index.js';
 import { party, race } from '../../entities/player/index.js';
 import { pickRandom } from '../../shared/lib/index.js';
-import { onModalChange, playSound, speak } from '../../shared/ui/index.js';
+import { onModalChange, playSound, setHandler, speak } from '../../shared/ui/index.js';
 
 const HINT_IDLE_MS = 10000; // sans toucher l'écran, le bouton se propose
 const HINT_LEVELS = 2;
@@ -156,7 +156,7 @@ function renderHintButton() {
     b = document.createElement('button');
     b.type = 'button';
     b.className = 'hint-btn';
-    b.onclick = () => useHint();
+    setHandler(b, 'click', () => useHint());
     head.appendChild(b);
     head.classList.add('has-hint');
   }

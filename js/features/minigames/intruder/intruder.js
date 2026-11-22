@@ -2,7 +2,7 @@
    js/entities/difficulty/difficulty.js § diffTotal / diffMirrorChance) */
 import { diffMirrorChance, diffTotal } from '../../../entities/difficulty/index.js';
 import { pickRandom, random } from '../../../shared/lib/index.js';
-import { openModal } from '../../../shared/ui/index.js';
+import { openModal, setHandler } from '../../../shared/ui/index.js';
 import { gameDiff } from '../../adaptive/index.js';
 import { registerHints, setHintQuestion } from '../../hints/index.js';
 import {
@@ -84,14 +84,14 @@ function renderDiff() {
     { choices: '.diff-item' },
   );
   document.querySelectorAll('.diff-item').forEach((el) => {
-    el.onclick = () => {
+    setHandler(el, 'click', () => {
       if (el.dataset.odd === 'true') {
         clearActiveTimer();
         stepOk(el);
         flashModal('ok');
         winSoon();
       } else loseLife(el, { onRetry: renderDiff });
-    };
+    });
   });
 }
 

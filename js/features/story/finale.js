@@ -13,7 +13,16 @@ import { COMPANIONS, companionSVG } from '../../entities/companion/index.js';
 import { save, state } from '../../entities/game-state/index.js';
 import { currentProfile, refreshAll, saveProfiles } from '../../entities/player/index.js';
 import { emit } from '../../shared/lib/index.js';
-import { closeModal, confetti, onModalClose, openModal, playSound, speak, vibrate } from '../../shared/ui/index.js';
+import {
+  closeModal,
+  confetti,
+  onModalClose,
+  openModal,
+  playSound,
+  setHandler,
+  speak,
+  vibrate,
+} from '../../shared/ui/index.js';
 import { grantSquishyTreasure, squishyArtSVG } from '../squishies/index.js';
 import { grisouSVG } from './grisou.js';
 
@@ -74,13 +83,13 @@ function openSeasonFinale(onDone, opts) {
       confetti();
       vibrate([80, 60, 80, 60, 200]);
     }
-    document.getElementById('finale-next').onclick = () => {
+    setHandler(document.getElementById('finale-next'), 'click', () => {
       playSound('tap');
       i++;
       if (i < FINALE_LINES.length) scene();
       else if (rewards) companionReward();
       else seasonComplete();
-    };
+    });
   };
 
   const companionReward = () => {
@@ -96,7 +105,7 @@ function openSeasonFinale(onDone, opts) {
       <button class="btn-ghost" id="finale-later">Plus tard</button>
     `);
     speak(say);
-    document.getElementById('finale-pick').onclick = () => {
+    setHandler(document.getElementById('finale-pick'), 'click', () => {
       playSound('good');
       const p = currentProfile();
       if (p) {
@@ -105,11 +114,11 @@ function openSeasonFinale(onDone, opts) {
         refreshAll();
       }
       treasureReward();
-    };
-    document.getElementById('finale-later').onclick = () => {
+    });
+    setHandler(document.getElementById('finale-later'), 'click', () => {
       playSound('tap');
       treasureReward();
-    };
+    });
   };
 
   const treasureReward = () => {
@@ -125,10 +134,10 @@ function openSeasonFinale(onDone, opts) {
     `);
     speak(say);
     confetti();
-    document.getElementById('finale-treasure').onclick = () => {
+    setHandler(document.getElementById('finale-treasure'), 'click', () => {
       playSound('tap');
       seasonComplete();
-    };
+    });
   };
 
   const seasonComplete = () => {
@@ -144,10 +153,10 @@ function openSeasonFinale(onDone, opts) {
       <button class="btn-primary" id="finale-end">Continuer ✨</button>
     `);
     speak(say);
-    document.getElementById('finale-end').onclick = () => {
+    setHandler(document.getElementById('finale-end'), 'click', () => {
       playSound('tap');
       end();
-    };
+    });
   };
 
   scene();

@@ -2,7 +2,7 @@
    algorithme simple en cycle 2 — voir js/entities/difficulty/difficulty.js § sequence*) */
 import { sequencePatternLength } from '../../../entities/difficulty/index.js';
 import { pickRandom, shuffle } from '../../../shared/lib/index.js';
-import { openModal } from '../../../shared/ui/index.js';
+import { openModal, setHandler } from '../../../shared/ui/index.js';
 import { gameDiff } from '../../adaptive/index.js';
 import { registerHints, setHintQuestion } from '../../hints/index.js';
 import {
@@ -73,7 +73,7 @@ function renderSequence() {
   setSolution([solSel('.seq-btn', 'v', answer)]);
   setHintQuestion('sequence', { pattern, shown }, { choices: '.seq-btn' });
   document.querySelectorAll('.seq-btn').forEach((btn) => {
-    btn.onclick = () => {
+    setHandler(btn, 'click', () => {
       if (btn.dataset.v === answer) {
         clearActiveTimer();
         const q = document.querySelector('.seq-row .q');
@@ -84,7 +84,7 @@ function renderSequence() {
         flashModal('ok');
         winSoon();
       } else loseLife(btn, { onRetry: renderSequence });
-    };
+    });
   });
 }
 

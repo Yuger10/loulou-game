@@ -5,7 +5,7 @@
    10) et expressions à 3 termes. Bornes dans js/entities/difficulty/difficulty.js (calcBounds). */
 import { CALC_MULT_TABLES, calcBounds } from '../../../entities/difficulty/index.js';
 import { pickRandom, random, shuffle } from '../../../shared/lib/index.js';
-import { openModal } from '../../../shared/ui/index.js';
+import { openModal, setHandler } from '../../../shared/ui/index.js';
 import { gameDiff } from '../../adaptive/index.js';
 import { registerHints, setHintQuestion } from '../../hints/index.js';
 import {
@@ -89,7 +89,7 @@ function renderCalc() {
   setSolution([solSel('.num-btn', 'v', result)]);
   setHintQuestion('calc', problem, { choices: '.num-btn' });
   document.querySelectorAll('.num-btn').forEach((btn) => {
-    btn.onclick = () => {
+    setHandler(btn, 'click', () => {
       if (Number(btn.dataset.v) === result) {
         clearActiveTimer();
         const q = document.querySelector('.eq-q');
@@ -103,7 +103,7 @@ function renderCalc() {
       } else {
         loseLife(btn, { onRetry: renderCalc });
       }
-    };
+    });
   });
 }
 

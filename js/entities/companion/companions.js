@@ -7,7 +7,7 @@
    princesse, fée ; garçon : pirate, chevalier, explorateur), mais l'enfant
    peut toujours choisir n'importe lequel. */
 import { state } from '../game-state/index.js';
-import { playSound } from '../../shared/ui/index.js';
+import { playSound, setHandler } from '../../shared/ui/index.js';
 
 // La garde-robe (« Mon look ») et les fêtes de saison habillent compagnons et
 // avatars. Ce sont des features : elles fournissent leurs fonctions ici avec
@@ -463,17 +463,17 @@ function companionSelector(sel, gender, showAll) {
 // branche les boutons du sélecteur ; onPick(id) / onMore()
 function bindCompanionSelector(root, onPick, onMore) {
   (root || document).querySelectorAll('.buddy-opt').forEach((b) => {
-    b.onclick = () => {
+    setHandler(b, 'click', () => {
       playSound('tap');
       onPick(b.dataset.buddy);
-    };
+    });
   });
   const more = (root || document).querySelector('[data-buddy-more]');
   if (more)
-    more.onclick = () => {
+    setHandler(more, 'click', () => {
       playSound('tap');
       onMore();
-    };
+    });
 }
 
 /* ---- avatars dessinés ----

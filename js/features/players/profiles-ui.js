@@ -32,6 +32,7 @@ import {
   formSheet,
   openModal,
   playSound,
+  setHandler,
   showToast,
   speak,
   switchView,
@@ -78,25 +79,25 @@ function openPlayers() {
     bindQuit();
 
     document.querySelectorAll('[data-pick]').forEach((b) => {
-      b.onclick = () => {
+      setHandler(b, 'click', () => {
         const id = b.dataset.pick;
         if (sel.has(id)) sel.delete(id);
         else sel.add(id);
         playSound('tap');
         render();
-      };
+      });
     });
     document.querySelectorAll('[data-edit]').forEach((b) => {
-      b.onclick = () => {
+      setHandler(b, 'click', () => {
         playSound('tap');
         openPlayerSettings(b.dataset.edit);
-      };
+      });
     });
-    document.getElementById('btn-add-player').onclick = () => {
+    setHandler(document.getElementById('btn-add-player'), 'click', () => {
       playSound('tap');
       openNewPlayer();
-    };
-    document.getElementById('btn-solo').onclick = () => {
+    });
+    setHandler(document.getElementById('btn-solo'), 'click', () => {
       playSound('tap');
       const id = [...sel][0] || profiles.current;
       if (party.active) stopParty();
@@ -106,8 +107,8 @@ function openPlayers() {
       renderLagon();
       speak(`Mode solo. À toi de jouer ${currentProfile().name || ''} !`);
       showToast(`👤 ${avatarText(currentProfile().avatar)} ${currentProfile().name || ''}`);
-    };
-    document.getElementById('btn-turns').onclick = () => {
+    });
+    setHandler(document.getElementById('btn-turns'), 'click', () => {
       playSound('tap');
       const ids = profiles.list.filter((p) => sel.has(p.id)).map((p) => p.id);
       if (ids.length < 2) {
@@ -117,8 +118,8 @@ function openPlayers() {
       }
       startParty(ids);
       closeModal();
-    };
-    document.getElementById('btn-race').onclick = () => {
+    });
+    setHandler(document.getElementById('btn-race'), 'click', () => {
       playSound('tap');
       const ids = profiles.list.filter((p) => sel.has(p.id)).map((p) => p.id);
       if (ids.length < 2) {
@@ -136,14 +137,14 @@ function openPlayers() {
       startRace(ids);
       closeModal();
       renderLagon();
-    };
+    });
     const stop = document.getElementById('btn-stop-party');
     if (stop)
-      stop.onclick = () => {
+      setHandler(stop, 'click', () => {
         playSound('tap');
         stopParty();
         closeModal();
-      };
+      });
   };
   render();
 }
@@ -232,26 +233,26 @@ function openNewPlayer() {
       name = input.value;
     });
     document.querySelectorAll('.avatar-opt').forEach((b) => {
-      b.onclick = () => {
+      setHandler(b, 'click', () => {
         av = b.dataset.av;
         playSound('tap');
         render();
-      };
+      });
     });
     document.querySelectorAll('.age-opt').forEach((b) => {
-      b.onclick = () => {
+      setHandler(b, 'click', () => {
         age = Number(b.dataset.age);
         playSound('tap');
         render();
-      };
+      });
     });
     document.querySelectorAll('.gender-opt').forEach((b) => {
-      b.onclick = () => {
+      setHandler(b, 'click', () => {
         gen = b.dataset.gender;
         playSound('tap');
         if (comp && !allBuddies && !companionsFor(gen).includes(comp)) comp = null;
         render();
-      };
+      });
     });
     bindCompanionSelector(
       document,
@@ -346,25 +347,25 @@ function openPlayerSettings(id) {
       name = input.value;
     });
     document.querySelectorAll('.avatar-opt').forEach((b) => {
-      b.onclick = () => {
+      setHandler(b, 'click', () => {
         av = b.dataset.av;
         playSound('tap');
         render();
-      };
+      });
     });
     document.querySelectorAll('.age-opt').forEach((b) => {
-      b.onclick = () => {
+      setHandler(b, 'click', () => {
         age = Number(b.dataset.age);
         playSound('tap');
         render();
-      };
+      });
     });
     document.querySelectorAll('.gender-opt').forEach((b) => {
-      b.onclick = () => {
+      setHandler(b, 'click', () => {
         gen = b.dataset.gender;
         playSound('tap');
         render();
-      };
+      });
     });
     bindCompanionSelector(
       document,
@@ -467,12 +468,12 @@ function openGamePicker(charId) {
   bindQuit();
   teamOnGamePicker(choices.map((g) => g.key)); // Léo le tuteur annonce un jeu à travailler
   document.querySelectorAll('[data-game]').forEach((b) => {
-    b.onclick = () => {
+    setHandler(b, 'click', () => {
       playSound('tap');
       const k = b.dataset.game;
       if (k === 'random') startMinigame();
       else playGame(k);
-    };
+    });
   });
 }
 

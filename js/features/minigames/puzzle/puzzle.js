@@ -5,7 +5,7 @@
    la liste de tirage (probabilité doublée par erreur). */
 import { puzzleCount, puzzleStartMax, puzzleVariants } from '../../../entities/difficulty/index.js';
 import { pickRandom, random, shuffle } from '../../../shared/lib/index.js';
-import { openModal } from '../../../shared/ui/index.js';
+import { openModal, setHandler } from '../../../shared/ui/index.js';
 import { gameDiff } from '../../adaptive/index.js';
 import { hintOrderStep, registerHints, setHintQuestion } from '../../hints/index.js';
 import {
@@ -63,7 +63,7 @@ function renderPuzzle() {
   setSolution(seq.map((n) => solSel('.puzzle-btn', 'n', n)));
   setHintQuestion('puzzle', q, { choices: '.puzzle-btn' });
   document.querySelectorAll('.puzzle-btn').forEach((btn) => {
-    btn.onclick = () => {
+    setHandler(btn, 'click', () => {
       const n = Number(btn.dataset.n);
       if (btn.classList.contains('done')) return;
       if (n === seq[q.idx]) {
@@ -78,7 +78,7 @@ function renderPuzzle() {
       } else {
         loseLife(btn, { disable: false }); // le bon nombre reste cliquable ensuite
       }
-    };
+    });
   });
 }
 

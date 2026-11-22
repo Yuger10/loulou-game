@@ -13,7 +13,7 @@
    Anti-devinette : une erreur relance un AUTRE mélange. */
 import { potionsRound } from '../../../entities/difficulty/index.js';
 import { random, shuffle } from '../../../shared/lib/index.js';
-import { openModal } from '../../../shared/ui/index.js';
+import { openModal, setHandler } from '../../../shared/ui/index.js';
 import { gameDiff } from '../../adaptive/index.js';
 import { registerHints, setHintQuestion } from '../../hints/index.js';
 import {
@@ -124,29 +124,28 @@ function renderPotions() {
     setSolution(r.missing.map((c) => solSel('.po-opt', 'c', c)));
     setHintQuestion('potions', { mode: 'rainbow' }, { choices: '.po-opt' });
     let pos = 0;
-    document.querySelectorAll('.po-opt').forEach(
-      (b) =>
-        (b.onclick = () => {
-          if (b.classList.contains('done')) return;
-          if (b.dataset.c !== r.missing[pos]) {
-            loseLife(b, { onRetry: renderPotions, disable: false });
-            return;
-          }
-          stepOk(b);
-          b.classList.add('done');
-          const band = document.querySelector(`.po-band[data-i="${r.holes[pos]}"]`);
-          const c = r.missing[pos];
-          if (band) {
-            band.classList.remove('hole');
-            band.dataset.c = c;
-            band.style.background = POTION_COLORS[c].fill;
-            band.innerHTML = `<b style="color:${POTION_COLORS[c].ink}">${POTION_COLORS[c].mark}</b> ${c}`;
-          }
-          pos++;
-          const p = document.getElementById('po-progress');
-          if (p) p.innerHTML = progressDots(pos, r.missing.length);
-          if (pos === r.missing.length) ok();
-        }),
+    document.querySelectorAll('.po-opt').forEach((b) =>
+      setHandler(b, 'click', () => {
+        if (b.classList.contains('done')) return;
+        if (b.dataset.c !== r.missing[pos]) {
+          loseLife(b, { onRetry: renderPotions, disable: false });
+          return;
+        }
+        stepOk(b);
+        b.classList.add('done');
+        const band = document.querySelector(`.po-band[data-i="${r.holes[pos]}"]`);
+        const c = r.missing[pos];
+        if (band) {
+          band.classList.remove('hole');
+          band.dataset.c = c;
+          band.style.background = POTION_COLORS[c].fill;
+          band.innerHTML = `<b style="color:${POTION_COLORS[c].ink}">${POTION_COLORS[c].mark}</b> ${c}`;
+        }
+        pos++;
+        const p = document.getElementById('po-progress');
+        if (p) p.innerHTML = progressDots(pos, r.missing.length);
+        if (pos === r.missing.length) ok();
+      }),
     );
     return;
   }
@@ -178,16 +177,15 @@ function renderPotions() {
   startTimerIfNeeded('potions');
   setSolution([solSel('.po-opt', 'c', good)]);
   setHintQuestion('potions', { mode: r.mode, target: r.target, a: r.a, b: r.b, r: r.r }, { choices: '.po-opt' });
-  document.querySelectorAll('.po-opt').forEach(
-    (b) =>
-      (b.onclick = () => {
-        if (b.dataset.c === good) {
-          stepOk(b);
-          const q = document.querySelector('.po-q');
-          if (q) q.outerHTML = potionShow(good);
-          ok();
-        } else loseLife(b, { onRetry: renderPotions });
-      }),
+  document.querySelectorAll('.po-opt').forEach((b) =>
+    setHandler(b, 'click', () => {
+      if (b.dataset.c === good) {
+        stepOk(b);
+        const q = document.querySelector('.po-q');
+        if (q) q.outerHTML = potionShow(good);
+        ok();
+      } else loseLife(b, { onRetry: renderPotions });
+    }),
   );
 }
 

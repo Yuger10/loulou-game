@@ -14,6 +14,7 @@ import {
   onModalClose,
   openModal,
   playSound,
+  setHandler,
   shakeEl,
   showToast,
   speak,
@@ -366,15 +367,15 @@ function onMissionFail() {
     m.classList.add('shake-hard');
     setTimeout(() => m.classList.remove('shake-hard'), 500);
   }
-  document.getElementById('btn-retry').onclick = () => {
+  setHandler(document.getElementById('btn-retry'), 'click', () => {
     playSound('tap');
     startMinigame();
-  };
-  document.getElementById('btn-later').onclick = () => {
+  });
+  setHandler(document.getElementById('btn-later'), 'click', () => {
     playSound('tap');
     closeModal();
     renderLagon();
-  };
+  });
 }
 
 /* Fin de mission : le délai entre la bonne réponse (étincelle, son) et
@@ -481,7 +482,7 @@ function onMissionWin() {
   `);
   // l'objet gagné s'envolera jusqu'au sac quand la fenêtre se fermera
   queueGain({ items: [it.emoji, bonus ? ITEMS[bonus].emoji : null] });
-  document.getElementById('btn-yay').onclick = () => {
+  setHandler(document.getElementById('btn-yay'), 'click', () => {
     playSound('tap');
     closeModal();
     renderLagon();
@@ -495,14 +496,14 @@ function onMissionWin() {
     setTimeout(() => {
       if (!checkNewIsland() && !maybeTeamOpening()) maybeStoryEpisode();
     }, 250);
-  };
+  });
   const againBtn = document.getElementById('btn-again');
   if (againBtn)
-    againBtn.onclick = () => {
+    setHandler(againBtn, 'click', () => {
       playSound('tap');
       renderLagon();
       startMinigame();
-    };
+    });
 }
 
 // tout nouveau contenu (ou la fermeture) invalide un éventuel minuteur de

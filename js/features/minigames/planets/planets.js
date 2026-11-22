@@ -33,7 +33,7 @@
    proposé qu'à partir de 5 ans (paliers 1-2 seulement à cet âge). */
 import { planetsTier } from '../../../entities/difficulty/index.js';
 import { random, shuffle } from '../../../shared/lib/index.js';
-import { openModal } from '../../../shared/ui/index.js';
+import { openModal, setHandler } from '../../../shared/ui/index.js';
 import { gameDiff } from '../../adaptive/index.js';
 import { hintOrderStep, registerHints, setHintQuestion } from '../../hints/index.js';
 import {
@@ -428,13 +428,13 @@ function renderPlanets() {
   setSolution([solSel('.pl-opt', 'v', q.answer)]);
   setHintQuestion('planets', q, { choices: '.pl-opt' });
   document.querySelectorAll('.pl-opt').forEach((/** @type {HTMLButtonElement} */ btn) => {
-    btn.onclick = () => {
+    setHandler(btn, 'click', () => {
       if (btn.dataset.v === q.answer) {
         stepOk(btn);
         flashModal('ok');
         planetWin(q);
       } else loseLife(btn, { onRetry: renderPlanets });
-    };
+    });
   });
 }
 
@@ -461,7 +461,7 @@ function renderPlanetOrder(q) {
   setSolution(seq.map((id) => solSel('.pl-opt', 'v', id)));
   setHintQuestion('planets', q, { choices: '.pl-opt' });
   document.querySelectorAll('.pl-opt').forEach((/** @type {HTMLButtonElement} */ btn) => {
-    btn.onclick = () => {
+    setHandler(btn, 'click', () => {
       if (btn.dataset.v === seq[q.next]) {
         q.next++;
         btn.disabled = true;
@@ -474,7 +474,7 @@ function renderPlanetOrder(q) {
           planetWin(q);
         }
       } else loseLife(btn, { disable: false });
-    };
+    });
   });
 }
 

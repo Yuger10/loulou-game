@@ -33,7 +33,7 @@ import {
   seasonPreview,
 } from '../../entities/season/index.js';
 import { emit } from '../../shared/lib/index.js';
-import { closeModal, confetti, openModal, playSound, showToast, speak } from '../../shared/ui/index.js';
+import { closeModal, confetti, openModal, playSound, setHandler, showToast, speak } from '../../shared/ui/index.js';
 import { addCoins } from '../wallet/index.js';
 import { currentLook, WARDROBE, wearLook } from '../wardrobe/index.js';
 
@@ -209,16 +209,16 @@ function maybeSeasonGift() {
   playSound('win');
   confetti();
   speak(msg);
-  document.getElementById('sg-wear').onclick = () => {
+  setHandler(document.getElementById('sg-wear'), 'click', () => {
     playSound('tap');
     wearLook('tete', s.hat);
     closeModal();
     showToast(`${s.emoji} ${hat.name} !`);
-  };
-  document.getElementById('sg-ok').onclick = () => {
+  });
+  setHandler(document.getElementById('sg-ok'), 'click', () => {
     playSound('tap');
     closeModal();
-  };
+  });
   return true;
 }
 

@@ -1,5 +1,6 @@
 /* ---------- Voix (Web Speech) ---------- */
 import { audioPrefs, setVoiceDuck } from './sound.js';
+import { setHandler } from './handlers.js';
 
 // Mots prononcés pour chaque emoji (singulier, pluriel)
 const EMOJI_WORDS = {
@@ -116,8 +117,9 @@ function speak(text, opts) {
     const v = chosenVoice || pickVoice();
     if (v) u.voice = v;
     // tout le bus audio baisse pendant que la voix parle (js/shared/ui/sound.js)
-    u.onstart = () => setVoiceDuck(true);
-    u.onend = u.onerror = () => setVoiceDuck(false);
+    setHandler(u, 'start', () => setVoiceDuck(true));
+    setHandler(u, 'end', () => setVoiceDuck(false));
+    setHandler(u, 'error', () => setVoiceDuck(false));
     window.speechSynthesis.speak(u);
   } catch {
     // synthèse vocale absente ou en panne : le texte reste affiché à l'écran
@@ -126,10 +128,10 @@ function speak(text, opts) {
 
 function bindSpeakButtons() {
   document.querySelectorAll('[data-say]').forEach((b) => {
-    b.onclick = (e) => {
+    setHandler(b, 'click', (e) => {
       e.stopPropagation();
       speak(b.dataset.say);
-    };
+    });
   });
 }
 
@@ -142,7 +144,7 @@ function speechBubble(text, extraStyle = '') {
 
 if ('speechSynthesis' in window) {
   pickVoice();
-  window.speechSynthesis.onvoiceschanged = pickVoice;
+  setHandler(window.speechSynthesis, 'voiceschanged', pickVoice);
 }
 
 export { bindSpeakButtons, emojiWord, speak, speechBubble };
