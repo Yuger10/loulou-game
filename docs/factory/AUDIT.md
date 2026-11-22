@@ -74,6 +74,8 @@ Les agents copient ce qu'ils voient. Chaque point est mesuré sur `js/`.
    - `js/features/backup/backup.js:266`.
 
    Règle proposée : un tag `html` qui échappe par défaut, plus un test avec un prénom `<b>`.
+
+   **Corrigé le 22 novembre 2026** (décision d'Amrou : nettoyer à l'entrée plutôt qu'échapper à l'affichage) : `cleanName()` à chacune des 5 portes d'entrée d'un prénom, `test/prenoms.test.js` avec un garde d'architecture.
 2. **`Math.random()` appelé directement** : 63 occurrences dans 27 fichiers, dont 14 mini-jeux. C'est la cause du test flaky des coccinelles. Le bon exemple existe déjà : `ladybugsBuildRound(dd, rng)` accepte un générateur injecté.
 
    Règle proposée : `no-restricted-syntax` hors de `shared/lib`, tirages par un `rng` injectable.

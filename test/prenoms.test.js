@@ -69,6 +69,7 @@ const pwned = (d) => d.querySelectorAll('[id^="pwn"]').length;
       c('Anne-Sophie') === 'Anne-Sophie' && c("N'Dia") === "N'Dia",
     );
     check('12 caractères au plus, espaces autour retirés', c('   Maximilienne-Rose  ') === 'Maximilienne');
+    check('sauts de ligne et tabulations retirés', c('Zo\né\t') === 'Zoé', JSON.stringify(c('Zo\né\t')));
     check('valeur absente : chaîne vide', c(null) === '' && ev('cleanName(undefined)') === '');
   }
 
