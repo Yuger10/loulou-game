@@ -34,6 +34,10 @@ En v50, le jeu compte 37 scripts classiques à plat dans `js/`, plus un `styles.
 | **D. Ne rien changer, juste des dossiers** | Rapide | Ne règle ni les fourre-tout ni les dépendances cachées | Écartée |
 | **FSD complet** (`pages`, `widgets`, `processes`) | Standard reconnu | Cérémonie inutile pour une appli d'une seule page à vues | Réduit à 4 couches |
 
+## Vérification
+
+`test/slices.test.js` (avec `test/tools/boundaries.js`) : chaque fichier est dans le manifeste `js/slices.cjs`, une slice n'importe que l'`index.js` d'une autre, d'une couche égale ou inférieure, et les noms de haut niveau sont uniques. Il échoue sur deux cas fabriqués (preuve qu'il sait échouer). Lancé par `bun run check` et la CI ; la garde elle-même est une zone sensible (relecture d'Amrou).
+
 ## Conséquences
 **Positives (constatées en v51)**
 - 49 slices. Les fourre-tout sont découpés, et `styles.css` est réparti en 48 feuilles avec une cascade **identique octet pour octet**.

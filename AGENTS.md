@@ -50,7 +50,7 @@ Jeu éducatif en français pour une enfant de 6 ans (mathématiques, lecture, lo
 - Modifier à la main `sw.js` et `index.html` (générés par `bun run sync`).
 - Assouplir la garde d'architecture (`test/slices.test.js`, `test/tools/boundaries.js`, `js/slices.cjs`) pour faire passer du code.
 - Désactiver, affaiblir ou supprimer un test existant pour faire passer `check`.
-- Modifier une **zone protégée** : les tests holdout (`test/holdout/`, écrits ou validés par Amrou) et la CI (`.github/`). La CI échoue sans l'étiquette `human:approved`, posée par Amrou seul.
+- Modifier une **zone protégée** : les tests holdout (`test/holdout/`, écrits ou validés par Amrou) et la CI (`.github/`). La CI échoue sans l'étiquette `human:approved`, posée par Amrou seul. Une telle PR le dit en tête de sa description, avec le geste : étiquette `human:approved` (colonne Labels, ou `gh pr edit N --add-label human:approved`), **pas le bouton Approve**, que GitHub refuse à l'auteur (l'agent ouvre les PR avec le compte d'Amrou).
 - Changer la forme de la sauvegarde sans augmenter `SAVE_VERSION` ni écrire la migration.
 - Ajouter une dépendance (`package.json`, `bun.lock`) sans le demander.
 - Toucher aux dessins des personnages et compagnons (`characters-art.js`, `characters-art-s2.js`, SVG) sans demande explicite.

@@ -68,6 +68,12 @@ En v53, le jeu compte 75 scripts classiques rangés en 52 slices (ADR 0001, éta
 | **Bundler pour le jeu** (Vite, esbuild) | Un seul fichier | Build et `dist/` à publier, contraire à « sans build » | Écartée (comme dans l'ADR 0001) |
 | **Tests en modules natifs uniquement** | Fidèle au navigateur | Les ~560 vérifications existantes lisent l'état interne par son nom (`state`, `playGame(…)`) | Combinée : regroupement esbuild pour ces tests, plus un test des vrais modules |
 
+## Vérification
+
+- `test/modules.test.js` charge les vrais modules ES du jeu dans jsdom, sans regroupement : une erreur d'ordre d'initialisation y casse le test.
+- `test/slices.test.js` : `index.html` et `sw.js` listent exactement les fichiers du manifeste (pas d'étape de build cachée) ; oxlint `import/no-cycle` refuse un cycle d'imports.
+- Lancés par `bun run check` et la CI.
+
 ## Conséquences
 **Positives**
 - **Frontières réelles :** un fichier ne voit que ce qu'il importe. Dans le navigateur, aucune variable du jeu n'est globale (vérifié dans Chromium).
