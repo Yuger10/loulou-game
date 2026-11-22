@@ -2,15 +2,20 @@
    `shared` ne connaît pas les features : celles qui doivent réagir à
    l'ouverture ou à la fermeture d'une fenêtre (minuteur, relances
    anti-devinette, gains en attente…) s'inscrivent ici. */
+/** @type {Array<() => void>} */
 const modalOpenHooks = [],
+  /** @type {Array<() => void>} */
   modalCloseHooks = [];
+/** @param {() => void} fn */
 function onModalOpen(fn) {
   modalOpenHooks.push(fn);
 }
+/** @param {() => void} fn */
 function onModalClose(fn) {
   modalCloseHooks.push(fn);
 }
 // raccourci : la même fonction à l'ouverture et à la fermeture
+/** @param {() => void} fn */
 function onModalChange(fn) {
   onModalOpen(fn);
   onModalClose(fn);
@@ -20,7 +25,10 @@ function onModalChange(fn) {
 // (js/shared/ui/form.js) peut retenir la fermeture demandée par l'enfant
 // (✕, poignée, clic à côté, Échap). Le garde renvoie false pour la retenir.
 // Tout nouveau contenu l'efface.
+/** @typedef {() => boolean} ModalCloseGuard renvoie false pour retenir la fermeture */
+/** @type {ModalCloseGuard | null} */
 let modalCloseGuard = null;
+/** @param {ModalCloseGuard | null} fn */
 function setModalCloseGuard(fn) {
   modalCloseGuard = fn;
 }
@@ -31,6 +39,7 @@ function requestCloseModal() {
   return true;
 }
 
+/** @param {string} html */
 function openModal(html) {
   modalCloseGuard = null;
   const m0 = document.getElementById('modal');
@@ -39,9 +48,9 @@ function openModal(html) {
   // défi, relance programmée après une erreur (anti-devinette), gains en
   // attente… Chaque feature concernée s'inscrit avec onModalOpen.
   modalOpenHooks.forEach((fn) => fn());
-  const body = document.getElementById('modal-body') || document.getElementById('modal');
+  const body = /** @type {HTMLElement} */ (document.getElementById('modal-body') || document.getElementById('modal'));
   body.innerHTML = html;
-  const ov = document.getElementById('overlay');
+  const ov = /** @type {HTMLElement} */ (document.getElementById('overlay'));
   ov.classList.add('show');
   document.body.classList.add('modal-open');
   // la fenêtre repart toujours du haut
@@ -52,7 +61,7 @@ function openModal(html) {
 function closeModal() {
   modalCloseGuard = null;
   modalCloseHooks.forEach((fn) => fn());
-  document.getElementById('overlay').classList.remove('show');
+  /** @type {HTMLElement} */ (document.getElementById('overlay')).classList.remove('show');
   document.body.classList.remove('modal-open');
   if (window.speechSynthesis) speechSynthesis.cancel();
 }

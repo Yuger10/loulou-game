@@ -3,6 +3,7 @@
    à sa façon (une tablette ancienne montre d'anciens dessins), alors que
    ces icônes sont identiques partout. Dans le contenu du jeu (objets,
    personnages…), les emoji restent ceux de l'appareil. */
+/** @type {Record<string, string>} */
 const UI_ICONS = {
   carte:
     '<path d="M5 13 L17 8 L31 13 L43 8 V35 L31 40 L17 35 L5 40 Z" fill="#FFF3DE"/><path d="M5 13 L17 8 V35 L5 40 Z" fill="#9FE3E4"/><path d="M31 13 L43 8 V35 L31 40 Z" fill="#BDE8B4"/><path d="M9 31 C13 25 19 28 23 23 C26 19 29 21 32 20" fill="none" stroke="#E8573A" stroke-width="2.4" stroke-linecap="round" stroke-dasharray=".5 4"/><path d="M34.5 17.5 L39.5 22.5 M39.5 17.5 L34.5 22.5" stroke="#E8573A" stroke-width="2.8" stroke-linecap="round"/><path d="M5 13 L17 8 L31 13 L43 8 V35 L31 40 L17 35 L5 40 Z M17 8 V35 M31 13 V40" fill="none" stroke="#123B4F" stroke-width="2.4" stroke-linejoin="round"/>',
@@ -22,14 +23,17 @@ const UI_ICONS = {
   piece:
     '<circle cx="24" cy="24" r="17" fill="#FFCB4C" stroke="#123B4F" stroke-width="2.4"/><circle cx="24" cy="24" r="12" fill="none" stroke="#D9A62A" stroke-width="2.4"/><path d="M24 16.5 L26.1 21.4 L31.4 21.8 L27.4 25.2 L28.6 30.4 L24 27.6 L19.4 30.4 L20.6 25.2 L16.6 21.8 L21.9 21.4 Z" fill="#FFE38A" stroke="#D9A62A" stroke-width="1.4" stroke-linejoin="round"/><path d="M13 17 C15 13 18 11 21 10" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" opacity=".7"/>',
 };
+/** @param {string} name */
 function uiIcon(name) {
   const body = UI_ICONS[name];
   return body ? `<svg class="ui-ic" viewBox="0 0 48 48" aria-hidden="true" focusable="false">${body}</svg>` : '';
 }
 // remplit les emplacements <span data-ui-icon="…"> de la page
+/** @param {ParentNode} [root] */
 function fillUiIcons(root) {
   (root || document).querySelectorAll('[data-ui-icon]').forEach((el) => {
-    el.innerHTML = uiIcon(el.dataset.uiIcon);
+    // le sélecteur garantit l'attribut data-ui-icon
+    el.innerHTML = uiIcon(/** @type {string} */ (el.dataset.uiIcon));
   });
 }
 fillUiIcons();

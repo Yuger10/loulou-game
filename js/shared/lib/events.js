@@ -13,23 +13,45 @@
    un appel de fonction). `emit` renvoie leurs résultats. Un écouteur qui
    plante n'empêche pas les autres : son erreur est relancée juste après,
    pour rester visible (console, tests). */
+/* Un écouteur reçoit les arguments de `emit`. Le bus ne connaît pas leur
+   forme (chaque événement a la sienne) : il les transmet tels quels, et
+   l'écouteur déclare lui-même ce qu'il reçoit. */
+/** @typedef {Function} BusListener */
+/** @type {Map<string, BusListener[]>} */
 const busListeners = new Map(); // nom → [fonctions]
 
+/**
+ * @template {BusListener} F
+ * @param {string} name
+ * @param {F} fn
+ * @returns {() => void} désinscrit l'écouteur
+ */
 function on(name, fn) {
-  (busListeners.get(name) || busListeners.set(name, []).get(name)).push(fn);
+  /** @type {BusListener[]} */ (busListeners.get(name) || busListeners.set(name, []).get(name)).push(fn);
   return () => off(name, fn);
 }
+/**
+ * @param {string} name
+ * @param {BusListener} fn
+ */
 function off(name, fn) {
   const list = busListeners.get(name);
   if (!list) return;
   const i = list.indexOf(fn);
   if (i >= 0) list.splice(i, 1);
 }
+/**
+ * @param {string} name
+ * @param {...unknown} args
+ * @returns {unknown[]} les résultats des écouteurs (undefined pour celui qui a planté)
+ */
 function emit(name, ...args) {
   const list = (busListeners.get(name) || []).slice();
   return list.map((fn) => {
     try {
-      return fn(...args);
+      // le bus transmet les arguments sans les connaître : l'écouteur inscrit
+      // pour ce nom sait ce qu'il reçoit
+      return /** @type {(...a: unknown[]) => unknown} */ (fn)(...args);
     } catch (e) {
       setTimeout(() => {
         throw e;

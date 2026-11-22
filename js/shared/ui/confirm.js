@@ -15,8 +15,25 @@
 import { speak } from './voice.js';
 import { setHandler } from './handlers.js';
 
+/**
+ * @typedef {object} ConfirmOptions
+ * @property {string} [text]
+ * @property {string} [confirmLabel]
+ * @property {string} [cancelLabel]
+ * @property {boolean} [danger]
+ * @property {string} [typeWord]
+ * @property {boolean | null} [dismissValue]
+ * @property {boolean} [primaryYes]
+ */
+/** @typedef {boolean | null} ConfirmResult */
+
+/** @type {((result: ConfirmResult) => void) | null} */
 let confirmClose = null;
 
+/**
+ * @param {ConfirmOptions} [opts]
+ * @returns {Promise<ConfirmResult>}
+ */
 function askConfirm(opts) {
   const o = Object.assign(
     {
@@ -54,13 +71,15 @@ function askConfirm(opts) {
     </div>`;
   el.hidden = false;
   speak(String(o.text).replace(/<[^>]+>/g, ''));
-  const yes = el.querySelector('[data-confirm="yes"]'),
-    no = el.querySelector('[data-confirm="no"]');
+  // les deux boutons viennent d'être écrits juste au-dessus
+  const yes = /** @type {HTMLElement} */ (el.querySelector('[data-confirm="yes"]')),
+    no = /** @type {HTMLElement} */ (el.querySelector('[data-confirm="no"]'));
   const input = /** @type {HTMLInputElement} */ (el.querySelector('#confirm-input'));
   const typed = () => !word || (input && input.value.trim().toLowerCase() === word.toLowerCase());
   const refresh = () => yes.setAttribute('aria-disabled', typed() ? 'false' : 'true');
   refresh();
   return new Promise((resolve) => {
+    /** @param {KeyboardEvent} e */
     const onKey = (e) => {
       if (e.key === 'Escape') {
         e.stopImmediatePropagation();
@@ -71,13 +90,16 @@ function askConfirm(opts) {
         close(true);
       }
     };
-    function close(result) {
+    // une fonction fléchée (et non `function close`, remontée en haut du bloc) :
+    // TypeScript sait alors que `el` n'est plus null quand elle est créée
+    /** @param {ConfirmResult} result */
+    const close = (result) => {
       document.removeEventListener('keydown', onKey, true);
       el.hidden = true;
       el.innerHTML = '';
       confirmClose = null;
       resolve(result);
-    }
+    };
     confirmClose = close;
     document.addEventListener('keydown', onKey, true); // avant la fenêtre derrière (qui fermerait sur Échap)
     if (input) {

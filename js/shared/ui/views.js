@@ -3,20 +3,30 @@
    switchView affiche la section puis appelle ces rendus. */
 import { playSound } from './sound.js';
 
+/** @typedef {{ sacTab: string | null }} ViewOptions */
+/** @type {Record<string, Array<(opts: ViewOptions) => void>>} */
 const viewRenderers = {};
 // fonctions appelées à chaque changement de vue (par exemple : la pause revient)
+/** @type {Array<(name: string) => void>} */
 const viewChangeHooks = [];
+/** @param {(name: string) => void} fn */
 function onViewChange(fn) {
   viewChangeHooks.push(fn);
 }
+/**
+ * @param {string} name
+ * @param {(opts: ViewOptions) => void} fn
+ */
 function registerView(name, fn) {
   (viewRenderers[name] = viewRenderers[name] || []).push(fn);
 }
 
+/** @param {string} nameArg */
 function switchView(nameArg) {
   let name = nameArg;
   // alias pratiques
   if (name === 'lagon') name = 'ile';
+  /** @type {string | null} */
   let sacTab = null;
   if (name === 'album') {
     name = 'sac';
@@ -44,7 +54,7 @@ function switchView(nameArg) {
 document.querySelectorAll('.navbtn').forEach((btn) => {
   btn.addEventListener('click', () => {
     playSound('tap');
-    switchView(btn.dataset.view);
+    switchView(/** @type {string} */ (btn.dataset.view)); // chaque .navbtn a son data-view
   });
 });
 
@@ -52,6 +62,12 @@ document.querySelectorAll('.navbtn').forEach((btn) => {
 // (par exemple le bouton Île affiche l'île courante : 🌲 Forêt). `shared` ne
 // connaît pas les îles : on lui passe l'icône et le texte. `iconKey` garde la
 // marque des icônes dessinées (data-ui-icon, js/shared/ui/icons.js).
+/**
+ * @param {string} view
+ * @param {string} icon
+ * @param {string} label
+ * @param {string} [iconKey]
+ */
 function setNavLabel(view, icon, label, iconKey) {
   const b = document.querySelector(`.navbtn[data-view="${view}"]`);
   if (!b) return;
