@@ -20,7 +20,7 @@ Fichiers copiés de cothon : `test/tools/check-docs.sh` (de `setting-up-docs`, v
 ## Actions 0.4.0 traitées
 
 - `0.4.0-1` : `test/tools/check-docs.sh` recopié (sortie 0/1/2, `--selftest`, noms accentués).
-- `0.4.0-2` : déjà fait avant la 0.4.0 (`"prepare": "lefthook install"`, hook de l'agent sur `Edit|MultiEdit|Write`) ; c'était un point du retour d'expérience de ce projet.
+- `0.4.0-2` : déjà fait avant la 0.4.0 (`"prepare": "lefthook install"`, hook de l'agent sur `Edit|MultiEdit|Write`). Raison : sous bun, on ne compte pas sur le postinstall de lefthook (lefthook 2.2.2 en a un et figure dans la liste de confiance par défaut de bun, mais aucun hook n'était posé) ; `prepare` le garantit, et `.git/hooks/pre-commit` existe bien (vérifié).
 - `0.4.0-3` : `bunfig.toml` avec `minimumReleaseAge = "3d"` ; actions GitHub déjà épinglées par SHA.
 - `0.4.0-4` : `.claude/`, `.mcp.json`, `.vscode/` (et `bunfig.toml`, `test/tools/sensitive.js`) dans les zones sensibles du garde et de `AGENTS.md` ; la partie `CODEOWNERS` (zone protégée) est dans la PR #68.
 - `0.4.0-5` : cible d'exécution dans `AUDIT.md` (1 bis : « marcher partout »), tableau « règle, cas, décision, raison » dans `SPEED.md`.
