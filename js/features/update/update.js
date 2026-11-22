@@ -108,7 +108,7 @@ function updateCardHTML() {
 }
 
 function bindUpdateCard() {
-  const btn = document.getElementById('ps-update'),
+  const btn = /** @type {HTMLButtonElement} */ (document.getElementById('ps-update')),
     msg = document.getElementById('ps-update-msg');
   if (!btn || !msg) return;
   btn.onclick = async () => {

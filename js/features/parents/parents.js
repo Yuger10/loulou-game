@@ -138,7 +138,7 @@ function openParentGate(onOk, onCancel, onWrong) {
     <button class="btn-primary" id="gate-ok">Valider</button>
     <button class="btn-ghost" id="gate-cancel">Retour</button>
   `);
-  const input = document.getElementById('gate-in');
+  const input = /** @type {HTMLInputElement} */ (document.getElementById('gate-in'));
   const ok = () => {
     if (Number(input.value) === a * b) {
       parentUnlockedUntil = Date.now() + 5 * 60 * 1000;
@@ -346,7 +346,7 @@ function openParentSpace(selectedId) {
         showToast(musicOn ? "🎵 Musique d'ambiance" : 'Pas de musique');
       }),
   );
-  const vol = document.getElementById('ps-volume');
+  const vol = /** @type {HTMLInputElement} */ (document.getElementById('ps-volume'));
   vol.oninput = () => {
     const v = Number(vol.value);
     document.getElementById('ps-volume-v').textContent = v + ' %';

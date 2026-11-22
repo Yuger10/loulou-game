@@ -349,7 +349,7 @@ function openBackup() {
   $('bk-code').onclick = async () => {
     playSound('tap');
     const code = await backupToCode(buildBackup());
-    const out = $('bk-code-out');
+    const out = /** @type {HTMLTextAreaElement} */ ($('bk-code-out'));
     out.value = code;
     out.hidden = false;
     try {
@@ -388,7 +388,8 @@ function openBackup() {
     };
   };
   $('bk-file').onchange = (e) => {
-    const f = e.target.files && e.target.files[0];
+    const files = /** @type {HTMLInputElement} */ (e.target).files;
+    const f = files && files[0];
     if (!f) return;
     const rd = new FileReader();
     rd.onload = () => preview(parseBackupText(String(rd.result || '')));
@@ -397,7 +398,7 @@ function openBackup() {
   };
   $('bk-paste-go').onclick = async () => {
     playSound('tap');
-    preview(await parseBackupCode($('bk-paste').value));
+    preview(await parseBackupCode(/** @type {HTMLTextAreaElement} */ ($('bk-paste')).value));
   };
   const undo = $('bk-undo');
   if (undo)

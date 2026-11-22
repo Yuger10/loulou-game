@@ -2,10 +2,13 @@
    connaît pas l'état du jeu : c'est l'état (entities/game-state) qui fournit la
    source, avec setAudioPrefsSource(() => state). Par défaut : tout est actif. */
 import { random } from '../lib/index.js';
+/** @typedef {{ sound?: boolean, voice?: boolean, music?: boolean, soundVolume?: number }} AudioPrefs */
+/** @type {() => AudioPrefs} */
 let audioPrefsSource = () => ({ sound: true, voice: true, music: false, soundVolume: 80 });
 function setAudioPrefsSource(fn) {
   audioPrefsSource = fn;
 }
+/** @returns {AudioPrefs} */
 function audioPrefs() {
   return audioPrefsSource() || {};
 }

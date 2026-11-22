@@ -193,7 +193,7 @@ function renderTeamHeads() {
 }
 if (typeof document !== 'undefined')
   document.addEventListener('click', (e) => {
-    const b = e.target && e.target.closest && e.target.closest('[data-team-slot]');
+    const b = e.target && /** @type {HTMLElement} */ (e.target).closest('[data-team-slot]');
     if (!b) return;
     playSound('tap');
     openTeamWindow();

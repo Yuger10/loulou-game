@@ -25,11 +25,11 @@ function renderCount() {
   const dd = gameDiff();
   const { min, max } = countRange(dd);
   const n = min + Math.floor(random() * (max - min + 1));
-  let options = new Set([n]);
-  while (options.size < 3) {
-    options.add(Math.max(1, n + (Math.floor(random() * 5) - 2)));
+  const choices = new Set([n]);
+  while (choices.size < 3) {
+    choices.add(Math.max(1, n + (Math.floor(random() * 5) - 2)));
   }
-  options = shuffle([...options]);
+  const options = shuffle([...choices]);
 
   openModal(`
     ${gameHeader('🔢 Compte avec moi', `Combien y a-t-il de ${emoji} ?`, `Combien y a-t-il de ${emojiWord(emoji, true)} ?`)}

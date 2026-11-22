@@ -260,7 +260,7 @@ function renderShapes() {
   bindQuit();
   setSolution(r.items.map((it, i) => (it.ok ? solSel('.sq-item', 'i', i) : null)).filter(Boolean));
   setHintQuestion('shapes', q, { choices: '.sq-item' });
-  document.querySelectorAll('.sq-item').forEach((btn) => {
+  document.querySelectorAll('.sq-item').forEach((/** @type {HTMLButtonElement} */ btn) => {
     btn.onclick = () => {
       const it = r.items[Number(btn.dataset.i)];
       btn.classList.remove('squish');
@@ -296,7 +296,7 @@ const SHAPES_TIPS = {
   vertices: 'Compte les sommets de chaque forme : les pointes, là où deux côtés se touchent.',
 };
 function shapesHints(q) {
-  const items = [...document.querySelectorAll('.sq-board .sq-item')];
+  const items = [.../** @type {NodeListOf<HTMLButtonElement>} */ (document.querySelectorAll('.sq-board .sq-item'))];
   const left = items.filter((b) => !b.disabled && q.r.items[Number(b.dataset.i)].ok);
   const n = Math.max(0, q.r.targets - q.found);
   let group = [];

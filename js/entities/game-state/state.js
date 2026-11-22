@@ -123,6 +123,7 @@ let state = {
    au-dessus) y branche sa clé, et ce qu'il faut faire après chaque
    sauvegarde (recopier prénom et avatar dans sa fiche) et chaque chargement
    (corriger un ancien avatar). Sans joueur : l'ancienne clé unique. */
+/** @type {{ key: () => string, afterSave: () => void, afterLoad: (state: object) => void }} */
 const saveSlot = { key: () => SAVE_KEY, afterSave: () => {}, afterLoad: () => {} };
 function setSaveSlot(slot) {
   Object.assign(saveSlot, slot);

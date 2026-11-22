@@ -49,13 +49,13 @@ function renderMath() {
   const emoji = pickRandom(MATH_EMOJIS);
   const { a, b, op, result } = makeMathProblem();
 
-  let options = new Set([result]);
-  while (options.size < 3) {
+  const choices = new Set([result]);
+  while (choices.size < 3) {
     const delta = Math.floor(random() * 5) - 2;
     const cand = Math.max(0, result + (delta === 0 ? 1 : delta));
-    options.add(cand);
+    choices.add(cand);
   }
-  options = shuffle([...options]);
+  const options = shuffle([...choices]);
 
   const spoken = op === '+' ? `Combien ça fait, ${a} plus ${b} ?` : `Combien ça fait, ${a} moins ${b} ?`;
 

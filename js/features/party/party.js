@@ -42,6 +42,7 @@ function passTurn(reason) {
   showTurnOverlay(p, reason);
 }
 
+let turnOverlayTimer = null; // l'annonce « À toi de jouer » disparaît 1,6 s après
 function showTurnOverlay(p, reason) {
   const el = document.getElementById('turn-overlay');
   if (!el) return;
@@ -56,8 +57,8 @@ function showTurnOverlay(p, reason) {
   playSound('tap');
   vibrate(60);
   speak(`${reason === 'wrong' ? "Ce n'est pas grave ! " : ''}À toi de jouer ${p.name || ''} !`);
-  clearTimeout(showTurnOverlay._t);
-  showTurnOverlay._t = setTimeout(() => el.classList.remove('show'), 1600);
+  clearTimeout(turnOverlayTimer);
+  turnOverlayTimer = setTimeout(() => el.classList.remove('show'), 1600);
 }
 
 function renderTurnBar() {

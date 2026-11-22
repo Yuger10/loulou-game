@@ -134,7 +134,7 @@ document.getElementById('modal-handle').addEventListener('click', () => {
   requestCloseModal();
 });
 document.getElementById('overlay').addEventListener('click', (e) => {
-  if (e.target.id === 'overlay') requestCloseModal();
+  if (/** @type {HTMLElement} */ (e.target).id === 'overlay') requestCloseModal();
 });
 document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape' && document.getElementById('overlay').classList.contains('show')) requestCloseModal();

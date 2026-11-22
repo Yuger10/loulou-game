@@ -227,7 +227,7 @@ function openNewPlayer() {
         secondary: 'Annuler',
       }),
     );
-    const input = document.getElementById('np-name');
+    const input = /** @type {HTMLInputElement} */ (document.getElementById('np-name'));
     input.addEventListener('input', () => {
       name = input.value;
     });
@@ -311,8 +311,8 @@ function openPlayerSettings(id) {
   ];
   // le jour et le mois sont relus dans la page à chaque fois (une liste peut changer sans événement)
   const readBday = () => {
-    const de = document.getElementById('pe-bday-d'),
-      me = document.getElementById('pe-bday-m');
+    const de = /** @type {HTMLSelectElement} */ (document.getElementById('pe-bday-d')),
+      me = /** @type {HTMLSelectElement} */ (document.getElementById('pe-bday-m'));
     if (!de || !me) return bday;
     const d = Number(de.value),
       m = Number(me.value);
@@ -341,7 +341,7 @@ function openPlayerSettings(id) {
         secondary: 'Retour',
       }),
     );
-    const input = document.getElementById('pe-name');
+    const input = /** @type {HTMLInputElement} */ (document.getElementById('pe-name'));
     input.addEventListener('input', () => {
       name = input.value;
     });

@@ -75,7 +75,7 @@ function openGiftPicker(charId) {
   const c = CHARACTERS[charId];
   const favs = favoritesOf(charId);
   const keys = giftableItems().sort(
-    (a, b) => favs.includes(b) - favs.includes(a) || ALL_ITEMS[a].name.localeCompare(ALL_ITEMS[b].name),
+    (a, b) => Number(favs.includes(b)) - Number(favs.includes(a)) || ALL_ITEMS[a].name.localeCompare(ALL_ITEMS[b].name),
   );
   const favText = favs.map((k) => `${ITEMS[k].emoji} ${ITEMS[k].name}`).join(' et ');
   openModal(`

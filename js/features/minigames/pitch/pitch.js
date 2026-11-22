@@ -100,7 +100,7 @@ function renderPitch() {
   const stage =
     r.ask === 'melody'
       ? `<div class="pitch-melody" id="pitch-stage" data-ask="melody">${r.notes.map((m, i) => `<span class="pm-dot" data-i="${i}" data-m="${m}" style="bottom:${8 + ((m - 60) / 24) * 76}%"></span>`).join('')}</div>`
-      : `<div class="pitch-bells" id="pitch-stage" data-ask="${r.ask}">${r.notes.map((m, i) => `<button class="bell" data-i="${i}" data-m="${m}" aria-label="Cloche ${i + 1}">${bellSVG(m, i)}<b class="bell-n"></b></button>`).join('')}</div>`;
+      : `<div class="pitch-bells" id="pitch-stage" data-ask="${r.ask}">${r.notes.map((m, i) => `<button class="bell" data-i="${i}" data-m="${m}" aria-label="Cloche ${i + 1}">${bellSVG(m)}<b class="bell-n"></b></button>`).join('')}</div>`;
   openModal(`
     ${gameHeader('🔔 Grave ou aigu ?', title, say)}
     ${livesBar()}
@@ -180,7 +180,7 @@ function renderPitch() {
         pos++;
         if (r.ask === 'order') {
           b.classList.add('done');
-          b.querySelector('.bell-n').textContent = pos;
+          b.querySelector('.bell-n').textContent = String(pos);
           const p = document.getElementById('pitch-progress');
           if (p) p.innerHTML = progressDots(pos, target.length);
         }

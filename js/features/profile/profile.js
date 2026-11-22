@@ -70,7 +70,7 @@ function openWelcome() {
       playSound('tap');
     };
   });
-  document.getElementById('name-input').value = state.name || '';
+  /** @type {HTMLInputElement} */ (document.getElementById('name-input')).value = state.name || '';
   const p0 = currentProfile();
   pendingGender = (p0 && p0.gender) || '';
   pendingCompanion = (p0 && p0.companion) || null;
@@ -79,7 +79,7 @@ function openWelcome() {
   document.getElementById('welcome').classList.add('show');
 }
 function closeWelcome() {
-  const input = document.getElementById('name-input');
+  const input = /** @type {HTMLInputElement} */ (document.getElementById('name-input'));
   const name = cleanName(input.value);
   // le prénom est obligatoire : on le demande en douceur, à voix haute
   if (!name) {

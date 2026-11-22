@@ -42,7 +42,7 @@ function setSacTab(tab) {
 function renderBadge() {
   const b = document.getElementById('sac-badge');
   b.hidden = state.newItems === 0;
-  b.textContent = state.newItems;
+  b.textContent = String(state.newItems);
 }
 
 /* ---------- Sac ---------- */

@@ -8,6 +8,7 @@ Jeu éducatif en français pour une enfant de 6 ans (mathématiques, lecture, lo
 - Vérifier avant de terminer : `bun run check` (obligatoire, doit passer) : garde des lockfiles, lint et format, docs, tests en parallèle (environ 20 s).
 - Tests ciblés : `bun run test jardin` (filtre sur le nom des suites).
 - Avant une PR : `bun run verify` (`check` puis les tests holdout de `test/holdout/`). La CI GitHub lance la même chose ; `ci-ok` doit être vert pour merger.
+- Types : `bun run typecheck` (TypeScript 7 vérifie le JavaScript, [ADR 0003](docs/adr/0003-typescript.md), 0,1 s), déjà dans `check` et dans le hook de l'agent.
 - Mettre en forme : `bun run format` (le hook de l'agent et le commit le font déjà).
 - Après un ajout ou un déplacement de fichier : `bun run sync` (régénère `index.html` et `sw.js`).
 - Lancer en local : `bun run start`, puis `http://localhost:8080` (jamais `file://`, les modules ES ne chargent pas).
@@ -34,6 +35,7 @@ Jeu éducatif en français pour une enfant de 6 ans (mathématiques, lecture, lo
 - **Fin de mission : `winSoon()`** du moteur (`WIN_DELAY`, ou `WIN_DELAY_LONG` si le jeu finit sur une animation), jamais `setTimeout(onMissionWin, …)` dans un mini-jeu (`test/gardes.test.js`).
 - **Bloc vide** : interdit par `no-empty`, sauf avec un commentaire qui dit pourquoi l'échec est sans gravité (`catch { // … }`).
 - **État lu par les tests** : les tests lisent l'état du jeu par son nom (`ev('gameSolution')`). Une variable qui ne sert qu'aux tests porte `// oxlint-disable-next-line no-unused-vars -- lu par les tests` : ne pas la supprimer.
+- **Types en JSDoc** (pas de fichiers `.ts`, pas de build) : un champ ou un bouton s'annote à sa déclaration (`/** @type {HTMLInputElement} */ (…)`), un point d'accroche a son type, un nom ne change pas de type (un `Set` et un tableau ont deux noms). Jamais `any` ni `@ts-ignore`.
 - **Lint** : corriger le code plutôt que désactiver une règle. Toute exception `oxlint-disable` dit pourquoi, sur la même ligne. Les règles encore désactivées sont suivies par la track `lint-regles-completes`.
 - Commentaires en français, qui expliquent le *pourquoi*. Styleguides : [JavaScript](conductor/code_styleguides/javascript.md), [HTML et CSS](conductor/code_styleguides/html-css.md).
 - Textes (docs, commentaires, PR) en français, termes techniques anglais standards, **pas de tirets cadratins**.
