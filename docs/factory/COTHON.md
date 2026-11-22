@@ -1,6 +1,6 @@
 # cothon dans ce projet
 
-Version : 0.7.1
+Version : 0.8.0
 Appliqué le : 2026-11-22
 Profil : petit projet, script, jeu HTML (playbook 9) ; étapes 3 à 5 hors profil (ADR 0006)
 Étapes installées : 0, 1, 2
