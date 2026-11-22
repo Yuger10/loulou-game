@@ -19,6 +19,9 @@ Sauvegarde dans `localStorage` (versionnée, migration automatique).
 **Ne pas perdre la partie** : panneau des joueurs (bouton avec l'avatar, en haut à gauche) → 💾 *Sauvegarde* : enregistrer un fichier, copier un code de transfert pour un autre appareil, restaurer. Installer le jeu sur l'écran d'accueil évite que Safari efface la partie après 7 jours sans visite.
 Le mode hors-ligne et le stockage protégé demandent `https://` : c'est le cas sur l'adresse GitHub Pages.
 
+## Pour les agents (et les humains pressés)
+[`AGENTS.md`](AGENTS.md) : commandes, architecture, conventions, interdits et définition de « terminé ». `CLAUDE.md` ne fait que l'importer.
+
 ## Tester
 ```bash
 bun install          # bun seulement (version épinglée dans package.json) ; npm, yarn et pnpm sont refusés par `check`
