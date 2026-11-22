@@ -95,6 +95,8 @@ Les agents copient ce qu'ils voient. Chaque point est mesuré sur `js/`.
 
    Proposition : un script `npm run release` et un check CI « le cache de `sw.js` a changé si le code a changé ».
 
+   **Corrigé le 22 novembre 2026** : la liste des tests n'est plus dans `package.json` (le lanceur les trouve, étape 2) ; `bun run release patch|track "résumé"` fait la partie mécanique (version, `sync`, ligne du TODO, section du PRD à compléter) ; `test/update.test.js` vérifie déjà que le cache et la version disent la même chose. Le check CI « le cache a changé si le code a changé » n'est pas retenu : avec le service worker en réseau d'abord, un oubli de version n'empêche pas la mise à jour, il change seulement le numéro affiché.
+
 Écart mineur, non retenu dans le top 5 : deux façons d'attacher un handler (`x.onclick =` 188 fois, `addEventListener` 47 fois). Les 2 095 couleurs hexadécimales en dur sont presque toutes dans les dessins SVG : ce n'est pas un problème.
 
 ## 8. Zones sensibles proposées

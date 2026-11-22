@@ -12,7 +12,8 @@
     "inventaire": "node test/tools/globals.js $(node -e \"console.log(require('./js/slices.cjs').SLICES.flatMap(s=>s.files).join(' '))\")",
     "sync": "node test/tools/sync.js",
     "sw": "node test/tools/sync.js",
-    "prepare": "lefthook install"
+    "prepare": "lefthook install",
+    "release": "node test/tools/release.js"
   },
   "devDependencies": {
     "acorn": "^8.19.0",
