@@ -9,6 +9,8 @@
     "docs": "bash test/tools/check-docs.sh",
     "start": "python3 -m http.server 8080",
     "test": "node test/tools/run.js",
+    "test:holdout": "node test/tools/run.js --holdout",
+    "verify": "bun run check && bun run test:holdout",
     "inventaire": "node test/tools/globals.js $(node -e \"console.log(require('./js/slices.cjs').SLICES.flatMap(s=>s.files).join(' '))\")",
     "sync": "node test/tools/sync.js",
     "sw": "node test/tools/sync.js",

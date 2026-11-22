@@ -7,6 +7,7 @@ Jeu éducatif en français pour une enfant de 6 ans (mathématiques, lecture, lo
 - Installer : `bun install` (installe aussi le hook git). **bun seulement** : npm, yarn et pnpm sont interdits, `check` échoue si leur lockfile apparaît.
 - Vérifier avant de terminer : `bun run check` (obligatoire, doit passer) : garde des lockfiles, lint et format, docs, tests en parallèle (environ 20 s).
 - Tests ciblés : `bun run test jardin` (filtre sur le nom des suites).
+- Avant une PR : `bun run verify` (`check` puis les tests holdout de `test/holdout/`). La CI GitHub lance la même chose ; `ci-ok` doit être vert pour merger.
 - Mettre en forme : `bun run format` (le hook de l'agent et le commit le font déjà).
 - Après un ajout ou un déplacement de fichier : `bun run sync` (régénère `index.html` et `sw.js`).
 - Lancer en local : `bun run start`, puis `http://localhost:8080` (jamais `file://`, les modules ES ne chargent pas).
@@ -42,6 +43,7 @@ Jeu éducatif en français pour une enfant de 6 ans (mathématiques, lecture, lo
 - Modifier à la main `sw.js` et `index.html` (générés par `bun run sync`).
 - Assouplir la garde d'architecture (`test/slices.test.js`, `test/tools/boundaries.js`, `js/slices.cjs`) pour faire passer du code.
 - Désactiver, affaiblir ou supprimer un test existant pour faire passer `check`.
+- Modifier une **zone protégée** : les tests holdout (`test/holdout/`, écrits ou validés par Amrou) et la CI (`.github/`). La CI échoue sans l'étiquette `human:approved`, posée par Amrou seul.
 - Changer la forme de la sauvegarde sans augmenter `SAVE_VERSION` ni écrire la migration.
 - Ajouter une dépendance (`package.json`, `bun.lock`) sans le demander.
 - Toucher aux dessins des personnages et compagnons (`characters-art.js`, SVG) sans demande explicite.

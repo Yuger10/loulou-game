@@ -1,0 +1,81 @@
+# CI (factory, phase 2 ; skill cothon:speeding-up-ci). Seul check obligatoire
+# de la branche main : `ci-ok`. Actions épinglées sur un commit (tag en
+# commentaire). Budgets de temps : timeout-minutes, un dépassement est un bug.
+name: ci
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, labeled, unlabeled]
+  push:
+    branches: [main]
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    name: lint, format, docs
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+        with:
+          bun-version-file: package.json
+      - run: bun install --frozen-lockfile
+      - run: node test/tools/lockfile.js
+      - run: bun run lint
+      - run: bun run docs
+
+  test:
+    name: tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+        with:
+          bun-version-file: package.json
+      - run: bun install --frozen-lockfile
+      - run: bun run test
+      - run: bun run test:holdout
+
+  guard:
+    name: zones sensibles
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+      - id: zones
+        env:
+          PR_LABELS: ${{ join(github.event.pull_request.labels.*.name, ',') }}
+        run: node test/tools/sensitive.js origin/${{ github.base_ref }} || true
+      # l'étiquette d'abord, même si la PR est bloquée : c'est là qu'elle compte le plus
+      - if: steps.zones.outputs.sensitive == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh pr edit ${{ github.event.pull_request.number }} --add-label needs-human:sensitive
+      - if: steps.zones.outputs.blocked == 'true'
+        run: |
+          echo "Zone protégée (test/holdout/, .github/) modifiée sans l'étiquette human:approved."
+          exit 1
+
+  ci-ok:
+    name: ci-ok
+    needs: [lint, test, guard]
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 1
+    steps:
+      - if: contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled')
+        run: exit 1
