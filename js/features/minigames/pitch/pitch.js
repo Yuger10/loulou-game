@@ -3,7 +3,7 @@
    les ranger du grave à l'aigu, puis reconnaître une mélodie qui monte ou
    qui descend. Chaque note est aussi une cloche plus ou moins grande (la
    grande sonne grave, la petite sonne aigu) : on peut jouer sans le son.
-   Selon le palier (`pitchRound`, js/entities/difficulty/difficulty.js) :
+   Selon le palier (`pitchRound`, js/entities/difficulty/difficulty-s2.js) :
      high    2 cloches très éloignées : « laquelle sonne le plus aigu (grave) ? »
      order   3, puis 4, puis 5 cloches à ranger, de plus en plus proches
      melody  « la mélodie monte ou descend ? » (palier 5)
