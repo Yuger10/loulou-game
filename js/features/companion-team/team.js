@@ -44,9 +44,15 @@ import { bindQuit, gameHeader } from '../screen/index.js';
 const TEAM_LEVEL = 10;
 const TEAM_MATES_MAX = 2;
 
+/**
+ * La place d'un compagnon dans l'équipe (détail des champs juste en dessous) ;
+ * `after` = le champ de la partie qui le fait rejoindre l'équipe sans rencontre.
+ * @typedef {{ home: string, role: string, icon: string, say: string[], demo: string, after?: string }} TeamRole
+ */
 // home : l'île de la rencontre ; role : la spécialité ; say : 2 phrases de présentation ;
 // demo : une petite démonstration en image. Lili (Monde des Boîtes) et
 // Grisou (fin de la saison 2) ne se rencontrent qu'une fois leur île livrée.
+/** @type {Record<string, TeamRole>} */
 const TEAM_ROLES = {
   perle: {
     home: 'lagon',
@@ -145,6 +151,7 @@ function teamIsOpen() {
 function teamKnownIds() {
   return TEAM_ORDER.filter((id) => COMPANIONS[id] && TEAM_ROLES[id]);
 }
+/** @param {string} id */
 function teamHasMet(id) {
   return id === teamPrincipal() || teamState().met.includes(id);
 }
@@ -155,11 +162,13 @@ function teamMates() {
     .slice(0, TEAM_MATES_MAX);
 }
 // l'île où l'on rencontre ce compagnon, si elle existe déjà dans le jeu
+/** @param {string} id @returns {string | null} */
 function teamHomeOf(id) {
   const r = TEAM_ROLES[id];
   return r && WORLDS[r.home] ? r.home : null;
 }
 // un compagnon à rencontrer sur cette île (jamais le principal, ni un déjà rencontré)
+/** @param {string} world */
 function teamEncounterOn(world) {
   if (!teamIsOpen()) return null;
   return teamKnownIds().find((id) => teamHomeOf(id) === world && !teamHasMet(id) && !TEAM_ROLES[id].after) || null;
@@ -203,11 +212,13 @@ if (typeof document !== 'undefined')
 function teamDue() {
   return level() >= TEAM_LEVEL && !teamIsOpen();
 }
+/** @param {() => void} [onDone] appelée une fois l'écran fermé */
 function maybeTeamOpening(onDone) {
   if (party.active || !teamDue()) return false;
   openTeamOpening(onDone);
   return true;
 }
+/** @param {() => void} [onDone] */
 function openTeamOpening(onDone) {
   const p = teamPrincipal(),
     c = COMPANIONS[p];
@@ -246,19 +257,23 @@ function openTeamOpening(onDone) {
 // une « visite » = arriver sur une île (voyage, ou début de partie) ;
 // « Plus tard » ne repropose la rencontre qu'à la visite suivante
 let teamVisit = 0;
+/** @type {Record<string, number>} la visite où l'enfant a dit « Plus tard », par compagnon */
 const teamLater = {};
 function teamNewVisit() {
   teamVisit++;
 }
+/** @param {string} [worldArg] l'île, par défaut l'île courante */
 function maybeTeamEncounter(worldArg) {
   const world = worldArg || currentWorld;
   if (party.active || race.active) return false;
-  if (document.getElementById('overlay').classList.contains('show')) return false;
+  // la fenêtre (#overlay) fait partie de la page (index.html)
+  if (/** @type {HTMLElement} */ (document.getElementById('overlay')).classList.contains('show')) return false;
   const id = teamEncounterOn(world);
   if (!id || teamLater[id] === teamVisit) return false;
   openTeamEncounter(id);
   return true;
 }
+/** @param {string} id */
 function openTeamEncounter(id) {
   const c = COMPANIONS[id],
     r = TEAM_ROLES[id];
@@ -287,6 +302,7 @@ function openTeamEncounter(id) {
   });
 }
 // le compagnon rejoint l'équipe : équipier s'il reste une place, sinon au repos
+/** @param {string} id */
 function teamWelcome(id) {
   const t = teamState();
   if (!t.met.includes(id)) t.met.push(id);
@@ -306,6 +322,7 @@ function teamWelcome(id) {
 }
 
 /* ---- composer l'équipe ---- */
+/** @param {string} id */
 function teamAddMate(id) {
   const t = teamState();
   if (id === teamPrincipal() || !teamHasMet(id) || teamMates().includes(id)) return false;
@@ -313,11 +330,13 @@ function teamAddMate(id) {
   t.mates = teamMates().concat(id);
   return true;
 }
+/** @param {string} id */
 function teamRest(id) {
   const t = teamState();
   t.mates = teamMates().filter((x) => x !== id);
 }
 // changer de principal : l'ancien prend la place du nouveau dans l'équipe
+/** @param {string} id */
 function teamMakePrincipal(id) {
   const old = teamPrincipal(),
     p = currentProfile();
@@ -335,6 +354,7 @@ function teamMakePrincipal(id) {
 }
 
 /* ---- la fenêtre « Mon équipe » ---- */
+/** @param {string} id @param {'main' | 'mate' | 'rest'} kind */
 function teamCard(id, kind) {
   const c = COMPANIONS[id],
     r = TEAM_ROLES[id] || { icon: '💡', role: 'Indices' };
@@ -351,6 +371,7 @@ function teamCard(id, kind) {
     ${actions ? `<span class="tw-actions">${actions}</span>` : ''}
   </div>`;
 }
+/** @param {string} [note] le message de l'en-tête */
 function openTeamWindow(note) {
   const p = teamPrincipal(),
     c = COMPANIONS[p];
@@ -386,6 +407,7 @@ function openTeamWindow(note) {
     }
   `);
   bindQuit();
+  /** @param {string} [msg] */
   const redraw = (msg) => {
     save();
     renderTeamHeads();
@@ -398,14 +420,16 @@ function openTeamWindow(note) {
   document.querySelectorAll('[data-team-add]').forEach((b) =>
     setHandler(b, 'click', () => {
       playSound('tap');
-      const id = b.dataset.teamAdd;
+      // le sélecteur [data-team-add] garantit l'attribut
+      const id = /** @type {string} */ (b.dataset.teamAdd);
       if (teamAddMate(id)) redraw(`${COMPANIONS[id].name} rejoint ton équipe !`);
     }),
   );
   document.querySelectorAll('[data-team-rest]').forEach((b) =>
     setHandler(b, 'click', () => {
       playSound('tap');
-      const id = b.dataset.teamRest;
+      // le sélecteur [data-team-rest] garantit l'attribut
+      const id = /** @type {string} */ (b.dataset.teamRest);
       teamRest(id);
       redraw(`${COMPANIONS[id].name} se repose.`);
     }),
@@ -413,7 +437,8 @@ function openTeamWindow(note) {
   document.querySelectorAll('[data-team-main]').forEach((b) =>
     setHandler(b, 'click', () => {
       playSound('tap');
-      const id = b.dataset.teamMain;
+      // le sélecteur [data-team-main] garantit l'attribut
+      const id = /** @type {string} */ (b.dataset.teamMain);
       if (teamMakePrincipal(id)) {
         refreshAll();
         redraw(`${COMPANIONS[id].name} est ton compagnon principal !`);
@@ -431,6 +456,7 @@ function teamOnSessionStart() {
   return maybeTeamEncounter(currentWorld);
 }
 // arrivée sur une autre île (js/features/island/island-view.js)
+/** @param {string} world */
 function teamOnTravel(world) {
   teamNewVisit();
   setTimeout(() => maybeTeamEncounter(world), 1400); // après l'annonce de l'île

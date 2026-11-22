@@ -10,6 +10,7 @@
 const GRISOU_COLORS = ['#B9C2CE', '#C9C3E6', '#D8C6F2', '#E6CDF6', '#F3D7F5'];
 const GRISOU_RAINBOW = ['#FF8FB8', '#FFD95A', '#6ED38C', '#6FB8F5', '#BFA3EC', '#FF6F61'];
 
+/** @param {number} freed les îles de la saison 2 libérées */
 function grisouSVG(freed) {
   const n = Math.max(0, Number(freed) || 0);
   // les 6 îles libérées (le grand final) : tout coloré, avec des étoiles

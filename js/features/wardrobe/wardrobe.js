@@ -33,6 +33,22 @@ import { confetti, playSound, setHandler, showToast, speak } from '../../shared/
 import { spendCoins } from '../gains/index.js';
 import { addCoins } from '../wallet/index.js';
 
+/** @typedef {import('../../entities/game-state/index.js').Look} Look */
+/** @typedef {import('../../entities/companion/index.js').Companion} Companion */
+/**
+ * Un habit : `slot` = l'emplacement (une clé de Look) ; il s'achète (`price`),
+ * se gagne après N missions (`unlock`) ou s'offre à une fête (`season`).
+ * `colors` = les couleurs de tenue ou de cape qu'il donne au personnage dessiné.
+ * @typedef {{
+ *   slot: string,
+ *   name: string,
+ *   price?: number,
+ *   unlock?: number,
+ *   season?: string,
+ *   colors?: Partial<Companion>,
+ * }} WardrobeItem
+ */
+
 const LOOK_SLOTS = [
   { id: 'tete', emoji: '🎩', name: 'Tête' },
   { id: 'visage', emoji: '👓', name: 'Visage' },
@@ -41,6 +57,7 @@ const LOOK_SLOTS = [
 ];
 
 // price : en pièces ; unlock : gagné automatiquement après N missions
+/** @type {Record<string, WardrobeItem>} */
 const WARDROBE = {
   noeud: { slot: 'tete', name: 'Nœud', price: 8 },
   casquette: { slot: 'tete', name: 'Casquette', price: 10 },
@@ -78,16 +95,25 @@ const WARDROBE = {
   c_noir: { slot: 'cape', name: 'Cape noire', price: 16, colors: { cape: '#3A4150', capeDark: '#1C212B' } },
   c_or: { slot: 'cape', name: 'Cape dorée', unlock: 40, colors: { cape: '#FFCB4C', capeDark: '#C98A14' } },
 };
+/** @type {Look} */
 const EMPTY_LOOK = { tete: null, visage: null, tenue: null, cape: null };
 // Avatars emoji qui sont un VISAGE de face : on peut y poser chapeau et
 // lunettes. Les autres (fusée, drapeau, héros en pied…) gardent leur
 // dessin ; les personnages dessinés, eux, s'habillent entièrement.
 const LOOK_FACE_EMOJI = ['👧', '👦', '🧒', '👩‍🦰', '👨‍🦰', '👩‍🦱', '👨‍🦱', '🤖', '🦁', '🐱'];
+/** @param {string} av */
 function lookFits(av) {
   return isArtAvatar(av) || LOOK_FACE_EMOJI.includes(av);
 }
 
 /* ---- dessin des accessoires (repère « tête ») ---- */
+/**
+ * @param {number} cx
+ * @param {number} cy
+ * @param {number} r
+ * @param {string} fill
+ * @param {string} [stroke]
+ */
 function lookStar(cx, cy, r, fill, stroke) {
   const pts = [];
   for (let i = 0; i < 10; i++) {
@@ -97,6 +123,7 @@ function lookStar(cx, cy, r, fill, stroke) {
   }
   return `<path d="M${pts.join(' L')} Z" fill="${fill}"${stroke ? ` stroke="${stroke}" stroke-width="2" stroke-linejoin="round"` : ''}/>`;
 }
+/** @type {Record<string, () => string>} */
 const LOOK_ART = {
   noeud: () => `<g transform="translate(80 -6) rotate(18)">
       <path d="M0 0 C-10 -15 -27 -11 -25 2 C-23 15 -8 10 0 0Z" fill="#FF6FA5" stroke="#D94A86" stroke-width="2.5" stroke-linejoin="round"/>
@@ -191,6 +218,7 @@ const LOOK_ART = {
       <path d="M11 47 L0 43 M89 47 L100 43" stroke="#1E2A38" stroke-width="4.5" stroke-linecap="round"/>
       <path d="M17 51 L27 51 M59 51 L69 51" stroke="#fff" stroke-width="3.2" opacity=".55" stroke-linecap="round"/>`,
   coeurs: () => {
+    /** @param {number} x */
     const h = (x) =>
       `<path transform="translate(${x} 56) scale(1.45)" d="M0 7 C-15 -3 -11 -16 0 -8 C11 -16 15 -3 0 7Z" fill="#FF5F8F" fill-opacity=".9" stroke="#D63C6E" stroke-width="2.2" stroke-linejoin="round"/>`;
     return (
@@ -213,9 +241,10 @@ const LOOK_ART = {
 };
 
 // Accessoires portés (visage, puis tête par-dessus)
+/** @param {Partial<Look> | null} [look] */
 function lookAccessoriesSVG(look) {
   if (!look) return '';
-  return ['visage', 'tete']
+  return /** @type {Array<keyof Look>} */ (['visage', 'tete'])
     .map((s) => {
       const id = look[s],
         art = id && WARDROBE[id] && LOOK_ART[id];
@@ -224,36 +253,44 @@ function lookAccessoriesSVG(look) {
     .join('');
 }
 // Couleurs de la tenue et de la cape (personnages dessinés)
+/** @param {Partial<Look> | null} [look] @returns {Partial<Companion>} */
 function lookColors(look) {
+  /** @type {Partial<Companion>} */
   const out = {};
-  ['tenue', 'cape'].forEach((s) => {
-    const it = look && look[s] && WARDROBE[look[s]];
+  /** @type {Array<keyof Look>} */ (['tenue', 'cape']).forEach((s) => {
+    const id = look && look[s];
+    const it = id && WARDROBE[id];
     if (it && it.colors) Object.assign(out, it.colors);
   });
   return out;
 }
 
 /* ---- ce que l'enfant possède et porte ---- */
+/** @returns {Look} */
 function currentLook() {
   return Object.assign({}, EMPTY_LOOK, state.look || {});
 }
+/** @param {string} id */
 function ownsLookItem(id) {
   const it = WARDROBE[id];
   if (!it) return false;
   if (it.unlock) return (state.missions || 0) >= it.unlock;
   return (state.wardrobe || []).includes(id);
 }
+/** @param {string} av */
 function lookSlotsFor(av) {
   if (!lookFits(av)) return [];
   const art = isArtAvatar(av);
   const hero = art && COMPANIONS[av.slice(4)].style === 'hero';
   return LOOK_SLOTS.filter((s) => (!s.artOnly || art) && (!s.heroOnly || hero));
 }
+/** @param {string} slot une clé de Look @param {string | null} [id] l'habit, rien pour retirer */
 function wearLook(slot, id) {
   state.look = Object.assign(currentLook(), { [slot]: id || null });
   save();
   refreshLookEverywhere();
 }
+/** @param {string} id */
 function buyLookItem(id) {
   const it = WARDROBE[id];
   if (!it || ownsLookItem(id) || !it.price || state.coins < it.price) return false;
@@ -273,11 +310,13 @@ function refreshLookEverywhere() {
 }
 
 /* ---- l'onglet « Mon look » du sac ---- */
+/** @type {{ slot: string, id: string } | null} */
 let lookTry = null; // objet essayé, pas encore acheté : { slot, id }
 function clearLookTry() {
   lookTry = null;
 }
 let lookSlot = 'tete';
+/** @param {string} id */
 function lookStatusText(id) {
   const it = WARDROBE[id];
   if (ownsLookItem(id)) return '';
@@ -296,23 +335,30 @@ function renderLook() {
   const tryItem = lookTry && WARDROBE[lookTry.id];
   let action = '';
   if (tryItem) {
+    // lu seulement dans les deux dernières branches : ni fête ni déblocage, l'habit
+    // s'achète et a donc un prix (WARDROBE)
+    const price = /** @type {number} */ (tryItem.price);
     if (tryItem.season) {
       const se = FETES[tryItem.season];
       action = `<p class="look-msg">${se.emoji} ${tryItem.name} : un cadeau ${tryItem.season === 'anniversaire' ? 'le jour de ton anniversaire' : 'à ' + se.name}</p>`;
     } else if (tryItem.unlock) {
       const left = tryItem.unlock - (state.missions || 0);
       action = `<p class="look-msg">🔒 Encore <b>${left}</b> mission${left > 1 ? 's' : ''} pour gagner : ${tryItem.name}</p>`;
-    } else if (state.coins >= tryItem.price) {
-      action = `<button class="btn-primary look-buy" id="look-buy">Acheter : ${tryItem.name} · 🪙 ${tryItem.price}</button>`;
+    } else if (state.coins >= price) {
+      action = `<button class="btn-primary look-buy" id="look-buy">Acheter : ${tryItem.name} · 🪙 ${price}</button>`;
     } else {
-      const miss = tryItem.price - state.coins;
-      action = `<p class="look-msg">Il te manque <b>${miss}</b> pièce${miss > 1 ? 's' : ''} pour : ${tryItem.name} 🪙 ${tryItem.price}</p>`;
+      const miss = price - state.coins;
+      action = `<p class="look-msg">Il te manque <b>${miss}</b> pièce${miss > 1 ? 's' : ''} pour : ${tryItem.name} 🪙 ${price}</p>`;
     }
   }
   const items = Object.keys(WARDROBE).filter((k) => WARDROBE[k].slot === lookSlot);
+  /** @param {string | null} id l'habit, null pour « Rien » */
   const tile = (id) => {
     const it = id ? WARDROBE[id] : null;
-    const on = (worn[lookSlot] || null) === id && !(lookTry && lookTry.slot === lookSlot);
+    // lookSlot est ici une clé de Look (la grille « Personnage » n'a pas de tuiles)
+    const on =
+      (/** @type {Record<string, string | null>} */ (worn)[lookSlot] || null) === id &&
+      !(lookTry && lookTry.slot === lookSlot);
     const trying = lookTry && lookTry.id === id;
     const owned = !id || ownsLookItem(id);
     const lk = Object.assign({}, worn, { [lookSlot]: id });
@@ -349,7 +395,8 @@ function renderLook() {
   el.querySelectorAll('[data-lslot]').forEach((b) =>
     setHandler(b, 'click', () => {
       playSound('tap');
-      lookSlot = b.dataset.lslot;
+      // le sélecteur [data-lslot] garantit l'attribut
+      lookSlot = /** @type {string} */ (b.dataset.lslot);
       lookTry = null;
       renderLook();
     }),
@@ -365,12 +412,14 @@ function renderLook() {
         if (it) speak(it.name);
       } else {
         lookTry = { slot: lookSlot, id };
+        // les tuiles ne portent que des ids de WARDROBE : l'habit existe
+        const w = /** @type {WardrobeItem} */ (it);
         speak(
-          it.season
-            ? `${it.name}. Un cadeau de saison.`
-            : it.unlock
-              ? `${it.name}. À gagner après ${it.unlock} missions.`
-              : `${it.name}. ${it.price} pièces.`,
+          w.season
+            ? `${w.name}. Un cadeau de saison.`
+            : w.unlock
+              ? `${w.name}. À gagner après ${w.unlock} missions.`
+              : `${w.name}. ${w.price} pièces.`,
         );
       }
       renderLook();
@@ -379,7 +428,8 @@ function renderLook() {
   el.querySelectorAll('[data-av]').forEach((b) =>
     setHandler(b, 'click', () => {
       playSound('tap');
-      state.avatar = b.dataset.av;
+      // le sélecteur [data-av] garantit l'attribut
+      state.avatar = /** @type {string} */ (b.dataset.av);
       lookTry = null;
       save();
       refreshLookEverywhere();
@@ -394,7 +444,8 @@ function renderLook() {
       const from = el.querySelector('.look-preview');
       if (!it || !buyLookItem(id)) return;
       lookTry = null;
-      spendCoins(it.price, from);
+      // buyLookItem n'achète qu'un habit qui a un prix
+      spendCoins(/** @type {number} */ (it.price), from);
       playSound('coin');
       confetti();
       showToast(`✨ Nouveau look : ${it.name} !`);

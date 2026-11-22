@@ -15,16 +15,24 @@ import { playSound, setHandler, showToast, speak } from '../../shared/ui/index.j
 import { applySeason } from '../seasons/index.js';
 import { openStoryChapter, storySolved } from '../story/index.js';
 
+// l'en-tête (pastille d'avatar, prénom) fait partie de la page (index.html)
 function renderProfile() {
-  document.querySelector('#avatar-pill .av').innerHTML = avatarHTML(state.avatar, state.look);
+  /** @type {HTMLElement} */ (document.querySelector('#avatar-pill .av')).innerHTML = avatarHTML(
+    state.avatar,
+    state.look,
+  );
   emit('ui:backup-reminder');
   applySeason(); // anniversaire : propre à chaque joueur
-  document.getElementById('player-name').textContent = state.name || 'Toi';
+  /** @type {HTMLElement} */ (document.getElementById('player-name')).textContent = state.name || 'Toi';
   // toucher l'avatar et le prénom ouvre les Réglages (le petit ⚙️ l'indique)
-  document.getElementById('avatar-pill').setAttribute('aria-label', `Réglages de ${state.name || 'Toi'}`);
+  /** @type {HTMLElement} */ (document.getElementById('avatar-pill')).setAttribute(
+    'aria-label',
+    `Réglages de ${state.name || 'Toi'}`,
+  );
 }
 let pendingAvatar = '👧';
 let pendingGender = '',
+  /** @type {string | null} */
   pendingCompanion = null,
   welcomeAllBuddies = false;
 // prénom, « tu es… » et compagnon sur l'écran d'accueil
@@ -35,7 +43,8 @@ function renderWelcomeExtra() {
   box.innerHTML = genderSelector(pendingGender) + companionSelector(comp, pendingGender, welcomeAllBuddies);
   box.querySelectorAll('.gender-opt').forEach((b) => {
     setHandler(b, 'click', () => {
-      pendingGender = b.dataset.gender;
+      // chaque .gender-opt porte data-gender (genderSelector)
+      pendingGender = /** @type {string} */ (b.dataset.gender);
       playSound('tap');
       // le compagnon suit le profil tant que l'enfant n'en a pas choisi un autre
       if (pendingCompanion && !companionsFor(pendingGender).includes(pendingCompanion) && !welcomeAllBuddies)
@@ -57,7 +66,8 @@ function renderWelcomeExtra() {
   );
 }
 function openWelcome() {
-  const grid = document.getElementById('avatar-grid');
+  // l'écran de bienvenue fait partie de la page (index.html)
+  const grid = /** @type {HTMLElement} */ (document.getElementById('avatar-grid'));
   pendingAvatar = state.avatar || '👧';
   grid.innerHTML = AVATARS.map(
     (a) =>
@@ -65,7 +75,8 @@ function openWelcome() {
   ).join('');
   grid.querySelectorAll('.avatar-opt').forEach((b) => {
     setHandler(b, 'click', () => {
-      pendingAvatar = b.dataset.av;
+      // chaque .avatar-opt porte data-av (juste au-dessus)
+      pendingAvatar = /** @type {string} */ (b.dataset.av);
       grid.querySelectorAll('.avatar-opt').forEach((x) => x.classList.toggle('sel', x === b));
       playSound('tap');
     });
@@ -76,7 +87,7 @@ function openWelcome() {
   pendingCompanion = (p0 && p0.companion) || null;
   welcomeAllBuddies = false;
   renderWelcomeExtra();
-  document.getElementById('welcome').classList.add('show');
+  /** @type {HTMLElement} */ (document.getElementById('welcome')).classList.add('show');
 }
 function closeWelcome() {
   const input = /** @type {HTMLInputElement} */ (document.getElementById('name-input'));
@@ -100,7 +111,7 @@ function closeWelcome() {
   }
   save();
   renderProfile();
-  document.getElementById('welcome').classList.remove('show');
+  /** @type {HTMLElement} */ (document.getElementById('welcome')).classList.remove('show');
   const extra = document.getElementById('welcome-extra');
   if (extra) extra.innerHTML = '';
   playSound('win');
@@ -121,6 +132,7 @@ onProfileRefresh(renderProfile);
 // une fête, une tenue… : l'en-tête se redessine à la demande
 on('ui:profile', renderProfile);
 
+/** @param {string | null} [sel] le profil choisi : 'f', 'm' ou '' */
 function genderSelector(sel) {
   const opts = [
     { v: 'f', emoji: '👧', label: 'Fille' },

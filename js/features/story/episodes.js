@@ -33,6 +33,11 @@ const EPISODE_AT = [2, 4, 7]; // missions réussies sur l'île pour chaque épis
 const EPISODE_REWARD = 3;
 
 // by : personnage qui raconte ; find : ce que l'on trouve (pour l'histoire)
+/**
+ * Un épisode : `by` = le personnage qui raconte, `find` = l'indice trouvé (emoji).
+ * @typedef {{ by: string, title: string, find: string, lines: string[] }} Episode
+ */
+/** @type {Record<string, Episode[]>} les épisodes, par île */
 const EPISODES = {
   lagon: [
     {
@@ -441,18 +446,22 @@ const EPISODES = {
   ],
 };
 
+/** @param {string} world */
 function storyMissionsOn(world) {
   return (state.storyMissions || {})[world] || 0;
 }
+/** @param {string} world */
 function episodesSeen(world) {
   return (state.storyEpisodes || {})[world] || 0;
 }
 // une mission réussie sur l'île (appelé par onMissionWin, en solo)
+/** @param {string} world */
 function noteStoryMission(world) {
   if (!EPISODES[world]) return;
   state.storyMissions = Object.assign({}, state.storyMissions || {}, { [world]: storyMissionsOn(world) + 1 });
 }
 // l'épisode à montrer maintenant sur cette île (son numéro), ou -1
+/** @param {string} world */
 function episodeDue(world) {
   const eps = EPISODES[world];
   if (!eps) return -1;
@@ -460,6 +469,7 @@ function episodeDue(world) {
   return k < eps.length && storyMissionsOn(world) >= EPISODE_AT[k] ? k : -1;
 }
 // pour l'écran de victoire : les missions vers le prochain épisode (●●○), ou ''
+/** @param {string} world */
 function storyProgressHTML(world) {
   const k = episodesSeen(world),
     eps = EPISODES[world];
@@ -485,6 +495,12 @@ function maybeStoryEpisode() {
 }
 
 // Une scène, ligne par ligne. fresh : vient d'être débloquée (pièces gagnées).
+/**
+ * @param {string} world
+ * @param {number} k le numéro de l'épisode
+ * @param {number} line la ligne à montrer
+ * @param {boolean} fresh
+ */
 function openEpisode(world, k, line, fresh) {
   const ep = EPISODES[world][k];
   const c = CHARACTERS[ep.by];

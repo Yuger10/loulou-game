@@ -42,11 +42,13 @@ import { addCoins } from '../wallet/index.js';
 import { ownsLookItem, WARDROBE } from '../wardrobe/index.js';
 import { teamIsOpen, teamMates, teamPrincipal, teamState } from './team.js';
 
+/** @param {string} id */
 function specialtyOn(id) {
   if (race.active || !COMPANIONS[id]) return false;
   return teamMates().includes(id) || (id === teamPrincipal() && teamIsOpen());
 }
 // en solo seulement (progression personnelle : défis, trésors, guide, tuteur)
+/** @param {string} id */
 function soloSpecialtyOn(id) {
   return !party.active && specialtyOn(id);
 }
@@ -61,17 +63,25 @@ function teamDay() {
 /* ---- la file de parole : une seule spécialité parle à la fois ---- */
 const TEAM_SAY_MS = 4200; // durée d'une bulle
 const HINT_HOLD_MS = 3500; // après un indice, les spécialités attendent
+/** @typedef {{ id: string, text: string, onTap: (() => void) | null }} TeamSayItem une bulle : qui parle, quoi, et ce que fait un toucher */
+// les minuteurs valent null quand il n'y en a pas : clearTimeout(null) est sans effet,
+// comme undefined (d'où la conversion de type à chaque appel)
+/** @type {TeamSayItem[]} */
 let teamSayQueue = [],
+  /** @type {TeamSayItem | null} */
   teamSaying = null,
+  /** @type {ReturnType<typeof setTimeout> | null} */
   teamSayTimer = null,
+  /** @type {ReturnType<typeof setTimeout> | null} */
   teamHold = null;
+/** @param {string} id @param {string} text @param {{ onTap?: () => void }} [opts] */
 function teamSay(id, text, opts = {}) {
   if (!COMPANIONS[id]) return;
   teamSayQueue.push({ id, text, onTap: opts.onTap || null });
   if (!teamSaying && !teamHold) teamSayNext();
 }
 function teamSayNext() {
-  clearTimeout(teamSayTimer);
+  clearTimeout(/** @type {number | undefined} */ (teamSayTimer));
   const el = teamSayEl();
   if (teamHold) return; // un indice parle : on attend
   const it = teamSayQueue.shift();
@@ -110,8 +120,8 @@ function teamSayEl() {
 function teamHintSpoken() {
   if (teamSaying) teamSayQueue.unshift(teamSaying);
   teamSaying = null;
-  clearTimeout(teamSayTimer);
-  clearTimeout(teamHold);
+  clearTimeout(/** @type {number | undefined} */ (teamSayTimer));
+  clearTimeout(/** @type {number | undefined} */ (teamHold));
   teamSayEl().classList.remove('show');
   teamHold = setTimeout(() => {
     teamHold = null;
@@ -121,8 +131,8 @@ function teamHintSpoken() {
 function teamSayClear() {
   teamSayQueue = [];
   teamSaying = null;
-  clearTimeout(teamSayTimer);
-  clearTimeout(teamHold);
+  clearTimeout(/** @type {number | undefined} */ (teamSayTimer));
+  clearTimeout(/** @type {number | undefined} */ (teamHold));
   teamHold = null;
   const el = document.getElementById('team-say');
   if (el) el.classList.remove('show');
@@ -130,6 +140,7 @@ function teamSayClear() {
 
 /* ---- Lili, Perle, Léo, Grisou : branchés sur les indices du moteur ---- */
 let grisouErrors = 0;
+/** @type {{ announced: boolean, primed: Record<string, boolean> }} */
 const leoSession = { announced: false, primed: {} };
 setHintPolicy({
   // Lili donne les indices des énigmes, et l'indice 2 (avec ses paillettes)
@@ -181,7 +192,8 @@ function perleDecorate() {
     setHandler(r, 'click', (e) => {
       e.stopPropagation();
       playSound('tap');
-      speak(b.dataset.say, { rate: 0.7 });
+      // le sélecteur [data-say] garantit l'attribut
+      speak(/** @type {string} */ (b.dataset.say), { rate: 0.7 });
     });
     b.insertAdjacentElement('afterend', r);
   });
@@ -194,6 +206,7 @@ function pauseAnnouncer() {
 }
 
 // Léo, dans le choix des jeux : un jeu « à travailler » proposé (1 fois par session)
+/** @param {string[]} keys les jeux proposés */
 function teamOnGamePicker(keys) {
   if (!soloSpecialtyOn('leo') || leoSession.announced) return;
   const k = keys.find((x) => needsPractice(x));
@@ -218,8 +231,10 @@ function samNextStep() {
   const q = ensureQuests();
   const quest = q && q.list.find((i) => i.n < i.goal);
   if (quest) {
-    if (quest.type === 'char' && CHARACTERS[quest.target]) {
-      const c = CHARACTERS[quest.target],
+    // lu seulement pour une mission « char », qui a toujours un personnage pour cible (quests.js)
+    const target = /** @type {string} */ (quest.target);
+    if (quest.type === 'char' && CHARACTERS[target]) {
+      const c = CHARACTERS[target],
         w = c.world || 'lagon';
       return {
         icon: '📜',
@@ -227,7 +242,7 @@ function samNextStep() {
         go: () => {
           if (currentWorld !== w) setWorld(w);
           switchView('ile');
-          openDialogue(quest.target);
+          openDialogue(target);
         },
       };
     }
@@ -323,6 +338,7 @@ function renderZapOffer() {
     speak("Zap : D'accord, une autre fois !");
   });
 }
+/** @param {string} [key] le jeu, par défaut un jeu déjà réussi */
 function zapStart(key) {
   teamDay().zap[currentWorld] = true;
   save();
@@ -357,6 +373,7 @@ function teamWinExtras() {
 }
 
 /* ---- Rose : ce qui manque à la collection, et où le trouver ---- */
+/** @param {string} tab l'onglet du Sac : 'sac', 'album' ou 'look' */
 function roseTipFor(tab) {
   if (tab === 'look') {
     const miss = Object.keys(WARDROBE).filter((k) => !WARDROBE[k].season && !ownsLookItem(k));
@@ -377,6 +394,7 @@ function roseTipFor(tab) {
     ? `Il te manque ${it.emoji} ${it.name} : ${CHARACTERS[giver].name} peut te l'offrir, sur l'île ${w.emoji} ${w.name} !`
     : `Il te manque ${it.emoji} ${it.name} : cherche sur l'île ${w.emoji} ${w.name} !`;
 }
+/** @param {string} tab */
 function roseTip(tab) {
   const host = document.getElementById(
     tab === 'sac' ? 'sac-content' : tab === 'album' ? 'album-content' : 'look-content',

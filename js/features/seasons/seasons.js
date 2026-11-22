@@ -37,6 +37,7 @@ import { closeModal, confetti, openModal, playSound, setHandler, showToast, spea
 import { addCoins } from '../wallet/index.js';
 import { currentLook, WARDROBE, wearLook } from '../wardrobe/index.js';
 
+/** @param {string | null} [id] la fête à prévisualiser, rien pour revenir à la vraie saison */
 function setSeasonPreview(id) {
   try {
     if (id) sessionStorage.setItem(SEASON_PREVIEW_KEY, id);
@@ -48,6 +49,7 @@ function setSeasonPreview(id) {
 }
 
 /* ---- ce qui tombe (ou monte) à l'écran ---- */
+/** @param {string} kind 'neige', 'feuilles' ou 'ballons' */
 function seasonFxHTML(kind) {
   const n = kind === 'ballons' ? 6 : 16;
   let out = '';
@@ -60,7 +62,9 @@ function seasonFxHTML(kind) {
   }
   return out;
 }
+/** @type {string | null | undefined} */
 let appliedSeason; // dernière saison appliquée (évite de tout redessiner)
+/** @param {boolean} [force] tout redessiner, même si la saison n'a pas changé */
 function applySeason(force) {
   const s = currentSeason();
   if (!force && s === appliedSeason) return;
@@ -95,6 +99,7 @@ function applySeason(force) {
 }
 
 /* ---- décor de l'île (repère du paysage : 480 × 360) ---- */
+/** @param {string | null} [id] la saison du moment */
 function seasonSceneSVG(id) {
   if (id === 'noel')
     return `<g class="ss ss-noel">
@@ -119,12 +124,14 @@ function seasonSceneSVG(id) {
       </g>
     </g>`;
   if (id === 'halloween') {
+    /** @param {number} x @param {number} y @param {number} s l'échelle */
     const pumpkin = (x, y, s) => `<g transform="translate(${x} ${y}) scale(${s})">
         <path d="M0 -20 C0 -27 4 -31 9 -31" stroke="#3F8F4E" stroke-width="4" fill="none" stroke-linecap="round"/>
         <ellipse rx="27" ry="21" fill="#FF8A3D" stroke="#C25E1E" stroke-width="2.5"/>
         <path d="M-10 -20 C-14 -7 -14 7 -10 20 M10 -20 C14 -7 14 7 10 20" stroke="#C25E1E" stroke-width="2" fill="none"/>
         <path d="M-14 -5 L-8 -12 L-3 -5 Z M3 -5 L8 -12 L14 -5 Z" fill="#6B3410"/>
         <path d="M-13 4 Q0 15 13 4 Q0 9 -13 4 Z" fill="#6B3410"/></g>`;
+    /** @param {number} x @param {number} y @param {number} s l'échelle @param {string} cls */
     const bat = (x, y, s, cls) => `<g class="ss-bat ${cls}" transform="translate(${x} ${y}) scale(${s})">
         <path d="M0 0 C-6 -8 -16 -10 -26 -4 C-20 -2 -18 2 -18 6 C-12 2 -6 4 0 8 C6 4 12 2 18 6 C18 2 20 -2 26 -4 C16 -10 6 -8 0 0 Z" fill="#4B3570"/>
         <circle cx="0" cy="1" r="6" fill="#4B3570"/><path d="M-4 -4 L-3 -9 L-1 -5 M4 -4 L3 -9 L1 -5" fill="#4B3570" stroke="#4B3570" stroke-width="1.5"/>
@@ -144,6 +151,7 @@ function seasonSceneSVG(id) {
         `<path d="M${x} ${y.toFixed(1)} L${x + 30} ${(y + 2).toFixed(1)} L${x + 15} ${(y + 26).toFixed(1)} Z" fill="${c}"/>`,
       );
     }
+    /** @param {number} x @param {number} y @param {string} c la couleur @param {number} d le décalage de l'animation */
     const balloon = (
       x,
       y,
@@ -168,6 +176,7 @@ function seasonSceneSVG(id) {
 }
 
 /* ---- le cadeau de la saison (une fois par saison et par enfant) ---- */
+/** @param {string} id @param {Date} [dArg] le jour, par défaut aujourd'hui */
 function seasonGiftKey(id, dArg) {
   const d = dArg || new Date();
   // Noël déborde sur janvier : c'est la saison de l'année de décembre
@@ -180,6 +189,7 @@ function seasonGiftDue() {
   if (party.active) return null;
   return (state.seasonGifts || {})[seasonGiftKey(id)] ? null : id;
 }
+/** @param {string} id */
 function giveSeasonGift(id) {
   const s = FETES[id];
   state.seasonGifts = Object.assign({}, state.seasonGifts || {}, { [seasonGiftKey(id)]: true });

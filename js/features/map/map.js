@@ -33,6 +33,7 @@ import { renderIslandCard, renderLevelPill, setWorld } from '../island/index.js'
    son niveau) tant qu'il n'est pas ouvert ; il a son fond pastel et ses
    nuages, et le bateau y devient une montgolfière. On voyage d'île en île à
    l'intérieur d'un archipel ; on passe de l'un à l'autre par l'onglet. */
+/** @type {number | null} */
 let mapSaison = null; // l'archipel affiché (par défaut, celui de l'île courante)
 function shownSaison() {
   const s = mapSaison || archipelagoOf(currentWorld);
@@ -41,6 +42,7 @@ function shownSaison() {
 
 // courbe douce passant par les îles d'un archipel (toutes, ou de l'île
 // `from` à l'île `to`) ; un morceau suit exactement le tracé complet
+/** @param {string[]} ids les îles de l'archipel @param {number} [from] @param {number} [to] */
 function mapRoutePath(ids, from, to) {
   const all = ids.map((id) => WORLDS[id].map);
   const pts = all.slice(from || 0, (to == null ? all.length - 1 : to) + 1);
@@ -55,6 +57,7 @@ function mapRoutePath(ids, from, to) {
   return d;
 }
 
+/** @param {number} saison l'archipel affiché */
 function renderMapTabs(saison) {
   const tabs = document.getElementById('map-tabs');
   if (!tabs) return;
@@ -98,7 +101,7 @@ function renderMap() {
   const reached = ids.reduce((m, id, i) => (worldUnlocked(id) ? i : m), 0);
   const hasNext = reached < ids.length - 1;
   el.classList.toggle('sky', !!arch.sky);
-  el.dataset.saison = saison;
+  el.dataset.saison = String(saison); // dataset ne garde que du texte (même valeur qu'avant)
 
   el.innerHTML = `
     <div class="sea" aria-hidden="true">
@@ -152,13 +155,15 @@ function renderMap() {
   // le véhicule est à l'île courante ; dans l'autre archipel, il attend à la première île
   const here = ids.includes(currentWorld);
   placeBoat(here ? currentWorld : ids[0], false);
-  document.getElementById('map-boat').classList.toggle('parked', !here);
+  // le bateau vient d'être dessiné dans la carte, juste au-dessus
+  /** @type {HTMLElement} */ (document.getElementById('map-boat')).classList.toggle('parked', !here);
   renderSamGuide(); // Sam le guide (js/features/companion-team)
 
   el.querySelectorAll('.map-island').forEach((b) => {
     setHandler(b, 'click', () => {
       playSound('tap');
-      const id = b.dataset.world;
+      // chaque .map-island porte data-world (juste au-dessus)
+      const id = /** @type {string} */ (b.dataset.world);
       if (!worldUnlocked(id)) {
         setWorld(id);
         return;
@@ -197,6 +202,7 @@ function renderMap() {
 /* La prochaine étape sous la carte : son nom, son niveau, les missions qui
    restent, et une barre qui part de la dernière île ouverte (elle se remplit
    à chaque île, au lieu de compter depuis le tout début). */
+/** @param {string} icon @param {string} label @param {string} name @param {number} lvl le niveau qui l'ouvre */
 function nextStepHTML(icon, label, name, lvl) {
   const from = missionsForLevel(lastOpenedLevel()),
     to = missionsForLevel(lvl);
@@ -209,6 +215,7 @@ function nextStepHTML(icon, label, name, lvl) {
         <div class="quest-bar" role="progressbar" aria-label="Vers ${name.replace(/"/g, '&quot;')}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${pct}"><i style="width:${pct}%"></i></div>`;
 }
 
+/** @param {string} id l'île @param {boolean} animated */
 function placeBoat(id, animated) {
   const boat = document.getElementById('map-boat');
   const w = WORLDS[id];
@@ -221,6 +228,7 @@ function placeBoat(id, animated) {
 }
 
 // on débarque sur une île (après le trajet, ou tout de suite depuis l'autre archipel)
+/** @param {string} id */
 function landOn(id) {
   setWorld(id);
   renderMap();
@@ -230,6 +238,7 @@ function landOn(id) {
 
 // le bateau navigue d'île en île avant de débarquer
 let sailing = false;
+/** @param {string} id */
 function sailTo(id) {
   if (sailing) {
     return;
@@ -274,6 +283,7 @@ registerView('carte', () => {
 on('ui:map', renderMap);
 
 // montrer un archipel (l'ouverture du Ciel, js/features/island)
+/** @param {number} saison */
 function showArchipelago(saison) {
   mapSaison = saison;
   renderMap();

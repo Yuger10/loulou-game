@@ -50,6 +50,16 @@ import { EPISODES, episodesSeen, openEpisode } from './episodes.js';
 import { openSeasonFinale } from './finale.js';
 import { grisouSVG } from './grisou.js';
 
+/** @typedef {{ e: string, ok?: boolean }} RiddleOption un choix (emoji) ; `ok` sur la bonne réponse */
+/** @typedef {{ q: string, tip: string, opts: RiddleOption[] }} Riddle une énigme et son indice */
+/**
+ * Le chapitre d'une île : `guide` = le personnage qui raconte, `reward` = les pièces de l'énigme.
+ * @typedef {{ guide: string, title: string, intro: string[], riddles: Riddle[], success: string, reward: number }} StoryChapter
+ */
+/** @typedef {{ guide: string, title: string, intro: string[] }} StoryPrologue le prologue d'une saison */
+/** @typedef {{ r: Riddle }} RiddleQuestion la question posée aux indices */
+
+/** @type {Record<string, StoryChapter>} les chapitres, par île */
 const STORY = {
   lagon: {
     guide: 'sirene',
@@ -411,6 +421,7 @@ const STORY = {
 
 /* Les prologues des saisons (v55) : lus à l'ouverture d'un archipel, avant le
    chapitre de sa première île. Pas d'énigme : c'est le début de l'histoire. */
+/** @type {Record<number, StoryPrologue>} les prologues, par saison */
 const STORY_PROLOGUES = {
   2: {
     guide: 'capucine',
@@ -428,6 +439,7 @@ function skyIslandsFreed() {
   return worldsOf(2).filter(storySolved).length;
 }
 
+/** @param {string} world */
 function storySolved(world) {
   return !!(state.storySolved && state.storySolved[world]);
 }
@@ -436,6 +448,7 @@ function storySolved(world) {
 // (mêmes raisons que `scheduleRetry` dans js/features/minigame-engine/engine.js et
 // `clearActiveTimer` pour le minuteur) — sinon une énigme en retard
 // pourrait réapparaître par-dessus une autre fenêtre déjà ouverte.
+/** @type {ReturnType<typeof setTimeout> | null} */
 let storyPendingRetry = null;
 function storyClearPendingRetry() {
   if (storyPendingRetry) {
@@ -443,6 +456,7 @@ function storyClearPendingRetry() {
     storyPendingRetry = null;
   }
 }
+/** @param {() => void} fn */
 function storyScheduleRetry(fn) {
   storyClearPendingRetry();
   storyPendingRetry = setTimeout(() => {
@@ -455,6 +469,7 @@ function storyScheduleRetry(fn) {
 // si elle n'a jamais été résolue. `onDone` est appelée une fois le
 // chapitre terminé (lu ou résolu) — utilisée pour enchaîner avec l'écran
 // habituel de nouvelle île (js/shared/ui.js `checkNewIsland`).
+/** @param {string} world @param {(() => void) | null} [onDone] */
 function openStoryChapter(world, onDone) {
   if (!STORY[world]) {
     if (onDone) onDone();
@@ -463,6 +478,7 @@ function openStoryChapter(world, onDone) {
   renderStoryIntro(world, 0, onDone);
 }
 
+/** @param {string} world @param {number} idx la ligne du récit @param {(() => void) | null} [onDone] */
 function renderStoryIntro(world, idx, onDone) {
   const ch = STORY[world];
   const last = idx >= ch.intro.length - 1;
@@ -503,6 +519,7 @@ function renderStoryIntro(world, idx, onDone) {
 }
 
 // Le prologue d'une saison (v55) : récit lu ligne à ligne, avec Grisou.
+/** @param {number} saison @param {(() => void) | null} [onDone] @param {number} [idxArg] la ligne du récit */
 function openSeasonPrologue(saison, onDone, idxArg) {
   const pr = STORY_PROLOGUES[saison];
   if (!pr) {
@@ -534,6 +551,7 @@ function openSeasonPrologue(saison, onDone, idxArg) {
   });
 }
 
+/** @param {string} world @param {number} idx l'énigme (modulo leur nombre) @param {(() => void) | null} [onDone] */
 function renderStoryRiddle(world, idx, onDone) {
   const ch = STORY[world];
   const r = ch.riddles[idx % ch.riddles.length];
@@ -546,7 +564,7 @@ function renderStoryRiddle(world, idx, onDone) {
   `);
   bindQuit();
   setHintQuestion('riddle', { r }, { choices: '.story-opt' });
-  document.querySelectorAll('.story-opt').forEach((/** @type {HTMLButtonElement} */ el, i) => {
+  /** @type {NodeListOf<HTMLButtonElement>} */ (document.querySelectorAll('.story-opt')).forEach((el, i) => {
     setHandler(el, 'click', () => {
       const o = opts[i];
       if (o.ok) {
@@ -568,6 +586,7 @@ function renderStoryRiddle(world, idx, onDone) {
   });
 }
 
+/** @param {string} world @param {(() => void) | null} [onDone] */
 function storyWin(world, onDone) {
   const ch = STORY[world];
   state.storySolved = state.storySolved || {};
@@ -606,6 +625,7 @@ function storyWin(world, onDone) {
   });
 }
 
+/** @param {RiddleQuestion} q */
 function riddleHints(q) {
   return [
     { say: `Écoute encore la devinette, un indice après l'autre : ${q.r.q}`, fx: { glow: '.puzzle-hint' } },
@@ -616,6 +636,7 @@ registerHints('riddle', riddleHints);
 
 // « 📖 Mon histoire » : relire n'importe quel chapitre déjà débloqué, rangé
 // par saison (v55) : le Lagon Magique, puis le Ciel des Rêves.
+/** @param {string} id l'île @param {number} i sa place dans la saison */
 function storyChapterRow(id, i) {
   const ch = STORY[id];
   if (!ch) return '';
@@ -674,7 +695,8 @@ function openStoryJournal() {
     setHandler(b, 'click', () => {
       playSound('tap');
       closeModal();
-      setTimeout(() => openStoryChapter(b.dataset.world), 200);
+      // le sélecteur [data-world] garantit l'attribut
+      setTimeout(() => openStoryChapter(/** @type {string} */ (b.dataset.world)), 200);
     });
   });
   const fin = document.querySelector('[data-finale]');
@@ -692,7 +714,8 @@ function openStoryJournal() {
   document.querySelectorAll('[data-ep]').forEach((b) => {
     setHandler(b, 'click', () => {
       playSound('tap');
-      const [w, k] = b.dataset.ep.split(':');
+      // le sélecteur [data-ep] garantit l'attribut
+      const [w, k] = /** @type {string} */ (b.dataset.ep).split(':');
       openEpisode(w, Number(k), 0, false);
     });
   });

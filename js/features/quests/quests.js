@@ -84,6 +84,11 @@ function ensureQuests() {
   return state.quests;
 }
 
+/**
+ * @param {string} type le type de mission ('collect', 'char', 'win', 'craft', 'sell', 'gift')
+ * @param {string | null} [target] l'objet ou le personnage concerné
+ * @param {number} [n]
+ */
 function questProgress(type, target, n = 1) {
   const q = ensureQuests();
   let changed = false;
@@ -131,6 +136,7 @@ function openQuestsModal() {
   renderQuests(document.getElementById('quests-modal'));
 }
 
+/** @param {HTMLElement | null} [target] le conteneur, par défaut #quests de l'accueil */
 function renderQuests(target) {
   const q = ensureQuests();
   const el = target || document.getElementById('quests');

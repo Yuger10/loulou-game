@@ -32,12 +32,14 @@ import { addCoins } from '../wallet/index.js';
 const FRIEND_MAX = 5; // cœurs affichés ; « meilleurs amis » à partir de là
 const FRIEND_REWARD = 10; // pièces offertes par un meilleur ami (une fois)
 
+/** @param {string} s */
 function giftHash(s) {
   let h = 0;
   for (const ch of s) h = (h * 31 + ch.charCodeAt(0)) >>> 0;
   return h;
 }
 // Les 2 objets préférés d'un personnage (toujours les mêmes)
+/** @param {string} charId @returns {string[]} */
 function favoritesOf(charId) {
   const c = CHARACTERS[charId];
   if (!c) return [];
@@ -49,9 +51,11 @@ function favoritesOf(charId) {
   const rest = pool.filter((k) => k !== a);
   return [a, rest[(h >>> 3) % rest.length]];
 }
+/** @param {string} charId */
 function friendPoints(charId) {
   return (state.friends || {})[charId] || 0;
 }
+/** @param {string} charId */
 function friendHearts(charId) {
   const n = Math.min(FRIEND_MAX, friendPoints(charId));
   return `<span class="friend-hearts" aria-label="Amitié : ${n} cœur${n > 1 ? 's' : ''} sur ${FRIEND_MAX}">${'❤️'.repeat(n)}${'<i>🤍</i>'.repeat(FRIEND_MAX - n)}</span>`;
@@ -60,7 +64,14 @@ function giftableItems() {
   return Object.keys(state.inventory || {}).filter((k) => countItem(k) > 0 && ALL_ITEMS[k]);
 }
 
+/** @typedef {{ fav: boolean, reward: number, bestFriends: boolean }} GiftResult ce qu'a donné un cadeau */
+
 // Donne l'objet : met à jour sac, amitié, missions. Renvoie ce qui s'est passé.
+/**
+ * @param {string} charId
+ * @param {string} key l'objet offert
+ * @returns {GiftResult | null} null si le personnage ou l'objet manque
+ */
 function giveGift(charId, key) {
   if (!CHARACTERS[charId] || countItem(key) <= 0) return null;
   const fav = favoritesOf(charId).includes(key);
@@ -79,6 +90,7 @@ function giveGift(charId, key) {
 }
 
 /* ---- le choix de l'objet ---- */
+/** @param {string} charId */
 function openGiftPicker(charId) {
   const c = CHARACTERS[charId];
   const favs = favoritesOf(charId);
@@ -120,8 +132,9 @@ function openGiftPicker(charId) {
   });
   document.querySelectorAll('[data-gift]').forEach((b) =>
     setHandler(b, 'click', () => {
-      const key = b.dataset.gift;
-      const from = b.querySelector('.gi-emoji').getBoundingClientRect();
+      // le sélecteur [data-gift] garantit l'attribut, et chaque bouton porte son .gi-emoji
+      const key = /** @type {string} */ (b.dataset.gift);
+      const from = /** @type {HTMLElement} */ (b.querySelector('.gi-emoji')).getBoundingClientRect();
       const res = giveGift(charId, key);
       if (res) showGiftThanks(charId, key, res, from);
     }),
@@ -129,6 +142,12 @@ function openGiftPicker(charId) {
 }
 
 /* ---- le merci ---- */
+/**
+ * @param {string} charId
+ * @param {string} key
+ * @param {GiftResult} res
+ * @param {DOMRect} [fromRect] d'où l'objet s'envole
+ */
 function showGiftThanks(charId, key, res, fromRect) {
   const c = CHARACTERS[charId],
     it = ALL_ITEMS[key];
