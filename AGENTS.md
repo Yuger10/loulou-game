@@ -22,7 +22,7 @@ Jeu éducatif en français pour une enfant de 6 ans (mathématiques, lecture, lo
 ## Comment on travaille
 - **Conductor** est la seule convention de spec et de plan : `conductor/tracks/<id>/spec.md` et `plan.md`, registre `conductor/tracks.md`. Cycle et livraison : [conductor/workflow.md](conductor/workflow.md).
 - Tests d'abord : le comportement attendu s'écrit dans `test/*.test.js` avant le code. Un nouveau fichier de test est trouvé tout seul par le lanceur.
-- Plusieurs sessions livrent en parallèle : le numéro de version s'attribue **à la livraison** (le suivant sur `main`), et on rebase sur `main` avant de pousser.
+- Plusieurs sessions livrent en parallèle : le numéro de version s'attribue **à la livraison** (le suivant sur `main`), et on rebase sur `main` avant de pousser. Une track livrée : `APP_VERSION` + 1 (67) ; une livraison sans track (outillage, correction) : `APP_PATCH` + 1 (66.1, 66.2). Voir `js/shared/lib/version.js`.
 - L'enfant d'abord : [conductor/product-guidelines.md](conductor/product-guidelines.md) (peu de texte et voix, pas de punition, anti-devinette, pas de minuteur avant le CP).
 
 ## Conventions

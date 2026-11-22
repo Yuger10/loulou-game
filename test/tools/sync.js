@@ -49,9 +49,9 @@ sw = sw.replace(/const FILES = \[[\s\S]*?\];/, (block) => {
   return 'const FILES = [\n' + lines.join(',\n') + '\n];';
 });
 // v66 : le cache porte la version du jeu (js/shared/lib/version.js)
-const version = (/const APP_VERSION = (\d+);/.exec(fs.readFileSync(file('js/shared/lib/version.js'), 'utf8')) || [])[1];
-if (!version) throw new Error('APP_VERSION introuvable dans js/shared/lib/version.js');
-sw = sw.replace(/const CACHE = 'lagon-v\d+';/, `const CACHE = 'lagon-v${version}';`);
+// (66.1 : versions sans track livrée, voir js/shared/lib/version.js)
+const version = require('./version.js').readVersion().label;
+sw = sw.replace(/const CACHE = 'lagon-v[\d.]+';/, `const CACHE = 'lagon-v${version}';`);
 fs.writeFileSync(file('sw.js'), sw);
 console.log(
   `index.html et sw.js alignés : ${scripts.length} modules, ${css.length} feuilles de style, cache lagon-v${version}`,

@@ -1627,3 +1627,32 @@ Les deux sont proposés dès 5 ans, sans minuteur. Le jeu de l'île est les poti
   4. puis « à jour (version 67) ».
 - Le jeu démarre toujours hors-ligne (244 fichiers en cache).
 - Cache `lagon-v66`.
+
+# v66.1 : la cuisine étoilée (outillage, vérifications et nettoyages)
+
+> **Demande du propriétaire :** installer le playbook « cuisine étoilée » (plugin cothon) sur le dépôt, puis « je veux des versions 66.xx pour ce genre de versioning, ou pas de track livrée ».
+
+## Les versions 66.x
+- **Version = 66, puis 66.1, 66.2… puis 67.** `APP_VERSION` augmente quand une track de contenu est livrée ; `APP_PATCH` augmente pour une livraison sans track (outillage, corrections, nettoyages) et revient à 0 à la version suivante (`js/shared/lib/version.js`).
+- L'espace parents affiche « Version 66.1 », le cache s'appelle `lagon-v66.1`, et les versions se comparent dans le bon ordre (66 < 66.1 < 66.2 < 66.10 < 67). Une tablette qui a encore `lagon-v66` se met à jour normalement.
+
+## Ce que voit l'enfant
+- **Un enregistrement raté ne passe plus inaperçu.** Si la partie ne peut pas être enregistrée (mémoire pleine, navigation privée), un message doux, lu à voix haute, une seule fois par session : « La partie n'a pas pu être enregistrée. Demande à un adulte. » Une restauration de sauvegarde incomplète le dit, au lieu d'afficher « Partie restaurée ».
+- **Espace parents :** une carte « ⚠️ Enregistrement » (heures, cause, conseil) quand c'est arrivé pendant la session.
+- **Prénoms sûrs :** un prénom ne peut plus contenir de HTML, ni tapé ni venu d'une sauvegarde importée.
+
+## Ce qui change pour le code (docs/factory/)
+- **Audit et mesures :** `docs/factory/AUDIT.md`, `docs/factory/SPEED.md`.
+- **bun** remplace npm ; **`bun run check`** est la seule commande à connaître : garde des lockfiles, lint et format, docs, tests.
+- **Tests en parallèle :** 108 s → 18 s ; une suite lente se découpe avec `// @shards N`.
+- **oxlint** (correctness et suspicious en erreur) et **oxfmt** (code reformaté, commit listé dans `.git-blame-ignore-revs`).
+- **Retour rapide :** hook de l'agent (format et lint de chaque fichier édité, environ 120 ms) et lefthook au commit.
+- **`AGENTS.md`** (source unique du contexte des agents), `CLAUDE.md` = `@AGENTS.md`, vérification de la doc dans `check`.
+- **Anti-patterns de l'audit corrigés :**
+  1. prénoms nettoyés à l'entrée (`cleanName`) ;
+  2. une seule source de hasard (`random()`), tests rejouables (`TEST_SEED`) ;
+  3. écritures signalées (`storageWrite`), blocs vides commentés.
+
+## Tests
+- `test/prenoms.test.js`, `test/hasard.test.js`, `test/stockage.test.js`, et `test/update.test.js` (versions 66.x).
+- Cache `lagon-v66.1`.
