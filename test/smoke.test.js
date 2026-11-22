@@ -1011,6 +1011,9 @@ setTimeout(() => {
       d.querySelector('#scene .deco[data-deco-key="palmier"]').dataset.vx === '300' &&
         ev('state.decoPos.palmier.y') === 300,
     );
+    // une mission du jour sur ce personnage (tirée au hasard) afficherait 📜 avant ❤️ :
+    // on termine les missions « personnage » pour que le test ne dépende pas du tirage
+    ev("ensureQuests().list.forEach((q) => { if (q.type === 'char') q.n = q.goal; })");
     ev('state.helped=null; markHelped("licorne"); renderScene()');
     check(
       "île vivante : ❤️ sur le personnage aidé aujourd'hui",

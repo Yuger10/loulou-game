@@ -62,6 +62,15 @@ for (const k of BROWSER) {
   Object.defineProperty(globalThis, k, { get: () => v || w[k], configurable: true });
 }
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+// attendre une condition plutôt qu'une durée fixe : la CI est plus lente que le poste
+async function waitFor(cond, ms = 3000) {
+  const t0 = Date.now();
+  while (Date.now() - t0 < ms) {
+    if (cond()) return true;
+    await wait(20);
+  }
+  return !!cond();
+}
 
 console.log('— Vrais modules ES (Node)');
 (async () => {
@@ -92,14 +101,20 @@ console.log('— Vrais modules ES (Node)');
   d.getElementById('modal-close').click();
   d.getElementById('ic-go').click();
   check("débarquer sur l'île", d.getElementById('view-ile').classList.contains('active'));
-  const ch = d.querySelector('.isle-char, .island, [data-char]');
-  if (ch) ch.click();
-  await wait(100);
+  // Ce test tourne sans graine (vrais modules dans Node) : une rencontre de l'équipe
+  // peut s'ouvrir à la place du dialogue. On la ferme et on réessaie, jusqu'à 3 fois.
+  for (let essai = 0; essai < 3 && !d.getElementById('btn-play'); essai++) {
+    if (d.getElementById('overlay').classList.contains('show')) d.getElementById('modal-close').click();
+    const ch = d.querySelector('.isle-char[data-char]');
+    if (ch) ch.click();
+    await waitFor(() => !!d.getElementById('btn-play'), 1500);
+  }
   const play = d.getElementById('btn-play');
   if (play) play.click();
+  await waitFor(() => !!d.querySelector('.game-choice'), 1500);
   const choice = d.querySelector('.game-choice');
   if (choice) choice.click();
-  await wait(100);
+  await waitFor(() => !!d.querySelector('#modal-body .game-head'), 3000);
   check("un mini-jeu s'ouvre (île → choix des jeux → jeu)", !!d.querySelector('#modal-body .game-head'));
   d.getElementById('modal-close').click();
   d.getElementById('squishy-btn').click();

@@ -9,7 +9,7 @@
 // sans cleanName, hors exceptions listées.
 const fs = require('fs');
 const path = require('path');
-const { JSDOM } = require('jsdom');
+const { JSDOM, VirtualConsole } = require('jsdom');
 const page = require('./tools/page.js');
 const html = page.buildHtml();
 
@@ -30,8 +30,15 @@ function section(name) {
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 const SAFE = (s) => typeof s === 'string' && !/[<>&"]/.test(s);
 
+// Une fois en CI (run 45036098430), le jeu n'était pas chargé au premier test
+// (« cleanName is not defined »), sans pouvoir le reproduire en local, même avec la
+// graine. Les erreurs internes de jsdom (script qui plante au chargement) sont donc
+// affichées : si ça se reproduit, le log donnera la cause.
 function boot(seed) {
+  const vc = new VirtualConsole();
+  vc.on('jsdomError', (e) => console.error('jsdomError :', e && (e.stack || e.message)));
   const dom = new JSDOM(html, {
+    virtualConsole: vc,
     runScripts: 'dangerously',
     pretendToBeVisual: true,
     url: 'http://localhost/?saison=aucune',
