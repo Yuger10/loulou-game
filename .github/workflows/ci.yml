@@ -59,11 +59,16 @@ jobs:
       - id: zones
         env:
           PR_LABELS: ${{ join(github.event.pull_request.labels.*.name, ',') }}
-        run: node test/tools/sensitive.js origin/${{ github.base_ref }}
+        run: node test/tools/sensitive.js origin/${{ github.base_ref }} || true
+      # l'étiquette d'abord, même si la PR est bloquée : c'est là qu'elle compte le plus
       - if: steps.zones.outputs.sensitive == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
         run: gh pr edit ${{ github.event.pull_request.number }} --add-label needs-human:sensitive
+      - if: steps.zones.outputs.blocked == 'true'
+        run: |
+          echo "Zone protégée (test/holdout/, .github/) modifiée sans l'étiquette human:approved."
+          exit 1
 
   ci-ok:
     name: ci-ok

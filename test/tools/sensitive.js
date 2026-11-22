@@ -8,7 +8,9 @@
    - Une PR qui modifie une zone PROTÉGÉE (tests holdout, workflows de la CI)
      échoue, sauf si Amrou a posé l'étiquette `human:approved`
      (variable PR_LABELS, fournie par la CI).
-   Sortie : une ligne `sensitive=true|false` pour la CI (GITHUB_OUTPUT). */
+   Sortie pour la CI (GITHUB_OUTPUT) : `sensitive=true|false` et
+   `blocked=true|false` ; la CI pose l'étiquette, puis échoue si bloqué.
+   Lancé à la main (sans GITHUB_OUTPUT), il échoue directement. */
 const fs = require('fs');
 const { execFileSync } = require('child_process');
 
@@ -34,15 +36,20 @@ const protectedHits = changed.filter((f) => PROTECTED.some((re) => re.test(f)));
 
 console.log(`${changed.length} fichier(s) modifié(s).`);
 if (sensitive.length) console.log(`Zones sensibles (relecture humaine) :\n  ${sensitive.join('\n  ')}`);
-if (process.env.GITHUB_OUTPUT) fs.appendFileSync(process.env.GITHUB_OUTPUT, `sensitive=${sensitive.length > 0}\n`);
 
-if (protectedHits.length && !labels.includes('human:approved')) {
+const blocked = protectedHits.length > 0 && !labels.includes('human:approved');
+if (process.env.GITHUB_OUTPUT)
+  fs.appendFileSync(process.env.GITHUB_OUTPUT, `sensitive=${sensitive.length > 0}\nblocked=${blocked}\n`);
+if (blocked) {
   console.error(
     `❌ Zone protégée modifiée sans l'étiquette « human:approved » :\n  ${protectedHits.join('\n  ')}\n` +
       "   Les tests holdout et les workflows ne changent que sur décision d'Amrou (AGENTS.md).",
   );
-  process.exit(1);
-}
-console.log(
-  protectedHits.length ? '✅ Zone protégée modifiée, approuvée (human:approved).' : '✅ Aucune zone protégée modifiée.',
-);
+  process.exitCode = 1;
+  if (!process.env.GITHUB_OUTPUT) process.exit(1);
+} else
+  console.log(
+    protectedHits.length
+      ? '✅ Zone protégée modifiée, approuvée (human:approved).'
+      : '✅ Aucune zone protégée modifiée.',
+  );
