@@ -121,6 +121,8 @@ function shareBuildRound(dd, rng = random) {
   if (cfg.ask === 'fair') {
     const n = pick(cfg.parts);
     const pool = shuffle(SHARE_UNEQUAL[cfg.near ? 'near' : 'far'][n].slice());
+    // même forme que les options des autres questions (n est absent ici) : le type de r.opts reste unique
+    /** @type {Array<{ parts: number[], equal: boolean, n?: number }>} */
     const opts = shuffle([
       { parts: equalParts(n), equal: true },
       { parts: pool[0], equal: false },

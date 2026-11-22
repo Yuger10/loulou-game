@@ -1680,3 +1680,9 @@ Les deux sont proposés dès 5 ans, sans minuteur. Le jeu de l'île est les poti
 - **Ce que voit l'enfant :** rien ne change : les boutons répondent comme avant, une seule fois par toucher.
 - **Pour le code :** fin de la track `lint-regles-completes`. Les 197 handlers `el.onclick = …` (et `oninput`, `onload`…) passent par `setHandler(el, type, fn)` (`js/shared/ui/handlers.js`) : `addEventListener`, mais le handler précédent du même type est retiré, donc jamais de doublon quand un écran se redessine ; repli sur la propriété `onX` pour un objet sans `addEventListener` (vieux navigateurs). Migration faite par analyse du code (acorn), `test/handlers.test.js` (fenêtre de confirmation ouverte 4 fois : un seul écouteur). Règle `prefer-add-event-listener` réactivée. Décision d'Amrou écrite : le jeu doit marcher partout, donc pas de `toSorted` ni `toReversed` (Safari 16).
 - Cache `lagon-v66.5`.
+
+# v66.6 : TypeScript strict sur la couche shared
+
+- **Ce que voit l'enfant :** rien ne change.
+- **Pour le code :** la couche `js/shared/` passe en TypeScript **strict** (ADR 0003, étape 2) : 161 erreurs ramenées à 0, en JSDoc seulement, sans `any` ni `@ts-ignore` ; types partagés (`StorageError`, `ConfirmOptions`, `FormBinding`, `SoundBus`…), `pickRandom`, `shuffle` et `setHandler` génériques. `tsconfig.strict.json` grandit couche par couche ; `bun run typecheck` vérifie les deux modes. Les types plus précis ont demandé 2 annotations dans `features` (`share.js`, `music.js`). Restent `entities` (299), `features` (1 867) et `app` (23).
+- Cache `lagon-v66.6`.

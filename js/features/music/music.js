@@ -78,7 +78,7 @@ function mNote(freq, t, durArg, kind, vol) {
     o = ctx.createOscillator(),
     g = ctx.createGain();
   let attack = 0.01,
-    type = 'sine';
+    type = /** @type {OscillatorType} */ ('sine');
   if (kind === 'marimba') {
     type = 'sine';
     dur = Math.min(dur, 0.45);
