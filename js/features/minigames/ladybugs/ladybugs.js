@@ -44,6 +44,10 @@ const LB_SPOTS = [
   [36, 158],
 ];
 
+/** @typedef {ReturnType<typeof ladybugsBuildRound>} LadybugsRound */
+/** @typedef {Pick<LadybugsRound, 'mode' | 'n' | 'total'>} LadybugsQuestion */
+
+/** @param {number} dd le palier de difficulté */
 function ladybugsBuildRound(dd, rng = random) {
   const cfg = ladybugsRound(dd);
   const mode = cfg.modes[Math.floor(rng() * cfg.modes.length)];
@@ -51,7 +55,13 @@ function ladybugsBuildRound(dd, rng = random) {
   return { cfg, mode, n, total: 2 * n };
 }
 // la coccinelle : `left` et `right` points sur chaque aile (right null : aile vide à compléter)
+/**
+ * @param {number} left
+ * @param {number | null} right
+ * @param {boolean} [hidden]
+ */
 function ladybugSVG(left, right, hidden) {
+  /** @type {(k: number, side: 'l' | 'r') => string} */
   const dots = (k, side) =>
     LB_SPOTS.slice(0, k)
       .map(([x, y]) => `<circle class="lb-dot" data-w="${side}" cx="${side === 'l' ? x : 120 - x}" cy="${y}" r="6.5"/>`)
@@ -64,6 +74,7 @@ function ladybugSVG(left, right, hidden) {
     <g fill="#2B2140">${hidden ? '' : dots(left, 'l')}<g id="lb-right">${hidden || right === null ? '' : dots(right, 'r')}</g></g>
   </svg>`;
 }
+/** @param {number} answer */
 function ladybugsOptions(answer) {
   const set = new Set([answer]);
   for (const k of shuffle([-2, -1, 1, 2, 3])) {
@@ -72,7 +83,8 @@ function ladybugsOptions(answer) {
   }
   return shuffle([...set]);
 }
-const lbDots = (n) => (n <= 12 ? `<span class="cube-dots" aria-hidden="true">${'<i></i>'.repeat(n)}</span>` : '');
+const lbDots = (/** @type {number} */ n) =>
+  n <= 12 ? `<span class="cube-dots" aria-hidden="true">${'<i></i>'.repeat(n)}</span>` : '';
 
 let ladybugsLast = '';
 function renderLadybugs() {
@@ -81,12 +93,13 @@ function renderLadybugs() {
   let r = ladybugsBuildRound(dd);
   for (let k = 0; k < 8 && `${r.mode}${r.n}` === ladybugsLast; k++) r = ladybugsBuildRound(dd);
   ladybugsLast = `${r.mode}${r.n}`;
-  const ok = (b) => {
+  const ok = (/** @type {HTMLElement} */ b) => {
     clearActiveTimer();
     stepOk(b);
     flashModal('ok');
     winSoon();
   };
+  /** @type {LadybugsQuestion} */
   const q = { mode: r.mode, n: r.n, total: r.total };
 
   if (r.mode === 'complete') {
@@ -128,8 +141,9 @@ function renderLadybugs() {
       }
     });
     setHandler(document.getElementById('lb-done'), 'click', (e) => {
-      if (added === r.n) ok(e.currentTarget);
-      else loseLife(e.currentTarget, { onRetry: renderLadybugs, disable: false });
+      const done = /** @type {HTMLElement} */ (e.currentTarget);
+      if (added === r.n) ok(done);
+      else loseLife(done, { onRetry: renderLadybugs, disable: false });
     });
     return;
   }
@@ -162,6 +176,7 @@ function renderLadybugs() {
 
 // Indices (v52) : 1. les deux ailes sont pareilles ; 2. une aile, puis le
 // double (ou partager en deux). Jamais le total ni la moitié.
+/** @param {LadybugsQuestion} q */
 function ladybugsHints(q) {
   if (q.mode === 'complete')
     return [

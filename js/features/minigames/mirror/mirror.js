@@ -27,18 +27,31 @@ import {
 } from '../../minigame-engine/index.js';
 import { bindQuit, gameHeader } from '../../screen/index.js';
 
+/** @typedef {{ r: number, c: number, v: number }} MirrorCell une case coloriée : ligne, colonne, encre (1 ou 2) */
+/** @typedef {ReturnType<typeof mirrorBuildRound>} MirrorRound */
+/** @typedef {Pick<MirrorRound, 'axis' | 'two'>} MirrorQuestion */
+
+/** @type {Record<number, { fill: string, sym: string, name: string }>} */
 const MIRROR_INKS = { 1: { fill: '#FF8FB8', sym: '♥', name: 'rose' }, 2: { fill: '#6FB8F5', sym: '★', name: 'bleue' } };
 
 // le reflet d'une case par l'axe (v : vertical, au milieu des colonnes ; h : horizontal)
+/**
+ * @param {MirrorCell} cell
+ * @param {string} axis
+ * @param {number} size
+ * @returns {MirrorCell}
+ */
 function mirrorOf(cell, axis, size) {
   return axis === 'v' ? { r: cell.r, c: size - 1 - cell.c, v: cell.v } : { r: size - 1 - cell.r, c: cell.c, v: cell.v };
 }
+/** @param {number} dd le palier de difficulté */
 function mirrorBuildRound(dd, rng = random) {
   const cfg = mirrorRound(dd);
   const axis = cfg.axes[Math.floor(rng() * cfg.axes.length)];
   const two = rng() < cfg.two;
   const half = cfg.size / 2;
   // les cases du côté déjà colorié : à gauche (axe vertical) ou en haut (axe horizontal)
+  /** @type {Array<{ r: number, c: number }>} */
   const source = [];
   for (let r = 0; r < cfg.size; r++)
     for (let c = 0; c < cfg.size; c++) {
@@ -56,18 +69,23 @@ function renderMirror() {
   setupLives('mirror');
   const dd = gameDiff();
   let r = mirrorBuildRound(dd);
-  const key = (x) => JSON.stringify([x.axis, x.pattern]);
+  const key = (/** @type {MirrorRound} */ x) => JSON.stringify([x.axis, x.pattern]);
   for (let k = 0; k < 8 && key(r) === mirrorLast; k++) r = mirrorBuildRound(dd);
   mirrorLast = key(r);
   const { size, axis } = r,
     half = size / 2;
+  /** @type {Record<string, number>} */
   const src = {};
   r.pattern.forEach((x) => (src[`${x.r}-${x.c}`] = x.v));
+  /** @type {Record<string, number>} */
   const want = {};
   r.target.forEach((x) => (want[`${x.r}-${x.c}`] = x.v));
+  /** @type {Record<string, number>} */
   const state = {};
   let errors = 0;
+  /** @type {(rr: number, cc: number) => boolean} */
   const isSource = (rr, cc) => (axis === 'v' ? cc < half : rr < half);
+  /** @type {(rr: number, cc: number) => string} */
   const cellHTML = (rr, cc) => {
     const k = `${rr}-${cc}`;
     if (isSource(rr, cc)) {
@@ -96,15 +114,15 @@ function renderMirror() {
   // la solution : chaque case du reflet, touchée 1 fois (♥) ou 2 fois (★), puis « Fini »
   setSolution([...r.target.flatMap((x) => Array(x.v).fill(`.mr-cell[data-k="${x.r}-${x.c}"]`)), '#mirror-done']);
   setHintQuestion('mirror', { axis, two: r.two }, { choices: '#mirror-done' });
-  const paint = (b) => {
-    const v = state[b.dataset.k] || 0;
+  const paint = (/** @type {HTMLElement} */ b) => {
+    const v = state[/** @type {string} */ (b.dataset.k)] || 0;
     b.classList.toggle('on', !!v);
     b.style.background = v ? MIRROR_INKS[v].fill : '';
     b.textContent = v ? MIRROR_INKS[v].sym : '';
   };
   document.querySelectorAll('.mr-cell.tap').forEach((b) =>
     setHandler(b, 'click', () => {
-      const k = b.dataset.k;
+      const k = /** @type {string} */ (b.dataset.k); // chaque case à toucher a son data-k
       state[k] = ((state[k] || 0) + 1) % (r.two ? 3 : 2);
       b.classList.remove('wrong');
       paint(b);
@@ -113,9 +131,10 @@ function renderMirror() {
   setHandler(document.getElementById('mirror-done'), 'click', (e) => {
     const keys = new Set([...Object.keys(want), ...Object.keys(state).filter((k) => state[k])]);
     const wrong = [...keys].filter((k) => (state[k] || 0) !== (want[k] || 0));
+    const done = /** @type {HTMLElement} */ (e.currentTarget);
     if (!wrong.length) {
       clearActiveTimer();
-      stepOk(e.currentTarget);
+      stepOk(done);
       flashModal('ok');
       winSoon();
       return;
@@ -131,11 +150,12 @@ function renderMirror() {
     });
     speak(`Les cases qui clignotent ne sont pas encore le reflet. Regarde leur jumelle, de l'autre côté de la ligne.`);
     // la 2ᵉ erreur : un nouveau motif ; la 1ʳᵉ : on corrige les cases qui clignotent
-    loseLife(e.currentTarget, errors >= 2 ? { onRetry: renderMirror, disable: false } : { disable: false });
+    loseLife(done, errors >= 2 ? { onRetry: renderMirror, disable: false } : { disable: false });
   });
 }
 
 // Indices (v52) : 1. ce qu'est un reflet ; 2. par quelle case commencer. Jamais une case.
+/** @param {MirrorQuestion} q */
 function mirrorHints(q) {
   const side = q.axis === 'v' ? "à la même hauteur, de l'autre côté" : "dans la même colonne, de l'autre côté";
   return [

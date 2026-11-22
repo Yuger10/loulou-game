@@ -30,6 +30,9 @@ import { bindQuit, gameHeader } from '../../screen/index.js';
 // en lecture, la dernière note jouée doit finir avant l'écran de victoire
 const READ_END_DELAY = 900;
 
+/** @typedef {'court' | 'long' | 'silence'} RhythmBeat un coup du rythme */
+/** @typedef {{ n: number, rests: number, read: boolean, replay: () => void }} RhythmQuestion */
+
 const RHYTHM_BEATS = {
   court: { sym: '●', label: 'Boum', aria: 'un coup court', freq: 262, dur: 0.25, units: 1 },
   long: { sym: '▬', label: 'Bouuum', aria: 'un coup long', freq: 196, dur: 0.9, units: 2 },
@@ -37,12 +40,16 @@ const RHYTHM_BEATS = {
 };
 const RHYTHM_UNIT = 420; // ms par temps
 
+/**
+ * @param {number} dd le palier de difficulté
+ * @returns {{ cfg: ReturnType<typeof rhythmRound>, seq: RhythmBeat[] }}
+ */
 function rhythmBuildRound(dd, rng = random) {
   const cfg = rhythmRound(dd);
   for (let t = 0; t < 300; t++) {
     // palier 1 : des coups tous pareils (tous courts, ou tous longs)
     const same = !cfg.long ? (rng() < 0.5 ? 'court' : 'long') : null;
-    /** @type {('court' | 'long' | 'silence')[]} */
+    /** @type {RhythmBeat[]} */
     const seq = Array.from({ length: cfg.n }, () => same || (rng() < 0.45 ? 'long' : 'court'));
     // les silences : jamais au début ni à la fin, jamais deux de suite
     let rests = 0;
@@ -71,6 +78,7 @@ function renderRhythm() {
   const { cfg, seq } = r;
   const token = ++rhythmToken;
   const alive = () => token === rhythmToken && !!document.getElementById('rh-score');
+  /** @type {RhythmBeat[]} */
   const kinds = cfg.rests ? ['court', 'long', 'silence'] : ['court', 'long'];
   let pos = 0;
   const intro = cfg.read
@@ -93,15 +101,19 @@ function renderRhythm() {
   startTimerIfNeeded('rhythm');
   setSolution(seq.map((k) => solSel('.rh-btn', 'k', k)));
 
-  const beatSound = (k) => {
+  const beatSound = (/** @type {RhythmBeat} */ k) => {
     const b = RHYTHM_BEATS[k];
     if (b.freq) playNote(b.freq, b.dur, 0.2);
   };
-  const setState = (t) => {
+  const setState = (/** @type {string} */ t) => {
     const s = document.getElementById('rh-state');
     if (s) s.textContent = t;
   };
   // le rythme joué : chaque symbole s'allume avec son son ; `slow` : plus lentement (indice)
+  /**
+   * @param {boolean} slow
+   * @param {(() => void) | null} then
+   */
   function play(slow, then) {
     const unit = RHYTHM_UNIT * (slow ? 1.6 : 1);
     const score = document.getElementById('rh-score');
@@ -141,6 +153,7 @@ function renderRhythm() {
     if (p) p.innerHTML = progressDots(0, seq.length);
   };
   // indices (v52) : réécouter et revoir le rythme, plus lentement, depuis le début
+  /** @type {RhythmQuestion} */
   const q = {
     n: seq.length,
     rests: cfg.rests,
@@ -155,7 +168,7 @@ function renderRhythm() {
 
   document.querySelectorAll('.rh-btn').forEach((btn) => {
     setHandler(btn, 'click', () => {
-      const k = btn.dataset.k;
+      const k = /** @type {RhythmBeat} */ (btn.dataset.k); // data-k : un des boutons de `kinds`
       beatSound(k);
       btn.classList.add('lit');
       setTimeout(() => btn.classList.remove('lit'), 200);
@@ -183,6 +196,7 @@ function renderRhythm() {
 
 // Indices (v52) : 1. ce que veulent dire ●, ▬ et 🤫 ; 2. le rythme réécouté
 // et revu plus lentement, depuis le début.
+/** @param {RhythmQuestion} q */
 function rhythmHints(q) {
   return [
     {

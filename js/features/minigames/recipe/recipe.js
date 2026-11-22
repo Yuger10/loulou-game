@@ -42,16 +42,45 @@ const CUP_LIQUIDS = [
   { what: 'jus de fraise', fill: '#FF8FB8' },
   { what: 'sirop', fill: '#F2B04E' },
 ];
+/** @typedef {typeof RECIPE_INGREDIENTS[number]} RecipeIngredient */
+/** @typedef {{ unit: string, step: number, max: number, label: number }} RecipeScale un verre doseur */
+/**
+ * Une recette ; sa forme dépend de la question (`ask`).
+ * @typedef {{ cfg: ReturnType<typeof recipeRound> } & (
+ *   | { ask: 'bowls', most: boolean, amounts: number[], ing: RecipeIngredient }
+ *   | { ask: 'balance', heavy: 'left' | 'right', heaviest: boolean }
+ *   | { ask: 'spoons', n: number, ing: RecipeIngredient }
+ *   | { ask: 'cup', scale: RecipeScale, marks: number[], target: number, liquid: typeof CUP_LIQUIDS[number] })} RecipeRound
+ */
+/**
+ * Ce que les indices savent de la question.
+ * @typedef {{ ask: 'bowls', most: boolean }
+ *   | { ask: 'balance', heaviest: boolean }
+ *   | { ask: 'spoons', n: number }
+ *   | { ask: 'cup', step: number, label: number, unit: string, target: number }} RecipeQuestion
+ */
+
+/** @type {(v: number, unit: string) => string} */
 const unitSay = (v, unit) =>
   unit === 'verres' ? `${v} verre${v > 1 ? 's' : ''}` : unit === 'g' ? `${v} grammes` : `${v} centilitres`;
+/** @type {(v: number, unit: string) => string} */
 const unitShort = (v, unit) => (unit === 'verres' ? `${v} verre${v > 1 ? 's' : ''}` : `${v} ${unit}`);
 
+/**
+ * @param {number} dd le palier de difficulté
+ * @returns {RecipeRound}
+ */
 function recipeBuildRound(dd, rng = random) {
   const cfg = recipeRound(dd);
+  /**
+   * @template T
+   * @param {T[]} arr
+   * @returns {T}
+   */
   const pick = (arr) => arr[Math.floor(rng() * arr.length)];
   const ask = pick(cfg.asks);
   if (ask === 'bowls') {
-    const amounts = shuffle(cfg.amounts.slice());
+    const amounts = shuffle(/** @type {number[]} */ (cfg.amounts).slice()); // les paliers « bowls » ont `amounts`
     return { cfg, ask, most: rng() < 0.5, amounts, ing: pick(RECIPE_INGREDIENTS) };
   }
   if (ask === 'balance') {
@@ -59,10 +88,12 @@ function recipeBuildRound(dd, rng = random) {
     return { cfg, ask, heavy, heaviest: rng() < 0.5 };
   }
   if (ask === 'spoons') {
-    const n = cfg.min + Math.floor(rng() * (cfg.max - cfg.min + 1));
+    const { min, max } = /** @type {{ min: number, max: number }} */ (cfg); // les paliers « spoons » ont leurs bornes
+    const n = min + Math.floor(rng() * (max - min + 1));
     return { cfg, ask, n, ing: pick(RECIPE_INGREDIENTS.filter((i) => i.what !== 'confiture')) };
   }
-  const scale = pick(cfg.scales);
+  const scale = pick(/** @type {RecipeScale[]} */ (cfg.scales)); // les paliers « cup » ont leurs verres
+  /** @type {number[]} */
   const marks = [];
   for (let v = scale.step; v <= scale.max; v += scale.step) marks.push(v);
   // la cible : un trait sans nombre écrit, quand il y en a (il faut compter)
@@ -70,10 +101,15 @@ function recipeBuildRound(dd, rng = random) {
   const target = pick(free.length ? free : marks);
   return { cfg, ask: 'cup', scale, marks, target, liquid: pick(CUP_LIQUIDS) };
 }
+/** @param {{ ask: string, amounts?: number[], most?: boolean, heavy?: string, heaviest?: boolean, n?: number, target?: number, scale?: RecipeScale }} r une recette (RecipeRound) */
 const recipeKey = (r) =>
   JSON.stringify([r.ask, r.amounts, r.most, r.heavy, r.heaviest, r.n, r.target, r.scale && r.scale.unit]);
 
 // un bol vu de face, avec un tas plus ou moins haut (amount de 1 à 5)
+/**
+ * @param {number} amount
+ * @param {string} fill
+ */
 function bowlSVG(amount, fill) {
   const top = 58 - amount * 10;
   return `<svg class="recipe-bowl" viewBox="0 0 100 100" aria-hidden="true">
@@ -84,6 +120,7 @@ function bowlSVG(amount, fill) {
   </svg>`;
 }
 // la balance : le plateau du sac lourd descend
+/** @param {'left' | 'right'} heavy */
 function balanceSVG(heavy) {
   const tilt = heavy === 'left' ? -12 : 12;
   return `<svg class="recipe-balance" viewBox="0 0 200 130" aria-hidden="true">
@@ -98,9 +135,10 @@ function balanceSVG(heavy) {
     <circle cx="100" cy="30" r="7" fill="#FFD95A" stroke="#8A4A2B" stroke-width="2.5"/>
   </svg>`;
 }
+/** @type {(fill: string, edge: string) => string} */
 const bagSVG = (fill, edge) =>
   `<svg class="recipe-bag" viewBox="0 0 60 60" aria-hidden="true"><path d="M12 56 Q8 22 22 16 L38 16 Q52 22 48 56Z" fill="${fill}" stroke="${edge}" stroke-width="3" stroke-linejoin="round"/><path d="M22 16 Q30 6 38 16" fill="none" stroke="${edge}" stroke-width="3"/></svg>`;
-const spoonIcon = (fill) =>
+const spoonIcon = (/** @type {string} */ fill) =>
   `<svg class="recipe-spoon" viewBox="0 0 40 40" aria-hidden="true"><ellipse cx="14" cy="14" rx="10" ry="8" fill="#E7C29A" stroke="#8A4A2B" stroke-width="2"/><ellipse cx="14" cy="13" rx="6" ry="4" fill="${fill}"/><path d="M21 20 L36 35" stroke="#8A4A2B" stroke-width="4" stroke-linecap="round"/></svg>`;
 
 // la recette précédente : une relance en tire toujours une AUTRE (anti-devinette)
@@ -116,6 +154,7 @@ function renderRecipe() {
     flashModal('ok');
     winSoon();
   };
+  /** @type {(el: HTMLElement, o?: { disable?: boolean }) => unknown} */
   const retry = (el, o) => loseLife(el, Object.assign({ onRetry: renderRecipe }, o || {}));
 
   if (r.ask === 'bowls') {
@@ -188,7 +227,7 @@ function renderRecipe() {
     startTimerIfNeeded('recipe');
     setSolution([...Array(r.n).fill('#recipe-add'), '#recipe-done']);
     setHintQuestion('recipe', { ask: 'spoons', n: r.n }, { choices: '.recipe-done' });
-    const box = document.getElementById('recipe-spoons');
+    const box = /** @type {HTMLElement} */ (document.getElementById('recipe-spoons'));
     const draw = () => {
       box.innerHTML = Array.from({ length: count }, () => spoonIcon(r.ing.fill)).join('');
     };
@@ -205,10 +244,11 @@ function renderRecipe() {
       }
     });
     setHandler(document.getElementById('recipe-done'), 'click', (e) => {
+      const done = /** @type {HTMLElement} */ (e.currentTarget);
       if (count === r.n) {
-        stepOk(e.currentTarget);
+        stepOk(done);
         ok();
-      } else retry(e.currentTarget, { disable: false });
+      } else retry(done, { disable: false });
     });
     return;
   }
@@ -216,7 +256,7 @@ function renderRecipe() {
   // le verre doseur : des traits à toucher ; seuls certains portent un nombre
   const { scale, marks, target } = r;
   const say = `Verse ${unitSay(target, scale.unit)} de ${r.liquid.what} : touche le bon trait du verre doseur.`;
-  const pct = (v) => 6 + (v / scale.max) * 86;
+  const pct = (/** @type {number} */ v) => 6 + (v / scale.max) * 86;
   openModal(`
     ${gameHeader('🥛 La recette', `Verse ${unitShort(target, scale.unit)} de ${r.liquid.what}`, say)}
     ${livesBar()}
@@ -247,7 +287,7 @@ function renderRecipe() {
   );
   document.querySelectorAll('.cup-mark').forEach((b) =>
     setHandler(b, 'click', () => {
-      document.getElementById('cup-liquid').style.height = `${pct(Number(b.dataset.v))}%`;
+      /** @type {HTMLElement} */ (document.getElementById('cup-liquid')).style.height = `${pct(Number(b.dataset.v))}%`;
       if (Number(b.dataset.v) === target) {
         stepOk(b);
         ok();
@@ -257,6 +297,7 @@ function renderRecipe() {
 }
 
 // Indices (v52) : 1. la méthode ; 2. par où commencer. Jamais la réponse.
+/** @param {RecipeQuestion} q */
 function recipeHints(q) {
   if (q.ask === 'bowls')
     return [

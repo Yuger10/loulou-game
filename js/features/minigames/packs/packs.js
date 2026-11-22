@@ -27,9 +27,14 @@ import {
 import { bindQuit, gameHeader } from '../../screen/index.js';
 
 const PACK_TOYS = ['🧸', '🪀', '⚽', '🎈', '🧩', '🪁', '🎲', '🚗', '🦆', '🍡'];
+/** @type {Record<number, string>} */
 const PACK_WORDS = { 2: 'deux', 5: 'cinq', 10: 'dix' };
 
+/** @typedef {ReturnType<typeof packsBuildRound>} PacksRound */
+/** @typedef {{ size: number, n: number, extra: number, label: PacksRound['label'], total: number }} PacksQuestion */
+
 // Une collection : `n` paquets de `size` jouets, et peut-être un jouet tout seul
+/** @param {number} dd le palier de difficulté */
 function packsBuildRound(dd, rng = random) {
   const cfg = packsRound(dd);
   const size = cfg.sizes[Math.floor(rng() * cfg.sizes.length)];
@@ -48,6 +53,7 @@ function packsBuildRound(dd, rng = random) {
 
 // trois réponses : la bonne et deux pièges plausibles (un paquet de plus ou
 // de moins, le jouet seul oublié, un de plus), toutes différentes et ≥ 1
+/** @param {PacksRound} r */
 function packsOptions(r) {
   const set = new Set([r.total]);
   const traps = shuffle([
@@ -65,12 +71,18 @@ function packsOptions(r) {
   for (let k = 1; set.size < 3; k++) set.add(r.total + k);
   return shuffle([...set]);
 }
-const packDots = (n) => (n <= 12 ? `<span class="cube-dots" aria-hidden="true">${'<i></i>'.repeat(n)}</span>` : '');
+const packDots = (/** @type {number} */ n) =>
+  n <= 12 ? `<span class="cube-dots" aria-hidden="true">${'<i></i>'.repeat(n)}</span>` : '';
 
 // un paquet : un sachet aux coins arrondis, les jouets rangés en lignes de 5
+/**
+ * @param {PacksRound} r
+ * @param {number} i
+ */
 function packHTML(r, i) {
   return `<div class="pack pack-${r.size}" data-pack="${i}" aria-hidden="true">${`<i class="pack-toy">${r.toy}</i>`.repeat(r.size)}</div>`;
 }
+/** @param {PacksRound} r */
 function packsLabel(r) {
   const what = `${r.n} paquet${r.n > 1 ? 's' : ''} de ${r.size}`;
   return r.extra ? `${what} et 1 jouet tout seul` : what;
@@ -81,11 +93,12 @@ let packsLast = '';
 function renderPacks() {
   setupLives('packs');
   const dd = gameDiff();
-  const key = (x) => `${x.size}-${x.n}-${x.extra}-${x.toy}`;
+  const key = (/** @type {PacksRound} */ x) => `${x.size}-${x.n}-${x.extra}-${x.toy}`;
   let r = packsBuildRound(dd);
   for (let k = 0; k < 8 && key(r) === packsLast; k++) r = packsBuildRound(dd);
   packsLast = key(r);
   const opts = packsOptions(r);
+  /** @type {PacksQuestion} */
   const q = { size: r.size, n: r.n, extra: r.extra, label: r.label, total: r.total };
   const say = r.extra
     ? `Les jouets sont rangés par paquets de ${r.size}, et un jouet est tout seul. Combien y en a-t-il en tout ?`
@@ -121,6 +134,7 @@ function renderPacks() {
 // Indices (v52) : 1. compter de paquet en paquet (de 2 en 2, de 5 en 5…) ;
 // 2. le premier paquet brille avec son nombre, et l'écriture « n × taille »
 //    au palier haut : il reste à continuer. Jamais le total.
+/** @param {PacksQuestion} q */
 function packsHints(q) {
   const word = PACK_WORDS[q.size] || q.size;
   const alone = q.extra ? " Et n'oublie pas le jouet tout seul !" : '';

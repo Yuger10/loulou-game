@@ -39,6 +39,7 @@ function shelfStar() {
   }).join(' ');
 }
 // g : genre du nom (accord de la couleur) ; face : centre du visage
+/** @type {Record<string, { g: string, s: string, art: string, face: number[], el: string }>} */
 const SHELF_SHAPES = {
   rond: { g: 'm', s: 'rond', art: 'le rond', face: [50, 54], el: '<circle cx="50" cy="52" r="38"/>' },
   carre: {
@@ -58,13 +59,26 @@ const SHELF_SHAPES = {
     el: '<path d="M50 90 C22 70 6 52 8 34 C10 16 34 10 50 28 C66 10 90 16 92 34 C94 52 78 70 50 90Z"/>',
   },
 };
+/** @typedef {{ color: string, shape: string }} ShelfToy un jouet : sa couleur (ligne) et sa forme (colonne) */
+/**
+ * @typedef {{ cfg: ReturnType<typeof shelfRound>, rows: string[], cols: string[], shown: ShelfToy[], steps: ShelfToy[] }
+ *   & ({ mode: 'find', target: ShelfToy, options: ShelfToy[] } | { mode: 'coords' | 'place' })} ShelfRound
+ */
+/** @typedef {ShelfToy & { mode: ShelfRound['mode'] }} ShelfQuestion */
+
+/** @type {(color: string, shape: string) => string} */
 const colorAdj = (color, shape) => SQ_COLORS[color].adj[SHELF_SHAPES[shape].g === 'f' ? 2 : 0];
-const toyName = (t) => `${SHELF_SHAPES[t.shape].art} ${colorAdj(t.color, t.shape)}`;
+const toyName = (/** @type {ShelfToy} */ t) => `${SHELF_SHAPES[t.shape].art} ${colorAdj(t.color, t.shape)}`;
 
 // un jouet : la forme, sa couleur, un petit visage (`plain` : la forme seule, en blanc, pour la colonne)
+/**
+ * @param {string} shape
+ * @param {string | null} color (null seulement avec `plain`)
+ * @param {boolean} [plain]
+ */
 function shelfToySVG(shape, color, plain) {
   const sh = SHELF_SHAPES[shape];
-  const c = plain ? { fill: '#fff', edge: '#8E7FA6' } : SQ_COLORS[color];
+  const c = plain ? { fill: '#fff', edge: '#8E7FA6' } : SQ_COLORS[/** @type {string} */ (color)];
   const [fx, fy] = sh.face;
   const face = plain
     ? ''
@@ -74,6 +88,10 @@ function shelfToySVG(shape, color, plain) {
 }
 const GIFT = '<span class="shelf-gift" aria-hidden="true">🎁</span>';
 
+/**
+ * @param {number} dd le palier de difficulté
+ * @returns {ShelfRound}
+ */
 function shelfBuildRound(dd, rng = random) {
   const cfg = shelfRound(dd);
   const rows = shuffle(SHELF_COLORS.slice()).slice(0, cfg.size);
@@ -95,8 +113,9 @@ function shelfBuildRound(dd, rng = random) {
   return { cfg, rows, cols, mode, steps: cells.slice(0, cfg.toys), shown: [] };
 }
 
+/** @param {ShelfRound} r */
 function shelfGridHTML(r) {
-  const key = (t) => `${t.color}-${t.shape}`;
+  const key = (/** @type {ShelfToy} */ t) => `${t.color}-${t.shape}`;
   const shown = new Set(r.shown.map(key));
   return `<div class="shelf" style="--n:${r.cols.length}">
     <span class="shelf-corner" aria-hidden="true">🧸</span>
@@ -118,7 +137,11 @@ function shelfGridHTML(r) {
       .join('')}
   </div>`;
 }
-const coordsSay = (t) => `ligne ${t.color}, colonne ${SHELF_SHAPES[t.shape].s}`;
+const coordsSay = (/** @type {ShelfToy} */ t) => `ligne ${t.color}, colonne ${SHELF_SHAPES[t.shape].s}`;
+/**
+ * @param {ShelfRound} r
+ * @param {number} i
+ */
 function stepAsk(r, i) {
   const t = r.steps[i];
   return r.mode === 'coords' ? `Pose le cadeau ici : ${coordsSay(t)}.` : `Range ${toyName(t)}.`;
@@ -130,6 +153,7 @@ function renderShelf() {
   const r = shelfBuildRound(dd);
   if (r.mode === 'find') {
     const t = r.target;
+    /** @type {ShelfQuestion} */
     const q = { mode: 'find', color: t.color, shape: t.shape };
     const say =
       "Une ligne pour chaque couleur, une colonne pour chaque forme. Quel jouet va dans la case avec le point d'interrogation ?";
@@ -164,6 +188,7 @@ function renderShelf() {
   }
   // place / coords : les jouets (ou cadeaux) attendent dans le panier, un par un
   let i = 0;
+  /** @type {(t: ShelfToy, k: number) => string} */
   const todo = (t, k) =>
     `<span class="shelf-todo${k === 0 ? ' now' : ''}" data-i="${k}" data-color="${t.color}" data-shape="${t.shape}">${r.mode === 'coords' ? GIFT : shelfToySVG(t.shape, t.color)}</span>`;
   const intro =
@@ -215,7 +240,7 @@ function renderShelf() {
       }
       const next = document.querySelector(`.shelf-todo[data-i="${i}"]`);
       if (next) next.classList.add('now');
-      document.getElementById('shelf-ask').textContent = stepAsk(r, i);
+      /** @type {HTMLElement} */ (document.getElementById('shelf-ask')).textContent = stepAsk(r, i);
       speak(stepAsk(r, i));
       ask();
     });
@@ -224,6 +249,7 @@ function renderShelf() {
 
 // Indices (v52) : 1. la méthode (la ligne de sa couleur, la colonne de sa
 // forme) ; 2. la ligne brille : il reste à trouver la colonne. Jamais la case.
+/** @param {ShelfQuestion} q */
 function shelfHints(q) {
   const row = `.shelf-head.row[data-color="${q.color}"]`;
   if (q.mode === 'find')

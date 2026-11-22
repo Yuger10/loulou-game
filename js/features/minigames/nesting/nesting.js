@@ -36,7 +36,11 @@ const NEST_COLORS = [
   ['#FFE9A8', '#B8901A'],
 ];
 
+/** @typedef {ReturnType<typeof nestingBuildRound>} NestRound */
+/** @typedef {{ r: NestRound, idx: number, errors: number }} NestQuestion */
+
 // une boîte en carton, vue de face, avec son couvercle ouvert
+/** @param {string[]} color [remplissage, bord] */
 function nestBoxSVG(color) {
   const [fill, edge] = color;
   return `<svg class="nest-box" viewBox="0 0 100 100" aria-hidden="true">
@@ -49,6 +53,7 @@ function nestBoxSVG(color) {
 
 /* Une série : les tailles (du plus petit au plus grand), l'ordre demandé et
    les boîtes mélangées sur le plateau. */
+/** @param {number} dd le palier de difficulté */
 function nestingBuildRound(dd, rng = random) {
   const cfg = nestingRound(dd);
   const reverse = rng() < cfg.reverse;
@@ -63,6 +68,7 @@ function renderNesting() {
   setupLives('nesting');
   const dd = gameDiff();
   const r = nestingBuildRound(dd);
+  /** @type {NestQuestion} */
   const q = { r, idx: 0, errors: 0 }; // q.idx : boîtes déjà rangées (pour les indices)
   const say = r.reverse
     ? 'Range les boîtes de la plus grande à la plus petite'
@@ -88,7 +94,7 @@ function renderNesting() {
   bindQuit();
   setSolution(r.order.map((b) => solSel('.nest-btn', 'i', b.i)));
   setHintQuestion('nesting', q, { choices: '.nest-btn' });
-  document.querySelectorAll('.nest-btn').forEach((/** @type {HTMLButtonElement} */ btn) => {
+  /** @type {NodeListOf<HTMLButtonElement>} */ (document.querySelectorAll('.nest-btn')).forEach((btn) => {
     setHandler(btn, 'click', () => {
       if (btn.disabled) return;
       const want = r.order[q.idx];
@@ -122,6 +128,10 @@ function renderNesting() {
 }
 
 // Les boîtes rangées : chacune dans la suivante (dessinées l'une dans l'autre)
+/**
+ * @param {NestRound} r
+ * @param {number} n boîtes déjà rangées
+ */
 function nestingDrawStack(r, n) {
   const el = document.getElementById('nest-stack');
   if (!el) return;
@@ -135,6 +145,7 @@ function nestingDrawStack(r, n) {
 
 // Indices (v52) : 1. par quelle taille commencer, ou la règle pour la suivante ;
 // 2. trois boîtes qui brillent, dont la bonne (jamais celle-là seule).
+/** @param {NestQuestion} q */
 function nestingHints(q) {
   const r = q.r,
     left = r.order.slice(q.idx);
