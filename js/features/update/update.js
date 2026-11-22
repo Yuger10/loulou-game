@@ -18,21 +18,23 @@ const UPDATE_FLAG = 'lagon-update-from';
 // si le nouveau service worker ne prend pas la main tout seul, on recharge quand même
 const UPDATE_RELOAD_AFTER = 20000;
 const UPDATE_MESSAGES = {
-  searching: '🔍 Recherche d\'une nouvelle version…',
-  offline:   '📴 Pas d\'Internet : le jeu se mettra à jour à la prochaine connexion.',
-  error:     '😕 Le site ne répond pas. Vérifiez Internet, puis réessayez dans un moment.',
-  uptodate:  `✅ Le jeu est à jour (version ${APP_VERSION}).`,
-  found:     '✨ Nouvelle version trouvée ! Le jeu redémarre dans quelques secondes…',
-  reload:    '🔄 Le jeu redémarre pour prendre la dernière version…',
+  searching: "🔍 Recherche d'une nouvelle version…",
+  offline: "📴 Pas d'Internet : le jeu se mettra à jour à la prochaine connexion.",
+  error: '😕 Le site ne répond pas. Vérifiez Internet, puis réessayez dans un moment.',
+  uptodate: `✅ Le jeu est à jour (version ${APP_VERSION}).`,
+  found: '✨ Nouvelle version trouvée ! Le jeu redémarre dans quelques secondes…',
+  reload: '🔄 Le jeu redémarre pour prendre la dernière version…',
 };
 
 // le plus grand numéro des caches `lagon-vNN` déjà installés (0 s'il n'y en a pas)
-async function installedVersion(){
-  try{
-    if(typeof caches === 'undefined') return 0;
-    const nums = (await caches.keys()).map(k=> Number((/^lagon-v(\d+)$/.exec(k) || [])[1]) || 0);
+async function installedVersion() {
+  try {
+    if (typeof caches === 'undefined') return 0;
+    const nums = (await caches.keys()).map((k) => Number((/^lagon-v(\d+)$/.exec(k) || [])[1]) || 0);
     return Math.max(0, ...nums);
-  }catch{ return 0; }
+  } catch {
+    return 0;
+  }
 }
 
 /* Cherche une mise à jour. Réponses :
@@ -42,43 +44,54 @@ async function installedVersion(){
    'reload'   : la nouvelle version est déjà là, il faut juste redémarrer
                 (ou il n'y a pas de service worker) ;
    'uptodate' : rien de neuf. */
-async function checkForUpdate(){
-  if(navigator.onLine === false) return 'offline';
+async function checkForUpdate() {
+  if (navigator.onLine === false) return 'offline';
   const sw = navigator.serviceWorker;
-  if(!sw || typeof sw.getRegistration !== 'function') return 'reload';
+  if (!sw || typeof sw.getRegistration !== 'function') return 'reload';
   let reg;
-  try{
+  try {
     reg = await sw.getRegistration();
-    if(!reg) return 'reload';
+    if (!reg) return 'reload';
     // demande sw.js au site : s'il a changé, le nouveau s'installe aussitôt
     await reg.update();
-  }catch{ return 'error'; }
-  if(reg.installing || reg.waiting){
-    if(reg.waiting) reg.waiting.postMessage('skipWaiting'); // oxlint-disable-line unicorn/require-post-message-target-origin -- service worker, pas une fenêtre
+  } catch {
+    return 'error';
+  }
+  if (reg.installing || reg.waiting) {
+    if (reg.waiting) reg.waiting.postMessage('skipWaiting'); // oxlint-disable-line unicorn/require-post-message-target-origin -- service worker, pas une fenêtre
     return 'found';
   }
   // un service worker plus récent que cette page est déjà installé
-  if(await installedVersion() > APP_VERSION) return 'reload';
+  if ((await installedVersion()) > APP_VERSION) return 'reload';
   return 'uptodate';
 }
 
-function reloadGame(){ location.reload(); }
+function reloadGame() {
+  location.reload();
+}
 
-function rememberUpdate(){
-  try{ sessionStorage.setItem(UPDATE_FLAG, String(APP_VERSION)); }catch{}
+function rememberUpdate() {
+  try {
+    sessionStorage.setItem(UPDATE_FLAG, String(APP_VERSION));
+  } catch {}
 }
 
 // au démarrage : si le jeu vient de redémarrer pour une mise à jour, le message
 // à montrer (une seule fois), sinon null
-function announceUpdate(){
+function announceUpdate() {
   let from = null;
-  try{ from = sessionStorage.getItem(UPDATE_FLAG); sessionStorage.removeItem(UPDATE_FLAG); }catch{}
-  if(from === null) return null;
-  return Number(from) < APP_VERSION ? `✨ Le jeu est à jour : version ${APP_VERSION}` : `✅ Le jeu est à jour (version ${APP_VERSION})`;
+  try {
+    from = sessionStorage.getItem(UPDATE_FLAG);
+    sessionStorage.removeItem(UPDATE_FLAG);
+  } catch {}
+  if (from === null) return null;
+  return Number(from) < APP_VERSION
+    ? `✨ Le jeu est à jour : version ${APP_VERSION}`
+    : `✅ Le jeu est à jour (version ${APP_VERSION})`;
 }
 
 /* ---- la carte de l'espace parents ---- */
-function updateCardHTML(){
+function updateCardHTML() {
   return `<section class="bk-card ps-update"><h3>📲 Version du jeu</h3>
     <p class="ps-version">Version <strong id="ps-version">${APP_VERSION}</strong></p>
     <div class="ps-actions">
@@ -90,17 +103,18 @@ function updateCardHTML(){
   </section>`;
 }
 
-function bindUpdateCard(){
-  const btn = document.getElementById('ps-update'), msg = document.getElementById('ps-update-msg');
-  if(!btn || !msg) return;
-  btn.onclick = async ()=>{
+function bindUpdateCard() {
+  const btn = document.getElementById('ps-update'),
+    msg = document.getElementById('ps-update-msg');
+  if (!btn || !msg) return;
+  btn.onclick = async () => {
     playSound('tap');
     btn.disabled = true;
     msg.textContent = UPDATE_MESSAGES.searching;
     const status = await checkForUpdate();
     msg.textContent = UPDATE_MESSAGES[status];
     msg.dataset.status = status;
-    if(status === 'found' || status === 'reload'){
+    if (status === 'found' || status === 'reload') {
       // 'found' : js/app/init.js recharge dès que la nouvelle version prend la main
       rememberUpdate();
       setTimeout(reloadGame, status === 'reload' ? 900 : UPDATE_RELOAD_AFTER);

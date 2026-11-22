@@ -7,50 +7,88 @@
    Seuils et tailles centralisés dans js/entities/difficulty/difficulty.js
    (volumeUsesCapacityCompare / ContainerCount / AskLessChance / solidOptions). */
 import {
-  solidOptions, volumeAskLessChance, volumeContainerCount, volumeUsesCapacityCompare
+  solidOptions,
+  volumeAskLessChance,
+  volumeContainerCount,
+  volumeUsesCapacityCompare,
 } from '../../../entities/difficulty/index.js';
 import { pickRandom, shuffle } from '../../../shared/lib/index.js';
 import { openModal } from '../../../shared/ui/index.js';
 import { gameDiff } from '../../adaptive/index.js';
 import { registerHints, setHintQuestion } from '../../hints/index.js';
 import {
-  clearActiveTimer, flashModal, livesBar, loseLife, onMissionWin, registerGame, setSolution,
-  setupLives, solSel, startTimerIfNeeded, stepOk
+  clearActiveTimer,
+  flashModal,
+  livesBar,
+  loseLife,
+  onMissionWin,
+  registerGame,
+  setSolution,
+  setupLives,
+  solSel,
+  startTimerIfNeeded,
+  stepOk,
 } from '../../minigame-engine/index.js';
 import { bindQuit, gameHeader } from '../../screen/index.js';
 
 const CONTAINER_PAIRS = [
-  ['🥤','🪣'], ['☕','🛁'], ['🍶','🏊'], ['🥛','🛢️'],
-  ['🧴','🚰'], ['🥣','🍲'], ['🧃','🛳️'], ['🥄','🍳'],
+  ['🥤', '🪣'],
+  ['☕', '🛁'],
+  ['🍶', '🏊'],
+  ['🥛', '🛢️'],
+  ['🧴', '🚰'],
+  ['🥣', '🍲'],
+  ['🧃', '🛳️'],
+  ['🥄', '🍳'],
 ];
 // un 3e contenant, de taille intermédiaire, pour le palier 2 (3 contenants
 // à classer au lieu de 2 — davantage de comparaisons mentales à faire)
-const CONTAINER_MID = ['🧋','🫖','🪙','🧊','🍯','🧱','🚲','🛶'];
+const CONTAINER_MID = ['🧋', '🫖', '🪙', '🧊', '🍯', '🧱', '🚲', '🛶'];
 
 // tip : une propriété du solide, sans le nommer (indice 2, v52) ; rolls : il roule
 const SOLIDS = [
-  { name:'cube',     items:['🎲','🧊','🗃️'], rolls:false, tip:'Il a des coins, et toutes ses faces sont des carrés pareils.' },
-  { name:'boule',    items:['⚽','🏀','🌍'], rolls:true,  tip:'Il roule dans tous les sens, et il n\'a aucun coin.' },
-  { name:'cylindre', items:['🥫','🕯️','🧻'], rolls:true,  tip:'Il peut rouler, et il a deux faces rondes et plates, en haut et en bas.' },
-  { name:'cône',     items:['🍦','🎉','🚧'], rolls:true,  tip:'Il a un bout pointu, et une face ronde et plate de l\'autre côté.' },
-  { name:'pavé',     items:['🎁','📦','🧱'], rolls:false, tip:'Il a des coins, et ses faces sont des rectangles, comme une boîte.' },
+  {
+    name: 'cube',
+    items: ['🎲', '🧊', '🗃️'],
+    rolls: false,
+    tip: 'Il a des coins, et toutes ses faces sont des carrés pareils.',
+  },
+  { name: 'boule', items: ['⚽', '🏀', '🌍'], rolls: true, tip: "Il roule dans tous les sens, et il n'a aucun coin." },
+  {
+    name: 'cylindre',
+    items: ['🥫', '🕯️', '🧻'],
+    rolls: true,
+    tip: 'Il peut rouler, et il a deux faces rondes et plates, en haut et en bas.',
+  },
+  {
+    name: 'cône',
+    items: ['🍦', '🎉', '🚧'],
+    rolls: true,
+    tip: "Il a un bout pointu, et une face ronde et plate de l'autre côté.",
+  },
+  {
+    name: 'pavé',
+    items: ['🎁', '📦', '🧱'],
+    rolls: false,
+    tip: 'Il a des coins, et ses faces sont des rectangles, comme une boîte.',
+  },
 ];
 
-function renderVolume(){
+function renderVolume() {
   setupLives('volume');
   const dd = gameDiff();
-  if(volumeUsesCapacityCompare(dd)) renderCapacityCompare(dd);
+  if (volumeUsesCapacityCompare(dd)) renderCapacityCompare(dd);
   else renderSolidShape(dd);
 }
 
 // paliers 1-2 : quel récipient contient le plus (ou le moins) ?
-function renderCapacityCompare(dd){
-  const pairIdx = Math.floor(Math.random()*CONTAINER_PAIRS.length);
+function renderCapacityCompare(dd) {
+  const pairIdx = Math.floor(Math.random() * CONTAINER_PAIRS.length);
   const [small, big] = CONTAINER_PAIRS[pairIdx];
   const nContainers = volumeContainerCount(dd);
   // palier 2 : un 3e contenant de taille intermédiaire, pour forcer un
   // vrai classement (petit/moyen/grand) plutôt qu'un simple duel
-  const containers = nContainers>=3 ? [small, CONTAINER_MID[pairIdx], big] : [small, big];
+  const containers = nContainers >= 3 ? [small, CONTAINER_MID[pairIdx], big] : [small, big];
 
   const askMore = Math.random() > volumeAskLessChance(dd);
   const answer = askMore ? big : small;
@@ -61,30 +99,34 @@ function renderCapacityCompare(dd){
     ${gameHeader('🧪 Grandeurs & volumes', question)}
     ${livesBar()}
     <div class="vol-containers">
-      ${options.map(o=>`<button type="button" class="vol-container-btn" data-v="${o}">${o}</button>`).join('')}
+      ${options.map((o) => `<button type="button" class="vol-container-btn" data-v="${o}">${o}</button>`).join('')}
     </div>
   `);
   bindQuit();
   startTimerIfNeeded('volume');
-  setSolution([solSel('.vol-container-btn','v',answer)]);
-  setHintQuestion('volume', { kind:'capacity', askMore }, { choices:'.vol-container-btn' });
+  setSolution([solSel('.vol-container-btn', 'v', answer)]);
+  setHintQuestion('volume', { kind: 'capacity', askMore }, { choices: '.vol-container-btn' });
   // seulement 2-3 contenants : sans ça, une mauvaise réponse laisserait
   // deviner la bonne par élimination. Une erreur relance une NOUVELLE
   // comparaison (nouveaux contenants), jamais la même à éliminer.
-  document.querySelectorAll('.vol-container-btn').forEach(btn=>{
-    btn.onclick = ()=>{
-      if(btn.dataset.v===answer){ clearActiveTimer(); stepOk(btn); flashModal('ok'); setTimeout(onMissionWin, 350); }
-      else loseLife(btn, { onRetry: ()=> renderCapacityCompare(dd) });
+  document.querySelectorAll('.vol-container-btn').forEach((btn) => {
+    btn.onclick = () => {
+      if (btn.dataset.v === answer) {
+        clearActiveTimer();
+        stepOk(btn);
+        flashModal('ok');
+        setTimeout(onMissionWin, 350);
+      } else loseLife(btn, { onRetry: () => renderCapacityCompare(dd) });
     };
   });
 }
 
 // paliers 3-5 : reconnaître la forme en volume (solide) d'un objet du quotidien
-function renderSolidShape(dd){
+function renderSolidShape(dd) {
   const solid = pickRandom(SOLIDS);
   const item = pickRandom(solid.items);
   const nOptions = solidOptions(dd);
-  const distractors = shuffle(SOLIDS.filter(s=>s.name!==solid.name)).slice(0, nOptions - 1);
+  const distractors = shuffle(SOLIDS.filter((s) => s.name !== solid.name)).slice(0, nOptions - 1);
   const options = shuffle([solid, ...distractors]);
 
   openModal(`
@@ -92,17 +134,21 @@ function renderSolidShape(dd){
     ${livesBar()}
     <div class="vol-shape-box"><span class="vol-shape-emoji">${item}</span></div>
     <div class="vol-options">
-      ${options.map(o=>`<button type="button" class="vol-opt-btn" data-v="${o.name}">${o.name}</button>`).join('')}
+      ${options.map((o) => `<button type="button" class="vol-opt-btn" data-v="${o.name}">${o.name}</button>`).join('')}
     </div>
   `);
   bindQuit();
   startTimerIfNeeded('volume');
-  setSolution([solSel('.vol-opt-btn','v',solid.name)]);
-  setHintQuestion('volume', { kind:'solid', solid, options }, { choices:'.vol-opt-btn' });
-  document.querySelectorAll('.vol-opt-btn').forEach(btn=>{
-    btn.onclick = ()=>{
-      if(btn.dataset.v===solid.name){ clearActiveTimer(); stepOk(btn); flashModal('ok'); setTimeout(onMissionWin, 350); }
-      else loseLife(btn, { onRetry: ()=> renderSolidShape(dd) });
+  setSolution([solSel('.vol-opt-btn', 'v', solid.name)]);
+  setHintQuestion('volume', { kind: 'solid', solid, options }, { choices: '.vol-opt-btn' });
+  document.querySelectorAll('.vol-opt-btn').forEach((btn) => {
+    btn.onclick = () => {
+      if (btn.dataset.v === solid.name) {
+        clearActiveTimer();
+        stepOk(btn);
+        flashModal('ok');
+        setTimeout(onMissionWin, 350);
+      } else loseLife(btn, { onRetry: () => renderSolidShape(dd) });
     };
   });
 }
@@ -111,15 +157,27 @@ function renderSolidShape(dd){
 // 2. penser à ce qu'on verse dedans. Solides : 1. roule-t-il ? a-t-il des
 // coins ? ; 2. une propriété du bon solide, et (avec 4 choix ou plus) un
 // solide qui roule écarté s'il ne roule pas, ou l'inverse.
-function volumeHints(q){
-  if(q.kind === 'capacity') return [
-    { say:`Imagine qu'on les remplit d'eau : lequel en prend ${q.askMore ? 'le plus' : 'le moins'} ?`, fx:{ glow:'.vol-containers' } },
-    { say:'Pense à ce que tu verses dedans : un petit objet se remplit vite, un grand objet en prend beaucoup.', fx:{} },
-  ];
-  const wrong = q.options.find(o=> o.name !== q.solid.name && o.rolls !== q.solid.rolls) || q.options.find(o=> o.name !== q.solid.name);
+function volumeHints(q) {
+  if (q.kind === 'capacity')
+    return [
+      {
+        say: `Imagine qu'on les remplit d'eau : lequel en prend ${q.askMore ? 'le plus' : 'le moins'} ?`,
+        fx: { glow: '.vol-containers' },
+      },
+      {
+        say: 'Pense à ce que tu verses dedans : un petit objet se remplit vite, un grand objet en prend beaucoup.',
+        fx: {},
+      },
+    ];
+  const wrong =
+    q.options.find((o) => o.name !== q.solid.name && o.rolls !== q.solid.rolls) ||
+    q.options.find((o) => o.name !== q.solid.name);
   return [
-    { say:'Regarde la forme de l\'objet : est-ce qu\'il peut rouler ? A-t-il des coins ?', fx:{ glow:'.vol-shape-box' } },
-    { say:q.solid.tip, fx:{ glow:'.vol-shape-box', dim: wrong ? solSel('.vol-opt-btn', 'v', wrong.name) : null } },
+    {
+      say: "Regarde la forme de l'objet : est-ce qu'il peut rouler ? A-t-il des coins ?",
+      fx: { glow: '.vol-shape-box' },
+    },
+    { say: q.solid.tip, fx: { glow: '.vol-shape-box', dim: wrong ? solSel('.vol-opt-btn', 'v', wrong.name) : null } },
   ];
 }
 

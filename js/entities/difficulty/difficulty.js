@@ -83,9 +83,16 @@
 // sur les 5 paliers « historiques », pour éviter les lectures `|| valeur
 // piochée` au hasard. Les jeux qui vont au-delà (calcul mental, palier 6)
 // ont leur propre fonction de bornes qui n'utilise pas `tierValue`.
-function tierValue(table, dd){
+function tierValue(table, dd) {
   const d = Math.max(1, Math.min(5, Number(dd) || 1));
-  return (d in table) ? table[d] : table[Object.keys(table).map(Number).sort((a,b)=>a-b).pop()];
+  return d in table
+    ? table[d]
+    : table[
+        Object.keys(table)
+          .map(Number)
+          .sort((a, b) => a - b)
+          .pop()
+      ];
 }
 
 /* ---------------------------------------------------------------------
@@ -94,8 +101,8 @@ function tierValue(table, dd){
    palier, jusqu'à 7 (au-delà, la grille devient difficile à lire sur
    un écran de téléphone pour un enfant).
    --------------------------------------------------------------------- */
-function memoryPairs(dd){
-  return tierValue({1:3, 2:4, 3:5, 4:6, 5:7}, dd);
+function memoryPairs(dd) {
+  return tierValue({ 1: 3, 2: 4, 3: 5, 4: 6, 5: 7 }, dd);
 }
 
 /* ---------------------------------------------------------------------
@@ -105,15 +112,18 @@ function memoryPairs(dd){
    dénombrement visuel un-par-un n'a plus de sens pédagogique — on passe
    au calcul, cf. mathBounds).
    --------------------------------------------------------------------- */
-function countRange(dd){
+function countRange(dd) {
   // { min, max } du nombre d'objets affichés
-  return tierValue({
-    1:{min:3, max:7},
-    2:{min:3, max:9},
-    3:{min:4, max:11},
-    4:{min:5, max:14},
-    5:{min:6, max:18},
-  }, dd);
+  return tierValue(
+    {
+      1: { min: 3, max: 7 },
+      2: { min: 3, max: 9 },
+      3: { min: 4, max: 11 },
+      4: { min: 5, max: 14 },
+      5: { min: 6, max: 18 },
+    },
+    dd,
+  );
 }
 
 /* ---------------------------------------------------------------------
@@ -123,11 +133,11 @@ function countRange(dd){
    « cet objet est différent »).
    Progression régulière : +2 images par palier (6 → 8 → 10 → 12 → 14).
    --------------------------------------------------------------------- */
-function diffTotal(dd){
-  return tierValue({1:6, 2:8, 3:10, 4:12, 5:14}, dd);
+function diffTotal(dd) {
+  return tierValue({ 1: 6, 2: 8, 3: 10, 4: 12, 5: 14 }, dd);
 }
-function diffMirrorChance(dd){
-  return tierValue({1:0, 2:0.3, 3:0.45, 4:0.55, 5:0.6}, dd);
+function diffMirrorChance(dd) {
+  return tierValue({ 1: 0, 2: 0.3, 3: 0.45, 4: 0.55, 5: 0.6 }, dd);
 }
 
 /* ---------------------------------------------------------------------
@@ -136,9 +146,9 @@ function diffMirrorChance(dd){
    notion de « suite organisée » du programme de cycle 1, puis à la
    notion d'algorithme simple en cycle 2.
    --------------------------------------------------------------------- */
-function sequencePatternLength(dd){
+function sequencePatternLength(dd) {
   // nombre de symboles affichés avant de demander le suivant
-  return tierValue({1:5, 2:6, 3:6, 4:7, 5:8}, dd);
+  return tierValue({ 1: 5, 2: 6, 3: 6, 4: 7, 5: 8 }, dd);
 }
 
 /* ---------------------------------------------------------------------
@@ -148,8 +158,8 @@ function sequencePatternLength(dd){
    reste prudemment sous cette limite même au palier maximal, pour que
    l'exercice reste un jeu et non un test de mémoire éprouvant.
    --------------------------------------------------------------------- */
-function simonLength(dd){
-  return tierValue({1:3, 2:4, 3:5, 4:6, 5:7}, dd);
+function simonLength(dd) {
+  return tierValue({ 1: 3, 2: 4, 3: 5, 4: 6, 5: 7 }, dd);
 }
 
 /* ---------------------------------------------------------------------
@@ -160,22 +170,22 @@ function simonLength(dd){
    where « start » était ajouté deux fois (probabilité doublée par
    erreur dans l'ancienne version).
    --------------------------------------------------------------------- */
-function puzzleCount(dd){
-  return tierValue({1:4, 2:5, 3:6, 4:7, 5:8}, dd);
+function puzzleCount(dd) {
+  return tierValue({ 1: 4, 2: 5, 3: 6, 4: 7, 5: 8 }, dd);
 }
-function puzzleVariants(dd){
+function puzzleVariants(dd) {
   const d = Math.max(1, Math.min(5, Number(dd) || 1));
   // palier 1 : uniquement la suite la plus simple (1, 2, 3…)
-  if(d<=1) return ['from1'];
+  if (d <= 1) return ['from1'];
   // palier 2 : + suite à partir d'un autre nombre
-  if(d===2) return ['from1','start'];
+  if (d === 2) return ['from1', 'start'];
   // palier 3 : + suite décroissante (compétence plus abstraite : CE1)
-  if(d===3) return ['from1','start','desc'];
+  if (d === 3) return ['from1', 'start', 'desc'];
   // palier 4-5 : + suite de 2 en 2 (dénombrement par groupements, CE1-CE2)
-  return ['from1','start','desc','step2'];
+  return ['from1', 'start', 'desc', 'step2'];
 }
-function puzzleStartMax(dd){
-  return tierValue({1:8, 2:8, 3:12, 4:12, 5:16}, dd);
+function puzzleStartMax(dd) {
+  return tierValue({ 1: 8, 2: 8, 3: 12, 4: 12, 5: 16 }, dd);
 }
 
 /* ---------------------------------------------------------------------
@@ -187,14 +197,17 @@ function puzzleStartMax(dd){
    fait sans support imagé, cf. proposition de 6e île en fin de document
    ANALYSE-DIFFICULTE.md).
    --------------------------------------------------------------------- */
-function mathBounds(dd){
-  return tierValue({
-    1:{max:5,  allowMinus:false},
-    2:{max:10, allowMinus:true},
-    3:{max:15, allowMinus:true},
-    4:{max:20, allowMinus:true},
-    5:{max:30, allowMinus:true},
-  }, dd);
+function mathBounds(dd) {
+  return tierValue(
+    {
+      1: { max: 5, allowMinus: false },
+      2: { max: 10, allowMinus: true },
+      3: { max: 15, allowMinus: true },
+      4: { max: 20, allowMinus: true },
+      5: { max: 30, allowMinus: true },
+    },
+    dd,
+  );
 }
 
 /* ---------------------------------------------------------------------
@@ -204,9 +217,11 @@ function mathBounds(dd){
    difficile). Le principe alphabétique est un objectif de fin de GS,
    la lecture autonome de mots simples un objectif CP.
    --------------------------------------------------------------------- */
-function readingWordOnly(dd){ return dd >= 3; }
-function readingOptions(dd){
-  return tierValue({1:3, 2:3, 3:4, 4:4, 5:5}, dd);
+function readingWordOnly(dd) {
+  return dd >= 3;
+}
+function readingOptions(dd) {
+  return tierValue({ 1: 3, 2: 3, 3: 4, 4: 4, 5: 5 }, dd);
 }
 
 /* ---------------------------------------------------------------------
@@ -215,11 +230,15 @@ function readingOptions(dd){
    singulier est travaillé d'abord, le pluriel demande de reconnaître
    une marque supplémentaire — on l'augmente progressivement).
    --------------------------------------------------------------------- */
-function determinantsImageShown(dd){ return dd <= 2; }
-function determinantsPluralChance(dd){
-  return tierValue({1:0.25, 2:0.3, 3:0.4, 4:0.45, 5:0.5}, dd);
+function determinantsImageShown(dd) {
+  return dd <= 2;
 }
-function determinantsExtraDistractor(dd){ return dd >= 3; }
+function determinantsPluralChance(dd) {
+  return tierValue({ 1: 0.25, 2: 0.3, 3: 0.4, 4: 0.45, 5: 0.5 }, dd);
+}
+function determinantsExtraDistractor(dd) {
+  return dd >= 3;
+}
 
 /* ---------------------------------------------------------------------
    10) GRANDEURS & VOLUMES — deux compétences enchaînées dans le temps
@@ -233,15 +252,17 @@ function determinantsExtraDistractor(dd){ return dd >= 3; }
    aussi (2 contenants au palier 1, 3 au palier 2, en demandant parfois
    le plus petit ET le plus grand), au lieu d'être identique partout.
    --------------------------------------------------------------------- */
-function volumeUsesCapacityCompare(dd){ return dd <= 2; }
-function volumeContainerCount(dd){
-  return tierValue({1:2, 2:3}, dd);           // n'est utilisé que pour dd 1-2
+function volumeUsesCapacityCompare(dd) {
+  return dd <= 2;
 }
-function volumeAskLessChance(dd){
-  return tierValue({1:0.2, 2:0.4}, dd);        // "le moins" = question plus exigeante
+function volumeContainerCount(dd) {
+  return tierValue({ 1: 2, 2: 3 }, dd); // n'est utilisé que pour dd 1-2
 }
-function solidOptions(dd){
-  return tierValue({3:3, 4:4, 5:5}, dd);       // n'est utilisé que pour dd >= 3
+function volumeAskLessChance(dd) {
+  return tierValue({ 1: 0.2, 2: 0.4 }, dd); // "le moins" = question plus exigeante
+}
+function solidOptions(dd) {
+  return tierValue({ 3: 3, 4: 4, 5: 5 }, dd); // n'est utilisé que pour dd >= 3
 }
 
 /* ---------------------------------------------------------------------
@@ -252,14 +273,14 @@ function solidOptions(dd){
    aucune réflexion). La vraie compétence de comparaison se mesure sur
    des nombres voisins, pas seulement sur l'ordre de grandeur.
    --------------------------------------------------------------------- */
-function compareRange(dd){
-  return tierValue({1:10, 2:20, 3:50, 4:100, 5:100}, dd);
+function compareRange(dd) {
+  return tierValue({ 1: 10, 2: 20, 3: 50, 4: 100, 5: 100 }, dd);
 }
-function compareCloseChance(dd){
-  return tierValue({1:0, 2:0.15, 3:0.35, 4:0.5, 5:0.6}, dd);
+function compareCloseChance(dd) {
+  return tierValue({ 1: 0, 2: 0.15, 3: 0.35, 4: 0.5, 5: 0.6 }, dd);
 }
-function compareEqualChance(dd){
-  return tierValue({1:0.2, 2:0.2, 3:0.2, 4:0.15, 5:0.15}, dd);
+function compareEqualChance(dd) {
+  return tierValue({ 1: 0.2, 2: 0.2, 3: 0.2, 4: 0.15, 5: 0.15 }, dd);
 }
 
 /* ---------------------------------------------------------------------
@@ -268,17 +289,29 @@ function compareEqualChance(dd){
    la pile à reconstituer (plus de pièces = plus de termes à additionner
    mentalement, donc plus dur, indépendamment des valeurs elles-mêmes).
    --------------------------------------------------------------------- */
-function moneyDenoms(dd){
-  return tierValue({
-    1:[1,2],
-    2:[1,2,5],
-    3:[1,2,5,10],
-    4:[1,2,5,10,20],
-    5:[1,2,5,10,20],
-  }, dd);
+function moneyDenoms(dd) {
+  return tierValue(
+    {
+      1: [1, 2],
+      2: [1, 2, 5],
+      3: [1, 2, 5, 10],
+      4: [1, 2, 5, 10, 20],
+      5: [1, 2, 5, 10, 20],
+    },
+    dd,
+  );
 }
-function moneyPileSize(dd){
-  return tierValue({1:{min:2,max:2}, 2:{min:2,max:3}, 3:{min:2,max:3}, 4:{min:3,max:4}, 5:{min:3,max:5}}, dd);
+function moneyPileSize(dd) {
+  return tierValue(
+    {
+      1: { min: 2, max: 2 },
+      2: { min: 2, max: 3 },
+      3: { min: 2, max: 3 },
+      4: { min: 3, max: 4 },
+      5: { min: 3, max: 5 },
+    },
+    dd,
+  );
 }
 
 /* ---------------------------------------------------------------------
@@ -291,17 +324,17 @@ function moneyPileSize(dd){
    --------------------------------------------------------------------- */
 const LIVES_TABLE = {
   // mémoire : voir livesFor — les essais suivent le nombre de paires
-  jigsaw:       {2:5, 3:4, 4:4, 5:3},   // puzzle : beaucoup de morceaux, on essaie
-  simon:        {2:3, 3:3, 4:2, 5:2},
-  rhythm:       {2:3, 3:3, 4:2, 5:2},   // comme Simon : une suite à rejouer
-  default:      {2:3, 3:2, 4:2, 5:1},          // jeux « une seule bonne réponse »
+  jigsaw: { 2: 5, 3: 4, 4: 4, 5: 3 }, // puzzle : beaucoup de morceaux, on essaie
+  simon: { 2: 3, 3: 3, 4: 2, 5: 2 },
+  rhythm: { 2: 3, 3: 3, 4: 2, 5: 2 }, // comme Simon : une suite à rejouer
+  default: { 2: 3, 3: 2, 4: 2, 5: 1 }, // jeux « une seule bonne réponse »
   // les jeux plus récents (calcul, lecture…) demandent un temps de
   // réflexion : on laisse un essai de plus que le barème par défaut.
-  generous:     {2:4, 3:3, 4:3, 5:2},
+  generous: { 2: 4, 3: 3, 4: 3, 5: 2 },
 };
-function livesFor(kind, dd){
+function livesFor(kind, dd) {
   const d = Math.max(1, Math.min(5, Number(dd) || 1));
-  if(d <= 1) return Infinity;                  // île 1 : on apprend sans pression
+  if (d <= 1) return Infinity; // île 1 : on apprend sans pression
   // MÉMOIRE : retourner deux cartes différentes fait partie du jeu. Avec n
   // paires, même un enfant qui se souvient de TOUT ce qu'il a vu se trompe
   // jusqu'à n fois en découvrant les cartes (≈ 0,6 n en moyenne). Avant, 3
@@ -309,8 +342,30 @@ function livesFor(kind, dd){
   // enfant qui n'avait rien oublié (constaté par test/games.test.js). Les
   // essais suivent donc le nombre de paires : n + 2. Bien retenir fait
   // toujours gagner ; toucher au hasard fait toujours perdre.
-  if(kind === 'memory') return memoryPairs(d) + 2;
-  const GENEROUS_KINDS = ['math','reading','determinants','volume','compare','money','clock','calendar','calc','shapes','planets','cubes','packs','shelf','share','recipe','pitch','lifecycle','ladybugs','potions','mirror'];
+  if (kind === 'memory') return memoryPairs(d) + 2;
+  const GENEROUS_KINDS = [
+    'math',
+    'reading',
+    'determinants',
+    'volume',
+    'compare',
+    'money',
+    'clock',
+    'calendar',
+    'calc',
+    'shapes',
+    'planets',
+    'cubes',
+    'packs',
+    'shelf',
+    'share',
+    'recipe',
+    'pitch',
+    'lifecycle',
+    'ladybugs',
+    'potions',
+    'mirror',
+  ];
   const table = LIVES_TABLE[kind] || (GENEROUS_KINDS.includes(kind) ? LIVES_TABLE.generous : LIVES_TABLE.default);
   // le calcul mental (palier 6, Volcan) emprunte le barème d'essais du
   // palier 5 : seul le minuteur continue de se resserrer au-delà.
@@ -334,28 +389,48 @@ function livesFor(kind, dd){
      un message encourageant, jamais un échec immédiat.
    ===================================================================== */
 const TIMER_SECONDS = {
-  count:        {3:20, 4:18, 5:16},
-  diff:         {3:20, 4:18, 5:16},
-  sequence:     {3:20, 4:18, 5:16},
-  reading:      {3:22, 4:20, 5:18},   // lire prend plus de temps : on reste généreux
-  math:         {3:26, 4:22, 5:20},
-  money:        {3:26, 4:22, 5:20},   // additionner plusieurs pièces prend du temps
-  determinants: {3:16, 4:14, 5:13},
-  volume:       {3:16, 4:14, 5:13},
-  compare:      {3:16, 4:14, 5:13},
-  clock:        {3:18, 4:16, 5:14},
-  calc:         {3:28, 4:24, 5:22, 6:20},   // calcul abstrait : le plus généreux de tous
+  count: { 3: 20, 4: 18, 5: 16 },
+  diff: { 3: 20, 4: 18, 5: 16 },
+  sequence: { 3: 20, 4: 18, 5: 16 },
+  reading: { 3: 22, 4: 20, 5: 18 }, // lire prend plus de temps : on reste généreux
+  math: { 3: 26, 4: 22, 5: 20 },
+  money: { 3: 26, 4: 22, 5: 20 }, // additionner plusieurs pièces prend du temps
+  determinants: { 3: 16, 4: 14, 5: 13 },
+  volume: { 3: 16, 4: 14, 5: 13 },
+  compare: { 3: 16, 4: 14, 5: 13 },
+  clock: { 3: 18, 4: 16, 5: 14 },
+  calc: { 3: 28, 4: 24, 5: 22, 6: 20 }, // calcul abstrait : le plus généreux de tous
 };
 // jeux à plusieurs étapes : jamais de minuteur, quelle que soit la difficulté
-const NO_TIMER_KINDS = ['memory','simon','puzzle','calendar','shapes','planets','jigsaw','nesting','cubes','packs','shelf','share','recipe','rhythm','pitch','lifecycle','ladybugs','potions','mirror'];
-function timerFor(kind, dd){
-  if(NO_TIMER_KINDS.includes(kind)) return null;
+const NO_TIMER_KINDS = [
+  'memory',
+  'simon',
+  'puzzle',
+  'calendar',
+  'shapes',
+  'planets',
+  'jigsaw',
+  'nesting',
+  'cubes',
+  'packs',
+  'shelf',
+  'share',
+  'recipe',
+  'rhythm',
+  'pitch',
+  'lifecycle',
+  'ladybugs',
+  'potions',
+  'mirror',
+];
+function timerFor(kind, dd) {
+  if (NO_TIMER_KINDS.includes(kind)) return null;
   const table = TIMER_SECONDS[kind];
-  if(!table) return null;
+  if (!table) return null;
   // le calcul mental va jusqu'au palier 6 (Volcan) ; les autres jeux
   // restent plafonnés au palier 5 comme avant.
-  const d = Math.max(1, Math.min(kind==='calc' ? 6 : 5, Number(dd) || 1));
-  return table[d] || null;            // undefined aux paliers 1-2 → pas de minuteur
+  const d = Math.max(1, Math.min(kind === 'calc' ? 6 : 5, Number(dd) || 1));
+  return table[d] || null; // undefined aux paliers 1-2 → pas de minuteur
 }
 
 /* =====================================================================
@@ -372,14 +447,14 @@ function timerFor(kind, dd){
    (MS/GS) en heures pleines : lire « il est 3 heures » sur une horloge
    ne demande pas de savoir lire des chiffres composés.
    --------------------------------------------------------------------- */
-function clockGranularity(dd){
+function clockGranularity(dd) {
   // minutes possibles affichées sur l'horloge, selon le palier
-  if(dd<=2) return [0];                 // heures pleines : 3h, 7h…
-  if(dd<=4) return [0,30];              // + demi-heures : 3h30
-  return [0,15,30,45];                  // + quarts d'heure : 3h15, 3h45
+  if (dd <= 2) return [0]; // heures pleines : 3h, 7h…
+  if (dd <= 4) return [0, 30]; // + demi-heures : 3h30
+  return [0, 15, 30, 45]; // + quarts d'heure : 3h15, 3h45
 }
-function clockOptions(dd){
-  return dd>=4 ? 4 : 3;
+function clockOptions(dd) {
+  return dd >= 4 ? 4 : 3;
 }
 
 /* ---------------------------------------------------------------------
@@ -393,9 +468,11 @@ function clockOptions(dd){
    qui passe n'a pas à être elle-même chronométrée, ce serait un comble
    pédagogique contre-productif.
    --------------------------------------------------------------------- */
-function calendarUsesWeekdayOrder(dd){ return dd >= 2; }
-function calendarWeekdayCount(dd){
-  return tierValue({1:3, 2:3, 3:4, 4:5, 5:6}, dd);
+function calendarUsesWeekdayOrder(dd) {
+  return dd >= 2;
+}
+function calendarWeekdayCount(dd) {
+  return tierValue({ 1: 3, 2: 3, 3: 4, 4: 5, 5: 6 }, dd);
 }
 
 /* ---------------------------------------------------------------------
@@ -407,15 +484,15 @@ function calendarWeekdayCount(dd){
    introduite au palier 5 (tables de 2, 5 et 10 : les plus régulières,
    toujours enseignées en premier).
    --------------------------------------------------------------------- */
-function calcBounds(dd){
+function calcBounds(dd) {
   const d = Math.max(1, Math.min(6, Number(dd) || 1));
   const table = {
-    1:{max:20,  terms:2, allowMinus:true,  allowMulti:false},
-    2:{max:30,  terms:2, allowMinus:true,  allowMulti:false},
-    3:{max:50,  terms:2, allowMinus:true,  allowMulti:false},
-    4:{max:70,  terms:2, allowMinus:true,  allowMulti:false},
-    5:{max:100, terms:3, allowMinus:true,  allowMulti:true},   // + multiplication
-    6:{max:100, terms:3, allowMinus:true,  allowMulti:true},   // Volcan : idem, en moins de temps (timerFor)
+    1: { max: 20, terms: 2, allowMinus: true, allowMulti: false },
+    2: { max: 30, terms: 2, allowMinus: true, allowMulti: false },
+    3: { max: 50, terms: 2, allowMinus: true, allowMulti: false },
+    4: { max: 70, terms: 2, allowMinus: true, allowMulti: false },
+    5: { max: 100, terms: 3, allowMinus: true, allowMulti: true }, // + multiplication
+    6: { max: 100, terms: 3, allowMinus: true, allowMulti: true }, // Volcan : idem, en moins de temps (timerFor)
   };
   return table[d];
 }
@@ -439,16 +516,52 @@ const CALC_MULT_TABLES = [2, 5, 10];
    enfant qui ne lit pas encore ; aux paliers 5-6, compter les côtés ou
    les sommets EST l'exercice, la consigne n'a donc pas d'image.
    Pas de minuteur (jeu à plusieurs touches) ; essais généreux. */
-function shapesRound(dd){
+function shapesRound(dd) {
   const d = Math.max(1, Math.min(6, Number(dd) || 1));
   return [
     null,
-    { criterion:'color',      items:6, targets:2, shapes:['rond','carre','triangle'],                               colors:['rose','bleu','jaune'] },
-    { criterion:'shape',      items:6, targets:2, shapes:['rond','carre','triangle','etoile','coeur'],             colors:['rose','bleu','jaune','vert'] },
-    { criterion:'shapeColor', items:8, targets:2, shapes:['rond','carre','triangle','etoile','coeur'],             colors:['rose','bleu','jaune','vert'] },
-    { criterion:'sizeShape',  items:8, targets:2, shapes:['rond','carre','triangle','etoile','coeur'],             colors:['rose','bleu','jaune','vert','violet'] },
-    { criterion:'sides',      items:8, targets:3, shapes:['rond','triangle','carre','rectangle','losange','pentagone','hexagone'], colors:['rose','bleu','jaune','vert','violet','orange'] },
-    { criterion:'vertices',   items:9, targets:3, shapes:['triangle','carre','rectangle','losange','pentagone','hexagone','octogone'], colors:['rose','bleu','jaune','vert','violet','orange'] },
+    {
+      criterion: 'color',
+      items: 6,
+      targets: 2,
+      shapes: ['rond', 'carre', 'triangle'],
+      colors: ['rose', 'bleu', 'jaune'],
+    },
+    {
+      criterion: 'shape',
+      items: 6,
+      targets: 2,
+      shapes: ['rond', 'carre', 'triangle', 'etoile', 'coeur'],
+      colors: ['rose', 'bleu', 'jaune', 'vert'],
+    },
+    {
+      criterion: 'shapeColor',
+      items: 8,
+      targets: 2,
+      shapes: ['rond', 'carre', 'triangle', 'etoile', 'coeur'],
+      colors: ['rose', 'bleu', 'jaune', 'vert'],
+    },
+    {
+      criterion: 'sizeShape',
+      items: 8,
+      targets: 2,
+      shapes: ['rond', 'carre', 'triangle', 'etoile', 'coeur'],
+      colors: ['rose', 'bleu', 'jaune', 'vert', 'violet'],
+    },
+    {
+      criterion: 'sides',
+      items: 8,
+      targets: 3,
+      shapes: ['rond', 'triangle', 'carre', 'rectangle', 'losange', 'pentagone', 'hexagone'],
+      colors: ['rose', 'bleu', 'jaune', 'vert', 'violet', 'orange'],
+    },
+    {
+      criterion: 'vertices',
+      items: 9,
+      targets: 3,
+      shapes: ['triangle', 'carre', 'rectangle', 'losange', 'pentagone', 'hexagone', 'octogone'],
+      colors: ['rose', 'bleu', 'jaune', 'vert', 'violet', 'orange'],
+    },
   ][d];
 }
 
@@ -460,7 +573,9 @@ function shapesRound(dd){
    jusqu'à l'ordre des planètes et aux planètes rocheuses ou géantes.
    Pas de minuteur : on lit la question, ou on l'écoute, à son rythme.
    La banque de questions et les règles d'exactitude sont dans js/features/minigames/planets/planets.js. */
-function planetsTier(dd){ return Math.max(1, Math.min(6, Number(dd) || 1)); }
+function planetsTier(dd) {
+  return Math.max(1, Math.min(6, Number(dd) || 1));
+}
 
 /* ---------------------------------------------------------------------
    ASSEMBLER L'IMAGE — vrai puzzle (« Se repérer dans l'espace », cycle 1 :
@@ -486,14 +601,17 @@ function planetsTier(dd){ return Math.max(1, Math.min(6, Number(dd) || 1)); }
                 (« de la plus grande à la plus petite »)
    `sizes` : tailles relatives (100 = la plus grande). Pas de minuteur.
    --------------------------------------------------------------------- */
-function nestingRound(dd){
-  return tierValue({
-    1:{ n:3, sizes:[42, 71, 100],               reverse:0 },
-    2:{ n:4, sizes:[40, 60, 80, 100],           reverse:0 },
-    3:{ n:5, sizes:[40, 55, 70, 85, 100],       reverse:0 },
-    4:{ n:5, sizes:[60, 70, 80, 90, 100],       reverse:.3 },
-    5:{ n:5, sizes:[64, 73, 82, 91, 100],       reverse:.5 },
-  }, dd);
+function nestingRound(dd) {
+  return tierValue(
+    {
+      1: { n: 3, sizes: [42, 71, 100], reverse: 0 },
+      2: { n: 4, sizes: [40, 60, 80, 100], reverse: 0 },
+      3: { n: 5, sizes: [40, 55, 70, 85, 100], reverse: 0 },
+      4: { n: 5, sizes: [60, 70, 80, 90, 100], reverse: 0.3 },
+      5: { n: 5, sizes: [64, 73, 82, 91, 100], reverse: 0.5 },
+    },
+    dd,
+  );
 }
 
 /* ---------------------------------------------------------------------
@@ -508,14 +626,17 @@ function nestingRound(dd){
                 cachés derrière ou dessous
    `w` × `d` : largeur et profondeur ; `h` : étages ; `min`/`max` : cubes.
    --------------------------------------------------------------------- */
-function cubesRound(dd){
-  return tierValue({
-    1:{ w:4, d:1, h:1, min:2, max:4 },
-    2:{ w:4, d:1, h:2, min:3, max:5 },
-    3:{ w:4, d:1, h:2, min:5, max:8 },
-    4:{ w:3, d:2, h:2, min:6, max:8 },
-    5:{ w:3, d:2, h:3, min:8, max:12 },
-  }, dd);
+function cubesRound(dd) {
+  return tierValue(
+    {
+      1: { w: 4, d: 1, h: 1, min: 2, max: 4 },
+      2: { w: 4, d: 1, h: 2, min: 3, max: 5 },
+      3: { w: 4, d: 1, h: 2, min: 5, max: 8 },
+      4: { w: 3, d: 2, h: 2, min: 6, max: 8 },
+      5: { w: 3, d: 2, h: 3, min: 8, max: 12 },
+    },
+    dd,
+  );
 }
 
 /* ---------------------------------------------------------------------
@@ -530,14 +651,17 @@ function cubesRound(dd){
    `extra` : chance d'un jouet tout seul en plus ; `label` : la phrase écrite.
    Pas de minuteur.
    --------------------------------------------------------------------- */
-function packsRound(dd){
-  return tierValue({
-    1:{ sizes:[2],        min:2, max:3, extra:0,  label:false },
-    2:{ sizes:[2, 5],     min:2, max:4, extra:0,  label:false },
-    3:{ sizes:[2, 5, 10], min:2, max:4, extra:0,  label:false },
-    4:{ sizes:[2, 5, 10], min:2, max:5, extra:.5, label:false },
-    5:{ sizes:[2, 5, 10], min:3, max:5, extra:.5, label:true },
-  }, dd);
+function packsRound(dd) {
+  return tierValue(
+    {
+      1: { sizes: [2], min: 2, max: 3, extra: 0, label: false },
+      2: { sizes: [2, 5], min: 2, max: 4, extra: 0, label: false },
+      3: { sizes: [2, 5, 10], min: 2, max: 4, extra: 0, label: false },
+      4: { sizes: [2, 5, 10], min: 2, max: 5, extra: 0.5, label: false },
+      5: { sizes: [2, 5, 10], min: 3, max: 5, extra: 0.5, label: true },
+    },
+    dd,
+  );
 }
 
 /* ---------------------------------------------------------------------
@@ -552,14 +676,17 @@ function packsRound(dd){
    `find` : chance de la question inverse ; `coords` : chance des coordonnées.
    Pas de minuteur.
    --------------------------------------------------------------------- */
-function shelfRound(dd){
-  return tierValue({
-    1:{ size:2, toys:1, find:0,  coords:0 },
-    2:{ size:3, toys:2, find:0,  coords:0 },
-    3:{ size:3, toys:3, find:.3, coords:0 },
-    4:{ size:4, toys:3, find:.3, coords:0 },
-    5:{ size:4, toys:3, find:.2, coords:.5 },
-  }, dd);
+function shelfRound(dd) {
+  return tierValue(
+    {
+      1: { size: 2, toys: 1, find: 0, coords: 0 },
+      2: { size: 3, toys: 2, find: 0, coords: 0 },
+      3: { size: 3, toys: 3, find: 0.3, coords: 0 },
+      4: { size: 4, toys: 3, find: 0.3, coords: 0 },
+      5: { size: 4, toys: 3, find: 0.2, coords: 0.5 },
+    },
+    dd,
+  );
 }
 
 /* ---------------------------------------------------------------------
@@ -573,14 +700,17 @@ function shelfRound(dd){
      palier 5   l'écriture de la part colorée, ou « combien de… pour faire… ? »
    `whole` : chance de la question « combien de… ». Pas de minuteur.
    --------------------------------------------------------------------- */
-function shareRound(dd){
-  return tierValue({
-    1:{ ask:'fair',  parts:[2],       near:false },
-    2:{ ask:'fair',  parts:[2, 4],    near:true },
-    3:{ ask:'show',  fracs:[2, 4],    trap:false },
-    4:{ ask:'show',  fracs:[2, 3, 4], trap:true },
-    5:{ ask:'write', fracs:[2, 3, 4], whole:.4 },
-  }, dd);
+function shareRound(dd) {
+  return tierValue(
+    {
+      1: { ask: 'fair', parts: [2], near: false },
+      2: { ask: 'fair', parts: [2, 4], near: true },
+      3: { ask: 'show', fracs: [2, 4], trap: false },
+      4: { ask: 'show', fracs: [2, 3, 4], trap: true },
+      5: { ask: 'write', fracs: [2, 3, 4], whole: 0.4 },
+    },
+    dd,
+  );
 }
 
 /* ---------------------------------------------------------------------
@@ -595,14 +725,23 @@ function shareRound(dd){
      palier 5   grammes de 50 en 50 (nombres tous les 250) ou centilitres de 10 en 10
    Pas de minuteur.
    --------------------------------------------------------------------- */
-function recipeRound(dd){
-  return tierValue({
-    1:{ asks:['bowls', 'balance'], amounts:[1, 3, 5] },
-    2:{ asks:['spoons'], min:2, max:6 },
-    3:{ asks:['spoons', 'cup'], min:4, max:10, scales:[{ unit:'verres', step:1, max:5, label:1 }] },
-    4:{ asks:['cup'], scales:[{ unit:'g', step:10, max:100, label:50 }] },
-    5:{ asks:['cup'], scales:[{ unit:'g', step:50, max:500, label:250 }, { unit:'cl', step:10, max:100, label:50 }] },
-  }, dd);
+function recipeRound(dd) {
+  return tierValue(
+    {
+      1: { asks: ['bowls', 'balance'], amounts: [1, 3, 5] },
+      2: { asks: ['spoons'], min: 2, max: 6 },
+      3: { asks: ['spoons', 'cup'], min: 4, max: 10, scales: [{ unit: 'verres', step: 1, max: 5, label: 1 }] },
+      4: { asks: ['cup'], scales: [{ unit: 'g', step: 10, max: 100, label: 50 }] },
+      5: {
+        asks: ['cup'],
+        scales: [
+          { unit: 'g', step: 50, max: 500, label: 250 },
+          { unit: 'cl', step: 10, max: 100, label: 50 },
+        ],
+      },
+    },
+    dd,
+  );
 }
 
 /* ---------------------------------------------------------------------
@@ -615,14 +754,17 @@ function recipeRound(dd){
      palier 5   6 symboles, deux silences : on lit le rythme écrit AVANT de l'entendre
    Pas de minuteur.
    --------------------------------------------------------------------- */
-function rhythmRound(dd){
-  return tierValue({
-    1:{ n:3, long:false, rests:0, hide:false, read:false },
-    2:{ n:4, long:true,  rests:0, hide:false, read:false },
-    3:{ n:5, long:true,  rests:1, hide:true,  read:false },
-    4:{ n:6, long:true,  rests:1, hide:true,  read:false },
-    5:{ n:6, long:true,  rests:2, hide:false, read:true },
-  }, dd);
+function rhythmRound(dd) {
+  return tierValue(
+    {
+      1: { n: 3, long: false, rests: 0, hide: false, read: false },
+      2: { n: 4, long: true, rests: 0, hide: false, read: false },
+      3: { n: 5, long: true, rests: 1, hide: true, read: false },
+      4: { n: 6, long: true, rests: 1, hide: true, read: false },
+      5: { n: 6, long: true, rests: 2, hide: false, read: true },
+    },
+    dd,
+  );
 }
 
 /* ---------------------------------------------------------------------
@@ -636,14 +778,17 @@ function rhythmRound(dd){
      palier 5   5 notes, ou « la mélodie monte ou descend ? »
    Pas de minuteur.
    --------------------------------------------------------------------- */
-function pitchRound(dd){
-  return tierValue({
-    1:{ ask:'high',  n:2, gap:9 },
-    2:{ ask:'order', n:3, gap:5 },
-    3:{ ask:'order', n:4, gap:2, maxGap:7 },
-    4:{ ask:'order', n:5, gap:2, maxGap:5 },
-    5:{ ask:'order', n:5, gap:2, maxGap:5, melody:.4 },
-  }, dd);
+function pitchRound(dd) {
+  return tierValue(
+    {
+      1: { ask: 'high', n: 2, gap: 9 },
+      2: { ask: 'order', n: 3, gap: 5 },
+      3: { ask: 'order', n: 4, gap: 2, maxGap: 7 },
+      4: { ask: 'order', n: 5, gap: 2, maxGap: 5 },
+      5: { ask: 'order', n: 5, gap: 2, maxGap: 5, melody: 0.4 },
+    },
+    dd,
+  );
 }
 
 /* ---------------------------------------------------------------------
@@ -656,14 +801,17 @@ function pitchRound(dd){
      palier 5   « que se passe-t-il ensuite ? », cycles mélangés, étape manquante
    Pas de minuteur.
    --------------------------------------------------------------------- */
-function lifecycleRound(dd){
-  return tierValue({
-    1:{ n:3, modes:['order'] },
-    2:{ n:4, modes:['order'] },
-    3:{ n:5, modes:['order', 'missing'] },
-    4:{ n:4, modes:['missing', 'mixed'] },
-    5:{ n:5, modes:['next', 'mixed', 'missing'] },
-  }, dd);
+function lifecycleRound(dd) {
+  return tierValue(
+    {
+      1: { n: 3, modes: ['order'] },
+      2: { n: 4, modes: ['order'] },
+      3: { n: 5, modes: ['order', 'missing'] },
+      4: { n: 4, modes: ['missing', 'mixed'] },
+      5: { n: 5, modes: ['next', 'mixed', 'missing'] },
+    },
+    dd,
+  );
 }
 
 /* ---------------------------------------------------------------------
@@ -676,14 +824,17 @@ function lifecycleRound(dd){
      palier 5   les moitiés : « 14 points en tout, combien par aile ? »
    `min`/`max` : points par aile. Pas de minuteur.
    --------------------------------------------------------------------- */
-function ladybugsRound(dd){
-  return tierValue({
-    1:{ modes:['count'],              min:1, max:3 },
-    2:{ modes:['double'],             min:2, max:5 },
-    3:{ modes:['double', 'complete'], min:4, max:10 },
-    4:{ modes:['complete', 'double'], min:5, max:10 },
-    5:{ modes:['half', 'half', 'complete'], min:4, max:10 },
-  }, dd);
+function ladybugsRound(dd) {
+  return tierValue(
+    {
+      1: { modes: ['count'], min: 1, max: 3 },
+      2: { modes: ['double'], min: 2, max: 5 },
+      3: { modes: ['double', 'complete'], min: 4, max: 10 },
+      4: { modes: ['complete', 'double'], min: 5, max: 10 },
+      5: { modes: ['half', 'half', 'complete'], min: 4, max: 10 },
+    },
+    dd,
+  );
 }
 
 /* ---------------------------------------------------------------------
@@ -696,14 +847,17 @@ function ladybugsRound(dd){
      palier 5   le mélange inverse, l'arc-en-ciel à 4 trous
    `mixes` : nombre de mélanges utilisés (3 = les primaires). Pas de minuteur.
    --------------------------------------------------------------------- */
-function potionsRound(dd){
-  return tierValue({
-    1:{ modes:['name'],                          mixes:3, holes:2 },
-    2:{ modes:['mix'],                           mixes:3, holes:2 },
-    3:{ modes:['mix', 'rainbow'],                mixes:5, holes:2 },
-    4:{ modes:['mix', 'rainbow', 'inverse'],     mixes:5, holes:3 },
-    5:{ modes:['inverse', 'rainbow'],            mixes:5, holes:4 },
-  }, dd);
+function potionsRound(dd) {
+  return tierValue(
+    {
+      1: { modes: ['name'], mixes: 3, holes: 2 },
+      2: { modes: ['mix'], mixes: 3, holes: 2 },
+      3: { modes: ['mix', 'rainbow'], mixes: 5, holes: 2 },
+      4: { modes: ['mix', 'rainbow', 'inverse'], mixes: 5, holes: 3 },
+      5: { modes: ['inverse', 'rainbow'], mixes: 5, holes: 4 },
+    },
+    dd,
+  );
 }
 
 /* ---------------------------------------------------------------------
@@ -716,32 +870,78 @@ function potionsRound(dd){
      palier 5   6 × 6, axe vertical ou horizontal, 6 cases ; souvent deux couleurs
    Pas de minuteur.
    --------------------------------------------------------------------- */
-function mirrorRound(dd){
-  return tierValue({
-    1:{ size:4, cells:2, axes:['v'],      two:0 },
-    2:{ size:4, cells:3, axes:['v'],      two:0 },
-    3:{ size:6, cells:5, axes:['v'],      two:0 },
-    4:{ size:6, cells:5, axes:['v', 'h'], two:0 },
-    5:{ size:6, cells:6, axes:['v', 'h'], two:.5 },
-  }, dd);
+function mirrorRound(dd) {
+  return tierValue(
+    {
+      1: { size: 4, cells: 2, axes: ['v'], two: 0 },
+      2: { size: 4, cells: 3, axes: ['v'], two: 0 },
+      3: { size: 6, cells: 5, axes: ['v'], two: 0 },
+      4: { size: 6, cells: 5, axes: ['v', 'h'], two: 0 },
+      5: { size: 6, cells: 6, axes: ['v', 'h'], two: 0.5 },
+    },
+    dd,
+  );
 }
 
-function jigsawRound(dd){
-  return tierValue({
-    1:{cols:2, rows:2, ghost:.45},
-    2:{cols:2, rows:2, ghost:.2},
-    3:{cols:3, rows:3, ghost:.22},
-    4:{cols:3, rows:3, ghost:0},
-    5:{cols:4, rows:3, ghost:0},
-  }, dd);
+function jigsawRound(dd) {
+  return tierValue(
+    {
+      1: { cols: 2, rows: 2, ghost: 0.45 },
+      2: { cols: 2, rows: 2, ghost: 0.2 },
+      3: { cols: 3, rows: 3, ghost: 0.22 },
+      4: { cols: 3, rows: 3, ghost: 0 },
+      5: { cols: 4, rows: 3, ghost: 0 },
+    },
+    dd,
+  );
 }
 
 export {
-  CALC_MULT_TABLES, calcBounds, calendarUsesWeekdayOrder, calendarWeekdayCount, clockGranularity,
-  clockOptions, compareCloseChance, compareEqualChance, compareRange, countRange,
-  determinantsExtraDistractor, determinantsImageShown, determinantsPluralChance, diffMirrorChance,
-  cubesRound, diffTotal, jigsawRound, nestingRound, ladybugsRound, lifecycleRound, livesFor, mirrorRound, packsRound, potionsRound, pitchRound, recipeRound, rhythmRound, shareRound, shelfRound, mathBounds, memoryPairs, moneyDenoms, moneyPileSize, planetsTier,
-  puzzleCount, puzzleStartMax, puzzleVariants, readingOptions, readingWordOnly, sequencePatternLength,
-  shapesRound, simonLength, solidOptions, timerFor, volumeAskLessChance, volumeContainerCount,
-  volumeUsesCapacityCompare
+  CALC_MULT_TABLES,
+  calcBounds,
+  calendarUsesWeekdayOrder,
+  calendarWeekdayCount,
+  clockGranularity,
+  clockOptions,
+  compareCloseChance,
+  compareEqualChance,
+  compareRange,
+  countRange,
+  determinantsExtraDistractor,
+  determinantsImageShown,
+  determinantsPluralChance,
+  diffMirrorChance,
+  cubesRound,
+  diffTotal,
+  jigsawRound,
+  nestingRound,
+  ladybugsRound,
+  lifecycleRound,
+  livesFor,
+  mirrorRound,
+  packsRound,
+  potionsRound,
+  pitchRound,
+  recipeRound,
+  rhythmRound,
+  shareRound,
+  shelfRound,
+  mathBounds,
+  memoryPairs,
+  moneyDenoms,
+  moneyPileSize,
+  planetsTier,
+  puzzleCount,
+  puzzleStartMax,
+  puzzleVariants,
+  readingOptions,
+  readingWordOnly,
+  sequencePatternLength,
+  shapesRound,
+  simonLength,
+  solidOptions,
+  timerFor,
+  volumeAskLessChance,
+  volumeContainerCount,
+  volumeUsesCapacityCompare,
 };

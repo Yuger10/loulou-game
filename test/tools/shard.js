@@ -5,5 +5,5 @@
    de la suite tourne dans chaque morceau. Lancée seule, sans TEST_SHARD,
    une suite fait tout (morceau 0/1). */
 const [k, n] = (process.env.TEST_SHARD || '0/1').split('/').map(Number);
-const inShard = (list)=> list.filter((_, i)=> i % n === k);
+const inShard = (list) => list.filter((_, i) => i % n === k);
 module.exports = { inShard, shard: { k, n } };

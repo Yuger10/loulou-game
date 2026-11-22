@@ -1,20 +1,32 @@
-  /* --- Monde : Forêt enchantée --- */
-  body[data-world="foret"]{
-    background:linear-gradient(180deg,#CDEFC4 0%, #66BB6A 45%, #2E7D52 100%);
-  }
-  body[data-world="foret"] .bubble{background:rgba(255,255,255,.5); border-radius:50% 50% 50% 0;}
-  body[data-world="foret"] .scene{background:linear-gradient(180deg,#DFF3D2 0%, #F6EFD9 100%);}
-  body[data-world="foret"] .level-pill i{background:#F4B942;}
+/* --- Monde : Forêt enchantée --- */
+body[data-world="foret"] {
+  background: linear-gradient(180deg, #cdefc4 0%, #66bb6a 45%, #2e7d52 100%);
+}
+body[data-world="foret"] .bubble {
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 50% 50% 50% 0;
+}
+body[data-world="foret"] .scene {
+  background: linear-gradient(180deg, #dff3d2 0%, #f6efd9 100%);
+}
+body[data-world="foret"] .level-pill i {
+  background: #f4b942;
+}
 
-  /* --- Monde : Montagne des Nuages --- */
-  body[data-world="montagne"]{
-    background:linear-gradient(180deg,#E8F4FF 0%, #9FC6E8 45%, #5B8FC7 100%);
-  }
-  body[data-world="montagne"] .scene{background:linear-gradient(180deg,#F2F8FF 0%, #DCE9F7 100%);}
-  /* --- Monde : Château des Étoiles --- */
-  body[data-world="chateau"]{
-    background:linear-gradient(180deg,#3B2E63 0%, #6A4C93 45%, #2A1F47 100%);
-  }
-  body[data-world="chateau"] .scene{background:linear-gradient(180deg,#4B3A7A 0%, #F6EFD9 100%);}
-  body[data-world="chateau"] .bubble{background:rgba(255,255,255,.55);}
-
+/* --- Monde : Montagne des Nuages --- */
+body[data-world="montagne"] {
+  background: linear-gradient(180deg, #e8f4ff 0%, #9fc6e8 45%, #5b8fc7 100%);
+}
+body[data-world="montagne"] .scene {
+  background: linear-gradient(180deg, #f2f8ff 0%, #dce9f7 100%);
+}
+/* --- Monde : Château des Étoiles --- */
+body[data-world="chateau"] {
+  background: linear-gradient(180deg, #3b2e63 0%, #6a4c93 45%, #2a1f47 100%);
+}
+body[data-world="chateau"] .scene {
+  background: linear-gradient(180deg, #4b3a7a 0%, #f6efd9 100%);
+}
+body[data-world="chateau"] .bubble {
+  background: rgba(255, 255, 255, 0.55);
+}

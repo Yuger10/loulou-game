@@ -15,16 +15,36 @@ import { openModal } from '../../../shared/ui/index.js';
 import { gameDiff } from '../../adaptive/index.js';
 import { registerHints, setHintQuestion } from '../../hints/index.js';
 import {
-  clearActiveTimer, flashModal, livesBar, loseLife, onMissionWin, registerGame, setSolution,
-  setupLives, solSel, startTimerIfNeeded, stepOk
+  clearActiveTimer,
+  flashModal,
+  livesBar,
+  loseLife,
+  onMissionWin,
+  registerGame,
+  setSolution,
+  setupLives,
+  solSel,
+  startTimerIfNeeded,
+  stepOk,
 } from '../../minigame-engine/index.js';
 import { bindQuit, gameHeader } from '../../screen/index.js';
 
 // places des 10 points possibles sur l'aile gauche (centres, repère 120×170,
 // sans chevauchement) ; l'aile droite est en miroir (120 - x)
-const LB_SPOTS = [[44, 68], [28, 74], [36, 92], [50, 96], [22, 100], [30, 118], [48, 120], [24, 138], [42, 142], [36, 158]];
+const LB_SPOTS = [
+  [44, 68],
+  [28, 74],
+  [36, 92],
+  [50, 96],
+  [22, 100],
+  [30, 118],
+  [48, 120],
+  [24, 138],
+  [42, 142],
+  [36, 158],
+];
 
-function ladybugsBuildRound(dd, rng){
+function ladybugsBuildRound(dd, rng) {
   rng = rng || Math.random;
   const cfg = ladybugsRound(dd);
   const mode = cfg.modes[Math.floor(rng() * cfg.modes.length)];
@@ -32,8 +52,11 @@ function ladybugsBuildRound(dd, rng){
   return { cfg, mode, n, total: 2 * n };
 }
 // la coccinelle : `left` et `right` points sur chaque aile (right null : aile vide à compléter)
-function ladybugSVG(left, right, hidden){
-  const dots = (k, side)=> LB_SPOTS.slice(0, k).map(([x, y])=> `<circle class="lb-dot" data-w="${side}" cx="${side === 'l' ? x : 120 - x}" cy="${y}" r="6.5"/>`).join('');
+function ladybugSVG(left, right, hidden) {
+  const dots = (k, side) =>
+    LB_SPOTS.slice(0, k)
+      .map(([x, y]) => `<circle class="lb-dot" data-w="${side}" cx="${side === 'l' ? x : 120 - x}" cy="${y}" r="6.5"/>`)
+      .join('');
   return `<svg class="lb-svg" viewBox="0 0 120 170" role="img" aria-label="Une coccinelle">
     <path d="M48 26 Q40 6 30 6 M72 26 Q80 6 90 6" fill="none" stroke="#2B2140" stroke-width="3.5" stroke-linecap="round"/><circle cx="30" cy="6" r="4" fill="#2B2140"/><circle cx="90" cy="6" r="4" fill="#2B2140"/>
     <ellipse cx="60" cy="38" rx="24" ry="18" fill="#2B2140"/><circle cx="52" cy="34" r="4" fill="#fff"/><circle cx="68" cy="34" r="4" fill="#fff"/>
@@ -42,27 +65,36 @@ function ladybugSVG(left, right, hidden){
     <g fill="#2B2140">${hidden ? '' : dots(left, 'l')}<g id="lb-right">${hidden || right === null ? '' : dots(right, 'r')}</g></g>
   </svg>`;
 }
-function ladybugsOptions(answer){
+function ladybugsOptions(answer) {
   const set = new Set([answer]);
-  for(const k of shuffle([-2, -1, 1, 2, 3])){ if(set.size >= 3) break; if(answer + k >= 1) set.add(answer + k); }
+  for (const k of shuffle([-2, -1, 1, 2, 3])) {
+    if (set.size >= 3) break;
+    if (answer + k >= 1) set.add(answer + k);
+  }
   return shuffle([...set]);
 }
-const lbDots = (n)=> n <= 12 ? `<span class="cube-dots" aria-hidden="true">${'<i></i>'.repeat(n)}</span>` : '';
+const lbDots = (n) => (n <= 12 ? `<span class="cube-dots" aria-hidden="true">${'<i></i>'.repeat(n)}</span>` : '');
 
 let ladybugsLast = '';
-function renderLadybugs(){
+function renderLadybugs() {
   setupLives('ladybugs');
   const dd = gameDiff();
   let r = ladybugsBuildRound(dd);
-  for(let k = 0; k < 8 && `${r.mode}${r.n}` === ladybugsLast; k++) r = ladybugsBuildRound(dd);
+  for (let k = 0; k < 8 && `${r.mode}${r.n}` === ladybugsLast; k++) r = ladybugsBuildRound(dd);
   ladybugsLast = `${r.mode}${r.n}`;
-  const ok = (b)=>{ clearActiveTimer(); stepOk(b); flashModal('ok'); setTimeout(onMissionWin, 400); };
+  const ok = (b) => {
+    clearActiveTimer();
+    stepOk(b);
+    flashModal('ok');
+    setTimeout(onMissionWin, 400);
+  };
   const q = { mode: r.mode, n: r.n, total: r.total };
 
-  if(r.mode === 'complete'){
+  if (r.mode === 'complete') {
     let added = 0;
     const max = Math.min(LB_SPOTS.length, r.cfg.max + 2);
-    const say = 'L\'aile droite a perdu ses points ! Ajoute autant de points que sur l\'aile gauche, puis appuie sur « Pareil ! ».';
+    const say =
+      "L'aile droite a perdu ses points ! Ajoute autant de points que sur l'aile gauche, puis appuie sur « Pareil ! ».";
     openModal(`
       ${gameHeader('🐞 Les coccinelles', 'Rends les deux ailes pareilles', say)}
       ${livesBar()}
@@ -73,16 +105,33 @@ function renderLadybugs(){
         <button class="btn-primary" id="lb-done">Pareil !</button>
       </div>
     `);
-    bindQuit(); startTimerIfNeeded('ladybugs');
+    bindQuit();
+    startTimerIfNeeded('ladybugs');
     setSolution([...Array(r.n).fill('#lb-add'), '#lb-done']);
-    setHintQuestion('ladybugs', q, { choices:'#lb-done' });
-    const draw = ()=>{
+    setHintQuestion('ladybugs', q, { choices: '#lb-done' });
+    const draw = () => {
       const g = document.getElementById('lb-right');
-      if(g) g.innerHTML = LB_SPOTS.slice(0, added).map(([x, y])=> `<circle class="lb-dot" data-w="r" cx="${120 - x}" cy="${y}" r="6.5"/>`).join('');
+      if (g)
+        g.innerHTML = LB_SPOTS.slice(0, added)
+          .map(([x, y]) => `<circle class="lb-dot" data-w="r" cx="${120 - x}" cy="${y}" r="6.5"/>`)
+          .join('');
     };
-    document.getElementById('lb-add').onclick = ()=>{ if(added < max){ added++; draw(); } };
-    document.getElementById('lb-undo').onclick = ()=>{ if(added > 0){ added--; draw(); } };
-    document.getElementById('lb-done').onclick = (e)=>{ if(added === r.n) ok(e.currentTarget); else loseLife(e.currentTarget, { onRetry: renderLadybugs, disable:false }); };
+    document.getElementById('lb-add').onclick = () => {
+      if (added < max) {
+        added++;
+        draw();
+      }
+    };
+    document.getElementById('lb-undo').onclick = () => {
+      if (added > 0) {
+        added--;
+        draw();
+      }
+    };
+    document.getElementById('lb-done').onclick = (e) => {
+      if (added === r.n) ok(e.currentTarget);
+      else loseLife(e.currentTarget, { onRetry: renderLadybugs, disable: false });
+    };
     return;
   }
 
@@ -96,34 +145,59 @@ function renderLadybugs(){
     ${gameHeader('🐞 Les coccinelles', title, say)}
     ${livesBar()}
     <div class="lb-stage" id="lb-stage" data-mode="${r.mode}" data-total="${r.total}">${ladybugSVG(r.n, r.n, half)}${half ? `<span class="lb-total">${r.total} points</span>` : ''}</div>
-    <div class="num-options lb-options">${ladybugsOptions(answer).map(o=> `<button class="num-btn lb-opt" data-v="${o}" aria-label="${o}"><b>${o}</b>${lbDots(o)}</button>`).join('')}</div>
+    <div class="num-options lb-options">${ladybugsOptions(answer)
+      .map((o) => `<button class="num-btn lb-opt" data-v="${o}" aria-label="${o}"><b>${o}</b>${lbDots(o)}</button>`)
+      .join('')}</div>
   `);
-  bindQuit(); startTimerIfNeeded('ladybugs');
+  bindQuit();
+  startTimerIfNeeded('ladybugs');
   setSolution([solSel('.lb-opt', 'v', answer)]);
-  setHintQuestion('ladybugs', q, { choices:'.lb-opt' });
-  document.querySelectorAll('.lb-opt').forEach(b=> b.onclick = ()=>{
-    if(Number(b.dataset.v) === answer) ok(b); else loseLife(b, { onRetry: renderLadybugs });
-  });
+  setHintQuestion('ladybugs', q, { choices: '.lb-opt' });
+  document.querySelectorAll('.lb-opt').forEach(
+    (b) =>
+      (b.onclick = () => {
+        if (Number(b.dataset.v) === answer) ok(b);
+        else loseLife(b, { onRetry: renderLadybugs });
+      }),
+  );
 }
 
 // Indices (v52) : 1. les deux ailes sont pareilles ; 2. une aile, puis le
 // double (ou partager en deux). Jamais le total ni la moitié.
-function ladybugsHints(q){
-  if(q.mode === 'complete') return [
-    { say:'Regarde l\'aile pleine : l\'aile vide doit avoir exactement autant de points.', fx:{ glow:'#lb-stage' } },
-    { say:'Compte les points de l\'aile pleine, puis ajoute-en autant sur l\'aile vide. Compte-les encore à la fin.', fx:{ glow:'#lb-add' } },
-  ];
-  if(q.mode === 'half') return [
-    { say:'Les deux ailes ont autant de points : on partage le total en deux parts égales.', fx:{ glow:'#lb-stage' } },
-    { say:`Cherche le nombre qui, ajouté à lui-même, fait ${q.total}.`, fx:{ glow:'.lb-options' } },
-  ];
-  if(q.mode === 'count') return [
-    { say:'Compte les points d\'une aile, puis ceux de l\'autre aile.', fx:{ glow:'#lb-stage' } },
-    { say:`Sur une aile, il y a ${q.n} point${q.n > 1 ? 's' : ''}. Il y en a autant sur l'autre : continue à compter.`, fx:{ glow:'#lb-stage' } },
-  ];
+function ladybugsHints(q) {
+  if (q.mode === 'complete')
+    return [
+      { say: "Regarde l'aile pleine : l'aile vide doit avoir exactement autant de points.", fx: { glow: '#lb-stage' } },
+      {
+        say: "Compte les points de l'aile pleine, puis ajoute-en autant sur l'aile vide. Compte-les encore à la fin.",
+        fx: { glow: '#lb-add' },
+      },
+    ];
+  if (q.mode === 'half')
+    return [
+      {
+        say: 'Les deux ailes ont autant de points : on partage le total en deux parts égales.',
+        fx: { glow: '#lb-stage' },
+      },
+      { say: `Cherche le nombre qui, ajouté à lui-même, fait ${q.total}.`, fx: { glow: '.lb-options' } },
+    ];
+  if (q.mode === 'count')
+    return [
+      { say: "Compte les points d'une aile, puis ceux de l'autre aile.", fx: { glow: '#lb-stage' } },
+      {
+        say: `Sur une aile, il y a ${q.n} point${q.n > 1 ? 's' : ''}. Il y en a autant sur l'autre : continue à compter.`,
+        fx: { glow: '#lb-stage' },
+      },
+    ];
   return [
-    { say:'Les deux ailes sont pareilles : compte les points d\'une seule aile, puis double.', fx:{ glow:'#lb-stage' } },
-    { say:`Sur chaque aile, il y a ${q.n} points. ${q.n} + ${q.n}, c'est le double de ${q.n}.`, fx:{ glow:'#lb-stage' } },
+    {
+      say: "Les deux ailes sont pareilles : compte les points d'une seule aile, puis double.",
+      fx: { glow: '#lb-stage' },
+    },
+    {
+      say: `Sur chaque aile, il y a ${q.n} points. ${q.n} + ${q.n}, c'est le double de ${q.n}.`,
+      fx: { glow: '#lb-stage' },
+    },
   ];
 }
 

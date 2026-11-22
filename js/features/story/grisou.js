@@ -10,20 +10,26 @@
 const GRISOU_COLORS = ['#B9C2CE', '#C9C3E6', '#D8C6F2', '#E6CDF6', '#F3D7F5'];
 const GRISOU_RAINBOW = ['#FF8FB8', '#FFD95A', '#6ED38C', '#6FB8F5', '#BFA3EC', '#FF6F61'];
 
-function grisouSVG(freed){
+function grisouSVG(freed) {
   const n = Math.max(0, Number(freed) || 0);
   // les 6 îles libérées (le grand final) : tout coloré, avec des étoiles
   const full = n >= 6;
   const body = full ? '#FFF0FB' : GRISOU_COLORS[Math.min(n, GRISOU_COLORS.length - 1)];
   const sad = n === 0;
   // l'arc-en-ciel, derrière le nuage : une bande de plus par île libérée
-  const arcs = GRISOU_RAINBOW.slice(0, Math.min(n, GRISOU_RAINBOW.length)).map((c, i)=>
-    `<path d="M${8 + i * 5} 78 Q60 ${-10 + i * 10} ${112 - i * 5} 78" fill="none" stroke="${c}" stroke-width="5" stroke-linecap="round"/>`).join('');
+  const arcs = GRISOU_RAINBOW.slice(0, Math.min(n, GRISOU_RAINBOW.length))
+    .map(
+      (c, i) =>
+        `<path d="M${8 + i * 5} 78 Q60 ${-10 + i * 10} ${112 - i * 5} 78" fill="none" stroke="${c}" stroke-width="5" stroke-linecap="round"/>`,
+    )
+    .join('');
   const mouth = sad
     ? '<path d="M52 82 Q60 76 68 82" fill="none" stroke="#5B6474" stroke-width="3" stroke-linecap="round"/>'
     : '<path d="M50 78 Q60 88 70 78" fill="none" stroke="#8C2F3F" stroke-width="3" stroke-linecap="round"/>';
   const tears = sad ? '<path d="M40 70 q-3 7 0 10 q3 -3 0 -10z M82 70 q-3 7 0 10 q3 -3 0 -10z" fill="#8FC8F2"/>' : '';
-  const cheeks = sad ? '' : '<ellipse cx="38" cy="76" rx="6" ry="3.6" fill="#FF8FA3" opacity=".6"/><ellipse cx="82" cy="76" rx="6" ry="3.6" fill="#FF8FA3" opacity=".6"/>';
+  const cheeks = sad
+    ? ''
+    : '<ellipse cx="38" cy="76" rx="6" ry="3.6" fill="#FF8FA3" opacity=".6"/><ellipse cx="82" cy="76" rx="6" ry="3.6" fill="#FF8FA3" opacity=".6"/>';
   return `<svg class="grisou${full ? ' full' : ''}" viewBox="0 0 120 124" role="img" aria-label="Grisou, le petit nuage" data-freed="${n}" data-color="${body}">
     ${arcs}
     <g fill="${body}" stroke="#7D8796" stroke-width="2.5" stroke-linejoin="round">

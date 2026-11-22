@@ -13,23 +13,29 @@
    un appel de fonction). `emit` renvoie leurs résultats. Un écouteur qui
    plante n'empêche pas les autres : son erreur est relancée juste après,
    pour rester visible (console, tests). */
-const busListeners = new Map();   // nom → [fonctions]
+const busListeners = new Map(); // nom → [fonctions]
 
-function on(name, fn){
+function on(name, fn) {
   (busListeners.get(name) || busListeners.set(name, []).get(name)).push(fn);
-  return ()=> off(name, fn);
+  return () => off(name, fn);
 }
-function off(name, fn){
+function off(name, fn) {
   const list = busListeners.get(name);
-  if(!list) return;
+  if (!list) return;
   const i = list.indexOf(fn);
-  if(i >= 0) list.splice(i, 1);
+  if (i >= 0) list.splice(i, 1);
 }
-function emit(name, ...args){
+function emit(name, ...args) {
   const list = (busListeners.get(name) || []).slice();
-  return list.map(fn=>{
-    try{ return fn(...args); }
-    catch(e){ setTimeout(()=>{ throw e; }); return undefined; }
+  return list.map((fn) => {
+    try {
+      return fn(...args);
+    } catch (e) {
+      setTimeout(() => {
+        throw e;
+      });
+      return undefined;
+    }
   });
 }
 

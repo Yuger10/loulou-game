@@ -12,8 +12,14 @@
 import { avatarHTML } from '../../entities/companion/index.js';
 import { load, save, state } from '../../entities/game-state/index.js';
 import {
-  LEGACY_SAVE_KEY, loadProfiles, party, profiles, PROFILES_KEY, profileSaveKey, refreshAll,
-  saveProfiles
+  LEGACY_SAVE_KEY,
+  loadProfiles,
+  party,
+  profiles,
+  PROFILES_KEY,
+  profileSaveKey,
+  refreshAll,
+  saveProfiles,
 } from '../../entities/player/index.js';
 import { setCurrentWorld } from '../../entities/world/index.js';
 import { on } from '../../shared/lib/index.js';
@@ -24,196 +30,278 @@ import { bindQuit, gameHeader } from '../screen/index.js';
 
 const BACKUP_PREFIX = 'lagon-magique';
 const BACKUP_META_KEY = 'lagon-magique-meta';
-const BACKUP_UNDO_KEY = 'lagon-avant-restauration';   // hors préfixe : jamais exportée
+const BACKUP_UNDO_KEY = 'lagon-avant-restauration'; // hors préfixe : jamais exportée
 const BACKUP_REMIND_DAYS = 14;
 
-function lsKeys(){
+function lsKeys() {
   const out = [];
-  try{ for(let i=0;i<localStorage.length;i++){ const k = localStorage.key(i); if(k) out.push(k); } }catch{}
+  try {
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (k) out.push(k);
+    }
+  } catch {}
   return out;
 }
-function backupMeta(){
-  try{ return JSON.parse(localStorage.getItem(BACKUP_META_KEY) || '{}') || {}; }catch{ return {}; }
+function backupMeta() {
+  try {
+    return JSON.parse(localStorage.getItem(BACKUP_META_KEY) || '{}') || {};
+  } catch {
+    return {};
+  }
 }
-function setBackupMeta(patch){
-  try{ localStorage.setItem(BACKUP_META_KEY, JSON.stringify(Object.assign(backupMeta(), patch))); }catch{}
+function setBackupMeta(patch) {
+  try {
+    localStorage.setItem(BACKUP_META_KEY, JSON.stringify(Object.assign(backupMeta(), patch)));
+  } catch {}
 }
 
 /* ---- construire / lire une sauvegarde ---- */
-function buildBackup(){
+function buildBackup() {
   save();
   saveProfiles();
   const data = {};
-  lsKeys().filter(k=>k.startsWith(BACKUP_PREFIX) && k!==BACKUP_META_KEY).forEach(k=>{
-    try{ data[k] = localStorage.getItem(k); }catch{}
-  });
-  return { app:'lagon-magique', kind:'sauvegarde', v:1, at:new Date().toISOString(), data };
+  lsKeys()
+    .filter((k) => k.startsWith(BACKUP_PREFIX) && k !== BACKUP_META_KEY)
+    .forEach((k) => {
+      try {
+        data[k] = localStorage.getItem(k);
+      } catch {}
+    });
+  return { app: 'lagon-magique', kind: 'sauvegarde', v: 1, at: new Date().toISOString(), data };
 }
 
 // renvoie { ok:true, backup, players:[{name, avatar, missions}] } ou { ok:false, error }
-function parseBackupObject(obj){
-  if(!obj || obj.app!=='lagon-magique' || typeof obj.data!=='object' || !obj.data)
-    return { ok:false, error:"Ce n'est pas une sauvegarde du Lagon Magique." };
+function parseBackupObject(obj) {
+  if (!obj || obj.app !== 'lagon-magique' || typeof obj.data !== 'object' || !obj.data)
+    return { ok: false, error: "Ce n'est pas une sauvegarde du Lagon Magique." };
   const keys = Object.keys(obj.data);
-  if(!keys.length || !keys.every(k=>k.startsWith(BACKUP_PREFIX) && typeof obj.data[k]==='string'))
-    return { ok:false, error:'Cette sauvegarde est incomplète ou abîmée.' };
+  if (!keys.length || !keys.every((k) => k.startsWith(BACKUP_PREFIX) && typeof obj.data[k] === 'string'))
+    return { ok: false, error: 'Cette sauvegarde est incomplète ou abîmée.' };
   let prof = null;
-  try{ prof = JSON.parse(obj.data[PROFILES_KEY] || 'null'); }catch{}
-  for(const k of keys){ try{ JSON.parse(obj.data[k]); }catch{ return { ok:false, error:'Cette sauvegarde est abîmée (une partie est illisible).' }; } }
-  const players = (prof && Array.isArray(prof.list) ? prof.list : []).map(p=>{
+  try {
+    prof = JSON.parse(obj.data[PROFILES_KEY] || 'null');
+  } catch {}
+  for (const k of keys) {
+    try {
+      JSON.parse(obj.data[k]);
+    } catch {
+      return { ok: false, error: 'Cette sauvegarde est abîmée (une partie est illisible).' };
+    }
+  }
+  const players = (prof && Array.isArray(prof.list) ? prof.list : []).map((p) => {
     let missions = 0;
-    try{ missions = (JSON.parse(obj.data[profileSaveKey(p.id)] || '{}').missions) || 0; }catch{}
+    try {
+      missions = JSON.parse(obj.data[profileSaveKey(p.id)] || '{}').missions || 0;
+    } catch {}
     return { name: p.name || 'Sans nom', avatar: p.avatar, missions };
   });
-  if(!players.length && !obj.data[LEGACY_SAVE_KEY])
-    return { ok:false, error:"Cette sauvegarde ne contient aucun joueur." };
-  return { ok:true, backup:obj, players };
+  if (!players.length && !obj.data[LEGACY_SAVE_KEY])
+    return { ok: false, error: 'Cette sauvegarde ne contient aucun joueur.' };
+  return { ok: true, backup: obj, players };
 }
-function parseBackupText(text){
+function parseBackupText(text) {
   const t = String(text || '').trim();
-  if(!t) return { ok:false, error:'Le code est vide.' };
-  try{
-    if(t.startsWith('LAGON1:')) return parseBackupObject(JSON.parse(b64ToUtf8(t.slice(7))));
-    if(t.startsWith('{')) return parseBackupObject(JSON.parse(t));
-  }catch{ return { ok:false, error:'Ce code est incomplet : vérifiez qu\'il a été copié en entier.' }; }
-  if(t.startsWith('LAGONZ1:')) return { ok:false, async:true };
-  return { ok:false, error:"Ce n'est pas un code de sauvegarde du Lagon Magique." };
+  if (!t) return { ok: false, error: 'Le code est vide.' };
+  try {
+    if (t.startsWith('LAGON1:')) return parseBackupObject(JSON.parse(b64ToUtf8(t.slice(7))));
+    if (t.startsWith('{')) return parseBackupObject(JSON.parse(t));
+  } catch {
+    return { ok: false, error: "Ce code est incomplet : vérifiez qu'il a été copié en entier." };
+  }
+  if (t.startsWith('LAGONZ1:')) return { ok: false, async: true };
+  return { ok: false, error: "Ce n'est pas un code de sauvegarde du Lagon Magique." };
 }
 
 /* ---- appliquer une sauvegarde (remplace la partie actuelle) ---- */
-function applyBackup(backup){
+function applyBackup(backup) {
   // garde une copie de ce qu'on remplace, pour pouvoir revenir en arrière
-  try{ localStorage.setItem(BACKUP_UNDO_KEY, JSON.stringify(buildBackup())); }catch{}
-  lsKeys().filter(k=>k.startsWith(BACKUP_PREFIX) && k!==BACKUP_META_KEY).forEach(k=>{ try{ localStorage.removeItem(k); }catch{} });
-  Object.entries(backup.data).forEach(([k,v])=>{ try{ localStorage.setItem(k, v); }catch{} });
+  try {
+    localStorage.setItem(BACKUP_UNDO_KEY, JSON.stringify(buildBackup()));
+  } catch {}
+  lsKeys()
+    .filter((k) => k.startsWith(BACKUP_PREFIX) && k !== BACKUP_META_KEY)
+    .forEach((k) => {
+      try {
+        localStorage.removeItem(k);
+      } catch {}
+    });
+  Object.entries(backup.data).forEach(([k, v]) => {
+    try {
+      localStorage.setItem(k, v);
+    } catch {}
+  });
   setBackupMeta({ restoredAt: new Date().toISOString(), lastBackupAt: backup.at || new Date().toISOString() });
   // recharge les joueurs et la partie sans recharger la page
-  if(party.active) stopParty();
-  loadProfiles(); load();
+  if (party.active) stopParty();
+  loadProfiles();
+  load();
   setCurrentWorld('lagon');
   refreshAll();
   renderMap();
   renderBackupReminder();
 }
-function undoRestoreAvailable(){ try{ return !!localStorage.getItem(BACKUP_UNDO_KEY); }catch{ return false; } }
+function undoRestoreAvailable() {
+  try {
+    return !!localStorage.getItem(BACKUP_UNDO_KEY);
+  } catch {
+    return false;
+  }
+}
 
 /* ---- encodage du code de transfert ---- */
 // (repli sans TextEncoder pour les vieux navigateurs : même résultat)
-function utf8ToB64(s){
-  if(typeof TextEncoder!=='function') return btoa(unescape(encodeURIComponent(s)));
-  const bytes = new TextEncoder().encode(s); let bin = '';
-  for(let i=0;i<bytes.length;i+=0x8000) bin += String.fromCharCode.apply(null, bytes.subarray(i, i+0x8000));
+function utf8ToB64(s) {
+  if (typeof TextEncoder !== 'function') return btoa(unescape(encodeURIComponent(s)));
+  const bytes = new TextEncoder().encode(s);
+  let bin = '';
+  for (let i = 0; i < bytes.length; i += 0x8000) bin += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000));
   return btoa(bin);
 }
-function b64ToUtf8(b){
-  const bin = atob(b.replace(/\s+/g,''));
-  if(typeof TextDecoder!=='function') return decodeURIComponent(escape(bin));
+function b64ToUtf8(b) {
+  const bin = atob(b.replace(/\s+/g, ''));
+  if (typeof TextDecoder !== 'function') return decodeURIComponent(escape(bin));
   const bytes = new Uint8Array(bin.length);
-  for(let i=0;i<bin.length;i++) bytes[i] = bin.charCodeAt(i);
+  for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
   return new TextDecoder().decode(bytes);
 }
-function bytesToB64(bytes){ let bin=''; for(let i=0;i<bytes.length;i+=0x8000) bin += String.fromCharCode.apply(null, bytes.subarray(i, i+0x8000)); return btoa(bin); }
-function b64ToBytes(b){ const bin = atob(b.replace(/\s+/g,'')); const out = new Uint8Array(bin.length); for(let i=0;i<bin.length;i++) out[i]=bin.charCodeAt(i); return out; }
+function bytesToB64(bytes) {
+  let bin = '';
+  for (let i = 0; i < bytes.length; i += 0x8000) bin += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000));
+  return btoa(bin);
+}
+function b64ToBytes(b) {
+  const bin = atob(b.replace(/\s+/g, ''));
+  const out = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
+  return out;
+}
 // code compressé (gzip) quand le navigateur sait le faire, sinon code simple
-async function backupToCode(backup){
+async function backupToCode(backup) {
   const json = JSON.stringify(backup);
-  if(typeof CompressionStream==='function'){
-    try{
+  if (typeof CompressionStream === 'function') {
+    try {
       const stream = new Blob([json]).stream().pipeThrough(new CompressionStream('gzip'));
       const buf = new Uint8Array(await new Response(stream).arrayBuffer());
       return 'LAGONZ1:' + bytesToB64(buf);
-    }catch{}
+    } catch {}
   }
   return 'LAGON1:' + utf8ToB64(json);
 }
-async function parseBackupCode(text){
+async function parseBackupCode(text) {
   const t = String(text || '').trim();
-  if(!t.startsWith('LAGONZ1:')) return parseBackupText(t);
-  if(typeof DecompressionStream!=='function') return { ok:false, error:"Ce navigateur ne sait pas lire ce code : utilisez plutôt le fichier de sauvegarde." };
-  try{
+  if (!t.startsWith('LAGONZ1:')) return parseBackupText(t);
+  if (typeof DecompressionStream !== 'function')
+    return { ok: false, error: 'Ce navigateur ne sait pas lire ce code : utilisez plutôt le fichier de sauvegarde.' };
+  try {
     const stream = new Blob([b64ToBytes(t.slice(8))]).stream().pipeThrough(new DecompressionStream('gzip'));
     return parseBackupObject(JSON.parse(await new Response(stream).text()));
-  }catch{ return { ok:false, error:'Ce code est incomplet : vérifiez qu\'il a été copié en entier.' }; }
+  } catch {
+    return { ok: false, error: "Ce code est incomplet : vérifiez qu'il a été copié en entier." };
+  }
 }
 
 /* ---- stockage persistant ---- */
-async function requestPersistentStorage(){
-  try{
-    if(!navigator.storage || !navigator.storage.persist) return null;
-    if(await navigator.storage.persisted()) return true;
+async function requestPersistentStorage() {
+  try {
+    if (!navigator.storage || !navigator.storage.persist) return null;
+    if (await navigator.storage.persisted()) return true;
     const ok = await navigator.storage.persist();
     setBackupMeta({ persisted: !!ok });
     return ok;
-  }catch{ return null; }
+  } catch {
+    return null;
+  }
 }
 
 /* ---- installation sur l'écran d'accueil ---- */
 let deferredInstallPrompt = null;
-window.addEventListener('beforeinstallprompt', e=>{ e.preventDefault(); deferredInstallPrompt = e; renderInstallHint(); });
-window.addEventListener('appinstalled', ()=>{ deferredInstallPrompt = null; setBackupMeta({ installed:true }); renderInstallHint(); });
-function isInstalled(){
-  try{ return (window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone === true; }catch{ return false; }
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredInstallPrompt = e;
+  renderInstallHint();
+});
+window.addEventListener('appinstalled', () => {
+  deferredInstallPrompt = null;
+  setBackupMeta({ installed: true });
+  renderInstallHint();
+});
+function isInstalled() {
+  try {
+    return (window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone === true;
+  } catch {
+    return false;
+  }
 }
-function isIOS(){
+function isIOS() {
   const ua = navigator.userAgent || '';
   return /iPad|iPhone|iPod/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1);
 }
-function installHelpHTML(){
-  if(isInstalled()) return `<p class="bk-ok">✅ Le jeu est installé sur cet appareil.</p>`;
-  if(deferredInstallPrompt) return `<button class="btn-small" id="bk-install">📲 Installer le jeu</button>`;
-  if(isIOS()) return `<ol class="bk-steps"><li>Ouvrez le jeu dans <b>Safari</b>.</li><li>Touchez le bouton <b>Partager</b> <span aria-hidden="true">⬆️</span>.</li><li>Choisissez <b>« Sur l'écran d'accueil »</b>.</li></ol>`;
+function installHelpHTML() {
+  if (isInstalled()) return `<p class="bk-ok">✅ Le jeu est installé sur cet appareil.</p>`;
+  if (deferredInstallPrompt) return `<button class="btn-small" id="bk-install">📲 Installer le jeu</button>`;
+  if (isIOS())
+    return `<ol class="bk-steps"><li>Ouvrez le jeu dans <b>Safari</b>.</li><li>Touchez le bouton <b>Partager</b> <span aria-hidden="true">⬆️</span>.</li><li>Choisissez <b>« Sur l'écran d'accueil »</b>.</li></ol>`;
   return `<p>Dans le menu du navigateur, choisissez <b>« Installer l'application »</b> ou <b>« Ajouter à l'écran d'accueil »</b>.</p>`;
 }
-function renderInstallHint(){
+function renderInstallHint() {
   const el = document.getElementById('install-hint');
-  if(!el) return;
+  if (!el) return;
   const dismissed = !!backupMeta().installHintDismissed;
   el.hidden = isInstalled() || dismissed || !(deferredInstallPrompt || isIOS());
 }
 
 /* ---- rappel de sauvegarde ---- */
-function backupDue(){
+function backupDue() {
   const last = backupMeta().lastBackupAt;
-  const anyProgress = (profiles.list).length > 0 && (state.missions >= 5);
-  if(!last) return anyProgress;
-  return (Date.now() - new Date(last).getTime()) > BACKUP_REMIND_DAYS * 864e5;
+  const anyProgress = profiles.list.length > 0 && state.missions >= 5;
+  if (!last) return anyProgress;
+  return Date.now() - new Date(last).getTime() > BACKUP_REMIND_DAYS * 864e5;
 }
-function lastBackupText(){
+function lastBackupText() {
   const last = backupMeta().lastBackupAt;
-  if(!last) return 'jamais';
+  if (!last) return 'jamais';
   const days = Math.floor((Date.now() - new Date(last).getTime()) / 864e5);
   return days <= 0 ? "aujourd'hui" : days === 1 ? 'hier' : `il y a ${days} jours`;
 }
-function renderBackupReminder(){
+function renderBackupReminder() {
   const pill = document.getElementById('avatar-pill');
-  if(pill) pill.classList.toggle('backup-due', backupDue());
+  if (pill) pill.classList.toggle('backup-due', backupDue());
 }
 
 /* ---- la fenêtre « Sauvegarde » (pour les adultes) ---- */
-function backupFileName(){
+function backupFileName() {
   const d = new Date();
-  return `lagon-magique-sauvegarde-${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}.json`;
+  return `lagon-magique-sauvegarde-${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}.json`;
 }
-async function exportBackupFile(){
+async function exportBackupFile() {
   const b = buildBackup();
   const json = JSON.stringify(b, null, 1);
   const name = backupFileName();
-  const file = (typeof File==='function') ? new File([json], name, { type:'application/json' }) : null;
-  try{
-    if(file && navigator.canShare && navigator.canShare({ files:[file] })){
-      await navigator.share({ files:[file], title:'Sauvegarde du Lagon Magique' });
-      setBackupMeta({ lastBackupAt: b.at }); return 'shared';
+  const file = typeof File === 'function' ? new File([json], name, { type: 'application/json' }) : null;
+  try {
+    if (file && navigator.canShare && navigator.canShare({ files: [file] })) {
+      await navigator.share({ files: [file], title: 'Sauvegarde du Lagon Magique' });
+      setBackupMeta({ lastBackupAt: b.at });
+      return 'shared';
     }
-  }catch(e){ if(e && e.name==='AbortError') return 'cancelled'; }
-  const url = URL.createObjectURL(new Blob([json], { type:'application/json' }));
-  const a = document.createElement('a'); a.href = url; a.download = name; document.body.appendChild(a); a.click(); a.remove();
-  setTimeout(()=> URL.revokeObjectURL(url), 4000);
+  } catch (e) {
+    if (e && e.name === 'AbortError') return 'cancelled';
+  }
+  const url = URL.createObjectURL(new Blob([json], { type: 'application/json' }));
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = name;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 4000);
   setBackupMeta({ lastBackupAt: b.at });
   return 'downloaded';
 }
 
-function openBackup(){
-  const players = (profiles.list).map(p=>p.name || 'Sans nom').join(', ');
+function openBackup() {
+  const players = profiles.list.map((p) => p.name || 'Sans nom').join(', ');
   openModal(`
     ${gameHeader('💾 Sauvegarde', 'Pour ne jamais perdre la partie (à faire avec un adulte)')}
     <section class="bk-card">
@@ -245,62 +333,114 @@ function openBackup(){
     </section>
   `);
   bindQuit();
-  const $ = (id)=> document.getElementById(id);
-  $('bk-export').onclick = async ()=>{
+  const $ = (id) => document.getElementById(id);
+  $('bk-export').onclick = async () => {
     playSound('tap');
     const r = await exportBackupFile();
-    if(r!=='cancelled'){ showToast('💾 Sauvegarde enregistrée'); const l = $('bk-last'); if(l) l.textContent = lastBackupText(); renderBackupReminder(); }
+    if (r !== 'cancelled') {
+      showToast('💾 Sauvegarde enregistrée');
+      const l = $('bk-last');
+      if (l) l.textContent = lastBackupText();
+      renderBackupReminder();
+    }
   };
-  $('bk-code').onclick = async ()=>{
+  $('bk-code').onclick = async () => {
     playSound('tap');
     const code = await backupToCode(buildBackup());
-    const out = $('bk-code-out'); out.value = code; out.hidden = false;
-    try{ await navigator.clipboard.writeText(code); showToast('📋 Code copié'); setBackupMeta({ lastBackupAt: new Date().toISOString() }); renderBackupReminder(); }
-    catch{ out.focus(); out.select(); showToast('Sélectionnez le code puis copiez-le'); }
+    const out = $('bk-code-out');
+    out.value = code;
+    out.hidden = false;
+    try {
+      await navigator.clipboard.writeText(code);
+      showToast('📋 Code copié');
+      setBackupMeta({ lastBackupAt: new Date().toISOString() });
+      renderBackupReminder();
+    } catch {
+      out.focus();
+      out.select();
+      showToast('Sélectionnez le code puis copiez-le');
+    }
   };
-  const preview = async (result)=>{
+  const preview = async (result) => {
     const box = $('bk-preview');
-    if(!result.ok){ box.innerHTML = `<p class="bk-err">${result.error}</p>`; return; }
-    const when = result.backup.at ? new Date(result.backup.at).toLocaleDateString('fr-FR', { day:'numeric', month:'long', year:'numeric' }) : 'date inconnue';
+    if (!result.ok) {
+      box.innerHTML = `<p class="bk-err">${result.error}</p>`;
+      return;
+    }
+    const when = result.backup.at
+      ? new Date(result.backup.at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })
+      : 'date inconnue';
     box.innerHTML = `<div class="bk-confirm"><p>Sauvegarde du <b>${when}</b> :</p>
-      <ul>${result.players.map(p=>`<li>${avatarHTML(p.avatar)} <b>${p.name}</b> — ${p.missions} mission${p.missions>1?'s':''}</li>`).join('')}</ul>
+      <ul>${result.players.map((p) => `<li>${avatarHTML(p.avatar)} <b>${p.name}</b> — ${p.missions} mission${p.missions > 1 ? 's' : ''}</li>`).join('')}</ul>
       <p>La partie actuelle de cet appareil sera remplacée (une copie est gardée).</p>
       <button class="btn-craft danger" id="bk-apply">Remplacer par cette sauvegarde</button></div>`;
-    $('bk-apply').onclick = ()=>{ applyBackup(result.backup); playSound('win'); closeModal(); showToast('✅ Partie restaurée'); };
+    $('bk-apply').onclick = () => {
+      applyBackup(result.backup);
+      playSound('win');
+      closeModal();
+      showToast('✅ Partie restaurée');
+    };
   };
-  $('bk-file').onchange = (e)=>{
-    const f = e.target.files && e.target.files[0]; if(!f) return;
+  $('bk-file').onchange = (e) => {
+    const f = e.target.files && e.target.files[0];
+    if (!f) return;
     const rd = new FileReader();
-    rd.onload = ()=> preview(parseBackupText(String(rd.result || '')));
-    rd.onerror = ()=> preview({ ok:false, error:'Impossible de lire ce fichier.' });
+    rd.onload = () => preview(parseBackupText(String(rd.result || '')));
+    rd.onerror = () => preview({ ok: false, error: 'Impossible de lire ce fichier.' });
     rd.readAsText(f);
   };
-  $('bk-paste-go').onclick = async ()=>{ playSound('tap'); preview(await parseBackupCode($('bk-paste').value)); };
+  $('bk-paste-go').onclick = async () => {
+    playSound('tap');
+    preview(await parseBackupCode($('bk-paste').value));
+  };
   const undo = $('bk-undo');
-  if(undo) undo.onclick = ()=>{
-    let r = { ok:false };
-    try{ r = parseBackupObject(JSON.parse(localStorage.getItem(BACKUP_UNDO_KEY))); }catch{}
-    if(r.ok) preview(r);
-  };
+  if (undo)
+    undo.onclick = () => {
+      let r = { ok: false };
+      try {
+        r = parseBackupObject(JSON.parse(localStorage.getItem(BACKUP_UNDO_KEY)));
+      } catch {}
+      if (r.ok) preview(r);
+    };
   const inst = $('bk-install');
-  if(inst) inst.onclick = async ()=>{
-    if(!deferredInstallPrompt) return;
-    deferredInstallPrompt.prompt();
-    try{ await deferredInstallPrompt.userChoice; }catch{}
-    deferredInstallPrompt = null; const z = $('bk-install-zone'); if(z) z.innerHTML = installHelpHTML();
-  };
+  if (inst)
+    inst.onclick = async () => {
+      if (!deferredInstallPrompt) return;
+      deferredInstallPrompt.prompt();
+      try {
+        await deferredInstallPrompt.userChoice;
+      } catch {}
+      deferredInstallPrompt = null;
+      const z = $('bk-install-zone');
+      if (z) z.innerHTML = installHelpHTML();
+    };
   const ps = $('bk-persist');
-  if(navigator.storage && navigator.storage.persisted){
-    navigator.storage.persisted().then(ok=>{ if(ps) ps.textContent = ok ? '🔒 Ce navigateur protège la partie contre l\'effacement automatique.' : 'ℹ️ Ce navigateur peut effacer la partie s\'il manque de place : pensez à sauvegarder.'; }).catch(()=>{});
+  if (navigator.storage && navigator.storage.persisted) {
+    navigator.storage
+      .persisted()
+      .then((ok) => {
+        if (ps)
+          ps.textContent = ok
+            ? "🔒 Ce navigateur protège la partie contre l'effacement automatique."
+            : "ℹ️ Ce navigateur peut effacer la partie s'il manque de place : pensez à sauvegarder.";
+      })
+      .catch(() => {});
   }
 }
 
 /* ---- branchements au démarrage ---- */
-function initBackup(){
+function initBackup() {
   const hint = document.getElementById('install-hint');
-  if(hint){
-    hint.querySelector('[data-install-how]').onclick = ()=>{ playSound('tap'); openBackup(); };
-    hint.querySelector('[data-install-close]').onclick = ()=>{ playSound('tap'); setBackupMeta({ installHintDismissed:true }); renderInstallHint(); };
+  if (hint) {
+    hint.querySelector('[data-install-how]').onclick = () => {
+      playSound('tap');
+      openBackup();
+    };
+    hint.querySelector('[data-install-close]').onclick = () => {
+      playSound('tap');
+      setBackupMeta({ installHintDismissed: true });
+      renderInstallHint();
+    };
   }
   renderInstallHint();
   renderBackupReminder();

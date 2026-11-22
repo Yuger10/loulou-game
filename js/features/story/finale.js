@@ -23,10 +23,12 @@ const FINALE_LINES = [
   "« Mais j'ai compris : un rêve partagé ne se perd jamais, il grandit ! Est-ce que je peux être ton ami ? »",
 ];
 
-function season2Done(){ return !!state.season2Done; }
+function season2Done() {
+  return !!state.season2Done;
+}
 // les récompenses, une seule fois : vrai si elles viennent d'être données
-function giveSeason2Rewards(){
-  if(state.season2Done) return false;
+function giveSeason2Rewards() {
+  if (state.season2Done) return false;
   state.season2Done = true;
   grantSquishyTreasure('grisou-arc');
   save();
@@ -36,41 +38,54 @@ function giveSeason2Rewards(){
 
 let finaleActive = false;
 // fermer la fenêtre (✕ ou fin du final) : la musique de l'île revient
-onModalClose(()=>{ if(finaleActive){ finaleActive = false; emit('music:theme', null); } });
+onModalClose(() => {
+  if (finaleActive) {
+    finaleActive = false;
+    emit('music:theme', null);
+  }
+});
 
-function openSeasonFinale(onDone, opts){
+function openSeasonFinale(onDone, opts) {
   const replay = !!(opts && opts.replay);
   // données dès le début : fermer la fenêtre en route ne les fait pas perdre
   const rewards = !replay && giveSeason2Rewards();
   finaleActive = true;
   emit('music:theme', 'licornes-fete');
-  const end = ()=>{ closeModal(); if(onDone) onDone(); };
+  const end = () => {
+    closeModal();
+    if (onDone) onDone();
+  };
   let i = 0;
 
-  const scene = ()=>{
+  const scene = () => {
     const last = i === FINALE_LINES.length - 1;
     openModal(`
       <div class="finale" id="finale" data-step="${i}">
         <div class="finale-sky" aria-hidden="true"></div>
         <div class="finale-grisou">${grisouSVG(i === 0 ? 5 : 6)}</div>
-        <h2>${i === 0 ? 'Grisou retrouve ses couleurs !' : 'Grisou, l\'ami de tous'}</h2>
+        <h2>${i === 0 ? 'Grisou retrouve ses couleurs !' : "Grisou, l'ami de tous"}</h2>
         <div class="speech">${FINALE_LINES[i]}</div>
       </div>
       <button class="btn-primary" id="finale-next">${!last ? 'Suite ➡️' : rewards ? 'Mes cadeaux 🎁' : 'Le Ciel des Rêves ✅'}</button>
     `);
     speak(FINALE_LINES[i]);
-    if(i === 0){ playSound('win'); confetti(); vibrate([80, 60, 80, 60, 200]); }
-    document.getElementById('finale-next').onclick = ()=>{
+    if (i === 0) {
+      playSound('win');
+      confetti();
+      vibrate([80, 60, 80, 60, 200]);
+    }
+    document.getElementById('finale-next').onclick = () => {
       playSound('tap');
       i++;
-      if(i < FINALE_LINES.length) scene();
-      else if(rewards) companionReward();
+      if (i < FINALE_LINES.length) scene();
+      else if (rewards) companionReward();
       else seasonComplete();
     };
   };
 
-  const companionReward = ()=>{
-    const say = 'Grisou devient ton compagnon ! Tu peux le choisir : il te fera un câlin quand c\'est difficile, et te dira quand c\'est l\'heure de la pause.';
+  const companionReward = () => {
+    const say =
+      "Grisou devient ton compagnon ! Tu peux le choisir : il te fera un câlin quand c'est difficile, et te dira quand c'est l'heure de la pause.";
     openModal(`
       <div class="reward-box finale-gift">
         <span class="finale-buddy">${companionSVG('grisou', 'cheer')}</span>
@@ -81,17 +96,25 @@ function openSeasonFinale(onDone, opts){
       <button class="btn-ghost" id="finale-later">Plus tard</button>
     `);
     speak(say);
-    document.getElementById('finale-pick').onclick = ()=>{
+    document.getElementById('finale-pick').onclick = () => {
       playSound('good');
       const p = currentProfile();
-      if(p){ p.companion = 'grisou'; saveProfiles(); refreshAll(); }
+      if (p) {
+        p.companion = 'grisou';
+        saveProfiles();
+        refreshAll();
+      }
       treasureReward();
     };
-    document.getElementById('finale-later').onclick = ()=>{ playSound('tap'); treasureReward(); };
+    document.getElementById('finale-later').onclick = () => {
+      playSound('tap');
+      treasureReward();
+    };
   };
 
-  const treasureReward = ()=>{
-    const say = 'Et un trésor unique : Grisou arc-en-ciel ! Il t\'attend dans la case Trésors de ta chambre à squishies.';
+  const treasureReward = () => {
+    const say =
+      "Et un trésor unique : Grisou arc-en-ciel ! Il t'attend dans la case Trésors de ta chambre à squishies.";
     openModal(`
       <div class="reward-box finale-gift">
         <span class="finale-treasure">${squishyArtSVG('grisou-arc')}</span>
@@ -102,10 +125,13 @@ function openSeasonFinale(onDone, opts){
     `);
     speak(say);
     confetti();
-    document.getElementById('finale-treasure').onclick = ()=>{ playSound('tap'); seasonComplete(); };
+    document.getElementById('finale-treasure').onclick = () => {
+      playSound('tap');
+      seasonComplete();
+    };
   };
 
-  const seasonComplete = ()=>{
+  const seasonComplete = () => {
     const say = replay
       ? 'Le Ciel des Rêves est terminé : tous les rêves du ciel sont libres, grâce à toi !'
       : 'Bravo ! Tu as libéré tous les rêves du ciel. La saison 2, le Ciel des Rêves, est terminée !';
@@ -118,7 +144,10 @@ function openSeasonFinale(onDone, opts){
       <button class="btn-primary" id="finale-end">Continuer ✨</button>
     `);
     speak(say);
-    document.getElementById('finale-end').onclick = ()=>{ playSound('tap'); end(); };
+    document.getElementById('finale-end').onclick = () => {
+      playSound('tap');
+      end();
+    };
   };
 
   scene();

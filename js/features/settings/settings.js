@@ -18,15 +18,15 @@ import { openNewPlayer, openPlayers, openPlayerSettings } from '../players/index
 import { renderProfile, renderSoundBtn } from '../profile/index.js';
 
 // un interrupteur lisible au doigt : libellé, état, et désactivé si besoin
-function rgSwitch(key, label, on, disabled){
+function rgSwitch(key, label, on, disabled) {
   return `<button type="button" class="rg-switch" role="switch" data-sound="${key}" aria-checked="${on}"${disabled ? ' aria-disabled="true"' : ''}>
     <span class="rg-switch-label">${label}</span><span class="rg-switch-track" aria-hidden="true"><span class="rg-switch-knob"></span></span>
   </button>`;
 }
 
-function renderSettings(){
+function renderSettings() {
   const el = document.getElementById('reglages-content');
-  if(!el) return;
+  if (!el) return;
   const p = currentProfile() || {};
   const comp = COMPANIONS[companionOf(p)] || {};
   const vol = typeof state.soundVolume === 'number' ? state.soundVolume : 80;
@@ -56,8 +56,14 @@ function renderSettings(){
       <h3 id="rg-players-title">👥 Joueurs</h3>
       <button type="button" class="btn-small ghost" id="rg-switch">🔁 Changer de joueur</button>
       <div class="rg-players" id="rg-players">
-        ${profiles.list.map(x=> `<button type="button" class="rg-player ${x.id === profiles.current ? 'on' : ''}" data-player="${x.id}" aria-pressed="${x.id === profiles.current}">
-          ${avatarHTML(x.avatar, x.look)}<span>${x.name || 'Sans nom'}</span></button>`).join('')}
+        ${profiles.list
+          .map(
+            (
+              x,
+            ) => `<button type="button" class="rg-player ${x.id === profiles.current ? 'on' : ''}" data-player="${x.id}" aria-pressed="${x.id === profiles.current}">
+          ${avatarHTML(x.avatar, x.look)}<span>${x.name || 'Sans nom'}</span></button>`,
+          )
+          .join('')}
       </div>
       <div class="rg-actions">
         <button type="button" class="btn-small" id="rg-add">➕ Ajouter un joueur</button>
@@ -76,55 +82,88 @@ function renderSettings(){
   bindSettings(el);
 }
 
-function setSound(key){
-  if(key === 'sound'){
+function setSound(key) {
+  if (key === 'sound') {
     state.sound = !state.sound;
     // couper les bruitages coupe tout ; les rallumer rend la voix
-    if(!state.sound){ state.voice = false; state.music = false; }
-    else state.voice = true;
+    if (!state.sound) {
+      state.voice = false;
+      state.music = false;
+    } else state.voice = true;
   } else {
-    if(!state.sound) return;
+    if (!state.sound) return;
     state[key] = !state[key];
   }
-  save(); renderSoundBtn();
-  if(!state.voice && window.speechSynthesis) speechSynthesis.cancel();
-  if(state.sound) playSound('tap');
+  save();
+  renderSoundBtn();
+  if (!state.voice && window.speechSynthesis) speechSynthesis.cancel();
+  if (state.sound) playSound('tap');
   showToast(soundModeLabel());
 }
 
-function bindSettings(el){
-  el.querySelectorAll('[data-sound]').forEach(b=> b.onclick = ()=>{
-    if(b.getAttribute('aria-disabled') === 'true'){ speak('Allume d\'abord les bruitages.'); return; }
-    setSound(b.dataset.sound);
-    renderSettings();
-  });
+function bindSettings(el) {
+  el.querySelectorAll('[data-sound]').forEach(
+    (b) =>
+      (b.onclick = () => {
+        if (b.getAttribute('aria-disabled') === 'true') {
+          speak("Allume d'abord les bruitages.");
+          return;
+        }
+        setSound(b.dataset.sound);
+        renderSettings();
+      }),
+  );
   const vol = el.querySelector('#rg-volume');
-  vol.oninput = ()=>{
-    state.soundVolume = Number(vol.value); save();
+  vol.oninput = () => {
+    state.soundVolume = Number(vol.value);
+    save();
     el.querySelector('#rg-volume-v').textContent = vol.value + ' %';
-    playSound('pop');   // une note pour entendre le nouveau volume
+    playSound('pop'); // une note pour entendre le nouveau volume
   };
-  el.querySelector('#rg-edit').onclick = ()=>{ playSound('tap'); openPlayerSettings(profiles.current); };
-  el.querySelector('#rg-switch').onclick = ()=>{
+  el.querySelector('#rg-edit').onclick = () => {
+    playSound('tap');
+    openPlayerSettings(profiles.current);
+  };
+  el.querySelector('#rg-switch').onclick = () => {
     playSound('tap');
     const list = el.querySelector('#rg-players');
-    try{ list.scrollIntoView({ block:'center', behavior:'smooth' }); }catch{}
+    try {
+      list.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    } catch {}
     speak('Touche le joueur qui va jouer.');
   };
-  el.querySelectorAll('[data-player]').forEach(b=> b.onclick = ()=>{
-    if(b.dataset.player === profiles.current) return;
-    switchProfile(b.dataset.player);
-    renderProfile();
-    renderSettings();
-  });
-  el.querySelector('#rg-add').onclick = ()=>{ playSound('tap'); openNewPlayer(); };
-  el.querySelector('#rg-modes').onclick = ()=>{ playSound('tap'); openPlayers(); };
-  el.querySelector('#rg-parents').onclick = ()=>{ playSound('tap'); openParents(); };
-  el.querySelector('#rg-backup').onclick = ()=>{ playSound('tap'); openParentGate(()=> openBackup()); };
+  el.querySelectorAll('[data-player]').forEach(
+    (b) =>
+      (b.onclick = () => {
+        if (b.dataset.player === profiles.current) return;
+        switchProfile(b.dataset.player);
+        renderProfile();
+        renderSettings();
+      }),
+  );
+  el.querySelector('#rg-add').onclick = () => {
+    playSound('tap');
+    openNewPlayer();
+  };
+  el.querySelector('#rg-modes').onclick = () => {
+    playSound('tap');
+    openPlayers();
+  };
+  el.querySelector('#rg-parents').onclick = () => {
+    playSound('tap');
+    openParents();
+  };
+  el.querySelector('#rg-backup').onclick = () => {
+    playSound('tap');
+    openParentGate(() => openBackup());
+  };
 }
 
-registerView('reglages', ()=> renderSettings());
+registerView('reglages', () => renderSettings());
 // changement de joueur pendant qu'on est sur les Réglages : on les redessine
-onProfileRefresh(()=>{ const v = document.getElementById('view-reglages'); if(v && v.classList.contains('active')) renderSettings(); });
+onProfileRefresh(() => {
+  const v = document.getElementById('view-reglages');
+  if (v && v.classList.contains('active')) renderSettings();
+});
 
 export { renderSettings };

@@ -17,163 +17,458 @@ import { save, state } from '../../entities/game-state/index.js';
 import { party } from '../../entities/player/index.js';
 import { currentWorld } from '../../entities/world/index.js';
 import { emit } from '../../shared/lib/index.js';
-import {
-  bindSpeakButtons, closeModal, openModal, playSound, speak, speechBubble
-} from '../../shared/ui/index.js';
+import { bindSpeakButtons, closeModal, openModal, playSound, speak, speechBubble } from '../../shared/ui/index.js';
 import { gainCoins } from '../gains/index.js';
 import { addCoins } from '../wallet/index.js';
 
-const EPISODE_AT = [2, 4, 7];     // missions réussies sur l'île pour chaque épisode
+const EPISODE_AT = [2, 4, 7]; // missions réussies sur l'île pour chaque épisode
 const EPISODE_REWARD = 3;
 
 // by : personnage qui raconte ; find : ce que l'on trouve (pour l'histoire)
 const EPISODES = {
   lagon: [
-    { by:'pirate',  title:'La bouteille à la mer', find:'✉️',
-      lines:["Ohé ! J'ai repêché une bouteille avec un message dedans !", "Il dit : « Le trésor dort là où les huit îles se donnent la main. » Mystère…"] },
-    { by:'licorne', title:"L'étoile filante", find:'⭐',
-      lines:["Cette nuit, une étoile filante est tombée derrière la forêt.", "Ma corne brille quand je regarde par là. C'est sûrement un signe !"] },
-    { by:'danseuse', title:'La danse des vagues', find:'🐚',
-      lines:["Les vagues dansent plus fort aujourd'hui.", "Elles veulent t'emmener plus loin : continue tes missions, la Forêt enchantée t'attend !"] },
+    {
+      by: 'pirate',
+      title: 'La bouteille à la mer',
+      find: '✉️',
+      lines: [
+        "Ohé ! J'ai repêché une bouteille avec un message dedans !",
+        'Il dit : « Le trésor dort là où les huit îles se donnent la main. » Mystère…',
+      ],
+    },
+    {
+      by: 'licorne',
+      title: "L'étoile filante",
+      find: '⭐',
+      lines: [
+        'Cette nuit, une étoile filante est tombée derrière la forêt.',
+        "Ma corne brille quand je regarde par là. C'est sûrement un signe !",
+      ],
+    },
+    {
+      by: 'danseuse',
+      title: 'La danse des vagues',
+      find: '🐚',
+      lines: [
+        "Les vagues dansent plus fort aujourd'hui.",
+        "Elles veulent t'emmener plus loin : continue tes missions, la Forêt enchantée t'attend !",
+      ],
+    },
   ],
   foret: [
-    { by:'hibou', title:'Des traces qui brillent', find:'🐾',
-      lines:["Hou hou ! J'ai vu des traces qui brillent sur le chemin.", "Elles mènent au grand chêne. Quelqu'un est passé par là avant toi…"] },
-    { by:'biche', title:'La petite clé dorée', find:'🗝️',
-      lines:["Dans le creux du grand chêne, j'ai trouvé une petite clé dorée.", "Elle ne m'ouvre rien… Garde-la bien : elle ouvrira peut-être quelque chose pour toi !"] },
-    { by:'loup', title:'Le vent des montagnes', find:'❄️',
-      lines:["Ahouuu ! Du haut de la colline, je vois des montagnes toutes blanches.", "Le vent qui en descend sent l'aventure. Prêt pour la suite ?"] },
+    {
+      by: 'hibou',
+      title: 'Des traces qui brillent',
+      find: '🐾',
+      lines: [
+        "Hou hou ! J'ai vu des traces qui brillent sur le chemin.",
+        "Elles mènent au grand chêne. Quelqu'un est passé par là avant toi…",
+      ],
+    },
+    {
+      by: 'biche',
+      title: 'La petite clé dorée',
+      find: '🗝️',
+      lines: [
+        "Dans le creux du grand chêne, j'ai trouvé une petite clé dorée.",
+        "Elle ne m'ouvre rien… Garde-la bien : elle ouvrira peut-être quelque chose pour toi !",
+      ],
+    },
+    {
+      by: 'loup',
+      title: 'Le vent des montagnes',
+      find: '❄️',
+      lines: [
+        'Ahouuu ! Du haut de la colline, je vois des montagnes toutes blanches.',
+        "Le vent qui en descend sent l'aventure. Prêt pour la suite ?",
+      ],
+    },
   ],
   montagne: [
-    { by:'aigle', title:'La grotte aux cristaux', find:'🔮',
-      lines:["Je vole plus haut que les nuages.", "De là-haut, j'ai vu une grotte qui scintille de mille cristaux !"] },
-    { by:'robotmontagne', title:'Le vieux parchemin', find:'📜',
-      lines:["Bip bip ! Mes capteurs ont trouvé un vieux parchemin dans la grotte.", "Il y a un dessin dessus : un château avec une tour très haute."] },
-    { by:'magicienne', title:'La boule de cristal', find:'🏰',
-      lines:["Ma boule de cristal montre une princesse qui t'attend dans son château.", "Garde bien la petite clé de la forêt : elle va bientôt servir !"] },
+    {
+      by: 'aigle',
+      title: 'La grotte aux cristaux',
+      find: '🔮',
+      lines: ['Je vole plus haut que les nuages.', "De là-haut, j'ai vu une grotte qui scintille de mille cristaux !"],
+    },
+    {
+      by: 'robotmontagne',
+      title: 'Le vieux parchemin',
+      find: '📜',
+      lines: [
+        'Bip bip ! Mes capteurs ont trouvé un vieux parchemin dans la grotte.',
+        'Il y a un dessin dessus : un château avec une tour très haute.',
+      ],
+    },
+    {
+      by: 'magicienne',
+      title: 'La boule de cristal',
+      find: '🏰',
+      lines: [
+        "Ma boule de cristal montre une princesse qui t'attend dans son château.",
+        'Garde bien la petite clé de la forêt : elle va bientôt servir !',
+      ],
+    },
   ],
   chateau: [
-    { by:'pegase', title:'Le tour des tours', find:'🌟',
-      lines:["Hiii ! Monte sur mon dos, on fait le tour des tours !", "Là-haut, une fenêtre est fermée par une serrure toute dorée…"] },
-    { by:'chevalier', title:'La fenêtre de la tour', find:'🗺️',
-      lines:["La petite clé de la forêt ! Elle ouvre la fenêtre de la tour !", "Derrière, il y a une carte, avec une jungle et un singe dessinés dessus."] },
-    { by:'sorciere', title:'La potion qui parle', find:'🧪',
-      lines:["Hi hi ! N'aie pas peur, je suis une gentille sorcière.", "Ma potion me dit que, dans la jungle, quelqu'un connaît le chemin du trésor."] },
+    {
+      by: 'pegase',
+      title: 'Le tour des tours',
+      find: '🌟',
+      lines: [
+        'Hiii ! Monte sur mon dos, on fait le tour des tours !',
+        'Là-haut, une fenêtre est fermée par une serrure toute dorée…',
+      ],
+    },
+    {
+      by: 'chevalier',
+      title: 'La fenêtre de la tour',
+      find: '🗺️',
+      lines: [
+        'La petite clé de la forêt ! Elle ouvre la fenêtre de la tour !',
+        'Derrière, il y a une carte, avec une jungle et un singe dessinés dessus.',
+      ],
+    },
+    {
+      by: 'sorciere',
+      title: 'La potion qui parle',
+      find: '🧪',
+      lines: [
+        "Hi hi ! N'aie pas peur, je suis une gentille sorcière.",
+        "Ma potion me dit que, dans la jungle, quelqu'un connaît le chemin du trésor.",
+      ],
+    },
   ],
   jungle: [
-    { by:'singe', title:'La noix de coco qui fait tic-tac', find:'🥥',
-      lines:["Hop, hop ! Je saute de liane en liane.", "Tout en haut d'un arbre, j'ai trouvé une noix de coco… qui fait tic-tac !"] },
-    { by:'perroquet', title:"L'horloge cachée", find:'⏰',
-      lines:["Tic-tac, tic-tac ! La noix de coco cache une petite horloge.", "Elle vient sûrement de la Cité du Temps…"] },
-    { by:'jaguar', title:'Le chemin secret', find:'🌿',
-      lines:["Doucement… J'ai flairé un chemin secret entre les grandes feuilles.", "Il mène à une porte en pierre, avec des aiguilles d'horloge. Bientôt la Cité !"] },
+    {
+      by: 'singe',
+      title: 'La noix de coco qui fait tic-tac',
+      find: '🥥',
+      lines: [
+        'Hop, hop ! Je saute de liane en liane.',
+        "Tout en haut d'un arbre, j'ai trouvé une noix de coco… qui fait tic-tac !",
+      ],
+    },
+    {
+      by: 'perroquet',
+      title: "L'horloge cachée",
+      find: '⏰',
+      lines: [
+        'Tic-tac, tic-tac ! La noix de coco cache une petite horloge.',
+        'Elle vient sûrement de la Cité du Temps…',
+      ],
+    },
+    {
+      by: 'jaguar',
+      title: 'Le chemin secret',
+      find: '🌿',
+      lines: [
+        "Doucement… J'ai flairé un chemin secret entre les grandes feuilles.",
+        "Il mène à une porte en pierre, avec des aiguilles d'horloge. Bientôt la Cité !",
+      ],
+    },
   ],
   cite: [
-    { by:'robotcoucou', title:"L'heure de l'aventure", find:'🕰️',
-      lines:["Coucou ! Coucou ! C'est l'heure de l'aventure !", "Merci d'avoir rapporté l'horloge de la jungle : elle était perdue depuis cent ans."] },
-    { by:'gardienne', title:'Le secret du temps', find:'⏳',
-      lines:["Le temps m'a raconté un secret.", "Le prochain indice est caché près d'un volcan… qui fait des bulles de feu !"] },
-    { by:'chouette', title:'La nuit du volcan', find:'🌙',
-      lines:["Cette nuit, j'ai vu le volcan s'allumer, tout rouge.", "Prends ton courage à deux mains : le génie du volcan t'attend !"] },
+    {
+      by: 'robotcoucou',
+      title: "L'heure de l'aventure",
+      find: '🕰️',
+      lines: [
+        "Coucou ! Coucou ! C'est l'heure de l'aventure !",
+        "Merci d'avoir rapporté l'horloge de la jungle : elle était perdue depuis cent ans.",
+      ],
+    },
+    {
+      by: 'gardienne',
+      title: 'Le secret du temps',
+      find: '⏳',
+      lines: [
+        "Le temps m'a raconté un secret.",
+        "Le prochain indice est caché près d'un volcan… qui fait des bulles de feu !",
+      ],
+    },
+    {
+      by: 'chouette',
+      title: 'La nuit du volcan',
+      find: '🌙',
+      lines: [
+        "Cette nuit, j'ai vu le volcan s'allumer, tout rouge.",
+        "Prends ton courage à deux mains : le génie du volcan t'attend !",
+      ],
+    },
   ],
   volcan: [
-    { by:'savante', title:'La lave qui chante', find:'🔥',
-      lines:["J'ai mesuré la lave : elle est très chaude, mais elle chante !", "Écoute bien : elle répète « dou-ceur, dou-ceur »… Bizarre, non ?"] },
-    { by:'dragonlave', title:'La pierre de feu', find:'💎',
-      lines:["Je garde cette pierre de feu depuis mille ans.", "Je te la confie : elle te donnera du courage pour la dernière étape."] },
-    { by:'robotsavant', title:'Le mot mystère', find:'🍡',
-      lines:["Analyse terminée ! Le mot « douceur » mène au Pays Squishy.", "C'est là que le dernier secret t'attend. Bip bip, bonne chance !"] },
+    {
+      by: 'savante',
+      title: 'La lave qui chante',
+      find: '🔥',
+      lines: [
+        "J'ai mesuré la lave : elle est très chaude, mais elle chante !",
+        'Écoute bien : elle répète « dou-ceur, dou-ceur »… Bizarre, non ?',
+      ],
+    },
+    {
+      by: 'dragonlave',
+      title: 'La pierre de feu',
+      find: '💎',
+      lines: [
+        'Je garde cette pierre de feu depuis mille ans.',
+        'Je te la confie : elle te donnera du courage pour la dernière étape.',
+      ],
+    },
+    {
+      by: 'robotsavant',
+      title: 'Le mot mystère',
+      find: '🍡',
+      lines: [
+        'Analyse terminée ! Le mot « douceur » mène au Pays Squishy.',
+        "C'est là que le dernier secret t'attend. Bip bip, bonne chance !",
+      ],
+    },
   ],
   squishy: [
-    { by:'donut', title:'Tout est tout doux', find:'🍭',
-      lines:["Bienvenue ! Ici, tout est tout doux, même le sol.", "On dit que le trésor est caché dans un nuage de barbe à papa !"] },
-    { by:'phoque', title:'Le coffre moelleux', find:'🎁',
-      lines:["Plouf ! J'ai trouvé un coffre tout moelleux sous l'eau.", "Il est fermé par huit petites serrures : une pour chaque île que tu as visitée !"] },
-    { by:'avocat', title:'Le vrai trésor', find:'🏆',
-      lines:["Tu as tous les indices, et tous nos amis sont avec toi.", "Le vrai trésor du Lagon Magique, c'est tout ce que tu as appris en chemin. Bravo !"] },
+    {
+      by: 'donut',
+      title: 'Tout est tout doux',
+      find: '🍭',
+      lines: [
+        'Bienvenue ! Ici, tout est tout doux, même le sol.',
+        'On dit que le trésor est caché dans un nuage de barbe à papa !',
+      ],
+    },
+    {
+      by: 'phoque',
+      title: 'Le coffre moelleux',
+      find: '🎁',
+      lines: [
+        "Plouf ! J'ai trouvé un coffre tout moelleux sous l'eau.",
+        'Il est fermé par huit petites serrures : une pour chaque île que tu as visitée !',
+      ],
+    },
+    {
+      by: 'avocat',
+      title: 'Le vrai trésor',
+      find: '🏆',
+      lines: [
+        'Tu as tous les indices, et tous nos amis sont avec toi.',
+        "Le vrai trésor du Lagon Magique, c'est tout ce que tu as appris en chemin. Bravo !",
+      ],
+    },
   ],
   // ---- Saison 2 : le fil de Grisou (v55) ----
   boites: [
-    { by:'kiki', title:'Les boîtes qui frissonnent', find:'📦',
-      lines:["Miaou ! Cette nuit, toutes les boîtes de la Fabrique frissonnaient.", "Je crois que les rêves enfermés dedans ont très envie de sortir !"] },
-    { by:'boulon', title:'Un rêve s\'échappe', find:'🫧',
-      lines:["BIP ! Un petit rêve rose s'est échappé d'une boîte mal fermée.", "Il a fait le tour du ciel… et Grisou a souri. Si, si, je l'ai vu !"] },
-    { by:'lola', title:'Le colis arc-en-ciel', find:'🌈',
-      lines:["J'ai une livraison très spéciale : un colis qui brille de toutes les couleurs !", "L'adresse dit : Royaume Arc-en-ciel. Ce sera sûrement notre prochaine île !"] },
+    {
+      by: 'kiki',
+      title: 'Les boîtes qui frissonnent',
+      find: '📦',
+      lines: [
+        'Miaou ! Cette nuit, toutes les boîtes de la Fabrique frissonnaient.',
+        'Je crois que les rêves enfermés dedans ont très envie de sortir !',
+      ],
+    },
+    {
+      by: 'boulon',
+      title: "Un rêve s'échappe",
+      find: '🫧',
+      lines: [
+        "BIP ! Un petit rêve rose s'est échappé d'une boîte mal fermée.",
+        "Il a fait le tour du ciel… et Grisou a souri. Si, si, je l'ai vu !",
+      ],
+    },
+    {
+      by: 'lola',
+      title: 'Le colis arc-en-ciel',
+      find: '🌈',
+      lines: [
+        "J'ai une livraison très spéciale : un colis qui brille de toutes les couleurs !",
+        "L'adresse dit : Royaume Arc-en-ciel. Ce sera sûrement notre prochaine île !",
+      ],
+    },
   ],
   jouets: [
-    { by:'cocotte', title:'Le premier bâillement', find:'🥱',
-      lines:["Boing ! Une petite toupie vient de bâiller, puis de tourner toute seule.", "Les jouets se réveillent, un par un, quand on joue avec eux !"] },
-    { by:'gloups', title:'Huit bras pour un câlin', find:'🤗',
-      lines:["Gloups ! Grisou est passé tout près du coffre, et il avait l'air si seul…", "Alors je lui ai fait un câlin avec mes huit bras. Il est devenu un peu rose !"] },
-    { by:'rainette', title:'La cachette de Rainette', find:'🎈',
-      lines:["Hop ! En sautant au fond du coffre, j'ai trouvé un ballon qui flotte vers le ciel.", "Il sent le sucre et la fraise… Je crois qu'il vient du Royaume des Bonbons !"] },
+    {
+      by: 'cocotte',
+      title: 'Le premier bâillement',
+      find: '🥱',
+      lines: [
+        'Boing ! Une petite toupie vient de bâiller, puis de tourner toute seule.',
+        'Les jouets se réveillent, un par un, quand on joue avec eux !',
+      ],
+    },
+    {
+      by: 'gloups',
+      title: 'Huit bras pour un câlin',
+      find: '🤗',
+      lines: [
+        "Gloups ! Grisou est passé tout près du coffre, et il avait l'air si seul…",
+        'Alors je lui ai fait un câlin avec mes huit bras. Il est devenu un peu rose !',
+      ],
+    },
+    {
+      by: 'rainette',
+      title: 'La cachette de Rainette',
+      find: '🎈',
+      lines: [
+        "Hop ! En sautant au fond du coffre, j'ai trouvé un ballon qui flotte vers le ciel.",
+        "Il sent le sucre et la fraise… Je crois qu'il vient du Royaume des Bonbons !",
+      ],
+    },
   ],
   bonbons: [
-    { by:'chouquette', title:'Le premier gâteau', find:'🧁',
-      lines:["Le four est encore tiède, mais j'ai réussi à cuire un tout petit gâteau !", "Je l'ai coupé en quatre parts égales, une pour chaque ami. C'est ça, partager !"] },
-    { by:'cacao', title:'Le chocolat chaud de Grisou', find:'☕',
-      lines:["J'ai préparé un chocolat chaud pour Grisou : trois cuillères de cacao, pas une de plus.", "Il l'a bu d'un trait… et une petite tache marron est apparue sur son nuage !"] },
-    { by:'berlingot', title:'La partition sucrée', find:'🎵',
-      lines:["Dans un paquet de bonbons, j'ai trouvé une feuille pleine de notes de musique.", "Quand on la lit, on entend chanter le ciel. Elle vient sûrement de l'Île de la Musique !"] },
+    {
+      by: 'chouquette',
+      title: 'Le premier gâteau',
+      find: '🧁',
+      lines: [
+        "Le four est encore tiède, mais j'ai réussi à cuire un tout petit gâteau !",
+        "Je l'ai coupé en quatre parts égales, une pour chaque ami. C'est ça, partager !",
+      ],
+    },
+    {
+      by: 'cacao',
+      title: 'Le chocolat chaud de Grisou',
+      find: '☕',
+      lines: [
+        "J'ai préparé un chocolat chaud pour Grisou : trois cuillères de cacao, pas une de plus.",
+        "Il l'a bu d'un trait… et une petite tache marron est apparue sur son nuage !",
+      ],
+    },
+    {
+      by: 'berlingot',
+      title: 'La partition sucrée',
+      find: '🎵',
+      lines: [
+        "Dans un paquet de bonbons, j'ai trouvé une feuille pleine de notes de musique.",
+        "Quand on la lit, on entend chanter le ciel. Elle vient sûrement de l'Île de la Musique !",
+      ],
+    },
   ],
   musique: [
-    { by:'boumbo', title:'Le premier boum', find:'🥁',
-      lines:["Boum ! Ce matin, j'ai réussi à faire un tout petit boum, rien qu'un !", "Les arbres-flûtes ont frissonné… La musique revient, coup par coup !"] },
-    { by:'flutine', title:'La note de Grisou', find:'🎶',
-      lines:["Grisou est passé au-dessus de la cascade, et il a fredonné une note, très grave.", "Je lui ai répondu avec une note toute aiguë. Il a souri, et il a fredonné encore !"] },
-    { by:'piccolo', title:'Piccolo a entendu', find:'🌸',
-      lines:["Piccolo a entendu ! Piccolo a entendu ! Des clochettes qui tintent, très loin dans le ciel !", "Elles viennent d'un jardin plein de fleurs géantes… Le Jardin des Fées, peut-être ?"] },
+    {
+      by: 'boumbo',
+      title: 'Le premier boum',
+      find: '🥁',
+      lines: [
+        "Boum ! Ce matin, j'ai réussi à faire un tout petit boum, rien qu'un !",
+        'Les arbres-flûtes ont frissonné… La musique revient, coup par coup !',
+      ],
+    },
+    {
+      by: 'flutine',
+      title: 'La note de Grisou',
+      find: '🎶',
+      lines: [
+        'Grisou est passé au-dessus de la cascade, et il a fredonné une note, très grave.',
+        'Je lui ai répondu avec une note toute aiguë. Il a souri, et il a fredonné encore !',
+      ],
+    },
+    {
+      by: 'piccolo',
+      title: 'Piccolo a entendu',
+      find: '🌸',
+      lines: [
+        'Piccolo a entendu ! Piccolo a entendu ! Des clochettes qui tintent, très loin dans le ciel !',
+        "Elles viennent d'un jardin plein de fleurs géantes… Le Jardin des Fées, peut-être ?",
+      ],
+    },
   ],
   jardin: [
-    { by:'pois', title:'La première fleur', find:'🌷',
-      lines:["Ce matin, une toute petite fleur a percé la terre, juste à côté de ma feuille !", "Elle était rose et pleine de rosée. Le jardin se réveille !"] },
-    { by:'azur', title:'Le vol de Grisou', find:'🦋',
-      lines:["J'ai volé jusqu'à Grisou, et je me suis posé sur son nuage.", "Il était presque tout coloré ! Il m'a dit qu'il lui manquait seulement… les couleurs de l'arc-en-ciel."] },
-    { by:'miella', title:'Le miel arc-en-ciel', find:'🌈',
-      lines:["Bzz ! Dans une fleur, j'ai trouvé un pollen de toutes les couleurs.", "Il vient du Royaume Arc-en-ciel, là où vivent les licornes. C'est là que tout va se jouer !"] },
+    {
+      by: 'pois',
+      title: 'La première fleur',
+      find: '🌷',
+      lines: [
+        'Ce matin, une toute petite fleur a percé la terre, juste à côté de ma feuille !',
+        'Elle était rose et pleine de rosée. Le jardin se réveille !',
+      ],
+    },
+    {
+      by: 'azur',
+      title: 'Le vol de Grisou',
+      find: '🦋',
+      lines: [
+        "J'ai volé jusqu'à Grisou, et je me suis posé sur son nuage.",
+        "Il était presque tout coloré ! Il m'a dit qu'il lui manquait seulement… les couleurs de l'arc-en-ciel.",
+      ],
+    },
+    {
+      by: 'miella',
+      title: 'Le miel arc-en-ciel',
+      find: '🌈',
+      lines: [
+        "Bzz ! Dans une fleur, j'ai trouvé un pollen de toutes les couleurs.",
+        "Il vient du Royaume Arc-en-ciel, là où vivent les licornes. C'est là que tout va se jouer !",
+      ],
+    },
   ],
   // le Royaume prépare le grand final : les couleurs reviennent, Grisou hésite
   licornes: [
-    { by:'biscotte', title:'Le premier arc-en-ciel', find:'🌈',
-      lines:["Hiii ! J'ai enfin réussi un arc-en-ciel, avec du rouge et du jaune dedans !", "Il en manque encore, mais les couleurs reviennent, une à une !"] },
-    { by:'felix', title:'La potion de Grisou', find:'🧪',
-      lines:["Grisou est venu voir mes potions. Il a regardé le violet très longtemps…", "Je crois qu'il hésite à rendre le tout dernier rêve. Il a peur de le perdre."] },
-    { by:'etincelle', title:'Une amie pour Grisou', find:'🤝',
-      lines:["J'ai parlé à Grisou, tout doucement. Je lui ai dit qu'un rêve partagé ne se perd jamais.", "Il a souri. Je crois qu'il va bientôt rendre ses couleurs au ciel…"] },
+    {
+      by: 'biscotte',
+      title: 'Le premier arc-en-ciel',
+      find: '🌈',
+      lines: [
+        "Hiii ! J'ai enfin réussi un arc-en-ciel, avec du rouge et du jaune dedans !",
+        'Il en manque encore, mais les couleurs reviennent, une à une !',
+      ],
+    },
+    {
+      by: 'felix',
+      title: 'La potion de Grisou',
+      find: '🧪',
+      lines: [
+        'Grisou est venu voir mes potions. Il a regardé le violet très longtemps…',
+        "Je crois qu'il hésite à rendre le tout dernier rêve. Il a peur de le perdre.",
+      ],
+    },
+    {
+      by: 'etincelle',
+      title: 'Une amie pour Grisou',
+      find: '🤝',
+      lines: [
+        "J'ai parlé à Grisou, tout doucement. Je lui ai dit qu'un rêve partagé ne se perd jamais.",
+        "Il a souri. Je crois qu'il va bientôt rendre ses couleurs au ciel…",
+      ],
+    },
   ],
 };
 
-function storyMissionsOn(world){ return (state.storyMissions || {})[world] || 0; }
-function episodesSeen(world){ return (state.storyEpisodes || {})[world] || 0; }
+function storyMissionsOn(world) {
+  return (state.storyMissions || {})[world] || 0;
+}
+function episodesSeen(world) {
+  return (state.storyEpisodes || {})[world] || 0;
+}
 // une mission réussie sur l'île (appelé par onMissionWin, en solo)
-function noteStoryMission(world){
-  if(!EPISODES[world]) return;
+function noteStoryMission(world) {
+  if (!EPISODES[world]) return;
   state.storyMissions = Object.assign({}, state.storyMissions || {}, { [world]: storyMissionsOn(world) + 1 });
 }
 // l'épisode à montrer maintenant sur cette île (son numéro), ou -1
-function episodeDue(world){
+function episodeDue(world) {
   const eps = EPISODES[world];
-  if(!eps) return -1;
+  if (!eps) return -1;
   const k = episodesSeen(world);
   return k < eps.length && storyMissionsOn(world) >= EPISODE_AT[k] ? k : -1;
 }
 // pour l'écran de victoire : les missions vers le prochain épisode (●●○), ou ''
-function storyProgressHTML(world){
-  const k = episodesSeen(world), eps = EPISODES[world];
-  if(!eps || k >= eps.length) return '';
-  const from = k ? EPISODE_AT[k-1] : 0, need = EPISODE_AT[k] - from;
+function storyProgressHTML(world) {
+  const k = episodesSeen(world),
+    eps = EPISODES[world];
+  if (!eps || k >= eps.length) return '';
+  const from = k ? EPISODE_AT[k - 1] : 0,
+    need = EPISODE_AT[k] - from;
   const done = Math.min(need, storyMissionsOn(world) - from);
-  const dots = Array.from({length:need}, (_,i)=> i < done ? '●' : '○').join('');
-  return `<div class="story-progress" aria-label="L'histoire avance : ${done} sur ${need}">📖 ${done >= need ? 'Un nouvel épisode de l\'histoire t\'attend !' : 'L\'histoire avance…'} <span class="sp-dots">${dots}</span></div>`;
+  const dots = Array.from({ length: need }, (_, i) => (i < done ? '●' : '○')).join('');
+  return `<div class="story-progress" aria-label="L'histoire avance : ${done} sur ${need}">📖 ${done >= need ? "Un nouvel épisode de l'histoire t'attend !" : "L'histoire avance…"} <span class="sp-dots">${dots}</span></div>`;
 }
 
 // Montre l'épisode dû (après l'écran de victoire). Renvoie true s'il y en a un.
-function maybeStoryEpisode(){
-  if(party.active) return false;
+function maybeStoryEpisode() {
+  if (party.active) return false;
   const world = currentWorld;
   const k = episodeDue(world);
-  if(k < 0) return false;
+  if (k < 0) return false;
   state.storyEpisodes = Object.assign({}, state.storyEpisodes || {}, { [world]: k + 1 });
   addCoins(EPISODE_REWARD);
   save();
@@ -182,7 +477,7 @@ function maybeStoryEpisode(){
 }
 
 // Une scène, ligne par ligne. fresh : vient d'être débloquée (pièces gagnées).
-function openEpisode(world, k, line, fresh){
+function openEpisode(world, k, line, fresh) {
   const ep = EPISODES[world][k];
   const c = CHARACTERS[ep.by];
   const last = line >= ep.lines.length - 1;
@@ -197,10 +492,16 @@ function openEpisode(world, k, line, fresh){
   `);
   bindSpeakButtons();
   speak(`${line === 0 ? c.name + ' : ' : ''}${ep.lines[line]}`);
-  if(last && fresh){ playSound('coin'); gainCoins(EPISODE_REWARD, document.querySelector('.ep-find-emoji')); }
-  document.getElementById('ep-next').onclick = ()=>{
+  if (last && fresh) {
+    playSound('coin');
+    gainCoins(EPISODE_REWARD, document.querySelector('.ep-find-emoji'));
+  }
+  document.getElementById('ep-next').onclick = () => {
     playSound('tap');
-    if(!last){ openEpisode(world, k, line + 1, fresh); return; }
+    if (!last) {
+      openEpisode(world, k, line + 1, fresh);
+      return;
+    }
     closeModal();
     emit('ui:lagon');
   };
