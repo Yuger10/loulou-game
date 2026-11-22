@@ -3,7 +3,9 @@
    difficulté (gameDiff) et ce qui est compté pour les parents ; le moteur
    les met à jour avec setLastGame et les fonctions du défi. */
 
+/** @type {string | null} */
 let lastGame = null;
+/** @param {string | null} key */
 function setLastGame(key) {
   lastGame = key;
 }
@@ -12,12 +14,14 @@ function setLastGame(key) {
    au-dessus de son niveau (js/features/adaptive/game-diff.js), la récompense
    est doublée, et le niveau du jeu ne bouge pas (js/features/parents). Il ne
    vaut que pour la partie lancée par startBonusChallenge. */
+/** @type {{ key: string, fresh: boolean, won: boolean } | null} */
 let bonusChallenge = null;
 
 function inBonusChallenge() {
   return !!bonusChallenge && bonusChallenge.key === lastGame;
 }
 // Zap lance un défi : il vaut pour la prochaine partie de ce jeu seulement
+/** @param {string} key */
 function beginBonusChallenge(key) {
   bonusChallenge = { key, fresh: true, won: false };
 }

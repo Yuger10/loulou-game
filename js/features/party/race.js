@@ -29,6 +29,9 @@ import { renderTurnBar } from './turn-bar.js';
 
 const RACE_PRIZE = 50; // pièces pour le vainqueur
 
+/** @typedef {import('../../entities/player/index.js').Profile} Profile */
+
+/** @param {string[]} ids les joueurs, dans l'ordre */
 function startRace(ids) {
   if (ids.length < 2) return false;
   setRace({ active: true, players: ids.slice(), pos: {}, turn: 0, goal: RACE_STEPS, winner: null, rounds: 0 });
@@ -41,12 +44,14 @@ function startRace(ids) {
   renderRaceTrack();
   playSound('win');
   confetti();
-  const p = raceCurrent();
+  // le premier joueur vient d'être choisi dans la liste : il existe
+  const p = /** @type {Profile} */ (raceCurrent());
   speak(`La course commence ! Premier arrivé à ${RACE_STEPS} cases gagne. ${p.name || ''} commence.`);
   showToast(`🏁 La course commence !`);
   return true;
 }
 
+/** @param {boolean} [silent] sans annonce (fin de course) */
 function stopRace(silent) {
   race.active = false;
   party.active = false;
@@ -73,6 +78,7 @@ function raceAdvance() {
   return false;
 }
 
+/** @param {Profile} p */
 function raceWin(p) {
   race.winner = p.id;
   race.active = false;
@@ -83,7 +89,8 @@ function raceWin(p) {
   confetti();
   vibrate([80, 50, 80, 50, 220]);
   const classement = race.players
-    .map((id) => ({ p: profiles.list.find((x) => x.id === id), n: race.pos[id] || 0 }))
+    // un joueur supprimé quitte la course (party-state.js) : chacun existe
+    .map((id) => ({ p: /** @type {Profile} */ (profiles.list.find((x) => x.id === id)), n: race.pos[id] || 0 }))
     .sort((a, b) => b.n - a.n);
   speak(`Bravo ${p.name || ''} ! Tu gagnes la course et ${RACE_PRIZE} pièces !`);
   openModal(`
@@ -150,7 +157,7 @@ function renderRaceTrack() {
     </div>
     ${race.players
       .map((id) => {
-        const p = profiles.list.find((x) => x.id === id);
+        const p = /** @type {Profile} */ (profiles.list.find((x) => x.id === id));
         const n = race.pos[id] || 0;
         const here = cur && cur.id === id;
         return `<div class="race-lane ${here ? 'active' : ''}">

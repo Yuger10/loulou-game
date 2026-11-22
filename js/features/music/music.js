@@ -17,6 +17,19 @@ import { currentWorld } from '../../entities/world/index.js';
 import { audioCtx, ensureAudioCtx, musicBusNode } from '../../shared/ui/index.js';
 
 // root : note MIDI de départ ; scale : gamme (demi-tons) ; prog : accords (degrés en demi-tons)
+/**
+ * @typedef {{
+ *   root: number,
+ *   scale: number[],
+ *   bpm: number,
+ *   lead: string,
+ *   prog: number[],
+ *   minor?: boolean,
+ *   shaker?: boolean,
+ *   tick?: boolean,
+ * }} MusicTheme
+ */
+/** @type {Record<string, MusicTheme>} */
 const MUSIC_THEMES = {
   lagon: { root: 60, scale: [0, 2, 4, 7, 9], bpm: 84, lead: 'marimba', prog: [0, 9, 5, 7] },
   foret: { root: 55, scale: [0, 2, 4, 7, 9], bpm: 76, lead: 'flute', prog: [0, 5, 9, 7] },
@@ -42,13 +55,27 @@ const MUSIC_THEMES = {
 };
 const MUSIC_VOLUME = 1.0; // crête ≈ 0,11, bien sous les bruitages ; passe ensuite par le volume général du bus
 
-let music = { on: false, timer: null, nextTime: 0, step: 0, master: null, filter: null, last: 7 };
+/**
+ * La musique en cours : `master` et `filter` existent dès qu'elle joue (on).
+ * @type {{
+ *   on: boolean,
+ *   timer: ReturnType<typeof setInterval> | undefined,
+ *   nextTime: number,
+ *   step: number,
+ *   master: GainNode | null,
+ *   filter: BiquadFilterNode | null,
+ *   last: number,
+ * }}
+ */
+let music = { on: false, timer: undefined, nextTime: 0, step: 0, master: null, filter: null, last: 7 };
 
 // un thème qui remplace un moment celui de l'île (la fête du grand final) :
 // emit('music:theme', 'licornes-fete'), puis emit('music:theme', null)
+/** @type {string | null} */
 let musicOverride = null;
-on('music:theme', (key) => {
-  musicOverride = MUSIC_THEMES[key] ? key : null;
+on('music:theme', (/** @type {string | null} */ key) => {
+  // String : null devient la clé « null », absente, comme le faisait l'accès direct
+  musicOverride = MUSIC_THEMES[String(key)] ? key : null;
 });
 function musicTheme() {
   const th = Object.assign({}, MUSIC_THEMES[musicOverride || currentWorld] || MUSIC_THEMES.lagon);
@@ -61,6 +88,7 @@ function musicTheme() {
   }
   return th;
 }
+/** @param {number} m note MIDI */
 function midiHz(m) {
   return 440 * Math.pow(2, (m - 69) / 12);
 }
@@ -72,9 +100,19 @@ function musicWanted() {
 }
 
 /* ---- les instruments ---- */
+/**
+ * @param {number} freq
+ * @param {number} t
+ * @param {number} durArg
+ * @param {string} kind l'instrument
+ * @param {number} vol
+ */
 function mNote(freq, t, durArg, kind, vol) {
   let dur = durArg;
-  const ctx = audioCtx,
+  // joué par musicTick, qui a vérifié le contexte audio ; master et filter existent (music.on)
+  const ctx = /** @type {AudioContext} */ (audioCtx),
+    master = /** @type {GainNode} */ (music.master),
+    filter = /** @type {BiquadFilterNode} */ (music.filter),
     o = ctx.createOscillator(),
     g = ctx.createGain();
   let attack = 0.01,
@@ -113,7 +151,7 @@ function mNote(freq, t, durArg, kind, vol) {
   g.gain.setValueAtTime(0, t);
   g.gain.linearRampToValueAtTime(vol, t + attack);
   g.gain.exponentialRampToValueAtTime(0.0008, t + dur);
-  o.connect(g).connect(kind === 'pad' ? music.filter : music.master);
+  o.connect(g).connect(kind === 'pad' ? filter : master);
   o.start(t);
   o.stop(t + dur + 0.05);
   // clochette : un second partiel, plus aigu, qui s'éteint plus vite
@@ -125,13 +163,14 @@ function mNote(freq, t, durArg, kind, vol) {
     g2.gain.setValueAtTime(0, t);
     g2.gain.linearRampToValueAtTime(vol * 0.35, t + 0.005);
     g2.gain.exponentialRampToValueAtTime(0.0008, t + dur * 0.4);
-    o2.connect(g2).connect(music.master);
+    o2.connect(g2).connect(master);
     o2.start(t);
     o2.stop(t + dur * 0.4 + 0.05);
   }
 }
 
 /* ---- une croche ---- */
+/** @param {number} t */
 function musicStep(t) {
   const th = musicTheme();
   const spb = 60 / th.bpm,
@@ -149,6 +188,7 @@ function musicStep(t) {
   // mélodie : marche au hasard dans la gamme, avec des silences
   const play = s === 0 ? 0.9 : s % 2 === 0 ? 0.6 : 0.32;
   if (random() < play) {
+    /** @type {number[]} */
     const degrees = [];
     for (let oct = 0; oct < 2; oct++) th.scale.forEach((iv) => degrees.push(iv + 12 * oct));
     let i = music.last + Math.round((random() - 0.5) * 4);
@@ -177,17 +217,21 @@ function startMusic() {
   if (music.on) return;
   try {
     ensureAudioCtx();
-    if (audioCtx.state === 'suspended' && audioCtx.resume) audioCtx.resume();
-    music.master = audioCtx.createGain();
-    music.master.gain.setValueAtTime(0, audioCtx.currentTime);
-    music.master.gain.linearRampToValueAtTime(MUSIC_VOLUME, audioCtx.currentTime + 1.5);
+    // sans Web Audio, audioCtx reste null : la ligne suivante lève, le catch laisse la musique coupée
+    const ctx = /** @type {AudioContext} */ (audioCtx);
+    if (ctx.state === 'suspended' && ctx.resume) ctx.resume();
+    const master = ctx.createGain();
+    music.master = master;
+    master.gain.setValueAtTime(0, ctx.currentTime);
+    master.gain.linearRampToValueAtTime(MUSIC_VOLUME, ctx.currentTime + 1.5);
     // sur le bus principal : volume général, réduction pendant la voix, limiteur (js/shared/ui/sound.js)
-    music.master.connect(musicBusNode() || audioCtx.destination);
-    music.filter = audioCtx.createBiquadFilter();
-    music.filter.type = 'lowpass';
-    music.filter.frequency.value = 900;
-    music.filter.connect(music.master);
-    music.nextTime = audioCtx.currentTime + 0.1;
+    master.connect(musicBusNode() || ctx.destination);
+    const filter = ctx.createBiquadFilter();
+    music.filter = filter;
+    filter.type = 'lowpass';
+    filter.frequency.value = 900;
+    filter.connect(master);
+    music.nextTime = ctx.currentTime + 0.1;
     music.step = 0;
     music.on = true;
     music.timer = setInterval(musicTick, 150);
@@ -200,12 +244,15 @@ function stopMusic() {
   if (!music.on) return;
   music.on = false;
   clearInterval(music.timer);
-  music.timer = null;
-  const master = music.master,
-    filter = music.filter;
+  music.timer = undefined;
+  // la musique jouait (music.on) : startMusic a créé ses deux nœuds
+  const master = /** @type {GainNode} */ (music.master),
+    filter = /** @type {BiquadFilterNode} */ (music.filter);
   try {
-    master.gain.cancelScheduledValues(audioCtx.currentTime);
-    master.gain.setTargetAtTime(0, audioCtx.currentTime, 0.15);
+    // un contexte absent lève ici, comme un contexte fermé
+    const ctx = /** @type {AudioContext} */ (audioCtx);
+    master.gain.cancelScheduledValues(ctx.currentTime);
+    master.gain.setTargetAtTime(0, ctx.currentTime, 0.15);
   } catch {
     // contexte audio déjà fermé : la musique est de toute façon coupée
   }

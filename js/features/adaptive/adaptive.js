@@ -29,6 +29,7 @@ import { pickRandom, random } from '../../shared/lib/index.js';
 import { lastGame } from './session.js';
 import { SKILL_ERR_TOLERANCE, skillStatus } from './skill-status.js';
 
+/** @type {Record<string, number>} */
 const GAME_TIER_MAX = { calc: 6, shapes: 6, planets: 6 };
 const ADAPT_UP_STREAK = 2; // réussites d'affilée pour monter d'un cran
 const ADAPT_DOWN_FAILS = 2; // missions ratées (sur les 3 dernières) pour redescendre
@@ -36,6 +37,7 @@ let PRACTICE_CHANCE = 0.5; // part des choix où revient un jeu à travailler
 
 // Ce que dit le compagnon quand un jeu progresse (sans accord : valable
 // pour une fille comme pour un garçon).
+/** @type {Record<string, string>} */
 const PROGRESS_CHEERS = {
   reading: 'Tu lis de mieux en mieux !',
   determinants: 'Les petits mots, tu les connais de mieux en mieux !',
@@ -69,9 +71,20 @@ const PROGRESS_CHEERS = {
   mirror: 'Tu dessines les reflets du miroir de mieux en mieux !',
 };
 
+/** @typedef {import('./skill-status.js').SkillRecord} SkillRecord */
+/**
+ * Un changement de niveau après une mission : `back` = remonté après un soutien.
+ * @typedef {{ type: 'up' | 'down', lvl: number, back?: boolean }} AdaptStep
+ */
+
+/** @param {string} key */
 function gameMaxTier(key) {
   return GAME_TIER_MAX[key] || 5;
 }
+/**
+ * @param {string} key
+ * @returns {SkillRecord | null}
+ */
 function skillOf(key) {
   return (state.skills || {})[key] || null;
 }
@@ -80,12 +93,17 @@ function inGroupPlay() {
 }
 
 // Niveau de départ d'un jeu jamais joué : un cran sous l'île.
+/** @param {number} base */
 function placementTier(base) {
   return Math.max(1, base - 1);
 }
 
 // Niveau réellement joué pour ce jeu, à partir du palier de l'île (déjà
 // plafonné par l'âge). Appelé par gameDiff() en solo.
+/**
+ * @param {number} base
+ * @param {string} [keyArg] le jeu, par défaut celui en cours
+ */
 function adaptTier(base, keyArg) {
   const key = keyArg || lastGame;
   if (!key || inGroupPlay()) return base;
@@ -97,6 +115,14 @@ function adaptTier(base, keyArg) {
 // Après une mission enregistrée (js/features/parents/parents.js, recordMission) : fait
 // monter ou redescendre le niveau du jeu. Renvoie {type:'up'|'down', lvl}
 // ou null.
+/**
+ * @param {string} key
+ * @param {SkillRecord} s
+ * @param {number} tier
+ * @param {boolean} ok
+ * @param {number} errors
+ * @returns {AdaptStep | null}
+ */
 function adaptAfterMission(key, s, tier, ok, errors) {
   if (!s.lvl) s.lvl = tier; // premier passage : on part du niveau joué
   if (tier !== s.lvl) return null; // joué plus bas (île plus facile) : ne compte pas
@@ -120,12 +146,14 @@ function adaptAfterMission(key, s, tier, ok, errors) {
 }
 
 /* ---- ce qui est à travailler revient plus souvent ---- */
+/** @param {string} key */
 function needsPractice(key) {
   const s = skillOf(key);
   return !!s && (s.support || skillStatus(s, key) === 'difficile');
 }
 // Un jeu à travailler parmi ceux proposés (jamais celui qu'on vient de
 // jouer), une fois sur deux ; sinon null.
+/** @param {string[]} keys */
 function pickPracticeGame(keys) {
   if (inGroupPlay() || random() >= PRACTICE_CHANCE) return null;
   const last = lastGame;
@@ -134,6 +162,7 @@ function pickPracticeGame(keys) {
 }
 
 /* ---- le compagnon encourage ce qui progresse ---- */
+/** @param {{ key: string } | null} p le progrès de la dernière mission (missionProgress) */
 function progressCheer(p) {
   if (!p) return null;
   return PROGRESS_CHEERS[p.key] || 'Tu progresses, bravo !';

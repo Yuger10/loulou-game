@@ -65,12 +65,23 @@ import {
 } from './squishies.js';
 import { random } from '../../shared/lib/index.js';
 
+/** @typedef {import('./squishies.js').SortCriterion} SortCriterion */
+/** @typedef {import('./squishies.js').SortingTask} SortingTask */
+/** @typedef {import('./squishies.js').Rng} Rng */
+/** @typedef {{ fill: string, edge: string }} SqColor les couleurs d'un corps : remplissage et contour */
+/** @typedef {{ capy?: boolean, sleep?: boolean, noEyes?: boolean, beak?: boolean, wide?: boolean }} SqFaceOptions */
+/** Le dessin d'un modèle : `faceY` déplace le visage, `back` et `front` dessinent derrière et devant le corps.
+ * @typedef {{ body: string, face?: SqFaceOptions, faceY?: number, back?: (c: SqColor) => string, front?: (c: SqColor) => string }} SqArt */
+/** @typedef {{ task: SortingTask, filled?: number }} SortQuestion la question posée aux indices */
+/** @typedef {{ task: SortingTask, filled: number, errors: number, age: number | null }} SortRun */
+
 /* ---------- Les dessins (SVG, aucune image) ----------
    Dans le style des squishies du mini-jeu Formes (squishySVG) : un corps
    doux à la forme du modèle (rond, ovale, carré arrondi), un reflet, un
    petit visage, et un détail propre au modèle. Un petit squishy est dessiné
    plus petit, posé au même endroit. */
 
+/** @type {Record<string, { el: string, face: number[] }>} */
 const SQ_BODIES = {
   rond: { el: '<circle cx="50" cy="58" r="38"/>', face: [50, 62] },
   'ovale-h': { el: '<ellipse cx="50" cy="67" rx="45" ry="28"/>', face: [50, 66] },
@@ -80,6 +91,7 @@ const SQ_BODIES = {
 
 // le visage : yeux, joues, bouche (o.sleep : yeux fermés ; o.capy : museau ;
 // o.beak : un bec à la place de la bouche ; o.noEyes : yeux dessinés à part)
+/** @param {number} fx @param {number} fy @param {SqFaceOptions} [o] */
 function sqFace(fx, fy, o = {}) {
   const ey = o.capy ? fy - 8 : fy;
   const eyes = o.noEyes
@@ -105,6 +117,7 @@ function sqFace(fx, fy, o = {}) {
 
 // Le dessin propre à chaque modèle : body (forme du corps), face (options du
 // visage), back (derrière le corps), front (devant). c = { fill, edge }.
+/** @type {Record<string, SqArt>} */
 const SQ_ART = {
   'capy-fraise': {
     body: 'carre',
@@ -622,11 +635,13 @@ const SQ_ART = {
 };
 
 // les paillettes d'un ✨ (animées en CSS)
+/** @param {number} x @param {number} y @param {number} s la taille */
 const SQ_SPARKLE = (x, y, s) =>
   `<path d="M${x} ${y - s} Q${x + s * 0.18} ${y - s * 0.18} ${x + s} ${y} Q${x + s * 0.18} ${y + s * 0.18} ${x} ${y + s} Q${x - s * 0.18} ${y + s * 0.18} ${x - s} ${y} Q${x - s * 0.18} ${y - s * 0.18} ${x} ${y - s}Z"/>`;
 
 /* Le dessin d'un squishy. opts.silhouette : gris, sans visage (un modèle
    pas encore trouvé). */
+/** @param {string} id @param {{ silhouette?: boolean }} [opts] */
 function squishyArtSVG(id, opts = {}) {
   const m = SQUISHIES[id] || SQUISHY_TREASURES[id],
     art = SQ_ART[id];
@@ -651,6 +666,7 @@ function squishyArtSVG(id, opts = {}) {
 }
 
 // Une boîte surprise (la couleur dit sa série ; violette avec « ? » : mystère)
+/** @type {Record<string, string[]>} remplissage et contour, par série */
 const SQ_BOX_COLORS = {
   capy: ['#FFC98F', '#C8661A'],
   desserts: ['#FFB8D6', '#C9497F'],
@@ -662,8 +678,9 @@ const SQ_BOX_COLORS = {
   petitesbetes: ['#CDEBC4', '#4F8A45'],
   licornes: ['#E3D6FB', '#6A4FB3'],
 };
-function squishyBoxSVG(series) {
-  const col = SQ_BOX_COLORS[series] || ['#CDB8F2', '#7B5CC0'];
+// String : sans série (boîte mystère), null et undefined restent des clés absentes
+function squishyBoxSVG(/** @type {string | null | undefined} */ series) {
+  const col = SQ_BOX_COLORS[String(series)] || ['#CDB8F2', '#7B5CC0'];
   return `<svg class="sq-boxart" viewBox="0 0 100 100" aria-hidden="true">
     <g class="sb-base"><rect x="16" y="44" width="68" height="50" rx="8" fill="${col[0]}" stroke="${col[1]}" stroke-width="4"/>
       <rect x="45" y="46" width="10" height="46" fill="#fff" opacity=".9"/>
@@ -675,6 +692,7 @@ function squishyBoxSVG(series) {
   </svg>`;
 }
 // La ligne « 🎁 Boîte surprise » des fenêtres de récompense (coffre, énigme)
+/** @param {string | null} [series] */
 function squishyBoxRewardHTML(series) {
   const s = series && SQUISHY_SERIES[series];
   return `<div class="speech sq-reward-line">
@@ -686,10 +704,10 @@ function squishyBoxRewardHTML(series) {
 /* ---------- Pastille 🧸 : les boîtes à ouvrir ---------- */
 function renderSquishyBadge() {
   const n = squishyBoxCount();
-  [
+  /** @type {Array<[string, boolean]>} */ ([
     ['squishy-badge', true],
     ['sq-room-link-n', false],
-  ].forEach((/** @type {[string, boolean]} */ [elId, pulse]) => {
+  ]).forEach(([elId, pulse]) => {
     const b = document.getElementById(elId);
     if (!b) return;
     b.hidden = !n;
@@ -704,7 +722,8 @@ onProfileRefresh(renderSquishyBadge);
 // (rattrapage de la migration, coffre…) : on le dit une fois, doucement.
 function squishySessionHello() {
   const sq = sqState();
-  if (sq.hello || !sq.boxes.length || document.getElementById('overlay').classList.contains('show')) return false;
+  const overlay = /** @type {HTMLElement} */ (document.getElementById('overlay'));
+  if (sq.hello || !sq.boxes.length || overlay.classList.contains('show')) return false;
   showToast(
     `🧸 Tu as ${sq.boxes.length} boîte${sq.boxes.length > 1 ? 's' : ''} surprise${sq.boxes.length > 1 ? 's' : ''} à ouvrir !`,
   );
@@ -712,7 +731,7 @@ function squishySessionHello() {
 }
 
 /* ---------- Presser un squishy ---------- */
-function squishyPress(el) {
+function squishyPress(/** @type {HTMLElement | null | undefined} */ el) {
   if (!el) return;
   el.classList.remove('sq-press');
   void el.offsetWidth;
@@ -723,8 +742,8 @@ function squishyPress(el) {
 
 /* ---------- La chambre ---------- */
 let sqRoomTab = 'collection';
-let sqTimers = [];
-function sqLater(fn, ms) {
+let sqTimers = /** @type {Array<ReturnType<typeof setTimeout>>} */ ([]);
+function sqLater(/** @type {() => void} */ fn, /** @type {number} */ ms) {
   const t = setTimeout(() => {
     sqTimers = sqTimers.filter((x) => x !== t);
     fn();
@@ -745,9 +764,11 @@ const SQ_TABS = [
   { id: 'ranger', icon: '📦', name: 'Ranger' },
 ];
 
+/** @param {string} [tabArg] l'onglet, par défaut le dernier @param {{ avoid?: string }} [opts] Ranger : la consigne à éviter */
 function openSquishyRoom(tabArg, opts) {
   let tab = tabArg;
-  tab = SQ_TABS.some((t) => t.id === tab) ? tab : sqRoomTab || 'collection';
+  // un onglet reconnu est forcément défini
+  tab = SQ_TABS.some((t) => t.id === tab) ? /** @type {string} */ (tab) : sqRoomTab || 'collection';
   sqRoomTab = tab;
   sqShelfSel = null;
   const sq = sqState();
@@ -777,6 +798,7 @@ function openSquishyRoom(tabArg, opts) {
 }
 
 // la consigne de l'en-tête (et ce que dit la voix), selon l'onglet
+/** @param {string} tab @param {{ avoid?: string }} [opts] @returns {{ hint: string, say: string, task?: SortingTask | null }} */
 function sqRoomHead(tab, opts) {
   if (tab === 'collection') {
     const n = squishyBoxCount();
@@ -795,7 +817,7 @@ function sqRoomHead(tab, opts) {
 }
 
 /* ---- 📚 Collection ---- */
-function sqCellHTML(id) {
+function sqCellHTML(/** @type {string} */ id) {
   const m = SQUISHIES[id],
     n = squishyCount(id);
   if (!n)
@@ -849,10 +871,11 @@ function renderSquishyCollection() {
   const open = document.getElementById('sq-open');
   if (open) setHandler(open, 'click', () => squishyOpenAnimated());
 }
-function sqBindPress(el) {
+function sqBindPress(/** @type {HTMLElement} */ el) {
   el.querySelectorAll('.sq-cell[data-sq]').forEach((b) => {
     setHandler(b, 'click', () => {
-      const id = b.dataset.sq,
+      // le sélecteur [data-sq] garantit l'attribut
+      const id = /** @type {string} */ (b.dataset.sq),
         n = squishyCount(id);
       squishyPress(b);
       speak(`${(SQUISHIES[id] || SQUISHY_TREASURES[id]).name}${n > 1 ? `. Tu en as ${n}.` : ' !'}`);
@@ -861,7 +884,7 @@ function sqBindPress(el) {
   el.querySelectorAll('.sq-cell[data-treasure]').forEach((b) => {
     setHandler(b, 'click', () => {
       playSound('tap');
-      speak(`Un trésor unique ! ${SQUISHY_TREASURES[b.dataset.treasure].how}.`);
+      speak(`Un trésor unique ! ${SQUISHY_TREASURES[/** @type {string} */ (b.dataset.treasure)].how}.`);
     });
   });
   el.querySelectorAll('.sq-cell[data-miss]').forEach((b) => {
@@ -877,9 +900,11 @@ function sqBindPress(el) {
    (1 fois sur 5), il surgit de la boîte pour le plaisir. Il ne change rien au
    tirage, qui a déjà eu lieu : son hasard (`popRng`) est à part. */
 const SQ_POP_CHANCE = 0.2;
+/** @param {Rng} [popRng] */
 function squishyPopDue(popRng) {
   return (popRng || random)() < SQ_POP_CHANCE;
 }
+/** @param {Rng} [popRng] */
 function squishyOpenAnimated(popRng) {
   const btn = /** @type {HTMLButtonElement} */ (document.getElementById('sq-open')),
     stage = document.getElementById('sq-stage');
@@ -907,7 +932,7 @@ function squishyOpenAnimated(popRng) {
   sqLater(() => squishyReveal(res), pop ? 1900 : 1300);
   return { res, pop };
 }
-function squishyReveal(res) {
+function squishyReveal(/** @type {import('./squishies.js').OpenedBox} */ res) {
   const box = document.getElementById('sq-boxes');
   if (!box) return;
   const m = SQUISHIES[res.id];
@@ -963,7 +988,7 @@ function squishyReveal(res) {
 }
 
 /* ---- 🗄️ Étagère ---- */
-let sqShelfSel = null; // { id } (depuis la collection) ou { id, slot } (depuis l'étagère)
+let sqShelfSel = /** @type {{ id: string, slot?: number } | null} */ (null); // { id } (depuis la collection) ou { id, slot } (depuis l'étagère)
 function renderSquishyShelf() {
   const el = document.getElementById('sq-room');
   if (!el) return;
@@ -997,7 +1022,8 @@ function renderSquishyShelf() {
     </div>`;
   el.querySelectorAll('[data-pick]').forEach((b) => {
     setHandler(b, 'click', () => {
-      const id = b.dataset.pick;
+      // le sélecteur [data-pick] garantit l'attribut
+      const id = /** @type {string} */ (b.dataset.pick);
       squishyPress(b);
       if (squishyCount(id) - squishyShelfCount(id) <= 0) {
         speak("Il est déjà sur l'étagère !");
@@ -1020,7 +1046,7 @@ function renderSquishyShelf() {
       renderSquishyShelf();
     });
 }
-function squishyShelfTap(slot, btn) {
+function squishyShelfTap(/** @type {number} */ slot, /** @type {HTMLElement} */ btn) {
   const sq = sqState(),
     sel = sqShelfSel,
     here = sq.shelf[slot];
@@ -1052,16 +1078,17 @@ function squishyShelfTap(slot, btn) {
 }
 
 /* ---- 📦 Ranger : les boîtes de rangement à consigne ---- */
-let sqSort = null; // { task, filled, errors, age }
-function sqSortTask(opts = {}) {
+let sqSort = /** @type {SortRun | null} */ (null); // { task, filled, errors, age }
+function sqSortTask(/** @type {{ avoid?: string }} */ opts = {}) {
   const age = currentPlayerAge();
   return makeSortingTask(sqState().owned, age, random, { avoid: opts.avoid });
 }
 // La consigne en image, pour qui ne lit pas encore : la forme (remplie de la
 // couleur s'il y en a une), sinon une pastille de couleur ; la taille par une
 // paire « petit / grand » dont la bonne est foncée.
-function sortIconsHTML(criteria) {
-  const get = (t) => (criteria.find((c) => c.type === t) || {}).value;
+function sortIconsHTML(/** @type {SortCriterion[]} */ criteria) {
+  /** @param {SortCriterion['type']} t */
+  const get = (t) => (criteria.find((c) => c.type === t) || /** @type {Partial<SortCriterion>} */ ({})).value;
   const color = get('color'),
     shape = get('shape'),
     size = get('size');
@@ -1082,7 +1109,7 @@ function sortTopHTML() {
       <div class="sr-pay">${left ? `🪙 +${SQ_SORT_REWARD} <small>(encore ${left} aujourd'hui)</small>` : '😊 Pour le plaisir'}</div>
     </div>`;
 }
-function renderSquishySorting(task) {
+function renderSquishySorting(/** @type {SortingTask | null | undefined} */ task) {
   const el = document.getElementById('sq-room');
   if (!el) return;
   const models = squishyOwnedIds().length;
@@ -1112,13 +1139,13 @@ function renderSquishySorting(task) {
     <div class="sr-board">
       ${task.items.map((id, i) => `<button type="button" class="sq-cell sr-item" data-i="${i}" aria-label="${SQUISHIES[id].name}">${squishyArtSVG(id)}<span class="sq-check" aria-hidden="true">✓</span></button>`).join('')}
     </div>`;
-  const q = { task };
+  const q = /** @type {SortQuestion} */ ({ task });
   setHintQuestion('rangement', q, { choices: '.sr-item', noCount: true });
   el.querySelectorAll('.sr-item').forEach((b) => {
-    setHandler(b, 'click', () => squishySortTap(b, q));
+    setHandler(b, 'click', () => squishySortTap(/** @type {HTMLButtonElement} */ (b), q));
   });
 }
-function squishySortTap(btn, q) {
+function squishySortTap(/** @type {HTMLButtonElement} */ btn, /** @type {SortQuestion} */ q) {
   const run = sqSort;
   if (!run || btn.disabled || run.filled >= SQ_SORT_SLOTS || run.errors >= SQ_SORT_MAX_ERRORS) return;
   const id = run.task.items[Number(btn.dataset.i)];
@@ -1153,7 +1180,7 @@ function squishySortTap(btn, q) {
     speak(sortWrongHint(id, run.task.criteria));
   }
 }
-function squishySortWin(run) {
+function squishySortWin(/** @type {SortRun} */ run) {
   const coins = sortingDone(run.errors, run.task.level, run.age);
   const crate = document.getElementById('sr-crate');
   const board = document.querySelector('.sr-board');
@@ -1180,9 +1207,9 @@ function squishySortWin(run) {
 
 // Indices du compagnon (v52) : 1. sur quoi porter son regard ; 2. combien
 // il en reste, et une partie du plateau où se cache l'un d'eux.
-function sortingHints(q) {
+function sortingHints(/** @type {SortQuestion} */ q) {
   const cr = q.task.criteria;
-  const one = (c) =>
+  const one = (/** @type {SortCriterion} */ c) =>
     c.type === 'color'
       ? `la couleur : on cherche les ${SQ_COLORS[c.value].adj[1]}`
       : c.type === 'shape'

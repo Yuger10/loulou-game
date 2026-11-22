@@ -24,6 +24,11 @@ function speakWrongHint() {
 
 // En-tête d'une fenêtre de jeu : titre, consigne et bouton pour l'écouter.
 // La fermeture est assurée par la croix de la fenêtre (#modal-close).
+/**
+ * @param {string} title
+ * @param {string} hint
+ * @param {string} [spoken] la consigne lue, si elle diffère du texte affiché
+ */
 function gameHeader(title, hint, spoken) {
   const say = (spoken || hint).replace(/"/g, '&quot;');
   return `
@@ -39,10 +44,12 @@ function gameHeader(title, hint, spoken) {
 // branche les boutons « écouter » et lit la consigne à voix haute
 // la consigne déjà lue à voix haute pour ce mini-jeu (pour ne pas la relire à
 // chaque rendu) ; le moteur l'oublie à chaque nouvelle mission
+/** @type {string | null} */
 let lastSpokenHint = null;
 function forgetSpokenHint() {
   lastSpokenHint = null;
 }
+/** @param {string} say */
 function rememberSpokenHint(say) {
   lastSpokenHint = say;
 }
@@ -52,8 +59,10 @@ function bindQuit() {
   // lit la consigne une seule fois par mini-jeu (le mémo se re-rend à chaque clic)
   const hint = document.querySelector('.puzzle-hint [data-say]');
   if (hint && hint.dataset.say !== lastSpokenHint) {
-    lastSpokenHint = hint.dataset.say;
-    speak(hint.dataset.say);
+    // le sélecteur [data-say] garantit l'attribut
+    const say = /** @type {string} */ (hint.dataset.say);
+    lastSpokenHint = say;
+    speak(say);
   }
 }
 

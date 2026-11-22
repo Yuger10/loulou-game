@@ -11,8 +11,16 @@ const SKILL_STATUS = {
 
 // Au mémo, retourner deux cartes différentes fait partie du jeu : on
 // tolère donc plus d'« erreurs » avant de dire que c'est difficile.
+/** @type {Record<string, number>} */
 const SKILL_ERR_TOLERANCE = { memory: 3 };
 
+/** @typedef {import('../../entities/game-state/index.js').GameState['skills'][string]} SkillRecord */
+
+/**
+ * @param {SkillRecord | null | undefined} s
+ * @param {string} key
+ * @returns {keyof typeof SKILL_STATUS}
+ */
 function skillStatus(s, key) {
   if (!s || !(s.wins + s.fails)) return 'jamais';
   const r = s.recent || [];

@@ -4,5 +4,17 @@
   // passe dans tsconfig.json et ce fichier disparaît (track typescript-checkjs).
   "extends": "./tsconfig.json",
   "compilerOptions": { "strict": true },
-  "include": ["js/shared/**/*.js", "js/entities/**/*.js", "types/**/*.d.ts"]
+  "include": [
+    "js/shared/**/*.js",
+    "js/entities/**/*.js",
+    "js/features/wallet/**/*.js",
+    "js/features/gains/**/*.js",
+    "js/features/screen/**/*.js",
+    "js/features/hints/**/*.js",
+    "js/features/adaptive/**/*.js",
+    "js/features/music/**/*.js",
+    "js/features/party/**/*.js",
+    "js/features/squishies/**/*.js",
+    "types/**/*.d.ts"
+  ]
 }
