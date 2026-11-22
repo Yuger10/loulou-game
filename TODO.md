@@ -168,6 +168,9 @@ Chaque mini-jeu a maintenant son propre niveau pour chaque enfant (`js/adaptive.
 - Coffre au trésor quotidien à ouvrir au lancement (en plus du coffre des missions)
 - Le compagnon grandit ou gagne des accessoires avec la progression
 - Nouveaux mondes : banquise, village des lutins, fond des océans
+- Îles et mini-jeux écartés de la saison 3 le 22/11/2026, au profit des souhaits de la joueuse (les specs d'origine restent dans l'historique git) : Cité des Nuages (« Quel temps fait-il ? », « Le thermomètre »), Vallée des Dinosaures (« La frise du temps »), Fête Foraine (« La caisse du manège », « La roue de la chance »), Bibliothèque Magique (« Qui ? Où ? Quoi ? »), Station des Étoiles
+- Une piste des nombres de 1 à 100 en ligne droite, où l'on dit le nombre de chaque case (la recherche montre un effet net sur le sens des nombres)
+- Surligner chaque mot pendant que la voix le lit (peu coûteux, preuve faible)
 - Un « livre des découvertes » qui garde les phrases à retenir des planètes et des autres jeux
 - L'amitié avec les compagnons qui grandit (cœurs, souvenirs), comme avec les personnages des îles (hors périmètre de la v52)
 - Espace parents : lire plus finement les statistiques (indices par jeu et par semaine, jeux réussis grâce à un indice)

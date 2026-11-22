@@ -1,0 +1,77 @@
+<!-- Gabarit cothon 0.4.0 (setting-up-docs), adopté dans Conductor (cothon 0.2.0-2 et 0.4.0-6). -->
+# Plan : ✏️ L'Île des Crayons
+
+Spec : [spec.md](spec.md). Checklists : [mini-jeu](../../checklist-mini-jeu.md), [île](../../checklist-ile.md).
+
+Livraison : règle « Track livrée en plusieurs PR » de [workflow.md](../../workflow.md) (section « Fin de track : livraison ») : chaque PR intermédiaire par `bun run release patch "résumé"`, la dernière par `bun run release track "résumé"`, numéro pris sur `main` après rebase. Ici : phases 1 et 2 en `patch`, phase 3 en `track`.
+
+Trois phases, chacune une PR livrable seule (chaque merge est en production une minute après). Les phases 1 et 2 ne dépendent de rien : un mini-jeu livré seul est proposé dans « choisir un jeu » sur toutes les îles. La phase 3 attend que les deux PR de la track `saison3-ouverture` soient mergées. Les numéros « ligne N » renvoient au « Comportement attendu » de la spec.
+
+## Tâches
+
+### Phase 1 : le mini-jeu « Trace avec ton doigt » (`trace`) (PR 1)
+
+- [ ] 1. `test/tools/gestures.js` : `traceAlong(w, el)` (contrat de la spec), module `require` comme `test/tools/page.js`.
+- [ ] 2. Tests rouges dans `test/crayons.test.js` (nouveau, harnais de `test/musique.test.js:1-75`) : lignes 1 à 12 (paliers, ensembles, glyphes, jugement, tolérance, sens, gribouillis, toucher, point du `i`, coordonnées).
+- [ ] 3. `js/entities/difficulty/difficulty-s3.js` (spec D21, modèle `difficulty-s2.js` : `import { tierValue } from './difficulty.js'` ; le créer s'il n'existe pas et le déclarer dans la slice `difficulty` de `js/slices.cjs`, après `difficulty-s2.js`, puis `bun run sync`) : `traceRound(dd)` et `TraceRules`, réexportés par `js/entities/difficulty/index.js` dans un bloc `export { … } from './difficulty-s3.js'` ; dans `difficulty.js` seulement `LIVES_TABLE.trace` et `trace` dans `NO_TIMER_KINDS`. `wc -l` de `difficulty.js` et `difficulty-s3.js` sous 800 (`max-lines`, `conductor/checklist-ile.md` 2 bis).
+- [ ] 4. `js/features/minigames/trace/trace.js` : `TRACE_GLYPHS`, `TRACE_SETS`, `traceStrokePoints`, `traceJudge`, `traceClientToPad`, `traceBuildRound` (logique pure, tirages par `random`, `shuffle`). Lignes 1 à 12 vertes. `wc -l` de `trace.js` sous 800 à la fin de la phase (sinon `trace-glyphs.js`, spec D21).
+- [ ] 5. Tests rouges : lignes 13 à 23 (écran, pilote, traits et glyphes suivants, ratés, toucher court, palier 5 sans flèches, démonstration au palier 1, indices, tables).
+- [ ] 6. Écran et saisie (phrases : règle « Phrase du jeu et phrase générique » de la spec, `speak` après `loseLife`, un seul `speak` pour deux phrases d'un même événement) : `renderTrace()`, `traceAddStroke`, `TRACE_EVENTS` et repli tactile (spec D3), démonstration, `registerGame('trace', …)`, `registerHints('trace', …)`, `setHintQuestion` par glyphe ; `trace.css` (`touch-action: none`, carré, bande, `prefers-reduced-motion`) ; `index.js` ; import de la slice dans `js/app/main.js` (comme `nesting`, ligne 55) ; slice `minigame-trace` dans `js/slices.cjs` (et sa feuille dans `CSS_ORDER`, avant `island.css`) ; `bun run sync`.
+- [ ] 7. Branchements : `GAME_TYPES`, `GAME_LIST`, tranche `max: 5` de `AGE_GAME_TYPES` (`js/entities/difficulty/game-types.js`) ; `PROGRESS_CHEERS.trace` (`js/features/adaptive/adaptive.js`) ; groupe `lire` de `SKILL_GROUPS` (`js/features/parents/parents.js`).
+- [ ] 8. `test/games.test.js` : `INDEPENDENT.trace`, et dans `playToWin` `traceAlong` quand l'élément a `data-pts` ; `test/companions.test.js` : même remplacement dans la boucle « le jeu reste gagnable » (spec D4, D16). Ligne 24 verte.
+- [ ] 9. `bun run typecheck` vert (types de la spec D20), `bun run check` vert. Doc : section du PRD (idée de la joueuse), `conductor/checklist-mini-jeu.md` (§ 1 : un jeu à geste se joue par `data-pts` et `traceAlong`). Livraison : `bun run release patch "Mini-jeu Trace avec ton doigt"`, PR `agent-generated: true`, étiquette `agent`.
+- [ ] 10. Ligne 👤 S7 et S8 avec Amrou et la joueuse (tolérance au doigt) ; un réglage de R ou de `cover` se fait dans `traceRound`, noté au journal de décisions.
+
+### Phase 2 : le mini-jeu « Mesure les crayons » (`length`) (PR 2)
+
+- [ ] 11. Tests rouges dans `test/crayons.test.js` : lignes 25 à 30 (paliers et tirages).
+- [ ] 12. `lengthRound(dd)` et `LengthRules` dans `difficulty-s3.js` (créé à la phase 1 s'il n'existait pas ; ré-exportés par `js/entities/difficulty/index.js`), `length` dans `NO_TIMER_KINDS` et dans `GENEROUS_KINDS` de `livesFor` ; `lengthBuildRound` dans `js/features/minigames/length/length.js`. Lignes 25 à 30 vertes.
+- [ ] 13. Tests rouges : lignes 31 à 34 (bonne réponse, autre question après une erreur, piège du zéro, indices, tables).
+- [ ] 14. Écran (`renderLength`, crayons et règle en SVG), phrases d'erreur dites après `loseLife` (`if (!loseLife(btn, { disable: false, onRetry: renderLength })) speak(phrase)`, comme `nesting.js:125`), indices (`fx.run` pour les guides, `fx.marks` pour la gomme 1, `fx.glow` et `fx.dim` pour la règle) ; `length.css` ; `index.js` ; import dans `js/app/main.js` ; slice `minigame-length` ; `bun run sync`.
+- [ ] 15. Branchements : `GAME_TYPES`, `GAME_LIST`, `AGE_GAME_TYPES` (`max: 5`), `PROGRESS_CHEERS.length`, groupe `mesures`. Vérifier que `length` ne se confond avec la propriété d'aucun tableau (spec D10). `wc -l` de `length.js` sous 800.
+- [ ] 16. `test/games.test.js` : `INDEPENDENT.length`. Ligne 35 verte.
+- [ ] 17. `bun run typecheck` vert (`LengthRules`, spec D20), `bun run check` vert. Doc : section du PRD. Livraison : `bun run release patch "Mini-jeu Mesure les crayons"`, PR `agent-generated: true`, étiquette `agent`.
+- [ ] 18. Ligne 👤 S9 avec Amrou.
+
+### Phase 3 : l'île (PR 3, après `saison3-ouverture`)
+
+- [ ] 18 bis. Vérifier les prérequis de la track `saison3-ouverture` : `ARCHIPELAGOS[3]`, `zapMapSVG` et les six fichiers `-s3` (`characters-s3.js` avec `CHARACTERS_S3`, `characters-art-s3.js` avec `season3Art(ART, kit)`, `squishies-s3.js` avec `SQUISHIES_S3`, `squishy-art-s3.js` avec `SQ_ART_S3`, `story-s3.js` avec `STORY_S3`, `island-s3.js` avec `ISLE_SCENERY_S3`, `conductor/checklist-ile.md` 2 bis) existent sur `main`. S'il manque, s'arrêter et le signaler.
+
+- [ ] 19. Tests rouges dans `test/crayons.test.js` : lignes 36 à 40 (île, thème, paysage, musique, personnages, objets).
+- [ ] 19 bis. Tests existants à effectif figé (spec D22), avant le code des personnages et des squishies : `test/smoke.test.js:755-757` à 61 personnages, `test/squishies.test.js:84-88` avec `'papeterie'` en fin de liste, `test/squishies.test.js:89-92` et `:106-108` à 60 squishies ; ils échouent jusqu'aux tâches 20 et 23.
+- [ ] 20. Entités : `WORLDS.crayons` (`js/entities/world/worlds.js`, après `licornes`) ; 4 personnages dans `CHARACTERS_S3` (`js/entities/character/characters-s3.js`) et leurs 4 dessins dans `season3Art(ART, kit)` de `js/entities/character/characters-art-s3.js` (demande explicite de la spec D13, outils de `kit` ; aucun dessin existant touché, `characters-art.js` seulement pour une ligne d'`ArtKit` si un outil manque) ; objets, recettes, décorations (`js/entities/item/items.js`).
+- [ ] 21. Thème (`design-system-v21.css`), `ISLE_SCENERY_S3.crayons` (`js/features/island/island-s3.js`), `MUSIC_THEMES.crayons` (`js/features/music/music.js`). Lignes 36 à 40 vertes.
+- [ ] 22. Tests rouges : lignes 41 à 46 (ouverture à 70 avec le prologue de Zap puis le chapitre, histoire, récompense et carte de Zap, squishies, épisodes, jeu favori).
+- [ ] 23. `STORY_S3.crayons` (`js/features/story/story-s3.js`), `EPISODES.crayons` (`js/features/story/episodes.js`), les 6 modèles dans `SQUISHIES_S3` (`js/entities/squishy/squishies-s3.js`), série `papeterie` dans `SQUISHY_SERIES`, `SQUISHY_SERIES_ORDER` et `SQUISHY_ISLAND_SERIES.crayons` (une ligne chacune, `js/entities/squishy/squishies.js`) ; les 6 dessins dans `SQ_ART_S3` (`js/features/squishies/squishy-art-s3.js`), sur le modèle de `'tambour-mochi'`, et la ligne `SQ_BOX_COLORS.papeterie` dans `js/features/squishies/squishy-art.js` (spec D19). Lignes 41 à 46 vertes. `wc -l` des fichiers touchés sous 800 (estimations de la spec D21).
+- [ ] 23 bis. Test rouge de la ligne 48 dans `test/crayons.test.js` (clés et prénoms en double, lus dans le texte source, et tables indexées par clé de jeu qui sont des objets simples) ; il doit échouer si l'on ajoute temporairement une seconde ligne `cahier: {` dans `items.js` (essai local, jamais commité), puis passer.
+- [ ] 24. Tests existants (spec D16, ligne 47) : `test/saison2.test.js:100` et `:126-129`, `test/niveaux.test.js:202-207`. `bun run test saison3` reste vert (il retire les vraies îles de la saison 3 avant ses essais).
+- [ ] 25. `bun run typecheck` vert (les données de l'île respectent `World`, `Character`, `Item`, `CraftedItem`, `Squishy`, spec D20), `bun run check` vert, puis `bun run verify`.
+- [ ] 26. Doc : `conductor/niveaux.md` (« Dans le jeu, aujourd'hui » : l'Île des Crayons existe), `conductor/tracks.md` (track faite), section du PRD (idée de la joueuse). Livraison : `bun run release track "L'Île des Crayons"`, PR avec résumé et risques, `agent-generated: true`, étiquette `agent`.
+- [ ] 27. Ligne 👤 S10 avec la joueuse : noms, dessins, série ; un changement de nom se fait dans les données et les tests, noté au journal de décisions.
+
+## Preuves
+
+| Ligne du smoke test | Résultat | Niveau | Preuve |
+|---|---|---|---|
+| S1 | à faire | test-verified | `bun run test crayons` (exit 0) |
+| S2 | à faire | test-verified | `bun run test games`, `bun run test companions` (exit 0) |
+| S3 | à faire | test-verified | `bun run test crayons` (exit 0) |
+| S4 | à faire | test-verified | `bun run test crayons` (exit 0) |
+| S5 | à faire | test-verified | `bun run test saison2`, `bun run test niveaux`, `bun run test saison3` (exit 0) |
+| S6 | à faire | test-verified | `bun run check`, `bun run verify` (exit 0) |
+| S7 à S10 | à faire | runtime-verified | retour d'Amrou et de la joueuse dans la PR |
+
+## Journal de décisions
+
+En ajout seul : une décision fausse reçoit une nouvelle ligne qui la remplace, on ne modifie ni ne supprime une ligne.
+
+| # | Décision | Décidé par | Pourquoi | Preuve | Résultat |
+|---|---|---|---|---|---|
+| 1 | Les deux mini-jeux d'abord, chacun dans sa PR ; l'île ensuite | politique | brief commun : « d'abord chacun de ses deux mini-jeux, seul, dans sa PR » | spec, Hors périmètre | gardée |
+| 2 | Remplace l'emplacement prévu par D13 et D21 (`characters-art-saison3.js` et `ART_S3` avec les aides de `ART_KIT`, `rounds-saison3.js`, plafond de 1100 lignes) : paliers dans `difficulty-s3.js` (qui importe `tierValue`, déjà exporté), dessins dans `season3Art(ART, kit)` de `characters-art-s3.js`, personnages, squishies, chapitre et paysage dans `characters-s3.js`, `squishies-s3.js`, `story-s3.js` et `island-s3.js` ; plafond de 800 lignes | politique | la v66.16 a posé le modèle `-s2` et baissé `max-lines` à 800 ; nouvelle règle commune de `conductor/checklist-ile.md` (2 bis) | `.oxlintrc.json:40`, `js/entities/difficulty/difficulty-s2.js:4`, `js/entities/character/characters-art.js:732` | gardée |
+| 3 | Les 6 dessins de squishies (D19) vont dans `SQ_ART_S3` de `squishy-art-s3.js`, plus dans `SQ_ART` de `squishy-art.js` ; seule `SQ_BOX_COLORS.papeterie` reste dans `squishy-art.js` | politique | règle de `conductor/checklist-ile.md` (2 bis), complétée : avec cinq îles, `squishy-art.js` (640 lignes) dépasserait 800 | `conductor/checklist-ile.md` (2 bis) | gardée |
+
+## Écarts et non vérifié
+
+- La tolérance du tracé (R, `cover`, `wander`) est réglée par calcul : seul l'essai au doigt de la joueuse (S7) dira si elle est juste.
+- Pointer Events et le repli tactile sur un vieil iPad (S8) : aucun outil du dépôt ne l'atteint.

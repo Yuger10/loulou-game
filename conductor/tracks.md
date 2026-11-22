@@ -83,28 +83,70 @@ Registre des tracks Conductor, **dans l'ordre d'implémentation**. Feuille de ro
 
 ---
 
-- [ ] **Track: Saison 3 « La Grande Expédition » + île 1 : ☁️ La Cité des Nuages (carte au trésor de Zap), niveau 70**
-*Link: [./tracks/saison3-monde-nuages_20261111/](./tracks/saison3-monde-nuages_20261111/)*
+> **Souhaits de la joueuse (22/11/2026) :** une île des crayons, une île des squishy dumplings, une île des coffres, un monde des chatouilles, ranger les squishies dans des boîtes, des jeux de mémoire et de résolution de problèmes, plus de maths, de la musique et des notes. Demandes du parent : des jeux pour aller plus loin que le niveau de l'âge, une voix partout et plus naturelle, de nouvelles idées pour mieux apprendre. Les cinq îles prévues avant pour la saison 3 (Nuages, Dinosaures, Fête Foraine, Bibliothèque, Étoiles) sont remplacées ; leurs mini-jeux utiles sont repris dans les nouvelles îles.
+
+- [ ] **Track: Une voix partout : tout texte montré à l'enfant se lit ou s'écoute au doigt (demande du parent)**
+*Link: [./tracks/voix-partout_20261122/](./tracks/voix-partout_20261122/)*
 
 ---
 
-- [ ] **Track: Saison 3, île 2 : 🦕 La Vallée des Dinosaures, niveau 78**
-*Link: [./tracks/monde-dinosaures_20261111/](./tracks/monde-dinosaures_20261111/)*
+- [ ] **Track: Une voix plus naturelle : phrases enregistrées à l'avance par une voix neuronale, la voix de l'appareil en repli (demande du parent)**
+*Link: [./tracks/voix-naturelle_20261122/](./tracks/voix-naturelle_20261122/)*
 
 ---
 
-- [ ] **Track: Saison 3, île 3 : 🎪 La Fête Foraine, niveau 86**
-*Link: [./tracks/monde-fete-foraine_20261111/](./tracks/monde-fete-foraine_20261111/)*
+- [ ] **Track: Aller plus loin : la classe du profil et le défi étoile, un cran au-dessus (demande du parent)**
+*Link: [./tracks/aller-plus-loin_20261122/](./tracks/aller-plus-loin_20261122/)*
 
 ---
 
-- [ ] **Track: Saison 3, île 4 : 📚 La Bibliothèque Magique, niveau 94**
-*Link: [./tracks/monde-bibliotheque_20261111/](./tracks/monde-bibliotheque_20261111/)*
+- [ ] **Track: Les erreurs expliquées : après une erreur, le jeu montre pourquoi (idée de Claude, d'après la recherche)**
+*Link: [./tracks/erreurs-expliquees_20261122/](./tracks/erreurs-expliquees_20261122/)*
 
 ---
 
-- [ ] **Track: Saison 3, île 5 : 🚀 La Station des Étoiles, niveau 102 (grand final de la saison 3)**
-*Link: [./tracks/monde-etoiles_20261111/](./tracks/monde-etoiles_20261111/)*
+- [ ] **Track: La révision espacée : les questions ratées reviennent quelques jours plus tard (idée de Claude, d'après la recherche)**
+*Link: [./tracks/revision-espacee_20261122/](./tracks/revision-espacee_20261122/)*
+
+---
+
+- [ ] **Track: Les boîtes de rangement : ranger pour de bon ses squishies dans des boîtes à étiquette (idée de la joueuse)**
+*Link: [./tracks/squishy-boites_20261122/](./tracks/squishy-boites_20261122/)*
+
+---
+
+- [ ] **Track: Saison 3 « La Grande Expédition » : troisième carte, avion en papier, carte au trésor de Zap, niveau 70**
+*Link: [./tracks/saison3-ouverture_20261122/](./tracks/saison3-ouverture_20261122/)*
+
+---
+
+- [ ] **Track: Saison 3, île 1 : ✏️ L'Île des Crayons (idée de la joueuse), niveau 70**
+*Link: [./tracks/monde-crayons_20261122/](./tracks/monde-crayons_20261122/)*
+
+---
+
+- [ ] **Track: Saison 3, île 2 : 🥟 L'Île des Squishy Dumplings (idée de la joueuse), niveau 78**
+*Link: [./tracks/monde-dumplings_20261122/](./tracks/monde-dumplings_20261122/)*
+
+---
+
+- [ ] **Track: Saison 3, île 3 : 🗝️ L'Île des Coffres (idée de la joueuse), niveau 86**
+*Link: [./tracks/monde-coffres_20261122/](./tracks/monde-coffres_20261122/)*
+
+---
+
+- [ ] **Track: Saison 3, île 4 : 🪶 Le Monde des Chatouilles (idée de la joueuse), niveau 94**
+*Link: [./tracks/monde-chatouilles_20261122/](./tracks/monde-chatouilles_20261122/)*
+
+---
+
+- [ ] **Track: Saison 3, île 5 : 🎼 L'Île du Grand Concert, niveau 102 (grand final de la saison 3)**
+*Link: [./tracks/monde-concert_20261122/](./tracks/monde-concert_20261122/)*
+
+---
+
+- [ ] **Track: Le bilan des parents : ce qui bloque, et une question à poser à table (idée de Claude, d'après la recherche)**
+*Link: [./tracks/bilan-parents_20261122/](./tracks/bilan-parents_20261122/)*
 
 ---
 

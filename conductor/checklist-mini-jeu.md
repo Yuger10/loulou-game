@@ -7,6 +7,7 @@ Remplacer `<cle>` par la clé du jeu (ex. `nesting`) et `<Jeu>` par son nom de f
 - [ ] `test/smoke.test.js` : le jeu s'ouvre, une bonne réponse avance, une mauvaise relance une **autre** question (anti-devinette), la difficulté suit le palier et l'âge.
 - [ ] `test/games.test.js` : le jeu est joué jusqu'à la victoire à chaque palier (ajouter son « solveur » s'il en faut un).
 - [ ] `test/companions.test.js` : ses indices sont vérifiés automatiquement (2 niveaux, anti-devinette, jeu gagnable après les indices).
+- [ ] `test/smoke.test.js`, test « variété : les 2 jeux jamais essayés remontent en priorité » : ajouter `state.gameCounts["<cle>"]=1` à la liste. Un jeu absent de cette liste compte 0 partie, comme les deux jeux que le test attend en tête, et le fait échouer au hasard. C'est un ajout, aucune vérification n'est affaiblie.
 - [ ] `bun run check` échoue pour la bonne raison.
 
 ## 2. La slice du jeu
@@ -26,7 +27,11 @@ Remplacer `<cle>` par la clé du jeu (ex. `nesting`) et `<Jeu>` par son nom de f
 - [ ] `js/slices.cjs` : une slice `minigame-<cle>` (couche `features`), placée avec les autres mini-jeux, après le moteur. Sa feuille de style va dans `css` **et** dans `CSS_ORDER` (en fin de liste, avant `island.css`).
 
 ## 3. Les entités et features à compléter
+> Tout `js/` est vérifié en TypeScript strict (`tsconfig.json`, v66.11) : le nouveau jeu, sa fonction de palier (`<cle>Round`) et les tables qu'il ajoute sont typés en JSDoc (`@param`, `@returns`, `@typedef` de l'objet renvoyé). Jamais `any` ni `@ts-ignore`.
+
+
 - [ ] `js/entities/difficulty/game-types.js` : la clé dans `GAME_TYPES`, et dans les tranches d'âge de `AGE_GAME_TYPES` où le jeu est proposé.
+- [ ] Taille des fichiers (`max-lines` à 800) : voir `conductor/checklist-ile.md`, section 2 bis (les jeux de la saison 3 mettent leur fonction de palier dans `js/entities/difficulty/difficulty-s3.js`, sur le modèle de `difficulty-s2.js`).
 - [ ] `js/entities/difficulty/difficulty.js` : ses paramètres par palier (une fonction `<cle>Round(dd)` ou équivalent), ses essais dans `LIVES_TABLE`, et `NO_TIMER_KINDS` s'il ne doit pas avoir de minuteur.
 - [ ] `js/features/adaptive/adaptive.js` : sa phrase de progrès dans `PROGRESS_CHEERS`, et `GAME_TIER_MAX` s'il va au-delà du palier 5.
 - [ ] `js/features/parents/parents.js` : le jeu dans un groupe de `SKILL_GROUPS` (compétence de l'espace parents).
@@ -38,6 +43,8 @@ Remplacer `<cle>` par la clé du jeu (ex. `nesting`) et `<Jeu>` par son nom de f
   - `test/companions.test.js` parcourt chaque jeu inscrit : il échoue si le jeu n'a pas d'indices.
 
 ## 4. Brancher et vérifier
+- [ ] `js/app/main.js` : l'import de la slice du jeu (`import '../features/minigames/<cle>/index.js';`), avec les autres mini-jeux. Sans lui, le jeu n'est jamais chargé.
+- [ ] `js/entities/difficulty/index.js` : la fonction de palier du jeu (`<cle>Round` ou équivalent) dans les exports. Sans elle, la slice du jeu ne peut pas l'importer.
 - [ ] `bun run sync` : met à jour `index.html` et la liste des fichiers mis en cache par `sw.js` depuis le manifeste.
 - [ ] Si le jeu expose volontairement un nom à d'autres slices : l'exporter et l'ajouter à son `index.js`.
 - [ ] `bun run check` vert : architecture et imports, vrais modules, test de fumée, tests de jeu.

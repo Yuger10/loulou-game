@@ -40,11 +40,11 @@
 | 2 | 🎵 L'Île de la Musique | `musique` | 50 | 6 | 30 | 245 |
 | 2 | 🌸 Le Jardin des Fées | `jardin` | 56 | 6 | 30 | 275 |
 | 2 | 🦄 Le Royaume Arc-en-ciel (Licornes) | `licornes` | 62 | 6 | 30 | 305 |
-| 3 | ☁️ La Cité des Nuages | `nuages` | 70 | 8 | 40 | 345 |
-| 3 | 🦕 La Vallée des Dinosaures | `dinos` | 78 | 8 | 40 | 385 |
-| 3 | 🎪 La Fête Foraine | `fete` | 86 | 8 | 40 | 425 |
-| 3 | 📚 La Bibliothèque Magique | `biblio` | 94 | 8 | 40 | 465 |
-| 3 | 🚀 La Station des Étoiles | `etoiles` | 102 | 8 | 40 | 505 |
+| 3 | ✏️ L'Île des Crayons | `crayons` | 70 | 8 | 40 | 345 |
+| 3 | 🥟 L'Île des Squishy Dumplings | `dumplings` | 78 | 8 | 40 | 385 |
+| 3 | 🗝️ L'Île des Coffres | `coffres` | 86 | 8 | 40 | 425 |
+| 3 | 🪶 Le Monde des Chatouilles | `chatouilles` | 94 | 8 | 40 | 465 |
+| 3 | 🎼 L'Île du Grand Concert | `concert` | 102 | 8 | 40 | 505 |
 
 Dans le jeu, aujourd'hui (v65) :
 - les îles de la saison 1 et toutes celles de la saison 2 (Boîtes, Jouets Doux, Bonbons, Musique, Jardin des Fées, Licornes) existent ;
@@ -73,3 +73,4 @@ Ces anciennes valeurs ne s'appliquent plus.
 - Il a ensuite été prévu au niveau 36.
 - La saison 3 avait été prévue au niveau 20, en parallèle des autres saisons.
 - La règle ci-dessus remplace tout cela.
+- La saison 3 avait d'abord cinq autres îles (Cité des Nuages, Vallée des Dinosaures, Fête Foraine, Bibliothèque Magique, Station des Étoiles), jamais codées. Le 22/11/2026, elles ont été remplacées par les souhaits de la joueuse (Crayons, Squishy Dumplings, Coffres, Chatouilles) et par le Grand Concert, sans changer les niveaux.
