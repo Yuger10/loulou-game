@@ -95,17 +95,10 @@ const SAVE_VERSION = 9;
  *   squishies: SquishyState,
  *   skyIntroSeen: boolean,
  *   season2Done: boolean,
+ *   decoPos: Record<string, { x: number, y: number }>,
+ *   helped: { date: string, ids: Record<string, number> } | null,
+ *   tipDragDeco: boolean,
  * }} GameState
- */
-/**
- * Des champs que des features posent sur `state` sans qu'ils soient dans
- * DEFAULT_STATE (js/features/island) : load() ne garde que les clés connues,
- * ils ne survivent donc pas à un rechargement.
- * @typedef {{
- *   helped?: { date: string, ids: Record<string, number> },
- *   decoPos?: Record<string, { x: number, y: number }>,
- *   tipDragDeco?: boolean,
- * }} TransientState
  */
 /**
  * Une sauvegarde lue du stockage, avant migration : n'importe quelle version,
@@ -150,6 +143,11 @@ const DEFAULT_STATE = {
   squishies: squishyFreshState(), // la collection de squishies (js/features/squishies, v53)
   skyIntroSeen: false, // l'ouverture du Ciel des Rêves (saison 2, v55) déjà montrée
   season2Done: false, // le grand final de la saison 2 (Royaume Arc-en-ciel) déjà joué
+  // l'île vivante (js/features/island) : ces champs étaient posés sans être ici, et
+  // load() ne garde que les champs de DEFAULT_STATE : ils se perdaient au redémarrage
+  decoPos: {}, // place des décorations que l'enfant a fait glisser : { clé: { x, y } }
+  helped: null, // personnages déjà aidés aujourd'hui (bulle ❤️) : { date, ids }
+  tipDragDeco: false, // l'astuce « fais glisser tes décorations » déjà vue
 };
 
 /* La collection de squishies (v53) : état neuf.
@@ -190,44 +188,10 @@ function freshState(extra) {
   return Object.assign(JSON.parse(JSON.stringify(DEFAULT_STATE)), extra || {});
 }
 
-/** @type {GameState & TransientState} */
-let state = {
-  v: SAVE_VERSION,
-  coins: 5,
-  inventory: {},
-  missions: 0,
-  sound: true,
-  voice: true,
-  newItems: 0,
-  decos: [],
-  name: '',
-  avatar: '👧',
-  seen: {}, // objets déjà découverts (album)
-  quests: null, // quêtes du jour { date, list:[{type,target,goal,done,n}], claimed }
-  albumReward: false, // récompense d'album complet déjà donnée
-  visited: [], // îles déjà découvertes (pour annoncer les nouvelles)
-  gameCounts: {}, // nombre de fois jouées, par type de mini-jeu
-  storySolved: {}, // énigmes d'histoire déjà résolues, par île
-  skills: {},
-  playTime: {},
-  pauseExtra: null,
-  wardrobe: [],
-  look: { tete: null, visage: null, tenue: null, cape: null },
-  seasonGifts: {},
-  music: false,
-  soundVolume: 80,
-  restLog: {},
-  restRecall: null,
-  storyMissions: {},
-  storyEpisodes: {},
-  friends: {},
-  friendRewards: {},
-  team: { open: false, met: [], mates: [], day: null },
-  charsHelped: {},
-  squishies: squishyFreshState(),
-  skyIntroSeen: false,
-  season2Done: false,
-};
+// la partie en cours, fabriquée depuis DEFAULT_STATE (une seule liste des champs :
+// une copie à la main avait déjà oublié des champs, voir test/redemarrage.test.js)
+/** @type {GameState} */
+let state = freshState();
 
 /* L'emplacement de sauvegarde : le joueur courant (entities/player, une couche
    au-dessus) y branche sa clé, et ce qu'il faut faire après chaque
