@@ -27,6 +27,8 @@ Remplacer `<cle>` par la clé du jeu (ex. `nesting`) et `<Jeu>` par son nom de f
 - [ ] `js/slices.cjs` : une slice `minigame-<cle>` (couche `features`), placée avec les autres mini-jeux, après le moteur. Sa feuille de style va dans `css` **et** dans `CSS_ORDER` (en fin de liste, avant `island.css`).
 
 ## 3. Les entités et features à compléter
+> `js/entities/` est vérifié en TypeScript strict (`tsconfig.strict.json`, [ADR 0003](../docs/adr/0003-typescript.md)) : la fonction de palier du jeu (`<cle>Round`) et toute table ajoutée dans `difficulty.js` ou `game-types.js` sont typées en JSDoc (`@param`, `@returns`, `@typedef` de l'objet renvoyé). Jamais `any` ni `@ts-ignore`.
+
 - [ ] `js/entities/difficulty/game-types.js` : la clé dans `GAME_TYPES`, et dans les tranches d'âge de `AGE_GAME_TYPES` où le jeu est proposé.
 - [ ] `js/entities/difficulty/difficulty.js` : ses paramètres par palier (une fonction `<cle>Round(dd)` ou équivalent), ses essais dans `LIVES_TABLE`, et `NO_TIMER_KINDS` s'il ne doit pas avoir de minuteur.
 - [ ] `js/features/adaptive/adaptive.js` : sa phrase de progrès dans `PROGRESS_CHEERS`, et `GAME_TIER_MAX` s'il va au-delà du palier 5.

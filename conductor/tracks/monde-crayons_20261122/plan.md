@@ -19,7 +19,7 @@ Trois phases, chacune une PR livrable seule (chaque merge est en production une 
 - [ ] 6. Écran et saisie (phrases : règle « Phrase du jeu et phrase générique » de la spec, `speak` après `loseLife`, un seul `speak` pour deux phrases d'un même événement) : `renderTrace()`, `traceAddStroke`, `TRACE_EVENTS` et repli tactile (spec D3), démonstration, `registerGame('trace', …)`, `registerHints('trace', …)`, `setHintQuestion` par glyphe ; `trace.css` (`touch-action: none`, carré, bande, `prefers-reduced-motion`) ; `index.js` ; import de la slice dans `js/app/main.js` (comme `nesting`, ligne 55) ; slice `minigame-trace` dans `js/slices.cjs` (et sa feuille dans `CSS_ORDER`, avant `island.css`) ; `bun run sync`.
 - [ ] 7. Branchements : `GAME_TYPES`, `GAME_LIST`, tranche `max: 5` de `AGE_GAME_TYPES` (`js/entities/difficulty/game-types.js`) ; `PROGRESS_CHEERS.trace` (`js/features/adaptive/adaptive.js`) ; groupe `lire` de `SKILL_GROUPS` (`js/features/parents/parents.js`).
 - [ ] 8. `test/games.test.js` : `INDEPENDENT.trace`, et dans `playToWin` `traceAlong` quand l'élément a `data-pts` ; `test/companions.test.js` : même remplacement dans la boucle « le jeu reste gagnable » (spec D4, D16). Ligne 24 verte.
-- [ ] 9. `bun run check` vert. Doc : section du PRD (idée de la joueuse), `conductor/checklist-mini-jeu.md` (§ 1 : un jeu à geste se joue par `data-pts` et `traceAlong`). Livraison : `bun run release patch "Mini-jeu Trace avec ton doigt"`, PR `agent-generated: true`, étiquette `agent`.
+- [ ] 9. `bun run typecheck` vert (types de la spec D20), `bun run check` vert. Doc : section du PRD (idée de la joueuse), `conductor/checklist-mini-jeu.md` (§ 1 : un jeu à geste se joue par `data-pts` et `traceAlong`). Livraison : `bun run release patch "Mini-jeu Trace avec ton doigt"`, PR `agent-generated: true`, étiquette `agent`.
 - [ ] 10. Ligne 👤 S7 et S8 avec Amrou et la joueuse (tolérance au doigt) ; un réglage de R ou de `cover` se fait dans `traceRound`, noté au journal de décisions.
 
 ### Phase 2 : le mini-jeu « Mesure les crayons » (`length`) (PR 2)
@@ -30,7 +30,7 @@ Trois phases, chacune une PR livrable seule (chaque merge est en production une 
 - [ ] 14. Écran (`renderLength`, crayons et règle en SVG), phrases d'erreur dites après `loseLife` (`if (!loseLife(btn, { disable: false, onRetry: renderLength })) speak(phrase)`, comme `nesting.js:119`), indices (`fx.run` pour les guides, `fx.marks` pour la gomme 1, `fx.glow` et `fx.dim` pour la règle) ; `length.css` ; `index.js` ; import dans `js/app/main.js` ; slice `minigame-length` ; `bun run sync`.
 - [ ] 15. Branchements : `GAME_TYPES`, `GAME_LIST`, `AGE_GAME_TYPES` (`max: 5`), `PROGRESS_CHEERS.length`, groupe `mesures`. Vérifier que `length` ne se confond avec la propriété d'aucun tableau (spec D10).
 - [ ] 16. `test/games.test.js` : `INDEPENDENT.length`. Ligne 35 verte.
-- [ ] 17. `bun run check` vert. Doc : section du PRD. Livraison : `bun run release patch "Mini-jeu Mesure les crayons"`, PR `agent-generated: true`, étiquette `agent`.
+- [ ] 17. `bun run typecheck` vert (`LengthRules`, spec D20), `bun run check` vert. Doc : section du PRD. Livraison : `bun run release patch "Mini-jeu Mesure les crayons"`, PR `agent-generated: true`, étiquette `agent`.
 - [ ] 18. Ligne 👤 S9 avec Amrou.
 
 ### Phase 3 : l'île (PR 3, après `saison3-ouverture` et la phase 0 de `squishy-boites`)
@@ -44,7 +44,7 @@ Trois phases, chacune une PR livrable seule (chaque merge est en production une 
 - [ ] 23. `STORY.crayons` (`js/features/story/story.js`), `EPISODES.crayons` (`js/features/story/episodes.js`), série `papeterie` et `SQUISHY_ISLAND_SERIES.crayons` (`js/entities/squishy/squishies.js`) ; les 6 dessins `SQ_ART` dans `js/features/squishies/squishy-art.js`, sur le modèle de `'tambour-mochi'` (spec D19). Lignes 41 à 46 vertes.
 - [ ] 23 bis. Test rouge de la ligne 48 dans `test/crayons.test.js` (clés et prénoms en double, lus dans le texte source, et tables indexées par clé de jeu qui sont des objets simples) ; il doit échouer si l'on ajoute temporairement une seconde ligne `cahier: {` dans `items.js` (essai local, jamais commité), puis passer.
 - [ ] 24. Tests existants (spec D16, ligne 47) : `test/saison2.test.js:100` et `:126-129`, `test/niveaux.test.js:202-207`. `bun run test saison3` reste vert (il retire les vraies îles de la saison 3 avant ses essais).
-- [ ] 25. `bun run check` vert, puis `bun run verify`.
+- [ ] 25. `bun run typecheck` vert (les données de l'île respectent `World`, `Character`, `Item`, `CraftedItem`, `Squishy`, spec D20), `bun run check` vert, puis `bun run verify`.
 - [ ] 26. Doc : `conductor/niveaux.md` (« Dans le jeu, aujourd'hui » : l'Île des Crayons existe), `conductor/tracks.md` (track faite), section du PRD (idée de la joueuse). Livraison : `bun run release track "L'Île des Crayons"`, PR avec résumé et risques, `agent-generated: true`, étiquette `agent`.
 - [ ] 27. Ligne 👤 S10 avec la joueuse : noms, dessins, série ; un changement de nom se fait dans les données et les tests, noté au journal de décisions.
 

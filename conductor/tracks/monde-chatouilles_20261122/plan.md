@@ -20,13 +20,13 @@ Les numéros entre parenthèses renvoient aux lignes de « Comportement attendu 
   - victoire : `giggle-wiggle` sur l'ami, C8 dit (10).
   Ils échouent avant le code.
 - [ ] 1.2 Tests dans les fichiers existants : vérificateur `coding` dans `test/games.test.js` (il rejoue la solution sur la grille lue dans le DOM : `#cd-grid` et ses `data-*`, règles G1 à G3), entrée `coding` dans `test/smoke.test.js` (ouverture, une erreur garde la grille, palier et âge), son `giggle` dans la liste de `test/sounds.test.js` (31). Tout ajout de liste dans un test existant ajoute, n'enlève rien.
-- [ ] 1.3 `js/entities/difficulty/difficulty.js` : `codingRound` (T1), `coding` dans `NO_TIMER_KINDS` et le barème `generous` ; export, et ré-export de `codingRound` dans `js/entities/difficulty/index.js` (comme `nestingRound`).
+- [ ] 1.3 `js/entities/difficulty/difficulty.js` : `codingRound` (T1), typé strictement (`@typedef CodingRound`, `@param {number} dd`, `@returns {CodingRound}`, spec D23), `coding` dans `NO_TIMER_KINDS` et le barème `generous` ; export, et ré-export de `codingRound` dans `js/entities/difficulty/index.js` (comme `nestingRound`).
 - [ ] 1.4 `js/entities/difficulty/game-types.js` : `coding` dans `GAME_TYPES` et `GAME_LIST` (🪶 « Le chemin de la plume »), pas dans les tranches `max: 4` et `max: 5` (28).
 - [ ] 1.5 `js/features/adaptive/adaptive.js` (`PROGRESS_CHEERS.coding`) et `js/features/parents/parents.js` (`coding` dans `formes`) (30).
 - [ ] 1.6 `js/shared/ui/sound.js` : `SOUND_PALETTE.giggle` et `SOUND_FAMILY.giggle` (T5) ; `js/shared/styles/design-system-v21.css` : `.giggle-wiggle` et `@keyframes giggleWiggle`, avec le repli `prefers-reduced-motion`.
 - [ ] 1.7 `js/features/minigames/coding/coding.js`, `coding.css`, `index.js` : génération (G1 à G6), rendu, trajet pas à pas, erreurs, textes C1 à C11, indices H1, `setSolution`, `registerGame('coding', renderCoding)`, `registerHints('coding', codingHints)`.
 - [ ] 1.8 `js/slices.cjs` : slice `minigame-coding` (couche `features`, après le moteur), sa feuille dans `css` et dans `CSS_ORDER` avant `island.css` ; `import '../features/minigames/coding/index.js';` dans `js/app/main.js` (avec les autres mini-jeux, comme `nesting` ligne 55) ; puis `bun run sync`.
-- [ ] 1.9 `bun run check` vert ; `bun run verify` avant la PR.
+- [ ] 1.9 `bun run typecheck` et `bun run check` verts ; `bun run verify` avant la PR.
 - [ ] 1.10 Doc : ligne « 🪶 Le chemin de la plume » dans le PRD (section de la version), `conductor/tracks.md` (phase 1 livrée).
 - [ ] 1.11 Conductor : vérification manuelle (S17) par Amrou sur téléphone.
 
@@ -39,9 +39,9 @@ Les numéros entre parenthèses renvoient aux lignes de « Comportement attendu 
   - ordre de départ jamais accepté (19) ; toucher, retirer, mot dit sans point (20, 21) ; « Lis ma phrase » (22, S5) ;
   - erreur 1 : étiquettes en place, S4 dit après la phrase ; erreur 2 : autre phrase (24) ; victoire (23).
 - [ ] 2.2 Vérificateur `sentence` dans `test/games.test.js` (la phrase construite par la solution est acceptée par R1, recalculée par le test à partir des `.st-tile`) ; entrée `sentence` dans `test/smoke.test.js`.
-- [ ] 2.3 `difficulty.js` (`sentenceRound`, sans minuteur, barème `generous`) et son ré-export dans `js/entities/difficulty/index.js`, `game-types.js` (📝 « La phrase rigolote », 6 ans et plus), `adaptive.js`, `parents.js` (`lire`) (28 à 30).
+- [ ] 2.3 `difficulty.js` (`sentenceRound` typé strictement avec `@typedef SentenceRound`, sans minuteur, barème `generous`) et son ré-export dans `js/entities/difficulty/index.js`, `game-types.js` (📝 « La phrase rigolote », 6 ans et plus), `adaptive.js`, `parents.js` (`lire`) (28 à 30).
 - [ ] 2.4 `js/features/minigames/sentence/sentence.js`, `sentence.css`, `index.js` : banque T4, rendu, textes S1 à S5, indices H2, `setSolution`, inscription.
-- [ ] 2.5 `js/slices.cjs` : slice `minigame-sentence` ; `import '../features/minigames/sentence/index.js';` dans `js/app/main.js` ; `bun run sync` ; `bun run check` et `bun run verify` verts.
+- [ ] 2.5 `js/slices.cjs` : slice `minigame-sentence` ; `import '../features/minigames/sentence/index.js';` dans `js/app/main.js` ; `bun run sync` ; `bun run typecheck`, `bun run check` et `bun run verify` verts.
 - [ ] 2.6 Doc : PRD, `conductor/tracks.md`.
 - [ ] 2.7 Conductor : vérification manuelle (S18) avec la joueuse.
 
@@ -54,10 +54,10 @@ Les numéros entre parenthèses renvoient aux lignes de « Comportement attendu 
   - toucher sur la scène : rire de bonjour sur `#scene .isle-char[data-char="<id>"] .emoji` (`helloLaugh`, pas de tirage d'envie) puis dialogue après 600 ms ; au repos : dialogue tout de suite ; autre île : inchangé (38 à 40) ;
   - dialogue avec `Math.random` forcé : bouton présent (41), refus (42), rires puis stop au `max`-ième toucher (43, 44), repos et retour après `tickleRestUntil` remis à 0 (45) ;
   - chapitre I8, récompense une seule fois, autre énigme après une erreur (46, 47) ; épisodes I9 aux missions 2, 4 et 7, jamais par Plumette (48).
-- [ ] 3.2 Entités : `worlds.js` (I1), `characters.js` (I2, I3), `characters-art.js` (4 dessins nouveaux, sans toucher aux autres), `items.js` (I4), `squishies.js` (I5).
+- [ ] 3.2 Entités : `worlds.js` (I1, et `giggly?: boolean` dans `@typedef World`), `characters.js` (I2, I3, et `@typedef CharacterTickle` plus `tickle?: CharacterTickle` dans `@typedef Character`, spec D23), `characters-art.js` (4 dessins nouveaux, sans toucher aux autres), `items.js` (I4), `squishies.js` (I5).
 - [ ] 3.3 Features : `island.js` (`ISLE_SCENERY.chatouilles`, toucher K5), `tickle.js` (nouveau, K1 à K4, exporté par l'`index.js` de la slice `island` si une autre slice en a besoin), `island-view.js` (bouton du dialogue), `SQ_ART` des 6 modèles dans `js/features/squishies/squishy-art.js` (si ce fichier manque : s'arrêter et signaler le prérequis, ne rien créer d'autre), `story.js` (I8), `episodes.js` (I9), `music.js` (I6), thème I7 dans `design-system-v21.css`.
 - [ ] 3.4 Morceau n° 4 de la carte de Zap : tests 46 et 46b (`zapMapPieces() === 4`, `.story-zapmap.happy svg.zap-map[data-found="4"]`, `zapMapSay(4)` dit après le `success`) ; aucun code de carte à écrire.
-- [ ] 3.5 `js/slices.cjs` : `js/features/island/tickle.js` dans les fichiers de la slice `island` ; `bun run sync` ; `bun run check` et `bun run verify` verts.
+- [ ] 3.5 `js/slices.cjs` : `js/features/island/tickle.js` dans les fichiers de la slice `island` ; `bun run sync` ; `bun run typecheck`, `bun run check` et `bun run verify` verts.
 - [ ] 3.6 Doc : PRD (idée de la joueuse visible), `conductor/tracks.md` (track faite), `conductor/niveaux.md` (la phrase « Dans le jeu, aujourd'hui » cite le Monde des Chatouilles).
 - [ ] 3.7 Conductor : vérification manuelle (S19 à S21) avec Amrou et la joueuse.
 
@@ -85,7 +85,7 @@ En ajout seul : une décision fausse reçoit une nouvelle ligne qui la remplace,
 |---|---|---|---|---|---|
 | 1 | Trois phases : `coding`, `sentence`, puis l'île | politique | un mini-jeu livré seul est utile partout ; l'île attend `saison3-ouverture` | brief de la saison 3 (politique « Livraison par phases ») | gardée |
 | 2 | Paliers de `coding` calés sur le programme (CP : 10 instructions dont 2 virages ; CE1 : 15 dont 4) | spec | D2 | essai du générateur par le rédacteur : 0 échec sur 2 000 grilles par palier | gardée |
-| 3 | Clés renommées après le testeur à blanc : `yoyo` (déjà « Yo-yo doux » des Jouets) devient `yoyofarceur`, `fanionsD` (pris par la spec Crayons, île plus basse) devient `fanionsrireD`, la loutre `lili` (compagne Lili) devient `lulu` (Lulu) ; l'objet existant `yoyo` n'est pas touché | testeur à blanc, tour 1 | collisions trouvées par `grep -rnw` dans `js/` et les specs de la saison 3 | `js/entities/item/items.js` (`yoyo`), `js/entities/companion/companions.js:44` | gardée |
+| 3 | Clés renommées après le testeur à blanc : `yoyo` (déjà « Yo-yo doux » des Jouets) devient `yoyofarceur`, `fanionsD` (pris par la spec Crayons, île plus basse) devient `fanionsrireD`, la loutre `lili` (compagne Lili) devient `lulu` (Lulu) ; l'objet existant `yoyo` n'est pas touché | testeur à blanc, tour 1 | collisions trouvées par `grep -rnw` dans `js/` et les specs de la saison 3 | `js/entities/item/items.js` (`yoyo`), `js/entities/companion/companions.js:77` | gardée |
 | 4 | Toucher sur la scène = « rire de bonjour », pas une chatouille ; `ticklish` devient `giggly`, `tickle-laugh` devient `giggle-wiggle`, `TICKLE_OPEN_DELAY` devient `HELLO_LAUGH_DELAY` ; phases ordonnées 1, 2, 3 | testeur à blanc, tour 2 (défaut de Claude pour le rire de bonjour, à juger par Amrou) | cohérence du message de consentement ; dépendances entre phases | spec D16b | gardée |
 
 ## Écarts et non vérifié

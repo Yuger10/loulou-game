@@ -9,11 +9,11 @@ Spec : [spec.md](spec.md). Quatre PR, chacune complète et en production une min
 
 - [ ] 1.1 Test d'abord : `test/voix-file.test.js`. Faux `speechSynthesis` qui gère `speaking`, `cancel()` et déclenche `end` à la demande du test ; prouve les lignes 1 à 9 de la spec. Échoue avant 1.3.
 - [ ] 1.2 Test d'abord : dans `test/voix-file.test.js`, aucun fichier de `js/` hors `js/shared/ui/voice.js` ne contient `speechSynthesis` (ligne 7).
-- [ ] 1.3 `js/shared/lib/spoken.js` : `EMOJI_WORDS`, `emojiWord`, `elide`, `toSpoken` déplacés tels quels de `js/shared/ui/voice.js:5-61` (`node test/tools/move.js`) ; exportés par `js/shared/lib/index.js` ; `voice.js` les importe et réexporte `emojiWord` (API inchangée). Déclarer le fichier dans la slice `shared-lib` de `js/slices.cjs`, puis `bun run sync`.
+- [ ] 1.3 `js/shared/lib/spoken.js` : `EMOJI_WORDS`, `emojiWord`, `elide`, `toSpoken` déplacés tels quels de `js/shared/ui/voice.js:5-68` (`node test/tools/move.js`) ; exportés par `js/shared/lib/index.js` ; `voice.js` les importe et réexporte `emojiWord` (API inchangée). Déclarer le fichier dans la slice `shared-lib` de `js/slices.cjs`, puis `bun run sync`.
 - [ ] 1.4 `js/shared/ui/voice.js` : file (D11), `speak(text, opts)` avec `interrupt` et `demand`, `stopSpeech()`, `newVoiceScene()`, `playItem(item, done)` (Web Speech, `end` et `error` font avancer la file, `setVoiceDuck` comme aujourd'hui), règle du premier geste (écouteurs `pointerdown` et `keydown` en capture, une fois).
-- [ ] 1.5 Appels : `closeModal` (`js/shared/ui/modal.js:57`), `js/features/settings/settings.js:99`, `js/features/profile/topbar.js:22`, `js/features/island/island-view.js:363` passent à `stopSpeech()` ; `#rest-skip` (`js/features/rest/rest.js:400-408`) appelle `stopSpeech()` puis dit sa phrase avec `interrupt` ; `openModal`, `closeModal`, `switchView` (`js/shared/ui/views.js:16`), l'écran titre, l'accueil et `renderVeil` (`js/features/rest/rest.js:178`) appellent `newVoiceScene()` (zone sensible : pause). `forgetSpokenHint` reste branché par le moteur (`js/features/minigame-engine/engine.js:517-519`) : aucun déplacement, la ligne 9 est couverte par un test.
+- [ ] 1.5 Appels : `closeModal` (`js/shared/ui/modal.js:66`), `js/features/settings/settings.js:101`, `js/features/profile/topbar.js:22`, `js/features/island/island-view.js:363` passent à `stopSpeech()` ; `#rest-skip` (`js/features/rest/rest.js:400-408`) appelle `stopSpeech()` puis dit sa phrase avec `interrupt` ; `openModal`, `closeModal`, `switchView` (`js/shared/ui/views.js:25`), l'écran titre, l'accueil et `renderVeil` (`js/features/rest/rest.js:178`) appellent `newVoiceScene()` (zone sensible : pause). `forgetSpokenHint` reste branché par le moteur (`js/features/minigame-engine/engine.js:517-519`) : aucun déplacement, la ligne 9 est couverte par un test.
 - [ ] 1.6 Options de chaque appelant selon la table « Appelants de `speak` » de la spec (`demand`, `interrupt`) ; `calendar.js:65` : `speak(…)` direct, sans `setTimeout`.
-- [ ] 1.7 `bun run check` vert ; PR 1 (zone sensible : aucune ; `island-view.js` « Pas maintenant »).
+- [ ] 1.7 `bun run typecheck` (souple et strict) puis `bun run check` verts, types de la table « Types » de la spec écrits ; PR 1 (zone sensible : aucune ; `island-view.js` « Pas maintenant »).
 
 ### Phase 2 : écouter au doigt, et la garde (PR 2, « tout texte s'écoute d'un toucher »)
 
@@ -28,7 +28,7 @@ Spec : [spec.md](spec.md). Quatre PR, chacune complète et en production une min
 - [ ] 2.7 Exceptions des jeux de lecture : `data-voix="lire"` sur le mot et les choix écrits de `reading` (`reading.js:49`, `59`) et sur les choix d'articles de `grammar` (`grammar.js:69`).
 - [ ] 2.8 Porte des parents : « C'est pour les adultes. » et `data-voix="muet"` sur la question de calcul (ligne 16).
 - [ ] 2.9 `conductor/checklist-mini-jeu.md` et `conductor/checklist-ile.md` : ligne « un nouvel écran ajoute son scénario dans `test/voix-ecrans.js` ; un choix écrit pose `data-say` ; jamais `disabled` hors réponse neutralisée » ; `AGENTS.md` (Conventions : écoute au doigt, `stopSpeech`, `data-voix="lire"`).
-- [ ] 2.10 `bun run check` vert ; PR 2 (zones sensibles : pause, porte des parents, règle d'interaction).
+- [ ] 2.10 `bun run typecheck` puis `bun run check` verts (`listen.js`, `isActive`, `listenText` et `data-act` typés selon la spec) ; PR 2 (zones sensibles : pause, porte des parents, règle d'interaction).
 
 ### Phase 3 : lire à l'ouverture, hors mini-jeux (PR 3, « chaque écran se présente »)
 

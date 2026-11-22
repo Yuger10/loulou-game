@@ -102,7 +102,7 @@ La joueuse veut « une île des coffres ». Le parent demande « plus de maths �
 
 ### T1. « Le trésor raconté » par palier (`problemsRound(dd)`)
 
-Livraison en deux PR (D30) : la PR 1a livre les lignes 1 à 3 (critères 1 à 9 sans l'égalité du palier 4, 11 à 13, 16 à 20 ; S1, S2, S4, S7 sur ce contenu) ; la PR 1b ajoute les lignes 4 et 5 (critères 10, 14, 15, l'égalité du critère 9 ; S1, S2, S4 sur toute la table). Entre les deux, les paliers 4 et 5 jouent la ligne 3 : `tierValue` renvoie l'entrée de la plus grande clé présente (`js/entities/difficulty/difficulty.js:86-97`), un état correct pour l'enfant et pour `test/games.test.js`.
+Livraison en deux PR (D30) : la PR 1a livre les lignes 1 à 3 (critères 1 à 9 sans l'égalité du palier 4, 11 à 13, 16 à 20 ; S1, S2, S4, S7 sur ce contenu) ; la PR 1b ajoute les lignes 4 et 5 (critères 10, 14, 15, l'égalité du critère 9 ; S1, S2, S4 sur toute la table). Entre les deux, les paliers 4 et 5 jouent la ligne 3 : `tierValue` renvoie l'entrée de la plus grande clé présente (`js/entities/difficulty/difficulty.js:92-106`), un état correct pour l'enfant et pour `test/games.test.js`.
 
 `min` et `max` : bornes du tout (ou du plus grand nombre de l'histoire). `ecart` : écart maximal des comparaisons.
 
@@ -509,7 +509,7 @@ Fabrication d'un cadenas (au plus 500 essais ; au-delà, on reprend le palier in
 
 ### K1. Les personnages (`js/entities/character/characters.js`)
 
-Champs de chaque entrée, comme `viola` (`js/entities/character/characters.js:582-594`) : `emoji`, `name`, `title`, `world: 'coffres'`, `gender`, `loot`, `texts` (3 répliques), et rien d'autre (pas de `noGames`). `world: 'coffres'` est indispensable : `favoritesOf` (`js/features/gifts/gifts.js:41-50`) prend les objets préférés parmi les objets de `c.world || 'lagon'` ; avec les 8 objets de l'île et 2 de butin, chaque personnage a 2 objets préférés pris parmi les 6 autres objets de l'île (le test le vérifie).
+Champs de chaque entrée, comme `viola` (`js/entities/character/characters.js:597-609`) : `emoji`, `name`, `title`, `world: 'coffres'`, `gender`, `loot`, `texts` (3 répliques), et rien d'autre (pas de `noGames`). `world: 'coffres'` est indispensable : `favoritesOf` (`js/features/gifts/gifts.js:41-50`) prend les objets préférés parmi les objets de `c.world || 'lagon'` ; avec les 8 objets de l'île et 2 de butin, chaque personnage a 2 objets préférés pris parmi les 6 autres objets de l'île (le test le vérifie).
 
 | id | Emoji | Nom | Titre | Genre | Butin (`loot`) |
 |---|---|---|---|---|---|
@@ -518,7 +518,7 @@ Champs de chaque entrée, comme `viola` (`js/entities/character/characters.js:58
 | grignote | 🐭 | Grignote | la souris qui compte tout | f | boulier, piecedor |
 | pincou | 🦀 | Pinçou | le crabe serrurier | m | tournevis, petitcadenas |
 
-Quel personnage « présente » quel jeu n'est pas un mécanisme : `characters.js` n'a pas de champ pour cela (seulement `loot`, `texts` et `noGames`, `js/entities/character/characters.js:582-633`). C'est une intention de narration portée par les répliques (Kadi parle de codes, Grignote d'histoires à compter) ; le jeu proposé reste celui du choix des jeux et du jeu favori de l'île.
+Quel personnage « présente » quel jeu n'est pas un mécanisme : `characters.js` n'a pas de champ pour cela (seulement `loot`, `texts` et `noGames`, `js/entities/character/characters.js:597-648`). C'est une intention de narration portée par les répliques (Kadi parle de codes, Grignote d'histoires à compter) ; le jeu proposé reste celui du choix des jeux et du jeu favori de l'île.
 
 Répliques (`texts`) :
 - Clémence : « Bienvenue sur l'Île des Coffres ! J'ai une clé pour chaque serrure… sauf pour le grand coffre. » ; « Un coffre ne s'ouvre pas en forçant. Il s'ouvre en réfléchissant ! » ; « Chaque mission réussie, c'est une serrure qui fait clic. On continue ? »
@@ -541,11 +541,11 @@ Dessins (`CHAR_ART`, demande explicite de cette spec ; aucun dessin existant n'e
 | lampe | 🔦 | Lampe de poche | 7 | personne |
 | bague | 💍 | Bague au rubis | 9 | personne |
 
-Champs, comme `baguettechef` (`js/entities/item/items.js:93`) : `{ emoji, name, price, world: 'coffres' }`.
+Champs, comme `baguettechef` (`js/entities/item/items.js:103`) : `{ emoji, name, price, world: 'coffres' }`.
 
-Recettes (`CRAFTED`), champs comme `lyre` (`js/entities/item/items.js:360`) : `trousseau: { emoji: '🔐', name: 'Trousseau magique', price: 22, world: 'coffres', recipe: { clecuivre: 2, tournevis: 1 } }` ; `medaillon: { emoji: '🏅', name: 'Médaillon secret', price: 20, world: 'coffres', recipe: { piecedor: 2, bague: 1 } }`.
+Recettes (`CRAFTED`), champs comme `lyre` (`js/entities/item/items.js:371`) : `trousseau: { emoji: '🔐', name: 'Trousseau magique', price: 22, world: 'coffres', recipe: { clecuivre: 2, tournevis: 1 } }` ; `medaillon: { emoji: '🏅', name: 'Médaillon secret', price: 20, world: 'coffres', recipe: { piecedor: 2, bague: 1 } }`.
 
-Décorations (`DECOS`), champs comme `pianoD` (`js/entities/item/items.js:509`), `{ emoji, name, price, world: 'coffres' }` : `salleD` 🏛️ « Salle des coffres » 40 ; `porteD` 🚪 « Porte secrète » 30 ; `arbreclesD` 🌳 « Arbre à clés » 18 ; `ancreD` ⚓ « Ancre dorée » 14 ; `jarreD` 🏺 « Jarre aux trésors » 12.
+Décorations (`DECOS`), champs comme `pianoD` (`js/entities/item/items.js:526`), `{ emoji, name, price, world: 'coffres' }` : `salleD` 🏛️ « Salle des coffres » 40 ; `porteD` 🚪 « Porte secrète » 30 ; `arbreclesD` 🌳 « Arbre à clés » 18 ; `ancreD` ⚓ « Ancre dorée » 14 ; `jarreD` 🏺 « Jarre aux trésors » 12.
 
 ### W1. L'entrée `WORLDS.coffres` et le décor
 
@@ -565,7 +565,7 @@ Paysage (`ISLE_SCENERY.coffres`, SVG 480 × 360 comme `musique` à `js/features/
 
 Les 6 dessins sont des entrées `SQ_ART` écrites dans `js/features/squishies/squishy-art.js` (créé par la phase 0 de `squishy-boites`), sur le modèle de l'entrée `'lyre-doree'` (`body`, `face`, `faceY`, `back`, `front`), aujourd'hui à `js/features/squishies/squishy-room.js:491`. Si `squishy-art.js` n'existe pas au moment d'implémenter la phase 3, l'agent s'arrête et signale le prérequis manquant ; il ne crée aucun autre fichier et n'écrit pas dans `squishy-room.js`.
 
-Champs de chaque modèle, comme `'lyre-doree'` (`js/entities/squishy/squishies.js:429-437`) : `series: 'coffres'`, `name`, `say`, `rarity`, `color`, `shape`, `size`.
+Champs de chaque modèle, comme `'lyre-doree'` (`js/entities/squishy/squishies.js:449-457`) : `series: 'coffres'`, `name`, `say`, `rarity`, `color`, `shape`, `size`.
 
 | id | Nom | `say` | Rareté | Couleur | Forme | Taille | Dessin (`SQ_ART`) |
 |---|---|---|---|---|---|---|---|
@@ -612,7 +612,7 @@ Chaque clé ci-dessous a été cherchée par `grep` dans `js/` (personnages, com
 | Fonctions de difficulté | `problemsRound`, `codeRound`, `LIVES_TABLE.problems`, table locale `PB_PEOPLE` (dans `problems.js`) |
 | Classes et ids CSS | préfixes `pb-` (`#pb-root`, `.pb-token`, `.pb-label`, `.pb-slot`, `.pb-sign`, `.pb-eq-num`, `.pb-num`, `.pb-yesno`, `.pb-next`, `.pb-chest`, `.pb-done`, `.pb-answer`, `#pb-main`, `#pb-ex`, `#pb-twin` et leurs blocs `-e1`, `-e2`, `.pb-scene`, `.pb-bars`) et `code-` (`#code-root`, `.code-wheel`, `.code-sym`, `.code-clue`, `#code-open`) |
 
-Le squishy rare `kadi` porte le même id que le personnage Kadi, comme le squishy `boumbo` et le personnage Boumbo (`js/entities/squishy/squishies.js:420`, `js/entities/character/characters.js:595`) : registres différents, même être, voulu.
+Le squishy rare `kadi` porte le même id que le personnage Kadi, comme le squishy `boumbo` et le personnage Boumbo (`js/entities/squishy/squishies.js:440`, `js/entities/character/characters.js:610`) : registres différents, même être, voulu.
 
 ### X2. Règles d'exclusion (chaque « autre », « nouveau », « différent »)
 
@@ -626,6 +626,48 @@ Le squishy rare `kadi` porte le même id que le personnage Kadi, comme le squish
 | Énigme du chapitre (critère 34) | l'énigme suivante de la liste | mécanisme existant, 3 énigmes |
 
 Tuples par type : reunion, ajout, retrait, compPlus, possible : (a, b) ; partie, ajoutInconnu : (t, a) ; compEcart : (a, g) ; compMoinsPlus : (t, b) ; deuxEtapes : (variante, a, b, c). Nombre de tuples au palier 1 : reunion 15, ajout 15, retrait 15 (somme de 1 à 5).
+
+### Y1. Types (TypeScript strict sur `js/entities` et `js/shared`)
+
+`js/entities/` et `js/shared/` sont vérifiés en strict (`tsconfig.strict.json`, `bun run typecheck`) ; règle commune : `conductor/checklist-mini-jeu.md` et `conductor/checklist-ile.md`. Jamais `any` ni `@ts-ignore`.
+
+Aucun `@typedef` existant n'est étendu : toutes les entrées de l'île tiennent dans les types actuels, champ par champ.
+
+| Table | Type existant | Entrées de cette track |
+|---|---|---|
+| `WORLDS` | `World` (`js/entities/world/worlds.js:8`) | `coffres` : tous les champs requis, `game: 'problems'` (une chaîne, permise) |
+| `CHARACTERS` | `Character` (`js/entities/character/characters.js:5`) | 4 personnages avec `world`, sans `noGames` |
+| `ITEMS`, `DECOS` | `Item` (`js/entities/item/items.js:6`) | 8 objets, 5 décorations, avec `world` |
+| `CRAFTED` | `CraftedItem` (`js/entities/item/items.js:11`) | 2 recettes, sans `tier` |
+| `SQUISHY_SERIES` | `SquishySeries` (`js/entities/squishy/squishies.js:22`) | `coffres` avec `world` |
+| `SQUISHIES` | `Squishy` (`js/entities/squishy/squishies.js:26`) | 6 modèles, sans `how` |
+| `SQUISHY_ISLAND_SERIES`, `SQUISHY_SERIES_ORDER` | `Record<string, string>`, `string[]` | une clé, un id |
+| `LIVES_TABLE` | `Record<string, Record<number, number>>` (`js/entities/difficulty/difficulty.js:359`) | `problems: { 2: 4, 3: 4, 4: 3, 5: 3 }` |
+| `state.skills.problems` | `SkillRecord` (`js/entities/game-state/state.js:23`, `lvl?`, `atLvl?`) | lu seulement (E1) ; aucun champ de sauvegarde nouveau |
+
+Nouvelles fonctions de `js/entities/difficulty/difficulty.js`, typées strictement, sur le modèle de `rhythmRound` (`js/entities/difficulty/difficulty.js:817`) et de `tierValue` (`:88-90`) :
+
+```js
+/** @typedef {'concret' | 'concret-barre' | 'barres' | 'egalite'} ProblemsRep */
+/**
+ * Une ligne de « Le trésor raconté » (T1, R1).
+ * @typedef {{ types: string[], min: number, max: number, ecart: number, rep: ProblemsRep,
+ *   eqUnder: boolean, choices: number, gap: number, tens: boolean }} ProblemsRound
+ */
+/** @param {number} dd le palier de difficulté
+ *  @returns {ProblemsRound} */
+function problemsRound(dd) { /* tierValue sur les objets littéraux de R1 */ }
+
+/**
+ * Une ligne du « Code secret » (T2).
+ * @typedef {{ wheels: number, palette: number, types: string[], maxEst: number, maxClues: number }} CodeRound
+ */
+/** @param {number} dd le palier de difficulté
+ *  @returns {CodeRound} */
+function codeRound(dd) { /* tierValue sur les objets littéraux ci-dessous */ }
+```
+
+Objets littéraux de `codeRound` (T2) : `1: { wheels: 2, palette: 4, types: ['est', 'absent'], maxEst: 1, maxClues: 3 }`, `2: { wheels: 3, palette: 4, types: ['est', 'pas', 'absent'], maxEst: 1, maxClues: 4 }`, `3: { wheels: 3, palette: 5, types: ['est', 'pas', 'absent', 'voisins'], maxEst: 1, maxClues: 4 }`, `4: { wheels: 4, palette: 5, types: ['est', 'pas', 'absent', 'voisins'], maxEst: 1, maxClues: 5 }`, `5: { wheels: 4, palette: 6, types: ['pas', 'absent', 'voisins', 'bout'], maxEst: 0, maxClues: 6 }`. Les objets de `problemsRound` sont ceux de R1. Les deux sont ré-exportés par `js/entities/difficulty/index.js`. Le code des mini-jeux (`js/features/minigames/problems/`, `code/`) est vérifié par `tsc -p .` (non strict) et suit les conventions JSDoc d'`AGENTS.md` (`PB_PEOPLE`, symboles S2 et indices I2 typés à leur déclaration).
 
 ## Décisions
 
@@ -642,34 +684,35 @@ Tuples par type : reunion, ajout, retrait, compPlus, possible : (a, b) ; partie,
 | D9 | Toutes les étapes et le jumeau sont dans une seule fenêtre ouverte dès le départ | Le test joue `gameSolution` et refuse un sélecteur absent à l'ouverture | `test/games.test.js:310`, `:314` |
 | D10 | Une erreur relance un autre problème ou un autre cadenas | Anti-devinette du moteur | `js/features/minigame-engine/engine.js:112` (`loseLife`, `onRetry`), `conductor/product-guidelines.md:7` |
 | D11 | `problems` ne double pas `math`, `calc`, `money`, `share` | `math` illustre `a ± b` sans histoire, `calc` est sans image, `money` compose une somme, `share` travaille les fractions | `js/features/minigames/math/math.js:1`, `calc/calc.js:1`, `money/money.js:1`, `share/share.js:1` |
-| D12 | Essais de `problems` : `{ 2: 4, 3: 4, 4: 3, 5: 3 }` ; `code` dans les jeux généreux | Plusieurs étapes notées par mission : un essai de plus que le barème généreux | `js/entities/difficulty/difficulty.js:325`, `:346` |
-| D13 | Pas de minuteur sur les deux jeux | Politique commune des nouveaux jeux | `js/entities/difficulty/difficulty.js:405`, brief de la saison 3 |
+| D12 | Essais de `problems` : `{ 2: 4, 3: 4, 4: 3, 5: 3 }` ; `code` dans les jeux généreux | Plusieurs étapes notées par mission : un essai de plus que le barème généreux | `js/entities/difficulty/difficulty.js:360`, `:346` |
+| D13 | Pas de minuteur sur les deux jeux | Politique commune des nouveaux jeux | `js/entities/difficulty/difficulty.js:446`, brief de la saison 3 |
 | D14 | `problems` dans `calcul`, `code` dans `logique` | Décision d'Amrou (tableau de la saison 3) | `js/features/parents/parents.js:45`, `:55` |
 | D15 | Les deux jeux sont proposés dès 6 ans, pas avant (aucun ajout dans `AGE_GAME_TYPES`) | Dès 6 ans tous les jeux sont ouverts ; la compréhension orale d'un énoncé et la déduction à plusieurs indices sont du CP. Défaut du rédacteur, à juger à la revue | `js/entities/difficulty/game-types.js:100` |
-| D16 | Jeu favori : `problems` à tout âge | Demande du parent « plus de maths ». Défaut du rédacteur, à juger à la revue (les autres îles changent de jeu à 7 ans) | `js/entities/world/worlds.js:202`, `js/features/players/profiles-ui.js:432` |
+| D16 | Jeu favori : `problems` à tout âge | Demande du parent « plus de maths ». Défaut du rédacteur, à juger à la revue (les autres îles changent de jeu à 7 ans) | `js/entities/world/worlds.js:223`, `js/features/players/profiles-ui.js:432` |
 | D17 | Le code secret est un jeu de déduction à indices fixes donnés d'avance (pas de retour essai par essai) | Un jeu à retour par essai se gagne en tâtonnant ; ici tout se déduit avant d'ouvrir, et l'ancienne idée (table de correspondance) n'était pas une déduction | `git show HEAD:conductor/tracks/monde-etoiles_20261111/spec.md` (« Déchiffrer un message avec une table de correspondance ») |
 | D18 | Un cadenas par mission, palier 1 à 2 roues et 4 symboles (12 codes) | Le test exige tous les éléments à l'ouverture ; 12 codes rendent le hasard peu payant, et une erreur change de cadenas | `test/games.test.js:310`, `js/features/minigame-engine/engine.js:112` |
 | D19 | Aucun indice n'écarte de choix (`fx.dim`) | Règle : au plus une, au niveau 2, avec 4 choix ou plus ; plus simple de n'en écarter aucune | `js/features/hints/hints.js:37`, `:38` |
 | D20 | Récompense du chapitre : 16 pièces | Entre la Musique (14) et le grand final des Licornes (20). Défaut du rédacteur, à juger à la revue | `js/features/story/story.js:350`, `:408` |
 | D21 | Le morceau 3 de la carte : gagné quand `state.storySolved.coffres` est vrai, rien d'autre n'est stocké ; carte et voix par `zapMapPieces()`, `zapMapSVG(n, { fresh: id })`, `zapMapSay(n)` | Contrat fixé par la track `saison3-ouverture` (`ZAP_MAP_PIECES = ['crayons', 'dumplings', 'coffres', 'chatouilles', 'concert']`) | spec de `saison3-ouverture`, comportements 22 à 25 et 29, « Contrats partagés » |
-| D22 | Position `{ x: 82, y: 70 }` sur la carte de la saison 3 | Positions des cinq îles fixées ensemble et vérifiées contre la règle de chevauchement : crayons `{ x: 18, y: 78 }`, dumplings `{ x: 50, y: 74 }`, coffres `{ x: 82, y: 70 }`, chatouilles `{ x: 82, y: 26 }`, concert `{ x: 50, y: 22 }` | décision de coordination de la saison 3 (22/11/2026) ; même place que les Bonbons dans la saison 2, `js/entities/world/worlds.js:185` |
+| D22 | Position `{ x: 82, y: 70 }` sur la carte de la saison 3 | Positions des cinq îles fixées ensemble et vérifiées contre la règle de chevauchement : crayons `{ x: 18, y: 78 }`, dumplings `{ x: 50, y: 74 }`, coffres `{ x: 82, y: 70 }`, chatouilles `{ x: 82, y: 26 }`, concert `{ x: 50, y: 22 }` | décision de coordination de la saison 3 (22/11/2026) ; même place que les Bonbons dans la saison 2, `js/entities/world/worlds.js:206` |
 | D23 | Thème de musique `pluck` et `tick` | Instruments déjà disponibles | `js/features/music/music.js:25`, `:36` |
 | D25 | Erreur pendant le jumeau : nouveau jumeau seul, `n = 0` tant qu'aucun jumeau n'est réussi | Ne pas faire revoir l'exemple à chaque erreur. Défaut de Claude, à juger à la revue par Amrou | tour 1 du testeur à blanc ; E1 |
 | D26 | Un symbole posé sur une seconde roue quitte la première | Jamais de doublon, aucune erreur « bête ». Défaut de Claude, à juger à la revue par Amrou | tour 1 du testeur à blanc ; critère 25 |
 | D27 | Brancher un mini-jeu touche aussi `js/app/main.js` (import de la slice) et `js/entities/difficulty/index.js` (ré-export de `<cle>Round`) | Comme `nesting` | `js/app/main.js:55`, `js/entities/difficulty/index.js:30` |
 | D28 | Barre « ? » à sa vraie longueur, échelle = plus grand nombre du schéma ; leurres à au plus 3 (paliers 1 à 3) ou 10 (paliers 4 et 5) du résultat | Un schéma montre les relations entre quantités, et estimer l'ordre de grandeur fait partie de l'apprentissage (« est-ce possible ? ») ; des leurres proches empêchent de répondre à la seule largeur. Défaut de Claude, à juger à la revue par Amrou | tour 2 du testeur à blanc ; F1, R1 |
 | D29 | Les dessins des squishies vont dans `js/features/squishies/squishy-art.js`, créé par la phase 0 de `squishy-boites` (prérequis de la phase 3) | Règle commune des cinq îles de la saison 3 ; `squishyArtSVG` renvoie une chaîne vide sans entrée `SQ_ART` | `js/features/squishies/squishy-room.js:108`, `:491` ; décision de coordination du 22/11/2026 |
-| D30 | `problems` livré en deux PR : 1a (paliers 1 à 3), puis 1b (paliers 4 et 5 : égalité, `compMoinsPlus`, `deuxEtapes`, `possible`) ; `bun run release patch` pour 1a, 1b et 2, `bun run release track` pour 3 | Une PR par morceau livrable ; avant 1b, `tierValue` sert la table du palier 3 aux paliers 4 et 5 | `js/entities/difficulty/difficulty.js:86-97` ; décision de coordination du 22/11/2026 ; `conductor/workflow.md:57-58` |
+| D30 | `problems` livré en deux PR : 1a (paliers 1 à 3), puis 1b (paliers 4 et 5 : égalité, `compMoinsPlus`, `deuxEtapes`, `possible`) ; `bun run release patch` pour 1a, 1b et 2, `bun run release track` pour 3 | Une PR par morceau livrable ; avant 1b, `tierValue` sert la table du palier 3 aux paliers 4 et 5 | `js/entities/difficulty/difficulty.js:92-106` ; décision de coordination du 22/11/2026 ; `conductor/workflow.md:57-58` |
 | D31 | Essais épuisés : échec enregistré (`recordMission(false)`) comme pour tous les jeux, E1 inchangé (la mission suivante peut avoir `n = 1` sans jumeau réussi) | Même règle pour tous les jeux. Défaut de Claude, à juger à la revue par Amrou | tour 7 du testeur à blanc ; `js/features/adaptive/skills.js:31` |
+| D32 | Types : aucun `@typedef` existant étendu ; `ProblemsRound` et `CodeRound` nouveaux, `problemsRound` et `codeRound` typés strictement | `js/entities` est en TypeScript strict ; les entrées de l'île tiennent dans `World`, `Character`, `Item`, `CraftedItem`, `SquishySeries`, `Squishy` | table Y1 ; `conductor/checklist-mini-jeu.md:30`, `conductor/checklist-ile.md:10` |
 | D24 | Noms des personnages proposés par Claude, jugés par la joueuse | Politique commune | brief de la saison 3 ; `conductor/product-guidelines.md:19` |
 
 ## Politiques
 
 - **Arbitrages** :
   - Anti-devinette contre douceur : l'anti-devinette gagne ; une erreur relance un autre problème, même à la dernière étape. La relance garde le mode d'exemple.
-  - Ordre des îles : `WORLDS.coffres` se place dans `WORLDS` juste après `dumplings` (l'ordre des clés fait le parcours, `js/entities/world/worlds.js:270`, recalculé par `refreshArchipelagos()`).
+  - Ordre des îles : `WORLDS.coffres` se place dans `WORLDS` juste après `dumplings` (l'ordre des clés fait le parcours, `js/entities/world/worlds.js:298`, recalculé par `refreshArchipelagos()`).
   - Série de squishies : ajoutée en fin de `SQUISHY_SERIES_ORDER`, après les séries déjà livrées.
-- **Défauts** : constantes plutôt que réglages ; aucune dépendance nouvelle ; aucun nouveau champ de sauvegarde (`migration: false`) ; hasard par `random()`, `pickRandom()`, `shuffle()` ; handlers par `setHandler`. Fin de mission par `winSoon()`. Textes : ceux de cette spec, mot pour mot ; une phrase composée (gabarit de B1, N1, H1, I2) suit ses accords (genre, « une »/« un », « du »/« de la »/« de l' »). Voix : tout passe par `speak()` et `data-say` ; la track `voix-naturelle` changera la voix sans toucher cette track. `speak()` passe le texte par `toSpoken()` (`js/shared/ui/voice.js:48`) : il enlève les balises, remplace les emojis connus par leur mot (`EMOJI_WORDS`, dont 🐚, 🌸, ⭐, 💎, 🐟, 🌙 ; 🪙 devient vide), supprime les autres, retire l'espace devant `? ! , . :` et élide. Après une erreur, ni `problems` ni `code` ne disent de phrase propre : seule parle la phrase de `loseLife` (`speakWrongHint()`, `js/features/minigame-engine/engine.js:112`), puis l'énoncé du nouveau problème ou la consigne du nouveau cadenas, dits à la relance (`scheduleRetry`, 900 ms de jeu plus tard), comme dans les autres jeux. Toute vérification de voix d'un test compare donc à `toSpoken(texte de la spec)` et la cherche dans `spoken` par `includes`, jamais en ne lisant que la dernière phrase (appelé dans la page de test par `ev`), jamais au texte brut. Les phrases dites de cette spec (B1, N1, H1, H2, I2, K1, C1, P1 à P3, consignes) ne contiennent aucun emoji qui doublerait un mot : les objets et symboles y sont nommés en mots, les emojis restent dans les vignettes et sur les boutons ; les seuls emojis dits sont décoratifs en fin ou milieu de phrase (🗝️ et 🗺️ du chapitre), que `toSpoken` supprime sans rien doubler.
+- **Défauts** : constantes plutôt que réglages ; aucune dépendance nouvelle ; aucun nouveau champ de sauvegarde (`migration: false`) ; hasard par `random()`, `pickRandom()`, `shuffle()` ; handlers par `setHandler`. Fin de mission par `winSoon()`. Textes : ceux de cette spec, mot pour mot ; une phrase composée (gabarit de B1, N1, H1, I2) suit ses accords (genre, « une »/« un », « du »/« de la »/« de l' »). Voix : tout passe par `speak()` et `data-say` ; la track `voix-naturelle` changera la voix sans toucher cette track. `speak()` passe le texte par `toSpoken()` (`js/shared/ui/voice.js:55`) : il enlève les balises, remplace les emojis connus par leur mot (`EMOJI_WORDS`, dont 🐚, 🌸, ⭐, 💎, 🐟, 🌙 ; 🪙 devient vide), supprime les autres, retire l'espace devant `? ! , . :` et élide. Après une erreur, ni `problems` ni `code` ne disent de phrase propre : seule parle la phrase de `loseLife` (`speakWrongHint()`, `js/features/minigame-engine/engine.js:112`), puis l'énoncé du nouveau problème ou la consigne du nouveau cadenas, dits à la relance (`scheduleRetry`, 900 ms de jeu plus tard), comme dans les autres jeux. Toute vérification de voix d'un test compare donc à `toSpoken(texte de la spec)` et la cherche dans `spoken` par `includes`, jamais en ne lisant que la dernière phrase (appelé dans la page de test par `ev`), jamais au texte brut. Les phrases dites de cette spec (B1, N1, H1, H2, I2, K1, C1, P1 à P3, consignes) ne contiennent aucun emoji qui doublerait un mot : les objets et symboles y sont nommés en mots, les emojis restent dans les vignettes et sur les boutons ; les seuls emojis dits sont décoratifs en fin ou milieu de phrase (🗝️ et 🗺️ du chapitre), que `toSpoken` supprime sans rien doubler.
 - **Référence visuelle** : la fenêtre de mini-jeu de « Opérations magiques » (`js/features/minigames/math/math.js`, `gameHeader`, `livesBar`, boutons `.num-btn`) pour les choix de nombres ; les étiquettes et cases de « Assembler l'image » (`js/features/minigames/jigsaw/jigsaw.js`, toucher une pièce puis une case) pour poser les étiquettes ; les boutons ronds de « Grave ou aigu ? » (`js/features/minigames/pitch/pitch.js`) pour la palette du code ; l'île `musique` pour l'île (`js/features/island/island.js:340`). Boutons d'au moins 64 px, tout tient sur un écran de 360 px de large sans défilement horizontal : ces mesures sont jugées à l'œil sur téléphone (lignes 👤 S7, S8, S10), jsdom ne calcule aucune mise en page.
 - **Détails non écrits** : l'agent prend le défaut de la référence ou l'option la plus simple, le note dans le journal de décisions du plan, l'humain juge à la revue.
 
@@ -690,6 +733,7 @@ Tuples par type : reunion, ajout, retrait, compPlus, possible : (a, b) ; partie,
 | Île précédente | `WORLDS.dumplings` présent avant `WORLDS.coffres` | `monde-dumplings` | `worldsOf(3)`, critère 31 |
 | Mode d'exemple | `state.skills.problems.lvl` et `.atLvl` (lecture seule) | slice `adaptive` | `problems` (E1) |
 | `gameSolution` | liste ordonnée de sélecteurs, tous présents à l'ouverture | moteur des mini-jeux | `test/games.test.js`, `test/companions.test.js` |
+| Types de difficulté | `ProblemsRound`, `CodeRound` (table Y1) | cette track (`entities/difficulty`) | `problems.js`, `code.js`, tests |
 | Données de la fenêtre | `#pb-root[data-type][data-a][data-b][data-c][data-t][data-r]` ; `#code-root[data-wheels][data-palette][data-code][data-clues]` (table A2) | cette track | `INDEPENDENT.problems` et `INDEPENDENT.code` de `test/games.test.js` |
 
 ## Surface d'attaque

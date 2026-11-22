@@ -7,6 +7,8 @@ Remplacer `<ile>` par la clé de l'île (ex. `boites`).
 - [ ] `test/smoke.test.js` : l'île s'ouvre au bon niveau, ses personnages et son jeu favori sont là. Les tests génériques (thème de couleurs, île dans le cadre de la carte, sans chevauchement) la couvrent automatiquement.
 
 ## 2. Entités
+> `js/shared/` et `js/entities/` sont vérifiés en TypeScript strict (`tsconfig.strict.json`, [ADR 0003](../docs/adr/0003-typescript.md)). Une entrée qui ajoute un champ à une table typée (`World`, `Archipelago`, `Character`, `Item`, `Squishy`, `GameState`…) étend d'abord son `@typedef` ; un nouveau fichier de ces couches est typé strictement. Jamais `any` ni `@ts-ignore`. `bun run typecheck` le vérifie.
+
 - [ ] `js/entities/world/worlds.js` : l'entrée `WORLDS.<ile>` :
   - nom, emoji, niveau (celui de `conductor/niveaux.md` : `test/niveaux.test.js` vérifie que le jeu et la spec suivent ce tableau), `diff`, sous-titre ;
   - **`saison`** : son archipel (1 = Lagon Magique, 2 = Ciel des Rêves, v55) ;
