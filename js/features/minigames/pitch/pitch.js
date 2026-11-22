@@ -10,7 +10,7 @@
    🔈 fait écouter les cloches de gauche à droite.
    Anti-devinette : une erreur relance d'AUTRES notes. */
 import { pitchRound } from '../../../entities/difficulty/index.js';
-import { shuffle } from '../../../shared/lib/index.js';
+import { random, shuffle } from '../../../shared/lib/index.js';
 import { openModal, playNote } from '../../../shared/ui/index.js';
 import { gameDiff } from '../../adaptive/index.js';
 import { registerHints, setHintQuestion } from '../../hints/index.js';
@@ -38,7 +38,7 @@ const BELL_COLORS = ['#FFD95A', '#5CC6CC', '#FF8FB8', '#BFA3EC', '#6ED38C', '#FF
 const bellSize = (m) => Math.round(36 + ((84 - m) / 24) * 48);
 
 function pitchBuildRound(dd, rng) {
-  rng = rng || Math.random;
+  rng = rng || random;
   const cfg = pitchRound(dd);
   if (rng() < (cfg.melody || 0)) {
     const up = rng() < 0.5;

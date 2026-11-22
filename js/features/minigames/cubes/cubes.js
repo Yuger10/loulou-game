@@ -8,7 +8,7 @@
    au palier haut, certains cubes sont cachés derrière ou dessous.
    Anti-devinette : une mauvaise réponse relance une AUTRE pile. */
 import { cubesRound } from '../../../entities/difficulty/index.js';
-import { shuffle } from '../../../shared/lib/index.js';
+import { random, shuffle } from '../../../shared/lib/index.js';
 import { openModal } from '../../../shared/ui/index.js';
 import { gameDiff } from '../../adaptive/index.js';
 import { registerHints, setHintQuestion } from '../../hints/index.js';
@@ -38,7 +38,7 @@ const CUBE_COLORS = [
 /* Une pile : les hauteurs (heights[y][x]) dans les limites du palier, avec au
    moins deux tours (sinon on compterait une seule tour). */
 function cubesBuildStack(dd, rng) {
-  rng = rng || Math.random;
+  rng = rng || random;
   const cfg = cubesRound(dd);
   for (let tries = 0; tries < 400; tries++) {
     const heights = Array.from({ length: cfg.d }, () =>

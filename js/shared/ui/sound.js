@@ -1,6 +1,7 @@
 /* Réglages audio du joueur ({ sound, voice, music, soundVolume }). `shared` ne
    connaît pas l'état du jeu : c'est l'état (entities/game-state) qui fournit la
    source, avec setAudioPrefsSource(() => state). Par défaut : tout est actif. */
+import { random } from '../lib/index.js';
 let audioPrefsSource = () => ({ sound: true, voice: true, music: false, soundVolume: 80 });
 function setAudioPrefsSource(fn) {
   audioPrefsSource = fn;
@@ -90,7 +91,7 @@ function reverbImpulse(seconds, decay) {
   const buf = ctx.createBuffer(2, n, ctx.sampleRate);
   for (let c = 0; c < 2; c++) {
     const data = buf.getChannelData(c);
-    for (let i = 0; i < n; i++) data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / n, decay);
+    for (let i = 0; i < n; i++) data[i] = (random() * 2 - 1) * Math.pow(1 - i / n, decay);
   }
   return buf;
 }
@@ -113,7 +114,7 @@ function musicBusNode() {
 }
 
 /* ---------- Instrument : le marimba ---------- */
-const soundVary = (x, amount, exact) => (exact ? x : x * (1 + (Math.random() * 2 - 1) * amount));
+const soundVary = (x, amount, exact) => (exact ? x : x * (1 + (random() * 2 - 1) * amount));
 
 // une composante : attaque très courte, extinction exponentielle
 function marimbaPartial(freq, t, vol, decay, type, wet) {

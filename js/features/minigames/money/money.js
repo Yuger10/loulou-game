@@ -6,7 +6,7 @@
    (moneyDenoms / moneyPileSize) : plus de pièces = plus de termes à
    additionner mentalement, indépendamment des valeurs elles-mêmes. */
 import { moneyDenoms, moneyPileSize } from '../../../entities/difficulty/index.js';
-import { pickRandom, shuffle } from '../../../shared/lib/index.js';
+import { pickRandom, random, shuffle } from '../../../shared/lib/index.js';
 import { openModal } from '../../../shared/ui/index.js';
 import { gameDiff } from '../../adaptive/index.js';
 import { registerHints, setHintQuestion } from '../../hints/index.js';
@@ -38,7 +38,7 @@ function renderMoney() {
   const dd = gameDiff();
   const denoms = moneyDenoms(dd);
   const { min, max } = moneyPileSize(dd);
-  const size = min + Math.floor(Math.random() * (max - min + 1));
+  const size = min + Math.floor(random() * (max - min + 1));
   const correct = randomPile(denoms, size);
   const target = correct.total;
   const item = pickRandom(['🍭', '🧸', '🎈', '🍦', '⚽', '🎁', '🪁', '🍪']);
@@ -47,7 +47,7 @@ function renderMoney() {
   let tries = 0;
   while (options.length < 3 && tries < 30) {
     tries++;
-    const p = randomPile(denoms, min + Math.floor(Math.random() * (max - min + 1)));
+    const p = randomPile(denoms, min + Math.floor(random() * (max - min + 1)));
     if (p.total !== target) options.push(p);
   }
   // au cas où (petites valeurs) on n'a pas trouvé 2 distracteurs différents

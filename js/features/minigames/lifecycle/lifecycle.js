@@ -9,7 +9,7 @@
      next     « que se passe-t-il ensuite ? »
    Anti-devinette : une erreur relance un AUTRE cycle. */
 import { lifecycleRound } from '../../../entities/difficulty/index.js';
-import { shuffle } from '../../../shared/lib/index.js';
+import { random, shuffle } from '../../../shared/lib/index.js';
 import { openModal } from '../../../shared/ui/index.js';
 import { gameDiff } from '../../adaptive/index.js';
 import { registerHints, setHintQuestion } from '../../hints/index.js';
@@ -75,7 +75,7 @@ const stageCard = (s, extra) =>
   `<button class="lc-card" data-s="${s}" aria-label="${LC_STAGES[s].name}"${extra || ''}>${stageArt(s)}<span class="lc-name">${LC_STAGES[s].name.replace(/^(la |le |l')/, '')}</span></button>`;
 
 function lifecycleBuildRound(dd, rng) {
-  rng = rng || Math.random;
+  rng = rng || random;
   const cfg = lifecycleRound(dd);
   const pick = (arr) => arr[Math.floor(rng() * arr.length)];
   const mode = pick(cfg.modes);

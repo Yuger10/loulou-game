@@ -6,7 +6,7 @@ import { hello, level, save, state, trackGamePlayed } from '../../entities/game-
 import { addItem, ITEMS } from '../../entities/item/index.js';
 import { ac, currentPlayerAge, party, race } from '../../entities/player/index.js';
 import { availableItems, currentWorld } from '../../entities/world/index.js';
-import { emit, on, pickRandom } from '../../shared/lib/index.js';
+import { emit, on, pickRandom, random } from '../../shared/lib/index.js';
 import {
   closeModal,
   confetti,
@@ -393,7 +393,7 @@ function onMissionWin() {
   if (solo) noteStoryMission(currentWorld); // l'histoire avance (js/features/story/episodes.js)
   const key = pickRandom(c.loot);
   // bonus : de temps en temps un objet rare en plus
-  const bonus = Math.random() < 0.2 ? pickRandom(availableItems()) : null;
+  const bonus = random() < 0.2 ? pickRandom(availableItems()) : null;
   // défi bonus de Zap réussi : la récompense est doublée
   const boost = inBonusChallenge() ? 2 : 1;
   if (boost > 1) bonusChallenge.won = true;

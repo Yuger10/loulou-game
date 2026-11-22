@@ -79,6 +79,8 @@ Les agents copient ce qu'ils voient. Chaque point est mesuré sur `js/`.
 2. **`Math.random()` appelé directement** : 63 occurrences dans 27 fichiers, dont 14 mini-jeux. C'est la cause du test flaky des coccinelles. Le bon exemple existe déjà : `ladybugsBuildRound(dd, rng)` accepte un générateur injecté.
 
    Règle proposée : `no-restricted-syntax` hors de `shared/lib`, tirages par un `rng` injectable.
+
+   **Corrigé le 22 novembre 2026** (décision d'Amrou : une source centrale rejouable) : `random()` dans `js/shared/lib/random.js`, 77 remplacements dans 40 fichiers, règle oxlint native `no-restricted-properties`, graine posée par la page de test (`TEST_SEED`) et affichée par le lanceur. `test/hasard.test.js` prouve qu'une graine rejoue les mêmes tirages.
 3. **`catch` vides** : 32 dans 13 fichiers (par exemple `js/features/music/music.js:163-164`, `js/features/settings/settings.js:111`). Certains sont légitimes (audio iOS), mais rien ne les distingue d'une erreur avalée par paresse.
 
    Règle proposée : `no-empty` avec commentaire obligatoire, ou un helper `ignoreError(reason, fn)`.

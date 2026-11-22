@@ -4,7 +4,7 @@
    Les bornes (mathBounds) sont centralisées et documentées dans
    js/entities/difficulty/difficulty.js — voir aussi ANALYSE-DIFFICULTE.md. */
 import { mathBounds } from '../../../entities/difficulty/index.js';
-import { pickRandom, shuffle } from '../../../shared/lib/index.js';
+import { pickRandom, random, shuffle } from '../../../shared/lib/index.js';
 import { emojiWord, openModal } from '../../../shared/ui/index.js';
 import { gameDiff } from '../../adaptive/index.js';
 import { registerHints, setHintQuestion } from '../../hints/index.js';
@@ -27,17 +27,17 @@ const MATH_EMOJIS = ['⭐', '🐚', '🌸', '🦪', '🐠', '🦋', '🍎', '�
 
 function makeMathProblem() {
   const { max, allowMinus } = mathBounds(gameDiff());
-  const isMinus = allowMinus && Math.random() < 0.5;
+  const isMinus = allowMinus && random() < 0.5;
   let a, b, result, op;
   if (isMinus) {
-    a = 2 + Math.floor(Math.random() * (max - 1)); // a entre 2 et max
-    b = 1 + Math.floor(Math.random() * (a - 1)); // b < a : jamais de résultat négatif
+    a = 2 + Math.floor(random() * (max - 1)); // a entre 2 et max
+    b = 1 + Math.floor(random() * (a - 1)); // b < a : jamais de résultat négatif
     result = a - b;
     op = '−';
   } else {
     const half = Math.max(1, Math.floor(max / 2));
-    a = 1 + Math.floor(Math.random() * half);
-    b = 1 + Math.floor(Math.random() * (max - a));
+    a = 1 + Math.floor(random() * half);
+    b = 1 + Math.floor(random() * (max - a));
     result = a + b;
     op = '+';
   }
@@ -51,7 +51,7 @@ function renderMath() {
 
   let options = new Set([result]);
   while (options.size < 3) {
-    const delta = Math.floor(Math.random() * 5) - 2;
+    const delta = Math.floor(random() * 5) - 2;
     const cand = Math.max(0, result + (delta === 0 ? 1 : delta));
     options.add(cand);
   }

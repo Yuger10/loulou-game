@@ -54,6 +54,7 @@ import {
   squishyShelfCount,
   squishyTreasureOwned,
 } from './squishies.js';
+import { random } from '../../shared/lib/index.js';
 
 /* ---------- Les dessins (SVG, aucune image) ----------
    Dans le style des squishies du mini-jeu Formes (squishySVG) : un corps
@@ -869,7 +870,7 @@ function sqBindPress(el) {
    tirage, qui a déjà eu lieu : son hasard (`popRng`) est à part. */
 const SQ_POP_CHANCE = 0.2;
 function squishyPopDue(popRng) {
-  return (popRng || Math.random)() < SQ_POP_CHANCE;
+  return (popRng || random)() < SQ_POP_CHANCE;
 }
 function squishyOpenAnimated(popRng) {
   const btn = document.getElementById('sq-open'),
@@ -1047,7 +1048,7 @@ let sqSort = null; // { task, filled, errors, age }
 function sqSortTask(opts) {
   opts = opts || {};
   const age = currentPlayerAge();
-  return makeSortingTask(sqState().owned, age, Math.random, { avoid: opts.avoid });
+  return makeSortingTask(sqState().owned, age, random, { avoid: opts.avoid });
 }
 // La consigne en image, pour qui ne lit pas encore : la forme (remplie de la
 // couleur s'il y en a une), sinon une pastille de couleur ; la taille par une

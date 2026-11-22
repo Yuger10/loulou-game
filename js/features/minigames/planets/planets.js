@@ -32,7 +32,7 @@
    paliers 4 à 6 sont donc des défis pour les plus grands, et le jeu n'est
    proposé qu'à partir de 5 ans (paliers 1-2 seulement à cet âge). */
 import { planetsTier } from '../../../entities/difficulty/index.js';
-import { shuffle } from '../../../shared/lib/index.js';
+import { random, shuffle } from '../../../shared/lib/index.js';
 import { openModal } from '../../../shared/ui/index.js';
 import { gameDiff } from '../../adaptive/index.js';
 import { hintOrderStep, registerHints, setHintQuestion } from '../../hints/index.js';
@@ -398,7 +398,7 @@ function pickPlanetQuestion(dd) {
   let i,
     guard = 0;
   do {
-    i = Math.floor(Math.random() * pool.length);
+    i = Math.floor(random() * pool.length);
   } while (pool.length > 1 && `${tier}:${i}` === lastPlanetQ && guard++ < 10);
   lastPlanetQ = `${tier}:${i}`;
   return Object.assign({ tier }, pool[i]());
@@ -440,7 +440,7 @@ function renderPlanets() {
 
 // palier 6 : toucher 4 planètes voisines dans l'ordre depuis le Soleil
 function renderPlanetOrder(q) {
-  const start = 1 + Math.floor(Math.random() * (PLANET_IDS.length - 3));
+  const start = 1 + Math.floor(random() * (PLANET_IDS.length - 3));
   const seq = PLANET_IDS.filter((id) => SOLAR_DATA[id].order >= start && SOLAR_DATA[id].order < start + 4);
   q.seq = seq;
   q.next = 0; // q.next : où en est l'enfant (pour les indices)

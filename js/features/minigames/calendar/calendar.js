@@ -6,7 +6,7 @@
      mots, réservé à partir du CP confirmé).
    Pas de minuteur sur ce jeu (voir NO_TIMER_KINDS dans difficulty.js). */
 import { calendarUsesWeekdayOrder, calendarWeekdayCount } from '../../../entities/difficulty/index.js';
-import { pickRandom, shuffle } from '../../../shared/lib/index.js';
+import { pickRandom, random, shuffle } from '../../../shared/lib/index.js';
 import { openModal, speak } from '../../../shared/ui/index.js';
 import { gameDiff } from '../../adaptive/index.js';
 import { hintOrderStep, registerHints, setHintQuestion } from '../../hints/index.js';
@@ -36,7 +36,7 @@ const WEEKDAYS = ['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', '
 function renderCalendar() {
   setupLives('calendar');
   const dd = gameDiff();
-  if (calendarUsesWeekdayOrder(dd) && Math.random() < 0.6) renderWeekdayOrder(dd);
+  if (calendarUsesWeekdayOrder(dd) && random() < 0.6) renderWeekdayOrder(dd);
   else renderSeasonGuess();
 }
 
@@ -80,7 +80,7 @@ function renderSeasonGuess() {
 // (même interaction que le puzzle des nombres, avec des mots à la place).
 function renderWeekdayOrder(dd) {
   const count = calendarWeekdayCount(dd);
-  const startIdx = Math.floor(Math.random() * (7 - count + 1));
+  const startIdx = Math.floor(random() * (7 - count + 1));
   const seq = WEEKDAYS.slice(startIdx, startIdx + count);
   const nums = shuffle(seq.slice());
   const q = { kind: 'week', seq, idx: 0 }; // q.idx : où en est l'enfant (pour les indices)

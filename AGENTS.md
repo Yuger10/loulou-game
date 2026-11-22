@@ -27,7 +27,7 @@ Jeu éducatif en français pour une enfant de 6 ans (mathématiques, lecture, lo
 
 ## Conventions
 - **Handlers d'événements : `el.onclick = …`** (l'idiome du projet). Réaffecté à chaque rendu, il ne crée jamais de doublon. `addEventListener` seulement quand c'est nécessaire : événement sans propriété `on…`, `{ capture: true }`, plusieurs écouteurs voulus. Exemple : `js/shared/ui/confirm.js`.
-- **Hasard injectable** : une fonction qui tire au sort reçoit un `rng` (par défaut `Math.random`), pour que les tests soient déterministes. Exemple : `ladybugsBuildRound(dd, rng)` dans `js/features/minigames/ladybugs/ladybugs.js`.
+- **Hasard : `random()`, `pickRandom()`, `shuffle()`** de `js/shared/lib` (oxlint interdit `Math.random` dans `js/`). Les tests sont rejouables : chaque passage affiche sa graine, et `TEST_SEED=1234 bun run test games` rejoue exactement le même. Un test peut forcer un tirage en remplaçant `Math.random`.
 - **Prénoms : `cleanName()` à l'entrée** (`js/shared/lib/text.js`). Tout prénom saisi, chargé ou importé passe par elle avant d'être stocké : il ne contient alors jamais de HTML et s'insère sans risque dans les templates. `test/prenoms.test.js` vérifie chaque porte et refuse toute affectation `x.name = …` d'un joueur sans `cleanName`.
 - **État lu par les tests** : les tests lisent l'état du jeu par son nom (`ev('gameSolution')`). Une variable qui ne sert qu'aux tests porte `// oxlint-disable-next-line no-unused-vars -- lu par les tests` : ne pas la supprimer.
 - **Lint** : corriger le code plutôt que désactiver une règle. Toute exception `oxlint-disable` dit pourquoi, sur la même ligne. Les règles encore désactivées sont suivies par la track `lint-regles-completes`.

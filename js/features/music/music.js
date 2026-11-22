@@ -12,7 +12,7 @@
    l'espace parents a aussi un interrupteur. Réglage : state.music. */
 import { state } from '../../entities/game-state/index.js';
 import { currentSeason } from '../../entities/season/index.js';
-import { on } from '../../shared/lib/index.js';
+import { on, random } from '../../shared/lib/index.js';
 import { currentWorld } from '../../entities/world/index.js';
 import { audioCtx, ensureAudioCtx, musicBusNode } from '../../shared/ui/index.js';
 
@@ -147,16 +147,16 @@ function musicStep(t) {
   if (s === 4) mNote(midiHz(chordRoot - 24 + 7), t, eighth * 3, 'bass', 0.035);
   // mélodie : marche au hasard dans la gamme, avec des silences
   const play = s === 0 ? 0.9 : s % 2 === 0 ? 0.6 : 0.32;
-  if (Math.random() < play) {
+  if (random() < play) {
     const degrees = [];
     for (let oct = 0; oct < 2; oct++) th.scale.forEach((iv) => degrees.push(iv + 12 * oct));
-    let i = music.last + Math.round((Math.random() - 0.5) * 4);
+    let i = music.last + Math.round((random() - 0.5) * 4);
     i = Math.max(0, Math.min(degrees.length - 1, i));
     music.last = i;
-    const len = s % 2 === 0 && Math.random() < 0.3 ? eighth * 2 : eighth;
+    const len = s % 2 === 0 && random() < 0.3 ? eighth * 2 : eighth;
     mNote(midiHz(th.root + degrees[i]), t, len * 1.6, th.lead, th.lead === 'pluck' ? 0.07 : 0.06);
   }
-  if (th.shaker && s % 2 === 1) mNote(4200 + Math.random() * 600, t, 0.03, 'pluck', 0.006);
+  if (th.shaker && s % 2 === 1) mNote(4200 + random() * 600, t, 0.03, 'pluck', 0.006);
   if (th.tick && s % 2 === 0) mNote(2093, t, 0.04, 'pluck', 0.008);
   music.step++;
   return eighth;

@@ -13,7 +13,7 @@ import {
   WORLDS,
   worldUnlocked,
 } from '../../entities/world/index.js';
-import { emit, on, pickRandom } from '../../shared/lib/index.js';
+import { emit, on, pickRandom, random } from '../../shared/lib/index.js';
 import {
   bindSpeakButtons,
   closeModal,
@@ -318,14 +318,14 @@ function contextualLine(charId) {
   if (countItem(c.loot[0]) === 0 && countItem(c.loot[1]) === 0)
     lines.push(`Je peux t'offrir ${ITEMS[c.loot[0]].emoji} ou ${ITEMS[c.loot[1]].emoji}, tu n'en as pas encore !`);
   // 60 % de chance d'utiliser une phrase contextuelle si dispo
-  return lines.length && Math.random() < 0.6 ? pickRandom(lines) : null;
+  return lines.length && random() < 0.6 ? pickRandom(lines) : null;
 }
 
 function openDialogue(charId) {
   const c = CHARACTERS[charId];
   currentChar = charId;
   const who = hello();
-  const greet = who && Math.random() < 0.5 ? `Coucou ${who} ! ` : '';
+  const greet = who && random() < 0.5 ? `Coucou ${who} ! ` : '';
   const text = greet + (contextualLine(charId) || pickRandom(c.texts));
   openModal(`
     <div class="char-header">

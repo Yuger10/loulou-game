@@ -3,7 +3,7 @@
    squishies, l'espace parents… les utilisent aussi, et ne doivent pas dépendre
    du moteur. */
 import { buddySlot } from '../../entities/companion/index.js';
-import { pickRandom } from '../../shared/lib/index.js';
+import { pickRandom, random } from '../../shared/lib/index.js';
 import { bindSpeakButtons, speak } from '../../shared/ui/index.js';
 
 // Une erreur : la proposition fautive est neutralisée et un essai est perdu.
@@ -19,7 +19,7 @@ const WRONG_HINTS = [
 ];
 
 function speakWrongHint() {
-  if (Math.random() < 0.7) speak(pickRandom(WRONG_HINTS));
+  if (random() < 0.7) speak(pickRandom(WRONG_HINTS));
 }
 
 // En-tête d'une fenêtre de jeu : titre, consigne et bouton pour l'écouter.

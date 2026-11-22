@@ -9,7 +9,7 @@
    Une erreur : les cases fausses clignotent, avec un indice parlé ; à la
    2ᵉ erreur, un NOUVEAU motif (relance annulable). */
 import { mirrorRound } from '../../../entities/difficulty/index.js';
-import { shuffle } from '../../../shared/lib/index.js';
+import { random, shuffle } from '../../../shared/lib/index.js';
 import { openModal, speak } from '../../../shared/ui/index.js';
 import { gameDiff } from '../../adaptive/index.js';
 import { registerHints, setHintQuestion } from '../../hints/index.js';
@@ -34,7 +34,7 @@ function mirrorOf(cell, axis, size) {
   return axis === 'v' ? { r: cell.r, c: size - 1 - cell.c, v: cell.v } : { r: size - 1 - cell.r, c: cell.c, v: cell.v };
 }
 function mirrorBuildRound(dd, rng) {
-  rng = rng || Math.random;
+  rng = rng || random;
   const cfg = mirrorRound(dd);
   const axis = cfg.axes[Math.floor(rng() * cfg.axes.length)];
   const two = rng() < cfg.two;

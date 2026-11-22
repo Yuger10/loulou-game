@@ -4,7 +4,7 @@
    puis demi-heures, puis quarts d'heure. Horloge dessinée en CSS pur
    (pas d'image), les aiguilles sont deux barres tournées en degrés. */
 import { clockGranularity, clockOptions } from '../../../entities/difficulty/index.js';
-import { pickRandom, shuffle } from '../../../shared/lib/index.js';
+import { pickRandom, random, shuffle } from '../../../shared/lib/index.js';
 import { openModal } from '../../../shared/ui/index.js';
 import { gameDiff } from '../../adaptive/index.js';
 import { registerHints, setHintQuestion } from '../../hints/index.js';
@@ -57,14 +57,14 @@ function renderClock() {
   setupLives('clock');
   const dd = gameDiff();
   const minutes = clockGranularity(dd);
-  const hour = 1 + Math.floor(Math.random() * 12);
+  const hour = 1 + Math.floor(random() * 12);
   const minute = pickRandom(minutes);
   const answer = timeLabel(hour, minute);
 
   const nOptions = clockOptions(dd);
   const options = new Set([answer]);
   while (options.size < nOptions) {
-    const h2 = 1 + Math.floor(Math.random() * 12);
+    const h2 = 1 + Math.floor(random() * 12);
     const m2 = pickRandom(minutes);
     options.add(timeLabel(h2, m2));
   }

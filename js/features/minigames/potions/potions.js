@@ -12,7 +12,7 @@
    voix haute et écrit dessous.
    Anti-devinette : une erreur relance un AUTRE mélange. */
 import { potionsRound } from '../../../entities/difficulty/index.js';
-import { shuffle } from '../../../shared/lib/index.js';
+import { random, shuffle } from '../../../shared/lib/index.js';
 import { openModal } from '../../../shared/ui/index.js';
 import { gameDiff } from '../../adaptive/index.js';
 import { registerHints, setHintQuestion } from '../../hints/index.js';
@@ -56,7 +56,7 @@ const COLOR_MIXES = [
 const RAINBOW = ['rouge', 'orange', 'jaune', 'vert', 'bleu', 'violet'];
 
 function potionsBuildRound(dd, rng) {
-  rng = rng || Math.random;
+  rng = rng || random;
   const cfg = potionsRound(dd);
   const pick = (arr) => arr[Math.floor(rng() * arr.length)];
   const mode = pick(cfg.modes);

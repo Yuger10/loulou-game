@@ -28,7 +28,7 @@ import {
 } from '../../entities/player/index.js';
 import { setCurrentWorld } from '../../entities/world/index.js';
 import { currentSeason, FETES, seasonPreview } from '../../entities/season/index.js';
-import { emit, on } from '../../shared/lib/index.js';
+import { emit, on, random } from '../../shared/lib/index.js';
 import { askConfirm, closeModal, openModal, playSound, showToast, speak } from '../../shared/ui/index.js';
 import { SKILL_STATUS, skillStatus, todayKey } from '../adaptive/index.js';
 import { openBackup } from '../backup/index.js';
@@ -125,8 +125,8 @@ function openParentGate(onOk, onCancel, onWrong) {
     onOk();
     return;
   }
-  const a = 6 + Math.floor(Math.random() * 4),
-    b = 6 + Math.floor(Math.random() * 4);
+  const a = 6 + Math.floor(random() * 4),
+    b = 6 + Math.floor(random() * 4);
   openModal(`
     ${gameHeader('🔒 Pour les adultes', 'Répondez à cette question pour continuer')}
     <div class="gate-box">
