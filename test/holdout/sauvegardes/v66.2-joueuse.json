@@ -1,0 +1,121 @@
+{
+  "lagon-magique-profiles": {
+    "list": [
+      {
+        "id": "pmwrrtpma870",
+        "name": "Zoé",
+        "avatar": "👧",
+        "look": {
+          "tete": null,
+          "visage": null,
+          "tenue": null,
+          "cape": null
+        },
+        "gender": "",
+        "companion": "perle"
+      }
+    ],
+    "current": "pmwrrtpma870"
+  },
+  "lagon-magique-save:pmwrrtpma870": {
+    "v": 9,
+    "coins": 42,
+    "inventory": {
+      "coquillage": 3,
+      "perle": 1
+    },
+    "missions": 17,
+    "sound": true,
+    "voice": true,
+    "newItems": 0,
+    "decos": [],
+    "name": "Zoé",
+    "avatar": "👧",
+    "seen": {},
+    "quests": {
+      "date": "2026-11-22",
+      "list": [
+        {
+          "type": "win",
+          "target": null,
+          "goal": 3,
+          "n": 0,
+          "label": "Réussis 3 missions 🎮"
+        },
+        {
+          "type": "craft",
+          "target": "cartetresor",
+          "goal": 1,
+          "n": 0,
+          "label": "Fabrique un carte au trésor 🗺️"
+        },
+        {
+          "type": "sell",
+          "target": null,
+          "goal": 2,
+          "n": 0,
+          "label": "Vends 2 objets au marché 🏪"
+        }
+      ],
+      "claimed": false
+    },
+    "albumReward": false,
+    "visited": ["lagon", "foret"],
+    "gameCounts": {},
+    "storySolved": {
+      "lagon": true,
+      "foret": true
+    },
+    "skills": {
+      "count": {
+        "wins": 9,
+        "fails": 2,
+        "errors": 3,
+        "last": null,
+        "recent": [],
+        "lvl": 2
+      }
+    },
+    "playTime": {},
+    "pauseExtra": null,
+    "wardrobe": [],
+    "look": {
+      "tete": null,
+      "visage": null,
+      "tenue": null,
+      "cape": null
+    },
+    "seasonGifts": {},
+    "music": false,
+    "soundVolume": 80,
+    "restLog": {},
+    "restRecall": null,
+    "storyMissions": {},
+    "storyEpisodes": {},
+    "friends": {
+      "sirene": 4
+    },
+    "friendRewards": {},
+    "team": {
+      "open": false,
+      "met": [],
+      "mates": [],
+      "day": null
+    },
+    "charsHelped": {},
+    "squishies": {
+      "owned": {},
+      "boxes": [],
+      "shelf": [null, null, null, null, null, null, null, null, null, null, null, null],
+      "dry": 0,
+      "done": {},
+      "fromStory": {},
+      "day": null,
+      "sorted": 0,
+      "hello": false,
+      "treasures": []
+    },
+    "skyIntroSeen": false,
+    "season2Done": false
+  }
+}

@@ -15,8 +15,10 @@ const fs = require('fs');
 const os = require('os');
 const path = require('path');
 
-const dir = path.join(__dirname, '..');
-const filters = process.argv.slice(2);
+// --holdout : les tests holdout (test/holdout/), lancés par `bun run verify` et la CI
+const holdout = process.argv.includes('--holdout');
+const dir = holdout ? path.join(__dirname, '..', 'holdout') : path.join(__dirname, '..');
+const filters = process.argv.slice(2).filter((a) => a !== '--holdout');
 const jobsMax = Number(process.env.TEST_JOBS) || os.availableParallelism();
 const seed =
   Number.isInteger(Number(process.env.TEST_SEED)) && process.env.TEST_SEED !== ''
