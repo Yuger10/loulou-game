@@ -21,12 +21,25 @@
 import { charFace } from '../../entities/character/index.js';
 import { save, state } from '../../entities/game-state/index.js';
 import {
-  ARCHIPELAGO_ORDER, ARCHIPELAGOS, archipelagoOf, archipelagoUnlocked, worldsOf, worldUnlocked
+  ARCHIPELAGO_ORDER,
+  ARCHIPELAGOS,
+  archipelagoOf,
+  archipelagoUnlocked,
+  worldsOf,
+  worldUnlocked,
 } from '../../entities/world/index.js';
 import { shuffle } from '../../shared/lib/index.js';
 import {
-  bindSpeakButtons, closeModal, confetti, onModalChange, openModal, playSound, shakeEl, speak,
-  speechBubble, vibrate
+  bindSpeakButtons,
+  closeModal,
+  confetti,
+  onModalChange,
+  openModal,
+  playSound,
+  shakeEl,
+  speak,
+  speechBubble,
+  vibrate,
 } from '../../shared/ui/index.js';
 import { hintNudge, registerHints, setHintQuestion } from '../hints/index.js';
 import { bindQuit, gameHeader, speakWrongHint } from '../screen/index.js';
@@ -41,114 +54,138 @@ const STORY = {
     guide: 'sirene',
     title: 'Le murmure du Lagon',
     intro: [
-      "Bienvenue, aventurier des mers 🌊",
-      "Je suis Marina, la gardienne du Lagon. Une légende raconte un trésor caché loin, par-delà huit îles mystérieuses 🏝️.",
+      'Bienvenue, aventurier des mers 🌊',
+      'Je suis Marina, la gardienne du Lagon. Une légende raconte un trésor caché loin, par-delà huit îles mystérieuses 🏝️.',
       "Aide chaque ami que tu rencontres, et résous l'énigme de chaque île pour avancer sur la carte !",
     ],
     riddles: [
-      { q: "Je nage dans la mer et j'ai une queue de poisson, mais je parle comme toi. Qui suis-je ?",
+      {
+        q: "Je nage dans la mer et j'ai une queue de poisson, mais je parle comme toi. Qui suis-je ?",
         tip: 'Cherche celle qui a une queue de poisson ET un visage comme le tien.',
-        opts: [{ e:'🧜‍♀️', ok:true }, { e:'🐬' }, { e:'🦀' }] },
-      { q: "Je vis dans la mer, j'ai huit bras et je sais me cacher partout. Qui suis-je ?",
-        tip: 'Compte les bras : huit, c\'est beaucoup de bras !',
-        opts: [{ e:'🐙', ok:true }, { e:'🦞' }, { e:'🐟' }] },
+        opts: [{ e: '🧜‍♀️', ok: true }, { e: '🐬' }, { e: '🦀' }],
+      },
+      {
+        q: "Je vis dans la mer, j'ai huit bras et je sais me cacher partout. Qui suis-je ?",
+        tip: "Compte les bras : huit, c'est beaucoup de bras !",
+        opts: [{ e: '🐙', ok: true }, { e: '🦞' }, { e: '🐟' }],
+      },
     ],
-    success: "Bravo ! Tu gardes précieusement le premier indice du trésor 🗺️",
+    success: 'Bravo ! Tu gardes précieusement le premier indice du trésor 🗺️',
     reward: 10,
   },
   foret: {
     guide: 'fee',
     title: 'Le secret de la forêt',
     intro: [
-      "Chhht… bienvenue dans la forêt enchantée 🌿",
+      'Chhht… bienvenue dans la forêt enchantée 🌿',
       "Je suis Sylvie, la fée des bois. L'indice de Marina m'a conduit jusqu'à toi !",
-      "Résous mon énigme, et je te confierai le deuxième indice du trésor.",
+      'Résous mon énigme, et je te confierai le deuxième indice du trésor.',
     ],
     riddles: [
-      { q: "Je suis tout petit, j'ai des ailes et je fais de la magie dans la forêt. Qui suis-je ?",
+      {
+        q: "Je suis tout petit, j'ai des ailes et je fais de la magie dans la forêt. Qui suis-je ?",
         tip: 'Cherche celle qui fait de la magie, avec des ailes toutes fines.',
-        opts: [{ e:'🧚‍♀️', ok:true }, { e:'🦋' }, { e:'🐝' }] },
-      { q: "Je pousse sous les arbres, j'ai un chapeau mais pas de tête. Qui suis-je ?",
-        tip: 'Le chapeau, c\'est le haut tout rond… et il pousse par terre, à l\'ombre.',
-        opts: [{ e:'🍄', ok:true }, { e:'🌻' }, { e:'🌳' }] },
+        opts: [{ e: '🧚‍♀️', ok: true }, { e: '🦋' }, { e: '🐝' }],
+      },
+      {
+        q: "Je pousse sous les arbres, j'ai un chapeau mais pas de tête. Qui suis-je ?",
+        tip: "Le chapeau, c'est le haut tout rond… et il pousse par terre, à l'ombre.",
+        opts: [{ e: '🍄', ok: true }, { e: '🌻' }, { e: '🌳' }],
+      },
     ],
-    success: "Bravo ! Un deuxième indice du trésor rejoint ta carte 🗺️",
+    success: 'Bravo ! Un deuxième indice du trésor rejoint ta carte 🗺️',
     reward: 12,
   },
   montagne: {
     guide: 'dragonciel',
     title: 'Le souffle de la montagne',
     intro: [
-      "Tout là-haut, au-dessus des nuages ☁️",
+      'Tout là-haut, au-dessus des nuages ☁️',
       "Je suis Zéphyr, le dragon du ciel. Le vent m'a soufflé que tu cherches un trésor…",
       "Si tu résous mon énigme, je t'indique le chemin vers la suite !",
     ],
     riddles: [
-      { q: "Je vole très haut dans le ciel, je crache du feu et j'ai des écailles. Qui suis-je ?",
+      {
+        q: "Je vole très haut dans le ciel, je crache du feu et j'ai des écailles. Qui suis-je ?",
         tip: 'Qui peut cracher du feu ?',
-        opts: [{ e:'🐉', ok:true }, { e:'🦅' }, { e:'☁️' }] },
-      { q: "Je suis blanc et froid, je tombe doucement du ciel en hiver. Qui suis-je ?",
+        opts: [{ e: '🐉', ok: true }, { e: '🦅' }, { e: '☁️' }],
+      },
+      {
+        q: 'Je suis blanc et froid, je tombe doucement du ciel en hiver. Qui suis-je ?',
         tip: 'Pense à ce qui tombe du ciel quand il fait très, très froid.',
-        opts: [{ e:'❄️', ok:true }, { e:'☀️' }, { e:'🌧️' }] },
+        opts: [{ e: '❄️', ok: true }, { e: '☀️' }, { e: '🌧️' }],
+      },
     ],
-    success: "Bravo ! Le troisième indice brille entre tes mains ✨",
+    success: 'Bravo ! Le troisième indice brille entre tes mains ✨',
     reward: 14,
   },
   chateau: {
     guide: 'princesse',
     title: 'Le mystère du château',
     intro: [
-      "Bienvenue au château des étoiles 👑",
-      "Je suis Aurore. Ici se cache un indice précieux, gardé par une énigme royale.",
+      'Bienvenue au château des étoiles 👑',
+      'Je suis Aurore. Ici se cache un indice précieux, gardé par une énigme royale.',
       "Résous-la, et le château t'ouvrira ses portes vers la suite de l'aventure !",
     ],
     riddles: [
-      { q: "Je porte une couronne et j'habite dans un château. Qui suis-je ?",
+      {
+        q: "Je porte une couronne et j'habite dans un château. Qui suis-je ?",
         tip: 'Qui porte une couronne sur la tête ?',
-        opts: [{ e:'👸', ok:true }, { e:'🧙‍♀️' }, { e:'🤖' }] },
-      { q: "Je sers à ouvrir toutes les portes et tous les coffres. Qui suis-je ?",
-        tip: 'Qu\'est-ce qu\'on met dans une serrure ?',
-        opts: [{ e:'🔑', ok:true }, { e:'🛡️' }, { e:'🕯️' }] },
+        opts: [{ e: '👸', ok: true }, { e: '🧙‍♀️' }, { e: '🤖' }],
+      },
+      {
+        q: 'Je sers à ouvrir toutes les portes et tous les coffres. Qui suis-je ?',
+        tip: "Qu'est-ce qu'on met dans une serrure ?",
+        opts: [{ e: '🔑', ok: true }, { e: '🛡️' }, { e: '🕯️' }],
+      },
     ],
-    success: "Bravo ! Le quatrième indice rejoint ta carte au trésor 🗺️",
+    success: 'Bravo ! Le quatrième indice rejoint ta carte au trésor 🗺️',
     reward: 16,
   },
   jungle: {
     guide: 'exploratrice',
     title: 'Le trésor de la jungle',
     intro: [
-      "Chhht, écoute les bruits de la jungle 🌴",
+      'Chhht, écoute les bruits de la jungle 🌴',
       "Je suis Maya, l'exploratrice. On approche du trésor, je le sens !",
-      "Résous mon énigme, et je te montre le prochain chemin.",
+      'Résous mon énigme, et je te montre le prochain chemin.',
     ],
     riddles: [
-      { q: "Je grimpe aux arbres, je mange des bananes et je fais ouh ouh. Qui suis-je ?",
+      {
+        q: 'Je grimpe aux arbres, je mange des bananes et je fais ouh ouh. Qui suis-je ?',
         tip: 'Qui adore les bananes ?',
-        opts: [{ e:'🐒', ok:true }, { e:'🐆' }, { e:'🦜' }] },
-      { q: "J'ai de grandes plumes colorées et je sais répéter ce que tu dis. Qui suis-je ?",
+        opts: [{ e: '🐒', ok: true }, { e: '🐆' }, { e: '🦜' }],
+      },
+      {
+        q: "J'ai de grandes plumes colorées et je sais répéter ce que tu dis. Qui suis-je ?",
         tip: 'Quel oiseau sait parler ?',
-        opts: [{ e:'🦜', ok:true }, { e:'🦚' }, { e:'🦋' }] },
+        opts: [{ e: '🦜', ok: true }, { e: '🦚' }, { e: '🦋' }],
+      },
     ],
-    success: "Bravo ! Le cinquième indice est entre tes mains 🗺️",
+    success: 'Bravo ! Le cinquième indice est entre tes mains 🗺️',
     reward: 18,
   },
   cite: {
     guide: 'horloger',
     title: "Le secret de l'horloger",
     intro: [
-      "Bienvenue dans la Cité du Temps 🕰️",
+      'Bienvenue dans la Cité du Temps 🕰️',
       "Je suis Horace, l'horloger. Chaque heure compte, et chaque énigme aussi !",
-      "Résous celle-ci, et le temps te révélera un nouvel indice.",
+      'Résous celle-ci, et le temps te révélera un nouvel indice.',
     ],
     riddles: [
-      { q: "J'ai deux aiguilles et je tourne toute la journée sans jamais m'arrêter. Qui suis-je ?",
+      {
+        q: "J'ai deux aiguilles et je tourne toute la journée sans jamais m'arrêter. Qui suis-je ?",
         tip: 'Cherche celle qui a des aiguilles.',
-        opts: [{ e:'🕰️', ok:true }, { e:'📅' }, { e:'🔔' }] },
-      { q: "Le sable coule de haut en bas pour mesurer le temps qui passe. Qui suis-je ?",
+        opts: [{ e: '🕰️', ok: true }, { e: '📅' }, { e: '🔔' }],
+      },
+      {
+        q: 'Le sable coule de haut en bas pour mesurer le temps qui passe. Qui suis-je ?',
         tip: 'Cherche le sable qui coule.',
-        opts: [{ e:'⏳', ok:true }, { e:'🕰️' }, { e:'🔔' }] },
+        opts: [{ e: '⏳', ok: true }, { e: '🕰️' }, { e: '🔔' }],
+      },
     ],
-    success: "Bravo ! Un sixième indice rejoint ta carte au trésor 🗺️",
+    success: 'Bravo ! Un sixième indice rejoint ta carte au trésor 🗺️',
     reward: 20,
   },
   volcan: {
@@ -156,37 +193,45 @@ const STORY = {
     title: 'Le vœu du génie',
     intro: [
       "Le Volcan des Génies t'attend 🌋",
-      "Je suis Nova, le génie. Le trésor est presque entre tes mains !",
+      'Je suis Nova, le génie. Le trésor est presque entre tes mains !',
       "Résous mon énigme, et je t'accorde un vœu !",
     ],
     riddles: [
-      { q: "Je sors d'une lampe magique et je peux réaliser trois vœux. Qui suis-je ?",
-        tip: 'Qui sort d\'une lampe magique ?',
-        opts: [{ e:'🧞‍♂️', ok:true }, { e:'🐉' }, { e:'🔥' }] },
-      { q: "Je coule rouge et brûlant du sommet d'une montagne qui explose. Qui suis-je ?",
-        tip: 'C\'est une montagne… qui crache du feu.',
-        opts: [{ e:'🌋', ok:true }, { e:'❄️' }, { e:'☁️' }] },
+      {
+        q: "Je sors d'une lampe magique et je peux réaliser trois vœux. Qui suis-je ?",
+        tip: "Qui sort d'une lampe magique ?",
+        opts: [{ e: '🧞‍♂️', ok: true }, { e: '🐉' }, { e: '🔥' }],
+      },
+      {
+        q: "Je coule rouge et brûlant du sommet d'une montagne qui explose. Qui suis-je ?",
+        tip: "C'est une montagne… qui crache du feu.",
+        opts: [{ e: '🌋', ok: true }, { e: '❄️' }, { e: '☁️' }],
+      },
     ],
-    success: "Bravo ! Le septième indice brûle de puissance ✨",
+    success: 'Bravo ! Le septième indice brûle de puissance ✨',
     reward: 22,
   },
   squishy: {
     guide: 'mochichat',
     title: 'Le dernier secret, tout doux',
     intro: [
-      "Bienvenue au Pays Squishy, où tout est doux et moelleux 🍡",
-      "Je suis Mimi, la chatte mochi. Voici la toute dernière énigme avant le trésor !",
-      "Résous-la, et le trésor du Lagon Magique sera enfin à toi !",
+      'Bienvenue au Pays Squishy, où tout est doux et moelleux 🍡',
+      'Je suis Mimi, la chatte mochi. Voici la toute dernière énigme avant le trésor !',
+      'Résous-la, et le trésor du Lagon Magique sera enfin à toi !',
     ],
     riddles: [
-      { q: "Je n'ai aucun coin, je suis tout rond. Qui suis-je ?",
-        tip: 'Cherche la forme qui n\'a aucune pointe.',
-        opts: [{ e:'⚪', ok:true }, { e:'🔺' }, { e:'🟥' }] },
-      { q: "J'ai trois côtés et trois coins pointus. Qui suis-je ?",
+      {
+        q: "Je n'ai aucun coin, je suis tout rond. Qui suis-je ?",
+        tip: "Cherche la forme qui n'a aucune pointe.",
+        opts: [{ e: '⚪', ok: true }, { e: '🔺' }, { e: '🟥' }],
+      },
+      {
+        q: "J'ai trois côtés et trois coins pointus. Qui suis-je ?",
         tip: 'Compte les pointes : il en faut trois.',
-        opts: [{ e:'🔺', ok:true }, { e:'🟦' }, { e:'⚪' }] },
+        opts: [{ e: '🔺', ok: true }, { e: '🟦' }, { e: '⚪' }],
+      },
     ],
-    success: "BRAVO ! Tu as trouvé tous les indices… le trésor du Lagon Magique est à toi ! 🏆✨",
+    success: 'BRAVO ! Tu as trouvé tous les indices… le trésor du Lagon Magique est à toi ! 🏆✨',
     reward: 25,
   },
   // ---- Saison 2 : « Les Rêves dans les boîtes » (v55) ----
@@ -194,20 +239,26 @@ const STORY = {
     guide: 'capucine',
     title: 'Les rêves de la Fabrique',
     intro: [
-      "Bienvenue à la Fabrique de boîtes 📦",
-      "Ici, Grisou a caché des centaines de rêves, bien rangés dans nos boîtes.",
-      "Résous mon énigme, et nous ouvrirons les premières boîtes ensemble !",
+      'Bienvenue à la Fabrique de boîtes 📦',
+      'Ici, Grisou a caché des centaines de rêves, bien rangés dans nos boîtes.',
+      'Résous mon énigme, et nous ouvrirons les premières boîtes ensemble !',
     ],
     riddles: [
-      { q: "J'ai six faces toutes carrées, et on me remplit de cadeaux. Qui suis-je ?",
-        tip: 'On met les cadeaux dedans, et on l\'ouvre en soulevant le couvercle.',
-        opts: [{ e:'📦', ok:true }, { e:'⚽' }, { e:'🍩' }] },
-      { q: "Je suis un chat, et ma cachette préférée, c'est une boîte en carton. Qui suis-je ?",
+      {
+        q: "J'ai six faces toutes carrées, et on me remplit de cadeaux. Qui suis-je ?",
+        tip: "On met les cadeaux dedans, et on l'ouvre en soulevant le couvercle.",
+        opts: [{ e: '📦', ok: true }, { e: '⚽' }, { e: '🍩' }],
+      },
+      {
+        q: "Je suis un chat, et ma cachette préférée, c'est une boîte en carton. Qui suis-je ?",
         tip: 'Il fait miaou.',
-        opts: [{ e:'🐱', ok:true }, { e:'🐶' }, { e:'🐟' }] },
-      { q: "Je flotte dans le ciel, je suis tout doux, et quand je suis triste, il pleut. Qui suis-je ?",
+        opts: [{ e: '🐱', ok: true }, { e: '🐶' }, { e: '🐟' }],
+      },
+      {
+        q: 'Je flotte dans le ciel, je suis tout doux, et quand je suis triste, il pleut. Qui suis-je ?',
         tip: 'Lève les yeux : il est blanc, ou gris quand il est triste.',
-        opts: [{ e:'☁️', ok:true }, { e:'☀️' }, { e:'🌙' }] },
+        opts: [{ e: '☁️', ok: true }, { e: '☀️' }, { e: '🌙' }],
+      },
     ],
     success: "Bravo ! Les premiers rêves s'échappent des boîtes, et Grisou retrouve un peu de couleur 🌈",
     reward: 14,
@@ -217,22 +268,28 @@ const STORY = {
     guide: 'nougat',
     title: 'Les jouets qui ne jouent plus',
     intro: [
-      "Chut… Bienvenue dans le Coffre aux Jouets Doux 🧸",
-      "Grisou a rangé le rêve de « jouer ensemble » tout au fond du coffre, et depuis, tous les jouets se sont endormis.",
-      "Résous mes devinettes : chaque bonne réponse réveille un jouet !",
+      'Chut… Bienvenue dans le Coffre aux Jouets Doux 🧸',
+      'Grisou a rangé le rêve de « jouer ensemble » tout au fond du coffre, et depuis, tous les jouets se sont endormis.',
+      'Résous mes devinettes : chaque bonne réponse réveille un jouet !',
     ],
     riddles: [
-      { q: "Je suis tout doux, j'ai deux petites oreilles rondes, et on me fait des câlins le soir. Qui suis-je ?",
-        tip: 'On l\'emmène au lit pour dormir.',
-        opts: [{ e:'🧸', ok:true }, { e:'🚗' }, { e:'⚽' }] },
-      { q: "Je suis rond, je rebondis, et on joue avec moi avec les pieds. Qui suis-je ?",
+      {
+        q: "Je suis tout doux, j'ai deux petites oreilles rondes, et on me fait des câlins le soir. Qui suis-je ?",
+        tip: "On l'emmène au lit pour dormir.",
+        opts: [{ e: '🧸', ok: true }, { e: '🚗' }, { e: '⚽' }],
+      },
+      {
+        q: 'Je suis rond, je rebondis, et on joue avec moi avec les pieds. Qui suis-je ?',
         tip: 'On tape dedans pour marquer un but.',
-        opts: [{ e:'⚽', ok:true }, { e:'🧩' }, { e:'🪁' }] },
-      { q: "J'ai beaucoup de petits morceaux qui s'emboîtent pour faire une image. Qui suis-je ?",
+        opts: [{ e: '⚽', ok: true }, { e: '🧩' }, { e: '🪁' }],
+      },
+      {
+        q: "J'ai beaucoup de petits morceaux qui s'emboîtent pour faire une image. Qui suis-je ?",
         tip: 'Chaque morceau a des bosses et des creux.',
-        opts: [{ e:'🧩', ok:true }, { e:'🎈' }, { e:'🪀' }] },
+        opts: [{ e: '🧩', ok: true }, { e: '🎈' }, { e: '🪀' }],
+      },
     ],
-    success: "Bravo ! Les jouets se réveillent et se mettent à jouer ensemble. Grisou rosit de plaisir 🌸",
+    success: 'Bravo ! Les jouets se réveillent et se mettent à jouer ensemble. Grisou rosit de plaisir 🌸',
     reward: 14,
   },
   bonbons: {
@@ -240,41 +297,53 @@ const STORY = {
     title: 'La fête sans gâteau',
     intro: [
       "Bienvenue au Royaume des Bonbons 🍭 Aujourd'hui, c'est jour de fête… mais le grand four est éteint !",
-      "Grisou a caché le rêve « fête et gourmandise » tout au fond du four, et sans lui, plus aucun gâteau ne cuit.",
-      "Résous mes devinettes gourmandes : chaque bonne réponse rallume une flamme !",
+      'Grisou a caché le rêve « fête et gourmandise » tout au fond du four, et sans lui, plus aucun gâteau ne cuit.',
+      'Résous mes devinettes gourmandes : chaque bonne réponse rallume une flamme !',
     ],
     riddles: [
-      { q: "Je suis rond, avec des bougies dessus, et on me mange pour un anniversaire. Qui suis-je ?",
+      {
+        q: 'Je suis rond, avec des bougies dessus, et on me mange pour un anniversaire. Qui suis-je ?',
         tip: 'On souffle les bougies avant de le manger.',
-        opts: [{ e:'🎂', ok:true }, { e:'🍕' }, { e:'🥕' }] },
-      { q: "Je suis tout rouge, je pousse par deux sur un arbre, et on me pose sur les gâteaux. Qui suis-je ?",
+        opts: [{ e: '🎂', ok: true }, { e: '🍕' }, { e: '🥕' }],
+      },
+      {
+        q: 'Je suis tout rouge, je pousse par deux sur un arbre, et on me pose sur les gâteaux. Qui suis-je ?',
         tip: 'Un petit fruit rouge avec une longue queue verte.',
-        opts: [{ e:'🍒', ok:true }, { e:'🍌' }, { e:'🍇' }] },
-      { q: "Je suis tout froid, en boule sur un cornet, et je fonds au soleil. Qui suis-je ?",
-        tip: 'On la lèche vite avant qu\'elle ne coule.',
-        opts: [{ e:'🍦', ok:true }, { e:'🧁' }, { e:'🍪' }] },
+        opts: [{ e: '🍒', ok: true }, { e: '🍌' }, { e: '🍇' }],
+      },
+      {
+        q: 'Je suis tout froid, en boule sur un cornet, et je fonds au soleil. Qui suis-je ?',
+        tip: "On la lèche vite avant qu'elle ne coule.",
+        opts: [{ e: '🍦', ok: true }, { e: '🧁' }, { e: '🍪' }],
+      },
     ],
-    success: "Bravo ! Le grand four se rallume, la fête peut commencer… et Grisou devient tout jaune caramel 🍮",
+    success: 'Bravo ! Le grand four se rallume, la fête peut commencer… et Grisou devient tout jaune caramel 🍮',
     reward: 14,
   },
   musique: {
     guide: 'viola',
-    title: 'Le silence de l\'île',
+    title: "Le silence de l'île",
     intro: [
       "Chut… Bienvenue sur l'Île de la Musique 🎵 Ici, d'habitude, tout chante : les arbres, la cascade, les touches du piano.",
       "Mais Grisou a enfermé le rêve « chanter et danser » dans une boîte à musique fermée à clé, et l'île est devenue silencieuse.",
       "Résous mes devinettes musicales : chaque bonne réponse remet un instrument de l'orchestre en marche !",
     ],
     riddles: [
-      { q: "Je suis rond, on tape sur moi avec des baguettes, et je fais boum boum ! Qui suis-je ?",
+      {
+        q: 'Je suis rond, on tape sur moi avec des baguettes, et je fais boum boum ! Qui suis-je ?',
         tip: 'On le frappe pour marquer le rythme.',
-        opts: [{ e:'🥁', ok:true }, { e:'🎺' }, { e:'🎻' }] },
-      { q: "J'ai des touches noires et des touches blanches, et on joue avec ses dix doigts. Qui suis-je ?",
-        tip: 'Il est parfois si grand qu\'il a besoin de trois pieds.',
-        opts: [{ e:'🎹', ok:true }, { e:'🥁' }, { e:'🪇' }] },
-      { q: "On souffle dedans, et je fais ta-ta-taaa très fort pour réveiller tout le monde. Qui suis-je ?",
+        opts: [{ e: '🥁', ok: true }, { e: '🎺' }, { e: '🎻' }],
+      },
+      {
+        q: "J'ai des touches noires et des touches blanches, et on joue avec ses dix doigts. Qui suis-je ?",
+        tip: "Il est parfois si grand qu'il a besoin de trois pieds.",
+        opts: [{ e: '🎹', ok: true }, { e: '🥁' }, { e: '🪇' }],
+      },
+      {
+        q: 'On souffle dedans, et je fais ta-ta-taaa très fort pour réveiller tout le monde. Qui suis-je ?',
         tip: 'Elle est dorée, et on appuie sur ses pistons.',
-        opts: [{ e:'🎺', ok:true }, { e:'🎸' }, { e:'🎹' }] },
+        opts: [{ e: '🎺', ok: true }, { e: '🎸' }, { e: '🎹' }],
+      },
     ],
     success: "Bravo ! La boîte à musique s'ouvre, l'orchestre se remet à jouer… et Grisou devient tout turquoise 🎶",
     reward: 14,
@@ -284,21 +353,28 @@ const STORY = {
     title: 'Le jardin endormi',
     intro: [
       "Chut… Bienvenue au Jardin des Fées 🌸 D'habitude, tout pousse ici : les fleurs sont plus grandes que des maisons !",
-      "Mais Grisou a posé le rêve « grandir et fleurir » sous une cloche de verre, et plus rien ne pousse.",
-      "Résous mes devinettes de jardin : chaque bonne réponse fait éclore une fleur !",
+      'Mais Grisou a posé le rêve « grandir et fleurir » sous une cloche de verre, et plus rien ne pousse.',
+      'Résous mes devinettes de jardin : chaque bonne réponse fait éclore une fleur !',
     ],
     riddles: [
-      { q: "Je suis toute petite, on me met dans la terre, et je deviens une plante. Qui suis-je ?",
-        tip: 'On l\'arrose, et elle germe.',
-        opts: [{ e:'🌱', ok:true }, { e:'🍎' }, { e:'🌻' }] },
-      { q: "Je suis rouge avec des points noirs, et je me pose sur les feuilles. Qui suis-je ?",
+      {
+        q: 'Je suis toute petite, on me met dans la terre, et je deviens une plante. Qui suis-je ?',
+        tip: "On l'arrose, et elle germe.",
+        opts: [{ e: '🌱', ok: true }, { e: '🍎' }, { e: '🌻' }],
+      },
+      {
+        q: 'Je suis rouge avec des points noirs, et je me pose sur les feuilles. Qui suis-je ?',
         tip: 'Elle a six pattes et des ailes cachées sous sa carapace.',
-        opts: [{ e:'🐞', ok:true }, { e:'🐌' }, { e:'🐛' }] },
-      { q: "Avant, j'étais une chenille. Maintenant, je vole avec de grandes ailes colorées. Qui suis-je ?",
+        opts: [{ e: '🐞', ok: true }, { e: '🐌' }, { e: '🐛' }],
+      },
+      {
+        q: "Avant, j'étais une chenille. Maintenant, je vole avec de grandes ailes colorées. Qui suis-je ?",
         tip: 'Il est sorti de sa chrysalide.',
-        opts: [{ e:'🦋', ok:true }, { e:'🐝' }, { e:'🐦' }] },
+        opts: [{ e: '🦋', ok: true }, { e: '🐝' }, { e: '🐦' }],
+      },
     ],
-    success: "Bravo ! La cloche de verre se soulève, le jardin refleurit… et Grisou est presque tout coloré : il ne lui manque plus que les couleurs des licornes 🌈",
+    success:
+      'Bravo ! La cloche de verre se soulève, le jardin refleurit… et Grisou est presque tout coloré : il ne lui manque plus que les couleurs des licornes 🌈',
     reward: 14,
   },
   // le grand final de la saison 2 suit la résolution de ce chapitre (finale.js)
@@ -307,21 +383,27 @@ const STORY = {
     title: 'Les couleurs du ciel',
     intro: [
       "Bienvenue au Royaume Arc-en-ciel 🦄 C'est d'ici que partent toutes les couleurs du ciel.",
-      "Mais Grisou a emporté mes couleurs, les toutes dernières, et mon royaume est devenu tout pâle.",
-      "Résous mes devinettes de couleurs : chaque bonne réponse rend une couleur au ciel !",
+      'Mais Grisou a emporté mes couleurs, les toutes dernières, et mon royaume est devenu tout pâle.',
+      'Résous mes devinettes de couleurs : chaque bonne réponse rend une couleur au ciel !',
     ],
     riddles: [
-      { q: "Je suis jaune, je brille dans le ciel, et je réchauffe tout le monde. Qui suis-je ?",
+      {
+        q: 'Je suis jaune, je brille dans le ciel, et je réchauffe tout le monde. Qui suis-je ?',
         tip: 'On le voit le jour, jamais la nuit.',
-        opts: [{ e:'☀️', ok:true }, { e:'🌙' }, { e:'⭐' }] },
-      { q: "J'ai toutes les couleurs, et j'apparais quand il y a du soleil et de la pluie en même temps. Qui suis-je ?",
+        opts: [{ e: '☀️', ok: true }, { e: '🌙' }, { e: '⭐' }],
+      },
+      {
+        q: "J'ai toutes les couleurs, et j'apparais quand il y a du soleil et de la pluie en même temps. Qui suis-je ?",
         tip: 'Je dessine un grand pont coloré dans le ciel.',
-        opts: [{ e:'🌈', ok:true }, { e:'☁️' }, { e:'⚡' }] },
-      { q: "Je suis toute rouge et ronde, et je pousse sur un arbre. Qui suis-je ?",
-        tip: 'Un fruit qu\'on croque, rouge ou vert.',
-        opts: [{ e:'🍎', ok:true }, { e:'🍌' }, { e:'🫐' }] },
+        opts: [{ e: '🌈', ok: true }, { e: '☁️' }, { e: '⚡' }],
+      },
+      {
+        q: 'Je suis toute rouge et ronde, et je pousse sur un arbre. Qui suis-je ?',
+        tip: "Un fruit qu'on croque, rouge ou vert.",
+        opts: [{ e: '🍎', ok: true }, { e: '🍌' }, { e: '🫐' }],
+      },
     ],
-    success: "Bravo ! Les couleurs reviennent dans tout le royaume… Regarde, Grisou arrive !",
+    success: 'Bravo ! Les couleurs reviennent dans tout le royaume… Regarde, Grisou arrive !',
     reward: 20,
   },
 };
@@ -333,41 +415,54 @@ const STORY_PROLOGUES = {
     guide: 'capucine',
     title: 'Les Rêves dans les boîtes',
     intro: [
-      "Bonjour ! Je suis Capucine, la directrice de la Fabrique de boîtes ☁️",
+      'Bonjour ! Je suis Capucine, la directrice de la Fabrique de boîtes ☁️',
       "Voici Grisou, un petit nuage. Il avait si peur de perdre les rêves colorés du ciel… qu'il les a tous enfermés dans des boîtes !",
-      "Depuis, le ciel est tout gris. Aide-nous à libérer les rêves, île après île !",
+      'Depuis, le ciel est tout gris. Aide-nous à libérer les rêves, île après île !',
     ],
   },
 };
 
 // Grisou reprend des couleurs à chaque île du Ciel libérée
-function skyIslandsFreed(){ return worldsOf(2).filter(storySolved).length; }
+function skyIslandsFreed() {
+  return worldsOf(2).filter(storySolved).length;
+}
 
-function storySolved(world){ return !!(state.storySolved && state.storySolved[world]); }
+function storySolved(world) {
+  return !!(state.storySolved && state.storySolved[world]);
+}
 
 // Relance programmée après une mauvaise réponse à une énigme : annulable
 // (mêmes raisons que `scheduleRetry` dans js/features/minigame-engine/engine.js et
 // `clearActiveTimer` pour le minuteur) — sinon une énigme en retard
 // pourrait réapparaître par-dessus une autre fenêtre déjà ouverte.
 let storyPendingRetry = null;
-function storyClearPendingRetry(){
-  if(storyPendingRetry){ clearTimeout(storyPendingRetry); storyPendingRetry = null; }
+function storyClearPendingRetry() {
+  if (storyPendingRetry) {
+    clearTimeout(storyPendingRetry);
+    storyPendingRetry = null;
+  }
 }
-function storyScheduleRetry(fn){
+function storyScheduleRetry(fn) {
   storyClearPendingRetry();
-  storyPendingRetry = setTimeout(()=>{ storyPendingRetry = null; fn(); }, 900);
+  storyPendingRetry = setTimeout(() => {
+    storyPendingRetry = null;
+    fn();
+  }, 900);
 }
 
 // Ouvre le chapitre d'une île : récit (une ligne à la fois), puis l'énigme
 // si elle n'a jamais été résolue. `onDone` est appelée une fois le
 // chapitre terminé (lu ou résolu) — utilisée pour enchaîner avec l'écran
 // habituel de nouvelle île (js/shared/ui.js `checkNewIsland`).
-function openStoryChapter(world, onDone){
-  if(!STORY[world]){ if(onDone) onDone(); return; }
+function openStoryChapter(world, onDone) {
+  if (!STORY[world]) {
+    if (onDone) onDone();
+    return;
+  }
   renderStoryIntro(world, 0, onDone);
 }
 
-function renderStoryIntro(world, idx, onDone){
+function renderStoryIntro(world, idx, onDone) {
   const ch = STORY[world];
   const last = idx >= ch.intro.length - 1;
   const line = ch.intro[idx];
@@ -385,20 +480,34 @@ function renderStoryIntro(world, idx, onDone){
   `);
   bindSpeakButtons();
   speak(line);
-  document.getElementById('story-next').onclick = ()=>{
+  document.getElementById('story-next').onclick = () => {
     playSound('tap');
-    if(!last){ renderStoryIntro(world, idx + 1, onDone); return; }
-    if(already){ closeModal(); if(onDone) onDone(); return; }
+    if (!last) {
+      renderStoryIntro(world, idx + 1, onDone);
+      return;
+    }
+    if (already) {
+      closeModal();
+      if (onDone) onDone();
+      return;
+    }
     renderStoryRiddle(world, 0, onDone);
   };
   const skip = document.getElementById('story-skip');
-  if(skip) skip.onclick = ()=>{ playSound('tap'); renderStoryIntro(world, ch.intro.length - 1, onDone); };
+  if (skip)
+    skip.onclick = () => {
+      playSound('tap');
+      renderStoryIntro(world, ch.intro.length - 1, onDone);
+    };
 }
 
 // Le prologue d'une saison (v55) : récit lu ligne à ligne, avec Grisou.
-function openSeasonPrologue(saison, onDone, idx){
+function openSeasonPrologue(saison, onDone, idx) {
   const pr = STORY_PROLOGUES[saison];
-  if(!pr){ if(onDone) onDone(); return; }
+  if (!pr) {
+    if (onDone) onDone();
+    return;
+  }
   idx = idx || 0;
   const last = idx >= pr.intro.length - 1;
   const line = pr.intro[idx];
@@ -413,52 +522,59 @@ function openSeasonPrologue(saison, onDone, idx){
   `);
   bindSpeakButtons();
   speak(line);
-  document.getElementById('story-next').onclick = ()=>{
+  document.getElementById('story-next').onclick = () => {
     playSound('tap');
-    if(!last){ openSeasonPrologue(saison, onDone, idx + 1); return; }
+    if (!last) {
+      openSeasonPrologue(saison, onDone, idx + 1);
+      return;
+    }
     closeModal();
-    if(onDone) onDone();
+    if (onDone) onDone();
   };
 }
 
-function renderStoryRiddle(world, idx, onDone){
+function renderStoryRiddle(world, idx, onDone) {
   const ch = STORY[world];
   const r = ch.riddles[idx % ch.riddles.length];
   const opts = shuffle(r.opts);
   openModal(`
     ${gameHeader('🔎 ' + ch.title, r.q, r.q)}
     <div class="story-options">
-      ${opts.map((o, i)=>`<button type="button" class="story-opt" data-i="${i}" aria-label="${o.e}">${o.e}</button>`).join('')}
+      ${opts.map((o, i) => `<button type="button" class="story-opt" data-i="${i}" aria-label="${o.e}">${o.e}</button>`).join('')}
     </div>
   `);
   bindQuit();
-  setHintQuestion('riddle', { r }, { choices:'.story-opt' });
-  document.querySelectorAll('.story-opt').forEach((el, i)=>{
-    el.onclick = ()=>{
+  setHintQuestion('riddle', { r }, { choices: '.story-opt' });
+  document.querySelectorAll('.story-opt').forEach((el, i) => {
+    el.onclick = () => {
       const o = opts[i];
-      if(o.ok){
+      if (o.ok) {
         storyWin(world, onDone);
       } else {
-        playSound('wrong'); vibrate(90); speakWrongHint();
-        hintNudge(true);   // le bouton 💡 se propose
+        playSound('wrong');
+        vibrate(90);
+        speakWrongHint();
+        hintNudge(true); // le bouton 💡 se propose
         shakeEl(el);
         el.classList.add('ko-flash');
         el.disabled = true;
-        setTimeout(()=> el.classList.remove('ko-flash'), 450);
+        setTimeout(() => el.classList.remove('ko-flash'), 450);
         // anti-devinette : une AUTRE énigme de l'île remplace celle-ci,
         // jamais les mêmes choix à éliminer un par un.
-        storyScheduleRetry(()=> renderStoryRiddle(world, idx + 1, onDone));
+        storyScheduleRetry(() => renderStoryRiddle(world, idx + 1, onDone));
       }
     };
   });
 }
 
-function storyWin(world, onDone){
+function storyWin(world, onDone) {
   const ch = STORY[world];
   state.storySolved = state.storySolved || {};
   state.storySolved[world] = true;
   save();
-  playSound('win'); confetti(); vibrate([60, 40, 120, 40, 160]);
+  playSound('win');
+  confetti();
+  vibrate([60, 40, 120, 40, 160]);
   addCoins(ch.reward);
   // v53 : une boîte surprise de la série de l'île (une seule fois par île)
   const box = addStorySquishyBox(world);
@@ -477,70 +593,103 @@ function storyWin(world, onDone){
     </div>
     <button class="btn-primary" id="story-continue">Continuer l'aventure ✨</button>
   `);
-  document.getElementById('story-continue').onclick = ()=>{
+  document.getElementById('story-continue').onclick = () => {
     playSound('tap');
     // le Royaume Arc-en-ciel : le grand final de la saison 2 suit son énigme (une seule fois)
-    if(world === 'licornes' && !state.season2Done){ openSeasonFinale(onDone); return; }
-    closeModal(); if(onDone) onDone();
+    if (world === 'licornes' && !state.season2Done) {
+      openSeasonFinale(onDone);
+      return;
+    }
+    closeModal();
+    if (onDone) onDone();
   };
 }
 
-function riddleHints(q){
+function riddleHints(q) {
   return [
-    { say:`Écoute encore la devinette, un indice après l'autre : ${q.r.q}`, fx:{ glow:'.puzzle-hint' } },
-    { say:q.r.tip, fx:{ glow:'.story-options' } },
+    { say: `Écoute encore la devinette, un indice après l'autre : ${q.r.q}`, fx: { glow: '.puzzle-hint' } },
+    { say: q.r.tip, fx: { glow: '.story-options' } },
   ];
 }
 registerHints('riddle', riddleHints);
 
 // « 📖 Mon histoire » : relire n'importe quel chapitre déjà débloqué, rangé
 // par saison (v55) : le Lagon Magique, puis le Ciel des Rêves.
-function storyChapterRow(id, i){
-  const ch = STORY[id]; if(!ch) return '';
+function storyChapterRow(id, i) {
+  const ch = STORY[id];
+  if (!ch) return '';
   const unlocked = worldUnlocked(id);
   const solved = storySolved(id);
   const eps = EPISODES[id] ? EPISODES[id] : [];
   const seen = episodesSeen(id);
   return `<button type="button" class="story-chap ${solved ? 'done' : ''} ${!unlocked ? 'locked' : ''}" data-world="${id}" ${!unlocked ? 'disabled' : ''}>
       <span class="story-chap-n">${i + 1}</span>
-      <span class="story-chap-ico">${!unlocked ? '🔒' : (solved ? '✅' : '📖')}</span>
+      <span class="story-chap-ico">${!unlocked ? '🔒' : solved ? '✅' : '📖'}</span>
       <span class="story-chap-title">${unlocked ? ch.title : '???'}</span>
     </button>
-    ${unlocked && eps.length ? `<div class="story-eps">${eps.map((ep, k)=> k < seen
-      ? `<button type="button" class="story-ep" data-ep="${id}:${k}" aria-label="Épisode ${k+1} : ${ep.title}"><span aria-hidden="true">${ep.find}</span> ${ep.title}</button>`
-      : `<span class="story-ep locked" aria-label="Épisode ${k+1} : à venir">🔒 Épisode ${k+1}</span>`).join('')}</div>` : ''}`;
+    ${
+      unlocked && eps.length
+        ? `<div class="story-eps">${eps
+            .map((ep, k) =>
+              k < seen
+                ? `<button type="button" class="story-ep" data-ep="${id}:${k}" aria-label="Épisode ${k + 1} : ${ep.title}"><span aria-hidden="true">${ep.find}</span> ${ep.title}</button>`
+                : `<span class="story-ep locked" aria-label="Épisode ${k + 1} : à venir">🔒 Épisode ${k + 1}</span>`,
+            )
+            .join('')}</div>`
+        : ''
+    }`;
 }
-function openStoryJournal(){
+function openStoryJournal() {
   openModal(`
     ${gameHeader('📖 Mon histoire', 'Le grand voyage du Lagon Magique', 'Le grand voyage du Lagon Magique')}
     <div class="story-journal">
-      ${ARCHIPELAGO_ORDER.map(saison=>{
-        const a = ARCHIPELAGOS[saison], open = archipelagoUnlocked(saison), pr = STORY_PROLOGUES[saison];
+      ${ARCHIPELAGO_ORDER.map((saison) => {
+        const a = ARCHIPELAGOS[saison],
+          open = archipelagoUnlocked(saison),
+          pr = STORY_PROLOGUES[saison];
         return `<section class="story-season ${a.sky ? 'sky' : ''}" data-saison="${saison}">
           <h3>${open ? a.emoji : '🔒'} ${saison === 1 ? 'Saison 1 : ' : ''}${a.name}${open ? '' : ` <small>(niveau ${a.level})</small>`}${saison === 2 && state.season2Done ? ' <span class="done">✅</span>' : ''}</h3>
-          ${pr && open ? `<button type="button" class="story-chap story-prologue" data-prologue="${saison}">
-            <span class="story-chap-n">☁️</span><span class="story-chap-ico">📜</span><span class="story-chap-title">${pr.title}</span></button>` : ''}
-          ${worldsOf(saison).map((id, i)=> storyChapterRow(id, i)).join('')}
-          ${saison === 2 && state.season2Done ? `<button type="button" class="story-chap story-prologue" data-finale>
-            <span class="story-chap-n">🌈</span><span class="story-chap-ico">☁️</span><span class="story-chap-title">Revoir le grand final</span></button>` : ''}
+          ${
+            pr && open
+              ? `<button type="button" class="story-chap story-prologue" data-prologue="${saison}">
+            <span class="story-chap-n">☁️</span><span class="story-chap-ico">📜</span><span class="story-chap-title">${pr.title}</span></button>`
+              : ''
+          }
+          ${worldsOf(saison)
+            .map((id, i) => storyChapterRow(id, i))
+            .join('')}
+          ${
+            saison === 2 && state.season2Done
+              ? `<button type="button" class="story-chap story-prologue" data-finale>
+            <span class="story-chap-n">🌈</span><span class="story-chap-ico">☁️</span><span class="story-chap-title">Revoir le grand final</span></button>`
+              : ''
+          }
         </section>`;
       }).join('')}
     </div>
   `);
   bindQuit();
-  document.querySelectorAll('.story-chap[data-world]').forEach(b=>{
-    b.onclick = ()=>{
-      playSound('tap'); closeModal();
-      setTimeout(()=> openStoryChapter(b.dataset.world), 200);
+  document.querySelectorAll('.story-chap[data-world]').forEach((b) => {
+    b.onclick = () => {
+      playSound('tap');
+      closeModal();
+      setTimeout(() => openStoryChapter(b.dataset.world), 200);
     };
   });
   const fin = document.querySelector('[data-finale]');
-  if(fin) fin.onclick = ()=>{ playSound('tap'); openSeasonFinale(openStoryJournal, { replay:true }); };
-  document.querySelectorAll('[data-prologue]').forEach(b=>{
-    b.onclick = ()=>{ playSound('tap'); openSeasonPrologue(Number(b.dataset.prologue), openStoryJournal); };
+  if (fin)
+    fin.onclick = () => {
+      playSound('tap');
+      openSeasonFinale(openStoryJournal, { replay: true });
+    };
+  document.querySelectorAll('[data-prologue]').forEach((b) => {
+    b.onclick = () => {
+      playSound('tap');
+      openSeasonPrologue(Number(b.dataset.prologue), openStoryJournal);
+    };
   });
-  document.querySelectorAll('[data-ep]').forEach(b=>{
-    b.onclick = ()=>{
+  document.querySelectorAll('[data-ep]').forEach((b) => {
+    b.onclick = () => {
       playSound('tap');
       const [w, k] = b.dataset.ep.split(':');
       openEpisode(w, Number(k), 0, false);
@@ -553,6 +702,4 @@ function openStoryJournal(){
 // mini-jeux)
 onModalChange(storyClearPendingRetry);
 
-export {
-  openSeasonPrologue, openStoryChapter, openStoryJournal, skyIslandsFreed, STORY, STORY_PROLOGUES, storySolved
-};
+export { openSeasonPrologue, openStoryChapter, openStoryJournal, skyIslandsFreed, STORY, STORY_PROLOGUES, storySolved };

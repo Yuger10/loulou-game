@@ -7,7 +7,9 @@
    pluriel (plus difficile à repérer) apparaît souvent — voir
    js/entities/difficulty/difficulty.js (determinantsImageShown/PluralChance/ExtraDistractor). */
 import {
-  determinantsExtraDistractor, determinantsImageShown, determinantsPluralChance
+  determinantsExtraDistractor,
+  determinantsImageShown,
+  determinantsPluralChance,
 } from '../../../entities/difficulty/index.js';
 import { WORDS_CP } from '../../../entities/words/index.js';
 import { pickRandom, shuffle } from '../../../shared/lib/index.js';
@@ -15,17 +17,26 @@ import { openModal } from '../../../shared/ui/index.js';
 import { gameDiff } from '../../adaptive/index.js';
 import { registerHints, setHintQuestion } from '../../hints/index.js';
 import {
-  clearActiveTimer, flashModal, livesBar, loseLife, onMissionWin, registerGame, setSolution,
-  setupLives, solSel, startTimerIfNeeded, stepOk
+  clearActiveTimer,
+  flashModal,
+  livesBar,
+  loseLife,
+  onMissionWin,
+  registerGame,
+  setSolution,
+  setupLives,
+  solSel,
+  startTimerIfNeeded,
+  stepOk,
 } from '../../minigame-engine/index.js';
 import { bindQuit, gameHeader } from '../../screen/index.js';
 
 const DET_FAMILIES = {
-  defini:   { m:'le',  f:'la',  p:'les' },
-  indefini: { m:'un',  f:'une', p:'des' },
+  defini: { m: 'le', f: 'la', p: 'les' },
+  indefini: { m: 'un', f: 'une', p: 'des' },
 };
 
-function renderDeterminants(){
+function renderDeterminants() {
   setupLives('determinants');
   const dd = gameDiff();
   const family = Math.random() < 0.5 ? 'defini' : 'indefini';
@@ -38,34 +49,38 @@ function renderDeterminants(){
   // les 3 déterminants de la même famille, toujours tous proposés
   let options = [dets.m, dets.f, dets.p];
   // paliers élevés : un intrus de l'autre famille, pour forcer à vraiment lire
-  if(determinantsExtraDistractor(dd)){
-    const otherFamily = DET_FAMILIES[family==='defini' ? 'indefini' : 'defini'];
+  if (determinantsExtraDistractor(dd)) {
+    const otherFamily = DET_FAMILIES[family === 'defini' ? 'indefini' : 'defini'];
     options.push(otherFamily[plural ? 'p' : noun.gender]);
   }
   options = shuffle([...new Set(options)]);
 
   const showImage = determinantsImageShown(dd);
-  const title = family==='defini' ? '🔤 "le", "la" ou "les" ?' : '🔤 "un", "une" ou "des" ?';
+  const title = family === 'defini' ? '🔤 "le", "la" ou "les" ?' : '🔤 "un", "une" ou "des" ?';
 
   openModal(`
     ${gameHeader(title, `Quel petit mot va avec « ${shown} » ?`, `Quel petit mot va avec le mot ${shown} ?`)}
     ${livesBar()}
     <div class="det-box">
-      ${showImage ? `<span class="det-emoji">${plural ? noun.emoji+noun.emoji : noun.emoji}</span>` : ''}
+      ${showImage ? `<span class="det-emoji">${plural ? noun.emoji + noun.emoji : noun.emoji}</span>` : ''}
       <span class="det-noun">${shown}</span>
     </div>
     <div class="det-options">
-      ${options.map(o=>`<button type="button" class="det-btn" data-v="${o}">${o}</button>`).join('')}
+      ${options.map((o) => `<button type="button" class="det-btn" data-v="${o}">${o}</button>`).join('')}
     </div>
   `);
   bindQuit();
   startTimerIfNeeded('determinants');
-  setSolution([solSel('.det-btn','v',answer)]);
-  setHintQuestion('determinants', { noun, plural, shown, family, answer, options }, { choices:'.det-btn' });
-  document.querySelectorAll('.det-btn').forEach(btn=>{
-    btn.onclick = ()=>{
-      if(btn.dataset.v===answer){ clearActiveTimer(); stepOk(btn); flashModal('ok'); setTimeout(onMissionWin, 350); }
-      else loseLife(btn, { onRetry: renderDeterminants });
+  setSolution([solSel('.det-btn', 'v', answer)]);
+  setHintQuestion('determinants', { noun, plural, shown, family, answer, options }, { choices: '.det-btn' });
+  document.querySelectorAll('.det-btn').forEach((btn) => {
+    btn.onclick = () => {
+      if (btn.dataset.v === answer) {
+        clearActiveTimer();
+        stepOk(btn);
+        flashModal('ok');
+        setTimeout(onMissionWin, 350);
+      } else loseLife(btn, { onRetry: renderDeterminants });
     };
   });
 }
@@ -73,16 +88,29 @@ function renderDeterminants(){
 // Indices (v52) : 1. un seul ou plusieurs ? ; 2. la marque du pluriel
 // montrée, ou « un … / une … » à dire dans sa tête pour entendre le genre.
 // Avec 4 choix, l'intrus de l'autre famille peut être écarté.
-function determinantsHints(q){
-  const intrus = q.options.find(o=> !Object.values(DET_FAMILIES[q.family]).includes(o));
+function determinantsHints(q) {
+  const intrus = q.options.find((o) => !Object.values(DET_FAMILIES[q.family]).includes(o));
   const end = q.shown.slice(-1);
   const two = q.plural
-    ? { say:'Il y en a plusieurs : regarde la petite lettre muette à la fin du mot. Le petit mot doit dire « plusieurs » lui aussi.',
-        fx:{ html: /[sx]$/.test(q.shown) ? `<span class="hint-syl">${q.shown.slice(0, -1)}<b>${end}</b></span>` : `<span class="hint-syl">${q.shown}</span>`, glow:'.det-noun' } }
-    : { say:`Il n'y en a qu'un. Dis dans ta tête « un ${q.noun.word} » puis « une ${q.noun.word} » : lequel sonne bien ?`, fx:{ glow:'.det-noun' } };
-  if(intrus) two.fx.dim = solSel('.det-btn', 'v', intrus);
+    ? {
+        say: 'Il y en a plusieurs : regarde la petite lettre muette à la fin du mot. Le petit mot doit dire « plusieurs » lui aussi.',
+        fx: {
+          html: /[sx]$/.test(q.shown)
+            ? `<span class="hint-syl">${q.shown.slice(0, -1)}<b>${end}</b></span>`
+            : `<span class="hint-syl">${q.shown}</span>`,
+          glow: '.det-noun',
+        },
+      }
+    : {
+        say: `Il n'y en a qu'un. Dis dans ta tête « un ${q.noun.word} » puis « une ${q.noun.word} » : lequel sonne bien ?`,
+        fx: { glow: '.det-noun' },
+      };
+  if (intrus) two.fx.dim = solSel('.det-btn', 'v', intrus);
   return [
-    { say:`Regarde bien le mot « ${q.shown} » : est-ce qu'il y en a un seul, ou plusieurs ?`, fx:{ glow:'.det-box' } },
+    {
+      say: `Regarde bien le mot « ${q.shown} » : est-ce qu'il y en a un seul, ou plusieurs ?`,
+      fx: { glow: '.det-box' },
+    },
     two,
   ];
 }

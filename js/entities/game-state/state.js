@@ -24,27 +24,27 @@ const DEFAULT_STATE = {
   quests: null,
   albumReward: false,
   visited: [],
-  gameCounts: {},     // nombre de fois jouées, par type de mini-jeu (pour forcer la variété)
-  storySolved: {},     // énigmes d'histoire déjà résolues, par île (js/features/story/story.js)
-  skills: {},         // réussites et erreurs par mini-jeu (espace parents)
-  playTime: {},       // secondes de jeu actif, par jour (espace parents)
-  pauseExtra: null,   // minutes ajoutées aujourd'hui par un adulte { date, min }
-  wardrobe: [],       // objets de la garde-robe achetés (js/features/wardrobe/wardrobe.js)
-  look: { tete:null, visage:null, tenue:null, cape:null },   // ce que porte l'avatar
-  seasonGifts: {},    // cadeaux de saison reçus, ex. { 'noel-2026': true } (js/features/seasons/seasons.js)
-  music: false,       // musique d'ambiance (js/features/music/music.js), coupée par défaut
-  soundVolume: 80,    // volume général des sons et de la musique, 0 à 100 (js/shared/ui/sound.js)
-  restLog: {},        // pauses par jour : { at, activity, skipped, attempts } (js/features/rest)
-  restRecall: null,   // dernier jour où le compagnon a rappelé l'activité de la veille
-  storyMissions: {},  // missions réussies par île, pour les épisodes (js/features/story/episodes.js)
-  storyEpisodes: {},  // épisodes déjà vus, par île
-  friends: {},        // points d'amitié par personnage (cadeaux, js/features/gifts/gifts.js)
-  friendRewards: {},  // surprise de « meilleur ami » déjà donnée, par personnage
-  team: { open:false, met:[], mates:[], day:null },   // l'équipe des compagnons (js/features/companion-team, v52)
-  charsHelped: {},    // personnages déjà aidés au moins une fois (Sam le guide, v52)
-  squishies: squishyFreshState(),   // la collection de squishies (js/features/squishies, v53)
-  skyIntroSeen: false,  // l'ouverture du Ciel des Rêves (saison 2, v55) déjà montrée
-  season2Done: false,   // le grand final de la saison 2 (Royaume Arc-en-ciel) déjà joué
+  gameCounts: {}, // nombre de fois jouées, par type de mini-jeu (pour forcer la variété)
+  storySolved: {}, // énigmes d'histoire déjà résolues, par île (js/features/story/story.js)
+  skills: {}, // réussites et erreurs par mini-jeu (espace parents)
+  playTime: {}, // secondes de jeu actif, par jour (espace parents)
+  pauseExtra: null, // minutes ajoutées aujourd'hui par un adulte { date, min }
+  wardrobe: [], // objets de la garde-robe achetés (js/features/wardrobe/wardrobe.js)
+  look: { tete: null, visage: null, tenue: null, cape: null }, // ce que porte l'avatar
+  seasonGifts: {}, // cadeaux de saison reçus, ex. { 'noel-2026': true } (js/features/seasons/seasons.js)
+  music: false, // musique d'ambiance (js/features/music/music.js), coupée par défaut
+  soundVolume: 80, // volume général des sons et de la musique, 0 à 100 (js/shared/ui/sound.js)
+  restLog: {}, // pauses par jour : { at, activity, skipped, attempts } (js/features/rest)
+  restRecall: null, // dernier jour où le compagnon a rappelé l'activité de la veille
+  storyMissions: {}, // missions réussies par île, pour les épisodes (js/features/story/episodes.js)
+  storyEpisodes: {}, // épisodes déjà vus, par île
+  friends: {}, // points d'amitié par personnage (cadeaux, js/features/gifts/gifts.js)
+  friendRewards: {}, // surprise de « meilleur ami » déjà donnée, par personnage
+  team: { open: false, met: [], mates: [], day: null }, // l'équipe des compagnons (js/features/companion-team, v52)
+  charsHelped: {}, // personnages déjà aidés au moins une fois (Sam le guide, v52)
+  squishies: squishyFreshState(), // la collection de squishies (js/features/squishies, v53)
+  skyIntroSeen: false, // l'ouverture du Ciel des Rêves (saison 2, v55) déjà montrée
+  season2Done: false, // le grand final de la saison 2 (Royaume Arc-en-ciel) déjà joué
 };
 
 /* La collection de squishies (v53) : état neuf.
@@ -60,13 +60,24 @@ const DEFAULT_STATE = {
      hello      la chambre a déjà été annoncée (première ouverture)
      treasures  les squishies uniques (case « Trésors »), jamais dans les boîtes :
                 ✨ Grisou arc-en-ciel, donné par le grand final de la saison 2 */
-function squishyFreshState(){
-  return { owned:{}, boxes:[], shelf:Array(12).fill(null), dry:0, done:{}, fromStory:{}, day:null, sorted:0, hello:false, treasures:[] };
+function squishyFreshState() {
+  return {
+    owned: {},
+    boxes: [],
+    shelf: Array(12).fill(null),
+    dry: 0,
+    done: {},
+    fromStory: {},
+    day: null,
+    sorted: 0,
+    hello: false,
+    treasures: [],
+  };
 }
 
 // copie profonde : sinon inventory/seen/decos seraient partagés avec DEFAULT_STATE
-function freshState(extra){
-  return Object.assign(JSON.parse(JSON.stringify(DEFAULT_STATE)), extra||{});
+function freshState(extra) {
+  return Object.assign(JSON.parse(JSON.stringify(DEFAULT_STATE)), extra || {});
 }
 
 let state = {
@@ -80,17 +91,17 @@ let state = {
   decos: [],
   name: '',
   avatar: '👧',
-  seen: {},           // objets déjà découverts (album)
-  quests: null,       // quêtes du jour { date, list:[{type,target,goal,done,n}], claimed }
+  seen: {}, // objets déjà découverts (album)
+  quests: null, // quêtes du jour { date, list:[{type,target,goal,done,n}], claimed }
   albumReward: false, // récompense d'album complet déjà donnée
-  visited: [],        // îles déjà découvertes (pour annoncer les nouvelles)
-  gameCounts: {},     // nombre de fois jouées, par type de mini-jeu
-  storySolved: {},    // énigmes d'histoire déjà résolues, par île
+  visited: [], // îles déjà découvertes (pour annoncer les nouvelles)
+  gameCounts: {}, // nombre de fois jouées, par type de mini-jeu
+  storySolved: {}, // énigmes d'histoire déjà résolues, par île
   skills: {},
   playTime: {},
   pauseExtra: null,
   wardrobe: [],
-  look: { tete:null, visage:null, tenue:null, cape:null },
+  look: { tete: null, visage: null, tenue: null, cape: null },
   seasonGifts: {},
   music: false,
   soundVolume: 80,
@@ -100,7 +111,7 @@ let state = {
   storyEpisodes: {},
   friends: {},
   friendRewards: {},
-  team: { open:false, met:[], mates:[], day:null },
+  team: { open: false, met: [], mates: [], day: null },
   charsHelped: {},
   squishies: squishyFreshState(),
   skyIntroSeen: false,
@@ -111,20 +122,22 @@ let state = {
    au-dessus) y branche sa clé, et ce qu'il faut faire après chaque
    sauvegarde (recopier prénom et avatar dans sa fiche) et chaque chargement
    (corriger un ancien avatar). Sans joueur : l'ancienne clé unique. */
-const saveSlot = { key: ()=> SAVE_KEY, afterSave: ()=>{}, afterLoad: ()=>{} };
-function setSaveSlot(slot){ Object.assign(saveSlot, slot); }
+const saveSlot = { key: () => SAVE_KEY, afterSave: () => {}, afterLoad: () => {} };
+function setSaveSlot(slot) {
+  Object.assign(saveSlot, slot);
+}
 
-function save(){
-  try{
+function save() {
+  try {
     localStorage.setItem(saveSlot.key(), JSON.stringify(state));
     saveSlot.afterSave();
-  }catch{}
+  } catch {}
 }
 
 // Migre une sauvegarde d'une ancienne version vers la structure courante
-function migrate(saved){
+function migrate(saved) {
   const v = saved.v || 0;
-  if(v < 1){
+  if (v < 1) {
     // v0 (jeu v1→v3) : ni profil, ni album, ni quêtes
     saved.name = saved.name || '';
     saved.avatar = saved.avatar || '👧';
@@ -134,83 +147,94 @@ function migrate(saved){
     saved.visited = saved.visited || [];
     saved.decos = saved.decos || [];
   }
-  if(v < 2){
+  if (v < 2) {
     saved.gameCounts = saved.gameCounts || {};
   }
-  if(v < 3){
+  if (v < 3) {
     saved.storySolved = saved.storySolved || {};
   }
-  if(v < 4){
+  if (v < 4) {
     // v52 : l'équipe des compagnons (fermée : une partie déjà au niveau 10
     // verra l'écran d'ouverture au chargement) et le compteur d'indices
-    saved.team = saved.team || { open:false, met:[], mates:[], day:null };
+    saved.team = saved.team || { open: false, met: [], mates: [], day: null };
     saved.charsHelped = saved.charsHelped || {};
-    Object.values(saved.skills || {}).forEach(sk=>{ if(sk && sk.hints == null) sk.hints = 0; });
+    Object.values(saved.skills || {}).forEach((sk) => {
+      if (sk && sk.hints == null) sk.hints = 0;
+    });
   }
-  if(v < 5){
+  if (v < 5) {
     // v53 : la collection de squishies. Rattrapage : une boîte (de la série
     // de l'île) par énigme d'histoire déjà résolue, à ouvrir.
     const sq = saved.squishies || squishyFreshState();
-    Object.keys(saved.storySolved || {}).filter(w=> saved.storySolved[w]).forEach(w=>{
-      if(sq.fromStory[w]) return;
-      sq.fromStory[w] = true;
-      sq.boxes.push(SQUISHY_ISLAND_SERIES[w] || null);
-    });
+    Object.keys(saved.storySolved || {})
+      .filter((w) => saved.storySolved[w])
+      .forEach((w) => {
+        if (sq.fromStory[w]) return;
+        sq.fromStory[w] = true;
+        sq.boxes.push(SQUISHY_ISLAND_SERIES[w] || null);
+      });
     saved.squishies = sq;
   }
-  if(v < 6){
+  if (v < 6) {
     // v55 : le Ciel des Rêves. Une partie qui a déjà son niveau d'ouverture le verra
     // s'ouvrir au prochain lancement (écran d'ouverture, prologue, chapitre).
     // Les îles visitées (state.visited) couvrent les deux archipels.
     saved.skyIntroSeen = false;
   }
-  if(v < 7){
+  if (v < 7) {
     // v56 : les nouveaux sons : un volume général par joueur, 80 % par défaut
-    if(typeof saved.soundVolume !== 'number') saved.soundVolume = 80;
+    if (typeof saved.soundVolume !== 'number') saved.soundVolume = 80;
   }
-  if(v < 8){
+  if (v < 8) {
     // une pause qui tient : le journal des pauses (activité choisie, tentatives)
-    if(!saved.restLog || typeof saved.restLog !== 'object') saved.restLog = {};
-    if(saved.restRecall === undefined) saved.restRecall = null;
+    if (!saved.restLog || typeof saved.restLog !== 'object') saved.restLog = {};
+    if (saved.restRecall === undefined) saved.restRecall = null;
   }
-  if(v < 9){
+  if (v < 9) {
     // le Royaume Arc-en-ciel : le grand final de la saison 2 (une fois), et la
     // case « Trésors » de la chambre à squishies
     saved.season2Done = false;
-    if(saved.squishies && !Array.isArray(saved.squishies.treasures)) saved.squishies.treasures = [];
+    if (saved.squishies && !Array.isArray(saved.squishies.treasures)) saved.squishies.treasures = [];
   }
   saved.v = SAVE_VERSION;
   return saved;
 }
 
-function load(){
-  try{
+function load() {
+  try {
     const key = saveSlot.key();
     const raw = localStorage.getItem(key);
-    if(!raw){ state = freshState(); return; }
+    if (!raw) {
+      state = freshState();
+      return;
+    }
     const saved = migrate(JSON.parse(raw));
     // ne garde que les clés connues : une sauvegarde ancienne ou corrompue ne casse pas le jeu
     // (une clé absente garde la valeur par défaut de freshState, qui est une
     // COPIE : sinon deux joueurs partageraient le même objet, ex. skills)
     const clean = {};
-    Object.keys(DEFAULT_STATE).forEach(k=>{
-      if((saved[k] !== undefined && saved[k] !== null) || k==='quests') clean[k] = saved[k];
+    Object.keys(DEFAULT_STATE).forEach((k) => {
+      if ((saved[k] !== undefined && saved[k] !== null) || k === 'quests') clean[k] = saved[k];
     });
     state = freshState(clean);
     saveSlot.afterLoad(state);
     save();
-  }catch(e){
+  } catch (e) {
     console.warn('Sauvegarde illisible, on repart à zéro', e);
   }
 }
 
 // Remplacer toute la partie (nouveau joueur) : seul ce fichier réaffecte `state`
-function replaceState(next){ state = next; }
+function replaceState(next) {
+  state = next;
+}
 
-function resetState(){
+function resetState() {
   state = freshState({
-    sound: state.sound, voice: state.voice,
-    name: state.name, avatar: state.avatar,
+    sound: state.sound,
+    voice: state.voice,
+    name: state.name,
+    avatar: state.avatar,
   });
   save();
 }
@@ -218,10 +242,12 @@ function resetState(){
 // Compteur de défis joués, par joueur (stocké dans sa sauvegarde) : permet
 // de proposer en priorité les types de mini-jeux les moins essayés, pour
 // que chaque joueur finisse par toutes les découvrir.
-function gameCount(key){ return (state.gameCounts && state.gameCounts[key]) || 0; }
+function gameCount(key) {
+  return (state.gameCounts && state.gameCounts[key]) || 0;
+}
 
-function trackGamePlayed(key){
-  if(!state.gameCounts) state.gameCounts = {};
+function trackGamePlayed(key) {
+  if (!state.gameCounts) state.gameCounts = {};
   state.gameCounts[key] = gameCount(key) + 1;
   save();
 }
@@ -231,23 +257,50 @@ function trackGamePlayed(key){
    WORLDS (js/entities/world) ; le tableau de référence est conductor/niveaux.md.
    Ces fonctions sont les seules à faire le calcul (niveau, missions qui
    restent), pour que la carte, l'île et les profils disent la même chose. */
-function levelOf(missions){ return 1 + Math.floor((Number(missions) || 0) / MISSIONS_PER_LEVEL); }
+function levelOf(missions) {
+  return 1 + Math.floor((Number(missions) || 0) / MISSIONS_PER_LEVEL);
+}
 // missions réussies qu'il faut pour atteindre le niveau `lvl`
-function missionsForLevel(lvl){ return (Math.max(1, lvl) - 1) * MISSIONS_PER_LEVEL; }
+function missionsForLevel(lvl) {
+  return (Math.max(1, lvl) - 1) * MISSIONS_PER_LEVEL;
+}
 // missions qu'il reste à réussir pour atteindre le niveau `lvl` (0 si atteint)
-function missionsUntil(lvl){ return Math.max(0, missionsForLevel(lvl) - state.missions); }
+function missionsUntil(lvl) {
+  return Math.max(0, missionsForLevel(lvl) - state.missions);
+}
 
-function level(){ return levelOf(state.missions); }
+function level() {
+  return levelOf(state.missions);
+}
 
-function levelProgress(){ return (state.missions % MISSIONS_PER_LEVEL) / MISSIONS_PER_LEVEL; }
+function levelProgress() {
+  return (state.missions % MISSIONS_PER_LEVEL) / MISSIONS_PER_LEVEL;
+}
 
 // le son et la voix (js/shared/ui) lisent les réglages du joueur courant
-setAudioPrefsSource(()=> state);
+setAudioPrefsSource(() => state);
 
 /* ---------- Profil (prénom + avatar) ---------- */
-function hello(){ return state.name ? state.name : ''; }
+function hello() {
+  return state.name ? state.name : '';
+}
 
 export {
-  freshState, gameCount, hello, level, levelOf, levelProgress, load, missionsForLevel, MISSIONS_PER_LEVEL,
-  missionsUntil, replaceState, resetState, save, setSaveSlot, squishyFreshState, state, trackGamePlayed
+  freshState,
+  gameCount,
+  hello,
+  level,
+  levelOf,
+  levelProgress,
+  load,
+  missionsForLevel,
+  MISSIONS_PER_LEVEL,
+  missionsUntil,
+  replaceState,
+  resetState,
+  save,
+  setSaveSlot,
+  squishyFreshState,
+  state,
+  trackGamePlayed,
 };

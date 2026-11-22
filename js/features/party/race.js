@@ -2,68 +2,80 @@
 import { avatarHTML } from '../../entities/companion/index.js';
 import { ageLabel, ageToDiff } from '../../entities/difficulty/index.js';
 import {
-  party, profiles, race, RACE_STEPS, raceCurrent, setParty, setRace, switchProfile
+  party,
+  profiles,
+  race,
+  RACE_STEPS,
+  raceCurrent,
+  setParty,
+  setRace,
+  switchProfile,
 } from '../../entities/player/index.js';
 import { emit } from '../../shared/lib/index.js';
-import {
-  closeModal, confetti, openModal, playSound, showToast, speak, vibrate
-} from '../../shared/ui/index.js';
+import { closeModal, confetti, openModal, playSound, showToast, speak, vibrate } from '../../shared/ui/index.js';
 import { gameDiffIsland } from '../adaptive/index.js';
 import { queueGain } from '../gains/index.js';
 import { addCoins } from '../wallet/index.js';
 import { renderTurnBar } from './party.js';
 
-const RACE_PRIZE = 50;       // pièces pour le vainqueur
+const RACE_PRIZE = 50; // pièces pour le vainqueur
 
-function startRace(ids){
-  if(ids.length < 2) return false;
-  setRace({ active:true, players:ids.slice(), pos:{}, turn:0, goal:RACE_STEPS, winner:null, rounds:0 });
-  ids.forEach(id=> race.pos[id] = 0);
+function startRace(ids) {
+  if (ids.length < 2) return false;
+  setRace({ active: true, players: ids.slice(), pos: {}, turn: 0, goal: RACE_STEPS, winner: null, rounds: 0 });
+  ids.forEach((id) => (race.pos[id] = 0));
   // la course réutilise la mécanique de tour par tour
-  setParty({ active:true, mode:'race', players:ids.slice(), turn:0, scores:{}, lastWinner:null });
-  ids.forEach(id=> party.scores[id] = 0);
+  setParty({ active: true, mode: 'race', players: ids.slice(), turn: 0, scores: {}, lastWinner: null });
+  ids.forEach((id) => (party.scores[id] = 0));
   switchProfile(ids[0], true);
   renderTurnBar();
   renderRaceTrack();
-  playSound('win'); confetti();
+  playSound('win');
+  confetti();
   const p = raceCurrent();
   speak(`La course commence ! Premier arrivé à ${RACE_STEPS} cases gagne. ${p.name || ''} commence.`);
   showToast(`🏁 La course commence !`);
   return true;
 }
 
-function stopRace(silent){
+function stopRace(silent) {
   race.active = false;
-  party.active = false; party.mode = null;
+  party.active = false;
+  party.mode = null;
   renderTurnBar();
   renderRaceTrack();
-  if(!silent){ showToast('👤 Mode solo'); speak('Course terminée.'); }
+  if (!silent) {
+    showToast('👤 Mode solo');
+    speak('Course terminée.');
+  }
 }
 
 // avance le joueur courant d'une case (mini-jeu réussi)
-function raceAdvance(){
-  if(!race.active) return false;
+function raceAdvance() {
+  if (!race.active) return false;
   const p = raceCurrent();
-  if(!p) return false;
-  race.pos[p.id] = Math.min(race.goal, (race.pos[p.id]||0) + 1);
+  if (!p) return false;
+  race.pos[p.id] = Math.min(race.goal, (race.pos[p.id] || 0) + 1);
   renderRaceTrack();
-  if(race.pos[p.id] >= race.goal){
+  if (race.pos[p.id] >= race.goal) {
     raceWin(p);
     return true;
   }
   return false;
 }
 
-function raceWin(p){
+function raceWin(p) {
   race.winner = p.id;
   race.active = false;
   const wasCurrent = profiles.current === p.id;
-  if(!wasCurrent) switchProfile(p.id, true);
+  if (!wasCurrent) switchProfile(p.id, true);
   addCoins(RACE_PRIZE);
-  playSound('win'); confetti(); vibrate([80,50,80,50,220]);
+  playSound('win');
+  confetti();
+  vibrate([80, 50, 80, 50, 220]);
   const classement = race.players
-    .map(id=>({ p: profiles.list.find(x=>x.id===id), n: race.pos[id]||0 }))
-    .sort((a,b)=>b.n-a.n);
+    .map((id) => ({ p: profiles.list.find((x) => x.id === id), n: race.pos[id] || 0 }))
+    .sort((a, b) => b.n - a.n);
   speak(`Bravo ${p.name || ''} ! Tu gagnes la course et ${RACE_PRIZE} pièces !`);
   openModal(`
     <div class="reward-box">
@@ -74,59 +86,84 @@ function raceWin(p){
         <span><strong>+${RACE_PRIZE} pièces</strong> <span data-gain-coins>🪙</span></span>
       </div>
       <div class="race-results">
-        ${classement.map((r,i)=>`<div class="race-result">
-          <span class="medal">${['🥇','🥈','🥉'][i]||'🏅'}</span>
+        ${classement
+          .map(
+            (r, i) => `<div class="race-result">
+          <span class="medal">${['🥇', '🥈', '🥉'][i] || '🏅'}</span>
           <span class="av">${avatarHTML(r.p.avatar, r.p.look)}</span>
           <span class="nm">${r.p.name || 'Joueur'}</span>
           <span class="sc">${r.n}/${race.goal}</span>
-        </div>`).join('')}
+        </div>`,
+          )
+          .join('')}
       </div>
     </div>
     <button class="btn-primary" id="race-again">🔁 Refaire une course</button>
     <button class="btn-ghost" id="race-done">Terminer</button>
   `);
-  queueGain({ coins:RACE_PRIZE });
-  document.getElementById('race-again').onclick = ()=>{
-    playSound('tap'); closeModal(); startRace(race.players);
+  queueGain({ coins: RACE_PRIZE });
+  document.getElementById('race-again').onclick = () => {
+    playSound('tap');
+    closeModal();
+    startRace(race.players);
   };
-  document.getElementById('race-done').onclick = ()=>{
-    playSound('tap'); closeModal(); stopRace(true); emit('ui:lagon');
+  document.getElementById('race-done').onclick = () => {
+    playSound('tap');
+    closeModal();
+    stopRace(true);
+    emit('ui:lagon');
   };
-  party.active = false; party.mode = null;
+  party.active = false;
+  party.mode = null;
   renderTurnBar();
   renderRaceTrack();
 }
 
 /* --- Piste de course affichée sur l'écran principal --- */
-function renderRaceTrack(){
+function renderRaceTrack() {
   const el = document.getElementById('race-track');
-  if(!el) return;
-  if(!race.active && !race.winner){ el.hidden = true; el.innerHTML = ''; return; }
-  if(!race.active && race.winner){ el.hidden = true; el.innerHTML = ''; return; }
+  if (!el) return;
+  if (!race.active && !race.winner) {
+    el.hidden = true;
+    el.innerHTML = '';
+    return;
+  }
+  if (!race.active && race.winner) {
+    el.hidden = true;
+    el.innerHTML = '';
+    return;
+  }
   el.hidden = false;
   const cur = raceCurrent();
   el.innerHTML = `
     <div class="race-head">🏁 Course : premier à ${race.goal} cases !
       <button class="turn-stop" id="race-stop">✖️</button>
     </div>
-    ${race.players.map(id=>{
-      const p = profiles.list.find(x=>x.id===id);
-      const n = race.pos[id]||0;
-      const here = cur && cur.id===id;
-      return `<div class="race-lane ${here?'active':''}">
+    ${race.players
+      .map((id) => {
+        const p = profiles.list.find((x) => x.id === id);
+        const n = race.pos[id] || 0;
+        const here = cur && cur.id === id;
+        return `<div class="race-lane ${here ? 'active' : ''}">
         <span class="lane-av">${avatarHTML(p.avatar, p.look)}</span>
-        <span class="lane-name">${p.name || 'Joueur'}<small>${ageLabel(p.age)} · ${'⭐'.repeat(ageToDiff(p.age)||1)}</small></span>
+        <span class="lane-name">${p.name || 'Joueur'}<small>${ageLabel(p.age)} · ${'⭐'.repeat(ageToDiff(p.age) || 1)}</small></span>
         <span class="lane-track">
-          ${Array.from({length:race.goal},(_,i)=>`<i class="${i<n?'on':''}"></i>`).join('')}
-          <span class="lane-boat" style="left:calc(${(n/race.goal)*100}% - 10px)">⛵</span>
+          ${Array.from({ length: race.goal }, (_, i) => `<i class="${i < n ? 'on' : ''}"></i>`).join('')}
+          <span class="lane-boat" style="left:calc(${(n / race.goal) * 100}% - 10px)">⛵</span>
         </span>
         <span class="lane-score">${n}/${race.goal}</span>
       </div>`;
-    }).join('')}
-    ${cur ? `<div class="race-turn">👉 Au tour de <b>${avatarHTML(cur.avatar, cur.look)} ${cur.name || 'Joueur'}</b> — niveau ${'⭐'.repeat(ageToDiff(cur.age)||gameDiffIsland())}</div>` : ''}
+      })
+      .join('')}
+    ${cur ? `<div class="race-turn">👉 Au tour de <b>${avatarHTML(cur.avatar, cur.look)} ${cur.name || 'Joueur'}</b> — niveau ${'⭐'.repeat(ageToDiff(cur.age) || gameDiffIsland())}</div>` : ''}
   `;
   const stop = document.getElementById('race-stop');
-  if(stop) stop.onclick = ()=>{ playSound('tap'); stopRace(); emit('ui:lagon'); };
+  if (stop)
+    stop.onclick = () => {
+      playSound('tap');
+      stopRace();
+      emit('ui:lagon');
+    };
 }
 
 export { raceAdvance, renderRaceTrack, startRace, stopRace };

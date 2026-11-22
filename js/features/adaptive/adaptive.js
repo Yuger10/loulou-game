@@ -29,58 +29,66 @@ import { pickRandom } from '../../shared/lib/index.js';
 import { lastGame } from './session.js';
 import { SKILL_ERR_TOLERANCE, skillStatus } from './skills.js';
 
-const GAME_TIER_MAX = { calc:6, shapes:6, planets:6 };
-const ADAPT_UP_STREAK = 2;      // réussites d'affilée pour monter d'un cran
-const ADAPT_DOWN_FAILS = 2;     // missions ratées (sur les 3 dernières) pour redescendre
-let PRACTICE_CHANCE = 0.5;      // part des choix où revient un jeu à travailler
+const GAME_TIER_MAX = { calc: 6, shapes: 6, planets: 6 };
+const ADAPT_UP_STREAK = 2; // réussites d'affilée pour monter d'un cran
+const ADAPT_DOWN_FAILS = 2; // missions ratées (sur les 3 dernières) pour redescendre
+let PRACTICE_CHANCE = 0.5; // part des choix où revient un jeu à travailler
 
 // Ce que dit le compagnon quand un jeu progresse (sans accord : valable
 // pour une fille comme pour un garçon).
 const PROGRESS_CHEERS = {
-  reading:      'Tu lis de mieux en mieux !',
+  reading: 'Tu lis de mieux en mieux !',
   determinants: 'Les petits mots, tu les connais de mieux en mieux !',
-  count:        'Tu comptes de mieux en mieux !',
-  puzzle:       'Tu ranges les nombres de mieux en mieux !',
-  compare:      'Tu compares les nombres de mieux en mieux !',
-  math:         'Tes calculs sont de plus en plus justes !',
-  calc:         'Ton calcul mental progresse vite !',
-  money:        'Tu comptes les pièces de mieux en mieux !',
-  clock:        "Tu lis l'heure de mieux en mieux !",
-  calendar:     'Les jours et les saisons, tu les connais de mieux en mieux !',
-  volume:       'Tu compares les tailles de mieux en mieux !',
-  shapes:       'Les formes et les couleurs, tu les reconnais de mieux en mieux !',
-  planets:      'Tu connais les planètes de mieux en mieux !',
-  memory:       'Ta mémoire est de plus en plus forte !',
-  simon:        'Tu retiens des suites de plus en plus longues !',
-  diff:         'Tu repères les intrus de mieux en mieux !',
-  sequence:     'Tu trouves les suites de mieux en mieux !',
-  jigsaw:       'Tu assembles les images de mieux en mieux !',
-  nesting:      'Tu ranges les boîtes de mieux en mieux !',
-  cubes:        'Tu comptes les cubes de mieux en mieux, même ceux qui se cachent !',
-  packs:        'Tu comptes par paquets de mieux en mieux !',
-  shelf:        'Tu ranges l\'étagère magique de mieux en mieux !',
-  share:        'Tu partages les gâteaux de mieux en mieux !',
-  recipe:       'Tu mesures tes recettes de mieux en mieux !',
-  rhythm:       'Tu rejoues les rythmes de mieux en mieux !',
-  pitch:        'Ton oreille reconnaît le grave et l\'aigu de mieux en mieux !',
-  lifecycle:    'Tu connais de mieux en mieux la vie des plantes et des petites bêtes !',
-  ladybugs:     'Tu trouves les doubles et les moitiés de mieux en mieux !',
-  potions:      'Tu connais les couleurs et leurs mélanges de mieux en mieux !',
-  mirror:       'Tu dessines les reflets du miroir de mieux en mieux !',
+  count: 'Tu comptes de mieux en mieux !',
+  puzzle: 'Tu ranges les nombres de mieux en mieux !',
+  compare: 'Tu compares les nombres de mieux en mieux !',
+  math: 'Tes calculs sont de plus en plus justes !',
+  calc: 'Ton calcul mental progresse vite !',
+  money: 'Tu comptes les pièces de mieux en mieux !',
+  clock: "Tu lis l'heure de mieux en mieux !",
+  calendar: 'Les jours et les saisons, tu les connais de mieux en mieux !',
+  volume: 'Tu compares les tailles de mieux en mieux !',
+  shapes: 'Les formes et les couleurs, tu les reconnais de mieux en mieux !',
+  planets: 'Tu connais les planètes de mieux en mieux !',
+  memory: 'Ta mémoire est de plus en plus forte !',
+  simon: 'Tu retiens des suites de plus en plus longues !',
+  diff: 'Tu repères les intrus de mieux en mieux !',
+  sequence: 'Tu trouves les suites de mieux en mieux !',
+  jigsaw: 'Tu assembles les images de mieux en mieux !',
+  nesting: 'Tu ranges les boîtes de mieux en mieux !',
+  cubes: 'Tu comptes les cubes de mieux en mieux, même ceux qui se cachent !',
+  packs: 'Tu comptes par paquets de mieux en mieux !',
+  shelf: "Tu ranges l'étagère magique de mieux en mieux !",
+  share: 'Tu partages les gâteaux de mieux en mieux !',
+  recipe: 'Tu mesures tes recettes de mieux en mieux !',
+  rhythm: 'Tu rejoues les rythmes de mieux en mieux !',
+  pitch: "Ton oreille reconnaît le grave et l'aigu de mieux en mieux !",
+  lifecycle: 'Tu connais de mieux en mieux la vie des plantes et des petites bêtes !',
+  ladybugs: 'Tu trouves les doubles et les moitiés de mieux en mieux !',
+  potions: 'Tu connais les couleurs et leurs mélanges de mieux en mieux !',
+  mirror: 'Tu dessines les reflets du miroir de mieux en mieux !',
 };
 
-function gameMaxTier(key){ return GAME_TIER_MAX[key] || 5; }
-function skillOf(key){ return (state.skills || {})[key] || null; }
-function inGroupPlay(){ return party.active; }
+function gameMaxTier(key) {
+  return GAME_TIER_MAX[key] || 5;
+}
+function skillOf(key) {
+  return (state.skills || {})[key] || null;
+}
+function inGroupPlay() {
+  return party.active;
+}
 
 // Niveau de départ d'un jeu jamais joué : un cran sous l'île.
-function placementTier(base){ return Math.max(1, base - 1); }
+function placementTier(base) {
+  return Math.max(1, base - 1);
+}
 
 // Niveau réellement joué pour ce jeu, à partir du palier de l'île (déjà
 // plafonné par l'âge). Appelé par gameDiff() en solo.
-function adaptTier(base, key){
+function adaptTier(base, key) {
   key = key || lastGame;
-  if(!key || inGroupPlay()) return base;
+  if (!key || inGroupPlay()) return base;
   const s = skillOf(key);
   const lvl = s && s.lvl ? s.lvl : placementTier(base);
   return Math.max(1, Math.min(base, lvl, gameMaxTier(key)));
@@ -89,41 +97,45 @@ function adaptTier(base, key){
 // Après une mission enregistrée (js/features/parents/parents.js, recordMission) : fait
 // monter ou redescendre le niveau du jeu. Renvoie {type:'up'|'down', lvl}
 // ou null.
-function adaptAfterMission(key, s, tier, ok, errors){
-  if(!s.lvl) s.lvl = tier;           // premier passage : on part du niveau joué
-  if(tier !== s.lvl) return null;    // joué plus bas (île plus facile) : ne compte pas
+function adaptAfterMission(key, s, tier, ok, errors) {
+  if (!s.lvl) s.lvl = tier; // premier passage : on part du niveau joué
+  if (tier !== s.lvl) return null; // joué plus bas (île plus facile) : ne compte pas
   s.atLvl = (s.atLvl || []).concat({ ok: !!ok, e: errors }).slice(-3);
-  const tol = (SKILL_ERR_TOLERANCE[key]) || 1;
+  const tol = SKILL_ERR_TOLERANCE[key] || 1;
   const streak = s.atLvl.slice(-ADAPT_UP_STREAK);
-  if(streak.length === ADAPT_UP_STREAK && streak.every(x=>x.ok && x.e <= tol) && s.lvl < gameMaxTier(key)){
+  if (streak.length === ADAPT_UP_STREAK && streak.every((x) => x.ok && x.e <= tol) && s.lvl < gameMaxTier(key)) {
     const back = !!s.support;
-    s.lvl++; s.atLvl = []; s.support = false;
-    return { type:'up', lvl: s.lvl, back };
+    s.lvl++;
+    s.atLvl = [];
+    s.support = false;
+    return { type: 'up', lvl: s.lvl, back };
   }
-  if(s.atLvl.filter(x=>!x.ok).length >= ADAPT_DOWN_FAILS && s.lvl > 1){
-    s.lvl--; s.atLvl = []; s.support = true;
-    return { type:'down', lvl: s.lvl };
+  if (s.atLvl.filter((x) => !x.ok).length >= ADAPT_DOWN_FAILS && s.lvl > 1) {
+    s.lvl--;
+    s.atLvl = [];
+    s.support = true;
+    return { type: 'down', lvl: s.lvl };
   }
   return null;
 }
 
 /* ---- ce qui est à travailler revient plus souvent ---- */
-function needsPractice(key){
+function needsPractice(key) {
   const s = skillOf(key);
-  return !!s && (s.support || skillStatus(s, key)==='difficile');
+  return !!s && (s.support || skillStatus(s, key) === 'difficile');
 }
 // Un jeu à travailler parmi ceux proposés (jamais celui qu'on vient de
 // jouer), une fois sur deux ; sinon null.
-function pickPracticeGame(keys){
-  if(inGroupPlay() || Math.random() >= PRACTICE_CHANCE) return null;
+function pickPracticeGame(keys) {
+  if (inGroupPlay() || Math.random() >= PRACTICE_CHANCE) return null;
   const last = lastGame;
-  const list = keys.filter(k=>k!==last && needsPractice(k));
+  const list = keys.filter((k) => k !== last && needsPractice(k));
   return list.length ? pickRandom(list) : null;
 }
 
 /* ---- le compagnon encourage ce qui progresse ---- */
-function progressCheer(p){
-  if(!p) return null;
+function progressCheer(p) {
+  if (!p) return null;
   return PROGRESS_CHEERS[p.key] || 'Tu progresses, bravo !';
 }
 

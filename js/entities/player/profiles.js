@@ -12,64 +12,88 @@ const LEGACY_SAVE_KEY = 'lagon-magique-save';
 
 let profiles = { list: [], current: null };
 
-function profileSaveKey(id){ return LEGACY_SAVE_KEY + ':' + id; }
+function profileSaveKey(id) {
+  return LEGACY_SAVE_KEY + ':' + id;
+}
 
-function currentSaveKey(){
+function currentSaveKey() {
   return profiles.current ? profileSaveKey(profiles.current) : LEGACY_SAVE_KEY;
 }
 
-function newId(){ return 'p' + Date.now().toString(36) + Math.floor(Math.random()*1000); }
-
-function saveProfiles(){
-  try{ localStorage.setItem(PROFILES_KEY, JSON.stringify(profiles)); }catch{}
+function newId() {
+  return 'p' + Date.now().toString(36) + Math.floor(Math.random() * 1000);
 }
 
-function loadProfiles(){
-  try{
+function saveProfiles() {
+  try {
+    localStorage.setItem(PROFILES_KEY, JSON.stringify(profiles));
+  } catch {}
+}
+
+function loadProfiles() {
+  try {
     const raw = localStorage.getItem(PROFILES_KEY);
-    if(raw) profiles = JSON.parse(raw);
-  }catch{}
-  if(!profiles || !Array.isArray(profiles.list)) profiles = { list: [], current: null };
-  profiles.list.forEach(p=>{ p.avatar = fixAvatar(p.avatar); });
+    if (raw) profiles = JSON.parse(raw);
+  } catch {}
+  if (!profiles || !Array.isArray(profiles.list)) profiles = { list: [], current: null };
+  profiles.list.forEach((p) => {
+    p.avatar = fixAvatar(p.avatar);
+  });
 
   // migration : une ancienne partie unique devient le premier joueur
-  if(!profiles.list.length){
+  if (!profiles.list.length) {
     let legacy = null;
-    try{ legacy = JSON.parse(localStorage.getItem(LEGACY_SAVE_KEY) || 'null'); }catch{}
+    try {
+      legacy = JSON.parse(localStorage.getItem(LEGACY_SAVE_KEY) || 'null');
+    } catch {}
     const id = newId();
     profiles.list = [{ id, name: (legacy && legacy.name) || '', avatar: (legacy && legacy.avatar) || '👧' }];
     profiles.current = id;
-    if(legacy){ try{ localStorage.setItem(profileSaveKey(id), JSON.stringify(legacy)); }catch{} }
+    if (legacy) {
+      try {
+        localStorage.setItem(profileSaveKey(id), JSON.stringify(legacy));
+      } catch {}
+    }
     saveProfiles();
   }
-  if(!profiles.current || !profiles.list.some(p=>p.id===profiles.current)){
+  if (!profiles.current || !profiles.list.some((p) => p.id === profiles.current)) {
     profiles.current = profiles.list[0].id;
     saveProfiles();
   }
 }
 
-function currentProfile(){ return profiles.list.find(p=>p.id===profiles.current) || profiles.list[0]; }
+function currentProfile() {
+  return profiles.list.find((p) => p.id === profiles.current) || profiles.list[0];
+}
 
 // garde la fiche du joueur (nom/avatar) synchro avec son état de jeu
-function syncProfileFromState(){
+function syncProfileFromState() {
   const p = currentProfile();
-  if(!p) return;
-  p.name = state.name; p.avatar = state.avatar;
-  p.look = state.look ? Object.assign({}, state.look) : null;   // pour dessiner son avatar habillé partout
+  if (!p) return;
+  p.name = state.name;
+  p.avatar = state.avatar;
+  p.look = state.look ? Object.assign({}, state.look) : null; // pour dessiner son avatar habillé partout
   saveProfiles();
 }
 
 // la partie de chaque joueur est sauvegardée sous sa propre clé
-setSaveSlot({ key: currentSaveKey, afterSave: syncProfileFromState, afterLoad: (st)=>{ st.avatar = fixAvatar(st.avatar); } });
+setSaveSlot({
+  key: currentSaveKey,
+  afterSave: syncProfileFromState,
+  afterLoad: (st) => {
+    st.avatar = fixAvatar(st.avatar);
+  },
+});
 
-function switchProfile(id, silent){
-  if(id === profiles.current) return;
-  save();                       // sauvegarde le joueur courant
-  profiles.current = id; saveProfiles();
-  load();                       // charge le nouveau
+function switchProfile(id, silent) {
+  if (id === profiles.current) return;
+  save(); // sauvegarde le joueur courant
+  profiles.current = id;
+  saveProfiles();
+  load(); // charge le nouveau
   setCurrentWorld(worldUnlocked(currentWorld) ? currentWorld : 'lagon');
   refreshAll();
-  if(!silent){
+  if (!silent) {
     playSound('good');
     const p = currentProfile();
     speak(`À toi de jouer ${p.name || ''} !`);
@@ -77,25 +101,35 @@ function switchProfile(id, silent){
   }
 }
 
-function addProfile(name, avatar, age, gender, companion){
+function addProfile(name, avatar, age, gender, companion) {
   const id = newId();
   // la pause du nouveau joueur : le réglage familial (la dernière durée choisie par un adulte)
-  profiles.list.push({ id, name: name||'', avatar: avatar||'👧', age: age||null, gender: gender||'',
-    companion: companion || defaultCompanionFor(gender||''), pauseMin: Number(profiles.familyPause) || 0 });
-  profiles.current = id; saveProfiles();
-  replaceState(freshState({ name: name||'', avatar: avatar||'👧', visited:['lagon'] }));
+  profiles.list.push({
+    id,
+    name: name || '',
+    avatar: avatar || '👧',
+    age: age || null,
+    gender: gender || '',
+    companion: companion || defaultCompanionFor(gender || ''),
+    pauseMin: Number(profiles.familyPause) || 0,
+  });
+  profiles.current = id;
+  saveProfiles();
+  replaceState(freshState({ name: name || '', avatar: avatar || '👧', visited: ['lagon'] }));
   save();
   setCurrentWorld('lagon');
   refreshAll();
   return id;
 }
 
-function deleteProfile(id){
-  if(profiles.list.length <= 1) return false;
-  profiles.list = profiles.list.filter(p=>p.id!==id);
-  try{ localStorage.removeItem(profileSaveKey(id)); }catch{}
-  party.players = party.players.filter(pid=>pid!==id);
-  if(profiles.current === id){
+function deleteProfile(id) {
+  if (profiles.list.length <= 1) return false;
+  profiles.list = profiles.list.filter((p) => p.id !== id);
+  try {
+    localStorage.removeItem(profileSaveKey(id));
+  } catch {}
+  party.players = party.players.filter((pid) => pid !== id);
+  if (profiles.current === id) {
     profiles.current = profiles.list[0].id;
     load();
     setCurrentWorld('lagon');
@@ -109,25 +143,41 @@ function deleteProfile(id){
 // ses données doit se redessiner. Les features concernées s'inscrivent avec
 // onProfileRefresh : l'entité ne les connaît pas.
 const profileRefreshHooks = [];
-function onProfileRefresh(fn){ profileRefreshHooks.push(fn); }
-function refreshAll(){ profileRefreshHooks.forEach(fn=> fn()); }
+function onProfileRefresh(fn) {
+  profileRefreshHooks.push(fn);
+}
+function refreshAll() {
+  profileRefreshHooks.forEach((fn) => fn());
+}
 
 /* ---------- Accords féminin / masculin / neutre ---------- */
 // 'f' = féminin, 'm' = masculin, '' = neutre (formulations sans accord)
-function playerGender(){
+function playerGender() {
   const p = currentProfile() || null;
   return (p && p.gender) || '';
 }
 
 // ac('fort') -> 'fort' / 'forte' ; ac('champion','championne')
-function ac(masc, fem){
+function ac(masc, fem) {
   const g = playerGender();
-  if(g==='f') return fem || (masc + 'e');
+  if (g === 'f') return fem || masc + 'e';
   return masc;
 }
 
 export {
-  ac, addProfile, currentProfile, deleteProfile, LEGACY_SAVE_KEY, loadProfiles, onProfileRefresh,
-  playerGender, profiles, PROFILES_KEY, profileSaveKey, refreshAll, saveProfiles, switchProfile,
-  syncProfileFromState
+  ac,
+  addProfile,
+  currentProfile,
+  deleteProfile,
+  LEGACY_SAVE_KEY,
+  loadProfiles,
+  onProfileRefresh,
+  playerGender,
+  profiles,
+  PROFILES_KEY,
+  profileSaveKey,
+  refreshAll,
+  saveProfiles,
+  switchProfile,
+  syncProfileFromState,
 };

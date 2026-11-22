@@ -31,58 +31,90 @@ import { openDecoShop, openDialogue } from './island-view.js';
 // selon la taille réelle de la scène : un personnage reste sur la plage et
 // un dauphin dans l'eau, quel que soit le format d'écran.
 
-const ISLE_W = 480, ISLE_H = 360;
+const ISLE_W = 480,
+  ISLE_H = 360;
 const ISLE_CHAR_SLOTS = [
-  {x:126, y:250}, {x:354, y:248}, {x:198, y:340}, {x:284, y:342}, {x:96, y:330}, {x:384, y:330},
+  { x: 126, y: 250 },
+  { x: 354, y: 248 },
+  { x: 198, y: 340 },
+  { x: 284, y: 342 },
+  { x: 96, y: 330 },
+  { x: 384, y: 330 },
 ];
 // une île à 5 personnages (le Royaume Arc-en-ciel) : 2 en haut, 3 en bas, bien espacés,
 // pour qu'aucune bulle ne cache le nom d'un voisin (vérifié de 360 à 1280 px de large)
-const ISLE_CHAR_SLOTS_5 = [ {x:126, y:240}, {x:354, y:240}, {x:112, y:352}, {x:220, y:350}, {x:330, y:352} ];
-const isleCharSlots = (n)=> n === 5 ? ISLE_CHAR_SLOTS_5 : ISLE_CHAR_SLOTS;
-const ISLE_GROUND_SLOTS = [
-  {x:242, y:262}, {x:110, y:276}, {x:378, y:276}, {x:248, y:348}, {x:150, y:350}, {x:345, y:350},
-  {x:282, y:292}, {x:182, y:290}, {x:104, y:342}, {x:384, y:342}, {x:214, y:270}, {x:300, y:268},
+const ISLE_CHAR_SLOTS_5 = [
+  { x: 126, y: 240 },
+  { x: 354, y: 240 },
+  { x: 112, y: 352 },
+  { x: 220, y: 350 },
+  { x: 330, y: 352 },
 ];
-const ISLE_SKY_SLOTS = [ {x:222, y:70}, {x:280, y:104}, {x:172, y:100}, {x:250, y:40} ];
-const ISLE_SEA_SLOTS = [ {x:272, y:180}, {x:206, y:184}, {x:370, y:178}, {x:240, y:192} ];
-const SKY_DECO_EMOJIS = ['🌈','🌙','☁️','⭐','🌟','🎈','🦋','🐦','🕊️','🪁','🦅','🐉','💫','🌞'];
-const SEA_DECO_EMOJIS = ['🐠','🐟','🐬','🦈','🐢','🐙','🐳','🐋','🦀','⛵','🏴‍☠️','🚤','🧜‍♀️'];
+const isleCharSlots = (n) => (n === 5 ? ISLE_CHAR_SLOTS_5 : ISLE_CHAR_SLOTS);
+const ISLE_GROUND_SLOTS = [
+  { x: 242, y: 262 },
+  { x: 110, y: 276 },
+  { x: 378, y: 276 },
+  { x: 248, y: 348 },
+  { x: 150, y: 350 },
+  { x: 345, y: 350 },
+  { x: 282, y: 292 },
+  { x: 182, y: 290 },
+  { x: 104, y: 342 },
+  { x: 384, y: 342 },
+  { x: 214, y: 270 },
+  { x: 300, y: 268 },
+];
+const ISLE_SKY_SLOTS = [
+  { x: 222, y: 70 },
+  { x: 280, y: 104 },
+  { x: 172, y: 100 },
+  { x: 250, y: 40 },
+];
+const ISLE_SEA_SLOTS = [
+  { x: 272, y: 180 },
+  { x: 206, y: 184 },
+  { x: 370, y: 178 },
+  { x: 240, y: 192 },
+];
+const SKY_DECO_EMOJIS = ['🌈', '🌙', '☁️', '⭐', '🌟', '🎈', '🦋', '🐦', '🕊️', '🪁', '🦅', '🐉', '💫', '🌞'];
+const SEA_DECO_EMOJIS = ['🐠', '🐟', '🐬', '🦈', '🐢', '🐙', '🐳', '🐋', '🦀', '⛵', '🏴‍☠️', '🚤', '🧜‍♀️'];
 
 /* ---- moment de la journée (heure réelle) ---- */
-function isleTimeOfDay(date){
+function isleTimeOfDay(date) {
   const h = (date || new Date()).getHours();
-  if(h >= 20 || h < 6) return 'nuit';
-  if(h < 10) return 'matin';
-  if(h < 17) return 'jour';
+  if (h >= 20 || h < 6) return 'nuit';
+  if (h < 10) return 'matin';
+  if (h < 17) return 'jour';
   return 'soir';
 }
-function isleToday(){
+function isleToday() {
   const d = new Date();
-  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 }
 
 /* ---- personnages aidés aujourd'hui ---- */
-function markHelped(charId){
-  if(!charId) return;
+function markHelped(charId) {
+  if (!charId) return;
   const today = isleToday();
-  if(!state.helped || state.helped.date !== today) state.helped = { date: today, ids: {} };
+  if (!state.helped || state.helped.date !== today) state.helped = { date: today, ids: {} };
   state.helped.ids[charId] = (state.helped.ids[charId] || 0) + 1;
-  state.charsHelped = Object.assign({}, state.charsHelped || {}, { [charId]: true });   // pour Sam le guide
+  state.charsHelped = Object.assign({}, state.charsHelped || {}, { [charId]: true }); // pour Sam le guide
   save();
 }
-function helpedToday(charId){
+function helpedToday(charId) {
   return !!(state.helped && state.helped.date === isleToday() && state.helped.ids[charId]);
 }
-function charMood(charId){
+function charMood(charId) {
   const q = ensureQuests();
-  const quest = q && q.list.find(i=>i.type==='char' && i.target===charId && i.n < i.goal);
-  if(quest) return { icon:'📜', label:'mission du jour' };
-  if(helpedToday(charId)) return { icon:'❤️', label:"déjà aidé aujourd'hui" };
-  return { icon:'💬', label:'veut jouer avec toi' };
+  const quest = q && q.list.find((i) => i.type === 'char' && i.target === charId && i.n < i.goal);
+  if (quest) return { icon: '📜', label: 'mission du jour' };
+  if (helpedToday(charId)) return { icon: '❤️', label: "déjà aidé aujourd'hui" };
+  return { icon: '💬', label: 'veut jouer avec toi' };
 }
 
 /* ---- paysages ---- */
-function isleSky(){
+function isleSky() {
   return `<rect width="480" height="360" fill="url(#isle-sky)"/>
     <g class="ls-stars" fill="#fff">
       <circle cx="40" cy="30" r="1.6"/><circle cx="96" cy="58" r="1.2"/><circle cx="150" cy="22" r="1.8"/>
@@ -97,7 +129,7 @@ function isleSky(){
 }
 
 const ISLE_SCENERY = {
-  lagon: (w)=>`
+  lagon: (w) => `
     <rect y="150" width="480" height="210" fill="#5ED0D2"/>
     <g class="ls-waves" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" opacity=".55">
       <path d="M-20 168 q15 -6 30 0 t30 0 t30 0 t30 0 t30 0 t30 0 t30 0 t30 0 t30 0 t30 0 t30 0 t30 0 t30 0 t30 0 t30 0 t30 0 t30 0 t30 0"/>
@@ -114,7 +146,7 @@ const ISLE_SCENERY = {
       <circle cx="126" cy="130" r="5" fill="#7A4A2E"/><circle cx="134" cy="132" r="5" fill="#7A4A2E"/>
     </g>
     <g fill="#fff" opacity=".85"><circle cx="360" cy="300" r="3"/><circle cx="370" cy="306" r="2"/><circle cx="96" cy="318" r="2.5"/></g>`,
-  foret: (w)=>`
+  foret: (w) => `
     <path d="M0 205 C80 150 160 160 240 186 C320 150 400 142 480 180 L480 360 L0 360 Z" fill="#9ED8A0"/>
     <g fill="#5FAF6E"><path d="M60 182 l12 -34 l12 34z"/><path d="M84 176 l10 -28 l10 28z"/><path d="M330 166 l13 -38 l13 38z"/><path d="M356 162 l11 -32 l11 32z"/><path d="M400 168 l10 -28 l10 28z"/></g>
     <path d="M0 232 C100 202 200 212 260 226 C340 206 420 202 480 216 L480 360 L0 360 Z" fill="#7CC77F"/>
@@ -124,7 +156,7 @@ const ISLE_SCENERY = {
       <circle cx="378" cy="180" r="34" fill="#3E9A55"/><circle cx="352" cy="196" r="22" fill="#4DAA60"/><circle cx="402" cy="198" r="22" fill="#4DAA60"/></g>
     <g><circle cx="120" cy="300" r="4" fill="#FF8FB8"/><circle cx="132" cy="306" r="3" fill="#FFD54A"/><circle cx="330" cy="318" r="4" fill="#C9A7F5"/><circle cx="90" cy="276" r="3" fill="#FFD54A"/></g>
     <g><rect x="146" y="262" width="5" height="9" rx="2" fill="#F6EFD9"/><path d="M140 264 q8 -12 17 0z" fill="#F46B5D"/></g>`,
-  montagne: (w)=>`
+  montagne: (w) => `
     <path d="M20 212 L130 72 L240 212 Z" fill="#B9D3EE"/><path d="M130 72 L104 106 L118 100 L130 112 L144 100 L157 106 Z" fill="#fff"/>
     <path d="M196 212 L330 42 L464 212 Z" fill="#A6C6E8"/><path d="M330 42 L298 84 L314 76 L330 90 L346 76 L362 84 Z" fill="#fff"/>
     <g class="ls-cloud c3" fill="#fff" opacity=".85"><ellipse cx="240" cy="178" rx="60" ry="10"/><ellipse cx="270" cy="170" rx="28" ry="10"/></g>
@@ -132,7 +164,7 @@ const ISLE_SCENERY = {
     <path d="M0 252 C140 238 340 238 480 252 L480 360 L0 360 Z" fill="${w.sand}"/>
     <g fill="${w.land}"><ellipse cx="70" cy="276" rx="26" ry="12"/><ellipse cx="420" cy="290" rx="30" ry="13"/><ellipse cx="300" cy="330" rx="18" ry="8"/></g>
     <g fill="#fff" opacity=".9"><ellipse cx="64" cy="270" rx="14" ry="4"/><ellipse cx="414" cy="283" rx="16" ry="4"/></g>`,
-  chateau: (w)=>`
+  chateau: (w) => `
     <path d="M60 232 C140 172 340 172 420 232 Z" fill="#4B3A7A"/>
     <g fill="#2E2452">
       <rect x="168" y="118" width="30" height="96"/><path d="M164 120 L183 90 L202 120 Z"/>
@@ -146,7 +178,7 @@ const ISLE_SCENERY = {
     <path d="M206 360 C220 320 236 290 240 236" fill="none" stroke="${w.sand}" stroke-width="16" stroke-linecap="round" opacity=".8"/>
     <g><rect x="110" y="270" width="4" height="30" fill="#6A4C93"/><circle cx="112" cy="266" r="7" fill="#FFE07A"/><circle cx="112" cy="266" r="16" fill="#FFE07A" opacity=".25"/>
     <rect x="366" y="276" width="4" height="30" fill="#6A4C93"/><circle cx="368" cy="272" r="7" fill="#FFE07A"/><circle cx="368" cy="272" r="16" fill="#FFE07A" opacity=".25"/></g>`,
-  jungle: (w)=>`
+  jungle: (w) => `
     <g fill="#3E8E5A"><circle cx="20" cy="200" r="40"/><circle cx="90" cy="186" r="44"/><circle cx="170" cy="196" r="40"/><circle cx="250" cy="182" r="46"/><circle cx="330" cy="194" r="40"/><circle cx="410" cy="184" r="44"/><circle cx="476" cy="198" r="38"/></g>
     <rect y="200" width="480" height="40" fill="#3E8E5A"/>
     <g class="ls-vines" fill="none" stroke="#2F7A4A" stroke-width="3" stroke-linecap="round">
@@ -159,7 +191,7 @@ const ISLE_SCENERY = {
     <g fill="#245F3C"><ellipse cx="118" cy="40" rx="50" ry="14" transform="rotate(28 118 40)"/><ellipse cx="380" cy="30" rx="54" ry="14" transform="rotate(-26 380 30)"/></g>
     <g><circle cx="300" cy="300" r="4" fill="#FF8FB8"/><circle cx="140" cy="290" r="4" fill="#FFD54A"/></g>`,
   // Cité du Temps : tour de l'horloge (les aiguilles tournent), engrenages dans le ciel, toits, réverbères
-  cite: (w)=>`
+  cite: (w) => `
     <g class="ls-gear g1" style="transform-origin:92px 74px">
       <circle cx="92" cy="74" r="25" fill="none" stroke="#C9A46A" stroke-width="10" stroke-dasharray="7 6"/>
       <circle cx="92" cy="74" r="20" fill="#D9B97E"/><circle cx="92" cy="74" r="7" fill="#8C7355"/>
@@ -195,7 +227,7 @@ const ISLE_SCENERY = {
     <g><rect x="120" y="244" width="4" height="40" fill="#5C4128"/><circle cx="122" cy="240" r="7" fill="#FFE07A"/><circle cx="122" cy="240" r="16" fill="#FFE07A" opacity=".25"/>
       <rect x="356" y="244" width="4" height="40" fill="#5C4128"/><circle cx="358" cy="240" r="7" fill="#FFE07A"/><circle cx="358" cy="240" r="16" fill="#FFE07A" opacity=".25"/></g>`,
   // Volcan des Génies : cône fumant, coulées de lave, fissures qui rougeoient
-  volcan: (w)=>`
+  volcan: (w) => `
     <path d="M0 236 L60 186 L118 214 L176 176 L214 200 L300 192 L352 170 L410 206 L480 180 L480 360 L0 360 Z" fill="#B4553A" opacity=".55"/>
     <g class="ls-smoke">
       <circle class="s1" cx="236" cy="78" r="14" fill="#A99A94"/><circle class="s2" cx="248" cy="70" r="12" fill="#BCAFA9"/><circle class="s3" cx="228" cy="66" r="10" fill="#9C8F8A"/>
@@ -217,7 +249,7 @@ const ISLE_SCENERY = {
     <g fill="${w.sand}"><ellipse cx="80" cy="266" rx="22" ry="9"/><ellipse cx="404" cy="272" rx="26" ry="10"/><ellipse cx="300" cy="318" rx="14" ry="6"/></g>
     <g fill="#FF8A3A" opacity=".8"><ellipse cx="150" cy="300" rx="16" ry="4"/></g>`,
   // Pays Squishy : collines de guimauve, nuages moelleux, sucettes géantes, bonbons
-  squishy: (w)=>`
+  squishy: (w) => `
     <g class="ls-cloud c3" fill="#fff"><ellipse cx="96" cy="86" rx="34" ry="16"/><ellipse cx="116" cy="76" rx="22" ry="16"/><ellipse cx="78" cy="78" rx="16" ry="12"/></g>
     <path d="M60 178 Q240 70 420 178" fill="none" stroke="#FFB3D1" stroke-width="10" stroke-linecap="round" opacity=".55"/>
     <path d="M70 180 Q240 84 410 180" fill="none" stroke="#FFE07A" stroke-width="9" stroke-linecap="round" opacity=".55"/>
@@ -234,7 +266,7 @@ const ISLE_SCENERY = {
     <g fill="#fff" opacity=".7"><circle cx="130" cy="292" r="2"/><circle cx="350" cy="310" r="2"/><circle cx="380" cy="287" r="1.6"/></g>`,
   // Monde des Boîtes (saison 2) : une île qui flotte sur les nuages, des piles
   // de boîtes en carton et le tapis roulant de la Fabrique
-  boites: (w)=>`
+  boites: (w) => `
     <g class="ls-cloud c3" fill="#fff" opacity=".9"><ellipse cx="400" cy="96" rx="30" ry="12"/><ellipse cx="418" cy="88" rx="18" ry="12"/></g>
     <g fill="#fff" opacity=".9"><ellipse cx="60" cy="252" rx="96" ry="26"/><ellipse cx="240" cy="248" rx="124" ry="24"/><ellipse cx="420" cy="252" rx="96" ry="26"/></g>
     <path d="M0 254 C140 240 340 240 480 254 L480 360 L0 360 Z" fill="${w.land}"/>
@@ -252,7 +284,7 @@ const ISLE_SCENERY = {
     <g fill="#fff" opacity=".7"><circle cx="128" cy="300" r="2"/><circle cx="356" cy="316" r="2"/></g>`,
   // Coffre aux Jouets Doux (saison 2) : un grand coffre ouvert d'où dépassent
   // des peluches, une étagère pastel avec des jouets mochi, des cubes à formes
-  jouets: (w)=>`
+  jouets: (w) => `
     <g class="ls-cloud c3" fill="#fff" opacity=".9"><ellipse cx="80" cy="92" rx="30" ry="12"/><ellipse cx="98" cy="84" rx="18" ry="12"/></g>
     <g fill="#fff" opacity=".9"><ellipse cx="60" cy="252" rx="96" ry="26"/><ellipse cx="240" cy="248" rx="124" ry="24"/><ellipse cx="420" cy="252" rx="96" ry="26"/></g>
     <path d="M0 254 C140 240 340 240 480 254 L480 360 L0 360 Z" fill="${w.land}"/>
@@ -281,7 +313,7 @@ const ISLE_SCENERY = {
     <g fill="#fff" opacity=".7"><circle cx="128" cy="300" r="2"/><circle cx="400" cy="316" r="2"/></g>`,
   // Royaume des Bonbons (saison 2) : maisons en pain d'épices au toit glacé,
   // rivière de sirop, arbres-sucettes, cailloux en bonbons
-  bonbons: (w)=>`
+  bonbons: (w) => `
     <g class="ls-cloud c3" fill="#fff" opacity=".9"><ellipse cx="392" cy="90" rx="30" ry="12"/><ellipse cx="410" cy="82" rx="18" ry="12"/></g>
     <g fill="#fff" opacity=".9"><ellipse cx="60" cy="252" rx="96" ry="26"/><ellipse cx="240" cy="248" rx="124" ry="24"/><ellipse cx="420" cy="252" rx="96" ry="26"/></g>
     <path d="M0 254 C140 240 340 240 480 254 L480 360 L0 360 Z" fill="${w.land}"/>
@@ -306,7 +338,7 @@ const ISLE_SCENERY = {
     <g fill="#fff" opacity=".7"><circle cx="128" cy="312" r="2"/><circle cx="300" cy="300" r="2"/></g>`,
   // Île de la Musique (saison 2) : un grand clavier-pont, des arbres-flûtes,
   // une cascade de notes ; nuit, or et turquoise
-  musique: (w)=>`
+  musique: (w) => `
     <g fill="#FFE07A" opacity=".85"><path d="M60 70 l3 7 l7 1 l-5 5 l1 7 l-6 -3 l-6 3 l1 -7 l-5 -5 l7 -1z"/><path d="M420 56 l2 5 l5 1 l-4 3 l1 5 l-4 -2 l-4 2 l1 -5 l-4 -3 l5 -1z"/></g>
     <g fill="#fff" opacity=".9"><ellipse cx="60" cy="252" rx="96" ry="26"/><ellipse cx="240" cy="248" rx="124" ry="24"/><ellipse cx="420" cy="252" rx="96" ry="26"/></g>
     <path d="M0 254 C140 240 340 240 480 254 L480 360 L0 360 Z" fill="${w.land}"/>
@@ -329,7 +361,7 @@ const ISLE_SCENERY = {
     <g fill="#fff" opacity=".7"><circle cx="110" cy="306" r="2"/><circle cx="380" cy="300" r="2"/></g>`,
   // Jardin des Fées (saison 2) : vu à hauteur d'insecte ; fleurs géantes,
   // champignons-maisons, gouttes de rosée, brins d'herbe
-  jardin: (w)=>`
+  jardin: (w) => `
     <g class="ls-cloud c3" fill="#fff" opacity=".9"><ellipse cx="410" cy="84" rx="28" ry="11"/><ellipse cx="426" cy="77" rx="16" ry="11"/></g>
     <g fill="#fff" opacity=".9"><ellipse cx="60" cy="252" rx="96" ry="26"/><ellipse cx="240" cy="248" rx="124" ry="24"/><ellipse cx="420" cy="252" rx="96" ry="26"/></g>
     <path d="M0 254 C140 240 340 240 480 254 L480 360 L0 360 Z" fill="${w.land}"/>
@@ -354,7 +386,7 @@ const ISLE_SCENERY = {
     <g fill="#fff" opacity=".7"><circle cx="110" cy="306" r="2"/><circle cx="380" cy="300" r="2"/></g>`,
   // Royaume Arc-en-ciel (saison 2, grand final) : une île de nuages, une
   // cascade arc-en-ciel, le château des licornes, des étoiles
-  licornes: (w)=>`
+  licornes: (w) => `
     <g fill="#FFE07A" opacity=".85"><path d="M70 64 l3 7 l7 1 l-5 5 l1 7 l-6 -3 l-6 3 l1 -7 l-5 -5 l7 -1z"/><path d="M430 50 l2 5 l5 1 l-4 3 l1 5 l-4 -2 l-4 2 l1 -5 l-4 -3 l5 -1z"/><path d="M250 40 l2 4 l4 1 l-3 3 l1 4 l-4 -2 l-4 2 l1 -4 l-3 -3 l4 -1z"/></g>
     <g fill="none" stroke-width="10" stroke-linecap="round" opacity=".8"><path d="M60 214 Q240 30 420 214" stroke="#FF6F61"/><path d="M74 214 Q240 46 406 214" stroke="#FFD95A"/><path d="M88 214 Q240 62 392 214" stroke="#6ED38C"/><path d="M102 214 Q240 78 378 214" stroke="#6FB8F5"/><path d="M116 214 Q240 94 364 214" stroke="#BFA3EC"/></g>
     <g fill="#fff"><ellipse cx="60" cy="236" rx="96" ry="34"/><ellipse cx="240" cy="240" rx="124" ry="30"/><ellipse cx="420" cy="236" rx="96" ry="34"/></g>
@@ -374,14 +406,14 @@ const ISLE_SCENERY = {
     <g fill="#fff" opacity=".8"><circle cx="110" cy="306" r="2.4"/><circle cx="340" cy="310" r="2"/><circle cx="60" cy="290" r="1.8"/></g>`,
 };
 // paysage générique, aux couleurs du monde (toute nouvelle île en profite)
-function isleGenericScenery(w){
+function isleGenericScenery(w) {
   return `
     <path d="M0 214 C90 170 190 178 260 200 C340 170 420 168 480 196 L480 360 L0 360 Z" fill="${w.land}" opacity=".45"/>
     <path d="M0 252 C140 234 340 234 480 252 L480 360 L0 360 Z" fill="${w.land}"/>
     <path d="M196 360 C212 320 246 298 256 260" fill="none" stroke="${w.sand}" stroke-width="16" stroke-linecap="round" opacity=".9"/>
     <g fill="${w.sand}" opacity=".9"><ellipse cx="80" cy="300" rx="22" ry="7"/><ellipse cx="402" cy="312" rx="26" ry="8"/></g>`;
 }
-function landscapeSVG(worldId){
+function landscapeSVG(worldId) {
   const w = WORLDS[worldId] || WORLDS.lagon;
   const draw = ISLE_SCENERY[w.shape] || ISLE_SCENERY[worldId] || isleGenericScenery;
   return `<svg class="isle-land" viewBox="0 0 480 360" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
@@ -395,19 +427,19 @@ function landscapeSVG(worldId){
 }
 
 /* ---- places des décorations ---- */
-function decoZone(emoji, worldShape){
-  if(SKY_DECO_EMOJIS.includes(emoji)) return 'sky';
-  if(worldShape === 'lagon' && SEA_DECO_EMOJIS.includes(emoji)) return 'sea';
+function decoZone(emoji, worldShape) {
+  if (SKY_DECO_EMOJIS.includes(emoji)) return 'sky';
+  if (worldShape === 'lagon' && SEA_DECO_EMOJIS.includes(emoji)) return 'sea';
   return 'ground';
 }
 const ISLE_ZONE_SLOTS = { sky: ISLE_SKY_SLOTS, sea: ISLE_SEA_SLOTS, ground: ISLE_GROUND_SLOTS };
 // place de chaque décoration : celle choisie par l'enfant, sinon la
 // prochaine place libre de sa zone (ciel, mer ou sol)
-function decoPositions(keys){
-  const shape = (WORLDS[currentWorld]||{}).shape;
-  const used = { sky:0, sea:0, ground:0 };
+function decoPositions(keys) {
+  const shape = (WORLDS[currentWorld] || {}).shape;
+  const used = { sky: 0, sea: 0, ground: 0 };
   const out = {};
-  keys.forEach(k=>{
+  keys.forEach((k) => {
     const zone = decoZone(DECOS[k].emoji, shape);
     const slots = ISLE_ZONE_SLOTS[zone];
     const def = slots[used[zone]++ % slots.length];
@@ -415,138 +447,186 @@ function decoPositions(keys){
   });
   return out;
 }
-function moveDeco(key, x, y){
-  if(!state.decoPos) state.decoPos = {};
-  state.decoPos[key] = { x: Math.round(Math.max(0, Math.min(ISLE_W, x))), y: Math.round(Math.max(0, Math.min(ISLE_H, y))) };
+function moveDeco(key, x, y) {
+  if (!state.decoPos) state.decoPos = {};
+  state.decoPos[key] = {
+    x: Math.round(Math.max(0, Math.min(ISLE_W, x))),
+    y: Math.round(Math.max(0, Math.min(ISLE_H, y))),
+  };
   save();
 }
-const isleZ = (y)=> 10 + Math.round(y / 4);
+const isleZ = (y) => 10 + Math.round(y / 4);
 
 /* ---- dessin ↔ écran : même cadrage que le SVG (xMidYMax slice) ---- */
-function isleFrame(sc){
-  const W = sc.clientWidth || 400, H = sc.clientHeight || 440;
+function isleFrame(sc) {
+  const W = sc.clientWidth || 400,
+    H = sc.clientHeight || 440;
   const s = Math.max(W / ISLE_W, H / ISLE_H);
-  const ox = (W - ISLE_W * s) / 2, oy = H - ISLE_H * s;
+  const ox = (W - ISLE_W * s) / 2,
+    oy = H - ISLE_H * s;
   // partie du dessin réellement visible (marge pour ne rien couper au bord)
   const pad = 22 / s;
-  return { W, H, s, ox, oy,
-    minX: Math.max(0, -ox / s) + pad, maxX: Math.min(ISLE_W, (W - ox) / s) - pad,
-    minY: Math.max(0, -oy / s) + pad * 1.6, maxY: ISLE_H - pad * .4 };
+  return {
+    W,
+    H,
+    s,
+    ox,
+    oy,
+    minX: Math.max(0, -ox / s) + pad,
+    maxX: Math.min(ISLE_W, (W - ox) / s) - pad,
+    minY: Math.max(0, -oy / s) + pad * 1.6,
+    maxY: ISLE_H - pad * 0.4,
+  };
 }
-function isleToScreen(f, x, y){
-  const cx = Math.max(f.minX, Math.min(f.maxX, x)), cy = Math.max(f.minY, Math.min(f.maxY, y));
-  return { left: (f.ox + cx * f.s) / f.W * 100, top: (f.oy + cy * f.s) / f.H * 100 };
+function isleToScreen(f, x, y) {
+  const cx = Math.max(f.minX, Math.min(f.maxX, x)),
+    cy = Math.max(f.minY, Math.min(f.maxY, y));
+  return { left: ((f.ox + cx * f.s) / f.W) * 100, top: ((f.oy + cy * f.s) / f.H) * 100 };
 }
-function isleFromScreen(f, px, py){
-  return { x: Math.max(f.minX, Math.min(f.maxX, (px - f.ox) / f.s)), y: Math.max(f.minY, Math.min(f.maxY, (py - f.oy) / f.s)) };
+function isleFromScreen(f, px, py) {
+  return {
+    x: Math.max(f.minX, Math.min(f.maxX, (px - f.ox) / f.s)),
+    y: Math.max(f.minY, Math.min(f.maxY, (py - f.oy) / f.s)),
+  };
 }
 // place chaque élément (data-vx / data-vy) selon la taille actuelle de la scène
-function layoutIsle(sc){
-  if(!sc) return;
+function layoutIsle(sc) {
+  if (!sc) return;
   const f = isleFrame(sc);
-  sc.querySelectorAll('[data-vx]').forEach(el=>{
-    if(el.classList.contains('dragging')) return;
+  sc.querySelectorAll('[data-vx]').forEach((el) => {
+    if (el.classList.contains('dragging')) return;
     const p = isleToScreen(f, Number(el.dataset.vx), Number(el.dataset.vy));
-    el.style.left = p.left + '%'; el.style.top = p.top + '%';
+    el.style.left = p.left + '%';
+    el.style.top = p.top + '%';
   });
 }
 let isleResizeObs = null;
 
 /* ---- rendu ---- */
-function renderLiveIsland(sc){
-  if(!sc) return;
+function renderLiveIsland(sc) {
+  if (!sc) return;
   const w = WORLDS[currentWorld];
   const chars = charsOfForPlayer(currentWorld, playerGender());
-  const owned = decosOf(currentWorld).map(([k])=>k).filter(k=>state.decos.includes(k));
+  const owned = decosOf(currentWorld)
+    .map(([k]) => k)
+    .filter((k) => state.decos.includes(k));
   const tod = isleTimeOfDay();
   const pos = decoPositions(owned);
   sc.className = `scene live-isle tod-${tod} shape-${w.shape || currentWorld}`;
   sc.innerHTML = `
     ${landscapeSVG(currentWorld)}
     <div class="isle-tod" aria-hidden="true"></div>
-    ${owned.map((k,i)=>{
-      const p = pos[k];
-      return `<span class="deco" data-deco-key="${k}" data-vx="${p.x}" data-vy="${p.y}" role="img" aria-label="${DECOS[k].name}"
-        style="z-index:${isleZ(p.y)}; --d:${(i*0.7)%3}s">${DECOS[k].emoji}</span>`;
-    }).join('')}
-    ${chars.map(([id,c],i)=>{
-      const slots = isleCharSlots(chars.length), p = slots[i % slots.length];
-      const mood = charMood(id);
-      return `<button class="island isle-char" data-char="${id}" data-vx="${p.x}" data-vy="${p.y}" aria-label="${c.name} ${c.title}, ${mood.label}"
-        style="z-index:${isleZ(p.y)}; --d:${i*0.6}s">
+    ${owned
+      .map((k, i) => {
+        const p = pos[k];
+        return `<span class="deco" data-deco-key="${k}" data-vx="${p.x}" data-vy="${p.y}" role="img" aria-label="${DECOS[k].name}"
+        style="z-index:${isleZ(p.y)}; --d:${(i * 0.7) % 3}s">${DECOS[k].emoji}</span>`;
+      })
+      .join('')}
+    ${chars
+      .map(([id, c], i) => {
+        const slots = isleCharSlots(chars.length),
+          p = slots[i % slots.length];
+        const mood = charMood(id);
+        return `<button class="island isle-char" data-char="${id}" data-vx="${p.x}" data-vy="${p.y}" aria-label="${c.name} ${c.title}, ${mood.label}"
+        style="z-index:${isleZ(p.y)}; --d:${i * 0.6}s">
         <span class="ic-bubble">${mood.icon}</span>
         <span class="emoji">${charFace(id)}</span>
         <span class="ic-shadow"></span>
         <span class="name">${c.name}</span>
       </button>`;
-    }).join('')}
+      })
+      .join('')}
     ${owned.length ? '' : `<span class="empty isle-empty">${w.sceneEmpty}</span>`}
     ${owned.length && !state.tipDragDeco ? `<span class="isle-tip">✋ Fais glisser tes décorations !</span>` : ''}
     <button class="btn-deco" id="btn-deco">🎨 Décorer</button>
   `;
   layoutIsle(sc);
   // l'écran tourne, la fenêtre change de taille : tout reste à sa place dans le dessin
-  if(!isleResizeObs && typeof ResizeObserver === 'function'){
-    isleResizeObs = new ResizeObserver(()=> layoutIsle(sc));
+  if (!isleResizeObs && typeof ResizeObserver === 'function') {
+    isleResizeObs = new ResizeObserver(() => layoutIsle(sc));
     isleResizeObs.observe(sc);
   }
-  sc.querySelectorAll('.isle-char').forEach(btn=>{
-    btn.addEventListener('click', ()=>{ playSound('tap'); openDialogue(btn.dataset.char); });
+  sc.querySelectorAll('.isle-char').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      playSound('tap');
+      openDialogue(btn.dataset.char);
+    });
   });
-  sc.querySelectorAll('.deco[data-deco-key]').forEach(el=> bindDecoDrag(sc, el));
+  sc.querySelectorAll('.deco[data-deco-key]').forEach((el) => bindDecoDrag(sc, el));
   const b = document.getElementById('btn-deco');
-  if(b) b.onclick = ()=>{ playSound('tap'); openDecoShop(); };
+  if (b)
+    b.onclick = () => {
+      playSound('tap');
+      openDecoShop();
+    };
 }
 
 /* ---- glisser une décoration ---- */
-function bindDecoDrag(sc, el){
-  let start = null, dragging = false;
-  el.addEventListener('pointerdown', e=>{
-    start = { x:e.clientX, y:e.clientY, id:e.pointerId };
+function bindDecoDrag(sc, el) {
+  let start = null,
+    dragging = false;
+  el.addEventListener('pointerdown', (e) => {
+    start = { x: e.clientX, y: e.clientY, id: e.pointerId };
     dragging = false;
   });
-  el.addEventListener('pointermove', e=>{
-    if(!start || e.pointerId !== start.id) return;
-    if(!dragging){
-      if(Math.hypot(e.clientX - start.x, e.clientY - start.y) < 6) return;
+  el.addEventListener('pointermove', (e) => {
+    if (!start || e.pointerId !== start.id) return;
+    if (!dragging) {
+      if (Math.hypot(e.clientX - start.x, e.clientY - start.y) < 6) return;
       dragging = true;
       el.classList.add('dragging');
-      try{ el.setPointerCapture(e.pointerId); }catch{}
+      try {
+        el.setPointerCapture(e.pointerId);
+      } catch {}
     }
     const r = sc.getBoundingClientRect();
-    if(!r.width) return;
+    if (!r.width) return;
     const f = isleFrame(sc);
     const v = isleFromScreen(f, e.clientX - r.left, e.clientY - r.top);
     const p = isleToScreen(f, v.x, v.y);
-    el.style.left = p.left + '%'; el.style.top = p.top + '%'; el.style.zIndex = 200;
-    el.dataset.vx = v.x; el.dataset.vy = v.y;
+    el.style.left = p.left + '%';
+    el.style.top = p.top + '%';
+    el.style.zIndex = 200;
+    el.dataset.vx = v.x;
+    el.dataset.vy = v.y;
   });
-  const end = e=>{
-    if(!start) return;
-    if(dragging){
-      const x = Number(el.dataset.vx), y = Number(el.dataset.vy);
+  const end = (e) => {
+    if (!start) return;
+    if (dragging) {
+      const x = Number(el.dataset.vx),
+        y = Number(el.dataset.vy);
       moveDeco(el.dataset.decoKey, x, y);
       el.style.zIndex = isleZ(y);
       el.classList.remove('dragging');
       playSound('pop');
-      if(!state.tipDragDeco){ state.tipDragDeco = true; save(); const t = sc.querySelector('.isle-tip'); if(t) t.remove(); }
-    } else if(e.type === 'pointerup'){
+      if (!state.tipDragDeco) {
+        state.tipDragDeco = true;
+        save();
+        const t = sc.querySelector('.isle-tip');
+        if (t) t.remove();
+      }
+    } else if (e.type === 'pointerup') {
       // simple toucher : la décoration se trémousse et dit son nom
-      el.classList.remove('wiggle'); void el.offsetWidth; el.classList.add('wiggle');
+      el.classList.remove('wiggle');
+      void el.offsetWidth;
+      el.classList.add('wiggle');
       playSound('tap');
       const d = DECOS[el.dataset.decoKey];
-      if(d) speak(d.name);
+      if (d) speak(d.name);
     }
-    start = null; dragging = false;
+    start = null;
+    dragging = false;
   };
   el.addEventListener('pointerup', end);
   el.addEventListener('pointercancel', end);
 }
 
 // le ciel change tout seul quand l'heure tourne (vérifié chaque minute)
-setInterval(()=>{
+setInterval(() => {
   const sc = document.getElementById('scene');
-  if(sc && sc.classList.contains('live-isle') && !sc.classList.contains('tod-' + isleTimeOfDay())) renderLiveIsland(sc);
+  if (sc && sc.classList.contains('live-isle') && !sc.classList.contains('tod-' + isleTimeOfDay()))
+    renderLiveIsland(sc);
 }, 60000);
 
 // revenir au dialogue d'un personnage (après un cadeau, js/features/gifts)

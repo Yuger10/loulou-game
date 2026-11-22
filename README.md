@@ -26,7 +26,8 @@ bun run check        # avant de terminer : architecture (imports, couches, aucun
                      # squishies, saison 2, Jouets Doux, Bonbons, Musique, Jardin, Licornes, niveaux (conductor/niveaux.md), chaque mini-jeu joué jusqu'à la victoire,
                      # compagnons
 bun install          # installe aussi le hook git (lefthook) : chaque commit lance oxlint sur les fichiers JS indexés
-bun run lint         # oxlint (33 ms), déjà inclus dans check ; règles dans .oxlintrc.json
+bun run lint         # oxlint puis oxfmt --check (125 ms), déjà inclus dans check ; règles dans .oxlintrc.json
+bun run format       # met en forme js/ et test/ (oxfmt, .oxfmtrc.json) ; le hook de l'agent et le commit le font aussi
 bun run test jardin  # seulement les suites dont le nom contient « jardin » (plusieurs filtres possibles)
 bun run sync         # après avoir ajouté/déplacé un fichier : index.html et sw.js depuis js/slices.cjs
 bun run sw           # (même chose) la liste des fichiers mis en cache hors-ligne

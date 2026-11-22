@@ -25,7 +25,9 @@ import { playSound, requestCloseModal, showToast, speak, switchView } from '../s
 loadProfiles();
 load();
 // marque comme déjà vus les objets déjà possédés (anciennes sauvegardes)
-Object.keys(state.inventory||{}).forEach(k=>{ if(state.inventory[k]>0) markSeen(k); });
+Object.keys(state.inventory || {}).forEach((k) => {
+  if (state.inventory[k] > 0) markSeen(k);
+});
 renderCoins();
 renderSoundBtn();
 renderBadge();
@@ -34,7 +36,7 @@ renderTeamHeads();
 renderSquishyBadge();
 ensureQuests();
 // à la première ouverture, les îles déjà accessibles sont considérées comme connues
-if(!state.visited || !state.visited.length){
+if (!state.visited || !state.visited.length) {
   state.visited = WORLD_ORDER.filter(worldUnlocked);
   save();
 }
@@ -47,102 +49,143 @@ renderLevelPill();
 switchView('carte');
 
 /* Écran titre : sert aussi à débloquer le son et la voix (geste utilisateur requis sur iOS) */
-function showSplash(){
+function showSplash() {
   const sp = document.getElementById('splash');
   const season = currentSeason();
   document.getElementById('splash-hello').textContent = season
     ? `${FETES[season].greet(state.name)} ${FETES[season].emoji}`
-    : state.name ? `Coucou ${state.name} ${avatarText(state.avatar)} !` : "En route pour l'aventure ?";
+    : state.name
+      ? `Coucou ${state.name} ${avatarText(state.avatar)} !`
+      : "En route pour l'aventure ?";
   // joueur connu : son compagnon l'accueille ; sinon la troupe des personnages
   const bud = document.getElementById('splash-buddy');
   const cast = sp.querySelector('.cast');
-  if(bud && state.name){
+  if (bud && state.name) {
     bud.innerHTML = companionSVG(currentCompanion(), 'cheer');
-    bud.hidden = false; if(cast) cast.hidden = true;
-  } else if(bud){ bud.hidden = true; if(cast) cast.hidden = false; }
+    bud.hidden = false;
+    if (cast) cast.hidden = true;
+  } else if (bud) {
+    bud.hidden = true;
+    if (cast) cast.hidden = false;
+  }
   sp.classList.remove('hiding');
   sp.classList.add('show');
 }
-function hideSplash(){
+function hideSplash() {
   requestPersistentStorage();
   const sp = document.getElementById('splash');
   playSound('win');
   const note = document.getElementById('splash-note');
-  if(note) note.hidden = true;
+  if (note) note.hidden = true;
   sp.classList.add('hiding');
-  setTimeout(()=>{
-    sp.classList.remove('show','hiding'); updateMusic();
+  setTimeout(() => {
+    sp.classList.remove('show', 'hiding');
+    updateMusic();
     // la pause revient toujours (même après un rechargement) ; le lendemain, le compagnon se souvient
     maybeRest();
-    if(state.name && !restActive()) restRecallYesterday();
+    if (state.name && !restActive()) restRecallYesterday();
   }, 450);
-  if(!state.name) openWelcome();
+  if (!state.name) openWelcome();
   else {
     const season = currentSeason();
-    speak(season ? `${FETES[season].greet(state.name)} L'aventure t'attend.` : `Coucou ${state.name} ! L'aventure t'attend.`);
+    speak(
+      season
+        ? `${FETES[season].greet(state.name)} L'aventure t'attend.`
+        : `Coucou ${state.name} ! L'aventure t'attend.`,
+    );
     switchView('carte');
     // une fois par saison : un cadeau (chapeau pour l'avatar + pièces) ;
     // sinon l'équipe des compagnons : son ouverture (niveau 10) ou une rencontre
     // le Ciel des Rêves (v55) : son ouverture, pour une partie qui a déjà son niveau
-    setTimeout(()=>{ if(!maybeSeasonGift() && !maybeSkyOpening()) teamOnSessionStart(); }, 700);
+    setTimeout(() => {
+      if (!maybeSeasonGift() && !maybeSkyOpening()) teamOnSessionStart();
+    }, 700);
     // v53 : des boîtes surprises attendent dans la chambre à squishies (une fois)
     setTimeout(squishySessionHello, 2600);
   }
 }
 // navigation secondaire
-document.getElementById('btn-back-map').addEventListener('click', ()=>{ playSound('tap'); switchView('carte'); });
-document.querySelectorAll('[data-sactab]').forEach(b=>{
-  b.addEventListener('click', ()=>{ playSound('tap'); setSacTab(b.dataset.sactab); });
+document.getElementById('btn-back-map').addEventListener('click', () => {
+  playSound('tap');
+  switchView('carte');
 });
-document.getElementById('quests-btn').addEventListener('click', ()=>{ playSound('tap'); openQuestsModal(); });
-document.getElementById('story-btn').addEventListener('click', ()=>{ playSound('tap'); openStoryJournal(); });
+document.querySelectorAll('[data-sactab]').forEach((b) => {
+  b.addEventListener('click', () => {
+    playSound('tap');
+    setSacTab(b.dataset.sactab);
+  });
+});
+document.getElementById('quests-btn').addEventListener('click', () => {
+  playSound('tap');
+  openQuestsModal();
+});
+document.getElementById('story-btn').addEventListener('click', () => {
+  playSound('tap');
+  openStoryJournal();
+});
 
 // fermeture facile des fenêtres : croix, poignée, clic à côté, touche Échap
-document.getElementById('modal-close').addEventListener('click', ()=>{ playSound('tap'); requestCloseModal(); });
-document.getElementById('modal-handle').addEventListener('click', ()=>{ playSound('tap'); requestCloseModal(); });
-document.getElementById('overlay').addEventListener('click', (e)=>{
-  if(e.target.id==='overlay') requestCloseModal();
+document.getElementById('modal-close').addEventListener('click', () => {
+  playSound('tap');
+  requestCloseModal();
 });
-document.addEventListener('keydown', (e)=>{
-  if(e.key==='Escape' && document.getElementById('overlay').classList.contains('show')) requestCloseModal();
+document.getElementById('modal-handle').addEventListener('click', () => {
+  playSound('tap');
+  requestCloseModal();
+});
+document.getElementById('overlay').addEventListener('click', (e) => {
+  if (e.target.id === 'overlay') requestCloseModal();
+});
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && document.getElementById('overlay').classList.contains('show')) requestCloseModal();
 });
 
 document.getElementById('btn-splash-play').addEventListener('click', hideSplash);
 showSplash();
 // la pastille en haut ouvre le panneau des joueurs (profils, solo / chacun son tour)
 // toucher l'avatar et le prénom ouvre les Réglages (pas de 5e bouton dans la barre du bas)
-document.getElementById('avatar-pill').addEventListener('click', ()=>{ playSound('tap'); switchView('reglages'); });
+document.getElementById('avatar-pill').addEventListener('click', () => {
+  playSound('tap');
+  switchView('reglages');
+});
 document.getElementById('btn-start').addEventListener('click', closeWelcome);
-document.getElementById('name-input').addEventListener('keydown', e=>{ if(e.key==='Enter') closeWelcome(); });
+document.getElementById('name-input').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') closeWelcome();
+});
 // le jeu vient de redémarrer après « Chercher une mise à jour » (espace parents, v66) :
 // on le dit sur l'écran titre, où le message reste jusqu'à « Jouer »
 const updateNote = announceUpdate();
-if(updateNote){
+if (updateNote) {
   const note = document.getElementById('splash-note');
-  if(note && document.getElementById('splash').classList.contains('show')){ note.textContent = updateNote; note.hidden = false; }
-  else setTimeout(()=> showToast(updateNote), 1200);
+  if (note && document.getElementById('splash').classList.contains('show')) {
+    note.textContent = updateNote;
+    note.hidden = false;
+  } else setTimeout(() => showToast(updateNote), 1200);
 }
 // Installe le service worker ET recharge automatiquement dès qu'une
 // nouvelle version est prête, pour que les nouveautés (nouveaux jeux,
 // nouvelle île…) soient toujours visibles sans manipulation.
-if('serviceWorker' in navigator && location.protocol!=='file:'){
-  navigator.serviceWorker.register('sw.js').then(reg=>{
-    // vérifie s'il y a une mise à jour à chaque lancement
-    reg.update().catch(()=>{});
-    reg.addEventListener('updatefound', ()=>{
-      const sw = reg.installing;
-      if(!sw) return;
-      sw.addEventListener('statechange', ()=>{
-        if(sw.state==='installed' && navigator.serviceWorker.controller){
-          // une nouvelle version vient de s'installer : on l'active tout de suite
-          sw.postMessage('skipWaiting'); // oxlint-disable-line unicorn/require-post-message-target-origin -- service worker, pas une fenêtre
-        }
+if ('serviceWorker' in navigator && location.protocol !== 'file:') {
+  navigator.serviceWorker
+    .register('sw.js')
+    .then((reg) => {
+      // vérifie s'il y a une mise à jour à chaque lancement
+      reg.update().catch(() => {});
+      reg.addEventListener('updatefound', () => {
+        const sw = reg.installing;
+        if (!sw) return;
+        sw.addEventListener('statechange', () => {
+          if (sw.state === 'installed' && navigator.serviceWorker.controller) {
+            // une nouvelle version vient de s'installer : on l'active tout de suite
+            sw.postMessage('skipWaiting'); // oxlint-disable-line unicorn/require-post-message-target-origin -- service worker, pas une fenêtre
+          }
+        });
       });
-    });
-  }).catch(()=>{});
+    })
+    .catch(() => {});
   let refreshed = false;
-  navigator.serviceWorker.addEventListener('controllerchange', ()=>{
-    if(refreshed) return;
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (refreshed) return;
     refreshed = true;
     location.reload();
   });

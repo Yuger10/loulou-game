@@ -1,17 +1,41 @@
 /* ---------- Écran des joueurs, modes de jeu, choix du mini-jeu ---------- */
 import {
-  avatarHTML, avatarText, bindCompanionSelector, companionOf, companionSelector, companionsFor,
-  companionSVG, defaultCompanionFor
+  avatarHTML,
+  avatarText,
+  bindCompanionSelector,
+  companionOf,
+  companionSelector,
+  companionsFor,
+  companionSVG,
+  defaultCompanionFor,
 } from '../../entities/companion/index.js';
 import { ageToDiff, GAME_LIST, gameTypesForAge } from '../../entities/difficulty/index.js';
 import { gameCount, levelOf, save, state } from '../../entities/game-state/index.js';
 import {
-  addProfile, AVATARS, currentPlayerAge, currentProfile, party, partyCurrent, profiles,
-  profileSaveKey, saveProfiles, switchProfile
+  addProfile,
+  AVATARS,
+  currentPlayerAge,
+  currentProfile,
+  party,
+  partyCurrent,
+  profiles,
+  profileSaveKey,
+  saveProfiles,
+  switchProfile,
 } from '../../entities/player/index.js';
 import { currentWorld, worldGame } from '../../entities/world/index.js';
 import { on, pickRandom, shuffle } from '../../shared/lib/index.js';
-import { bindForm, closeModal, confetti, formSheet, openModal, playSound, showToast, speak, switchView } from '../../shared/ui/index.js';
+import {
+  bindForm,
+  closeModal,
+  confetti,
+  formSheet,
+  openModal,
+  playSound,
+  showToast,
+  speak,
+  switchView,
+} from '../../shared/ui/index.js';
 import { pickPracticeGame } from '../adaptive/index.js';
 import { teamOnGamePicker } from '../companion-team/index.js';
 import { renderLagon, setCurrentChar } from '../island/index.js';
@@ -21,22 +45,26 @@ import { genderSelector, renderProfile } from '../profile/index.js';
 import { bindQuit, gameHeader } from '../screen/index.js';
 
 /* --- Panneau des joueurs --- */
-function openPlayers(){
+function openPlayers() {
   const sel = new Set(party.active ? party.players : [profiles.current]);
-  const render = ()=>{
+  const render = () => {
     openModal(`
-      ${gameHeader('👥 Les joueurs', 'Choisis qui joue, ou ajoute quelqu\'un')}
+      ${gameHeader('👥 Les joueurs', "Choisis qui joue, ou ajoute quelqu'un")}
       <div id="players-list">
-        ${profiles.list.map(p=>`
-          <div class="market-row player-row ${p.id===profiles.current?'current':''}">
-            <span class="emoji">${avatarHTML(p.avatar, p.look)}<span class="row-buddy">${companionSVG(companionOf(p),'happy')}</span></span>
+        ${profiles.list
+          .map(
+            (p) => `
+          <div class="market-row player-row ${p.id === profiles.current ? 'current' : ''}">
+            <span class="emoji">${avatarHTML(p.avatar, p.look)}<span class="row-buddy">${companionSVG(companionOf(p), 'happy')}</span></span>
             <div class="info">
-              <div class="name">${p.name || 'Sans nom'} ${p.id===profiles.current?'<small>(en cours)</small>':''}</div>
-              <div class="sub">${p.age?`🎂 ${p.age} ans · `:''}${playerSummary(p.id)}</div>
+              <div class="name">${p.name || 'Sans nom'} ${p.id === profiles.current ? '<small>(en cours)</small>' : ''}</div>
+              <div class="sub">${p.age ? `🎂 ${p.age} ans · ` : ''}${playerSummary(p.id)}</div>
             </div>
-            <button class="pick-btn ${sel.has(p.id)?'on':''}" data-pick="${p.id}">${sel.has(p.id)?'✅':'⬜️'}</button>
+            <button class="pick-btn ${sel.has(p.id) ? 'on' : ''}" data-pick="${p.id}">${sel.has(p.id) ? '✅' : '⬜️'}</button>
             <button class="btn-small ghost" data-edit="${p.id}">⚙️</button>
-          </div>`).join('')}
+          </div>`,
+          )
+          .join('')}
       </div>
       <button class="btn-craft" id="btn-add-player">➕ Ajouter un joueur</button>
       <div class="mode-row">
@@ -49,32 +77,40 @@ function openPlayers(){
     `);
     bindQuit();
 
-    document.querySelectorAll('[data-pick]').forEach(b=>{
-      b.onclick = ()=>{
+    document.querySelectorAll('[data-pick]').forEach((b) => {
+      b.onclick = () => {
         const id = b.dataset.pick;
-        if(sel.has(id)) sel.delete(id); else sel.add(id);
+        if (sel.has(id)) sel.delete(id);
+        else sel.add(id);
         playSound('tap');
         render();
       };
     });
-    document.querySelectorAll('[data-edit]').forEach(b=>{
-      b.onclick = ()=>{ playSound('tap'); openPlayerSettings(b.dataset.edit); };
+    document.querySelectorAll('[data-edit]').forEach((b) => {
+      b.onclick = () => {
+        playSound('tap');
+        openPlayerSettings(b.dataset.edit);
+      };
     });
-    document.getElementById('btn-add-player').onclick = ()=>{ playSound('tap'); openNewPlayer(); };
-    document.getElementById('btn-solo').onclick = ()=>{
+    document.getElementById('btn-add-player').onclick = () => {
+      playSound('tap');
+      openNewPlayer();
+    };
+    document.getElementById('btn-solo').onclick = () => {
       playSound('tap');
       const id = [...sel][0] || profiles.current;
-      if(party.active) stopParty();
+      if (party.active) stopParty();
       switchProfile(id, true);
       closeModal();
-      renderProfile(); renderLagon();
+      renderProfile();
+      renderLagon();
       speak(`Mode solo. À toi de jouer ${currentProfile().name || ''} !`);
       showToast(`👤 ${avatarText(currentProfile().avatar)} ${currentProfile().name || ''}`);
     };
-    document.getElementById('btn-turns').onclick = ()=>{
+    document.getElementById('btn-turns').onclick = () => {
       playSound('tap');
-      const ids = profiles.list.filter(p=>sel.has(p.id)).map(p=>p.id);
-      if(ids.length < 2){
+      const ids = profiles.list.filter((p) => sel.has(p.id)).map((p) => p.id);
+      if (ids.length < 2) {
         showToast('Choisis au moins 2 joueurs ✌️');
         speak('Choisis au moins deux joueurs pour jouer chacun son tour.');
         return;
@@ -82,16 +118,16 @@ function openPlayers(){
       startParty(ids);
       closeModal();
     };
-    document.getElementById('btn-race').onclick = ()=>{
+    document.getElementById('btn-race').onclick = () => {
       playSound('tap');
-      const ids = profiles.list.filter(p=>sel.has(p.id)).map(p=>p.id);
-      if(ids.length < 2){
+      const ids = profiles.list.filter((p) => sel.has(p.id)).map((p) => p.id);
+      if (ids.length < 2) {
         showToast('Choisis au moins 2 joueurs ✌️');
         speak('Choisis au moins deux joueurs pour faire la course.');
         return;
       }
-      const sansAge = profiles.list.filter(p=>sel.has(p.id) && !p.age);
-      if(sansAge.length){
+      const sansAge = profiles.list.filter((p) => sel.has(p.id) && !p.age);
+      if (sansAge.length) {
         showToast(`Ajoute l'âge de ${sansAge[0].name || 'ce joueur'} 🎂`);
         speak(`Indique l'âge de ${sansAge[0].name || 'ce joueur'} pour une course équitable.`);
         openPlayerSettings(sansAge[0].id);
@@ -102,92 +138,146 @@ function openPlayers(){
       renderLagon();
     };
     const stop = document.getElementById('btn-stop-party');
-    if(stop) stop.onclick = ()=>{ playSound('tap'); stopParty(); closeModal(); };
+    if (stop)
+      stop.onclick = () => {
+        playSound('tap');
+        stopParty();
+        closeModal();
+      };
   };
   render();
 }
 
-function playerSummary(id){
-  try{
+function playerSummary(id) {
+  try {
     const raw = localStorage.getItem(profileSaveKey(id));
-    if(!raw) return 'Nouvelle aventure';
+    if (!raw) return 'Nouvelle aventure';
     const s = JSON.parse(raw);
     const lvl = levelOf(s.missions);
-    return `⭐ niveau ${lvl} · 🪙 ${s.coins||0} · 🎮 ${s.missions||0} missions`;
-  }catch{ return ''; }
+    return `⭐ niveau ${lvl} · 🪙 ${s.coins || 0} · 🎮 ${s.missions || 0} missions`;
+  } catch {
+    return '';
+  }
 }
 
-function ageSelector(sel){
-  const ages = [4,5,6,7,8,9,10,11,12];
+function ageSelector(sel) {
+  const ages = [4, 5, 6, 7, 8, 9, 10, 11, 12];
   return `<label class="mini-label">🎂 Quel âge ?</label>
     <div class="age-grid">
-      ${ages.map(a=>`<button class="age-opt ${Number(sel)===a?'sel':''}" data-age="${a}">${a}</button>`).join('')}
+      ${ages.map((a) => `<button class="age-opt ${Number(sel) === a ? 'sel' : ''}" data-age="${a}">${a}</button>`).join('')}
     </div>
-    <p class="mode-hint" id="age-hint">${sel?`Défi adapté : ${'⭐'.repeat(ageToDiff(sel))}`:'Sert à adapter la difficulté en course 🏁'}</p>`;
+    <p class="mode-hint" id="age-hint">${sel ? `Défi adapté : ${'⭐'.repeat(ageToDiff(sel))}` : 'Sert à adapter la difficulté en course 🏁'}</p>`;
 }
 
 /* --- Formulaires des joueurs (modèle commun de js/shared/ui/form.js) --- */
 // après un formulaire : on revient d'où l'on vient (l'écran Réglages, ou le panneau des joueurs)
-function backFromPlayerForm(){
+function backFromPlayerForm() {
   const rg = document.getElementById('view-reglages');
-  if(rg && rg.classList.contains('active')){ closeModal(); switchView('reglages'); }
-  else openPlayers();
+  if (rg && rg.classList.contains('active')) {
+    closeModal();
+    switchView('reglages');
+  } else openPlayers();
 }
 
-const NAME_INPUT_ATTRS = 'type="text" maxlength="12" placeholder="Prénom" autocomplete="off" autocapitalize="words" autocorrect="off" spellcheck="false" enterkeyhint="done"';
-const NAME_REQUIRED = 'Écris d\'abord un prénom, en haut.';
-const escAttr = (v)=> String(v || '').replace(/"/g, '&quot;');
+const NAME_INPUT_ATTRS =
+  'type="text" maxlength="12" placeholder="Prénom" autocomplete="off" autocapitalize="words" autocorrect="off" spellcheck="false" enterkeyhint="done"';
+const NAME_REQUIRED = "Écris d'abord un prénom, en haut.";
+const escAttr = (v) => String(v || '').replace(/"/g, '&quot;');
 // les sections communes : Moi (prénom, âge), Mon avatar, Mon compagnon
-function playerFormSections(o){
+function playerFormSections(o) {
   return [
-    { title:'🙂 Moi', html:`<input id="${o.nameId}" class="name-input-modal" ${NAME_INPUT_ATTRS} value="${escAttr(o.name)}">${ageSelector(o.age)}` },
-    { title:'🎨 Mon avatar', html:`<div class="avatar-grid">
-        ${AVATARS.map(a=>`<button class="avatar-opt ${a===o.av?'sel':''}" data-av="${a}" aria-label="${avatarText(a)}">${avatarHTML(a)}</button>`).join('')}
-      </div>` },
-    { title:'🧚 Mon compagnon', html:`${genderSelector(o.gen)}${companionSelector(o.comp, o.gen, o.allBuddies)}` },
+    {
+      title: '🙂 Moi',
+      html: `<input id="${o.nameId}" class="name-input-modal" ${NAME_INPUT_ATTRS} value="${escAttr(o.name)}">${ageSelector(o.age)}`,
+    },
+    {
+      title: '🎨 Mon avatar',
+      html: `<div class="avatar-grid">
+        ${AVATARS.map((a) => `<button class="avatar-opt ${a === o.av ? 'sel' : ''}" data-av="${a}" aria-label="${avatarText(a)}">${avatarHTML(a)}</button>`).join('')}
+      </div>`,
+    },
+    { title: '🧚 Mon compagnon', html: `${genderSelector(o.gen)}${companionSelector(o.comp, o.gen, o.allBuddies)}` },
   ];
 }
 
 /* --- Nouveau joueur --- */
-function openNewPlayer(){
+function openNewPlayer() {
   let av = pickRandom(AVATARS);
-  let age = null, gen = '', comp = null, allBuddies = false, name = '';
-  const snap = ()=> ({ name: name.trim(), av, age, gen, comp });
+  let age = null,
+    gen = '',
+    comp = null,
+    allBuddies = false,
+    name = '';
+  const snap = () => ({ name: name.trim(), av, age, gen, comp });
   const initial = snap();
-  const render = ()=>{
-    openModal(formSheet({
-      title:'➕ Nouveau joueur',
-      sections: playerFormSections({ nameId:'np-name', name, age, av, gen, comp: comp || defaultCompanionFor(gen), allBuddies }),
-      primary:'C\'est parti ! 🎮', secondary:'Annuler',
-    }));
+  const render = () => {
+    openModal(
+      formSheet({
+        title: '➕ Nouveau joueur',
+        sections: playerFormSections({
+          nameId: 'np-name',
+          name,
+          age,
+          av,
+          gen,
+          comp: comp || defaultCompanionFor(gen),
+          allBuddies,
+        }),
+        primary: "C'est parti ! 🎮",
+        secondary: 'Annuler',
+      }),
+    );
     const input = document.getElementById('np-name');
-    input.addEventListener('input', ()=>{ name = input.value; });
-    document.querySelectorAll('.avatar-opt').forEach(b=>{
-      b.onclick = ()=>{ av = b.dataset.av; playSound('tap'); render(); };
+    input.addEventListener('input', () => {
+      name = input.value;
     });
-    document.querySelectorAll('.age-opt').forEach(b=>{
-      b.onclick = ()=>{ age = Number(b.dataset.age); playSound('tap'); render(); };
-    });
-    document.querySelectorAll('.gender-opt').forEach(b=>{
-      b.onclick = ()=>{
-        gen = b.dataset.gender; playSound('tap');
-        if(comp && !allBuddies && !companionsFor(gen).includes(comp)) comp = null;
+    document.querySelectorAll('.avatar-opt').forEach((b) => {
+      b.onclick = () => {
+        av = b.dataset.av;
+        playSound('tap');
         render();
       };
     });
-    bindCompanionSelector(document, k=>{ comp = k; render(); }, ()=>{ allBuddies = true; render(); });
+    document.querySelectorAll('.age-opt').forEach((b) => {
+      b.onclick = () => {
+        age = Number(b.dataset.age);
+        playSound('tap');
+        render();
+      };
+    });
+    document.querySelectorAll('.gender-opt').forEach((b) => {
+      b.onclick = () => {
+        gen = b.dataset.gender;
+        playSound('tap');
+        if (comp && !allBuddies && !companionsFor(gen).includes(comp)) comp = null;
+        render();
+      };
+    });
+    bindCompanionSelector(
+      document,
+      (k) => {
+        comp = k;
+        render();
+      },
+      () => {
+        allBuddies = true;
+        render();
+      },
+    );
     bindForm({
-      initial, current: snap,
-      required:[{ value:()=> name, say:NAME_REQUIRED, focus:()=> document.getElementById('np-name') }],
-      onSave:()=>{
-        const n = name.trim().slice(0,12);
+      initial,
+      current: snap,
+      required: [{ value: () => name, say: NAME_REQUIRED, focus: () => document.getElementById('np-name') }],
+      onSave: () => {
+        const n = name.trim().slice(0, 12);
         addProfile(n, av, age, gen, comp || defaultCompanionFor(gen));
-        playSound('win'); confetti();
+        playSound('win');
+        confetti();
         speak(`Bienvenue ${n} !`);
         showToast(`${avatarText(av)} ${n} ajouté !`);
         backFromPlayerForm();
       },
-      onCancel:()=> backFromPlayerForm(),
+      onCancel: () => backFromPlayerForm(),
     });
   };
   render();
@@ -195,73 +285,123 @@ function openNewPlayer(){
 
 /* --- Réglages d'un joueur : prénom, âge, avatar, compagnon, anniversaire ---
    (recommencer et supprimer sont dans l'espace parents, zone sensible) */
-function openPlayerSettings(id){
-  const p = profiles.list.find(x=>x.id===id);
-  if(!p) return;
+function openPlayerSettings(id) {
+  const p = profiles.list.find((x) => x.id === id);
+  if (!p) return;
   let name = p.name || '';
   let av = p.avatar;
   let age = p.age || null;
   let gen = p.gender || '';
-  let comp = companionOf(p), allBuddies = !companionsFor(gen).includes(comp);
-  let bday = p.birthday || '';   // « MM-JJ » : le jeu fête l'anniversaire ce jour-là (js/features/seasons/seasons.js)
-  const MONTHS = ['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
+  let comp = companionOf(p),
+    allBuddies = !companionsFor(gen).includes(comp);
+  let bday = p.birthday || ''; // « MM-JJ » : le jeu fête l'anniversaire ce jour-là (js/features/seasons/seasons.js)
+  const MONTHS = [
+    'janvier',
+    'février',
+    'mars',
+    'avril',
+    'mai',
+    'juin',
+    'juillet',
+    'août',
+    'septembre',
+    'octobre',
+    'novembre',
+    'décembre',
+  ];
   // le jour et le mois sont relus dans la page à chaque fois (une liste peut changer sans événement)
-  const readBday = ()=>{
-    const de = document.getElementById('pe-bday-d'), me = document.getElementById('pe-bday-m');
-    if(!de || !me) return bday;
-    const d = Number(de.value), m = Number(me.value);
-    bday = d && m ? `${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}` : '';
+  const readBday = () => {
+    const de = document.getElementById('pe-bday-d'),
+      me = document.getElementById('pe-bday-m');
+    if (!de || !me) return bday;
+    const d = Number(de.value),
+      m = Number(me.value);
+    bday = d && m ? `${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}` : '';
     return bday;
   };
-  const snap = ()=> ({ name: name.trim(), av, age, gen, comp, bday: readBday() });
+  const snap = () => ({ name: name.trim(), av, age, gen, comp, bday: readBday() });
   const initial = { name: name.trim(), av, age, gen, comp, bday };
-  const render = ()=>{
+  const render = () => {
     const [bm, bd] = bday ? bday.split('-').map(Number) : [0, 0];
-    openModal(formSheet({
-      title:`⚙️ ${p.name || 'Joueur'}`,
-      sections:[
-        ...playerFormSections({ nameId:'pe-name', name, age, av, gen, comp, allBuddies }),
-        { title:'🎂 Mon anniversaire (facultatif)', html:`<div class="bday-row">
-            <select id="pe-bday-d" aria-label="Jour de l'anniversaire"><option value="0">Jour</option>${Array.from({length:31},(_,i)=>`<option value="${i+1}" ${bd===i+1?'selected':''}>${i+1}</option>`).join('')}</select>
-            <select id="pe-bday-m" aria-label="Mois de l'anniversaire"><option value="0">Mois</option>${MONTHS.map((m,i)=>`<option value="${i+1}" ${bm===i+1?'selected':''}>${m}</option>`).join('')}</select>
-          </div>` },
-        { html:`<div class="speech" style="font-size:.82rem;">${playerSummary(id)}</div>` },
-      ],
-      primary:'Enregistrer ✅', secondary:'Retour',
-    }));
+    openModal(
+      formSheet({
+        title: `⚙️ ${p.name || 'Joueur'}`,
+        sections: [
+          ...playerFormSections({ nameId: 'pe-name', name, age, av, gen, comp, allBuddies }),
+          {
+            title: '🎂 Mon anniversaire (facultatif)',
+            html: `<div class="bday-row">
+            <select id="pe-bday-d" aria-label="Jour de l'anniversaire"><option value="0">Jour</option>${Array.from({ length: 31 }, (_, i) => `<option value="${i + 1}" ${bd === i + 1 ? 'selected' : ''}>${i + 1}</option>`).join('')}</select>
+            <select id="pe-bday-m" aria-label="Mois de l'anniversaire"><option value="0">Mois</option>${MONTHS.map((m, i) => `<option value="${i + 1}" ${bm === i + 1 ? 'selected' : ''}>${m}</option>`).join('')}</select>
+          </div>`,
+          },
+          { html: `<div class="speech" style="font-size:.82rem;">${playerSummary(id)}</div>` },
+        ],
+        primary: 'Enregistrer ✅',
+        secondary: 'Retour',
+      }),
+    );
     const input = document.getElementById('pe-name');
-    input.addEventListener('input', ()=>{ name = input.value; });
-    document.querySelectorAll('.avatar-opt').forEach(b=>{
-      b.onclick = ()=>{ av = b.dataset.av; playSound('tap'); render(); };
+    input.addEventListener('input', () => {
+      name = input.value;
     });
-    document.querySelectorAll('.age-opt').forEach(b=>{
-      b.onclick = ()=>{ age = Number(b.dataset.age); playSound('tap'); render(); };
+    document.querySelectorAll('.avatar-opt').forEach((b) => {
+      b.onclick = () => {
+        av = b.dataset.av;
+        playSound('tap');
+        render();
+      };
     });
-    document.querySelectorAll('.gender-opt').forEach(b=>{
-      b.onclick = ()=>{ gen = b.dataset.gender; playSound('tap'); render(); };
+    document.querySelectorAll('.age-opt').forEach((b) => {
+      b.onclick = () => {
+        age = Number(b.dataset.age);
+        playSound('tap');
+        render();
+      };
     });
-    bindCompanionSelector(document, k=>{ comp = k; render(); }, ()=>{ allBuddies = true; render(); });
-    ['pe-bday-d','pe-bday-m'].forEach(k=> document.getElementById(k).addEventListener('change', readBday));
+    document.querySelectorAll('.gender-opt').forEach((b) => {
+      b.onclick = () => {
+        gen = b.dataset.gender;
+        playSound('tap');
+        render();
+      };
+    });
+    bindCompanionSelector(
+      document,
+      (k) => {
+        comp = k;
+        render();
+      },
+      () => {
+        allBuddies = true;
+        render();
+      },
+    );
+    ['pe-bday-d', 'pe-bday-m'].forEach((k) => document.getElementById(k).addEventListener('change', readBday));
     bindForm({
-      initial, current: snap,
-      required:[{ value:()=> name, say:NAME_REQUIRED, focus:()=> document.getElementById('pe-name') }],
-      onSave:()=>{
+      initial,
+      current: snap,
+      required: [{ value: () => name, say: NAME_REQUIRED, focus: () => document.getElementById('pe-name') }],
+      onSave: () => {
         p.birthday = readBday();
-        p.name = name.trim().slice(0,12);
+        p.name = name.trim().slice(0, 12);
         p.avatar = av;
         p.age = age;
         p.gender = gen;
         p.companion = comp;
         saveProfiles();
-        if(id === profiles.current){
-          state.name = p.name; state.avatar = p.avatar; save();
-          renderProfile(); renderLagon();
+        if (id === profiles.current) {
+          state.name = p.name;
+          state.avatar = p.avatar;
+          save();
+          renderProfile();
+          renderLagon();
         }
         playSound('good');
         showToast('Enregistré ✅');
         backFromPlayerForm();
       },
-      onCancel:()=> backFromPlayerForm(),
+      onCancel: () => backFromPlayerForm(),
     });
   };
   render();
@@ -280,48 +420,57 @@ const GAME_PICKER_SIZE = 2;
 //    compteur personnel `state.gameCounts`) : les jeux jamais faits
 //    remontent toujours en premier, pour forcer la variété (égalités
 //    départagées au hasard).
-function pickPickerChoices(n){
+function pickPickerChoices(n) {
   const allowed = new Set(gameTypesForAge(currentPlayerAge()));
-  const pool = GAME_LIST.filter(g=>allowed.has(g.key));
-  const withCount = shuffle(pool.length ? pool : GAME_LIST).map(g=>({ g, c: gameCount(g.key) }));
-  withCount.sort((a,b)=>a.c-b.c);
-  const choices = withCount.slice(0, n).map(x=>x.g);
+  const pool = GAME_LIST.filter((g) => allowed.has(g.key));
+  const withCount = shuffle(pool.length ? pool : GAME_LIST).map((g) => ({ g, c: gameCount(g.key) }));
+  withCount.sort((a, b) => a.c - b.c);
+  const choices = withCount.slice(0, n).map((x) => x.g);
   // une île peut avoir « son » mini-jeu (WORLDS[id].game) : il est toujours
   // proposé quand on y joue (s'il convient à l'âge du joueur)
   const own = worldGame(currentWorld, currentPlayerAge());
-  const ownGame = own && pool.find(g=>g.key===own);
-  if(ownGame && !choices.includes(ownGame)) choices[0] = ownGame;
+  const ownGame = own && pool.find((g) => g.key === own);
+  if (ownGame && !choices.includes(ownGame)) choices[0] = ownGame;
   // Phase 3 : un jeu à travailler revient plus souvent (js/features/adaptive/adaptive.js)
-  const practice = pickPracticeGame(pool.map(g=>g.key));
-  if(practice && !choices.some(g=>g.key===practice)){
-    const slot = choices.length > 1 && choices[choices.length-1]!==ownGame ? choices.length-1 : (choices[0]===ownGame ? -1 : 0);
-    if(slot >= 0) choices[slot] = pool.find(g=>g.key===practice);
+  const practice = pickPracticeGame(pool.map((g) => g.key));
+  if (practice && !choices.some((g) => g.key === practice)) {
+    const slot =
+      choices.length > 1 && choices[choices.length - 1] !== ownGame
+        ? choices.length - 1
+        : choices[0] === ownGame
+          ? -1
+          : 0;
+    if (slot >= 0) choices[slot] = pool.find((g) => g.key === practice);
   }
   return choices;
 }
 
-function openGamePicker(charId){
-  if(charId) setCurrentChar(charId);
-  const who = party.active ? (partyCurrent() || currentProfile()) : currentProfile();
+function openGamePicker(charId) {
+  if (charId) setCurrentChar(charId);
+  const who = party.active ? partyCurrent() || currentProfile() : currentProfile();
   const choices = pickPickerChoices(Math.min(GAME_PICKER_SIZE, GAME_LIST.length));
   openModal(`
     ${gameHeader('🎮 Choisis ton jeu', party.active ? `${avatarText(who.avatar)} ${who.name || 'À toi'} choisit !` : 'À quoi veux-tu jouer ?')}
     <div class="game-picker">
-      ${choices.map(g=>`<button class="game-choice" data-game="${g.key}">
+      ${choices
+        .map(
+          (g) => `<button class="game-choice" data-game="${g.key}">
         <span class="emoji">${g.emoji}</span><span class="nm">${g.name}</span>
-      </button>`).join('')}
+      </button>`,
+        )
+        .join('')}
       <button class="game-choice surprise" data-game="random">
         <span class="emoji">🎲</span><span class="nm">Surprise</span>
       </button>
     </div>
   `);
   bindQuit();
-  teamOnGamePicker(choices.map(g=>g.key));   // Léo le tuteur annonce un jeu à travailler
-  document.querySelectorAll('[data-game]').forEach(b=>{
-    b.onclick = ()=>{
+  teamOnGamePicker(choices.map((g) => g.key)); // Léo le tuteur annonce un jeu à travailler
+  document.querySelectorAll('[data-game]').forEach((b) => {
+    b.onclick = () => {
       playSound('tap');
       const k = b.dataset.game;
-      if(k==='random') startMinigame();
+      if (k === 'random') startMinigame();
       else playGame(k);
     };
   });
@@ -332,6 +481,4 @@ function openGamePicker(charId){
 on('nav:game-picker', openGamePicker);
 on('nav:player-settings', openPlayerSettings);
 
-export {
-  openNewPlayer, openPlayers, openPlayerSettings
-};
+export { openNewPlayer, openPlayers, openPlayerSettings };

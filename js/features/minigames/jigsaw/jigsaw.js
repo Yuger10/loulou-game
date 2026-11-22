@@ -21,20 +21,30 @@ import { gameDiff } from '../../adaptive/index.js';
 import { registerHints, setHintQuestion } from '../../hints/index.js';
 import { ISLE_SCENERY, isleGenericScenery } from '../../island/index.js';
 import {
-  flashModal, livesBar, loseLife, onMissionWin, progressDots, registerGame, setSolution, setupLives,
-  solSel, stepOk
+  flashModal,
+  livesBar,
+  loseLife,
+  onMissionWin,
+  progressDots,
+  registerGame,
+  setSolution,
+  setupLives,
+  solSel,
+  stepOk,
 } from '../../minigame-engine/index.js';
 import { bindQuit, gameHeader } from '../../screen/index.js';
 
-const JIGSAW_W = 480, JIGSAW_H = 360;
+const JIGSAW_W = 480,
+  JIGSAW_H = 360;
 
 // L'image : ciel, paysage de l'île (js/features/island/island.js), et un compagnon en grand.
-function jigsawPicture(worldId, compId){
+function jigsawPicture(worldId, compId) {
   const w = WORLDS[worldId] || WORLDS.lagon;
-  const draw = (ISLE_SCENERY[w.shape] || ISLE_SCENERY[worldId])
-    || isleGenericScenery;
-  const buddy = companionSVG(compId, 'happy')
-    .replace(/^<svg class="[^"]*"/, '<svg class="jg-buddy" x="138" y="140" width="204" height="221"');
+  const draw = ISLE_SCENERY[w.shape] || ISLE_SCENERY[worldId] || isleGenericScenery;
+  const buddy = companionSVG(compId, 'happy').replace(
+    /^<svg class="[^"]*"/,
+    '<svg class="jg-buddy" x="138" y="140" width="204" height="221"',
+  );
   return `<linearGradient id="jg-sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7FD3EE"/><stop offset=".6" stop-color="#E2F7F6"/></linearGradient>
     <rect width="${JIGSAW_W}" height="${JIGSAW_H}" fill="url(#jg-sky)"/>
     <circle cx="404" cy="62" r="40" fill="#FFE07A" opacity=".35"/><circle cx="404" cy="62" r="25" fill="#FFD54A"/>
@@ -61,33 +71,34 @@ const JIGSAW_DETAILS = `
     <path d="M-20 2 C-20 -16 20 -16 20 2 Z" fill="#E5484D"/><circle cx="-8" cy="-6" r="3" fill="#fff"/><circle cx="6" cy="-9" r="2.6" fill="#fff"/><circle cx="12" cy="-2" r="2.2" fill="#fff"/></g>`;
 
 // Un morceau (ou l'image entière) : une fenêtre sur le symbole #jg-art
-function jigsawViewSVG(x, y, w, h, cls){
+function jigsawViewSVG(x, y, w, h, cls) {
   return `<svg class="${cls || 'jg-svg'}" viewBox="${x} ${y} ${w} ${h}" preserveAspectRatio="none" aria-hidden="true"><use href="#jg-art" width="${JIGSAW_W}" height="${JIGSAW_H}"/></svg>`;
 }
 
 // oxlint-disable-next-line no-unused-vars -- lu par les tests, par son nom : { cols, rows, order }
 let jigsawState = null;
 
-function renderJigsaw(){
+function renderJigsaw() {
   setupLives('jigsaw');
   const dd = gameDiff();
   const r = jigsawRound(dd);
   const n = r.cols * r.rows;
-  const pw = JIGSAW_W / r.cols, ph = JIGSAW_H / r.rows;
+  const pw = JIGSAW_W / r.cols,
+    ph = JIGSAW_H / r.rows;
   // une île déjà découverte (ou le Lagon) et un compagnon au hasard
-  const worlds = WORLD_ORDER.filter(id=> worldUnlocked(id));
+  const worlds = WORLD_ORDER.filter((id) => worldUnlocked(id));
   const worldId = pickRandom(worlds.length ? worlds : ['lagon']);
   const compId = pickRandom(COMPANION_ORDER);
   // ordre mélangé, jamais déjà en place
-  let order = shuffle(Array.from({length:n}, (_,i)=>i));
-  if(order.every((p,i)=>p===i)) order = order.slice(1).concat(order[0]);
-  jigsawState = { cols:r.cols, rows:r.rows, order };
-  const piece = (i)=> jigsawViewSVG((i % r.cols) * pw, Math.floor(i / r.cols) * ph, pw, ph);
-  const hint = r.ghost ? 'Remets les morceaux à leur place' : 'Refais l\'image du modèle';
+  let order = shuffle(Array.from({ length: n }, (_, i) => i));
+  if (order.every((p, i) => p === i)) order = order.slice(1).concat(order[0]);
+  jigsawState = { cols: r.cols, rows: r.rows, order };
+  const piece = (i) => jigsawViewSVG((i % r.cols) * pw, Math.floor(i / r.cols) * ph, pw, ph);
+  const hint = r.ghost ? 'Remets les morceaux à leur place' : "Refais l'image du modèle";
   // réserve compacte : tous les morceaux tiennent sur 1 ou 2 rangées sous le cadre
   const tcols = n <= 4 ? n : Math.ceil(n / 2);
   openModal(`
-    ${gameHeader('🖼️ Le puzzle', hint, r.ghost ? 'Remets chaque morceau à sa place pour reconstruire l\'image' : 'Refais l\'image du modèle')}
+    ${gameHeader('🖼️ Le puzzle', hint, r.ghost ? "Remets chaque morceau à sa place pour reconstruire l'image" : "Refais l'image du modèle")}
     ${livesBar()}
     <svg class="jg-defs" width="0" height="0" aria-hidden="true" focusable="false"><defs><symbol id="jg-art" viewBox="0 0 ${JIGSAW_W} ${JIGSAW_H}">${jigsawPicture(worldId, compId)}</symbol></defs></svg>
     <div class="jg-wrap" style="--cols:${r.cols}; --rows:${r.rows}; --tcols:${tcols};">
@@ -97,91 +108,120 @@ function renderJigsaw(){
       </div>
       <div class="jg-board">
         ${r.ghost ? `<div class="jg-ghost" style="opacity:${r.ghost}">${jigsawViewSVG(0, 0, JIGSAW_W, JIGSAW_H, 'jg-svg')}</div>` : ''}
-        ${Array.from({length:n}, (_,i)=>`<button type="button" class="jg-slot" data-s="${i}" aria-label="Case, ligne ${Math.floor(i/r.cols)+1}, colonne ${i%r.cols+1}"></button>`).join('')}
+        ${Array.from({ length: n }, (_, i) => `<button type="button" class="jg-slot" data-s="${i}" aria-label="Case, ligne ${Math.floor(i / r.cols) + 1}, colonne ${(i % r.cols) + 1}"></button>`).join('')}
       </div>
       <p class="jg-tip">👆 Glisse un morceau, ou touche-le puis touche sa case</p>
       <div class="jg-tray">
-        ${order.map(p=>`<button type="button" class="jg-piece" data-p="${p}" aria-label="Morceau de l'image">${piece(p)}</button>`).join('')}
+        ${order.map((p) => `<button type="button" class="jg-piece" data-p="${p}" aria-label="Morceau de l'image">${piece(p)}</button>`).join('')}
       </div>
     </div>
   `);
   bindQuit();
   // tests : toucher chaque morceau, puis sa case
-  setSolution(Array.from({length:n}, (_,i)=>[solSel('.jg-piece','p',i), solSel('.jg-slot','s',i)]).flat());
-  setHintQuestion('jigsaw', { cols:r.cols, rows:r.rows, ghost:!!r.ghost });
+  setSolution(Array.from({ length: n }, (_, i) => [solSel('.jg-piece', 'p', i), solSel('.jg-slot', 's', i)]).flat());
+  setHintQuestion('jigsaw', { cols: r.cols, rows: r.rows, ghost: !!r.ghost });
 
-  let placed = 0, selected = null, justDragged = false;
-  const clearSel = ()=>{ if(selected) selected.classList.remove('sel'); selected = null; };
-  const tryPlace = (pieceEl, slotEl)=>{
-    if(!pieceEl || !slotEl || slotEl.classList.contains('filled') || pieceEl.classList.contains('used')) return;
-    const p = Number(pieceEl.dataset.p), s = Number(slotEl.dataset.s);
+  let placed = 0,
+    selected = null,
+    justDragged = false;
+  const clearSel = () => {
+    if (selected) selected.classList.remove('sel');
+    selected = null;
+  };
+  const tryPlace = (pieceEl, slotEl) => {
+    if (!pieceEl || !slotEl || slotEl.classList.contains('filled') || pieceEl.classList.contains('used')) return;
+    const p = Number(pieceEl.dataset.p),
+      s = Number(slotEl.dataset.s);
     clearSel();
-    if(p === s){
+    if (p === s) {
       slotEl.innerHTML = piece(p);
       slotEl.classList.add('filled');
       slotEl.setAttribute('aria-label', 'Morceau bien placé');
-      pieceEl.classList.add('used'); pieceEl.disabled = true; pieceEl.innerHTML = '';
+      pieceEl.classList.add('used');
+      pieceEl.disabled = true;
+      pieceEl.innerHTML = '';
       placed++;
       const prog = document.querySelector('.jg-progress');
-      if(prog) prog.innerHTML = progressDots(placed, n);
+      if (prog) prog.innerHTML = progressDots(placed, n);
       stepOk(slotEl);
-      if(placed >= n){
+      if (placed >= n) {
         document.querySelector('.jg-board').classList.add('done');
         flashModal('ok');
         setTimeout(onMissionWin, 700);
       }
     } else {
       pieceEl.classList.remove('lifted');
-      loseLife(slotEl, { disable:false });
+      loseLife(slotEl, { disable: false });
     }
   };
-  document.querySelectorAll('.jg-slot').forEach(slot=>{
-    slot.onclick = ()=>{
-      if(slot.classList.contains('filled')) return;
-      if(selected) tryPlace(selected, slot);
-      else { playSound('tap'); showToast('👆 Choisis d\'abord un morceau en bas'); }
+  document.querySelectorAll('.jg-slot').forEach((slot) => {
+    slot.onclick = () => {
+      if (slot.classList.contains('filled')) return;
+      if (selected) tryPlace(selected, slot);
+      else {
+        playSound('tap');
+        showToast("👆 Choisis d'abord un morceau en bas");
+      }
     };
   });
-  document.querySelectorAll('.jg-piece').forEach(pc=>{
-    pc.onclick = ()=>{
-      if(justDragged){ justDragged = false; return; }
-      if(pc.classList.contains('used')) return;
+  document.querySelectorAll('.jg-piece').forEach((pc) => {
+    pc.onclick = () => {
+      if (justDragged) {
+        justDragged = false;
+        return;
+      }
+      if (pc.classList.contains('used')) return;
       playSound('tap');
-      if(selected === pc){ clearSel(); return; }
-      clearSel(); selected = pc; pc.classList.add('sel');
+      if (selected === pc) {
+        clearSel();
+        return;
+      }
+      clearSel();
+      selected = pc;
+      pc.classList.add('sel');
     };
     // glisser du doigt (ou à la souris) jusqu'à une case
-    pc.addEventListener('pointerdown', e=>{
-      if(pc.classList.contains('used') || (e.pointerType==='mouse' && e.button!==0)) return;
-      const sx = e.clientX, sy = e.clientY;
-      let ghost = null, box = null;
-      try{ pc.setPointerCapture(e.pointerId); }catch{}
-      const move = ev=>{
-        if(!ghost && Math.hypot(ev.clientX - sx, ev.clientY - sy) > 8){
+    pc.addEventListener('pointerdown', (e) => {
+      if (pc.classList.contains('used') || (e.pointerType === 'mouse' && e.button !== 0)) return;
+      const sx = e.clientX,
+        sy = e.clientY;
+      let ghost = null,
+        box = null;
+      try {
+        pc.setPointerCapture(e.pointerId);
+      } catch {}
+      const move = (ev) => {
+        if (!ghost && Math.hypot(ev.clientX - sx, ev.clientY - sy) > 8) {
           box = pc.getBoundingClientRect();
           ghost = pc.cloneNode(true);
-          ghost.classList.add('jg-drag'); ghost.classList.remove('sel');
-          ghost.style.width = box.width + 'px'; ghost.style.height = box.height + 'px';
+          ghost.classList.add('jg-drag');
+          ghost.classList.remove('sel');
+          ghost.style.width = box.width + 'px';
+          ghost.style.height = box.height + 'px';
           document.body.appendChild(ghost);
-          pc.classList.add('lifted'); clearSel();
+          pc.classList.add('lifted');
+          clearSel();
         }
-        if(ghost){
-          ghost.style.left = (ev.clientX - box.width/2) + 'px';
-          ghost.style.top = (ev.clientY - box.height/2) + 'px';
+        if (ghost) {
+          ghost.style.left = ev.clientX - box.width / 2 + 'px';
+          ghost.style.top = ev.clientY - box.height / 2 + 'px';
         }
       };
-      const end = ev=>{
+      const end = (ev) => {
         pc.removeEventListener('pointermove', move);
         pc.removeEventListener('pointerup', end);
         pc.removeEventListener('pointercancel', end);
-        if(!ghost) return;
-        ghost.remove(); justDragged = true;
-        setTimeout(()=>{ justDragged = false; }, 350);
+        if (!ghost) return;
+        ghost.remove();
+        justDragged = true;
+        setTimeout(() => {
+          justDragged = false;
+        }, 350);
         pc.classList.remove('lifted');
-        if(ev.type === 'pointercancel') return;
+        if (ev.type === 'pointercancel') return;
         const target = document.elementFromPoint(ev.clientX, ev.clientY);
         const slot = target && target.closest && target.closest('.jg-slot');
-        if(slot) tryPlace(pc, slot);
+        if (slot) tryPlace(pc, slot);
       };
       pc.addEventListener('pointermove', move);
       pc.addEventListener('pointerup', end);
@@ -192,14 +232,21 @@ function renderJigsaw(){
 
 // Indices (v52) : 1. commencer par les coins et regarder les bords ; 2. une
 // case vide à remplir en premier (la case, jamais le morceau).
-function jigsawHints(q){
+function jigsawHints(q) {
   const empty = document.querySelector('.jg-slot:not(.filled)');
   const s = empty ? Number(empty.dataset.s) : 0;
-  const corner = s === 0 ? 'en haut à gauche' : `ligne ${Math.floor(s / q.cols) + 1}, colonne ${s % q.cols + 1}`;
+  const corner = s === 0 ? 'en haut à gauche' : `ligne ${Math.floor(s / q.cols) + 1}, colonne ${(s % q.cols) + 1}`;
   return [
-    { say: q.ghost ? 'Regarde l\'image en transparence, puis commence par les coins.' : 'Regarde le modèle, puis commence par les coins : ils ont deux bords droits.',
-      fx:{ glow: q.ghost ? '.jg-board' : '.jg-model' } },
-    { say:`Commence par cette case, ${corner}. Quel morceau a le même dessin ?`, fx:{ glow: empty ? solSel('.jg-slot', 's', s) : null } },
+    {
+      say: q.ghost
+        ? "Regarde l'image en transparence, puis commence par les coins."
+        : 'Regarde le modèle, puis commence par les coins : ils ont deux bords droits.',
+      fx: { glow: q.ghost ? '.jg-board' : '.jg-model' },
+    },
+    {
+      say: `Commence par cette case, ${corner}. Quel morceau a le même dessin ?`,
+      fx: { glow: empty ? solSel('.jg-slot', 's', s) : null },
+    },
   ];
 }
 

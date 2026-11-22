@@ -18,14 +18,14 @@ const WRONG_HINTS = [
   'Non, regarde une nouvelle fois',
 ];
 
-function speakWrongHint(){
-  if(Math.random()<0.7) speak(pickRandom(WRONG_HINTS));
+function speakWrongHint() {
+  if (Math.random() < 0.7) speak(pickRandom(WRONG_HINTS));
 }
 
 // En-tête d'une fenêtre de jeu : titre, consigne et bouton pour l'écouter.
 // La fermeture est assurée par la croix de la fenêtre (#modal-close).
-function gameHeader(title, hint, spoken){
-  const say = (spoken || hint).replace(/"/g,'&quot;');
+function gameHeader(title, hint, spoken) {
+  const say = (spoken || hint).replace(/"/g, '&quot;');
   return `
     <div class="game-head"><h2>${title}</h2></div>
     <p class="puzzle-hint has-buddy">
@@ -37,11 +37,14 @@ function gameHeader(title, hint, spoken){
 }
 
 // branche les boutons « écouter » et lit la consigne à voix haute
-function bindQuit(){
+function bindQuit() {
   bindSpeakButtons();
   // lit la consigne une seule fois par mini-jeu (le mémo se re-rend à chaque clic)
   const hint = document.querySelector('.puzzle-hint [data-say]');
-  if(hint && hint.dataset.say !== bindQuit._last){ bindQuit._last = hint.dataset.say; speak(hint.dataset.say); }
+  if (hint && hint.dataset.say !== bindQuit._last) {
+    bindQuit._last = hint.dataset.say;
+    speak(hint.dataset.say);
+  }
 }
 
 export { bindQuit, gameHeader, speakWrongHint };

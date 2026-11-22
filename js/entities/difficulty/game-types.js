@@ -1,5 +1,36 @@
 /* ---------- Types de mini-jeux et ceux proposés selon l'âge ---------- */
-const GAME_TYPES = ['memory','count','diff','puzzle','sequence','simon','math','reading','determinants','volume','compare','money','clock','calendar','calc','shapes','planets','jigsaw','nesting','cubes','packs','shelf','share','recipe','rhythm','pitch','lifecycle','ladybugs','potions','mirror'];
+const GAME_TYPES = [
+  'memory',
+  'count',
+  'diff',
+  'puzzle',
+  'sequence',
+  'simon',
+  'math',
+  'reading',
+  'determinants',
+  'volume',
+  'compare',
+  'money',
+  'clock',
+  'calendar',
+  'calc',
+  'shapes',
+  'planets',
+  'jigsaw',
+  'nesting',
+  'cubes',
+  'packs',
+  'shelf',
+  'share',
+  'recipe',
+  'rhythm',
+  'pitch',
+  'lifecycle',
+  'ladybugs',
+  'potions',
+  'mirror',
+];
 
 /* Quels types de défis proposer selon l'âge (programme de l'école
    maternelle, cycle 1, 3-6 ans — repères eduscol.education.fr) :
@@ -23,7 +54,7 @@ const AGE_GAME_TYPES = [
   // transparence se fait dès la petite section.
   // « Les boîtes gigognes » (nesting, v55) : ranger 3 objets du plus petit
   // au plus grand se fait dès la petite section.
-  { max:4, types:['memory','count','diff','calendar','shapes','jigsaw','nesting'] },
+  { max: 4, types: ['memory', 'count', 'diff', 'calendar', 'shapes', 'jigsaw', 'nesting'] },
   // à 5 ans (MS/GS) : + comparer des tailles, suites simples, couleurs,
   // et lire l'heure en heures pleines (« il est 3 heures »).
   // « Combien de cubes ? » (cubes, v55) : à 5 ans, compter une petite pile
@@ -38,49 +69,76 @@ const AGE_GAME_TYPES = [
   // « Les coccinelles » (ladybugs) : en GS, compter jusqu'à 3 points par aile.
   // « Les potions de couleurs » (potions) : en GS, reconnaître la couleur nommée ;
   // « Le miroir magique » (mirror) : en GS, 2 cases à refléter dans une grille 4 × 4.
-  { max:5, types:['memory','count','diff','volume','sequence','simon','clock','calendar','shapes','planets','jigsaw','nesting','cubes','packs','shelf','share','recipe','rhythm','pitch','lifecycle','ladybugs','potions','mirror'] },
+  {
+    max: 5,
+    types: [
+      'memory',
+      'count',
+      'diff',
+      'volume',
+      'sequence',
+      'simon',
+      'clock',
+      'calendar',
+      'shapes',
+      'planets',
+      'jigsaw',
+      'nesting',
+      'cubes',
+      'packs',
+      'shelf',
+      'share',
+      'recipe',
+      'rhythm',
+      'pitch',
+      'lifecycle',
+      'ladybugs',
+      'potions',
+      'mirror',
+    ],
+  },
   // 6 ans et plus (ou âge non précisé) : tous les jeux, dont le calcul
   // mental abstrait (calc), réservé au CP confirmé et plus.
 ];
 
-function gameTypesForAge(age){
+function gameTypesForAge(age) {
   const a = Number(age);
-  if(!a) return GAME_TYPES;
-  const tier = AGE_GAME_TYPES.find(r=>a<=r.max);
+  if (!a) return GAME_TYPES;
+  const tier = AGE_GAME_TYPES.find((r) => a <= r.max);
   return tier ? tier.types : GAME_TYPES;
 }
 
 const GAME_LIST = [
-  { key:'memory',   emoji:'🧠', name:'Mémoire' },
-  { key:'count',    emoji:'🔢', name:'Compter' },
-  { key:'diff',     emoji:'🔍', name:"L'intrus" },
-  { key:'puzzle',   emoji:'🧩', name:'Les nombres' },
-  { key:'sequence', emoji:'🔮', name:'La suite' },
-  { key:'simon',    emoji:'🎵', name:'Les couleurs' },
-  { key:'math',     emoji:'➕', name:'Opérations' },
-  { key:'reading',  emoji:'📖', name:'Lecture' },
-  { key:'determinants', emoji:'🔤', name:'Petits mots' },
-  { key:'volume',   emoji:'🧪', name:'Volumes' },
-  { key:'compare',  emoji:'⚖️', name:'Comparer' },
-  { key:'money',    emoji:'💰', name:'La monnaie' },
-  { key:'clock',    emoji:'🕐', name:"L'heure" },
-  { key:'calendar', emoji:'📅', name:'Calendrier' },
-  { key:'calc',     emoji:'🌋', name:'Calcul mental' },
-  { key:'shapes',   emoji:'🍡', name:'Formes et couleurs' },
-  { key:'planets',  emoji:'🪐', name:'Les planètes' },
-  { key:'jigsaw',   emoji:'🖼️', name:'Le puzzle' },
-  { key:'nesting',  emoji:'🪆', name:'Les boîtes gigognes' },
-  { key:'cubes',    emoji:'🧊', name:'Combien de cubes ?' },
-  { key:'packs',    emoji:'🧸', name:'Les paquets de jouets' },
-  { key:'shelf',    emoji:'🗄️', name:'L\'étagère magique' },
-  { key:'share',    emoji:'🎂', name:'Le gâteau partagé' },
-  { key:'recipe',   emoji:'🥣', name:'La recette' },
-  { key:'rhythm',   emoji:'🥁', name:'Le rythme magique' },
-  { key:'pitch',    emoji:'🔔', name:'Grave ou aigu ?' },
-  { key:'lifecycle', emoji:'🌱', name:'De la graine à la fleur' },
-  { key:'ladybugs', emoji:'🐞', name:'Les coccinelles' },
-  { key:'potions',  emoji:'🧪', name:'Les potions de couleurs' },
-  { key:'mirror',   emoji:'🪞', name:'Le miroir magique' },
+  { key: 'memory', emoji: '🧠', name: 'Mémoire' },
+  { key: 'count', emoji: '🔢', name: 'Compter' },
+  { key: 'diff', emoji: '🔍', name: "L'intrus" },
+  { key: 'puzzle', emoji: '🧩', name: 'Les nombres' },
+  { key: 'sequence', emoji: '🔮', name: 'La suite' },
+  { key: 'simon', emoji: '🎵', name: 'Les couleurs' },
+  { key: 'math', emoji: '➕', name: 'Opérations' },
+  { key: 'reading', emoji: '📖', name: 'Lecture' },
+  { key: 'determinants', emoji: '🔤', name: 'Petits mots' },
+  { key: 'volume', emoji: '🧪', name: 'Volumes' },
+  { key: 'compare', emoji: '⚖️', name: 'Comparer' },
+  { key: 'money', emoji: '💰', name: 'La monnaie' },
+  { key: 'clock', emoji: '🕐', name: "L'heure" },
+  { key: 'calendar', emoji: '📅', name: 'Calendrier' },
+  { key: 'calc', emoji: '🌋', name: 'Calcul mental' },
+  { key: 'shapes', emoji: '🍡', name: 'Formes et couleurs' },
+  { key: 'planets', emoji: '🪐', name: 'Les planètes' },
+  { key: 'jigsaw', emoji: '🖼️', name: 'Le puzzle' },
+  { key: 'nesting', emoji: '🪆', name: 'Les boîtes gigognes' },
+  { key: 'cubes', emoji: '🧊', name: 'Combien de cubes ?' },
+  { key: 'packs', emoji: '🧸', name: 'Les paquets de jouets' },
+  { key: 'shelf', emoji: '🗄️', name: "L'étagère magique" },
+  { key: 'share', emoji: '🎂', name: 'Le gâteau partagé' },
+  { key: 'recipe', emoji: '🥣', name: 'La recette' },
+  { key: 'rhythm', emoji: '🥁', name: 'Le rythme magique' },
+  { key: 'pitch', emoji: '🔔', name: 'Grave ou aigu ?' },
+  { key: 'lifecycle', emoji: '🌱', name: 'De la graine à la fleur' },
+  { key: 'ladybugs', emoji: '🐞', name: 'Les coccinelles' },
+  { key: 'potions', emoji: '🧪', name: 'Les potions de couleurs' },
+  { key: 'mirror', emoji: '🪞', name: 'Le miroir magique' },
 ];
 
 export { GAME_LIST, gameTypesForAge };

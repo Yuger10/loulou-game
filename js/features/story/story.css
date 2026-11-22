@@ -1,60 +1,188 @@
-  /* =====================================================================
+/* =====================================================================
      Histoire du Lagon Magique : énigmes et journal (v40)
      ===================================================================== */
-  .story-options{
-    display:flex; flex-wrap:wrap; justify-content:center; gap:16px;
-    max-width:420px; margin:0 auto 10px;
-  }
-  .story-opt{
-    border:none; background:var(--foam); box-shadow:var(--shadow);
-    border-radius:20px; min-width:84px; min-height:84px;
-    font-size:2.6rem; display:flex; align-items:center; justify-content:center;
-  }
-  .story-journal{ display:flex; flex-direction:column; gap:10px; max-width:460px; margin:0 auto; }
-  .story-chap{
-    display:flex; align-items:center; gap:12px; text-align:left;
-    border:none; background:var(--foam); box-shadow:var(--shadow);
-    border-radius:16px; padding:10px 14px; font-weight:700;
-    color:var(--ocean-deep, #123B4F);
-  }
-  .story-chap.locked{ opacity:.55; }
-  .story-chap.done .story-chap-title{ color:var(--lagoon-dark); }
-  .story-chap-n{
-    width:26px; height:26px; border-radius:50%; background:var(--coral);
-    color:#fff; display:flex; align-items:center; justify-content:center;
-    font-size:.8rem; flex:none;
-  }
-  .story-chap-ico{ font-size:1.3rem; flex:none; }
-  .story-chap-title{ flex:1; font-size:.92rem; }
-  .weekday-btn.done{background:var(--sun); color:var(--ocean-deep, #123B4F);}
+.story-options {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 16px;
+  max-width: 420px;
+  margin: 0 auto 10px;
+}
+.story-opt {
+  border: none;
+  background: var(--foam);
+  box-shadow: var(--shadow);
+  border-radius: 20px;
+  min-width: 84px;
+  min-height: 84px;
+  font-size: 2.6rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.story-journal {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 460px;
+  margin: 0 auto;
+}
+.story-chap {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-align: left;
+  border: none;
+  background: var(--foam);
+  box-shadow: var(--shadow);
+  border-radius: 16px;
+  padding: 10px 14px;
+  font-weight: 700;
+  color: var(--ocean-deep, #123b4f);
+}
+.story-chap.locked {
+  opacity: 0.55;
+}
+.story-chap.done .story-chap-title {
+  color: var(--lagoon-dark);
+}
+.story-chap-n {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--coral);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  flex: none;
+}
+.story-chap-ico {
+  font-size: 1.3rem;
+  flex: none;
+}
+.story-chap-title {
+  flex: 1;
+  font-size: 0.92rem;
+}
+.weekday-btn.done {
+  background: var(--sun);
+  color: var(--ocean-deep, #123b4f);
+}
 
-
-  /* =====================================================================
+/* =====================================================================
      Saison 2 (v55) : Grisou, le journal en deux saisons
      ===================================================================== */
-  .story-grisou{display:flex; justify-content:center; margin:-4px 0 4px;}
-  .story-grisou .grisou{width:110px; height:auto; animation:grisouFloat 3.4s ease-in-out infinite;}
-  .story-grisou.happy .grisou{width:90px;}
-  @keyframes grisouFloat{0%,100%{transform:translateY(0);} 50%{transform:translateY(-6px);}}
-  .story-season{margin:0 0 12px; padding:8px; border-radius:var(--radius-md); background:rgba(255,255,255,.5);}
-  .story-season.sky{background:linear-gradient(180deg,#FDE7F3, #E6DDFB);}
-  .story-season h3{margin:2px 4px 8px; font-size:1rem; text-align:left;}
-  .story-season h3 small{font-weight:700; color:var(--ink-soft);}
-  .story-prologue{background:#F2ECFF;}
-  @media (prefers-reduced-motion: reduce){ .story-grisou .grisou{animation:none;} }
-  /* ---------- le grand final de la saison 2 (finale.js) ---------- */
-  .finale{position:relative; text-align:center; padding:6px 0 4px; overflow:hidden; border-radius:22px;
-    background:linear-gradient(180deg, #FFF6FD 0%, #F4EDFF 60%, #E9F6FF 100%);}
-  .finale-sky{position:absolute; inset:0; pointer-events:none;
-    background:radial-gradient(circle at 20% 20%, rgba(255,217,90,.35) 0 6px, transparent 7px),
-               radial-gradient(circle at 80% 30%, rgba(255,143,184,.35) 0 5px, transparent 6px),
-               radial-gradient(circle at 65% 12%, rgba(111,184,245,.35) 0 4px, transparent 5px);}
-  .finale-grisou{position:relative; width:180px; margin:0 auto; animation:finaleFloat 3s ease-in-out infinite;}
-  .finale-grisou .grisou{width:100%; height:auto;}
-  .finale-grisou .grisou.full{filter:drop-shadow(0 0 10px rgba(255,217,90,.6));}
-  @keyframes finaleFloat{0%,100%{transform:translateY(0);} 50%{transform:translateY(-8px);}}
-  .finale h2{position:relative; margin:4px 0;}
-  .finale-buddy, .finale-treasure{display:block; width:140px; margin:0 auto;}
-  .finale-buddy svg, .finale-treasure svg{width:100%; height:auto;}
-  .story-season h3 .done{margin-left:4px;}
-  @media (prefers-reduced-motion: reduce){ .finale-grisou{animation:none;} }
+.story-grisou {
+  display: flex;
+  justify-content: center;
+  margin: -4px 0 4px;
+}
+.story-grisou .grisou {
+  width: 110px;
+  height: auto;
+  animation: grisouFloat 3.4s ease-in-out infinite;
+}
+.story-grisou.happy .grisou {
+  width: 90px;
+}
+@keyframes grisouFloat {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+.story-season {
+  margin: 0 0 12px;
+  padding: 8px;
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.5);
+}
+.story-season.sky {
+  background: linear-gradient(180deg, #fde7f3, #e6ddfb);
+}
+.story-season h3 {
+  margin: 2px 4px 8px;
+  font-size: 1rem;
+  text-align: left;
+}
+.story-season h3 small {
+  font-weight: 700;
+  color: var(--ink-soft);
+}
+.story-prologue {
+  background: #f2ecff;
+}
+@media (prefers-reduced-motion: reduce) {
+  .story-grisou .grisou {
+    animation: none;
+  }
+}
+/* ---------- le grand final de la saison 2 (finale.js) ---------- */
+.finale {
+  position: relative;
+  text-align: center;
+  padding: 6px 0 4px;
+  overflow: hidden;
+  border-radius: 22px;
+  background: linear-gradient(180deg, #fff6fd 0%, #f4edff 60%, #e9f6ff 100%);
+}
+.finale-sky {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 20% 20%, rgba(255, 217, 90, 0.35) 0 6px, transparent 7px),
+    radial-gradient(circle at 80% 30%, rgba(255, 143, 184, 0.35) 0 5px, transparent 6px),
+    radial-gradient(circle at 65% 12%, rgba(111, 184, 245, 0.35) 0 4px, transparent 5px);
+}
+.finale-grisou {
+  position: relative;
+  width: 180px;
+  margin: 0 auto;
+  animation: finaleFloat 3s ease-in-out infinite;
+}
+.finale-grisou .grisou {
+  width: 100%;
+  height: auto;
+}
+.finale-grisou .grisou.full {
+  filter: drop-shadow(0 0 10px rgba(255, 217, 90, 0.6));
+}
+@keyframes finaleFloat {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+.finale h2 {
+  position: relative;
+  margin: 4px 0;
+}
+.finale-buddy,
+.finale-treasure {
+  display: block;
+  width: 140px;
+  margin: 0 auto;
+}
+.finale-buddy svg,
+.finale-treasure svg {
+  width: 100%;
+  height: auto;
+}
+.story-season h3 .done {
+  margin-left: 4px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .finale-grisou {
+    animation: none;
+  }
+}

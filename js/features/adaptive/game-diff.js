@@ -5,7 +5,9 @@ import { currentWorld, WORLDS } from '../../entities/world/index.js';
 import { adaptTier, gameMaxTier } from './adaptive.js';
 import { inBonusChallenge, lastGame } from './session.js';
 
-function gameDiffIsland(){ return WORLDS[currentWorld] ? WORLDS[currentWorld].diff : 1; }
+function gameDiffIsland() {
+  return WORLDS[currentWorld] ? WORLDS[currentWorld].diff : 1;
+}
 
 // La difficulté suit l'île… mais jamais au-delà de ce que l'âge du
 // joueur permet, y compris en solo. Avant ce correctif, un enfant de
@@ -15,15 +17,15 @@ function gameDiffIsland(){ return WORLDS[currentWorld] ? WORLDS[currentWorld].di
 // (`gameTypesForAge`), jamais ses PARAMÈTRES numériques. Résultat : des
 // exercices trop abstraits pour son âge (ex. la variante miroir de
 // « Trouve l'intrus »), que l'enfant ne peut résoudre qu'au hasard.
-function gameDiff(){
+function gameDiff() {
   const island = gameDiffIsland();
   // multijoueur (chacun son tour / course) : l'âge prime totalement,
   // sans plafond lié à l'île — c'est le mécanisme d'équité déjà en
   // place (chacun joue à son niveau, peu importe où se déroule la partie).
-  if(party.active){
+  if (party.active) {
     const p = partyCurrent() || currentProfile();
     const d = p && ageToDiff(p.age);
-    if(d) return d;
+    if (d) return d;
   }
   // solo : l'âge, s'il est renseigné, plafonne la difficulté de l'île —
   // jamais l'inverse (un enfant plus âgé qu'une île facile n'est pas
@@ -32,7 +34,7 @@ function gameDiff(){
   {
     const p = currentProfile();
     const d = p && ageToDiff(p.age);
-    if(d) return adaptedDiff(Math.min(d, island));
+    if (d) return adaptedDiff(Math.min(d, island));
   }
   return adaptedDiff(island);
 }
@@ -41,9 +43,9 @@ function gameDiff(){
 // on ne joue jamais au-dessus de ce qui est acquis dans CE jeu.
 // Défi bonus de Zap (v52) : un cran au-dessus du niveau du jeu, sans jamais
 // dépasser le plafond de l'âge ni le palier maximal du jeu.
-function adaptedDiff(base){
+function adaptedDiff(base) {
   const t = adaptTier(base);
-  if(!inBonusChallenge()) return t;
+  if (!inBonusChallenge()) return t;
   const p = currentProfile();
   const ageCap = (p && ageToDiff(p.age)) || 6;
   return Math.max(t, Math.min(t + 1, ageCap, gameMaxTier(lastGame)));

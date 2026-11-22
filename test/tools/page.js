@@ -20,47 +20,95 @@ const root = path.join(__dirname, '..', '..');
 const { SLICES, CSS_ORDER } = require(path.join(root, 'js', 'slices.cjs'));
 const ENTRY = 'js/app/main.js';
 
-const read = (f)=> fs.readFileSync(path.join(root, f), 'utf8');
+const read = (f) => fs.readFileSync(path.join(root, f), 'utf8');
 const LOCAL_CSS = /<link rel="stylesheet" href="(?!https?:)([^"]+\.css)">\n?/g;
 const LOCAL_JS = /<script(?: type="module")? src="(js\/[^"]+)"><\/script>\n?/g;
 
 // le dossier d'une slice (un seul par slice) et son fichier d'API publique
-function sliceDir(s){ return s.files.length ? path.posix.dirname(s.files[0]) : null; }
-function sliceIndex(s){ return s.files.length && s.layer !== 'app' ? sliceDir(s) + '/index.js' : null; }
+function sliceDir(s) {
+  return s.files.length ? path.posix.dirname(s.files[0]) : null;
+}
+function sliceIndex(s) {
+  return s.files.length && s.layer !== 'app' ? sliceDir(s) + '/index.js' : null;
+}
 
 // tous les modules du jeu : les fichiers des slices, leurs index.js, main.js
-function manifestScripts(){
-  return SLICES.flatMap(s=> [...s.files, ...(sliceIndex(s) ? [sliceIndex(s)] : []), ...(s.layer === 'app' ? [ENTRY] : [])]);
+function manifestScripts() {
+  return SLICES.flatMap((s) => [
+    ...s.files,
+    ...(sliceIndex(s) ? [sliceIndex(s)] : []),
+    ...(s.layer === 'app' ? [ENTRY] : []),
+  ]);
 }
-function manifestCss(){ return CSS_ORDER.slice(); }
+function manifestCss() {
+  return CSS_ORDER.slice();
+}
 
 // balises de index.html, dans l'ordre (pour le test de cohérence)
-function indexScripts(){ return [...read('index.html').matchAll(LOCAL_JS)].map(m=> m[1]); }
-function indexModuleScripts(){ return [...read('index.html').matchAll(/<script type="module" src="([^"]+)"><\/script>/g)].map(m=> m[1]); }
-function indexCss(){ return [...read('index.html').matchAll(LOCAL_CSS)].map(m=> m[1]); }
+function indexScripts() {
+  return [...read('index.html').matchAll(LOCAL_JS)].map((m) => m[1]);
+}
+function indexModuleScripts() {
+  return [...read('index.html').matchAll(/<script type="module" src="([^"]+)"><\/script>/g)].map((m) => m[1]);
+}
+function indexCss() {
+  return [...read('index.html').matchAll(LOCAL_CSS)].map((m) => m[1]);
+}
 
 let bundleCache = null;
-function bundle(){
-  if(bundleCache) return bundleCache;
+function bundle() {
+  if (bundleCache) return bundleCache;
   const esbuild = require('esbuild');
   const out = esbuild.buildSync({
-    absWorkingDir: root, entryPoints:[ENTRY], bundle:true, format:'esm', treeShaking:false,
-    write:false, charset:'utf8', logLevel:'silent', metafile:true,
+    absWorkingDir: root,
+    entryPoints: [ENTRY],
+    bundle: true,
+    format: 'esm',
+    treeShaking: false,
+    write: false,
+    charset: 'utf8',
+    logLevel: 'silent',
+    metafile: true,
   });
   bundleCache = { code: out.outputFiles[0].text, metafile: out.metafile };
   return bundleCache;
 }
 
-function buildHtml(){
+function buildHtml() {
   let html = read('index.html');
-  const css = manifestCss().map(f=> '<style>' + read(f) + '</style>').join('\n');
+  const css = manifestCss()
+    .map((f) => '<style>' + read(f) + '</style>')
+    .join('\n');
   // un « </script> » dans le code fermerait la balise trop tôt
   const js = '<script>"use strict";\n' + bundle().code.replace(/<\/script/gi, '<\\/script') + '</script>';
-  let cssDone = false, jsDone = false;
-  html = html.replace(LOCAL_CSS, ()=>{ if(cssDone) return ''; cssDone = true; return css + '\n'; });
-  html = html.replace(LOCAL_JS, ()=>{ if(jsDone) return ''; jsDone = true; return js + '\n'; });
+  let cssDone = false,
+    jsDone = false;
+  html = html.replace(LOCAL_CSS, () => {
+    if (cssDone) return '';
+    cssDone = true;
+    return css + '\n';
+  });
+  html = html.replace(LOCAL_JS, () => {
+    if (jsDone) return '';
+    jsDone = true;
+    return js + '\n';
+  });
   return html;
 }
 
-module.exports = { root, SLICES, CSS_ORDER, ENTRY, buildHtml, bundle, manifestScripts, manifestCss,
-  indexScripts, indexModuleScripts, indexCss, read, sliceDir, sliceIndex };
+module.exports = {
+  root,
+  SLICES,
+  CSS_ORDER,
+  ENTRY,
+  buildHtml,
+  bundle,
+  manifestScripts,
+  manifestCss,
+  indexScripts,
+  indexModuleScripts,
+  indexCss,
+  read,
+  sliceDir,
+  sliceIndex,
+};

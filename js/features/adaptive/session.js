@@ -4,7 +4,9 @@
    les met à jour avec setLastGame et les fonctions du défi. */
 
 let lastGame = null;
-function setLastGame(key){ lastGame = key; }
+function setLastGame(key) {
+  lastGame = key;
+}
 
 /* Défi bonus de Zap (js/features/companion-team) : le jeu est joué un cran
    au-dessus de son niveau (js/features/adaptive/game-diff.js), la récompense
@@ -12,16 +14,30 @@ function setLastGame(key){ lastGame = key; }
    vaut que pour la partie lancée par startBonusChallenge. */
 let bonusChallenge = null;
 
-function inBonusChallenge(){ return !!bonusChallenge && bonusChallenge.key === lastGame; }
-// Zap lance un défi : il vaut pour la prochaine partie de ce jeu seulement
-function beginBonusChallenge(key){ bonusChallenge = { key, fresh:true, won:false }; }
-// une nouvelle partie commence : le défi vaut pour la première, puis s'arrête
-function bonusOnNewGame(){
-  if(bonusChallenge){ if(bonusChallenge.fresh) bonusChallenge.fresh = false; else bonusChallenge = null; }
+function inBonusChallenge() {
+  return !!bonusChallenge && bonusChallenge.key === lastGame;
 }
-function endBonusChallenge(){ bonusChallenge = null; }
+// Zap lance un défi : il vaut pour la prochaine partie de ce jeu seulement
+function beginBonusChallenge(key) {
+  bonusChallenge = { key, fresh: true, won: false };
+}
+// une nouvelle partie commence : le défi vaut pour la première, puis s'arrête
+function bonusOnNewGame() {
+  if (bonusChallenge) {
+    if (bonusChallenge.fresh) bonusChallenge.fresh = false;
+    else bonusChallenge = null;
+  }
+}
+function endBonusChallenge() {
+  bonusChallenge = null;
+}
 
 export {
-  beginBonusChallenge, bonusChallenge, bonusOnNewGame, endBonusChallenge, inBonusChallenge, lastGame,
-  setLastGame
+  beginBonusChallenge,
+  bonusChallenge,
+  bonusOnNewGame,
+  endBonusChallenge,
+  inBonusChallenge,
+  lastGame,
+  setLastGame,
 };

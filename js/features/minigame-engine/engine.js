@@ -8,13 +8,33 @@ import { ac, currentPlayerAge, party, race } from '../../entities/player/index.j
 import { availableItems, currentWorld } from '../../entities/world/index.js';
 import { emit, on, pickRandom } from '../../shared/lib/index.js';
 import {
-  closeModal, confetti, onModalChange, onModalClose, openModal, playSound, shakeEl, showToast, speak,
-  vibrate, wrongFeedback
+  closeModal,
+  confetti,
+  onModalChange,
+  onModalClose,
+  openModal,
+  playSound,
+  shakeEl,
+  showToast,
+  speak,
+  vibrate,
+  wrongFeedback,
 } from '../../shared/ui/index.js';
 import {
-  beginBonusChallenge, bonusChallenge, bonusOnNewGame, endBonusChallenge, gameDiff, inBonusChallenge,
-  lastGame, missionProgress, noteAnswerError, pickPracticeGame, progressCheer, recordMission,
-  resetMissionErrors, setLastGame
+  beginBonusChallenge,
+  bonusChallenge,
+  bonusOnNewGame,
+  endBonusChallenge,
+  gameDiff,
+  inBonusChallenge,
+  lastGame,
+  missionProgress,
+  noteAnswerError,
+  pickPracticeGame,
+  progressCheer,
+  recordMission,
+  resetMissionErrors,
+  setLastGame,
 } from '../adaptive/index.js';
 import { markSeen, renderBadge } from '../bag/index.js';
 import { maybeTeamOpening, teamCheerBy, teamWinExtras } from '../companion-team/index.js';
@@ -33,32 +53,37 @@ import { newlyUnlockedLookItems, WARDROBE } from '../wardrobe/index.js';
    documenté dans js/entities/difficulty/difficulty.js (fonction `livesFor`) — voir aussi
    ANALYSE-DIFFICULTE.md pour le détail académique. */
 
-let lives = Infinity, maxLives = Infinity;
+let lives = Infinity,
+  maxLives = Infinity;
 
-function triesFor(kind){
+function triesFor(kind) {
   return livesFor(kind, gameDiff());
 }
 
-function setupLives(kind){
+function setupLives(kind) {
   maxLives = triesFor(kind);
   lives = maxLives;
 }
 
-function livesBar(){
-  if(maxLives === Infinity) return '';
+function livesBar() {
+  if (maxLives === Infinity) return '';
   return `<div class="lives" id="lives-bar" aria-label="Essais restants">
-    ${Array.from({length:maxLives},(_,i)=>`<span class="life ${i<lives?'on':'off'}">${i<lives?'❤️':'🤍'}</span>`).join('')}
+    ${Array.from({ length: maxLives }, (_, i) => `<span class="life ${i < lives ? 'on' : 'off'}">${i < lives ? '❤️' : '🤍'}</span>`).join('')}
   </div>`;
 }
-function renderLives(){
+function renderLives() {
   const bar = document.getElementById('lives-bar');
-  if(!bar || maxLives === Infinity) return;
-  [...bar.querySelectorAll('.life')].forEach((el,i)=>{
+  if (!bar || maxLives === Infinity) return;
+  [...bar.querySelectorAll('.life')].forEach((el, i) => {
     const alive = i < lives;
-    if(!alive && el.classList.contains('on')){
-      el.classList.remove('on'); el.classList.add('off','breaking');
+    if (!alive && el.classList.contains('on')) {
+      el.classList.remove('on');
+      el.classList.add('off', 'breaking');
       el.textContent = '💔';
-      setTimeout(()=>{ el.textContent = '🤍'; el.classList.remove('breaking'); }, 600);
+      setTimeout(() => {
+        el.textContent = '🤍';
+        el.classList.remove('breaking');
+      }, 600);
     }
   });
 }
@@ -68,57 +93,78 @@ function renderLives(){
 // question en retard pourrait réapparaître par-dessus un autre jeu déjà
 // lancé (même principe que `clearActiveTimer` pour le minuteur).
 let pendingRetryTimeout = null;
-function clearPendingRetry(){
-  if(pendingRetryTimeout){ clearTimeout(pendingRetryTimeout); pendingRetryTimeout = null; }
+function clearPendingRetry() {
+  if (pendingRetryTimeout) {
+    clearTimeout(pendingRetryTimeout);
+    pendingRetryTimeout = null;
+  }
 }
-function scheduleRetry(fn){
+function scheduleRetry(fn) {
   clearPendingRetry();
-  pendingRetryTimeout = setTimeout(()=>{
+  pendingRetryTimeout = setTimeout(() => {
     pendingRetryTimeout = null;
     bindQuit._last = null;
     fn();
   }, 900);
 }
 
-function loseLife(el, opts){
+function loseLife(el, opts) {
   opts = opts || {};
   buddyReact('oops', 1300);
-  hintNudge(true);     // le bouton 💡 se propose (js/features/hints/hints.js)
+  hintNudge(true); // le bouton 💡 se propose (js/features/hints/hints.js)
   // multijoueur : la règle reste « une erreur = on passe la main »
-  if(party.active){ wrongFeedback(el); return false; }
-  noteAnswerError();   // pour l'espace parents
+  if (party.active) {
+    wrongFeedback(el);
+    return false;
+  }
+  noteAnswerError(); // pour l'espace parents
 
   playSound('wrong');
   vibrate(90);
   speakWrongHint();
-  if(el){
+  if (el) {
     shakeEl(el);
     el.classList.add('ko-flash');
-    if(opts.disable !== false && 'disabled' in el){ el.disabled = true; el.classList.add('ko'); }
-    setTimeout(()=> el.classList.remove('ko-flash'), 450);
+    if (opts.disable !== false && 'disabled' in el) {
+      el.disabled = true;
+      el.classList.add('ko');
+    }
+    setTimeout(() => el.classList.remove('ko-flash'), 450);
   }
-  if(lives === Infinity){
+  if (lives === Infinity) {
     // Avec seulement 2-3 choix et des essais illimités, laisser le
     // bouton fautif se réactiver permettrait de deviner la bonne
     // réponse PAR ÉLIMINATION, sans aucune compréhension (observé en
     // situation réelle sur « Volumes » et « Quelle saison ? »). Quand
     // le jeu le permet (`opts.onRetry`), on propose une NOUVELLE
     // question à la place — jamais la même à éliminer petit à petit.
-    if(opts.onRetry){ scheduleRetry(opts.onRetry); return false; }
-    if(el && 'disabled' in el && opts.disable !== false){
+    if (opts.onRetry) {
+      scheduleRetry(opts.onRetry);
+      return false;
+    }
+    if (el && 'disabled' in el && opts.disable !== false) {
       // île 1 : la mauvaise réponse se referme mais on peut continuer
-      setTimeout(()=>{ el.disabled = false; el.classList.remove('ko'); }, 700);
+      setTimeout(() => {
+        el.disabled = false;
+        el.classList.remove('ko');
+      }, 700);
     }
     return false;
   }
   lives--;
   renderLives();
   flashModal('ko');
-  if(lives <= 0){ setTimeout(onMissionFail, 520); return true; }
+  if (lives <= 0) {
+    setTimeout(onMissionFail, 520);
+    return true;
+  }
   showToast(lives === 1 ? '⚠️ Dernier essai !' : `${lives} essais restants`);
   // même logique à essais limités : une nouvelle question plutôt que
   // de réduire le choix restant jusqu'à la seule bonne réponse.
-  if(opts.onRetry){ scheduleRetry(opts.onRetry); return false; }
+  if (opts.onRetry) {
+    scheduleRetry(opts.onRetry);
+    return false;
+  }
   return false;
 }
 
@@ -136,29 +182,32 @@ function loseLife(el, opts){
    ===================================================================== */
 let activeTimerInterval = null;
 
-function clearActiveTimer(){
-  if(activeTimerInterval){ clearInterval(activeTimerInterval); activeTimerInterval = null; }
+function clearActiveTimer() {
+  if (activeTimerInterval) {
+    clearInterval(activeTimerInterval);
+    activeTimerInterval = null;
+  }
 }
 
 // Insère la barre de minuteur juste après la consigne, et démarre le
 // décompte. `kind` = type de jeu (sert à lire la durée adaptée dans
 // TIMER_SECONDS) ; appelé par chaque jeu « une question = une réponse »
 // juste après son propre openModal(...).
-function startTimerIfNeeded(kind){
+function startTimerIfNeeded(kind) {
   clearActiveTimer();
   // en multijoueur (chacun son tour / course), on garde l'expérience
   // simple : pas de minuteur qui se superpose au passage de main.
-  if(party.active) return;
-  if(race.active) return;
+  if (party.active) return;
+  if (race.active) return;
   const dd = gameDiff();
   // jamais de pression temporelle avant le CP (programme de maternelle)
   const age = currentPlayerAge();
-  if(age && age < 6) return;
+  if (age && age < 6) return;
   const seconds = timerFor(kind, dd);
-  if(!seconds) return;
+  if (!seconds) return;
 
   const hint = document.querySelector('.puzzle-hint');
-  if(!hint) return;
+  if (!hint) return;
   const bar = document.createElement('div');
   bar.className = 'challenge-timer';
   bar.id = 'challenge-timer';
@@ -166,13 +215,13 @@ function startTimerIfNeeded(kind){
   hint.insertAdjacentElement('afterend', bar);
 
   let remaining = seconds;
-  activeTimerInterval = setInterval(()=>{
+  activeTimerInterval = setInterval(() => {
     remaining -= 1;
     const el = document.getElementById('challenge-timer-bar');
     const wrap = document.getElementById('challenge-timer');
-    if(el) el.style.width = Math.max(0, (remaining/seconds)*100) + '%';
-    if(wrap) wrap.classList.toggle('urgent', remaining <= 5);
-    if(remaining <= 0){
+    if (el) el.style.width = Math.max(0, (remaining / seconds) * 100) + '%';
+    if (wrap) wrap.classList.toggle('urgent', remaining <= 5);
+    if (remaining <= 0) {
       clearActiveTimer();
       onResponseTimeout(kind);
     }
@@ -184,35 +233,35 @@ function startTimerIfNeeded(kind){
 // bouton fautif puisque l'enfant n'a rien cliqué de faux. Si la mission
 // n'est pas ratée, on redonne simplement un nouveau temps complet sur
 // la même question — aucune pénalité au-delà de l'essai perdu.
-function onResponseTimeout(kind){
+function onResponseTimeout(kind) {
   showToast('⏰ Temps écoulé ! On réessaie 👀');
   const failed = loseLife(null);
-  if(!failed) startTimerIfNeeded(kind);
+  if (!failed) startTimerIfNeeded(kind);
 }
 
 // petit flash coloré sur tout le deck
-function flashModal(kind){
+function flashModal(kind) {
   const m = document.getElementById('modal');
-  if(!m) return;
-  m.classList.remove('flash-ok','flash-ko');
+  if (!m) return;
+  m.classList.remove('flash-ok', 'flash-ko');
   void m.offsetWidth;
-  m.classList.add(kind==='ok' ? 'flash-ok' : 'flash-ko');
-  setTimeout(()=> m.classList.remove('flash-ok','flash-ko'), 500);
+  m.classList.add(kind === 'ok' ? 'flash-ok' : 'flash-ko');
+  setTimeout(() => m.classList.remove('flash-ok', 'flash-ko'), 500);
 }
 
 // bonne étape : pastille verte + petite étoile qui monte
-function stepOk(el){
+function stepOk(el) {
   playSound('good');
-  if(hintPolicy.onGood) hintPolicy.onGood();
+  if (hintPolicy.onGood) hintPolicy.onGood();
   buddyReact('wow', 900);
-  if(!el) return;
+  if (!el) return;
   el.classList.add('ok-flash');
-  setTimeout(()=> el.classList.remove('ok-flash'), 600);
+  setTimeout(() => el.classList.remove('ok-flash'), 600);
   const spark = document.createElement('span');
   spark.className = 'step-spark';
-  spark.textContent = pickRandom(['✨','⭐','💫','👍']);
-  if(el.appendChild) el.appendChild(spark);
-  setTimeout(()=> spark.remove(), 800);
+  spark.textContent = pickRandom(['✨', '⭐', '💫', '👍']);
+  if (el.appendChild) el.appendChild(spark);
+  setTimeout(() => spark.remove(), 800);
 }
 
 /* Pour les tests automatiques : chaque mini-jeu note ce qu'il faut toucher
@@ -220,37 +269,47 @@ function stepOk(el){
    ainsi chaque jeu jusqu'à la victoire). Rien n'est montré à l'enfant. */
 // oxlint-disable-next-line no-unused-vars -- lu par les tests, par son nom (ev('gameSolution'))
 let gameSolution = null;
-function setSolution(steps){ gameSolution = steps; }
-function solSel(base, attr, v){ return `${base}[data-${attr}=${JSON.stringify(String(v))}]`; }
+function setSolution(steps) {
+  gameSolution = steps;
+}
+function solSel(base, attr, v) {
+  return `${base}[data-${attr}=${JSON.stringify(String(v))}]`;
+}
 // Phrase à retenir (vraie et vérifiée) qu'un jeu peut faire afficher et dire
 // sur l'écran de victoire, ex. le quiz des planètes. Utilisée une seule fois.
 let missionFact = null;
-function setMissionFact(f){ missionFact = f; }
+function setMissionFact(f) {
+  missionFact = f;
+}
 // Registre des mini-jeux : chaque jeu s'inscrit avec registerGame(clé, rendu)
 // (js/features/minigames/<jeu>/). Le moteur ne connaît pas la liste des jeux.
 // Résolu au moment de l'appel : tous les jeux sont inscrits avant le premier.
 const GAME_RENDERERS = {};
-function registerGame(key, render){ GAME_RENDERERS[key] = render; }
+function registerGame(key, render) {
+  GAME_RENDERERS[key] = render;
+}
 // les indices (js/features/hints) ne comptent que ceux des mini-jeux inscrits
-setHintCountable((key)=> !!GAME_RENDERERS[key]);
-function gameRenderer(key){ return GAME_RENDERERS[key] || GAME_RENDERERS.memory; }
+setHintCountable((key) => !!GAME_RENDERERS[key]);
+function gameRenderer(key) {
+  return GAME_RENDERERS[key] || GAME_RENDERERS.memory;
+}
 
 // lancer un jeu à la demande d'une feature : l'île (« Surprise »), Zap (défi)
-on('game:start', ()=> startMinigame());
-on('game:bonus', (key)=> startBonusChallenge(key));
-function startBonusChallenge(key){
+on('game:start', () => startMinigame());
+on('game:bonus', (key) => startBonusChallenge(key));
+function startBonusChallenge(key) {
   beginBonusChallenge(key);
   playGame(key);
 }
 
 // Lance un type de jeu précis, en comptant le coup pour ce joueur
 // (utilisé pour proposer en priorité les jeux les moins essayés).
-function playGame(key){
+function playGame(key) {
   // pause douce réglée par les parents : plus de nouveau défi aujourd'hui
   // (l'espace parents répond true et montre l'écran de pause)
-  if(emit('game:before', key).some(Boolean)) return;
+  if (emit('game:before', key).some(Boolean)) return;
   bonusOnNewGame();
-  if(hintPolicy.onMission) hintPolicy.onMission(key);
+  if (hintPolicy.onMission) hintPolicy.onMission(key);
   resetMissionErrors();
   trackGamePlayed(key);
   setLastGame(key);
@@ -258,24 +317,24 @@ function playGame(key){
   gameRenderer(key)();
 }
 
-function startMinigame(){
+function startMinigame() {
   // ne propose que des défis adaptés à l'âge du joueur, et évite de
   // tomber deux fois de suite sur le même jeu
   const allowed = gameTypesForAge(currentPlayerAge());
-  const pool = allowed.filter(t=>t!==lastGame);
+  const pool = allowed.filter((t) => t !== lastGame);
   const practice = pickPracticeGame(allowed);
   const type = practice || pickRandom(pool.length ? pool : allowed);
   playGame(type);
 }
 
-function progressDots(done, total){
-  return `<div class="game-progress">${Array.from({length:total},(_,i)=>`<i class="${i<done?'on':''}"></i>`).join('')}</div>`;
+function progressDots(done, total) {
+  return `<div class="game-progress">${Array.from({ length: total }, (_, i) => `<i class="${i < done ? 'on' : ''}"></i>`).join('')}</div>`;
 }
 
 /* Mission ratée : on encourage, on ne punit pas — mais pas de récompense. */
-function onMissionFail(){
+function onMissionFail() {
   recordMission(false);
-  emit('game:after', { win:false });   // fin naturelle : la pause peut venir ensuite (js/features/rest)
+  emit('game:after', { win: false }); // fin naturelle : la pause peut venir ensuite (js/features/rest)
   endBonusChallenge();
   missionFact = null;
   bindQuit._last = null;
@@ -285,7 +344,7 @@ function onMissionFail(){
   playSound('wrong');
   vibrate([120, 60, 120]);
   const msg = pickRandom([
-    `Ce n'est pas grave${who?' '+who:''} ! On réessaie ?`,
+    `Ce n'est pas grave${who ? ' ' + who : ''} ! On réessaie ?`,
     `Presque ! Tu vas y arriver la prochaine fois.`,
     `Oups ! Regarde bien et réessaie 👀`,
   ]);
@@ -293,7 +352,7 @@ function onMissionFail(){
 
   openModal(`
     <div class="reward-box fail-box">
-      ${buddySlot('oops','buddy-big fail-emoji')}
+      ${buddySlot('oops', 'buddy-big fail-emoji')}
       <h2>Raté !</h2>
       <div class="speech">${msg}</div>
       <div class="speech" style="background:#FFF1EC;">
@@ -304,110 +363,165 @@ function onMissionFail(){
     <button class="btn-ghost" id="btn-later">Plus tard</button>
   `);
   const m = document.getElementById('modal');
-  if(m){ m.classList.add('shake-hard'); setTimeout(()=>m.classList.remove('shake-hard'), 500); }
-  document.getElementById('btn-retry').onclick = ()=>{ playSound('tap'); startMinigame(); };
-  document.getElementById('btn-later').onclick = ()=>{ playSound('tap'); closeModal(); renderLagon(); };
+  if (m) {
+    m.classList.add('shake-hard');
+    setTimeout(() => m.classList.remove('shake-hard'), 500);
+  }
+  document.getElementById('btn-retry').onclick = () => {
+    playSound('tap');
+    startMinigame();
+  };
+  document.getElementById('btn-later').onclick = () => {
+    playSound('tap');
+    closeModal();
+    renderLagon();
+  };
 }
 
-function onMissionWin(){
-  recordMission(true);   // avant le mode course, qui s'arrête plus bas
-  emit('game:after', { win:true });    // fin naturelle : la pause peut venir ensuite (js/features/rest)
+function onMissionWin() {
+  recordMission(true); // avant le mode course, qui s'arrête plus bas
+  emit('game:after', { win: true }); // fin naturelle : la pause peut venir ensuite (js/features/rest)
   bindQuit._last = null;
   partyScore();
   // course : on avance d'une case ; si la ligne d'arrivée est franchie, l'écran de victoire s'affiche
-  if(partyAfterWin()) return;
+  if (partyAfterWin()) return;
   const c = CHARACTERS[currentChar] || CHARACTERS.sirene;
-  markHelped(currentChar);   // ❤️ sur l'île
+  markHelped(currentChar); // ❤️ sur l'île
   const prevLevel = level();
   state.missions += 1;
-  const solo = !(party.active);
-  if(solo) noteStoryMission(currentWorld);   // l'histoire avance (js/features/story/episodes.js)
+  const solo = !party.active;
+  if (solo) noteStoryMission(currentWorld); // l'histoire avance (js/features/story/episodes.js)
   const key = pickRandom(c.loot);
   // bonus : de temps en temps un objet rare en plus
   const bonus = Math.random() < 0.2 ? pickRandom(availableItems()) : null;
   // défi bonus de Zap réussi : la récompense est doublée
   const boost = inBonusChallenge() ? 2 : 1;
-  if(boost > 1) bonusChallenge.won = true;
-  addItem(key,boost); markSeen(key);
-  if(bonus){ addItem(bonus,1); markSeen(bonus); }
+  if (boost > 1) bonusChallenge.won = true;
+  addItem(key, boost);
+  markSeen(key);
+  if (bonus) {
+    addItem(bonus, 1);
+    markSeen(bonus);
+  }
   state.newItems += bonus ? 2 : 1;
   save();
   renderBadge();
   questProgress('win', null, 1);
   questProgress('char', currentChar, 1);
   questProgress('collect', key, 1);
-  if(bonus) questProgress('collect', bonus, 1);
+  if (bonus) questProgress('collect', bonus, 1);
   const it = ITEMS[key];
   const levelUp = level() > prevLevel;
 
   playSound('win');
-  vibrate([60,40,120]);
+  vibrate([60, 40, 120]);
   confetti();
   const who = hello();
   const praise = pickRandom([
-    `Bravo${who?' '+who:''}, bien joué !`,
-    `Super${who?' '+who:''}, tu es trop ${ac('fort')} !`,
+    `Bravo${who ? ' ' + who : ''}, bien joué !`,
+    `Super${who ? ' ' + who : ''}, tu es trop ${ac('fort')} !`,
     `Génial, c'est réussi !`,
-    `Waouh${who?' '+who:''}, quel${ac('','le')} ${ac('champion','championne')} !`,
+    `Waouh${who ? ' ' + who : ''}, quel${ac('', 'le')} ${ac('champion', 'championne')} !`,
     `Incroyable, tu as tout trouvé !`,
-    `Trop ${ac('malin','maligne')} ! 💪`,
-  ]).replace(/ ([!?])/g, '\u00a0$1');   // espace insécable : le « ! » ne part pas seul à la ligne
-  const fact = missionFact; missionFact = null;
+    `Trop ${ac('malin', 'maligne')} ! 💪`,
+  ]).replace(/ ([!?])/g, '\u00a0$1'); // espace insécable : le « ! » ne part pas seul à la ligne
+  const fact = missionFact;
+  missionFact = null;
   // garde-robe : un objet se gagne à certains nombres de missions (js/features/wardrobe/wardrobe.js)
-  const lookWon = newlyUnlockedLookItems().map(k=>WARDROBE[k].name);
+  const lookWon = newlyUnlockedLookItems().map((k) => WARDROBE[k].name);
   const cheer = progressCheer(missionProgress);
   // l'équipe des compagnons (js/features/companion-team) : Léo dit la phrase de
   // progrès ; Zap fête le défi bonus ; Tom rapporte le trésor du jour
   const cheerBy = cheer ? teamCheerBy() : null;
   const extras = teamWinExtras();
   endBonusChallenge();
-  setTimeout(()=> speak(`${levelUp ? `Niveau ${level()} ! ` : ''}${praise} ${cheer ? (cheerBy ? COMPANIONS[cheerBy].name + ' : ' : '') + cheer + ' ' : ''}${extras.map(x=> `${COMPANIONS[x.by].name} : ${x.text} `).join('')}${lookWon.length ? `Tu gagnes ${lookWon.join(' et ')} pour ton avatar ! ` : ''}${fact ? fact + ' ' : ''}${c.name} t'offre ${it.name}${bonus ? `, et une surprise : ${ITEMS[bonus].name}` : ''}.`), 300);
+  setTimeout(
+    () =>
+      speak(
+        `${levelUp ? `Niveau ${level()} ! ` : ''}${praise} ${cheer ? (cheerBy ? COMPANIONS[cheerBy].name + ' : ' : '') + cheer + ' ' : ''}${extras.map((x) => `${COMPANIONS[x.by].name} : ${x.text} `).join('')}${lookWon.length ? `Tu gagnes ${lookWon.join(' et ')} pour ton avatar ! ` : ''}${fact ? fact + ' ' : ''}${c.name} t'offre ${it.name}${bonus ? `, et une surprise : ${ITEMS[bonus].name}` : ''}.`,
+      ),
+    300,
+  );
 
   openModal(`
     <div class="reward-box win-box">
       <span class="win-rays" aria-hidden="true"></span>
-      ${buddySlot('cheer','buddy-big win-emoji')}
+      ${buddySlot('cheer', 'buddy-big win-emoji')}
       <span class="win-stamp">${levelUp ? '🌟' : '✅'}</span>
       <h2>${levelUp ? `Niveau ${level()} !` : praise}</h2>
       ${lookWon.length ? `<div class="speech look-won"><span aria-hidden="true">🎁</span> Nouveau pour ton avatar : <strong>${lookWon.join(', ')}</strong> (sac → Mon look)</div>` : ''}
       ${cheer ? `<div class="speech progress-cheer">${cheerBy ? `<span class="cheer-face" aria-hidden="true">${companionSVG(cheerBy, 'cheer')}</span><b>${COMPANIONS[cheerBy].name}</b>` : '<span aria-hidden="true">📈</span>'} ${cheer}</div>` : ''}
-      ${extras.map(x=> `<div class="speech team-extra" data-by="${x.by}"><span class="cheer-face" aria-hidden="true">${companionSVG(x.by, 'cheer')}</span><span><b>${COMPANIONS[x.by].name}</b> ${x.text}</span></div>`).join('')}
+      ${extras.map((x) => `<div class="speech team-extra" data-by="${x.by}"><span class="cheer-face" aria-hidden="true">${companionSVG(x.by, 'cheer')}</span><span><b>${COMPANIONS[x.by].name}</b> ${x.text}</span></div>`).join('')}
       ${fact ? `<div class="speech fun-fact"><span aria-hidden="true">💡</span> ${fact}</div>` : ''}
       <div class="speech reward-item" style="display:flex; align-items:center; justify-content:center; gap:10px;">
         <span class="reward-emoji" data-gain-item style="font-size:2rem;">${it.emoji}</span>
         <span>${c.name} t'offre : <strong>${it.name}</strong>${boost > 1 ? ` <b class="boost">× ${boost}</b>` : ''}</span>
       </div>
       ${solo ? storyProgressHTML(currentWorld) : ''}
-      ${bonus ? `<div class="speech" style="display:flex; align-items:center; justify-content:center; gap:10px; background:#FFF9E8;">
+      ${
+        bonus
+          ? `<div class="speech" style="display:flex; align-items:center; justify-content:center; gap:10px; background:#FFF9E8;">
         <span data-gain-item style="font-size:2rem;">${ITEMS[bonus].emoji}</span>
         <span>Surprise ! <strong>${ITEMS[bonus].name}</strong> en plus ✨</span>
-      </div>` : ''}
+      </div>`
+          : ''
+      }
     </div>
-    <button class="btn-primary" id="btn-yay">${(party.active) ? 'Au joueur suivant 👉' : 'Super !'}</button>
-    ${(party.active) ? '' : '<button class="btn-ghost" id="btn-again">Encore une mission 🎮</button>'}
+    <button class="btn-primary" id="btn-yay">${party.active ? 'Au joueur suivant 👉' : 'Super !'}</button>
+    ${party.active ? '' : '<button class="btn-ghost" id="btn-again">Encore une mission 🎮</button>'}
   `);
   // l'objet gagné s'envolera jusqu'au sac quand la fenêtre se fermera
-  queueGain({ items:[it.emoji, bonus ? ITEMS[bonus].emoji : null] });
-  document.getElementById('btn-yay').onclick = ()=> {
-    playSound('tap'); closeModal(); renderLagon();
+  queueGain({ items: [it.emoji, bonus ? ITEMS[bonus].emoji : null] });
+  document.getElementById('btn-yay').onclick = () => {
+    playSound('tap');
+    closeModal();
+    renderLagon();
     // multijoueur : la main passe au joueur suivant après une réussite
-    if(party.active){ passTurn('next'); return; }
+    if (party.active) {
+      passTurn('next');
+      return;
+    }
     // nouvelle île débloquée ? sinon l'équipe qui s'ouvre (niveau 10), sinon
     // peut-être un épisode de l'histoire
-    setTimeout(()=>{ if(!checkNewIsland() && !maybeTeamOpening()) maybeStoryEpisode(); }, 250);
+    setTimeout(() => {
+      if (!checkNewIsland() && !maybeTeamOpening()) maybeStoryEpisode();
+    }, 250);
   };
   const againBtn = document.getElementById('btn-again');
-  if(againBtn) againBtn.onclick = ()=> { playSound('tap'); renderLagon(); startMinigame(); };
+  if (againBtn)
+    againBtn.onclick = () => {
+      playSound('tap');
+      renderLagon();
+      startMinigame();
+    };
 }
 
 // tout nouveau contenu (ou la fermeture) invalide un éventuel minuteur de
 // défi en cours — jamais de décompte qui tourne « dans le vide » — et une
 // relance de question programmée après une erreur (anti-devinette) : sans
 // ça, l'ancienne question pourrait réapparaître par-dessus un autre jeu.
-onModalChange(()=>{ clearActiveTimer(); clearPendingRetry(); });
-onModalClose(()=>{ bindQuit._last = null; });
+onModalChange(() => {
+  clearActiveTimer();
+  clearPendingRetry();
+});
+onModalClose(() => {
+  bindQuit._last = null;
+});
 
 export {
-  clearActiveTimer, flashModal, livesBar, loseLife, onMissionWin, playGame, progressDots, registerGame,
-  setMissionFact, setSolution, setupLives, solSel, startMinigame, startTimerIfNeeded, stepOk
+  clearActiveTimer,
+  flashModal,
+  livesBar,
+  loseLife,
+  onMissionWin,
+  playGame,
+  progressDots,
+  registerGame,
+  setMissionFact,
+  setSolution,
+  setupLives,
+  solSel,
+  startMinigame,
+  startTimerIfNeeded,
+  stepOk,
 };

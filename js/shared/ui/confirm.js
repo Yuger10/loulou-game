@@ -16,11 +16,22 @@ import { speak } from './voice.js';
 
 let confirmClose = null;
 
-function askConfirm(opts){
-  const o = Object.assign({ text:'', confirmLabel:'Oui', cancelLabel:'Annuler', danger:true, typeWord:'', dismissValue:false, primaryYes:false }, opts || {});
-  if(confirmClose) confirmClose(null);
+function askConfirm(opts) {
+  const o = Object.assign(
+    {
+      text: '',
+      confirmLabel: 'Oui',
+      cancelLabel: 'Annuler',
+      danger: true,
+      typeWord: '',
+      dismissValue: false,
+      primaryYes: false,
+    },
+    opts || {},
+  );
+  if (confirmClose) confirmClose(null);
   let el = document.getElementById('confirm-layer');
-  if(!el){
+  if (!el) {
     el = document.createElement('div');
     el.id = 'confirm-layer';
     document.body.appendChild(el);
@@ -29,8 +40,12 @@ function askConfirm(opts){
   el.innerHTML = `
     <div class="confirm-box" role="alertdialog" aria-modal="true" aria-labelledby="confirm-text">
       <p id="confirm-text" class="confirm-text">${o.text}</p>
-      ${word ? `<label class="confirm-type">Pour confirmer, écris <strong>${word}</strong>
-        <input id="confirm-input" type="text" autocomplete="off" autocapitalize="characters" autocorrect="off" spellcheck="false" enterkeyhint="done"></label>` : ''}
+      ${
+        word
+          ? `<label class="confirm-type">Pour confirmer, écris <strong>${word}</strong>
+        <input id="confirm-input" type="text" autocomplete="off" autocapitalize="characters" autocorrect="off" spellcheck="false" enterkeyhint="done"></label>`
+          : ''
+      }
       <div class="confirm-actions">
         <button type="button" class="${o.primaryYes ? 'form-primary' : o.danger ? 'danger' : 'form-secondary'}" data-confirm="yes">${o.confirmLabel}</button>
         <button type="button" class="${o.primaryYes ? 'form-secondary' : 'form-primary'}" data-confirm="no">${o.cancelLabel}</button>
@@ -38,32 +53,48 @@ function askConfirm(opts){
     </div>`;
   el.hidden = false;
   speak(String(o.text).replace(/<[^>]+>/g, ''));
-  const yes = el.querySelector('[data-confirm="yes"]'), no = el.querySelector('[data-confirm="no"]');
+  const yes = el.querySelector('[data-confirm="yes"]'),
+    no = el.querySelector('[data-confirm="no"]');
   const input = el.querySelector('#confirm-input');
-  const typed = ()=> !word || (input && input.value.trim().toLowerCase() === word.toLowerCase());
-  const refresh = ()=> yes.setAttribute('aria-disabled', typed() ? 'false' : 'true');
+  const typed = () => !word || (input && input.value.trim().toLowerCase() === word.toLowerCase());
+  const refresh = () => yes.setAttribute('aria-disabled', typed() ? 'false' : 'true');
   refresh();
-  return new Promise(resolve=>{
-    const onKey = (e)=>{
-      if(e.key === 'Escape'){ e.stopImmediatePropagation(); e.preventDefault(); close(o.dismissValue); }
-      else if(e.key === 'Enter' && e.target === input && typed()){ e.preventDefault(); close(true); }
+  return new Promise((resolve) => {
+    const onKey = (e) => {
+      if (e.key === 'Escape') {
+        e.stopImmediatePropagation();
+        e.preventDefault();
+        close(o.dismissValue);
+      } else if (e.key === 'Enter' && e.target === input && typed()) {
+        e.preventDefault();
+        close(true);
+      }
     };
-    function close(result){
+    function close(result) {
       document.removeEventListener('keydown', onKey, true);
-      el.hidden = true; el.innerHTML = '';
+      el.hidden = true;
+      el.innerHTML = '';
       confirmClose = null;
       resolve(result);
     }
     confirmClose = close;
-    document.addEventListener('keydown', onKey, true);   // avant la fenêtre derrière (qui fermerait sur Échap)
-    if(input){ input.addEventListener('input', refresh); setTimeout(()=> input.focus(), 0); }
-    else setTimeout(()=> no.focus(), 0);
-    yes.onclick = ()=>{
-      if(!typed()){ speak(`Pour confirmer, écris ${word}.`); if(input) input.focus(); return; }
+    document.addEventListener('keydown', onKey, true); // avant la fenêtre derrière (qui fermerait sur Échap)
+    if (input) {
+      input.addEventListener('input', refresh);
+      setTimeout(() => input.focus(), 0);
+    } else setTimeout(() => no.focus(), 0);
+    yes.onclick = () => {
+      if (!typed()) {
+        speak(`Pour confirmer, écris ${word}.`);
+        if (input) input.focus();
+        return;
+      }
       close(true);
     };
-    no.onclick = ()=> close(false);
-    el.onclick = (e)=>{ if(e.target === el) close(o.dismissValue); };
+    no.onclick = () => close(false);
+    el.onclick = (e) => {
+      if (e.target === el) close(o.dismissValue);
+    };
   });
 }
 
