@@ -7,6 +7,10 @@
 4. **L'enfant d'abord :** chaque décision respecte `product-guidelines.md` (peu de texte, voix, pas de punition, anti-devinette).
 5. **Commandes non interactives :** `CI=true` si besoin.
 
+## Nouvelle track
+- `spec.md` et `plan.md` partent des gabarits [`conductor/templates/`](./templates/) (cothon 0.2.0-2) : décisions sourcées, politiques, surface d'attaque, zones sensibles, smoke test avec niveaux de preuve, journal de décisions.
+- Pour une petite track, une section sans objet s'écrit « sans objet » plutôt que de disparaître : on voit qu'elle a été considérée.
+
 ## Cycle d'une tâche
 1. Prendre la tâche suivante du `plan.md` et la passer de `[ ]` à `[~]`.
 2. **Rouge :** écrire le ou les tests qui décrivent le comportement, lancer `bun run check` et constater l'échec.
