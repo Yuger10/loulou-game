@@ -153,6 +153,7 @@ Chaque mini-jeu a maintenant son propre niveau pour chaque enfant (`js/adaptive.
 | v66.6 | TypeScript strict sur la couche shared |
 | v66.7 | TypeScript strict sur la couche entities |
 | v66.8 | La place des décorations survit au redémarrage |
+| v66.9 | TypeScript strict sur 8 slices de features, dessins des squishies dans leur fichier |
 
 ---
 

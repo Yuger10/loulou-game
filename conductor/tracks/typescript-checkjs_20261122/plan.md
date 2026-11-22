@@ -10,7 +10,7 @@ Spec : [spec.md](./spec.md). Une PR par couche. Mesure de départ du mode strict
 ## Phase 2 : mode strict, couche par couche
 - [x] Task: `js/shared/` en strict : 161 erreurs → 0, en JSDoc seulement (aucun `any`), `tsconfig.strict.json` (include de la couche), `bun run typecheck` lance les deux modes ; 2 annotations dans `features` rendues nécessaires par les types de `shared` (`share.js`, `music.js`)
 - [x] Task: `js/entities/` en strict (dont la sauvegarde) : 299 → 0, types de la partie (`GameState`…) ; a révélé la perte de `decoPos` au chargement
-- [ ] Task: `js/features/` en strict, slice par slice
+- [~] Task: `js/features/` en strict, par lots de bas en haut (ordre du manifeste) : lot 1 fait (8 slices, 402 → 0) ; lots 2 (`story` → `map`), 3 (moteur et mini-jeux), 4 (`market` → `settings`)
 - [ ] Task: `js/app/` en strict (après `features` : `app` les importe toutes), puis `strict: true` dans `tsconfig.json`
 
 ## Phase 3 : livraison
