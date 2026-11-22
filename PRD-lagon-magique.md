@@ -1734,3 +1734,9 @@ Les deux sont proposés dès 5 ans, sans minuteur. Le jeu de l'île est les poti
 - **Ce que voit l'enfant :** en mode chacun son tour, une paire ratée au jeu de mémoire, ou le temps écoulé, passe la main au joueur suivant (avec l'écran de changement de joueur) ; avant, le jeu se bloquait sur le même joueur.
 - **Pour le code :** `wrongFeedback` accepte une erreur sans bouton fautif (`null`) : le son, la vibration et le passage de main restent, le tremblement du bouton seulement s'il y en a un. Révélé par TypeScript strict (66.11). `test/multijoueur.test.js` (9 vérifications), écrit avant la correction.
 - Cache `lagon-v66.14`.
+
+# v66.15 : au rythme magique, Boumbo joue tout le rythme avant la victoire
+
+- **Ce que voit l'enfant :** au rythme magique, palier de lecture, une fois le rythme lu et joué, Boumbo le joue enfin **en entier** (chaque symbole s'allume avec son son), puis la victoire arrive. Avant, elle coupait la musique après la première note.
+- **Pour le code :** `play()` renvoie le moment où finit sa dernière note ; la victoire attend ce moment plus 400 ms (`READ_END_PAUSE`), au lieu d'un délai fixe de 900 ms. Révélé par TypeScript strict (66.11). `test/rythme-lecture.test.js`, écrit avant la correction.
+- Cache `lagon-v66.15`.
