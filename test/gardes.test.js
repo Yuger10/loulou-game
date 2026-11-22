@@ -44,5 +44,31 @@ check(
 const literal = grep(/winSoon\(\s*\d/);
 check('winSoon reçoit un délai nommé, jamais un nombre', literal.length === 0, literal.join('\n       '));
 
+/* ---- AGENTS.md, types en JSDoc : jamais `any` ni `@ts-ignore` (ADR 0003) ----
+   tsc en mode strict refuse un `any` implicite, pas un `any` écrit : ce garde
+   le refuse, sous toutes ses formes (`{any}`, `{*}`, `{?}`, `Array<any>`…). */
+console.log('— Types stricts');
+const ANY = /[{<(,|:]\s*any\b|\bany\s*[>}[|,)]|\{\s*[*?]\s*\}/;
+const IGNORE = /@ts-(ignore|nocheck|expect-error)\b/;
+check(
+  'le garde reconnaît chaque forme de `any`',
+  [
+    '/** @type {any} */',
+    '/** @param {Array<any>} x */',
+    '/** @type {Record<string, any>} */',
+    '/** @returns {*} */',
+    '/** @type {?} */',
+  ].every((l) => ANY.test(l)) &&
+    !['/** @type {HTMLElement} */', "const company = 'Anyway'", '/** @type {Set<string>} */'].some((l) =>
+      ANY.test(l),
+    ) &&
+    IGNORE.test('// @ts-ignore') &&
+    IGNORE.test('// @ts-expect-error'),
+);
+const anys = grep(ANY);
+check('aucun type `any` dans js/', anys.length === 0, anys.join('\n       '));
+const ignores = grep(IGNORE);
+check('aucune erreur de type mise sous silence (@ts-ignore)', ignores.length === 0, ignores.join('\n       '));
+
 console.log(`\n${failed ? '❌' : '✅'} gardes : ${passed} vérifications réussies, ${failed} en échec`);
 process.exit(failed ? 1 : 0);

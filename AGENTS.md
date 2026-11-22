@@ -38,7 +38,7 @@ Jeu éducatif en français pour une enfant de 6 ans (mathématiques, lecture, lo
 - **Fin de mission : `winSoon()`** du moteur (`WIN_DELAY`, ou `WIN_DELAY_LONG` si le jeu finit sur une animation), jamais `setTimeout(onMissionWin, …)` dans un mini-jeu (`test/gardes.test.js`).
 - **Bloc vide** : interdit par `no-empty`, sauf avec un commentaire qui dit pourquoi l'échec est sans gravité (`catch { // … }`).
 - **État lu par les tests** : les tests lisent l'état du jeu par son nom (`ev('gameSolution')`). Une variable qui ne sert qu'aux tests porte `// oxlint-disable-next-line no-unused-vars -- lu par les tests` : ne pas la supprimer.
-- **Types en JSDoc** (pas de fichiers `.ts`, pas de build) : un champ ou un bouton s'annote à sa déclaration (`/** @type {HTMLInputElement} */ (…)`), un point d'accroche a son type, un nom ne change pas de type (un `Set` et un tableau ont deux noms). Jamais `any` ni `@ts-ignore`.
+- **Types en JSDoc** (pas de fichiers `.ts`, pas de build) : un champ ou un bouton s'annote à sa déclaration (`/** @type {HTMLInputElement} */ (…)`), un point d'accroche a son type, un nom ne change pas de type (un `Set` et un tableau ont deux noms). Jamais `any` ni `@ts-ignore` (`test/gardes.test.js`).
 - **Lint** : corriger le code plutôt que désactiver une règle. Toute exception `oxlint-disable` dit pourquoi, sur la même ligne. Les règles encore désactivées sont suivies par la track `lint-regles-completes`.
 - Commentaires en français, qui expliquent le *pourquoi*. Styleguides : [JavaScript](conductor/code_styleguides/javascript.md), [HTML et CSS](conductor/code_styleguides/html-css.md).
 - Textes (docs, commentaires, PR) en français, termes techniques anglais standards, **pas de tirets cadratins**.
