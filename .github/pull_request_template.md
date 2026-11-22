@@ -14,4 +14,7 @@
 ## Risques et zones sensibles
 <!-- Sauvegarde, pause et parents, PWA, garde d'architecture, dépendances : voir AGENTS.md. -->
 
+<!-- PR écrite par un agent : garder la ligne ci-dessous (métriques, cothon 0.3.0-2). Correctif : titre en « fix: ». -->
+agent-generated: true
+
 Pas de merge sans ordre explicite d'Amrou.
