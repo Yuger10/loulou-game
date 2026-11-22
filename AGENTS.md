@@ -1,0 +1,52 @@
+# Le Lagon Magique
+
+## Ce que fait le projet
+Jeu éducatif en français pour une enfant de 6 ans (mathématiques, lecture, logique) : des îles, des personnages, des mini-jeux, une collection. PWA sans dépendance de production, jouée sur téléphone et tablette, en ligne sur GitHub Pages depuis `main` : **chaque merge est en production une minute après.** Données uniquement sur l'appareil (`localStorage`).
+
+## Commandes
+- Installer : `bun install` (installe aussi le hook git). **bun seulement** : npm, yarn et pnpm sont interdits, `check` échoue si leur lockfile apparaît.
+- Vérifier avant de terminer : `bun run check` (obligatoire, doit passer) : garde des lockfiles, lint et format, docs, tests en parallèle (environ 20 s).
+- Tests ciblés : `bun run test jardin` (filtre sur le nom des suites).
+- Mettre en forme : `bun run format` (le hook de l'agent et le commit le font déjà).
+- Après un ajout ou un déplacement de fichier : `bun run sync` (régénère `index.html` et `sw.js`).
+- Lancer en local : `bun run start`, puis `http://localhost:8080` (jamais `file://`, les modules ES ne chargent pas).
+
+## Architecture
+- **Feature slices** sur 4 couches, en modules ES natifs : `js/app` > `js/features` > `js/entities` > `js/shared`. Voir [ADR 0001](docs/adr/0001-architecture-feature-slices.md) et [ADR 0002](docs/adr/0002-modules-es-natifs.md).
+- Une slice n'importe que l'`index.js` d'une autre slice (son API publique), de sa couche ou d'une couche inférieure, sans cycle. Pour prévenir une slice plus haute : un événement (`emit`/`on`, `js/shared/lib/events.js`) ou un point d'accroche. `test/slices.test.js` le vérifie.
+- `js/slices.cjs` est le manifeste (ordre des slices, CSS). Où ajouter quoi : [conductor/workflow.md](conductor/workflow.md#où-ajouter-quoi-feature-slices-v51-modules-es-v54).
+- Ajouter un mini-jeu : [checklist-mini-jeu](conductor/checklist-mini-jeu.md). Une île : [checklist-ile](conductor/checklist-ile.md). Niveaux : [conductor/niveaux.md](conductor/niveaux.md).
+- Sauvegarde versionnée : `SAVE_VERSION` et `migrate()` dans `js/entities/game-state/state.js`.
+- Décisions : `docs/adr/` (lire les ADR avant de changer un outil ou un pattern). Outillage et mesures : `docs/factory/`.
+
+## Comment on travaille
+- **Conductor** est la seule convention de spec et de plan : `conductor/tracks/<id>/spec.md` et `plan.md`, registre `conductor/tracks.md`. Cycle et livraison : [conductor/workflow.md](conductor/workflow.md).
+- Tests d'abord : le comportement attendu s'écrit dans `test/*.test.js` avant le code. Un nouveau fichier de test est trouvé tout seul par le lanceur.
+- Plusieurs sessions livrent en parallèle : le numéro de version s'attribue **à la livraison** (le suivant sur `main`), et on rebase sur `main` avant de pousser.
+- L'enfant d'abord : [conductor/product-guidelines.md](conductor/product-guidelines.md) (peu de texte et voix, pas de punition, anti-devinette, pas de minuteur avant le CP).
+
+## Conventions
+- **Handlers d'événements : `el.onclick = …`** (l'idiome du projet). Réaffecté à chaque rendu, il ne crée jamais de doublon. `addEventListener` seulement quand c'est nécessaire : événement sans propriété `on…`, `{ capture: true }`, plusieurs écouteurs voulus. Exemple : `js/shared/ui/confirm.js`.
+- **Hasard injectable** : une fonction qui tire au sort reçoit un `rng` (par défaut `Math.random`), pour que les tests soient déterministes. Exemple : `ladybugsBuildRound(dd, rng)` dans `js/features/minigames/ladybugs/ladybugs.js`.
+- **État lu par les tests** : les tests lisent l'état du jeu par son nom (`ev('gameSolution')`). Une variable qui ne sert qu'aux tests porte `// oxlint-disable-next-line no-unused-vars -- lu par les tests` : ne pas la supprimer.
+- **Lint** : corriger le code plutôt que désactiver une règle. Toute exception `oxlint-disable` dit pourquoi, sur la même ligne. Les règles encore désactivées sont suivies par la track `lint-regles-completes`.
+- Commentaires en français, qui expliquent le *pourquoi*. Styleguides : [JavaScript](conductor/code_styleguides/javascript.md), [HTML et CSS](conductor/code_styleguides/html-css.md).
+- Textes (docs, commentaires, PR) en français, termes techniques anglais standards, **pas de tirets cadratins**.
+
+## Interdits
+- Merger sans ordre explicite d'Amrou, `push --force`, activer l'auto-merge.
+- Modifier à la main `sw.js` et `index.html` (générés par `bun run sync`).
+- Assouplir la garde d'architecture (`test/slices.test.js`, `test/tools/boundaries.js`, `js/slices.cjs`) pour faire passer du code.
+- Désactiver, affaiblir ou supprimer un test existant pour faire passer `check`.
+- Changer la forme de la sauvegarde sans augmenter `SAVE_VERSION` ni écrire la migration.
+- Ajouter une dépendance (`package.json`, `bun.lock`) sans le demander.
+- Toucher aux dessins des personnages et compagnons (`characters-art.js`, SVG) sans demande explicite.
+
+## Zones sensibles (relecture humaine obligatoire)
+Sauvegarde et migrations (`js/entities/game-state/`), import de sauvegarde (`js/features/backup/`, entrée non fiable), pause et porte des parents (`js/features/rest/`, `js/features/parents/`), PWA (`sw.js`, `manifest.json`, `index.html`), garde d'architecture, dépendances. Liste complète : [docs/factory/AUDIT.md](docs/factory/AUDIT.md#8-zones-sensibles-proposées).
+
+## Définition de "terminé"
+- `bun run check` passe.
+- Les critères d'acceptation de la spec sont couverts par des tests.
+- La doc touchée par le changement est à jour dans la même PR (ce fichier, `conductor/`, `docs/`, ADR si décision).
+- Résumé du changement et risques écrits dans le corps de la PR.
