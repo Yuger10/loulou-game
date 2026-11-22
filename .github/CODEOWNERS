@@ -1,0 +1,17 @@
+# Zones sensibles (docs/factory/AUDIT.md, section 8) : relecture d'Amrou.
+# La CI (test/tools/sensitive.js) pose l'étiquette needs-human:sensitive.
+/js/entities/game-state/          @Yuger10
+/js/features/backup/              @Yuger10
+/js/features/rest/                @Yuger10
+/js/features/parents/             @Yuger10
+/sw.js                            @Yuger10
+/manifest.json                    @Yuger10
+/index.html                       @Yuger10
+/js/slices.cjs                    @Yuger10
+/test/slices.test.js              @Yuger10
+/test/tools/boundaries.js         @Yuger10
+/package.json                     @Yuger10
+/bun.lock                         @Yuger10
+/js/entities/character/characters-art.js @Yuger10
+/test/holdout/                    @Yuger10
+/.github/                         @Yuger10
