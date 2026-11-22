@@ -17,7 +17,7 @@
    Réglage dans le profil : profile.pauseMin (0 = pas de pause). */
 import { avatarHTML } from '../../entities/companion/index.js';
 import { GAME_LIST, gameTypesForAge } from '../../entities/difficulty/index.js';
-import { resetState, save, state } from '../../entities/game-state/index.js';
+import { readSave, resetState, save, state } from '../../entities/game-state/index.js';
 import {
   currentProfile,
   deleteProfile,
@@ -188,8 +188,11 @@ function openParentGate(onOk, onCancel, onWrong) {
  */
 function profileState(id) {
   if (id === profiles.current) return state;
+  // la partie d'un autre joueur passe par la même porte que pour jouer (elle peut
+  // venir d'une sauvegarde importée) ; lue seulement, elle n'est pas réécrite
   try {
-    return JSON.parse(localStorage.getItem(profileSaveKey(id)) || '{}') || {};
+    const raw = localStorage.getItem(profileSaveKey(id));
+    return raw ? readSave(raw) : {};
   } catch {
     return {};
   }
