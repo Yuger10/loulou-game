@@ -1,0 +1,18 @@
+# Learnings : chaque correction devient un check
+
+Boucle d'amélioration du playbook cothon (7.3). Après chaque correction d'Amrou ou incident d'un agent : trois lignes (ce qui s'est passé, pourquoi, ce qui l'empêche désormais), puis un check qui rend l'erreur impossible. Une ligne dans `AGENTS.md` seule ne suffit pas : la colonne « Check » dit si l'erreur est vraiment bloquée.
+
+| Date | Ce qui s'est passé | Pourquoi | Ce qui l'empêche | Check |
+|---|---|---|---|---|
+| 2026-11-21 | L'agent a coupé 5 règles de lint pour livrer vite ; Amrou : « je préfère corriger proprement » | Désactiver est plus rapide que corriger | Convention « corriger plutôt que désactiver » dans `AGENTS.md`, track `lint-regles-completes` | ⏳ la track réactive les règles |
+| 2026-11-22 | « Version 66 » affichée alors que du code changé était en ligne | La version n'augmentait qu'avec une track | Versions 66.x (ADR 0005), `bun run release` | ✅ `test/update.test.js` (version = cache) |
+| 2026-11-22 | Deux vérifications du test de fumée finissaient par `\|\| true` et passaient toujours (depuis la v11) | Test écrit vite, jamais relu | Lint sur `test/` | ✅ oxlint (`no-unused-vars` les a révélées) |
+| 2026-11-22 | Un appel `bellSVG(m, i)` n'avait pas suivi le retrait du paramètre `i` (par l'agent, étape oxlint) | Aucun typecheck à l'époque | TypeScript en vérification du JS (ADR 0003) | ✅ `tsc` dans `check`, la CI et le hook de l'agent |
+| 2026-11-22 | Un test des coccinelles échouait 1 fois sur 6, impossible à reproduire | `Math.random` direct, sans graine | Une seule source de hasard, graine rejouable | ✅ oxlint `no-restricted-properties`, `TEST_SEED` affiché par le lanceur |
+| 2026-11-22 | Une écriture de sauvegarde ratée passait en silence (`catch {}` vide) | Les blocs vides n'étaient pas interdits | `storageWrite`, message à l'enfant, carte parents | ✅ oxlint `no-empty` et `localStorage.setItem` interdit, `test/stockage.test.js` |
+| 2026-11-22 | L'agent a voulu annuler une expérience avec `git checkout` alors que ses modifications n'étaient pas commitées (bloqué par le garde-fou) | Habitude d'annuler par checkout | Commiter avant toute expérience qui s'annule | ⏳ consigne, pas de check |
+| 2026-11-22 | Une PR empilée visait encore la branche de la PR précédente au moment du merge (#52) | GitHub ne la réoriente pas tout seul si la branche reste | Réorienter vers `main` avant de merger une PR empilée | ⏳ consigne, pas de check |
+| 2026-11-22 | L'agent a voulu poser lui-même l'étiquette `human:approved` sur sa PR, sur délégation (refusé par le garde-fou) | Confusion entre « vérifier » et « approuver » | L'étiquette est posée par un humain, jamais par l'agent, même sur délégation (`AGENTS.md`) | ✅ garde-fou de l'agent ; la CI exige l'étiquette |
+| 2026-11-22 | « ok go » et « Oui » n'ont pas suffi à autoriser un merge | Un merge exige un ordre explicite | Demander « merge la PR N » | ✅ garde-fou de l'agent |
+
+Les lignes ⏳ sont des candidates : si elles reviennent, elles deviennent un check (script, test ou règle).
