@@ -9,13 +9,15 @@
     "test": "node test/tools/run.js",
     "inventaire": "node test/tools/globals.js $(node -e \"console.log(require('./js/slices.cjs').SLICES.flatMap(s=>s.files).join(' '))\")",
     "sync": "node test/tools/sync.js",
-    "sw": "node test/tools/sync.js"
+    "sw": "node test/tools/sync.js",
+    "prepare": "lefthook install"
   },
   "devDependencies": {
     "acorn": "^8.19.0",
     "acorn-walk": "^8.3.5",
     "esbuild": "^0.24.0",
     "jsdom": "^26.0.0",
+    "lefthook": "2.2.2",
     "oxlint": "1.94.0"
   }
 }
