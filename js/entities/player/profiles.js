@@ -75,7 +75,7 @@ function loadProfiles() {
       // ancienne partie illisible : rien à migrer
     }
     const id = newId();
-    profiles.list = [{ id, name: (legacy && legacy.name) || '', avatar: (legacy && legacy.avatar) || '👧' }];
+    profiles.list = [{ id, name: (legacy && legacy.name) || '', avatar: (legacy && fixAvatar(legacy.avatar)) || '👧' }];
     profiles.current = id;
     if (legacy) {
       storageWrite(profileSaveKey(id), JSON.stringify(legacy));
