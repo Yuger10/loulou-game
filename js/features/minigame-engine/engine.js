@@ -130,8 +130,7 @@ function loseLife(target, opts = {}) {
   hintNudge(true); // le bouton 💡 se propose (js/features/hints/hints.js)
   // multijoueur : la règle reste « une erreur = on passe la main »
   if (party.active) {
-    // el vaut null pour une erreur sans bouton (temps écoulé, mémoire) : wrongFeedback attend un élément
-    wrongFeedback(/** @type {HTMLElement} */ (el));
+    wrongFeedback(el); // el vaut null pour une erreur sans bouton (temps écoulé, mémoire)
     return false;
   }
   noteAnswerError(); // pour l'espace parents
