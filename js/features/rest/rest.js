@@ -510,8 +510,9 @@ function restRecallYesterday() {
   if (state.restRecall === today) return;
   const y = todayKey(new Date(Date.now() - 864e5));
   const log = state.restLog && state.restLog[y];
-  if (!log || !log.activity) return;
-  const a = REST_ACTIVITIES[log.activity];
+  // une activité inconnue (sauvegarde d'une autre version) : pas de rappel
+  const a = log && log.activity ? REST_ACTIVITIES[log.activity] : undefined;
+  if (!log || !a) return;
   const line =
     log.activity === 'offscreen'
       ? 'Hier, tu as fait une activité sans écran. Bravo !'
@@ -535,7 +536,7 @@ on('parents:cards', (/** @type {{ st: Partial<GameState> }} */ { st }) => {
   const fam = Number(profiles.familyPause) || 0;
   /** @param {RestDay} l */
   const label = (l) =>
-    l.activity
+    l.activity && REST_ACTIVITIES[l.activity]
       ? `${REST_ACTIVITIES[l.activity].emoji} ${REST_ACTIVITIES[l.activity].label}`
       : l.skipped
         ? 'activité passée'
