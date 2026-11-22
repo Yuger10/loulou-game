@@ -29,7 +29,7 @@ import { save, state } from '../../entities/game-state/index.js';
 import { AVATARS, syncProfileFromState } from '../../entities/player/index.js';
 import { FETES } from '../../entities/season/index.js';
 import { emit } from '../../shared/lib/index.js';
-import { confetti, playSound, showToast, speak } from '../../shared/ui/index.js';
+import { confetti, playSound, setHandler, showToast, speak } from '../../shared/ui/index.js';
 import { spendCoins } from '../gains/index.js';
 import { addCoins } from '../wallet/index.js';
 
@@ -346,52 +346,49 @@ function renderLook() {
         : `<div class="look-grid">${tile(null)}${items.map(tile).join('')}</div>`
     }
   `;
-  el.querySelectorAll('[data-lslot]').forEach(
-    (b) =>
-      (b.onclick = () => {
-        playSound('tap');
-        lookSlot = b.dataset.lslot;
-        lookTry = null;
-        renderLook();
-      }),
+  el.querySelectorAll('[data-lslot]').forEach((b) =>
+    setHandler(b, 'click', () => {
+      playSound('tap');
+      lookSlot = b.dataset.lslot;
+      lookTry = null;
+      renderLook();
+    }),
   );
-  el.querySelectorAll('[data-look]').forEach(
-    (b) =>
-      (b.onclick = () => {
-        playSound('tap');
-        const id = b.dataset.look || null;
-        const it = id && WARDROBE[id];
-        if (!id || ownsLookItem(id)) {
-          lookTry = null;
-          wearLook(lookSlot, id);
-          if (it) speak(it.name);
-        } else {
-          lookTry = { slot: lookSlot, id };
-          speak(
-            it.season
-              ? `${it.name}. Un cadeau de saison.`
-              : it.unlock
-                ? `${it.name}. À gagner après ${it.unlock} missions.`
-                : `${it.name}. ${it.price} pièces.`,
-          );
-        }
-        renderLook();
-      }),
-  );
-  el.querySelectorAll('[data-av]').forEach(
-    (b) =>
-      (b.onclick = () => {
-        playSound('tap');
-        state.avatar = b.dataset.av;
+  el.querySelectorAll('[data-look]').forEach((b) =>
+    setHandler(b, 'click', () => {
+      playSound('tap');
+      const id = b.dataset.look || null;
+      const it = id && WARDROBE[id];
+      if (!id || ownsLookItem(id)) {
         lookTry = null;
-        save();
-        refreshLookEverywhere();
-        renderLook();
-      }),
+        wearLook(lookSlot, id);
+        if (it) speak(it.name);
+      } else {
+        lookTry = { slot: lookSlot, id };
+        speak(
+          it.season
+            ? `${it.name}. Un cadeau de saison.`
+            : it.unlock
+              ? `${it.name}. À gagner après ${it.unlock} missions.`
+              : `${it.name}. ${it.price} pièces.`,
+        );
+      }
+      renderLook();
+    }),
+  );
+  el.querySelectorAll('[data-av]').forEach((b) =>
+    setHandler(b, 'click', () => {
+      playSound('tap');
+      state.avatar = b.dataset.av;
+      lookTry = null;
+      save();
+      refreshLookEverywhere();
+      renderLook();
+    }),
   );
   const buy = document.getElementById('look-buy');
   if (buy)
-    buy.onclick = () => {
+    setHandler(buy, 'click', () => {
       const id = lookTry && lookTry.id;
       const it = id && WARDROBE[id];
       const from = el.querySelector('.look-preview');
@@ -403,7 +400,7 @@ function renderLook() {
       showToast(`✨ Nouveau look : ${it.name} !`);
       speak(`Super ! ${it.name}, ça te va très bien !`);
       renderLook();
-    };
+    });
 }
 
 // habille compagnons et avatars (js/entities/companion)

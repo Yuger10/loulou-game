@@ -4,7 +4,7 @@
    arrête la partie par un point d'accroche, branché par party.js. */
 import { avatarHTML } from '../../entities/companion/index.js';
 import { party, partyPlayers, race } from '../../entities/player/index.js';
-import { playSound } from '../../shared/ui/index.js';
+import { playSound, setHandler } from '../../shared/ui/index.js';
 
 let turnStop = () => {};
 function onTurnStop(fn) {
@@ -33,10 +33,10 @@ function renderTurnBar() {
       .join('') + `<button class="turn-stop" id="turn-stop">✖️</button>`;
   const st = document.getElementById('turn-stop');
   if (st)
-    st.onclick = () => {
+    setHandler(st, 'click', () => {
       playSound('tap');
       turnStop();
-    };
+    });
 }
 
 export { onTurnStop, renderTurnBar };

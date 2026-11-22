@@ -8,6 +8,7 @@ import {
   confetti,
   playSound,
   registerView,
+  setHandler,
   showToast,
   speak,
   vibrate,
@@ -68,7 +69,7 @@ function renderVendre(el) {
     .join('');
   bindSpeakButtons();
   el.querySelectorAll('[data-sell]').forEach((btn) => {
-    btn.onclick = () => {
+    setHandler(btn, 'click', () => {
       const k = btn.dataset.sell;
       const rowEmoji = btn.closest('.market-row').querySelector('.emoji');
       removeItem(k, 1);
@@ -79,7 +80,7 @@ function renderVendre(el) {
       showToast(`Vendu ! +${ALL_ITEMS[k].price} 🪙`);
       speak(`Vendu ! Tu gagnes ${ALL_ITEMS[k].price} pièces.`);
       renderVendre(el);
-    };
+    });
   });
 }
 
@@ -109,7 +110,7 @@ function squishyTradeHTML() {
 }
 function bindSquishyTrade(el, rerender) {
   el.querySelectorAll('[data-want]').forEach((b) => {
-    b.onclick = () => {
+    setHandler(b, 'click', () => {
       playSound('tap');
       sqWanted = b.dataset.want;
       const need = Math.max(0, SQ_TRADE_COST - squishyDuplicates());
@@ -119,11 +120,11 @@ function bindSquishyTrade(el, rerender) {
           : 'Celui-là ? Touche Échanger !',
       );
       rerender();
-    };
+    });
   });
   const t = el.querySelector('#sqm-trade');
   if (t)
-    t.onclick = () => {
+    setHandler(t, 'click', () => {
       const res = tradeDuplicatesFor(sqWanted);
       if (!res.ok) return;
       sqWanted = null;
@@ -137,7 +138,7 @@ function bindSquishyTrade(el, rerender) {
       );
       if (res.seriesCompleted) gainCoins(SQ_SERIES_BONUS, t);
       rerender();
-    };
+    });
 }
 function squishyShopHTML() {
   const shop = squishyShopState();
@@ -159,7 +160,7 @@ function squishyShopHTML() {
 function bindSquishyShop(el, rerender) {
   const b = el.querySelector('#sqm-buy');
   if (b)
-    b.onclick = () => {
+    setHandler(b, 'click', () => {
       const res = buySquishyBox();
       if (!res.ok) {
         speak(res.reason === 'limit' ? "Reviens demain pour d'autres boîtes !" : `Il te faut ${SQ_BOX_PRICE} pièces.`);
@@ -171,13 +172,13 @@ function bindSquishyShop(el, rerender) {
       showToast('🎁 Boîte surprise achetée !');
       speak('Une boîte surprise ! Ouvre-la dans ta chambre à squishies.');
       rerender();
-    };
+    });
   const go = el.querySelector('#sqm-go');
   if (go)
-    go.onclick = () => {
+    setHandler(go, 'click', () => {
       playSound('tap');
       openSquishyRoom('collection');
-    };
+    });
 }
 
 function renderEchanger(el) {
@@ -205,7 +206,7 @@ function renderEchanger(el) {
   bindSpeakButtons();
   bindSquishyTrade(el, () => renderEchanger(el));
   el.querySelectorAll('[data-trade]').forEach((btn) => {
-    btn.onclick = () => {
+    setHandler(btn, 'click', () => {
       const k = btn.dataset.trade;
       const others = Object.keys(ITEMS).filter((x) => x !== k);
       const gained = pickRandom(others);
@@ -218,7 +219,7 @@ function renderEchanger(el) {
       showToast(`Échangé contre ${ITEMS[gained].emoji} ${ITEMS[gained].name} !`);
       speak(`Échangé contre ${ITEMS[gained].name} !`);
       renderEchanger(el);
-    };
+    });
   });
 }
 
@@ -241,7 +242,7 @@ function renderAcheter(el) {
   bindSpeakButtons();
   bindSquishyShop(el, () => renderAcheter(el));
   el.querySelectorAll('[data-buy]').forEach((btn) => {
-    btn.onclick = () => {
+    setHandler(btn, 'click', () => {
       const k = btn.dataset.buy;
       const cost = ITEMS[k].price * 2;
       if (state.coins < cost) return;
@@ -259,7 +260,7 @@ function renderAcheter(el) {
       showToast(`${ITEMS[k].emoji} ${ITEMS[k].name} acheté !`);
       speak(`${ITEMS[k].name} acheté !`);
       renderAcheter(el);
-    };
+    });
   });
 }
 
@@ -289,7 +290,7 @@ function renderFusionner(el) {
     .join('');
   bindSpeakButtons();
   el.querySelectorAll('[data-craft]').forEach((btn) => {
-    btn.onclick = () => {
+    setHandler(btn, 'click', () => {
       const key = btn.dataset.craft;
       const c = CRAFTED[key];
       Object.entries(c.recipe).forEach(([ik, qty]) => removeItem(ik, qty));
@@ -302,7 +303,7 @@ function renderFusionner(el) {
       showToast(`${c.emoji} ${c.name} créé !`);
       speak(`${c.name} créé !`);
       renderFusionner(el);
-    };
+    });
   });
 }
 

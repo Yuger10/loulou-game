@@ -11,6 +11,7 @@ import {
   openModal,
   playSound,
   registerView,
+  setHandler,
   speak,
   vibrate,
 } from '../../shared/ui/index.js';
@@ -112,10 +113,10 @@ function checkAlbumComplete() {
     <button class="btn-primary" id="btn-yay">Waouh ! 🎉</button>
   `);
   queueGain({ coins: ALBUM_REWARD });
-  document.getElementById('btn-yay').onclick = () => {
+  setHandler(document.getElementById('btn-yay'), 'click', () => {
     playSound('tap');
     closeModal();
-  };
+  });
 }
 
 function renderAlbum() {

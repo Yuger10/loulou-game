@@ -11,7 +11,7 @@
    La progression n'est jamais touchée : elle est dans la sauvegarde, qui se
    migre toute seule (js/entities/game-state). */
 import { APP_LABEL, versionBuild } from '../../shared/lib/index.js';
-import { playSound } from '../../shared/ui/index.js';
+import { playSound, setHandler } from '../../shared/ui/index.js';
 
 // mémorisé juste avant le redémarrage, pour l'annoncer ensuite
 const UPDATE_FLAG = 'lagon-update-from';
@@ -111,7 +111,7 @@ function bindUpdateCard() {
   const btn = /** @type {HTMLButtonElement} */ (document.getElementById('ps-update')),
     msg = document.getElementById('ps-update-msg');
   if (!btn || !msg) return;
-  btn.onclick = async () => {
+  setHandler(btn, 'click', async () => {
     playSound('tap');
     btn.disabled = true;
     msg.textContent = UPDATE_MESSAGES.searching;
@@ -125,7 +125,7 @@ function bindUpdateCard() {
     } else {
       btn.disabled = false;
     }
-  };
+  });
 }
 
 export { announceUpdate, bindUpdateCard, checkForUpdate, updateCardHTML };

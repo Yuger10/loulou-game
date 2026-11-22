@@ -10,7 +10,7 @@
    parts en bandes). Anti-devinette : une erreur relance un AUTRE gâteau. */
 import { shareRound } from '../../../entities/difficulty/index.js';
 import { random, shuffle } from '../../../shared/lib/index.js';
-import { openModal } from '../../../shared/ui/index.js';
+import { openModal, setHandler } from '../../../shared/ui/index.js';
 import { gameDiff } from '../../adaptive/index.js';
 import { registerHints, setHintQuestion } from '../../hints/index.js';
 import {
@@ -221,14 +221,14 @@ function renderShare() {
   setSolution([solSel('.share-opt', 'k', good)]);
   setHintQuestion('share', q, { choices: '.share-opt' });
   document.querySelectorAll('.share-opt').forEach((btn) => {
-    btn.onclick = () => {
+    setHandler(btn, 'click', () => {
       if (btn.dataset.k === String(good)) {
         clearActiveTimer();
         stepOk(btn);
         flashModal('ok');
         winSoon();
       } else loseLife(btn, { onRetry: renderShare });
-    };
+    });
   });
 }
 

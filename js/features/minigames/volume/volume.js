@@ -13,7 +13,7 @@ import {
   volumeUsesCapacityCompare,
 } from '../../../entities/difficulty/index.js';
 import { pickRandom, random, shuffle } from '../../../shared/lib/index.js';
-import { openModal } from '../../../shared/ui/index.js';
+import { openModal, setHandler } from '../../../shared/ui/index.js';
 import { gameDiff } from '../../adaptive/index.js';
 import { registerHints, setHintQuestion } from '../../hints/index.js';
 import {
@@ -110,14 +110,14 @@ function renderCapacityCompare(dd) {
   // deviner la bonne par élimination. Une erreur relance une NOUVELLE
   // comparaison (nouveaux contenants), jamais la même à éliminer.
   document.querySelectorAll('.vol-container-btn').forEach((btn) => {
-    btn.onclick = () => {
+    setHandler(btn, 'click', () => {
       if (btn.dataset.v === answer) {
         clearActiveTimer();
         stepOk(btn);
         flashModal('ok');
         winSoon();
       } else loseLife(btn, { onRetry: () => renderCapacityCompare(dd) });
-    };
+    });
   });
 }
 
@@ -142,14 +142,14 @@ function renderSolidShape(dd) {
   setSolution([solSel('.vol-opt-btn', 'v', solid.name)]);
   setHintQuestion('volume', { kind: 'solid', solid, options }, { choices: '.vol-opt-btn' });
   document.querySelectorAll('.vol-opt-btn').forEach((btn) => {
-    btn.onclick = () => {
+    setHandler(btn, 'click', () => {
       if (btn.dataset.v === solid.name) {
         clearActiveTimer();
         stepOk(btn);
         flashModal('ok');
         winSoon();
       } else loseLife(btn, { onRetry: () => renderSolidShape(dd) });
-    };
+    });
   });
 }
 

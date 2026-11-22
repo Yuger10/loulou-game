@@ -31,7 +31,7 @@ import { addItem, ITEMS } from '../../entities/item/index.js';
 import { ac, currentPlayerAge, onProfileRefresh, party, race } from '../../entities/player/index.js';
 import { availableItems, currentWorld, WORLD_ORDER, WORLDS, worldUnlocked } from '../../entities/world/index.js';
 import { emit, on, pickRandom, random } from '../../shared/lib/index.js';
-import { bindSpeakButtons, onModalOpen, playSound, speak, switchView } from '../../shared/ui/index.js';
+import { bindSpeakButtons, onModalOpen, playSound, setHandler, speak, switchView } from '../../shared/ui/index.js';
 import { bonusChallenge, needsPractice, todayKey } from '../adaptive/index.js';
 import { markSeen } from '../bag/index.js';
 import { hintLevel, hintShowFirst, setHintPolicy } from '../hints/index.js';
@@ -96,12 +96,12 @@ function teamSayEl() {
     el.id = 'team-say';
     el.className = 'team-say';
     el.setAttribute('aria-live', 'polite');
-    el.onclick = () => {
+    setHandler(el, 'click', () => {
       const it = teamSaying;
       playSound('tap');
       if (it && it.onTap) it.onTap();
       teamSayNext();
-    };
+    });
     document.body.appendChild(el);
   }
   return el;
@@ -178,11 +178,11 @@ function perleDecorate() {
     r.className = 'btn-reread';
     r.setAttribute('aria-label', 'Perle relit doucement');
     r.innerHTML = `<span class="rr-face" aria-hidden="true">${companionSVG('perle', 'happy')}</span>🔁`;
-    r.onclick = (e) => {
+    setHandler(r, 'click', (e) => {
       e.stopPropagation();
       playSound('tap');
       speak(b.dataset.say, { rate: 0.7 });
-    };
+    });
     b.insertAdjacentElement('afterend', r);
   });
 }
@@ -282,11 +282,11 @@ function renderSamGuide() {
     el.hidden = false;
     el.innerHTML = `<button type="button" class="sam-guide"><span class="sg-face" aria-hidden="true">${companionSVG('sam', 'happy')}</span>
       <span class="sg-txt"><b>Sam</b> ${step.text}</span><span class="sg-arrow" aria-hidden="true">${step.icon} ➜</span></button>`;
-    el.querySelector('button').onclick = () => {
+    setHandler(el.querySelector('button'), 'click', () => {
       playSound('tap');
       speak(`Sam : ${step.text}`);
       step.go();
-    };
+    });
   });
 }
 
@@ -311,17 +311,17 @@ function renderZapOffer() {
   el.innerHTML = `<div class="zap-offer"><span class="sg-face" aria-hidden="true">${companionSVG('zap', 'cheer')}</span>
     <span class="sg-txt"><b>Zap</b> Un défi bonus ? Un cran plus difficile, et la récompense est doublée !</span>
     <span class="zo-btns"><button type="button" class="btn-small" data-zap="yes">⚡ Oui !</button><button type="button" class="btn-small ghost" data-zap="no">Non merci</button></span></div>`;
-  el.querySelector('[data-zap="yes"]').onclick = () => {
+  setHandler(el.querySelector('[data-zap="yes"]'), 'click', () => {
     playSound('tap');
     zapStart();
-  };
-  el.querySelector('[data-zap="no"]').onclick = () => {
+  });
+  setHandler(el.querySelector('[data-zap="no"]'), 'click', () => {
     playSound('tap');
     teamDay().zap[currentWorld] = true;
     save();
     renderZapOffer();
     speak("Zap : D'accord, une autre fois !");
-  };
+  });
 }
 function zapStart(key) {
   teamDay().zap[currentWorld] = true;

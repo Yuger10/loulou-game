@@ -1,5 +1,6 @@
 /* Slice « shared-ui » (couche shared) : son API publique. Les autres slices
    n'importent que ce fichier (vérifié par test/slices.test.js). */
+export { setHandler } from './handlers.js';
 export { uiIcon } from './icons.js';
 export {
   audioCtx,

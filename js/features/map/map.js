@@ -16,7 +16,15 @@ import {
   worldUnlocked,
 } from '../../entities/world/index.js';
 import { on } from '../../shared/lib/index.js';
-import { bindSpeakButtons, playSound, registerView, showToast, speak, switchView } from '../../shared/ui/index.js';
+import {
+  bindSpeakButtons,
+  playSound,
+  registerView,
+  setHandler,
+  showToast,
+  speak,
+  switchView,
+} from '../../shared/ui/index.js';
 import { renderSamGuide, teamHeadsHTML } from '../companion-team/index.js';
 import { renderIslandCard, renderLevelPill, setWorld } from '../island/index.js';
 
@@ -60,7 +68,7 @@ function renderMapTabs(saison) {
     </button>`;
   }).join('');
   tabs.querySelectorAll('[data-saison]').forEach((b) => {
-    b.onclick = () => {
+    setHandler(b, 'click', () => {
       const s = Number(b.dataset.saison),
         a = ARCHIPELAGOS[s];
       if (!archipelagoUnlocked(s)) {
@@ -74,7 +82,7 @@ function renderMapTabs(saison) {
       mapSaison = s;
       speak(a.name);
       renderMap();
-    };
+    });
   });
 }
 
@@ -148,7 +156,7 @@ function renderMap() {
   renderSamGuide(); // Sam le guide (js/features/companion-team)
 
   el.querySelectorAll('.map-island').forEach((b) => {
-    b.onclick = () => {
+    setHandler(b, 'click', () => {
       playSound('tap');
       const id = b.dataset.world;
       if (!worldUnlocked(id)) {
@@ -165,7 +173,7 @@ function renderMap() {
         return;
       }
       sailTo(id);
-    };
+    });
   });
 
   const info = document.getElementById('map-next');

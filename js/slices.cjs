@@ -46,6 +46,7 @@ const SLICES = [
     id: 'shared-ui',
     layer: 'shared',
     files: [
+      'js/shared/ui/handlers.js',
       'js/shared/ui/icons.js',
       'js/shared/ui/sound.js',
       'js/shared/ui/voice.js',

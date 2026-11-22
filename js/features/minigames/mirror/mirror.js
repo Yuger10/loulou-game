@@ -10,7 +10,7 @@
    2ᵉ erreur, un NOUVEAU motif (relance annulable). */
 import { mirrorRound } from '../../../entities/difficulty/index.js';
 import { random, shuffle } from '../../../shared/lib/index.js';
-import { openModal, speak } from '../../../shared/ui/index.js';
+import { openModal, setHandler, speak } from '../../../shared/ui/index.js';
 import { gameDiff } from '../../adaptive/index.js';
 import { registerHints, setHintQuestion } from '../../hints/index.js';
 import {
@@ -102,16 +102,15 @@ function renderMirror() {
     b.style.background = v ? MIRROR_INKS[v].fill : '';
     b.textContent = v ? MIRROR_INKS[v].sym : '';
   };
-  document.querySelectorAll('.mr-cell.tap').forEach(
-    (b) =>
-      (b.onclick = () => {
-        const k = b.dataset.k;
-        state[k] = ((state[k] || 0) + 1) % (r.two ? 3 : 2);
-        b.classList.remove('wrong');
-        paint(b);
-      }),
+  document.querySelectorAll('.mr-cell.tap').forEach((b) =>
+    setHandler(b, 'click', () => {
+      const k = b.dataset.k;
+      state[k] = ((state[k] || 0) + 1) % (r.two ? 3 : 2);
+      b.classList.remove('wrong');
+      paint(b);
+    }),
   );
-  document.getElementById('mirror-done').onclick = (e) => {
+  setHandler(document.getElementById('mirror-done'), 'click', (e) => {
     const keys = new Set([...Object.keys(want), ...Object.keys(state).filter((k) => state[k])]);
     const wrong = [...keys].filter((k) => (state[k] || 0) !== (want[k] || 0));
     if (!wrong.length) {
@@ -133,7 +132,7 @@ function renderMirror() {
     speak(`Les cases qui clignotent ne sont pas encore le reflet. Regarde leur jumelle, de l'autre côté de la ligne.`);
     // la 2ᵉ erreur : un nouveau motif ; la 1ʳᵉ : on corrige les cases qui clignotent
     loseLife(e.currentTarget, errors >= 2 ? { onRetry: renderMirror, disable: false } : { disable: false });
-  };
+  });
 }
 
 // Indices (v52) : 1. ce qu'est un reflet ; 2. par quelle case commencer. Jamais une case.

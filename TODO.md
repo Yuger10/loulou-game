@@ -149,6 +149,7 @@ Chaque mini-jeu a maintenant son propre niveau pour chaque enfant (`js/adaptive.
 | v66.2 | Une seule fin de mission (`winSoon`, délais nommés) au lieu de 6 délais copiés-collés dans 33 mini-jeux |
 | v66.3 | TypeScript vérifie le JavaScript du jeu (ADR 0003) |
 | v66.4 | Lint complet : 7 règles de plus, 5 cycles d'imports cassés, sauvegarde illisible signalée |
+| v66.5 | Handlers sans doublon (setHandler), compatibilité partout écrite |
 
 ---
 

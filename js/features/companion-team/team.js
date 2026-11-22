@@ -34,6 +34,7 @@ import {
   confetti,
   openModal,
   playSound,
+  setHandler,
   showToast,
   speak,
   speechBubble,
@@ -234,11 +235,11 @@ function openTeamOpening(onDone) {
   teamState().open = true;
   save();
   renderTeamHeads();
-  document.getElementById('team-open-ok').onclick = () => {
+  setHandler(document.getElementById('team-open-ok'), 'click', () => {
     playSound('tap');
     closeModal();
     if (onDone) onDone();
-  };
+  });
 }
 
 /* ---- les rencontres sur les îles ---- */
@@ -275,15 +276,15 @@ function openTeamEncounter(id) {
   bindSpeakButtons();
   playSound('good');
   speak(`${r.say.join(' ')} Tu veux bien que je rejoigne ton équipe ?`);
-  document.getElementById('tm-yes').onclick = () => {
+  setHandler(document.getElementById('tm-yes'), 'click', () => {
     playSound('tap');
     teamWelcome(id);
-  };
-  document.getElementById('tm-later').onclick = () => {
+  });
+  setHandler(document.getElementById('tm-later'), 'click', () => {
     playSound('tap');
     teamLater[id] = teamVisit;
     closeModal();
-  };
+  });
 }
 // le compagnon rejoint l'équipe : équipier s'il reste une place, sinon au repos
 function teamWelcome(id) {
@@ -394,33 +395,30 @@ function openTeamWindow(note) {
       speak(msg);
     }
   };
-  document.querySelectorAll('[data-team-add]').forEach(
-    (b) =>
-      (b.onclick = () => {
-        playSound('tap');
-        const id = b.dataset.teamAdd;
-        if (teamAddMate(id)) redraw(`${COMPANIONS[id].name} rejoint ton équipe !`);
-      }),
+  document.querySelectorAll('[data-team-add]').forEach((b) =>
+    setHandler(b, 'click', () => {
+      playSound('tap');
+      const id = b.dataset.teamAdd;
+      if (teamAddMate(id)) redraw(`${COMPANIONS[id].name} rejoint ton équipe !`);
+    }),
   );
-  document.querySelectorAll('[data-team-rest]').forEach(
-    (b) =>
-      (b.onclick = () => {
-        playSound('tap');
-        const id = b.dataset.teamRest;
-        teamRest(id);
-        redraw(`${COMPANIONS[id].name} se repose.`);
-      }),
+  document.querySelectorAll('[data-team-rest]').forEach((b) =>
+    setHandler(b, 'click', () => {
+      playSound('tap');
+      const id = b.dataset.teamRest;
+      teamRest(id);
+      redraw(`${COMPANIONS[id].name} se repose.`);
+    }),
   );
-  document.querySelectorAll('[data-team-main]').forEach(
-    (b) =>
-      (b.onclick = () => {
-        playSound('tap');
-        const id = b.dataset.teamMain;
-        if (teamMakePrincipal(id)) {
-          refreshAll();
-          redraw(`${COMPANIONS[id].name} est ton compagnon principal !`);
-        }
-      }),
+  document.querySelectorAll('[data-team-main]').forEach((b) =>
+    setHandler(b, 'click', () => {
+      playSound('tap');
+      const id = b.dataset.teamMain;
+      if (teamMakePrincipal(id)) {
+        refreshAll();
+        redraw(`${COMPANIONS[id].name} est ton compagnon principal !`);
+      }
+    }),
   );
 }
 

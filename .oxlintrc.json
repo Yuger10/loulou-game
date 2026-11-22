@@ -8,9 +8,10 @@
   "rules": {
     // un paramètre imposé par une signature mais inutile se préfixe par _
     "no-unused-vars": ["error", { "argsIgnorePattern": "^_" }],
-    // `el.onclick = ...` est l'idiome du projet : réaffecté à chaque rendu, sans doublon de handler
-    "unicorn/prefer-add-event-listener": "off",
-    // toSorted et toReversed demandent Safari 16 : les tablettes des enfants sont souvent plus anciennes
+    // un handler passe par setHandler (js/shared/ui/handlers.js) : addEventListener, sans doublon
+    "unicorn/prefer-add-event-listener": "error",
+    // décision d'Amrou : le jeu doit marcher partout (c'est pourquoi il est en HTML) ; ces règles
+    // imposent toSorted et toReversed (Safari 16), donc elles restent coupées et `.sort()` reste
     "unicorn/no-array-sort": "off",
     "unicorn/no-array-reverse": "off",
     // gardée coupée (décision écrite, track lint-regles-completes) : sortir les 50 petites fonctions

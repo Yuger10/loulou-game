@@ -6,7 +6,7 @@
 import { readingOptions, readingWordOnly } from '../../../entities/difficulty/index.js';
 import { WORDS_CP } from '../../../entities/words/index.js';
 import { pickRandom, shuffle } from '../../../shared/lib/index.js';
-import { openModal } from '../../../shared/ui/index.js';
+import { openModal, setHandler } from '../../../shared/ui/index.js';
 import { gameDiff } from '../../adaptive/index.js';
 import { hintSyllablesFirst, hintSyllablesHTML, registerHints, setHintQuestion } from '../../hints/index.js';
 import {
@@ -66,14 +66,14 @@ function renderReading() {
   setSolution([solSel('.reading-opt', 'w', correct.word)]);
   setHintQuestion('reading', { correct, wordToImage, options }, { choices: '.reading-opt' });
   document.querySelectorAll('.reading-opt').forEach((btn) => {
-    btn.onclick = () => {
+    setHandler(btn, 'click', () => {
       if (btn.dataset.w === correct.word) {
         clearActiveTimer();
         stepOk(btn);
         flashModal('ok');
         winSoon();
       } else loseLife(btn, { onRetry: renderReading });
-    };
+    });
   });
 }
 

@@ -15,6 +15,7 @@ import { askConfirm } from './confirm.js';
 import { closeModal, requestCloseModal, setModalCloseGuard } from './modal.js';
 import { playSound } from './sound.js';
 import { speak } from './voice.js';
+import { setHandler } from './handlers.js';
 
 // sections : [{ title, html }] (une section sans titre : { html })
 function formSheet({ title, sections, primary, secondary }) {
@@ -111,19 +112,19 @@ function bindForm({ initial, current, required, onSave, onCancel }) {
         }
       });
   });
-  primary.onclick = () => {
+  setHandler(primary, 'click', () => {
     playSound('tap');
     save();
-  };
-  secondary.onclick = () => {
+  });
+  setHandler(secondary, 'click', () => {
     playSound('tap');
     if (dirty()) askKeep(leave);
     else leave();
-  };
-  closeBtn.onclick = () => {
+  });
+  setHandler(closeBtn, 'click', () => {
     playSound('tap');
     requestCloseModal();
-  };
+  });
   setModalCloseGuard(() => (dirty() ? askKeep(() => closeModal()) : true));
 }
 

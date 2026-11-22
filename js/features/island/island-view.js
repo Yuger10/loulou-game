@@ -21,6 +21,7 @@ import {
   openModal,
   playSound,
   registerView,
+  setHandler,
   setNavLabel,
   showToast,
   speak,
@@ -91,16 +92,16 @@ function checkNewIsland() {
       <button class="btn-primary" id="btn-go">Y aller ! ${w.emoji}</button>
       <button class="btn-ghost" id="btn-stay">Plus tard</button>
     `);
-    document.getElementById('btn-go').onclick = () => {
+    setHandler(document.getElementById('btn-go'), 'click', () => {
       playSound('tap');
       closeModal();
       setWorld(id);
-    };
-    document.getElementById('btn-stay').onclick = () => {
+    });
+    setHandler(document.getElementById('btn-stay'), 'click', () => {
       playSound('tap');
       closeModal();
       renderLagon();
-    };
+    });
   };
   // le fil de l'histoire (js/features/story/story.js) précède l'écran habituel : une
   // nouvelle île est d'abord racontée, avec son énigme à résoudre.
@@ -138,10 +139,10 @@ function openSkyOpening(onDone) {
     </div>
     <button class="btn-primary" id="sky-go">Découvrir le Ciel ☁️</button>
   `);
-  document.getElementById('sky-go').onclick = () => {
+  setHandler(document.getElementById('sky-go'), 'click', () => {
     playSound('tap');
     onDone();
-  };
+  });
 }
 // Au lancement : une partie qui a déjà le niveau du Ciel le découvre une fois
 function maybeSkyOpening() {
@@ -179,10 +180,10 @@ function renderIslandCard() {
     <button class="btn-primary" id="ic-go">🏝️ Débarquer sur l'île</button>`;
   const b = document.getElementById('ic-go');
   if (b)
-    b.onclick = () => {
+    setHandler(b, 'click', () => {
       playSound('tap');
       switchView('ile');
-    };
+    });
 }
 
 function renderLagon() {
@@ -232,7 +233,7 @@ function openDecoShop() {
   `);
   bindQuit();
   document.querySelectorAll('[data-deco]').forEach((btn) => {
-    btn.onclick = () => {
+    setHandler(btn, 'click', () => {
       const k = btn.dataset.deco;
       const d = DECOS[k];
       if (state.coins < d.price || state.decos.includes(k)) return;
@@ -261,7 +262,7 @@ function openDecoShop() {
       showToast(`${d.emoji} ${d.name} ajouté !`);
       renderScene();
       openDecoShop();
-    };
+    });
   });
 }
 
@@ -342,26 +343,26 @@ function openDialogue(charId) {
   speak(`${c.name} ${c.title} : ${text}`);
   const playBtn = document.getElementById('btn-play');
   if (playBtn)
-    playBtn.onclick = () => {
+    setHandler(playBtn, 'click', () => {
       playSound('tap');
       emit('nav:game-picker', charId);
-    };
+    });
   const pickBtn = document.getElementById('btn-random');
   if (pickBtn)
-    pickBtn.onclick = () => {
+    setHandler(pickBtn, 'click', () => {
       playSound('tap');
       emit('game:start');
-    };
+    });
   const giftBtn = document.getElementById('btn-gift');
   if (giftBtn)
-    giftBtn.onclick = () => {
+    setHandler(giftBtn, 'click', () => {
       playSound('tap');
       openGiftPicker(charId);
-    };
-  document.getElementById('btn-close').onclick = () => {
+    });
+  setHandler(document.getElementById('btn-close'), 'click', () => {
     if (window.speechSynthesis) speechSynthesis.cancel();
     closeModal();
-  };
+  });
 }
 
 registerView('ile', () => renderLagon());

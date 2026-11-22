@@ -8,7 +8,7 @@
 import { shapesRound } from '../../../entities/difficulty/index.js';
 import { SQ_COLORS } from '../../../entities/squishy/index.js';
 import { pickRandom, random, shuffle } from '../../../shared/lib/index.js';
-import { openModal } from '../../../shared/ui/index.js';
+import { openModal, setHandler } from '../../../shared/ui/index.js';
 import { gameDiff } from '../../adaptive/index.js';
 import { registerHints, setHintQuestion } from '../../hints/index.js';
 import {
@@ -261,7 +261,7 @@ function renderShapes() {
   setSolution(r.items.map((it, i) => (it.ok ? solSel('.sq-item', 'i', i) : null)).filter(Boolean));
   setHintQuestion('shapes', q, { choices: '.sq-item' });
   document.querySelectorAll('.sq-item').forEach((/** @type {HTMLButtonElement} */ btn) => {
-    btn.onclick = () => {
+    setHandler(btn, 'click', () => {
       const it = r.items[Number(btn.dataset.i)];
       btn.classList.remove('squish');
       void btn.offsetWidth;
@@ -280,7 +280,7 @@ function renderShapes() {
       } else {
         loseLife(btn);
       }
-    };
+    });
   });
 }
 

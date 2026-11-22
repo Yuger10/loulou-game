@@ -4,7 +4,7 @@
    js/entities/difficulty/difficulty.js § « MINUTEUR ». Longueur dans § simonLength. */
 import { simonLength } from '../../../entities/difficulty/index.js';
 import { pickRandom } from '../../../shared/lib/index.js';
-import { openModal, playNote } from '../../../shared/ui/index.js';
+import { openModal, playNote, setHandler } from '../../../shared/ui/index.js';
 import { gameDiff } from '../../adaptive/index.js';
 import { registerHints, setHintQuestion } from '../../hints/index.js';
 import {
@@ -96,7 +96,7 @@ function renderSimon() {
   );
 
   document.querySelectorAll('.simon-pad').forEach((btn) => {
-    btn.onclick = () => {
+    setHandler(btn, 'click', () => {
       if (playing) return;
       const k = btn.dataset.k;
       const p = PADS.find((x) => x.k === k);
@@ -127,7 +127,7 @@ function renderSimon() {
           600 + seq.length * 650,
         );
       }
-    };
+    });
   });
 }
 

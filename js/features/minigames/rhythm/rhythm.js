@@ -9,7 +9,7 @@
    Anti-devinette : une erreur relance un AUTRE rythme. */
 import { rhythmRound } from '../../../entities/difficulty/index.js';
 import { random, shuffle } from '../../../shared/lib/index.js';
-import { openModal, playNote } from '../../../shared/ui/index.js';
+import { openModal, playNote, setHandler } from '../../../shared/ui/index.js';
 import { gameDiff } from '../../adaptive/index.js';
 import { registerHints, setHintQuestion } from '../../hints/index.js';
 import {
@@ -154,7 +154,7 @@ function renderRhythm() {
   setHintQuestion('rhythm', q, { choices: '.rh-btn' });
 
   document.querySelectorAll('.rh-btn').forEach((btn) => {
-    btn.onclick = () => {
+    setHandler(btn, 'click', () => {
       const k = btn.dataset.k;
       beatSound(k);
       btn.classList.add('lit');
@@ -177,7 +177,7 @@ function renderRhythm() {
         if (cfg.read) play(false, null);
         winSoon(cfg.read ? READ_END_DELAY : undefined);
       }
-    };
+    });
   });
 }
 

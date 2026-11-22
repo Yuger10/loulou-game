@@ -1,7 +1,7 @@
 /* Jeu 2 : compter (dénombrement — voir js/entities/difficulty/difficulty.js § countRange) */
 import { countRange } from '../../../entities/difficulty/index.js';
 import { pickRandom, random, shuffle } from '../../../shared/lib/index.js';
-import { emojiWord, openModal } from '../../../shared/ui/index.js';
+import { emojiWord, openModal, setHandler } from '../../../shared/ui/index.js';
 import { gameDiff } from '../../adaptive/index.js';
 import { registerHints, setHintQuestion } from '../../hints/index.js';
 import {
@@ -47,14 +47,14 @@ function renderCount() {
   setSolution([solSel('.num-btn', 'v', n)]);
   setHintQuestion('count', { n, emoji }, { choices: '.num-btn' });
   document.querySelectorAll('.num-btn').forEach((btn) => {
-    btn.onclick = () => {
+    setHandler(btn, 'click', () => {
       if (Number(btn.dataset.v) === n) {
         clearActiveTimer();
         stepOk(btn);
         flashModal('ok');
         winSoon();
       } else loseLife(btn, { onRetry: renderCount });
-    };
+    });
   });
 }
 

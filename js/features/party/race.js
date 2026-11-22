@@ -12,7 +12,16 @@ import {
   switchProfile,
 } from '../../entities/player/index.js';
 import { emit } from '../../shared/lib/index.js';
-import { closeModal, confetti, openModal, playSound, showToast, speak, vibrate } from '../../shared/ui/index.js';
+import {
+  closeModal,
+  confetti,
+  openModal,
+  playSound,
+  setHandler,
+  showToast,
+  speak,
+  vibrate,
+} from '../../shared/ui/index.js';
 import { gameDiffIsland } from '../adaptive/index.js';
 import { queueGain } from '../gains/index.js';
 import { addCoins } from '../wallet/index.js';
@@ -102,17 +111,17 @@ function raceWin(p) {
     <button class="btn-ghost" id="race-done">Terminer</button>
   `);
   queueGain({ coins: RACE_PRIZE });
-  document.getElementById('race-again').onclick = () => {
+  setHandler(document.getElementById('race-again'), 'click', () => {
     playSound('tap');
     closeModal();
     startRace(race.players);
-  };
-  document.getElementById('race-done').onclick = () => {
+  });
+  setHandler(document.getElementById('race-done'), 'click', () => {
     playSound('tap');
     closeModal();
     stopRace(true);
     emit('ui:lagon');
-  };
+  });
   party.active = false;
   party.mode = null;
   renderTurnBar();
@@ -159,11 +168,11 @@ function renderRaceTrack() {
   `;
   const stop = document.getElementById('race-stop');
   if (stop)
-    stop.onclick = () => {
+    setHandler(stop, 'click', () => {
       playSound('tap');
       stopRace();
       emit('ui:lagon');
-    };
+    });
 }
 
 export { raceAdvance, renderRaceTrack, startRace, stopRace };

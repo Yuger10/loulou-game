@@ -3,7 +3,7 @@
 import { memoryPairs } from '../../../entities/difficulty/index.js';
 import { ALL_ITEMS } from '../../../entities/item/index.js';
 import { pickRandom, random, shuffle } from '../../../shared/lib/index.js';
-import { openModal, playSound } from '../../../shared/ui/index.js';
+import { openModal, playSound, setHandler } from '../../../shared/ui/index.js';
 import { gameDiff } from '../../adaptive/index.js';
 import { registerHints, setHintQuestion } from '../../hints/index.js';
 import {
@@ -52,7 +52,7 @@ function renderMemory() {
     bindQuit();
     setHintQuestion('memory', q); // même question à chaque nouveau dessin : les indices restent
     document.querySelectorAll('.mcard').forEach((el) => {
-      el.onclick = () => {
+      setHandler(el, 'click', () => {
         const id = Number(el.dataset.id);
         const card = cards.find((c) => c.id === id);
         if (lock || card.flipped || card.matched) return;
@@ -95,7 +95,7 @@ function renderMemory() {
           },
           isMatch ? 350 : 700,
         );
-      };
+      });
     });
   }
   render();

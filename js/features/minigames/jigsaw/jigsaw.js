@@ -16,7 +16,7 @@ import { COMPANION_ORDER, companionSVG } from '../../../entities/companion/index
 import { jigsawRound } from '../../../entities/difficulty/index.js';
 import { WORLD_ORDER, WORLDS, worldUnlocked } from '../../../entities/world/index.js';
 import { pickRandom, shuffle } from '../../../shared/lib/index.js';
-import { openModal, playSound, showToast } from '../../../shared/ui/index.js';
+import { openModal, playSound, setHandler, showToast } from '../../../shared/ui/index.js';
 import { gameDiff } from '../../adaptive/index.js';
 import { registerHints, setHintQuestion } from '../../hints/index.js';
 import { ISLE_SCENERY, isleGenericScenery } from '../../island/index.js';
@@ -156,17 +156,17 @@ function renderJigsaw() {
     }
   };
   document.querySelectorAll('.jg-slot').forEach((slot) => {
-    slot.onclick = () => {
+    setHandler(slot, 'click', () => {
       if (slot.classList.contains('filled')) return;
       if (selected) tryPlace(selected, slot);
       else {
         playSound('tap');
         showToast("👆 Choisis d'abord un morceau en bas");
       }
-    };
+    });
   });
   document.querySelectorAll('.jg-piece').forEach((pc) => {
-    pc.onclick = () => {
+    setHandler(pc, 'click', () => {
       if (justDragged) {
         justDragged = false;
         return;
@@ -180,7 +180,7 @@ function renderJigsaw() {
       clearSel();
       selected = pc;
       pc.classList.add('sel');
-    };
+    });
     // glisser du doigt (ou à la souris) jusqu'à une case
     pc.addEventListener('pointerdown', (e) => {
       if (pc.classList.contains('used') || (e.pointerType === 'mouse' && e.button !== 0)) return;

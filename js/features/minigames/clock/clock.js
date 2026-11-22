@@ -5,7 +5,7 @@
    (pas d'image), les aiguilles sont deux barres tournées en degrés. */
 import { clockGranularity, clockOptions } from '../../../entities/difficulty/index.js';
 import { pickRandom, random, shuffle } from '../../../shared/lib/index.js';
-import { openModal } from '../../../shared/ui/index.js';
+import { openModal, setHandler } from '../../../shared/ui/index.js';
 import { gameDiff } from '../../adaptive/index.js';
 import { registerHints, setHintQuestion } from '../../hints/index.js';
 import {
@@ -84,14 +84,14 @@ function renderClock() {
   setSolution([solSel('.clock-opt-btn', 'v', answer)]);
   setHintQuestion('clock', { hour, minute, answer, options: [...options] }, { choices: '.clock-opt-btn' });
   document.querySelectorAll('.clock-opt-btn').forEach((btn) => {
-    btn.onclick = () => {
+    setHandler(btn, 'click', () => {
       if (btn.dataset.v === answer) {
         clearActiveTimer();
         stepOk(btn);
         flashModal('ok');
         winSoon();
       } else loseLife(btn, { onRetry: renderClock });
-    };
+    });
   });
 }
 

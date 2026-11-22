@@ -11,7 +11,7 @@
    Anti-devinette : une erreur relance d'AUTRES notes. */
 import { pitchRound } from '../../../entities/difficulty/index.js';
 import { random, shuffle } from '../../../shared/lib/index.js';
-import { openModal, playNote } from '../../../shared/ui/index.js';
+import { openModal, playNote, setHandler } from '../../../shared/ui/index.js';
 import { gameDiff } from '../../adaptive/index.js';
 import { registerHints, setHintQuestion } from '../../hints/index.js';
 import {
@@ -135,7 +135,7 @@ function renderPitch() {
       ),
     );
   }
-  document.getElementById('pitch-listen').onclick = () => listen(false);
+  setHandler(document.getElementById('pitch-listen'), 'click', () => listen(false));
   if (r.ask === 'melody') listen(false);
 
   const q = {
@@ -148,16 +148,15 @@ function renderPitch() {
     const good = r.up ? 'up' : 'down';
     setSolution([solSel('.pitch-dir', 'v', good)]);
     setHintQuestion('pitch', q, { choices: '.pitch-dir' });
-    document.querySelectorAll('.pitch-dir').forEach(
-      (b) =>
-        (b.onclick = () => {
-          if (b.dataset.v === good) {
-            clearActiveTimer();
-            stepOk(b);
-            flashModal('ok');
-            winSoon();
-          } else loseLife(b, { onRetry: renderPitch });
-        }),
+    document.querySelectorAll('.pitch-dir').forEach((b) =>
+      setHandler(b, 'click', () => {
+        if (b.dataset.v === good) {
+          clearActiveTimer();
+          stepOk(b);
+          flashModal('ok');
+          winSoon();
+        } else loseLife(b, { onRetry: renderPitch });
+      }),
     );
     return;
   }
@@ -165,30 +164,29 @@ function renderPitch() {
   setSolution(target.map((m) => solSel('.bell', 'm', m)));
   setHintQuestion('pitch', q, { choices: '.bell' });
   let pos = 0;
-  document.querySelectorAll('.bell').forEach(
-    (b) =>
-      (b.onclick = () => {
-        const m = Number(b.dataset.m);
-        playNote(pitchHz(m), 0.5, 0.2);
-        if (b.classList.contains('done')) return;
-        if (m !== target[pos]) {
-          loseLife(b, { onRetry: renderPitch, disable: false });
-          return;
-        }
-        stepOk(b);
-        pos++;
-        if (r.ask === 'order') {
-          b.classList.add('done');
-          b.querySelector('.bell-n').textContent = String(pos);
-          const p = document.getElementById('pitch-progress');
-          if (p) p.innerHTML = progressDots(pos, target.length);
-        }
-        if (pos === target.length) {
-          clearActiveTimer();
-          flashModal('ok');
-          winSoon();
-        }
-      }),
+  document.querySelectorAll('.bell').forEach((b) =>
+    setHandler(b, 'click', () => {
+      const m = Number(b.dataset.m);
+      playNote(pitchHz(m), 0.5, 0.2);
+      if (b.classList.contains('done')) return;
+      if (m !== target[pos]) {
+        loseLife(b, { onRetry: renderPitch, disable: false });
+        return;
+      }
+      stepOk(b);
+      pos++;
+      if (r.ask === 'order') {
+        b.classList.add('done');
+        b.querySelector('.bell-n').textContent = String(pos);
+        const p = document.getElementById('pitch-progress');
+        if (p) p.innerHTML = progressDots(pos, target.length);
+      }
+      if (pos === target.length) {
+        clearActiveTimer();
+        flashModal('ok');
+        winSoon();
+      }
+    }),
   );
 }
 

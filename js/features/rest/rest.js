@@ -22,6 +22,7 @@ import {
   onModalClose,
   onViewChange,
   playSound,
+  setHandler,
   showToast,
   speak,
   switchView,
@@ -390,26 +391,25 @@ function finishRestActivity(key, idea) {
 
 /* ---- les boutons du voile ---- */
 function bindVeil(el) {
-  el.querySelectorAll('[data-rest-act]').forEach(
-    (b) =>
-      (b.onclick = () => {
-        playSound('tap');
-        startRestActivity(b.dataset.restAct);
-      }),
+  el.querySelectorAll('[data-rest-act]').forEach((b) =>
+    setHandler(b, 'click', () => {
+      playSound('tap');
+      startRestActivity(b.dataset.restAct);
+    }),
   );
   const skip = el.querySelector('#rest-skip');
   if (skip)
-    skip.onclick = () => {
+    setHandler(skip, 'click', () => {
       playSound('tap');
       const log = restLogToday();
       log.skipped = true;
       save();
       speak("D'accord. Bonne nuit, à demain !");
       renderVeil('asleep');
-    };
+    });
   const adult = el.querySelector('#rest-adult');
   if (adult)
-    adult.onclick = () => {
+    setHandler(adult, 'click', () => {
       playSound('tap');
       el.classList.add('rest-behind'); // la porte des parents passe devant le voile
       openParentGate(
@@ -428,7 +428,7 @@ function bindVeil(el) {
           save();
         },
       );
-    };
+    });
   const addMin = (min) => {
     const k = todayKey();
     const cur = state.pauseExtra && state.pauseExtra.date === k ? state.pauseExtra.min : 0;
@@ -438,25 +438,25 @@ function bindVeil(el) {
     showToast(min >= 24 * 60 ? "🌞 Plus de pause aujourd'hui" : `⏱️ ${min} minutes de plus`);
   };
   const on10 = el.querySelector('#rest-add10');
-  if (on10) on10.onclick = () => addMin(10);
+  if (on10) setHandler(on10, 'click', () => addMin(10));
   const on30 = el.querySelector('#rest-add30');
-  if (on30) on30.onclick = () => addMin(30);
+  if (on30) setHandler(on30, 'click', () => addMin(30));
   const end = el.querySelector('#rest-endday');
-  if (end) end.onclick = () => addMin(24 * 60);
+  if (end) setHandler(end, 'click', () => addMin(24 * 60));
   const sw = el.querySelector('#rest-switch');
   if (sw)
-    sw.onclick = () => {
+    setHandler(sw, 'click', () => {
       restGrace = { id: profiles.current, until: Date.now() + 2 * 60 * 1000 };
       restWake();
       switchView('reglages');
-    };
+    });
   const back = el.querySelector('#rest-back');
   if (back)
-    back.onclick = () => {
+    setHandler(back, 'click', () => {
       const log = restLogToday();
       if (log.activity || log.skipped) renderVeil('asleep');
       else renderVeil('choose', restIntroLine());
-    };
+    });
 }
 
 /* ---- le lendemain : le compagnon se souvient ---- */

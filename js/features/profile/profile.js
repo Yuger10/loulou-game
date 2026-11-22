@@ -11,7 +11,7 @@ import {
 import { save, state } from '../../entities/game-state/index.js';
 import { AVATARS, currentProfile, onProfileRefresh, saveProfiles } from '../../entities/player/index.js';
 import { cleanName, emit, on } from '../../shared/lib/index.js';
-import { playSound, showToast, speak } from '../../shared/ui/index.js';
+import { playSound, setHandler, showToast, speak } from '../../shared/ui/index.js';
 import { applySeason } from '../seasons/index.js';
 import { openStoryChapter, storySolved } from '../story/index.js';
 
@@ -34,14 +34,14 @@ function renderWelcomeExtra() {
   const comp = pendingCompanion || defaultCompanionFor(pendingGender);
   box.innerHTML = genderSelector(pendingGender) + companionSelector(comp, pendingGender, welcomeAllBuddies);
   box.querySelectorAll('.gender-opt').forEach((b) => {
-    b.onclick = () => {
+    setHandler(b, 'click', () => {
       pendingGender = b.dataset.gender;
       playSound('tap');
       // le compagnon suit le profil tant que l'enfant n'en a pas choisi un autre
       if (pendingCompanion && !companionsFor(pendingGender).includes(pendingCompanion) && !welcomeAllBuddies)
         pendingCompanion = null;
       renderWelcomeExtra();
-    };
+    });
   });
   bindCompanionSelector(
     box,
@@ -64,11 +64,11 @@ function openWelcome() {
       `<button class="avatar-opt ${a === pendingAvatar ? 'sel' : ''}" data-av="${a}" aria-label="${avatarText(a)}">${avatarHTML(a)}</button>`,
   ).join('');
   grid.querySelectorAll('.avatar-opt').forEach((b) => {
-    b.onclick = () => {
+    setHandler(b, 'click', () => {
       pendingAvatar = b.dataset.av;
       grid.querySelectorAll('.avatar-opt').forEach((x) => x.classList.toggle('sel', x === b));
       playSound('tap');
-    };
+    });
   });
   /** @type {HTMLInputElement} */ (document.getElementById('name-input')).value = state.name || '';
   const p0 = currentProfile();

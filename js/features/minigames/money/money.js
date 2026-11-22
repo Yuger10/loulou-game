@@ -7,7 +7,7 @@
    additionner mentalement, indépendamment des valeurs elles-mêmes. */
 import { moneyDenoms, moneyPileSize } from '../../../entities/difficulty/index.js';
 import { pickRandom, random, shuffle } from '../../../shared/lib/index.js';
-import { openModal } from '../../../shared/ui/index.js';
+import { openModal, setHandler } from '../../../shared/ui/index.js';
 import { gameDiff } from '../../adaptive/index.js';
 import { registerHints, setHintQuestion } from '../../hints/index.js';
 import {
@@ -75,14 +75,14 @@ function renderMoney() {
   setSolution([solSel('.money-pile-btn', 'v', target)]);
   setHintQuestion('money', { target, piles: shuffled }, { choices: '.money-pile-btn' });
   document.querySelectorAll('.money-pile-btn').forEach((btn) => {
-    btn.onclick = () => {
+    setHandler(btn, 'click', () => {
       if (Number(btn.dataset.v) === target) {
         clearActiveTimer();
         stepOk(btn);
         flashModal('ok');
         winSoon();
       } else loseLife(btn, { onRetry: renderMoney });
-    };
+    });
   });
 }
 
