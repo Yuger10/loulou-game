@@ -24,7 +24,7 @@ import {
   switchProfile,
 } from '../../entities/player/index.js';
 import { currentWorld, worldGame } from '../../entities/world/index.js';
-import { on, pickRandom, shuffle } from '../../shared/lib/index.js';
+import { cleanName, on, pickRandom, shuffle } from '../../shared/lib/index.js';
 import {
   bindForm,
   closeModal,
@@ -267,9 +267,9 @@ function openNewPlayer() {
     bindForm({
       initial,
       current: snap,
-      required: [{ value: () => name, say: NAME_REQUIRED, focus: () => document.getElementById('np-name') }],
+      required: [{ value: () => cleanName(name), say: NAME_REQUIRED, focus: () => document.getElementById('np-name') }],
       onSave: () => {
-        const n = name.trim().slice(0, 12);
+        const n = cleanName(name);
         addProfile(n, av, age, gen, comp || defaultCompanionFor(gen));
         playSound('win');
         confetti();
@@ -381,10 +381,10 @@ function openPlayerSettings(id) {
     bindForm({
       initial,
       current: snap,
-      required: [{ value: () => name, say: NAME_REQUIRED, focus: () => document.getElementById('pe-name') }],
+      required: [{ value: () => cleanName(name), say: NAME_REQUIRED, focus: () => document.getElementById('pe-name') }],
       onSave: () => {
         p.birthday = readBday();
-        p.name = name.trim().slice(0, 12);
+        p.name = cleanName(name);
         p.avatar = av;
         p.age = age;
         p.gender = gen;

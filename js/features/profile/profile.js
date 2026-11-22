@@ -10,7 +10,7 @@ import {
 } from '../../entities/companion/index.js';
 import { save, state } from '../../entities/game-state/index.js';
 import { AVATARS, currentProfile, onProfileRefresh, saveProfiles } from '../../entities/player/index.js';
-import { emit, on } from '../../shared/lib/index.js';
+import { cleanName, emit, on } from '../../shared/lib/index.js';
 import { playSound, showToast, speak } from '../../shared/ui/index.js';
 import { applySeason } from '../seasons/index.js';
 import { openStoryChapter, storySolved } from '../story/index.js';
@@ -80,7 +80,7 @@ function openWelcome() {
 }
 function closeWelcome() {
   const input = document.getElementById('name-input');
-  const name = input.value.trim().slice(0, 12);
+  const name = cleanName(input.value);
   // le prénom est obligatoire : on le demande en douceur, à voix haute
   if (!name) {
     playSound('tap');
