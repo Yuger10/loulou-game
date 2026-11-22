@@ -55,7 +55,7 @@ Jeu éducatif en français pour une enfant de 6 ans (mathématiques, lecture, lo
 - Toucher aux dessins des personnages et compagnons (`characters-art.js`, SVG) sans demande explicite.
 
 ## Ressources protégées (cothon 0.2.0-1)
-Jamais supprimées, vidées ni réécrites par l'agent : la branche `main` (pas de `push --force`, `reset --hard`, `clean -f`, merge `--admin`, ni changement de sa protection), et les dossiers `js/`, `docs/`, `conductor/`, `test/`, `test/holdout/`, `.git/`, `.github/`. Le hook `PreToolUse` `.claude/hooks/guard-resources.sh` refuse ces commandes (sortie 2, `--selftest`). L'agent ne supprime que ce qu'il a créé.
+Jamais supprimées, vidées ni réécrites par l'agent : la branche `main` (pas de `push --force`, `reset --hard`, `clean -f`, merge `--admin`, ni changement de sa protection), et les dossiers `js/`, `docs/`, `conductor/`, `test/`, `test/holdout/`, `.git/`, `.github/`. Le hook `PreToolUse` `.claude/hooks/guard-resources.js` refuse ces commandes (sortie 2, `--selftest`) ; il lit la ligne comme le shell (commande par commande, hors guillemets et heredocs), donc citer une commande dans un texte ne déclenche rien. L'agent ne supprime que ce qu'il a créé.
 
 ## Zones sensibles (relecture humaine obligatoire)
 Sauvegarde et migrations (`js/entities/game-state/`), import de sauvegarde (`js/features/backup/`, entrée non fiable), pause et porte des parents (`js/features/rest/`, `js/features/parents/`), PWA (`sw.js`, `manifest.json`, `index.html`), garde d'architecture, dépendances (`package.json`, `bun.lock`, `bunfig.toml`), config de l'agent et de l'éditeur (`.claude/`, `.mcp.json`, `.vscode/`), le garde lui-même (`test/tools/sensitive.js`). Liste complète : [docs/factory/AUDIT.md](docs/factory/AUDIT.md#8-zones-sensibles-proposées).

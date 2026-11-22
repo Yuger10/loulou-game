@@ -18,7 +18,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/guard-resources.sh\"",
+            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/guard-resources.js\"",
             "timeout": 5
           }
         ]
