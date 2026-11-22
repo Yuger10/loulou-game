@@ -31,7 +31,7 @@ Remplacer `<cle>` par la clé du jeu (ex. `nesting`) et `<Jeu>` par son nom de f
 
 
 - [ ] `js/entities/difficulty/game-types.js` : la clé dans `GAME_TYPES`, et dans les tranches d'âge de `AGE_GAME_TYPES` où le jeu est proposé.
-- [ ] Taille des fichiers : voir `conductor/checklist-ile.md`, section 2 bis (`difficulty.js` est presque plein ; les jeux de la saison 3 mettent leur fonction de palier dans `js/entities/difficulty/rounds-saison3.js`).
+- [ ] Taille des fichiers (`max-lines` à 800) : voir `conductor/checklist-ile.md`, section 2 bis (les jeux de la saison 3 mettent leur fonction de palier dans `js/entities/difficulty/difficulty-s3.js`, sur le modèle de `difficulty-s2.js`).
 - [ ] `js/entities/difficulty/difficulty.js` : ses paramètres par palier (une fonction `<cle>Round(dd)` ou équivalent), ses essais dans `LIVES_TABLE`, et `NO_TIMER_KINDS` s'il ne doit pas avoir de minuteur.
 - [ ] `js/features/adaptive/adaptive.js` : sa phrase de progrès dans `PROGRESS_CHEERS`, et `GAME_TIER_MAX` s'il va au-delà du palier 5.
 - [ ] `js/features/parents/parents.js` : le jeu dans un groupe de `SKILL_GROUPS` (compétence de l'espace parents).

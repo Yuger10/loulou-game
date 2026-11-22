@@ -18,23 +18,24 @@ files:
   - js/slices.cjs
   - js/app/main.js
   - js/entities/difficulty/index.js
-  - js/entities/difficulty/rounds-saison3.js   # problemsRound, codeRound et leurs types ; créé par la première PR qui en a besoin
+  - js/entities/difficulty/difficulty-s3.js   # problemsRound, codeRound et leurs types ; créé par la première track de la saison 3 qui en a besoin (modèle difficulty-s2.js)
   - js/entities/difficulty/game-types.js
   - js/entities/difficulty/difficulty.js
   - js/features/adaptive/adaptive.js
   - js/features/parents/parents.js
   - js/entities/world/worlds.js
-  - js/entities/character/characters.js
-  - js/entities/character/characters-art-saison3.js   # 4 dessins dans ART_S3 (fichier préparé par saison3-ouverture)
+  - js/entities/character/characters-s3.js        # 4 personnages dans CHARACTERS_S3 (préparé par saison3-ouverture)
+  - js/entities/character/characters-art-s3.js    # 4 dessins dans season3Art(ART, kit) (préparé par saison3-ouverture, zone sensible)
   - index.html                       # régénéré par bun run sync (zone sensible)
   - sw.js                            # régénéré par bun run sync et release (zone sensible)
   - js/entities/item/items.js
-  - js/entities/squishy/squishies.js
-  - js/features/squishies/squishy-art.js   # 6 entrées SQ_ART (fichier déjà sur main)
-  - js/features/story/story.js
+  - js/entities/squishy/squishies.js         # la série seulement (SQUISHY_SERIES, SQUISHY_SERIES_ORDER, SQUISHY_ISLAND_SERIES)
+  - js/entities/squishy/squishies-s3.js      # 6 modèles dans SQUISHIES_S3 (préparé par saison3-ouverture)
+  - js/features/squishies/squishy-art-s3.js  # 6 dessins dans SQ_ART_S3 (préparé par saison3-ouverture)
+  - js/features/story/story-s3.js            # STORY_S3.coffres (préparé par saison3-ouverture)
   - js/features/story/episodes.js
   - js/features/music/music.js
-  - js/features/island/island.js
+  - js/features/island/island-s3.js          # ISLE_SCENERY_S3.coffres (préparé par saison3-ouverture)
   - js/shared/styles/design-system-v21.css
   - test/problems.test.js
   - test/code.test.js
@@ -43,7 +44,7 @@ files:
   - test/companions.test.js          # lu, pas modifié : sa boucle générique couvre les deux jeux
   - test/smoke.test.js              # test de variété (gameCounts) ; « personnages : les N ids possèdent un SVG » (vers 755)
   - test/squishies.test.js           # séries et effectifs figés (vers 86, 91, 107)
-taster: { facts: 0, decisions: 0, rounds: 14 }
+taster: { facts: 0, decisions: 0, rounds: 17 }
 ---
 
 <!-- Gabarit cothon 0.4.0 (setting-up-docs), adopté dans Conductor (cothon 0.2.0-2 et 0.4.0-6) : une nouvelle track part de ce fichier. -->
@@ -52,7 +53,7 @@ taster: { facts: 0, decisions: 0, rounds: 14 }
 
 - Nouveau projet : non
 
-L'île : `coffres`, emoji 🗝️, niveau d'ouverture **86**. Règle et tableau de tous les niveaux : `conductor/niveaux.md`. Idée de la joueuse. Prérequis de la phase 3 (l'île) : la track `saison3-ouverture` (troisième onglet, `ARCHIPELAGOS[3]`, `refreshArchipelagos()`, carte de Zap `ZAP_MAP_PIECES`) est sur `main`, l'île précédente de la saison (`dumplings`, track `monde-dumplings`) est déjà dans `WORLDS`, (les dessins des squishies sont déjà dans `js/features/squishies/squishy-art.js` sur `main`). Ordre de livraison des îles : crayons, dumplings, coffres, chatouilles, concert. Les phases 1 et 2 (les deux mini-jeux) n'ont pas ce prérequis.
+L'île : `coffres`, emoji 🗝️, niveau d'ouverture **86**. Règle et tableau de tous les niveaux : `conductor/niveaux.md`. Idée de la joueuse. Prérequis de la phase 3 (l'île) : la track `saison3-ouverture` (troisième onglet, `ARCHIPELAGOS[3]`, `refreshArchipelagos()`, carte de Zap `ZAP_MAP_PIECES`) est sur `main`, l'île précédente de la saison (`dumplings`, track `monde-dumplings`) est déjà dans `WORLDS`, et les six fichiers `-s3` préparés vides par `saison3-ouverture` (`characters-s3.js`, `characters-art-s3.js`, `squishies-s3.js`, `squishy-art-s3.js`, `story-s3.js`, `island-s3.js`, règle « 2 bis » de `conductor/checklist-ile.md`) sont sur `main`. Ordre de livraison des îles : crayons, dumplings, coffres, chatouilles, concert. Les phases 1 et 2 (les deux mini-jeux) n'ont pas ce prérequis.
 
 ## Problème
 
@@ -112,6 +113,8 @@ La joueuse veut « une île des coffres ». Le parent demande « plus de maths �
 
 Livraison en deux PR (D30) : la PR 1a livre les lignes 1 à 3 (critères 1 à 9 sans l'égalité du palier 4, 11 à 13, 16 à 20 ; S1, S2, S4, S7 sur ce contenu) ; la PR 1b ajoute les lignes 4 et 5 (critères 10, 14, 15, l'égalité du critère 9 ; S1, S2, S4 sur toute la table). Entre les deux, les paliers 4 et 5 jouent la ligne 3 : `tierValue` renvoie l'entrée de la plus grande clé présente (`js/entities/difficulty/difficulty.js:92-105`), un état correct pour l'enfant et pour `test/games.test.js`.
 
+**Règle de repli 1a (pour tout test écrit en 1a)** : pendant 1a, tout ce qui se lit aux paliers 4 et 5 est ce que donne la ligne 3 (types, bornes, `choices`, `gap`, représentation `barres` sans égalité, donc `gameSolution` du palier 4 en « barres » sans `.pb-eq-text`, A1, H0, exemples aux extrêmes ci-dessous). Ces assertions de repli ne se mêlent pas aux autres : la PR 1a les écrit toutes dans un seul bloc nommé de `test/problems.test.js`, « repli 1a : paliers 4 et 5 = ligne 3 », et les assertions des paliers 1 à 3 n'en dépendent pas. La tâche 1b.1 remplace ce bloc entier par les assertions des clés 4 et 5 (lignes 4 et 5 de T1). Ce remplacement est prévu par la spec et n'affaiblit aucune vérification : il suit la même règle que Z2 pour les tests à effectif figé (un changement voulu du contenu, écrit dans la PR qui le livre, règle « 2 quater » de `conductor/checklist-ile.md`), et chaque assertion retirée est remplacée par celle de la vraie ligne du palier.
+
 `min` et `max` : bornes du tout (ou du plus grand nombre de l'histoire). `ecart` : écart maximal des comparaisons.
 
 | Palier | Types | min | max | ecart | Représentation | Choix au calcul |
@@ -151,6 +154,18 @@ Aucune plage n'est vide, aux deux bornes de chaque palier (le test tire 500 prob
 | possible, non (4 et 5) | palier 4 : a = 2 : b dans [3, 11] ; a = 49 : b = 50 | palier 5 : a = 99 : b = 100 |
 | possible, oui (4 et 5) | palier 4 : a = 2 : b dans [1, 2] | palier 5 : a = 100 : b dans [1, 100] |
 
+La colonne « Dernier palier » vaut après 1b. Pendant 1a (règle de repli ci-dessus), les paliers 3, 4 et 5 servent tous la ligne 3 (min 5, max 20, ecart 9), seuls ses 7 types existent, et les extrêmes effectifs du dernier palier sont ceux de la ligne 3, aux paliers 3, 4 et 5 ; la colonne « Premier palier » ne change pas pour ces types. Le test « 500 tirages par palier » lit donc, aux paliers 4 et 5 pendant 1a, les bornes de la ligne 3, dans le bloc « repli 1a : paliers 4 et 5 = ligne 3 » :
+
+| Type (pendant 1a) | Dernier palier effectif (paliers 3, 4 et 5 = ligne 3), bornes hautes |
+|---|---|
+| reunion, ajout | t = 20 : a dans [1, 19] |
+| retrait | a = 20 : b dans [1, 19] |
+| partie | t = 20 : a dans [1, 19] |
+| ajoutInconnu | t = 20 : a dans [1, 19] |
+| compPlus | b = 9 : a dans [1, 11] ; b = 1 : a dans [1, 19] |
+| compEcart | a = 1 : g dans [2, 10] ; a = 19 : g = 20 |
+| compMoinsPlus, deuxEtapes, possible | jamais tirés (aucune ligne de 1a ne les contient) |
+
 ### V1. Contenu des vignettes, phrase par phrase
 
 Une vignette par phrase entre crochets de B1. Une phrase avec un nombre montre le personnage dont elle parle et ses objets (un emoji par objet jusqu'à 10, au-delà le nombre en chiffres et un seul emoji). Une phrase sans nombre montre le personnage seul (ou les deux pour une action à deux), zéro emoji d'objet. La question montre le personnage, un emoji d'objet et « ? » (`data-q`).
@@ -184,7 +199,7 @@ Toujours présents : `data-type` (le type), `data-a`, `data-b`, `data-c`, `data-
 | deuxEtapes | a | b | c | vide | a + b − c ; `data-r1` = a + b |
 | possible | a | b | vide | vide | `oui` si b ≤ a, sinon `non` |
 
-### Z1. Fichiers de la slice `minigame-problems` (`max-lines` à 1100)
+### Z1. Fichiers de la slice `minigame-problems` (`max-lines` à 800, `.oxlintrc.json`)
 
 `problems` est découpé en fichiers frères dans `js/features/minigames/problems/`, tous déclarés dans `files` de la slice `minigame-problems` de `js/slices.cjs` (ordre : banque, tirage, schéma, indices, puis `problems.js`), puis `bun run sync`. Chaque fichier importe ses frères directement (même slice) ; seul `index.js` est importé par les autres slices.
 
@@ -196,7 +211,7 @@ Toujours présents : `data-type` (le type), `data-a`, `data-b`, `data-c`, `data-
 | `problems-hints.js` | table H0, textes H1, `registerHints('problems', …)` | 150 lignes |
 | `problems.js` | fenêtre, étapes, modes E1, exemple et jumeau, `gameSolution` G1, erreurs et relances, `registerGame` | 450 lignes |
 
-PR 1a : les cinq fichiers, contenu des paliers 1 à 3 ; PR 1b : ajouts dans les mêmes fichiers (environ 150 lignes en tout), chacun reste sous 600 lignes. `code` tient dans `code.js` (environ 450 lignes : fabrication, solveur, fenêtre, indices) ; s'il dépassait 1000 lignes, la fabrication passe dans `code-make.js`, même règle.
+PR 1a : les cinq fichiers, contenu des paliers 1 à 3 ; PR 1b : ajouts dans les mêmes fichiers (environ 150 lignes en tout), chacun reste sous 600 lignes, donc sous 800. `code` tient dans `code.js` (environ 450 lignes : fabrication, solveur, fenêtre, indices) ; s'il approchait 800 lignes, la fabrication passe dans `code-make.js`, fichier frère déclaré dans la slice `minigame-code` avant `code.js`, puis `bun run sync`.
 
 ### Z2. Tests existants à effectif figé (règle « 2 quater » de `conductor/checklist-ile.md`)
 
@@ -540,9 +555,9 @@ Fabrication d'un cadenas (au plus 500 essais ; au-delà, on reprend le palier in
 - Indice 2, selon le premier indice présent dans cet ordre : absent : « {X} n'est pas dans le code : {il} ne va sur aucune roue. Regarde les autres symboles. » ; voisins : « {X} et {Y} sont {collés} : {x} d'abord, puis {y} juste à sa droite. Où peuvent-{ils} aller ? » ; pas : « {X} n'est pas sur la roue {couleur}. Où peut-{il} aller, alors ? » ; est (repli) : « Une carte dit où va {x} : la roue {couleur}. Commence par elle, puis cherche les autres. » ; bout (repli) : « {X} est sur une roue du bout : la première ou la dernière. Laquelle reste possible ? ». Glow sur la carte citée. Exemples : « Le poisson n'est pas dans le code : il ne va sur aucune roue. Regarde les autres symboles. » ; « La lune n'est pas dans le code : elle ne va sur aucune roue. Regarde les autres symboles. » ; « La pomme n'est pas sur la roue bleue. Où peut-elle aller, alors ? » ; « Le coquillage n'est pas sur la roue rouge. Où peut-il aller, alors ? » ; « La fleur et l'étoile sont collées… Où peuvent-elles aller ? » (l'accord « collés »/« collées » suit `{ils}`) ; « Le poisson et la lune sont collés : le poisson d'abord, puis la lune juste à sa droite. Où peuvent-ils aller ? ».
 - Couverture par palier (types permis par T2 et l'algorithme) : palier 1 a toujours 1 « est » et 2 « absent » (seul moyen d'une solution unique avec 4 symboles et 2 roues) ; paliers 2 à 4 ont toujours au moins un indice parmi absent, voisins, pas (un seul « est » ne suffit jamais à fixer 3 ou 4 roues) ; palier 5 a toujours au moins un absent, voisins ou pas (des « bout » seuls laissent au moins 2 codes). Les replis « est » et « bout » ne servent donc qu'en garde ; le test `test/code.test.js` vérifie sur 200 cadenas par palier que l'indice 1 vise au moins une carte et que les deux indices sont distincts. Pas de `fx.dim`, pas de `fx.strike`.
 
-### K1. Les personnages (`js/entities/character/characters.js`)
+### K1. Les personnages (`CHARACTERS_S3` de `js/entities/character/characters-s3.js`)
 
-Champs de chaque entrée, comme `viola` (`js/entities/character/characters.js:597-609`) : `emoji`, `name`, `title`, `world: 'coffres'`, `gender`, `loot`, `texts` (3 répliques), et rien d'autre (pas de `noGames`). `world: 'coffres'` est indispensable : `favoritesOf` (`js/features/gifts/gifts.js:43-52`) prend les objets préférés parmi les objets de `c.world || 'lagon'` ; avec les 8 objets de l'île et 2 de butin, chaque personnage a 2 objets préférés pris parmi les 6 autres objets de l'île (le test le vérifie).
+Les 4 entrées vont dans `CHARACTERS_S3` (`js/entities/character/characters-s3.js`, préparé par `saison3-ouverture`), que `characters.js` étale à la fin de `CHARACTERS` : `characters.js` n'est pas modifié (798 lignes, règle « 2 bis » de `conductor/checklist-ile.md`). Champs de chaque entrée, comme `viola` (`js/entities/character/characters.js:597-609`) : `emoji`, `name`, `title`, `world: 'coffres'`, `gender`, `loot`, `texts` (3 répliques), et rien d'autre (pas de `noGames`). `world: 'coffres'` est indispensable : `favoritesOf` (`js/features/gifts/gifts.js:43-52`) prend les objets préférés parmi les objets de `c.world || 'lagon'` ; avec les 8 objets de l'île et 2 de butin, chaque personnage a 2 objets préférés pris parmi les 6 autres objets de l'île (le test le vérifie).
 
 | id | Emoji | Nom | Titre | Genre | Butin (`loot`) |
 |---|---|---|---|---|---|
@@ -559,7 +574,7 @@ Répliques (`texts`) :
 - Grignote : « Je compte tout : les pièces, les clés, les coffres ! Tu m'aides ? » ; « Une histoire, un dessin, un calcul… et hop, le trésor est trouvé ! » ; « Écoute bien mon histoire. La réponse se cache dedans ! »
 - Pinçou : « Avec mes pinces, j'ouvre les serrures… enfin, j'essaie ! » ; « Clic-clic ! On joue avant que je referme mes pinces ? » ; « Le sable est plein de trésors. On cherche ensemble ? »
 
-Dessins (demande explicite de cette spec ; aucun dessin existant n'est touché) : dans la table `ART_S3` de `js/entities/character/characters-art-saison3.js`, que `characters-art.js` fusionne dans `CHAR_ART`, avec les aides (`svg`, `human`…) importées de `js/entities/character/characters-art-kit.js` ; ces deux fichiers sont préparés par la track `saison3-ouverture` (prérequis de la phase 3, règle « 2 bis » de `conductor/checklist-ile.md`) : Clémence (`human`) : cheveux bruns en tresse, robe bleu canard, un gros trousseau de clés dorées à la ceinture ; Kadi (`svg`) : un cadenas doré tout rond, l'anse en haut, une molette à chiffres sur le ventre, yeux et joues comme Boumbo ; Grignote (`svg`) : une souris grise aux grandes oreilles roses, lunettes rondes, une pièce d'or dans les pattes ; Pinçou (`svg`) : un crabe orange, deux grosses pinces, une petite clé tenue dans une pince.
+Dessins (demande explicite de cette spec ; aucun dessin existant n'est touché) : dans la fonction `season3Art(ART, kit)` de `js/entities/character/characters-art-s3.js`, sur le modèle de `season2Art` (`js/entities/character/characters-art-s2.js`) : elle ajoute ses entrées à `ART` avec les outils de `kit` (`@typedef ArtKit` de `characters-art.js` : `svg`, `human`, `eyes`, `cheeks`…), et `characters-art.js` l'appelle juste après `season2Art` ; le fichier est préparé par la track `saison3-ouverture` (prérequis de la phase 3, règle « 2 bis » de `conductor/checklist-ile.md`) et c'est une zone sensible (dessins). Si un dessin demande un outil absent de `ArtKit`, la phase 3 l'ajoute au `@typedef ArtKit` et à l'objet passé aux deux appels (une ligne, aucun dessin ne change) : Clémence (`human`) : cheveux bruns en tresse, robe bleu canard, un gros trousseau de clés dorées à la ceinture ; Kadi (`svg`) : un cadenas doré tout rond, l'anse en haut, une molette à chiffres sur le ventre, yeux et joues comme Boumbo ; Grignote (`svg`) : une souris grise aux grandes oreilles roses, lunettes rondes, une pièce d'or dans les pattes ; Pinçou (`svg`) : un crabe orange, deux grosses pinces, une petite clé tenue dans une pince.
 
 ### O1, R2, D1. Objets, recettes, décorations (`js/entities/item/items.js`, `world: 'coffres'`)
 
@@ -586,7 +601,7 @@ Décorations (`DECOS`), champs comme `pianoD` (`js/entities/item/items.js:526`),
 
 Thème (`design-system-v21.css`) : `body[data-world="coffres"] { --world-sky: #fff4dc; --world-sea: #3fa7a3; --world-deep: #6b3f1d; --world-scene-top: #fffaf0; --world-scene-floor: #f2d29b; }`.
 
-Paysage (`ISLE_SCENERY.coffres`, SVG 480 × 360 comme `musique` à `js/features/island/island.js:349`) : une île de sable (`w.sand`) sur la mer turquoise ; au centre un grand coffre de bois brun cerclé d'or, fermé par un cadenas doré ; à gauche un arbre dont les branches portent des clés qui se balancent (classes `ls-lolly l1` et `l2` pour le mouvement) ; à droite un rocher avec une petite porte ronde ; quelques pièces d'or brillantes dans le sable ; un chemin de sable vers le bas, comme les autres îles.
+Paysage (`ISLE_SCENERY_S3.coffres` de `js/features/island/island-s3.js`, préparé par `saison3-ouverture`, que `island.js` étale à la fin de `ISLE_SCENERY`, d'où `ISLE_SCENERY.coffres` ; SVG 480 × 360 comme `musique` à `js/features/island/island.js:349`) : une île de sable (`w.sand`) sur la mer turquoise ; au centre un grand coffre de bois brun cerclé d'or, fermé par un cadenas doré ; à gauche un arbre dont les branches portent des clés qui se balancent (classes `ls-lolly l1` et `l2` pour le mouvement) ; à droite un rocher avec une petite porte ronde ; quelques pièces d'or brillantes dans le sable ; un chemin de sable vers le bas, comme les autres îles.
 
 ### M1. Musique
 
@@ -594,9 +609,9 @@ Paysage (`ISLE_SCENERY.coffres`, SVG 480 × 360 comme `musique` à `js/features/
 
 ### Q1. La série de squishies « Coffres »
 
-`SQUISHY_SERIES.coffres = { name: 'Coffres', emoji: '🔐', world: 'coffres' }`, `SQUISHY_ISLAND_SERIES.coffres = 'coffres'`, et `'coffres'` ajouté en fin de `SQUISHY_SERIES_ORDER`.
+`SQUISHY_SERIES.coffres = { name: 'Coffres', emoji: '🔐', world: 'coffres' }`, `SQUISHY_ISLAND_SERIES.coffres = 'coffres'`, et `'coffres'` ajouté en fin de `SQUISHY_SERIES_ORDER` : ces trois lignes courtes restent dans `js/entities/squishy/squishies.js`. Les 6 modèles vont dans `SQUISHIES_S3` de `js/entities/squishy/squishies-s3.js` (préparé par `saison3-ouverture`), que `squishies.js` étale à la fin de `SQUISHIES`.
 
-Les 6 dessins sont des entrées `SQ_ART` (type `SqArt`, `js/features/squishies/squishy-art.js:10`) ajoutées à la table `SQ_ART` de `js/features/squishies/squishy-art.js:55`, sur le modèle de l'entrée `'lyre-doree'` (`body`, `face`, `faceY`, `back`, `front`, `js/features/squishies/squishy-art.js:438`) ; `squishyArtSVG` (`:579`) les dessine. `SQ_BOX_COLORS` (`:604`) n'est pas touché.
+Les 6 dessins sont des entrées de `SQ_ART_S3` (`Record<string, SqArt>`, type `SqArt` de `js/features/squishies/squishy-art.js:10`) dans `js/features/squishies/squishy-art-s3.js` (préparé par `saison3-ouverture`), que `squishy-art.js` étale à la fin de la table `SQ_ART` (`js/features/squishies/squishy-art.js:55`) : `squishy-art.js` n'est pas modifié. Modèle : l'entrée `'lyre-doree'` (`body`, `face`, `faceY`, `back`, `front`, `js/features/squishies/squishy-art.js:438`) ; `squishyArtSVG` (`:579`) les dessine. `SQ_BOX_COLORS` (`:604`) n'est pas touché.
 
 Champs de chaque modèle, comme `'lyre-doree'` (`js/entities/squishy/squishies.js:449-457`) : `series: 'coffres'`, `name`, `say`, `rarity`, `color`, `shape`, `size`.
 
@@ -610,6 +625,8 @@ Champs de chaque modèle, comme `'lyre-doree'` (`js/entities/squishy/squishies.j
 | coffre-etoiles | Coffre aux étoiles | un coffre aux étoiles | brille | vert | carre | grand | corps `carre`, un couvercle doré, trois petites étoiles qui s'échappent |
 
 ### C1. Le chapitre `STORY.coffres`
+
+L'entrée va dans `STORY_S3` de `js/features/story/story-s3.js` (préparé par `saison3-ouverture`), que `story.js` étale à la fin de `STORY` : `story.js` n'est pas modifié.
 
 - `guide: 'clemence'`, `title: 'Le troisième morceau de la carte'`, `reward: 16`.
 - `intro` :
@@ -669,16 +686,18 @@ Aucun `@typedef` existant n'est étendu : toutes les entrées de l'île tiennent
 | Table | Type existant | Entrées de cette track |
 |---|---|---|
 | `WORLDS` | `World` (`js/entities/world/worlds.js:8`) | `coffres` : tous les champs requis, `game: 'problems'` (une chaîne, permise) |
-| `CHARACTERS` | `Character` (`js/entities/character/characters.js:5`) | 4 personnages avec `world`, sans `noGames` |
+| `CHARACTERS_S3` (étalé dans `CHARACTERS`) | `Record<string, Character>`, `Character` de `js/entities/character/characters.js:5` | 4 personnages avec `world`, sans `noGames` |
 | `ITEMS`, `DECOS` | `Item` (`js/entities/item/items.js:6`) | 8 objets, 5 décorations, avec `world` |
 | `CRAFTED` | `CraftedItem` (`js/entities/item/items.js:11`) | 2 recettes, sans `tier` |
 | `SQUISHY_SERIES` | `SquishySeries` (`js/entities/squishy/squishies.js:22`) | `coffres` avec `world` |
-| `SQUISHIES` | `Squishy` (`js/entities/squishy/squishies.js:26`) | 6 modèles, sans `how` |
+| `SQUISHIES_S3` (étalé dans `SQUISHIES`) | `Record<string, Squishy>`, `Squishy` de `js/entities/squishy/squishies.js:26` | 6 modèles, sans `how` |
+| `SQ_ART_S3` (étalé dans `SQ_ART`) | `Record<string, SqArt>` (`js/features/squishies/squishy-art.js:10`) | 6 dessins |
+| `STORY_S3`, `ISLE_SCENERY_S3` | `Record<string, StoryChapter>`, `Record<string, (w: World) => string>` (posés par `saison3-ouverture`) | le chapitre C1, le paysage de W1 |
 | `SQUISHY_ISLAND_SERIES`, `SQUISHY_SERIES_ORDER` | `Record<string, string>`, `string[]` | une clé, un id |
 | `LIVES_TABLE` | `Record<string, Record<number, number>>` (`js/entities/difficulty/difficulty.js:360`) | `problems: { 2: 4, 3: 4, 4: 3, 5: 3 }` |
 | `state.skills.problems` | `SkillRecord` (`js/entities/game-state/state.js:22-36`, `lvl?`, `atLvl?`) | lu seulement (E1) ; aucun champ de sauvegarde nouveau |
 
-Nouvelles fonctions, dans `js/entities/difficulty/rounds-saison3.js` (et non dans `difficulty.js`, presque plein : règle « 2 bis » de `conductor/checklist-ile.md`), typées strictement, sur le modèle de `rhythmRound` (`js/entities/difficulty/difficulty.js:818`) et de `tierValue` (`js/entities/difficulty/difficulty.js:92-105`) :
+Nouvelles fonctions, dans `js/entities/difficulty/difficulty-s3.js` (et non dans `difficulty.js` : règle « 2 bis » de `conductor/checklist-ile.md`, modèle `difficulty-s2.js` de la v66.16), typées strictement, sur le modèle de `rhythmRound` (`js/entities/difficulty/difficulty-s2.js:190`) et de `tierValue` (`js/entities/difficulty/difficulty.js:92-105`) :
 
 ```js
 /** @typedef {'concret' | 'concret-barre' | 'barres' | 'egalite'} ProblemsRep */
@@ -700,7 +719,7 @@ function problemsRound(dd) { /* tierValue sur les objets littéraux de R1 */ }
 function codeRound(dd) { /* tierValue sur les objets littéraux ci-dessous */ }
 ```
 
-Objets littéraux de `codeRound` (T2) : `1: { wheels: 2, palette: 4, types: ['est', 'absent'], maxEst: 1, maxClues: 3 }`, `2: { wheels: 3, palette: 4, types: ['est', 'pas', 'absent'], maxEst: 1, maxClues: 4 }`, `3: { wheels: 3, palette: 5, types: ['est', 'pas', 'absent', 'voisins'], maxEst: 1, maxClues: 4 }`, `4: { wheels: 4, palette: 5, types: ['est', 'pas', 'absent', 'voisins'], maxEst: 1, maxClues: 5 }`, `5: { wheels: 4, palette: 6, types: ['pas', 'absent', 'voisins', 'bout'], maxEst: 0, maxClues: 6 }`. Les objets de `problemsRound` sont ceux de R1. Les deux sont ré-exportés par `js/entities/difficulty/index.js`. `rounds-saison3.js` est créé par la première PR de la saison 3 qui en a besoin ; s'il n'existe pas encore, la PR 1a (ou la PR 2 si elle passe avant) le crée et le déclare dans `js/slices.cjs`, slice `difficulty`. `LIVES_TABLE`, `GENEROUS_KINDS` et `NO_TIMER_KINDS` restent dans `difficulty.js` (une ligne par jeu). `rounds-saison3.js` importe `tierValue` de `difficulty.js`, qui l'exporte pour cela (une ligne ajoutée à son `export`, par la première PR qui crée `rounds-saison3.js`). Tout nouveau code de cette track s'écrit strictement typé, quelle que soit sa slice (règle des deux checklists) : `problems.js` et `code.js` comme les ajouts aux slices `story`, `island`, `squishies`, `music`. Chaque fonction a `@param` et `@returns` ; chaque table a son `@type` ou son `@typedef` (`PB_PEOPLE` : `Record<string, { name: string, gender: 'f' | 'm', emoji: string }>` ; objets de B1 : `Record<string, { emoji: string, one: string, many: string, gender: 'f' | 'm' }>` ; symboles S2 : `Record<string, { emoji: string, name: string, of: string }>` ; un indice I2 : `{ t: 'est' | 'pas' | 'absent' | 'voisins' | 'bout', s: string, s2?: string, w?: number }`). Les types existants des slices de `main` suffisent, sans extension : les indices des deux jeux n'utilisent que les champs de `HintFx` (`glow`, `html`, `js/features/hints/hints.js:40-50`) et s'inscrivent par `registerHints` avec un `HintProvider<Q>` (`:55-57`, `:67`), où `Q` est le type de la question propre au jeu (`ProblemsHintQ = { moment: string, problem: object }` typé précisément dans `problems.js`, `CodeHintQ = { clues: object[] }` de même dans `code.js`) ; `setHintQuestion(kind, q, { choices })` garde sa signature (`:180-185`) ; tout ce code est vérifié en strict par `bun run typecheck` ; le thème `MUSIC_THEMES.coffres` tient dans `MusicTheme` (`js/features/music/music.js:20-31`) ; les 6 dessins tiennent dans `SqArt`. Jamais `any` ni `@ts-ignore`.
+Objets littéraux de `codeRound` (T2) : `1: { wheels: 2, palette: 4, types: ['est', 'absent'], maxEst: 1, maxClues: 3 }`, `2: { wheels: 3, palette: 4, types: ['est', 'pas', 'absent'], maxEst: 1, maxClues: 4 }`, `3: { wheels: 3, palette: 5, types: ['est', 'pas', 'absent', 'voisins'], maxEst: 1, maxClues: 4 }`, `4: { wheels: 4, palette: 5, types: ['est', 'pas', 'absent', 'voisins'], maxEst: 1, maxClues: 5 }`, `5: { wheels: 4, palette: 6, types: ['pas', 'absent', 'voisins', 'bout'], maxEst: 0, maxClues: 6 }`. Les objets de `problemsRound` sont ceux de R1. Les deux sont ré-exportés par `js/entities/difficulty/index.js`. `difficulty-s3.js` est créé par la première track de la saison 3 qui en a besoin ; s'il n'existe pas encore, la PR 1a (ou la PR 2 si elle passe avant) le crée sur le modèle de `difficulty-s2.js` (en-tête, `import { tierValue } from './difficulty.js';`), le déclare dans `js/slices.cjs`, slice `difficulty`, juste après `difficulty-s2.js`, et ajoute à `js/entities/difficulty/index.js` un bloc `export { … } from './difficulty-s3.js';` après celui de `difficulty-s2.js` ; s'il existe, la PR y ajoute ses fonctions et leurs noms au bloc. `tierValue` est déjà exporté par `difficulty.js` (son `export { … }`) : rien à y ajouter. `LIVES_TABLE`, `GENEROUS_KINDS` et `NO_TIMER_KINDS` restent dans `difficulty.js` (une ligne par jeu ; 670 lignes). Tout nouveau code de cette track s'écrit strictement typé, quelle que soit sa slice (règle des deux checklists) : `problems.js` et `code.js` comme les ajouts aux slices `story`, `island`, `squishies`, `music`. Chaque fonction a `@param` et `@returns` ; chaque table a son `@type` ou son `@typedef` (`PB_PEOPLE` : `Record<string, { name: string, gender: 'f' | 'm', emoji: string }>` ; objets de B1 : `Record<string, { emoji: string, one: string, many: string, gender: 'f' | 'm' }>` ; symboles S2 : `Record<string, { emoji: string, name: string, of: string }>` ; un indice I2 : `{ t: 'est' | 'pas' | 'absent' | 'voisins' | 'bout', s: string, s2?: string, w?: number }`). Les types existants des slices de `main` suffisent, sans extension : les indices des deux jeux n'utilisent que les champs de `HintFx` (`glow`, `html`, `js/features/hints/hints.js:40-50`) et s'inscrivent par `registerHints` avec un `HintProvider<Q>` (`:55-57`, `:67`), où `Q` est le type de la question propre au jeu (`ProblemsHintQ = { moment: string, problem: object }` typé précisément dans `problems.js`, `CodeHintQ = { clues: object[] }` de même dans `code.js`) ; `setHintQuestion(kind, q, { choices })` garde sa signature (`:180-185`) ; tout ce code est vérifié en strict par `bun run typecheck` ; le thème `MUSIC_THEMES.coffres` tient dans `MusicTheme` (`js/features/music/music.js:20-31`) ; les 6 dessins tiennent dans `SqArt`. Jamais `any` ni `@ts-ignore`.
 
 ## Décisions
 
@@ -731,13 +750,14 @@ Objets littéraux de `codeRound` (T2) : `1: { wheels: 2, palette: 4, types: ['es
 | D23 | Thème de musique `pluck` et `tick` | Instruments déjà disponibles | `js/features/music/music.js:38`, `:49` |
 | D25 | Erreur pendant le jumeau : nouveau jumeau seul, `n = 0` tant qu'aucun jumeau n'est réussi | Ne pas faire revoir l'exemple à chaque erreur. Défaut de Claude, à juger à la revue par Amrou | tour 1 du testeur à blanc ; E1 |
 | D26 | Un symbole posé sur une seconde roue quitte la première | Jamais de doublon, aucune erreur « bête ». Défaut de Claude, à juger à la revue par Amrou | tour 1 du testeur à blanc ; critère 25 |
-| D27 | Brancher un mini-jeu touche aussi `js/app/main.js` (import de la slice) et `js/entities/difficulty/index.js` (ré-export de `<cle>Round`) | Comme `nesting` | `js/app/main.js:55`, `js/entities/difficulty/index.js:30` |
+| D27 | Brancher un mini-jeu touche aussi `js/app/main.js` (import de la slice) et `js/entities/difficulty/index.js` (ré-export de `<cle>Round`, dans le bloc `export { … } from './difficulty-s3.js'`) | Comme `nesting`, ré-exporté dans le bloc de `difficulty-s2.js` | `js/app/main.js:55` ; `nestingRound` dans le bloc `export { … } from './difficulty-s2.js'` de `js/entities/difficulty/index.js` |
 | D28 | Barre « ? » à sa vraie longueur, échelle = plus grand nombre du schéma ; leurres à au plus 3 (paliers 1 à 3) ou 10 (paliers 4 et 5) du résultat | Un schéma montre les relations entre quantités, et estimer l'ordre de grandeur fait partie de l'apprentissage (« est-ce possible ? ») ; des leurres proches empêchent de répondre à la seule largeur. Défaut de Claude, à juger à la revue par Amrou | tour 2 du testeur à blanc ; F1, R1 |
 | D29 | Les dessins des 6 squishies vont dans `SQ_ART` de `js/features/squishies/squishy-art.js` | Les dessins y vivent déjà sur `main` ; `squishyArtSVG` renvoie une chaîne vide sans entrée `SQ_ART` | `js/features/squishies/squishy-art.js:55`, `:438`, `:579` |
 | D30 | `problems` livré en deux PR : 1a (paliers 1 à 3), puis 1b (paliers 4 et 5 : égalité, `compMoinsPlus`, `deuxEtapes`, `possible`) ; `bun run release patch` pour 1a, 1b et 2, `bun run release track` pour 3 | Une PR par morceau livrable ; avant 1b, `tierValue` sert la table du palier 3 aux paliers 4 et 5 | `js/entities/difficulty/difficulty.js:92-105` ; décision de coordination du 22/11/2026 ; `conductor/workflow.md:57-58` |
 | D31 | Essais épuisés : échec enregistré (`recordMission(false)`) comme pour tous les jeux, E1 inchangé (la mission suivante peut avoir `n = 1` sans jumeau réussi) | Même règle pour tous les jeux. Défaut de Claude, à juger à la revue par Amrou | tour 7 du testeur à blanc ; `js/features/adaptive/skills.js:37` |
 | D32 | Types : aucun `@typedef` existant étendu ; `ProblemsRound` et `CodeRound` nouveaux, `problemsRound` et `codeRound` typés strictement ; tout le code de la track vérifié en strict par `bun run typecheck`, sans `any` ni `@ts-ignore` | Tout `js/` est en TypeScript strict ; les entrées de l'île tiennent dans `World`, `Character`, `Item`, `CraftedItem`, `SquishySeries`, `Squishy` | table Y1 ; `conductor/checklist-mini-jeu.md:30`, `conductor/checklist-ile.md:10` |
-| D33 | Taille : `problems` en 5 fichiers frères (Z1) ; `problemsRound` et `codeRound` dans `rounds-saison3.js` ; dessins dans `characters-art-saison3.js` (`ART_S3`) | `max-lines` à 1100 ; `difficulty.js` et `characters-art.js` presque pleins | `.oxlintrc.json` ; `conductor/checklist-ile.md` section « 2 bis » |
+| D33 | (remplacée par D34) Taille : `problems` en 5 fichiers frères (Z1) ; `problemsRound` et `codeRound` dans `rounds-saison3.js` ; dessins dans `characters-art-saison3.js` (`ART_S3`) | `max-lines` à 1100 ; `difficulty.js` et `characters-art.js` presque pleins | `.oxlintrc.json` ; `conductor/checklist-ile.md` section « 2 bis » |
+| D34 | Taille, remplace D33 (et D29 pour l'emplacement des dessins de squishies) : `problems` en 5 fichiers frères (Z1, chacun sous 800 lignes) ; `problemsRound` et `codeRound` dans `difficulty-s3.js` ; personnages dans `CHARACTERS_S3` (`characters-s3.js`), dessins dans `season3Art(ART, kit)` (`characters-art-s3.js`), squishies dans `SQUISHIES_S3` (`squishies-s3.js`), leurs dessins dans `SQ_ART_S3` (`squishy-art-s3.js`), chapitre dans `STORY_S3` (`story-s3.js`), paysage dans `ISLE_SCENERY_S3` (`island-s3.js`) ; restent dans les fichiers d'origine la série de squishies, le thème `MUSIC_THEMES.coffres`, les épisodes, les objets et `WORLDS.coffres` | `max-lines` passe à 800 (v66.16) et la v66.16 a posé le modèle `-s2` ; `characters.js` (798), `story.js` (729), `island.js` (663), `squishy-art.js` (640) et `squishies.js` (630) dépasseraient 800 avec cinq îles | `.oxlintrc.json` ; `conductor/checklist-ile.md` section « 2 bis » ; `js/entities/difficulty/difficulty-s2.js`, `js/entities/character/characters-art-s2.js` |
 | D24 | Noms des personnages proposés par Claude, jugés par la joueuse | Politique commune | brief de la saison 3 ; `conductor/product-guidelines.md:19` |
 
 ## Politiques
@@ -763,12 +783,13 @@ Objets littéraux de `codeRound` (T2) : `1: { wheels: 2, palette: 4, types: ['es
 | Contrat | Forme (ou lien) | Propriétaire | Consommateurs |
 |---|---|---|---|
 | Archipel de la saison 3 | `ARCHIPELAGOS[3]`, `refreshArchipelagos()`, `shownArchipelagos()` | `saison3-ouverture` (`entities/world`) | `WORLDS.coffres.saison = 3`, `test/coffres.test.js` |
-| Dessins de la saison 3 | `ART_S3` de `js/entities/character/characters-art-saison3.js`, aides de `characters-art-kit.js` | `saison3-ouverture` | K1 (4 dessins) |
+| Dessins de la saison 3 | `season3Art(ART, kit)` de `js/entities/character/characters-art-s3.js` (même signature que `season2Art`, outils `ArtKit`) | `saison3-ouverture` | K1 (4 dessins) |
+| Fichiers `-s3` des îles | `CHARACTERS_S3` (`characters-s3.js`), `SQUISHIES_S3` (`squishies-s3.js`), `SQ_ART_S3` (`squishy-art-s3.js`), `STORY_S3` (`story-s3.js`), `ISLE_SCENERY_S3` (`island-s3.js`), étalés à la fin de `CHARACTERS`, `SQUISHIES`, `SQ_ART`, `STORY`, `ISLE_SCENERY` | `saison3-ouverture` (règle « 2 bis » de `conductor/checklist-ile.md`) | K1, Q1, C1, W1 |
 | Carte de Zap | `ZAP_MAP_PIECES` (coffres au rang 3), `zapMapFound()`, `zapMapPieces()`, `zapMapSVG(zapMapFound(), { fresh: id })`, `zapMapSay(n)`, `.story-zapmap` ; morceau gagné si `state.storySolved.coffres` | `saison3-ouverture` (`features/story`) | chapitre C1 (critères 32 et 33) |
 | Île précédente | `WORLDS.dumplings` présent avant `WORLDS.coffres` | `monde-dumplings` | `worldsOf(3)`, critère 31 |
 | Mode d'exemple | `state.skills.problems.lvl` et `.atLvl` (lecture seule) | slice `adaptive` | `problems` (E1) |
 | `gameSolution` | liste ordonnée de sélecteurs, tous présents à l'ouverture | moteur des mini-jeux | `test/games.test.js`, `test/companions.test.js` |
-| Types de difficulté | `ProblemsRound`, `CodeRound` (table Y1), dans `js/entities/difficulty/rounds-saison3.js` | première PR de la saison 3 qui crée ce fichier (`entities/difficulty`) | `problems.js`, `code.js`, tests |
+| Types de difficulté | `ProblemsRound`, `CodeRound` (table Y1), dans `js/entities/difficulty/difficulty-s3.js`, ré-exportés par `difficulty/index.js` | première track de la saison 3 qui crée ce fichier (`entities/difficulty`) | `problems.js`, `code.js`, tests |
 | Données de la fenêtre | `#pb-root[data-type][data-a][data-b][data-c][data-t][data-r]` ; `#code-root[data-wheels][data-palette][data-code][data-clues]` (table A2) | cette track | `INDEPENDENT.problems` et `INDEPENDENT.code` de `test/games.test.js` |
 
 ## Surface d'attaque
@@ -780,7 +801,8 @@ Aucune : aucune entrée de texte, aucun import, aucune donnée extérieure. Les 
 Relecture humaine demandée dans chaque PR :
 - `js/features/parents/parents.js` (espace parents) : `SKILL_GROUPS` reçoit `problems` (groupe `calcul`, PR 1a) et `code` (groupe `logique`, PR 2), une donnée seulement ;
 - PWA : `index.html` et `sw.js` régénérés par `bun run sync` (nouveaux fichiers des slices) et `bun run release` (cache), jamais écrits à la main ;
-- garde d'architecture : deux slices ajoutées dans `js/slices.cjs` selon la checklist, et les fichiers frères de `problems` déclarés dans sa slice, sans assouplir la garde.
+- garde d'architecture : deux slices ajoutées dans `js/slices.cjs` selon la checklist, les fichiers frères de `problems` déclarés dans sa slice, et `difficulty-s3.js` déclaré dans la slice `difficulty` s'il est créé ici, sans assouplir la garde ;
+- dessins (PR 3) : `js/entities/character/characters-art-s3.js` reçoit les 4 dessins de K1 (demande explicite de cette spec), et `characters-art.js` seulement si un outil manque à `ArtKit` (une ligne).
 
 Pas de champ de sauvegarde, pas d'import, pas de pause, pas de dépendance.
 
@@ -791,11 +813,11 @@ Pas de champ de sauvegarde, pas d'import, pas de pause, pas de dépendance.
 | Id | Qui | Étapes | Attendu | Niveau visé |
 |---|---|---|---|---|
 | S1 | 🤖 | `bun run test games` | `problems` et `code` gagnés à chaque palier 1 à 5, 3 tirages, solution vérifiée par `INDEPENDENT` | test-verified |
-| S2 | 🤖 | `bun run test problems` | critères 1 à 20 : table T1 (types, bornes sur 500 tirages par palier), un mauvais choix à chaque étape relance un autre problème, modes `n = 0`, `1`, `2`, phrases de B1 accordées (« une pièce », jamais « 1 pièce ») | test-verified |
+| S2 | 🤖 | `bun run test problems` | 1a : critères 1 à 9 (sans l'égalité du palier 4), 11 à 13, 16 à 20, sur les lignes 1 à 3 de T1, et le bloc « repli 1a : paliers 4 et 5 = ligne 3 » ; 1b : le reste (égalité du palier 4 au critère 9, critères 10, 14, 15, et 2, 11, 16, 19 pour les types des lignes 4 et 5), le bloc de repli remplacé par les clés 4 et 5. Dans les deux : table T1 (types, bornes sur 500 tirages par palier), un mauvais choix à chaque étape relance un autre problème, modes `n = 0`, `1`, `2`, phrases de B1 accordées (« une pièce », jamais « 1 pièce ») | test-verified |
 | S3 | 🤖 | `bun run test code` | critères 21 à 30 : 200 cadenas par palier, chacun à solution unique, chaque indice nécessaire, T2 respectée ; mauvais code : nouveau cadenas ; « Ouvrir » inactif tant qu'une roue est vide | test-verified |
 | S4 | 🤖 | `bun run test companions` | 2 indices par étape, distincts, jamais le résultat, aucune réponse écartée, jeu gagnable après les indices | test-verified |
 | S5 | 🤖 | `bun run test coffres` (après `saison3-ouverture` et `monde-dumplings`) | critères 31 à 37 : île, niveau 86, saison 3, `worldsOf(3).indexOf('coffres') === 2`, série `coffres` présente dans `SQUISHY_SERIES_ORDER` (pas forcément la dernière), carte, personnages, objets, recettes, décorations, série, musique, chapitre, épisodes, récompense une seule fois, jeu favori | test-verified |
-| S6 | 🤖 | `bun run test niveaux` puis `bun run check` | vert, aucune erreur JS | test-verified |
+| S6 | 🤖 | `bun run test niveaux` puis `bun run check` | vert, aucune erreur JS, aucun fichier au-delà de 800 lignes (`max-lines`) | test-verified |
 | S7 | 👤 | téléphone : jouer 5 problèmes au palier 2 (6 ans), dont le premier en exemple résolu | les objets se touchent bien, les barres se lisent (aucune plus étroite qu'un doigt), tout tient sur l'écran sans défilement horizontal, l'enfant comprend sans lire | runtime-verified |
 | S8 | 👤 | téléphone : 3 cadenas aux paliers 1 et 2 | l'enfant trouve le code en écoutant les indices, pas en tâtonnant ; roues, palette et cartes tiennent sur 360 px | runtime-verified |
 | S9 | 👤 | la joueuse écoute les noms, les répliques et l'histoire de l'île | elle garde ou change les noms (Clémence, Kadi, Grignote, Pinçou) | runtime-verified |

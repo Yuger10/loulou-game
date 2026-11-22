@@ -15,24 +15,27 @@ files:
   - js/features/minigames/melody/melody.css
   - js/features/minigames/melody/index.js
   - js/features/story/finale3.js
-  - js/features/story/story.js
+  - js/features/story/story.js           # déclenchement du final, journal
+  - js/features/story/story-s3.js        # STORY_S3.concert (fichier préparé par saison3-ouverture)
   - js/features/story/episodes.js
   - js/features/story/story.css
   - js/features/story/index.js
-  - js/features/island/island.js
+  - js/features/island/island-s3.js      # ISLE_SCENERY_S3.concert (fichier préparé par saison3-ouverture)
   - js/features/island/island-view.js
   - js/features/music/music.js
   - js/features/parents/parents.js
   - js/features/adaptive/adaptive.js
-  - js/entities/difficulty/difficulty.js   # LIVES_TABLE, GENEROUS_KINDS, NO_TIMER_KINDS, export de tierValue
-  - js/entities/difficulty/rounds-saison3.js
+  - js/entities/difficulty/difficulty.js   # LIVES_TABLE, GENEROUS_KINDS, NO_TIMER_KINDS (une ligne par jeu)
+  - js/entities/difficulty/difficulty-s3.js # notesRound, melodyRound (créé par la première track qui en a besoin)
   - js/entities/difficulty/game-types.js
   - js/entities/world/worlds.js
-  - js/entities/character/characters.js
-  - js/entities/character/characters-art-saison3.js
+  - js/entities/character/characters-s3.js      # CHARACTERS_S3 (fichier préparé par saison3-ouverture)
+  - js/entities/character/characters-art-s3.js  # season3Art(ART, kit) (fichier préparé par saison3-ouverture)
   - js/entities/item/items.js
-  - js/entities/squishy/squishies.js
-  - js/features/squishies/squishy-art.js
+  - js/entities/squishy/squishies.js     # séries : une ligne dans SQUISHY_SERIES, SQUISHY_SERIES_ORDER, SQUISHY_ISLAND_SERIES
+  - js/entities/squishy/squishies-s3.js  # SQUISHIES_S3, les 6 modèles (fichier préparé par saison3-ouverture)
+  - js/features/squishies/squishy-art.js     # SQ_BOX_COLORS.concert (une ligne)
+  - js/features/squishies/squishy-art-s3.js  # SQ_ART_S3, les 6 dessins (fichier préparé par saison3-ouverture)
   - js/entities/game-state/state.js
   - js/shared/styles/design-system-v21.css
   - js/slices.cjs
@@ -45,7 +48,7 @@ files:
   - test/smoke.test.js
   - test/squishies.test.js
   - test/licornes.test.js
-taster: { facts: 0, decisions: 0, rounds: 11 }
+taster: { facts: 0, decisions: 0, rounds: 14 }
 ---
 
 <!-- Gabarit cothon 0.4.0 (setting-up-docs), adopté dans Conductor (cothon 0.2.0-2 et 0.4.0-6). -->
@@ -55,7 +58,7 @@ taster: { facts: 0, decisions: 0, rounds: 11 }
 - Nouveau projet : non
 - L'île : `concert`, emoji 🎼, niveau d'ouverture **102**. Règle et tableau de tous les niveaux : `conductor/niveaux.md`.
 - Proposition de Claude, pour le souhait « musique et notes » de la joueuse. Décision d'Amrou du 22/11/2026 (brief de la saison 3, tableau des îles).
-- **Prérequis :** les phases 1 et 2 (les deux mini-jeux) n'ont aucun prérequis. La phase 3 (l'île) attend que la track `saison3-ouverture` soit livrée (troisième archipel `ARCHIPELAGOS[3]`, `refreshArchipelagos()`, `shownArchipelagos()`, `SEASON_OPENINGS`, `STORY_PROLOGUES[3]`, carte de Zap `ZAP_MAP_PIECES`, `zapMapFound()`, `zapMapPieces()`, `zapMapSVG(zapMapFound(), { fresh: id })`, `zapMapSay(n)`, `.story-zapmap`) **et** que `js/entities/character/characters-art-saison3.js` et `characters-art-kit.js` existent (préparés par `saison3-ouverture`), **et** que les quatre îles précédentes soient dans `WORLDS` : `crayons`, `dumplings`, `coffres`, `chatouilles` (tracks `monde-crayons`, `monde-dumplings`, `monde-coffres`, `monde-chatouilles`).
+- **Prérequis :** les phases 1 et 2 (les deux mini-jeux) n'ont aucun prérequis. La phase 3 (l'île) attend que la track `saison3-ouverture` soit livrée (troisième archipel `ARCHIPELAGOS[3]`, `refreshArchipelagos()`, `shownArchipelagos()`, `SEASON_OPENINGS`, `STORY_PROLOGUES[3]`, carte de Zap `ZAP_MAP_PIECES`, `zapMapFound()`, `zapMapPieces()`, `zapMapSVG(zapMapFound(), { fresh: id })`, `zapMapSay(n)`, `.story-zapmap`) **et** que les six fichiers frères de la saison 3 existent (`characters-s3.js`, `characters-art-s3.js`, `squishies-s3.js`, `squishy-art-s3.js`, `story-s3.js`, `island-s3.js`, préparés vides par `saison3-ouverture`, règle de `conductor/checklist-ile.md`, section « 2 bis »), **et** que les quatre îles précédentes soient dans `WORLDS` : `crayons`, `dumplings`, `coffres`, `chatouilles` (tracks `monde-crayons`, `monde-dumplings`, `monde-coffres`, `monde-chatouilles`).
 - Suivre `conductor/checklist-ile.md` et `conductor/checklist-mini-jeu.md` en entier. Noms et personnages : à relire avec la joueuse (ligne S14 du smoke test).
 
 ## Problème
@@ -75,11 +78,11 @@ La joueuse aime la musique et veut « des notes ». L'Île de la Musique (saison
 5. Étant donné le jeu `notes` à chaque palier 1 à 5, quand il s'ouvre, alors `#notes-stage` porte `data-ask` et les lames ou cases de la table « `notesRound` » (politiques), et la consigne affichée et lue est celle de la table « Textes de `notes` ».
 6. Étant donné `notes` au palier 1, quand il s'ouvre, alors la note cible est jouée une fois après 400 ms, un ♪ `.notes-heard` est affiché avec `data-n` égal à la cible et un style en ligne `color` égal à la couleur de la cible dans `XYLO_NOTES` (le test lit `el.style.color` et le compare à la colonne « En `rgb` » de la table « Les 8 lames », règle « Couleurs dans les tests ») (le jeu se joue sans le son), et le bouton `#notes-listen` « 🔈 Écouter » rejoue la note.
 7. Étant donné `notes` à n'importe quel palier, quand l'enfant touche la bonne réponse, alors la mission est gagnée par `winSoon()`. Au palier 4, toucher l'une ou l'autre lame « do » est juste quand la cible est un do.
-8. Étant donné `notes` au palier 1 (essais illimités), quand l'enfant touche une mauvaise lame, alors la lame joue sa note, le moteur dit son indice d'erreur, et une **autre** question arrive (cible différente de la précédente) : anti-devinette par `loseLife(el, { onRetry: renderNotes, disable: false })`.
+8. Étant donné `notes` au palier 1 (essais illimités), quand l'enfant touche une mauvaise lame, alors la lame joue sa note, le moteur dit son indice d'erreur, et une **autre** question arrive (cible différente de la précédente) : anti-devinette par `loseLife(el, { onRetry: renderNotes, disable: false })`. La « précédente » est la dernière cible tirée par `notes` (et, pour `melody`, la dernière mélodie tirée), gardée dans une variable de module : elle survit d'une ouverture du jeu à l'autre et au changement de palier, et n'est jamais remise à `null`. Le tirage l'exclut ; seule la première question après le chargement de la page est libre.
 9. Étant donné `notes`, quand deux questions se suivent, alors leurs cibles sont différentes (jamais deux fois la même note d'affilée).
 10. Étant donné `notes` au palier 5, quand il s'ouvre, alors on voit 5 boutons `.notes-find`, chacun avec une petite portée de 5 lignes et une seule note, 5 notes toutes différentes, dont la cible, et jamais les deux do ensemble.
 11. Étant donné `notes`, quand on demande les indices, alors il y en a 2, distincts, ceux de la table « Indices », sans aucune réponse écartée.
-12. Étant donné les tables du jeu, alors `notes` est dans `GAME_TYPES`, dans la tranche `max: 5` de `AGE_GAME_TYPES` (pas dans `max: 4`), dans `GAME_LIST` (`🎹`, « Do, ré, mi »), dans `NO_TIMER_KINDS`, dans la liste des jeux généreux de `livesFor`, et a sa phrase dans `PROGRESS_CHEERS`.
+12. Étant donné les tables du jeu, alors `notes` est dans `GAME_TYPES`, dans la tranche `max: 5` de `AGE_GAME_TYPES` (pas dans `max: 4`), dans `GAME_LIST` (`🎹`, « Do, ré, mi »), dans `NO_TIMER_KINDS`, dans la liste des jeux généreux de `livesFor` (`GENEROUS_KINDS` est locale à `livesFor`, `difficulty.js:385` : on y ajoute `'notes'` sans la remonter ; le test vérifie `livesFor('notes', 1) === Infinity` et `livesFor('notes', d) === LIVES_TABLE.generous[d]` pour d = 2 à 5), et a sa phrase dans `PROGRESS_CHEERS`.
 13. Étant donné l'espace parents, alors `SKILL_GROUPS` a un groupe `{ id: 'musique', emoji: '🎵', name: 'Musique' }` placé après le groupe `logique` (test : son indice est plus grand que celui de `logique`, pas « le dernier », pour rester vrai si un groupe s'ajoute plus tard), qui contient `rhythm`, `pitch` et `notes` ; le groupe `logique` ne contient plus `rhythm` ni `pitch`.
 14. Étant donné une sauvegarde qui a déjà `state.skills.rhythm` et `state.skills.pitch`, quand on ouvre l'espace parents, alors le `.sk-group` dont le `h4` contient « Musique » contient les `.sk-row` de « Le rythme magique » et « Grave ou aigu ? », dont le `.sk-detail` dit le même nombre de réussites que `state.skills` ; aucune migration (`SAVE_VERSION` inchangé par la phase 1).
 15. Étant donné `test/games.test.js`, alors `notes` est joué jusqu'à la victoire à chaque palier 1 à 5 avec un solveur qui recalcule la réponse depuis le dessin (position de la note ou ♪), pas depuis `gameSolution`.
@@ -90,7 +93,7 @@ La joueuse aime la musique et veut « des notes ». L'Île de la Musique (saison
 17. Étant donné `melody` aux paliers 1 à 3, quand il s'ouvre, alors la mélodie est jouée (une note toutes les 650 ms, à partir de 500 ms), chaque lame s'allume (`lit`) quand sa note sonne, `#melody-state` dit « 👂 Écoute… » et porte `data-turn="listen"`, les touches sont ignorées pendant l'écoute (aucun son, aucune erreur), puis l'état devient « 👆 À toi ! » (« 👆 À toi ! Tu t'en souviens ? » au palier 3) avec `data-turn="you"` à `500 + n × 650` ms.
 18. Étant donné `melody` aux paliers 1 et 2, quand l'écoute est finie, alors aucune `#melody-score .ml-note` n'a la classe `covered` et chacune garde son style en ligne `background` (couleur de sa lame : le test compare `el.style.backgroundColor` à la colonne « En `rgb` ») et `bottom` (`10 + n × 10` %, le test lit `el.style.bottom`). Au palier 3, toutes les `.ml-note` reçoivent la classe `covered` et leur style en ligne devient `background: #C9CEDB; bottom: 45%` (le test vérifie la classe `covered`, `el.style.bottom === '45%'` et `el.style.backgroundColor === 'rgb(201, 206, 219)'`), et l'état dit « 👆 À toi ! Tu t'en souviens ? ».
 19. Étant donné `melody` aux paliers 4 et 5, quand il s'ouvre, alors rien n'est joué (`playNote` n'est pas appelé avant le premier toucher), `#melody-staff` existe avec 5 `line.staff-line` et une `.note-head.ml-note` par note de la mélodie, d'attribut `fill` égal à la couleur de la lame au palier 4 et à `#2B2F6B` au palier 5, l'état dit « 📖 Lis la mélodie, puis joue-la ! », et l'enfant peut jouer tout de suite.
-20. Étant donné `melody`, quand l'enfant joue toutes les notes dans l'ordre, alors la `k`-ième `.ml-note` de `#melody-score` reçoit la classe `done` quand la `k`-ième note est juste, `#melody-progress` contient `progressDots(pos, n)` du moteur (des `i`, ceux d'indice inférieur à `pos` avec la classe `on`, comme `simon.js:119`), et la mission est gagnée par `winSoon()` aux paliers 1 à 3. Aux paliers 4 et 5 : la mélodie est jouée une fois, une note toutes les `MELODY_READ_STEP` (300 ms) à partir de 0 ms (lames allumées), et `winSoon(melodyReadEnd(n))` est appelé tout de suite après l'avoir programmée, sur le principe de `rhythm` (`const READ_END_DELAY = 900`, `winSoon(cfg.read ? READ_END_DELAY : undefined)`, `rhythm.js:31,178`) : le délai laisse finir la dernière note avant l'écran de victoire. Constantes de `melody.js` : `MELODY_READ_STEP = 300`, `MELODY_NOTE_MS = 500` (durée d'une note, `playNote(hz, 0.5, …)`), `MELODY_END_MARGIN = 200`, et `melodyReadEnd(n) = MELODY_READ_STEP × (n - 1) + MELODY_NOTE_MS + MELODY_END_MARGIN`, soit 1 900 ms pour 5 notes (palier 4) et 2 200 ms pour 6 notes (palier 5). `winSoon` reçoit donc un délai nommé, jamais un nombre (`test/gardes.test.js`, « winSoon reçoit un délai nommé »).
+20. Étant donné `melody`, quand l'enfant joue toutes les notes dans l'ordre, alors la `k`-ième `.ml-note` de `#melody-score` reçoit la classe `done` quand la `k`-ième note est juste, `#melody-progress` contient `progressDots(pos, n)` du moteur (des `i`, ceux d'indice inférieur à `pos` avec la classe `on`, comme `simon.js:119`), et la mission est gagnée par `winSoon()` aux paliers 1 à 3. Aux paliers 4 et 5 : la mélodie est jouée une fois, une note toutes les `MELODY_READ_STEP` (300 ms) à partir de 0 ms (lames allumées), et `winSoon(melodyReadEnd(n))` est appelé tout de suite après l'avoir programmée, sur le principe de `rhythm` depuis la v66.15 (`winSoon(play(false, null) + READ_END_PAUSE)`, `rhythm.js:193`, où `play` rend le moment où finit la dernière note et `READ_END_PAUSE = 400`, `rhythm.js:31-32` ; `test/rythme-lecture.test.js`) : l'écran de victoire, qui remplace le jeu et couperait la musique, attend la fin de la dernière note. `melody` calcule ce moment par une formule nommée au lieu de le lire sur sa fonction de lecture, ce qui revient au même et se teste sans horloge. Constantes de `melody.js` : `MELODY_READ_STEP = 300`, `MELODY_NOTE_MS = 500` (durée d'une note, `playNote(hz, 0.5, …)`), `MELODY_END_MARGIN = 200`, et `melodyReadEnd(n) = MELODY_READ_STEP × (n - 1) + MELODY_NOTE_MS + MELODY_END_MARGIN`, soit 1 900 ms pour 5 notes (palier 4) et 2 200 ms pour 6 notes (palier 5). `winSoon` reçoit donc un délai nommé, jamais un nombre (`test/gardes.test.js`, « winSoon reçoit un délai nommé »).
 21. Étant donné `melody`, quand l'enfant touche une mauvaise lame, alors la lame joue sa note, puis `loseLife(el, { onRetry: renderMelody, disable: false })` : une **autre** mélodie arrive (jamais la même deux fois d'affilée).
 22. Étant donné `melody` aux paliers 1 à 3, quand on touche « 🔈 Écouter » (`#melody-listen`), alors la mélodie est rejouée depuis le début au tempo normal (une note toutes les 650 ms à partir de 500 ms ; seul l'indice 2 est lent), `#melody-state` passe à « 🔁 Écoute encore… » et `data-turn="listen"` puis revient à `data-turn="you"` et au libellé du palier à `500 + n × 650` ms, et la progression revient à 0 (`#melody-progress i.on` vaut 0, aucune `.ml-note.done`). Au palier 3, les points restent cachés pendant et après le rejeu (classe `covered` gardée, seul `done` est retiré). Aucun `#melody-listen` dans le DOM aux paliers 4 et 5.
 23. Étant donné `melody`, quand on demande les indices, alors il y en a 2, distincts, ceux de la table « Indices » ; l'indice 2 rejoue la mélodie 1,6 fois plus lentement (une note toutes les 1 040 ms, à partir de 500 ms), en allumant les lames, remet la progression à 0, passe `#melody-state` à « 🔁 Écoute encore… » et `data-turn="listen"` (touches ignorées, à tous les paliers, y compris 4 et 5), puis le rend à `data-turn="you"` à `500 + n × 1 040` ms avec le libellé du palier.
@@ -132,9 +135,9 @@ La joueuse aime la musique et veut « des notes ». L'Île de la Musique (saison
 | D8 | Une question par mission dans `notes` (comme `pitch` au palier 1) ; une mélodie par mission dans `melody`. | Même rythme de mission que les jeux de la même compétence ; l'anti-devinette relance tout le jeu (`onRetry`). | `js/features/minigames/pitch/pitch.js:169-174,186-190` |
 | D9 | Portée : têtes de note pleines, sans hampe ; lignes à `y` 88, 72, 56, 40, 24 ; une note `n` à `cy = 104 - 8 n` ; do grave sur un petit trait à 104. Portée réduite (palier 3 de `notes`) : les 3 lignes du bas seulement. Pas de clé de sol. | Ces jeux n'ont pas de rythme écrit : une tête ronde suffit. La clé de sol n'apporte rien à 6 ans et son caractère Unicode (𝄞) manque dans beaucoup de polices. Défaut du rédacteur, à juger à la revue. | Positions de la portée de sol (mi sur la 1re ligne, sol sur la 2e, si sur la 3e) ; politique « Compatibilité » de `AGENTS.md` |
 | D10 | Au palier 4 de `notes`, l'une ou l'autre lame « do » est acceptée quand la cible est un do ; dans `melody`, l'octave compte. | Au palier 4, la question est « quel est son nom ? » ; dans une mélodie, on rejoue un son précis. | Comportement attendu 7 et 20 |
-| D11 | Pendant l'écoute de `melody`, les touches sont ignorées (comme `simon`) ; aux paliers 4 et 5, on lit avant d'entendre et la mélodie est jouée après la réussite (comme `rhythm` au palier 5). | Ne pas mélanger la note de l'enfant et celle du modèle ; même mécanique de lecture que le jeu existant. | `js/features/minigames/simon/simon.js:110-111`, `js/features/minigames/rhythm/rhythm.js:31,76-78,178` |
+| D11 | Pendant l'écoute de `melody`, les touches sont ignorées (comme `simon`) ; aux paliers 4 et 5, on lit avant d'entendre et la mélodie est jouée après la réussite (comme `rhythm` au palier 5). | Ne pas mélanger la note de l'enfant et celle du modèle ; même mécanique de lecture que le jeu existant. | `js/features/minigames/simon/simon.js:110-111`, `js/features/minigames/rhythm/rhythm.js:31-32,85-87,148,193` (v66.15 : la victoire attend la fin du rythme joué) |
 | D12 | `melody` diffère de `simon` et de `pitch` (voir politiques, « En quoi `melody` est différent »). | Demande du propriétaire. | `js/features/minigames/simon/simon.js:27-34`, `js/features/minigames/pitch/pitch.js:1-11` |
-| D13 | Essais : `melody` comme `simon` et `rhythm` (`{ 2: 3, 3: 3, 4: 2, 5: 2 }`) ; `notes` dans les jeux « généreux ». Aucun minuteur. | Une suite à rejouer comme Simon ; une question de réflexion comme `pitch`. Règle de la saison : pas de minuteur dans les nouveaux jeux. | `js/entities/difficulty/difficulty.js:360-366,346-368,405-425` |
+| D13 | Essais : `melody` comme `simon` et `rhythm` (`{ 2: 3, 3: 3, 4: 2, 5: 2 }`) ; `notes` dans les jeux « généreux ». Aucun minuteur. | Une suite à rejouer comme Simon ; une question de réflexion comme `pitch`. Règle de la saison : pas de minuteur dans les nouveaux jeux. | `js/entities/difficulty/difficulty.js:360-369` (`LIVES_TABLE`), `:385-407` (`GENEROUS_KINDS`, dans `livesFor`), `:446-466` (`NO_TIMER_KINDS`) |
 | D14 | Nouveau groupe parents `musique` (🎵 « Musique »), en dernier, avec `rhythm`, `pitch`, `notes`, `melody` ; `simon` reste dans « Mémoire et logique ». | Décision d'Amrou (brief du 22/11/2026, tableau des îles). `simon` travaille la mémoire d'une suite de couleurs, pas la musique. | Brief de la saison 3, décision 1 ; `js/features/parents/parents.js:45-63` |
 | D15 | Ce déplacement ne demande aucune migration. | `state.skills` est rangé par jeu, pas par groupe ; les groupes ne servent qu'à l'affichage de l'espace parents. | `js/features/adaptive/skills.js:4,48`, `js/features/parents/parents.js:243-261` |
 | D16 | Les deux tests de `test/musique.test.js` qui vérifient « logique » vérifient désormais `musique`, avec la même force (même `includes`), et leur libellé devient « compétence « Musique » ». | Le comportement attendu change par décision du propriétaire ; ce n'est ni affaiblir ni supprimer un test. | `test/musique.test.js:289-291,351-353` ; `AGENTS.md` (Interdits) |
@@ -144,10 +147,10 @@ La joueuse aime la musique et veut « des notes ». L'Île de la Musique (saison
 | D20 | La scène 1 du final appelle directement `zapMapSVG(ZAP_MAP_PIECES, { fresh: 'concert' })` : la carte y est complète (avec la croix du trésor sur le 5ᵉ morceau), même si `zapMapPieces()` vaut moins de 5. Le journal et la fenêtre de victoire du chapitre continuent de montrer le vrai compte, `zapMapSVG(zapMapFound())` ; rien n'est stocké pour la carte (elle se déduit de `state.storySolved`). Un chapitre manquant se résout toujours plus tard depuis le journal, et sa pièce apparaît alors. | Même choix que la saison 2, où le final montre Grisou tout coloré quel que soit le nombre d'îles libérées ; le journal reste juste. Défaut du rédacteur, à juger à la revue. | `js/features/story/finale.js:78` (`grisouSVG(i === 0 ? 5 : 6)`) ; `conductor/tracks/saison3-ouverture_20261122/spec.md` (comportements 22 à 25 et 29) |
 | D21 | Le thème `concert` est en do pentatonique (`root: 60`). | Toutes ses notes sont dans la gamme de do majeur : la musique d'ambiance ne fait jamais de fausse note avec le xylophone d'or. | `js/features/music/music.js:20-33` (`@typedef MusicTheme` et `MUSIC_THEMES`) |
 | D22 | Les lames (jeux et xylophone d'or) ne se branchent que sur `click`, par `setHandler(lame, 'click', …)`. Pas de `pointerdown`, donc pas de double branchement ni d'anti-doublon à écrire. | C'est ce que font tous les mini-jeux, dont `simon` qui joue aussi une note par toucher ; la page déclare `width=device-width`, ce qui supprime le retard du clic sur les navigateurs mobiles ; les tests du harnais jouent par `el.click()`. Un `pointerdown` serait réservé à `window.PointerEvent`, que jsdom fournit : les lames ne réagiraient plus aux tests. | `js/features/minigames/simon/simon.js:109-110`, `index.html:5`, `test/games.test.js` (fonction `playToWin`, boucle `el.click()`) |
-| D23 | Position sur la carte : `{ x: 50, y: 22 }`. Places de la saison : crayons `{ x: 18, y: 78 }`, dumplings `{ x: 50, y: 74 }`, coffres `{ x: 82, y: 70 }`, chatouilles `{ x: 82, y: 26 }`, concert `{ x: 50, y: 22 }`. | Sommet de la carte, l'arrivée de l'expédition ; places fixées par la coordination des cinq îles, vérifiées contre la règle du cadre et du chevauchement (écart d'au moins 24 en x ou 30 en y). | `test/smoke.test.js:1865-1882` ; décision de coordination du 22/11/2026 |
+| D23 | Position sur la carte : `{ x: 50, y: 22 }`. Places de la saison : crayons `{ x: 18, y: 78 }`, dumplings `{ x: 50, y: 74 }`, coffres `{ x: 82, y: 70 }`, chatouilles `{ x: 82, y: 26 }`, concert `{ x: 50, y: 22 }`. | Sommet de la carte, l'arrivée de l'expédition ; places fixées par la coordination des cinq îles, vérifiées contre la règle du cadre et du chevauchement (écart d'au moins 24 en x ou 30 en y). | `test/smoke.test.js:1868-1886` ; décision de coordination du 22/11/2026 |
 | D24 | Pas de nouvelle dépendance, pas de fichier audio : tout le son passe par `playNote`. | Règle du projet. | `AGENTS.md` (Interdits) |
-| D25 | Types stricts (TypeScript, tout `js/` en mode strict) : un seul `@typedef` existant s'étend, `GameState` (`season3Done: boolean`) ; `World`, `Character`, `Item`, `CraftedItem`, `SquishySeries` et `Squishy` suffisent tels quels (aucun champ nouveau). Les nouvelles fonctions de `js/entities` (`notesRound`, `melodyRound`) ont `@param {number} dd` et `@returns` vers les nouveaux `@typedef` `NotesRound` et `MelodyRound` (forme exacte dans les politiques). Les nouveaux fichiers de `js/features` sont typés de la même façon (`XyloNote`, `@param`, `@returns`). Jamais `any` ni `@ts-ignore`. Tout `js/` est vérifié en strict par `bun run typecheck` (`strict: true` dans `tsconfig.json` depuis la v66.11). | `bun run typecheck` vérifie tout `js/` en strict depuis la v66.11 ; règle des checklists. | `js/entities/game-state/state.js:63-107`, `js/entities/world/worlds.js:6-25`, `js/entities/character/characters.js:2-15`, `js/entities/item/items.js:4-12`, `js/entities/squishy/squishies.js:20-37`, `js/entities/difficulty/difficulty.js:842`, `conductor/checklist-mini-jeu.md`, `conductor/checklist-ile.md` |
-| D26 | Taille des fichiers : `max-lines` vaut 1 100 et ne se relève pas. Dessins dans `characters-art-saison3.js`, fonctions de palier et leurs `@typedef` dans `rounds-saison3.js` (créé par la première PR qui en a besoin, déclaré dans la slice `difficulty` de `js/slices.cjs` après `difficulty.js`, réexporté par `js/entities/difficulty/index.js` ; il importe `tierValue` de `./difficulty.js`, qui l'exporte s'il ne le fait pas encore). `LIVES_TABLE`, `GENEROUS_KINDS`, `NO_TIMER_KINDS` restent dans `difficulty.js` (une ligne par jeu). Estimations dans « Taille des fichiers ». | `difficulty.js` fait 1 014 lignes et `characters-art.js` 1 055 (`wc -l`, 22/11/2026) ; règle commune de la saison. | `.oxlintrc.json:40`, `conductor/checklist-ile.md` (section « 2 bis. Taille des fichiers ») |
+| D25 | Types stricts (TypeScript, tout `js/` en mode strict) : un seul `@typedef` existant s'étend, `GameState` (`season3Done: boolean`) ; `World`, `Character`, `Item`, `CraftedItem`, `SquishySeries` et `Squishy` suffisent tels quels (aucun champ nouveau). Les nouvelles fonctions de `js/entities` (`notesRound`, `melodyRound`) ont `@param {number} dd` et `@returns` vers les nouveaux `@typedef` `NotesRound` et `MelodyRound` (forme exacte dans les politiques). Les nouveaux fichiers de `js/features` sont typés de la même façon (`XyloNote`, `@param`, `@returns`). Jamais `any` ni `@ts-ignore`. Tout `js/` est vérifié en strict par `bun run typecheck` (`strict: true` dans `tsconfig.json` depuis la v66.11). | `bun run typecheck` vérifie tout `js/` en strict depuis la v66.11 ; règle des checklists. | `js/entities/game-state/state.js:63-107`, `js/entities/world/worlds.js:6-25`, `js/entities/character/characters.js:2-15`, `js/entities/item/items.js:4-12`, `js/entities/squishy/squishies.js:20-37`, `js/entities/difficulty/difficulty-s2.js:214-215` (`pitchRound` et son `@param`), `conductor/checklist-mini-jeu.md`, `conductor/checklist-ile.md` |
+| D26 | Taille des fichiers : `max-lines` vaut 800 et ne se relève pas. La track suit le modèle `-s2` de la v66.16 : personnages dans `CHARACTERS_S3` (`characters-s3.js`), dessins dans `season3Art(ART, kit)` (`characters-art-s3.js`), 6 modèles de squishies dans `SQUISHIES_S3` (`squishies-s3.js`) et leurs 6 dessins dans `SQ_ART_S3` (`squishy-art-s3.js`), chapitre dans `STORY_S3` (`story-s3.js`), paysage dans `ISLE_SCENERY_S3` (`island-s3.js`) ; ces six fichiers sont préparés vides par `saison3-ouverture`. Fonctions de palier et leurs `@typedef` dans `js/entities/difficulty/difficulty-s3.js`, sur le modèle de `difficulty-s2.js` (`import { tierValue } from './difficulty.js'`, déjà exporté) : la première track qui en a besoin le crée, le déclare dans la slice `difficulty` de `js/slices.cjs` après `difficulty-s2.js`, et `js/entities/difficulty/index.js` le réexporte dans un bloc `export { … } from './difficulty-s3.js'`. Restent dans les fichiers d'origine les lignes courtes : `LIVES_TABLE`, `GENEROUS_KINDS`, `NO_TIMER_KINDS` (`difficulty.js`), la série (`squishies.js`), la couleur de la boîte (`SQ_BOX_COLORS`, `squishy-art.js`), les thèmes (`music.js`), les épisodes (`episodes.js`). Estimations dans « Taille des fichiers ». | La v66.16 a posé le modèle `-s2` en abaissant `max-lines` à 800 ; avec cinq îles, `characters.js`, `story.js`, `squishies.js`, `squishy-art.js` et `island.js` dépasseraient 800 lignes ; règle commune de la saison (remplace l'ancienne règle, journal du plan, ligne 2). | `.oxlintrc.json:40`, `conductor/checklist-ile.md` (section « 2 bis. Taille des fichiers ») |
 | D27 | Le bouton « 🔈 Écouter » de `melody` rejoue au tempo de la première écoute (650 ms par note) ; seul l'indice 2 rejoue lentement. Au palier 3, les points restent cachés pendant le rejeu. | L'indice est l'aide graduée ; le bouton est une simple réécoute, et montrer les points au palier 3 retirerait l'exercice de mémoire. Défaut de Claude, à juger à la revue par Amrou. | Comportements 17, 22, 23 ; `js/features/minigames/rhythm/rhythm.js:5-7` (le rythme se cache après l'écoute aux paliers 3 et 4) |
 
 ## Politiques
@@ -159,7 +162,7 @@ La joueuse aime la musique et veut « des notes ». L'Île de la Musique (saison
   - Cette track ne réécrit rien de ce que fait `saison3-ouverture` (carte de Zap, section du journal, ouverture) : elle n'en utilise que les noms des « Contrats partagés ».
 - **Défauts**
   - Constantes plutôt que réglages (temps d'écoute, tailles, couleurs : tables ci-dessous).
-  - Messages d'erreur : ceux du moteur (`speakWrongHint`, `js/features/minigame-engine/engine.js:141`), le jeu n'en ajoute pas.
+  - Messages d'erreur : ceux du moteur (`speakWrongHint`, `js/features/minigame-engine/engine.js:140`), le jeu n'en ajoute pas.
   - Textes : tous écrits ci-dessous. Phrases courtes, présent, tutoiement. Aucun texte ne s'accorde au genre de l'enfant.
   - Voix dans les tests : `speak()` passe chaque texte par `toSpoken()` (`js/shared/ui/voice.js:55-68`), qui retire les balises, remplace les emojis de `EMOJI_WORDS` par leur mot et supprime les autres, colle `? ! , . :` au mot d'avant et élide (`de`, `le`, `la`… devant une voyelle, `voice.js:50-52`). Le texte d'une table n'est donc pas toujours celui qui arrive dans `spoken`. Toute vérification de voix compare à `ev('toSpoken(' + JSON.stringify(texteDeLaTable) + ')')` (le bundle de test expose les noms de haut niveau, comme `ev('SKILL_GROUPS…')` dans `test/musique.test.js:291`), ou cherche un fragment sans emoji ni ponctuation (comme `/clignotent/` dans `test/licornes.test.js:345`).
   - Emojis dans les textes dits : seuls trois en ont : l'`intro` de `WORLDS.concert` (🎼), la phrase 1 de l'intro du chapitre (🎼) et son `success` (🗺️). Aucun de ces emojis n'est dans `EMOJI_WORDS` (`voice.js:7-47`) : ils sont supprimés à la lecture et ne doublent aucun mot. Les textes dits du final, du xylophone d'or et des jeux n'ont pas d'emoji. Un emoji ajouté plus tard à un texte dit doit être vérifié contre `EMOJI_WORDS`.
@@ -170,7 +173,7 @@ La joueuse aime la musique et veut « des notes ». L'Île de la Musique (saison
   - Mini-jeux : l'écran de `pitch` (`js/features/minigames/pitch/pitch.js`, `pitch.css`) pour la disposition (en-tête, essais, scène, bouton 🔈 Écouter, progression).
   - Points de la partition (`melody`, paliers 1 à 3) : les points de la mélodie de `pitch` (`.pm-dot`, hauteur selon la note).
   - Grand final : les écrans de `js/features/story/finale.js` (classes `finale`, `reward-box finale-gift`, `reward-box finale-done`).
-  - Personnages : le style de `ART.viola` et `ART.boumbo` (`js/entities/character/characters-art.js:864-888`).
+  - Personnages : le style de `ART.viola` et `ART.boumbo`, dans `season2Art` (`js/entities/character/characters-art-s2.js:163-186`).
   - Squishies : le style des entrées `SQ_ART` existantes (`js/features/squishies/squishy-art.js:55`, par exemple `licorne-etoile`).
 - **Détails non écrits** : l'agent prend le défaut de la référence ou l'option la plus simple, le note dans le journal de décisions du plan, l'humain juge à la revue.
 
@@ -195,7 +198,7 @@ La joueuse aime la musique et veut « des notes ». L'Île de la Musique (saison
 
 ### Branchement des trois nouvelles slices
 
-Chaque slice est importée par `js/app/main.js` dans l'ordre de `js/slices.cjs` (comme `screen` et `hints` lignes 20-21, `nesting` ligne 55, `mirror` ligne 66) : `import '../features/xylophone/index.js';` juste après la ligne de `hints` ; `import '../features/minigames/notes/index.js';` puis `import '../features/minigames/melody/index.js';` juste après la ligne de `mirror`. `notesRound` et `melodyRound` sont ré-exportés par `js/entities/difficulty/index.js` (comme `nestingRound` et `pitchRound`, lignes 30-32).
+Chaque slice est importée par `js/app/main.js` dans l'ordre de `js/slices.cjs` (comme `screen` et `hints` lignes 20-21, `nesting` ligne 55, `mirror` ligne 66) : `import '../features/xylophone/index.js';` juste après la ligne de `hints` ; `import '../features/minigames/notes/index.js';` puis `import '../features/minigames/melody/index.js';` juste après la ligne de `mirror`. `notesRound` et `melodyRound` sont ré-exportés par `js/entities/difficulty/index.js` dans un bloc `export { … } from './difficulty-s3.js'` (comme `nestingRound` et `pitchRound` dans le bloc de `difficulty-s2.js`, lignes 39-53).
 
 **Tests robustes dans le temps** : aucun test de cette track n'affirme une liste complète qui grandira (îles de `worldsOf(3)`, groupes de `SKILL_GROUPS`, `GAME_TYPES`, séries de squishies) ; il vérifie l'appartenance (`includes`), l'absence (`!includes`), un ordre relatif, ou le compte des seules entrées `world: 'concert'`.
 
@@ -212,7 +215,7 @@ Chaque slice est importée par `js/app/main.js` dans l'ordre de `js/slices.cjs` 
 ### Types (`@typedef`, TypeScript strict)
 
 - `js/entities/game-state/state.js`, `GameState` : ajouter `season3Done: boolean,` après `season2Done: boolean,`.
-- `js/entities/difficulty/rounds-saison3.js` :
+- `js/entities/difficulty/difficulty-s3.js` :
   - `@typedef {{ ask: 'hear' | 'name' | 'read' | 'find', lames: number[], targets: number[], staff?: 3 | 5, colors?: boolean, choices?: number }} NotesRound`, et `notesRound` porte `/** @param {number} dd le palier de difficulté @returns {NotesRound} */` ;
   - `@typedef {{ n: number, lames: number[], show: 'dots' | 'staff', hide: boolean, read: boolean, colors: boolean }} MelodyRound`, et `melodyRound` porte `@returns {MelodyRound}`.
 - `js/features/xylophone/xylophone.js` : `@typedef {{ n: number, name: string, hz: number, color: string, edge: string }} XyloNote`, `XYLO_NOTES` en `/** @type {XyloNote[]} */` ; `xyloHTML`, `staffSVG`, `playXylo`, `openGoldenXylophone` ont leurs `@param` (objets d'options en `@typedef` : `XyloOptions`, `StaffOptions`, `GoldenOptions`, formes des tables de l'API ci-dessous) et `@returns {string}` ou `@returns {void}`.
@@ -220,30 +223,36 @@ Chaque slice est importée par `js/app/main.js` dans l'ordre de `js/slices.cjs` 
 - Aucun champ nouveau sur `World`, `Archipelago`, `Character`, `Item`, `CraftedItem`, `SquishySeries`, `Squishy`.
 - `MUSIC_THEMES` (`js/features/music/music.js:20-33`) : `concert` et `'concert-fete'` respectent `MusicTheme` tel quel (`root`, `scale`, `bpm`, `lead`, `prog`, `shaker`), sans champ nouveau.
 - Indices (`js/features/hints/hints.js:40-57`) : `registerHints` reçoit un `HintProvider<Q>` typé ; `notes.js` déclare `@typedef {{ ask: NotesRound['ask'], replay: () => void }} NotesQuestion` et `melody.js` `@typedef {{ read: boolean, replay: () => void }} MelodyQuestion` ; chaque `fx` respecte `HintFx` (`glow`, `run`), jamais d'autre clé.
-- **Tout nouveau code est strictement typé, quelle que soit sa slice** (règle des deux checklists) : `xylophone.js`, `notes.js`, `melody.js`, `finale3.js` et chaque fonction ajoutée à `story.js`, `episodes.js`, `island.js`, `island-view.js`, `parents.js`, `squishy-art.js`, `items.js`, `characters.js`, `characters-art.js` ont leurs `@param` et `@returns`, et un `@typedef` pour tout objet passé ou renvoyé (par exemple `Season3FinaleOptions = { replay?: boolean }` pour `openSeason3Finale`). `bun run typecheck` reste vert : depuis la v66.11, `strict: true` est dans `tsconfig.json` pour tout `js/`, donc tout le code de la track (nouveaux fichiers et ajouts aux fichiers existants) est vérifié en strict, sans `any` ni `@ts-ignore`, et rien n'est à déclarer. Les `@typedef` et extensions de types de cette section sont obligatoires. Les appels au moteur suivent ses types réels, par exemple `loseLife(target, opts)` avec `LoseLifeOptions` (`{ disable?: boolean, onRetry?: () => void }`, `js/features/minigame-engine/engine.js`, `@typedef LoseLifeOptions` au-dessus de `function loseLife`).
+- **Tout nouveau code est strictement typé, quelle que soit sa slice** (règle des deux checklists) : `xylophone.js`, `notes.js`, `melody.js`, `finale3.js` et chaque fonction ajoutée à `story.js`, `story-s3.js`, `episodes.js`, `island-s3.js`, `island-view.js`, `parents.js`, `squishy-art-s3.js`, `items.js`, `characters-art-s3.js` ont leurs `@param` et `@returns`, et un `@typedef` pour tout objet passé ou renvoyé (par exemple `Season3FinaleOptions = { replay?: boolean }` pour `openSeason3Finale`). `bun run typecheck` reste vert : depuis la v66.11, `strict: true` est dans `tsconfig.json` pour tout `js/`, donc tout le code de la track (nouveaux fichiers et ajouts aux fichiers existants) est vérifié en strict, sans `any` ni `@ts-ignore`, et rien n'est à déclarer. Les `@typedef` et extensions de types de cette section sont obligatoires. Les appels au moteur suivent ses types réels, par exemple `loseLife(target, opts)` avec `LoseLifeOptions` (`{ disable?: boolean, onRetry?: () => void }`, `js/features/minigame-engine/engine.js`, `@typedef LoseLifeOptions` au-dessus de `function loseLife`).
 
-### Taille des fichiers (estimations, plafond 1 100 lignes)
+### Taille des fichiers (estimations, plafond 800 lignes)
 
-| Fichier | Aujourd'hui | Ajout estimé | Après |
+Règle de `conductor/checklist-ile.md`, section « 2 bis » (modèle `-s2` de la v66.16). Tailles mesurées par `wc -l` le 22/11/2026, après la v66.16 ; « avec les îles d'avant » ajoute ce que les quatre îles précédentes de la saison mettent dans le même fichier (coûts de la checklist).
+
+| Fichier | Aujourd'hui | Ajout de cette track | Après |
 |---|---|---|---|
 | `js/features/xylophone/xylophone.js` (nouveau) | 0 | `XYLO_NOTES`, `xyloHTML`, `staffSVG`, `playXylo`, `openGoldenXylophone`, types | environ 230 |
 | `js/features/xylophone/xylophone.css` (nouveau) | 0 | lames, portée, xylophone d'or, ♪ flottant | environ 120 |
-| `js/features/minigames/notes/notes.js` (nouveau) | 0 | comme `pitch.js` (246) | environ 270 |
+| `js/features/minigames/notes/notes.js` (nouveau) | 0 | comme `pitch.js` (263) | environ 270 |
 | `js/features/minigames/melody/melody.js` (nouveau) | 0 | `MELODIES`, écoute, lecture, indices | environ 310 |
-| `js/entities/difficulty/rounds-saison3.js` (nouveau ou existant) | 0 ou ce qu'y ont mis les autres îles | `notesRound`, `melodyRound`, deux `@typedef` | plus 60 |
-| `js/features/story/finale3.js` (nouveau) | 0 | comme `finale.js` (165), plus l'écran du trésor | environ 200 |
-| `js/features/story/story.js` | 706 | `STORY.concert` (30), déclenchement (5), journal (25) | environ 770 |
-| `js/features/story/episodes.js` | 518 | `EPISODES.concert` | environ 555 |
-| `js/entities/character/characters-art-saison3.js` | préparé par `saison3-ouverture` | 4 dessins | plus 50 |
-| `js/entities/character/characters.js` | 798 | 4 personnages | environ 855 |
-| `js/entities/squishy/squishies.js` | 630 | série et 6 modèles | environ 700 |
-| `js/features/squishies/squishy-art.js` | 640 | 6 dessins et une boîte | environ 695 |
-| `js/features/island/island.js` | 635 | `ISLE_SCENERY.concert` | environ 665 |
-| `js/entities/difficulty/difficulty.js` | 1 014 | 4 lignes (`LIVES_TABLE`, `GENEROUS_KINDS`, `NO_TIMER_KINDS` deux fois) et l'export de `tierValue` | environ 1 019 |
+| `js/features/story/finale3.js` (nouveau) | 0 | comme `finale.js` (169), plus l'écran du trésor | environ 200 |
+| `js/entities/difficulty/difficulty-s3.js` (nouveau ou existant) | 0 ou ce qu'y ont mis les autres tracks | `notesRound`, `melodyRound`, deux `@typedef` | plus 60 |
+| `js/entities/difficulty/difficulty.js` | 670 | 4 lignes (`LIVES_TABLE`, `GENEROUS_KINDS`, `NO_TIMER_KINDS` deux fois) | environ 675 |
+| `js/features/story/story.js` | 729 | déclenchement du final (5), journal (25) ; le chapitre va dans `story-s3.js` | environ 760 |
+| `js/features/story/story-s3.js` | préparé par `saison3-ouverture` | `STORY_S3.concert` | plus 30 |
+| `js/features/story/episodes.js` | 534 | `EPISODES.concert` | environ 680 avec les îles d'avant |
+| `js/entities/character/characters-s3.js` | préparé par `saison3-ouverture` | 4 personnages | plus 55 |
+| `js/entities/character/characters-art-s3.js` | préparé par `saison3-ouverture` | 4 dessins | plus 50 |
+| `js/entities/squishy/squishies-s3.js` | préparé par `saison3-ouverture` | 6 modèles | plus 56 |
+| `js/entities/squishy/squishies.js` | 630 | 3 lignes (série) | environ 645 avec les îles d'avant |
+| `js/features/island/island-s3.js` | préparé par `saison3-ouverture` | `ISLE_SCENERY_S3.concert` | plus 30 |
+| `js/features/music/music.js` | 276 | 2 thèmes | environ 290 |
+| `js/features/squishies/squishy-art.js` | 640 | 1 ligne (`SQ_BOX_COLORS.concert`) | environ 645 avec les îles d'avant |
+| `js/features/squishies/squishy-art-s3.js` | préparé par `saison3-ouverture` | 6 dessins (`SQ_ART_S3`) | plus 50 |
 
-Aucun fichier ne dépasse 1 100 lignes : rien à découper. Si l'implémentation dépasse une estimation au point d'approcher le plafond, le fichier se découpe en fichiers frères dans sa slice (règle de la checklist), noté au journal du plan.
+Chaque nouveau fichier de cette track tient sous 800 lignes : rien à découper. Avant chaque ajout à un fichier partagé, l'agent mesure sa marge sur `main` après le rebase (`wc -l`). Si un fichier dépasse une estimation au point d'approcher 800, il se découpe en fichiers frères dans sa slice (règle de la checklist), déclarés dans `js/slices.cjs`, puis `bun run sync`, et c'est noté au journal du plan.
 
-### `notesRound(dd)` (`js/entities/difficulty/rounds-saison3.js`, par `tierValue`)
+### `notesRound(dd)` (`js/entities/difficulty/difficulty-s3.js`, par `tierValue`)
 
 | Palier | `ask` | Ce qu'on voit | Lames ou choix | Cibles possibles |
 |---|---|---|---|---|
@@ -266,7 +275,7 @@ Forme : `{ ask, lames, targets, staff?: 3 | 5, colors?: boolean, choices?: 5 }`.
 
 `{nom}` est le `name` de la cible (« do », « ré »…). Bouton `#notes-listen` « 🔈 Écouter » au palier 1 seulement.
 
-### `melodyRound(dd)` (`js/entities/difficulty/rounds-saison3.js`, par `tierValue`)
+### `melodyRound(dd)` (`js/entities/difficulty/difficulty-s3.js`, par `tierValue`)
 
 | Palier | Notes | Lames | Écrite comment | Écoute |
 |---|---|---|---|---|
@@ -349,7 +358,7 @@ Seuls ces sélecteurs sont lus par les critères, les solveurs (`test/games.test
 | 3 et 4 | `#notes-staff` | `staffSVG([t], { lines: 3 au palier 3, 5 au palier 4, colors: palier 3, id: 'notes-staff' })` : des `line.staff-line`, une seule `ellipse.note-head[data-n="t"]` de `cy = 104 - 8 t` (`fill` couleur ou `#2B2F6B`), et `line.ledger-line` si `t = 0` |
 | 5 | `.notes-find-row` | `<div class="notes-find-row">` de 5 `<button class="notes-find" data-n="k" aria-label="Portée {numéro de 1 à 5}">`, chacun contenant `staffSVG([k], { lines: 5, colors: false, cls: 'notes-find-staff' })` : une seule `ellipse.note-head[data-n="k"]` de `cy = 104 - 8 k` ; les 5 `k` sont distincts, dont `t`, jamais 0 et 7 ensemble |
 
-Solveur `notes` : `hear` lit `.notes-heard[data-n]` ; `read` lit le `cy` de `#notes-staff .note-head` (`n = (104 - cy) / 8`) ; `name` cherche le texte de `.notes-name` dans les `name` des lames affichées (une seule correspondance aux paliers 2 et 5, car un seul do y figure) ; `find` choisit la `.notes-find` dont la tête a ce `n` par son `cy`. Il vérifie que `gameSolution` vise cet élément (au palier 4, une lame de même `name`).
+Solveur `notes` : `hear` lit `.notes-heard[data-n]` ; `read` lit le `cy` de `#notes-staff .note-head` (`n = (104 - cy) / 8`) ; `name` cherche le texte de `.notes-name` dans les `name` des lames affichées (une seule correspondance au palier 2, car un seul do y figure) ; `find` choisit la `.notes-find` dont la tête a ce `n` par son `cy`. Il vérifie que `gameSolution` vise cet élément (au palier 4, une lame de même `name`).
 
 **`melody`, tous paliers** :
 
@@ -373,14 +382,14 @@ Délais réels du harnais : toutes les minuteries du jeu sont 10 fois plus court
 
 **`notes`**
 - Événement : `click` sur la lame ou la case. Aucune attente : les touches marchent dès l'ouverture.
-- `gameSolution` (un seul sélecteur, `solSel`, `js/features/minigame-engine/engine.js:305-307`) : paliers 1 à 4 : `['.xylo-lame[data-n="t"]']`, où `t` est la cible (`#notes-stage[data-n]`) ; au palier 4, quand la cible est un do, c'est la lame de la même octave que la note dessinée (`t` = 0 ou 7), même si l'autre do est aussi accepté au clic ; palier 5 : `['.notes-find[data-n="t"]']`.
+- `gameSolution` (un seul sélecteur, `solSel`, `js/features/minigame-engine/engine.js:304-306`) : paliers 1 à 4 : `['.xylo-lame[data-n="t"]']`, où `t` est la cible (`#notes-stage[data-n]`) ; au palier 4, quand la cible est un do, c'est la lame de la même octave que la note dessinée (`t` = 0 ou 7), même si l'autre do est aussi accepté au clic ; palier 5 : `['.notes-find[data-n="t"]']`.
 - Durées : victoire à `WIN_DELAY` (400 ms, soit 40 ms réels). L'indice 2 du palier 1 rejoue la note (une seule, 0 ms) et ne bloque rien.
 - Fichiers de test touchés : `test/games.test.js` (solveur `notes` dans `INDEPENDENT`), aucun changement de boucle.
 
 **`melody`**
 - Événement : `click` sur les lames. Les touches ne comptent que si `#melody-state[data-turn="you"]`.
 - `gameSolution` : `mélodie.map((n) => '.xylo-lame[data-n="' + n + '"]')`, dans l'ordre, répétitions comprises (par exemple `[0,0,4]` donne deux fois `.xylo-lame[data-n="0"]` puis `.xylo-lame[data-n="4"]`) ; l'octave compte (`0` et `7` sont deux lames différentes). `setSolution` est appelé à l'ouverture, comme `simon` (`simon.js:77`).
-- Signal « l'écoute est finie » : l'attribut `data-turn="you"` de `#melody-state` (le libellé change aussi : « 👆 À toi ! », « 👆 À toi ! Tu t'en souviens ? », ou « 📖 Lis la mélodie, puis joue-la ! » dès l'ouverture aux paliers 4 et 5). Pendant toute écoute (début des paliers 1 à 3, bouton Écouter, indice 2 à tous les paliers) : `data-turn="listen"`.
+- Signal « l'écoute est finie » : l'attribut `data-turn="you"` de `#melody-state` (le libellé change aussi : « 👆 À toi ! », « 👆 À toi ! Tu t'en souviens ? », ou « 📖 Lis la mélodie, puis joue-la ! » dès l'ouverture aux paliers 4 et 5). Aux paliers 4 et 5, `data-turn="you"` est posé dès l'ouverture. Pendant toute écoute (début des paliers 1 à 3, bouton Écouter, indice 2 à tous les paliers) : `data-turn="listen"`. Après la réussite, pendant la mélodie rejouée jusqu'à l'écran de victoire : `data-turn="listen"` aussi (touches ignorées), à tous les paliers.
 - Durées, temps du jeu puis temps réel du harnais : écoute du début au palier 3 (5 notes) : `500 + 5 × 650 = 3 750` ms, soit 375 ms réels ; au palier 2 : 3 100 ms (310 ms réels) ; indice 2 au palier 5 (6 notes) : `500 + 6 × 1 040 = 6 740` ms, soit 674 ms réels. Tout est sous les 3 000 ms réels de `waitFor`. Victoire : `WIN_DELAY` aux paliers 1 à 3 (40 ms réels), `melodyReadEnd(n)` aux paliers 4 et 5 (au plus 2 200 ms, soit 220 ms réels), sous les 2 000 ms réels de `companions` et les 3 000 ms réels de `games`.
 - Fichiers de test touchés : `test/games.test.js` (solveur `melody` dans `INDEPENDENT`, et dans `playToWin` la même attente que pour `simon` : `if (key === 'melody' && !(await waitFor(() => !!d.querySelector('#melody-state[data-turn="you"]')))) return 'La mélodie ne rend pas la main';`) ; `test/companions.test.js` (à côté de l'attente de `simon`, avant de cliquer la solution : `if (key === 'melody') await waitFor(() => !!d.querySelector('#melody-state[data-turn="you"]'), 3000);`). Ajouter une attente pour un nouveau jeu n'affaiblit aucun test existant.
 
@@ -426,9 +435,11 @@ Délais réels du harnais : toutes les minuteries du jeu sont 10 fois plus court
 
 Thème CSS (`js/shared/styles/design-system-v21.css`, après `licornes`) : `body[data-world="concert"] { --world-sky: #fdf0e6; --world-sea: #e9a0a8; --world-deep: #8a2e3b; --world-scene-top: #fff8f0; --world-scene-floor: #ffe7a8; }`. Rouge velours, or et crème.
 
-Paysage `ISLE_SCENERY.concert(w)` (`js/features/island/island.js`), même structure que `musique` (nuages au loin, sol `w.land`, chemin `w.sand`) : une estrade en bois au centre (rectangle brun clair `#E0A96D`, bord `#7A4524`), deux rideaux rouges `#C8384B` relevés de chaque côté, une guirlande d'ampoules de couleur tendue entre deux mâts au-dessus, trois rangées de petites chaises en bas à gauche, quelques notes ♪ blanches qui flottent. Sur l'estrade : si `state.season3Done`, un groupe `<g class="ls-xylo-or">` de 8 `<rect class="ls-xylo-lame">` dorés (`#F7C948`, bord `#B8860B`), du plus long au plus court ; sinon, un groupe `<g class="ls-drap">` : un drap violet `#7B5CC0` posé sur une forme, et un `<text>` « ? » blanc. Un seul des deux groupes est rendu.
+Paysage `ISLE_SCENERY_S3.concert(w)` (`js/features/island/island-s3.js`, étalé à la fin de `ISLE_SCENERY` par `island.js`, donc lu comme `ISLE_SCENERY.concert`), même structure que `musique` (nuages au loin, sol `w.land`, chemin `w.sand`) : une estrade en bois au centre (rectangle brun clair `#E0A96D`, bord `#7A4524`), deux rideaux rouges `#C8384B` relevés de chaque côté, une guirlande d'ampoules de couleur tendue entre deux mâts au-dessus, trois rangées de petites chaises en bas à gauche, quelques notes ♪ blanches qui flottent. Sur l'estrade : si `state.season3Done`, un groupe `<g class="ls-xylo-or">` de 8 `<rect class="ls-xylo-lame">` dorés (`#F7C948`, bord `#B8860B`), du plus long au plus court ; sinon, un groupe `<g class="ls-drap">` : un drap violet `#7B5CC0` posé sur une forme, et un `<text>` « ? » blanc. Un seul des deux groupes est rendu.
 
-### Les personnages (`js/entities/character/characters.js`, `world: 'concert'`)
+### Les personnages (`CHARACTERS_S3`, `js/entities/character/characters-s3.js`, `world: 'concert'`)
+
+`characters.js` étale `CHARACTERS_S3` à la fin de `CHARACTERS` : les 4 personnages se lisent comme `CHARACTERS.<id>`, et `characters.js` ne change pas.
 
 | id | emoji | name | title | gender | loot | texts (3 répliques) |
 |---|---|---|---|---|---|---|
@@ -439,7 +450,7 @@ Paysage `ISLE_SCENERY.concert(w)` (`js/features/island/island.js`), même struct
 
 Stella est la guide du chapitre ; elle propose aussi des jeux (pas de `noGames`). Aucun personnage n'est lié à un jeu dans le code : `CHARACTERS` n'a que `emoji`, `name`, `title`, `world`, `gender`, `loot`, `texts` et `noGames` (`js/entities/character/characters.js:598-655`), et le choix des jeux ne dépend pas du personnage touché, seulement de l'âge, de la variété et du jeu favori de l'île (`js/features/players/profiles-ui.js:444-454`). Le lien entre Dorémi et « Do, ré, mi », entre Xylo et « La mélodie », est seulement narratif : il passe par leurs répliques ci-dessus et par les consignes des jeux (« Écoute la note de Dorémi », « Rejoue la mélodie de Xylo »). Rien à coder pour lui.
 
-**Dessins** (table `ART_S3` de `js/entities/character/characters-art-saison3.js`, fusionnée dans `CHAR_ART` par `characters-art.js`, aides `human` et `svg` importées de `js/entities/character/characters-art-kit.js` ; ces deux fichiers sont préparés par la track `saison3-ouverture`, règle de `conductor/checklist-ile.md`, section « 2 bis ») : cette spec demande explicitement de créer les dessins de ces 4 nouveaux personnages, sans toucher aux dessins existants ni à `characters-art.js` (1 055 lignes pour un plafond de 1 100). Style de `ART.viola` (humain) et `ART.boumbo` (objet ou animal) :
+**Dessins** (fonction `season3Art(ART, kit)` de `js/entities/character/characters-art-s3.js`, même signature que `season2Art` de `characters-art-s2.js` ; `characters-art.js` l'appelle juste après `season2Art` avec le même objet d'outils ; les outils `human` et `svg` se lisent dans `kit`, comme `const { …, svg, human, … } = kit;` en tête de `season2Art`, `characters-art-s2.js:12` ; le fichier est préparé vide par la track `saison3-ouverture`, règle de `conductor/checklist-ile.md`, section « 2 bis ») : cette spec demande explicitement de créer les dessins de ces 4 nouveaux personnages, sans toucher aux dessins existants ni à `characters-art.js`. `characters-art-s3.js` est une zone sensible (dessins) : la PR le signale à la revue. Style de `ART.viola` (humain) et `ART.boumbo` (objet ou animal) :
 - `stella` : `human(...)`, cheveux violets en queue de cheval, veste rouge à paillettes dorées, un micro doré dans la main.
 - `doremi` : `svg(...)`, petit oiseau jaune et vert, bec orange ouvert, trois notes ♪ qui sortent du bec.
 - `xylo` : `svg(...)`, ourson brun, nœud papillon rouge, deux maillets (bâton et boule ronde) dans les pattes.
@@ -460,15 +471,17 @@ Stella est la guide du chapitre ; elle propose aussi des jeux (pas de `noGames`)
 
 Personne ne donne `projecteur`, `casque` ni `saxo` (3 objets pour les objets préférés).
 
-**Clés uniques** : chaque clé nouvelle de cette spec (personnages `stella`, `doremi`, `xylo`, `trompi` ; objets ; recettes `etincelles`, `medaille` ; décorations ; squishies et série `concert` ; jeux `notes`, `melody` ; thèmes `concert`, `concert-fete` ; forme `concert` ; slice `xylophone`) a été cherchée par `grep -w` dans `js/` et dans les specs `monde-crayons`, `monde-dumplings`, `monde-coffres`, `monde-chatouilles` le 22/11/2026 : aucune n'y existe comme clé. Deux clés ont été renommées pour cela : l'objet `lunettesstar` (`lunettes` est déjà un vêtement, `js/features/wardrobe/wardrobe.js:77`) et le squishy `fauvette-doremi` (pour ne pas reprendre l'id du personnage `doremi`). La slice `xylophone` est un nom de dossier, distinct du squishy `xylophone` de la série `instruments` (`js/entities/squishy/squishies.js:422`), qui ne change pas. `melody` n'est pas encore une clé de jeu : dans `pitch`, c'est seulement une valeur de `ask` (`pitch.js:58`) et un champ de `pitchRound` (`difficulty.js:850`). Prénoms Stella, Dorémi, Xylo, Trompi : portés par aucun personnage ni compagnon du jeu (`js/entities/character/characters.js`, `js/entities/companion/companions.js:56-132`) ni des quatre autres îles.
+**Clés uniques** : chaque clé nouvelle de cette spec (personnages `stella`, `doremi`, `xylo`, `trompi` ; objets ; recettes `etincelles`, `medaille` ; décorations ; squishies et série `concert` ; jeux `notes`, `melody` ; thèmes `concert`, `concert-fete` ; forme `concert` ; slice `xylophone`) a été cherchée par `grep -w` dans `js/` et dans les specs `monde-crayons`, `monde-dumplings`, `monde-coffres`, `monde-chatouilles` le 22/11/2026 : aucune n'y existe comme clé. Deux clés ont été renommées pour cela : l'objet `lunettesstar` (`lunettes` est déjà un vêtement, `js/features/wardrobe/wardrobe.js:77`) et le squishy `fauvette-doremi` (pour ne pas reprendre l'id du personnage `doremi`). La slice `xylophone` est un nom de dossier, distinct du squishy `xylophone` de la série `instruments` (`js/entities/squishy/squishies.js:422`), qui ne change pas. `melody` n'est pas encore une clé de jeu : dans `pitch`, c'est seulement une valeur de `ask` (`pitch.js:58`) et un champ de `pitchRound` (`difficulty-s2.js:225`). Prénoms Stella, Dorémi, Xylo, Trompi : portés par aucun personnage ni compagnon du jeu (`js/entities/character/characters.js`, `js/entities/companion/companions.js:56-132`) ni des quatre autres îles.
 
 Recettes (`CRAFTED`) : `etincelles` 🎇 « Feu d'étincelles », prix 22, `recipe: { ampoule: 2, etoilescene: 1 }` ; `medaille` 🥇 « Médaille du concert », prix 20, `recipe: { saxo: 1, programme: 1, billetconcert: 1 }`.
 
 Décorations (`DECOS`) : `sceneD` 🏟️ « Grande scène » 40 ; `roueD` 🎡 « Grande roue de la fête » 30 ; `enceinteD` 🔊 « Enceinte géante » 18 ; `banderolesD` 🎏 « Banderoles » 14 ; `chaisesD` 🪑 « Rang de chaises » 12.
 
-### Squishies « Concert » (`js/entities/squishy/squishies.js`)
+### Squishies « Concert » (série dans `js/entities/squishy/squishies.js`, modèles dans `SQUISHIES_S3` de `js/entities/squishy/squishies-s3.js`)
 
-Série : `concert: { name: 'Concert', emoji: '🎼', world: 'concert' }`, ajoutée à la fin de `SQUISHY_SERIES_ORDER` ; `SQUISHY_ISLAND_SERIES.concert = 'concert'` ; boîte `SQ_BOX_COLORS.concert = ['#FFE7A8', '#8A2E3B']`.
+Série (une ligne dans `SQUISHY_SERIES` de `squishies.js`) : `concert: { name: 'Concert', emoji: '🎼', world: 'concert' }`, ajoutée à la fin de `SQUISHY_SERIES_ORDER` ; `SQUISHY_ISLAND_SERIES.concert = 'concert'` ; boîte `SQ_BOX_COLORS.concert = ['#FFE7A8', '#8A2E3B']`.
+
+Les 6 modèles ci-dessous vont dans `SQUISHIES_S3` (`squishies-s3.js`), que `squishies.js` étale à la fin de `SQUISHIES`.
 
 | id | name | say | rarity | color | shape | size | Dessin `SQ_ART` |
 |---|---|---|---|---|---|---|---|
@@ -479,14 +492,14 @@ Série : `concert: { name: 'Concert', emoji: '🎼', world: 'concert' }`, ajout�
 | `fauvette-doremi` | Dorémi | Dorémi, la petite fauvette | rare | vert | rond | petit | `body: 'rond'`, un petit bec orange, deux ailes, une note ♪ au-dessus |
 | `cle-sol-etoilee` | Clé de sol étoilée | une clé de sol étoilée | brille | violet | ovale | grand | `body: 'ovale'`, une boucle de clé de sol dorée derrière, des étoiles dorées |
 
-**Où vont les dessins** : le dessin d'un squishy vient de `SQ_ART` (`js/features/squishies/squishy-art.js:55`), pas du catalogue ; sans entrée, `squishyArtSVG` renvoie une chaîne vide (`squishy-art.js:579-582`). Les 6 entrées s'ajoutent à `SQ_ART` dans `squishy-art.js`, sur le modèle de `'licorne-etoile'` (`squishy-art.js:550-558` : `body`, `face`, `faceY`, `back(c)`, `front()`) ; la boîte va dans `SQ_BOX_COLORS` du même fichier (`squishy-art.js:604-614`). Marge : `squishy-art.js` fait 640 lignes pour un plafond oxlint de 1 100 (`.oxlintrc.json:40`) ; les 6 entrées en ajoutent environ 50.
+**Où vont les dessins** : le dessin d'un squishy vient de `SQ_ART` (`js/features/squishies/squishy-art.js:55`), pas du catalogue ; sans entrée, `squishyArtSVG` renvoie une chaîne vide (`squishy-art.js:579-582`). Les 6 entrées vont dans `SQ_ART_S3` de `js/features/squishies/squishy-art-s3.js` (type `SqArt` lu par `import('./squishy-art.js').SqArt`, fichier préparé vide par `saison3-ouverture`), que `squishy-art.js` étale à la fin de `SQ_ART` ; modèle : `'licorne-etoile'` (`squishy-art.js:550-558` : `body`, `face`, `faceY`, `back(c)`, `front()`). Seule la couleur de la boîte va dans `squishy-art.js`, une ligne dans `SQ_BOX_COLORS` (`squishy-art.js:604-614`). Marge : `squishy-art.js` fait 640 lignes pour un plafond oxlint de 800 (`.oxlintrc.json:40`) et ne reçoit qu'une ligne par île.
 
 ### Musique (`js/features/music/music.js`)
 
 - `concert: { root: 60, scale: [0, 2, 4, 7, 9], bpm: 96, lead: 'marimba', prog: [0, 5, 7, 0], shaker: true }`, commentaire « un marimba en do, comme le xylophone d'or (aucune fausse note avec lui) ».
 - `'concert-fete': { root: 60, scale: [0, 2, 4, 7, 9], bpm: 116, lead: 'bell', prog: [0, 5, 7, 0], shaker: true }`, la fête du grand final.
 
-### Le chapitre (`STORY.concert`, `js/features/story/story.js`)
+### Le chapitre (`STORY_S3.concert`, `js/features/story/story-s3.js`, étalé à la fin de `STORY` par `story.js`, donc lu comme `STORY.concert`)
 
 - `guide: 'stella'`, `title: 'Le dernier morceau de la carte'`, `reward: 20` (voir plus bas).
 - `intro` :
@@ -510,7 +523,7 @@ Série : `concert: { name: 'Concert', emoji: '🎼', world: 'concert' }`, ajout�
 
 ### Le grand final (`js/features/story/finale3.js`, exports `openSeason3Finale(onDone, opts)` et `season3Done()`)
 
-Même structure que `finale.js`. Déclenché dans `storyWin` juste après celui de la saison 2 : `if (world === 'concert' && !state.season3Done) { openSeason3Finale(onDone); return; }`.
+Même structure que `finale.js`. `js/features/story/index.js` réexporte les deux noms par une ligne `export { openSeason3Finale, season3Done } from './finale3.js';`, juste après celle de `finale.js` (`story/index.js:14`). Déclenché dans `storyWin` juste après celui de la saison 2 : `if (world === 'concert' && !state.season3Done) { openSeason3Finale(onDone); return; }`.
 
 | Écran | Titre (`h2`) | Image | Phrase dite et affichée | Bouton |
 |---|---|---|---|---|
@@ -549,7 +562,8 @@ Même structure que `finale.js`. Déclenché dans `storyWin` juste après celui 
 | Contrat | Forme (ou lien) | Propriétaire | Consommateurs |
 |---|---|---|---|
 | Slice `xylophone` | `XYLO_NOTES`, `xyloHTML`, `playXylo`, `staffSVG`, `openGoldenXylophone` (tables ci-dessus) | cette track | `notes`, `melody`, `story` (final, journal), `island` (dialogue) |
-| `notesRound`, `melodyRound` | tables ci-dessus, dans `js/entities/difficulty/rounds-saison3.js`, réexportées par `js/entities/difficulty/index.js` | cette track | `notes`, `melody`, tests |
+| `notesRound`, `melodyRound` | tables ci-dessus, dans `js/entities/difficulty/difficulty-s3.js`, réexportées par `js/entities/difficulty/index.js` (bloc `export { … } from './difficulty-s3.js'`) | cette track | `notes`, `melody`, tests |
+| Fichiers frères de la saison 3 | `CHARACTERS_S3`, `season3Art(ART, kit)`, `SQUISHIES_S3`, `SQ_ART_S3`, `STORY_S3`, `ISLE_SCENERY_S3` (`conductor/checklist-ile.md`, section « 2 bis »), préparés vides et branchés sur `CHARACTERS`, `ART`, `SQUISHIES`, `SQ_ART`, `STORY`, `ISLE_SCENERY` | `saison3-ouverture` | cette track (phase 3) et les quatre autres îles |
 | Groupe parents `musique` | `SKILL_GROUPS`, 8ᵉ groupe | cette track | espace parents, track `bilan-parents` |
 | `state.season3Done` | booléen, migré | cette track | final, journal, dialogue de Stella, paysage de l'île |
 | Événement `season3:done` | `emit('season3:done')`, sans argument | cette track | personne aujourd'hui (pour les suites) |
@@ -595,4 +609,3 @@ Revue humaine obligatoire :
 | S14 | 👤 | La joueuse découvre Stella, Dorémi, Xylo, Trompi, leurs dessins et la série « Concert » | elle garde ou renomme les noms ; ses choix vont dans le journal de décisions du plan | humain |
 
 ## Questions ouvertes
-

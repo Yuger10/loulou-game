@@ -162,7 +162,7 @@ Exemple 3 : aucun item dû : `[]` (pas de proposition, ligne 9).
 
 ## Effets de `loseLife` en mode manche
 
-Un effet par ligne (`loseLife`, `engine.js:116-186`). « Gardé » : comme en jeu normal ; « coupé » : pas fait en mode manche.
+Un effet par ligne (`loseLife`, `engine.js:116-185`). « Gardé » : comme en jeu normal ; « coupé » : pas fait en mode manche.
 
 | Effet | Mode manche | Pourquoi |
 |---|---|---|
@@ -187,7 +187,7 @@ Chaque minuterie que la mission déclenche ou hérite du moteur, et ce qui l'ann
 
 | Minuterie | Posée par | Annulée par |
 |---|---|---|
-| `winSoon` en mode manche : `onRight` après `WIN_DELAY` (aujourd'hui `setTimeout(onMissionWin, …)` sans garde, `engine.js:432-434`) | moteur | le moteur garde ce `setTimeout` dans `pendingRoundTimer` et son `onModalChange` (`engine.js:558-561`) l'annule ; en plus, `onRight` et `onWrong` ne font rien si la mission est arrêtée (`setRoundHandlers(null)` déjà appelé) |
+| `winSoon` en mode manche : `onRight` après `WIN_DELAY` (aujourd'hui `setTimeout(onMissionWin, …)` sans garde, `engine.js:431-433`) | moteur | le moteur garde ce `setTimeout` dans `pendingRoundTimer` et son `onModalChange` (`engine.js:557-560`) l'annule ; en plus, `onRight` et `onWrong` ne font rien si la mission est arrêtée (`setRoundHandlers(null)` déjà appelé) |
 | `onWrong` après `REVIEW_SHOW_MS` (ou `EXPLAIN_MS`, cas 2) | moteur | même `pendingRoundTimer`, même annulation, même garde |
 | bonne réponse qui brille (`hint-glow`) | moteur | aucune minuterie : la classe disparaît avec la fenêtre |
 | proposition du bouton 💡 après 10 s | `hints` (existant) | `onModalChange` de `hints` (`hints.js:424-429`) |
@@ -196,7 +196,7 @@ Chaque minuterie que la mission déclenche ou hérite du moteur, et ce qui l'ann
 
 À la fermeture (`onModalClose`), la feature `review` appelle `setRoundHandlers(null)` et oublie la mission en cours. Un autre écran ouvert par-dessus la mission sans la fermer (un `openModal`) ne déclenche pas `onModalClose` : c'est pourquoi `playGame` (`engine.js`, au début de la fonction) appelle aussi `setRoundHandlers(null)` et oublie `pendingRoundTimer` ; un jeu normal lancé après une mission abandonnée n'est donc jamais en mode manche. La feature `review` ne passe pas par `playGame` (elle appelle `render(p)` du jeu), elle n'est pas touchée. Test (S7) : mission ouverte, puis `playGame('count')` au palier 3 par-dessus, sans fermer : le jeu a ses cœurs (`#lives-bar`) et son minuteur (`#challenge-timer`), et une erreur relance une autre question comme d'habitude. Le test de la ligne 17 (S7) ferme la fenêtre pendant `WIN_DELAY` après une bonne réponse, puis pendant `REVIEW_SHOW_MS` après une erreur, attend deux fois ce délai, et vérifie : aucune fenêtre ouverte, item de la question inchangé.
 
-## Ce que fait le démarrage d'une question « souvenirs » (comparé à `playGame`, `engine.js:348-359`)
+## Ce que fait le démarrage d'une question « souvenirs » (comparé à `playGame`, `engine.js:347-358`)
 
 | Appel de `playGame` | Souvenirs | Pourquoi |
 |---|---|---|
@@ -238,7 +238,7 @@ Aucune des deux tracks ne teste à l'exécution si l'autre existe (un import ES 
 | D14 | Proposée par le compagnon principal (`currentCompanion()`), une fois par jour au plus, en dernier dans la chaîne de début de séance | Pas de nouvelle voix à présenter ; ne passe jamais avant le cadeau de saison, l'ouverture d'une saison ou l'équipe | `init.js:97-102` (la chaîne est dans un `setTimeout(…, 700)`, ligne 101) ; `team.js:453-457`, `:253-261` |
 | D15 | Pas de révision à plusieurs | Défaut du brief ; une erreur à plusieurs n'est pas comptée non plus pour les progrès | brief ; `skills.js:39-45` |
 | D16 | Pas de capture pendant le défi bonus de Zap | Joué un cran au-dessus ; déjà exclu des progrès | `skills.js:56-62` ; `specialties.js:18-20` |
-| D17 | Un temps écoulé n'est pas une question ratée | Rien de faux n'a été touché ; le minuteur n'existe qu'à partir du palier 3 | `engine.js:250-260` ; `difficulty.js` (`TIMER_SECONDS`) |
+| D17 | Un temps écoulé n'est pas une question ratée | Rien de faux n'a été touché ; le minuteur n'existe qu'à partir du palier 3 | `engine.js:249-259` ; `difficulty.js` (`TIMER_SECONDS`) |
 | D18 | Le moteur reçoit un mode « manche » : `setRoundHandlers({ onRight, onWrong } ou null)` ; tant qu'il est actif : pas de cœurs, pas de minuteur, `winSoon` appelle `onRight`, `playGame` l'éteint au début (`setRoundHandlers(null)`, voir « Minuteries de la mission »), `loseLife` fait les effets de la table « Effets de `loseLife` en mode manche » (dont `speakWrongHint` et `hintNudge` coupés), désactive tous les `button` de `#modal-body` sauf `.btn-speak` (seule la première réponse compte), montre la bonne réponse (`hint-glow` sur le premier sélecteur de `gameSolution`, la phrase de la table dite) puis appelle `onWrong` après `REVIEW_SHOW_MS` (minuterie du moteur, annulée par son `onModalChange`), sans `onRetry`, sans `noteAnswerError`, sans `answer:wrong` | Les jeux restent inchangés pour gagner et perdre ; le moteur ne connaît pas la file | `engine.js:66-69`, `:112-169`, `:196-229`, `:385-389` |
 | D19 | `setLastGame(g)` avant chaque question de souvenirs, et aucun autre appel de `playGame` (table « Ce que fait le démarrage ») | `gameDiff()` lit le jeu courant pour le palier adaptatif (nombre de choix) | `js/features/adaptive/game-diff.js:44-55` |
 | D20 | Deux slices aux identifiants uniques : `review-queue` (couche `entities`, `files: ['js/entities/review/review.js']`, `css: []`), placée après `words` et avant `game-state` ; `review` (couche `features`, `files: ['js/features/review/review.js']`, `css: ['js/features/review/review.css']`), placée après `minigame-engine` et avant `minigame-memory`. `js/features/review/review.css` est aussi ajoutée à `CSS_ORDER`, en fin de liste, avant `js/features/island/island.css` | `sanitizeReview` vérifie les mots de `WORDS_CP` ; les jeux importent `registerReplay` ; le test exige des identifiants uniques et un dossier par slice ; règle de la checklist pour le CSS | `js/slices.cjs:68-70`, `:182-193`, la liste `CSS_ORDER` et sa ligne `js/features/island/island.css` ; `test/slices.test.js:41-50` ; `conductor/checklist-mini-jeu.md` (section 2) |
@@ -247,7 +247,7 @@ Aucune des deux tracks ne teste à l'exécution si l'autre existe (un import ES 
 
 - **Arbitrages** : la pause gagne toujours (pas de proposition si `emit('game:before', 'souvenirs')` renvoie `true`, et la mission se termine par `emit('game:after')` pour que la pause puisse venir) ; le cadeau de saison, l'ouverture de saison et l'équipe passent avant (une seule chose en début de séance) ; une track qui ajoute un écran de début de séance (ex. `saison3-ouverture`) le place avant la proposition, qui reste la dernière ; si la mission est ouverte, une question ratée en jeu normal le même jour entre dans la file pour demain, jamais dans la mission en cours.
 - **Défauts** : constantes `REVIEW_MAX = 30`, `REVIEW_STEPS = [1, 3, 7]`, `REVIEW_SESSION = 3`, `REVIEW_STOP_AFTER = 2` erreurs, `REVIEW_FAILS_OUT = 3`, `REVIEW_SHOW_MS = 1500` ; aucun réglage parent ; aucune dépendance ; une erreur de lecture de la file la vide (jamais d'exception au chargement).
-- **Référence visuelle** : la proposition reprend la fenêtre de rencontre d'un compagnon (`openTeamEncounter`, `js/features/companion-team/team.js:277`) : tête du compagnon, bulle de texte, deux boutons `.btn-primary` et `.btn-ghost`. L'écran de fin reprend `.reward-box` de l'écran de victoire (`engine.js:501-527`) sans objet ni confettis. Le badge `🌟 i/n` est une pastille dans `.game-head`, à droite du titre.
+- **Référence visuelle** : la proposition reprend la fenêtre de rencontre d'un compagnon (`openTeamEncounter`, `js/features/companion-team/team.js:277`) : tête du compagnon, bulle de texte, deux boutons `.btn-primary` et `.btn-ghost`. L'écran de fin reprend `.reward-box` de l'écran de victoire (`engine.js:500-526`) sans objet ni confettis. Le badge `🌟 i/n` est une pastille dans `.game-head`, à droite du titre.
 - **Détails non écrits** : l'agent prend l'option la plus simple, la note dans le journal de décisions du plan, l'humain juge à la revue.
 
 ## Hors périmètre

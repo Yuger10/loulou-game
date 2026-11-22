@@ -48,7 +48,7 @@ Vocabulaire : une **explication** est l'objet `{ say, fx }` qu'un jeu renvoie po
 12. Étant donné une explication qui s'affiche, quand l'équipe des compagnons est branchée, alors `hintPolicy.onExplain(kind)` est appelé et la file de paroles de l'équipe est vidée (`teamSayClear`) : aucune bulle d'équipe ne reparle pendant ni après l'explication, une seule phrase est dite.
 13. Étant donné une explication en cours, quand la fenêtre se ferme ou change (`onModalChange`), alors la relance programmée et le retrait programmé sont annulés par le moteur (rien ne réapparaît par-dessus un autre écran), et `explainClear()` est appelé par `hints` : `#modal-body` n'a plus la classe `explaining` (il persiste d'une fenêtre à l'autre, `js/shared/ui/modal.js:43-58`).
 14. Étant donné chaque ligne des tables d'explications ci-dessous, quand `explainFor(jeu, question, mauvaise réponse)` est appelé avec les valeurs de la ligne, alors `say` est exactement la phrase de la table et `fx` contient les effets de la table.
-15. Étant donné une mission gagnée en solo dans un jeu qui a inscrit `right`, quand l'écran de victoire s'ouvre, alors il contient, juste après le `<h2>`, `<div class="speech win-how"><span aria-hidden="true">🧠</span> <span class="win-how-text">{phrase}</span></div>`, le texte de `.win-how-text` est exactement la phrase de la table, et l'unique `speak` de la victoire (`engine.js:493-498`) contient la phrase insérée juste après l'éloge : `${niveau}${praise} ${phrase} ${cheer}…` (une seule chaîne, `speak` coupant toute phrase en cours).
+15. Étant donné une mission gagnée en solo dans un jeu qui a inscrit `right`, quand l'écran de victoire s'ouvre, alors il contient, juste après le `<h2>`, `<div class="speech win-how"><span aria-hidden="true">🧠</span> <span class="win-how-text">{phrase}</span></div>`, le texte de `.win-how-text` est exactement la phrase de la table, et l'unique `speak` de la victoire (`engine.js:492-497`) contient la phrase insérée juste après l'éloge : `${niveau}${praise} ${phrase} ${cheer}…` (une seule chaîne, `speak` coupant toute phrase en cours).
 16. Étant donné l'écran de victoire, quand on lit la liste des éloges (`winPraises`), alors aucun ne contient « fort », « forte », « champion », « championne », « malin » ni « maligne ».
 17. Étant donné la liste des jeux inscrits (`GAME_TYPES`), quand `test/explications.test.js` tourne, alors il échoue si un jeu n'a ni explication, ni place dans `EXPLAIN_EXEMPT`, ni place dans `EXPLAIN_NEVER` ; s'il trouve dans `EXPLAIN_EXEMPT` un jeu qui a des explications ; si `EXPLAIN_EXEMPT` contient un jeu hors de `LEGACY_GAMES` ; ou si `EXPLAIN_EXEMPT` dépasse `EXPLAIN_EXEMPT_MAX`.
 18. Étant donné chaque jeu de la phase en cours, à chaque palier (1 à 5, et 6 pour `calc`), sur 3 parties, quand l'enfant se trompe une fois, alors les lignes 1 à 7 sont vraies (ou la ligne 8 si l'essai était le dernier), `fx.dim` est absent, et le jeu reste gagnable : la question suivante se gagne, ou, si la mission est ratée, une mission relancée par `playGame(jeu)` se gagne.
@@ -91,11 +91,11 @@ Structure exacte, insérée après `#challenge-timer`, sinon `.puzzle-hint`, sin
 - Aucune espace insécable n'est ajoutée (contrairement à `showHint`, `hints.js:337`) : `.explain-text` contient `say` exactement, et c'est ce que le test compare. `fx.html` va dans son propre `.hint-extra`, hors de `.explain-text`.
 - `speak(say)` reçoit `say` brut.
 - La classe `explaining` posée sur `#modal-body` est un **simple marqueur** (lu par les tests, aucune règle CSS). Elle est posée par `explainShow` et retirée par `explainClear`.
-- **Propriétaire des minuteries : le moteur.** Il programme la relance (`scheduleRetry`), l'écran « Raté ! » et, pour une question continuée, l'appel à `explainClear()` après `EXPLAIN_MS` ; son `onModalChange` (`engine.js:558-561`) les annule toutes. `hints` n'a aucune minuterie d'explication : son `onModalChange` (`hints.js:424-429`) appelle seulement `explainClear()`.
+- **Propriétaire des minuteries : le moteur.** Il programme la relance (`scheduleRetry`), l'écran « Raté ! » et, pour une question continuée, l'appel à `explainClear()` après `EXPLAIN_MS` ; son `onModalChange` (`engine.js:557-560`) les annule toutes. `hints` n'a aucune minuterie d'explication : son `onModalChange` (`hints.js:424-429`) appelle seulement `explainClear()`.
 
 ## Le déroulé dans le moteur (`loseLife`)
 
-Ordre, pour une erreur en solo (`loseLife`, `js/features/minigame-engine/engine.js:116-186`) :
+Ordre, pour une erreur en solo (`loseLife`, `js/features/minigame-engine/engine.js:116-185`) :
 
 1. Inchangé : `buddyReact('oops')`, `hintNudge(true)`, retour immédiat si `party.active`, `noteAnswerError()`, son, vibration.
 2. `shown = el !== null && opts.wrong !== undefined && explainShow(opts.wrong)`. Si `shown` : `clearActiveTimer()` ; sinon `speakWrongHint()` (comme avant).
@@ -103,7 +103,7 @@ Ordre, pour une erreur en solo (`loseLife`, `js/features/minigame-engine/engine.
 4. `delay = shown ? EXPLAIN_MS : 900`. Essais illimités avec `onRetry` : `scheduleRetry(onRetry, delay)`. Essais illimités sans `onRetry` : comme avant, et si `shown`, `explainClear()` après `EXPLAIN_MS` (minuterie du moteur, annulée par son `onModalChange`).
 5. Essais limités : `lives--` ; si plus d'essai, `onMissionFail` après `shown ? EXPLAIN_MS : 520` ; sinon le message d'essais restants, puis `scheduleRetry(onRetry, delay)` ou, sans `onRetry`, `explainClear()` après `EXPLAIN_MS`.
 
-Effets de `loseLife`, un par ligne (`loseLife`, `engine.js:116-186`), quand une explication est montrée (`shown`) :
+Effets de `loseLife`, un par ligne (`loseLife`, `engine.js:116-185`), quand une explication est montrée (`shown`) :
 
 | Effet | Avec explication | Pourquoi |
 |---|---|---|
@@ -295,7 +295,7 @@ Cas le plus long : `La petite aiguille est sur le 12 : il est 12 heures 45.` = 1
 | `ladybugs` | `count` / `double` / `complete` / `half` | `Tu as compté les deux ailes.` / `Tu as trouvé le double.` / `Tu as rendu les deux ailes pareilles.` / `Tu as partagé en deux parts égales.` |
 | `clock` | toujours | `Tu as lu la petite aiguille, puis la grande.` |
 
-### Éloges de l'écran de victoire (`winPraises(who)`, remplace la liste de `engine.js:475-482`)
+### Éloges de l'écran de victoire (`winPraises(who)`, remplace la liste de `engine.js:474-481`)
 
 `Bravo{, who}, bien joué !` ; `Super{, who}, tu as bien cherché !` ; `Génial, c'est réussi !` ; `Waouh{, who}, tu as bien réfléchi !` ; `Incroyable, tu as tout trouvé !` ; `Tu as bien travaillé ! 💪`. (`{, who}` : « ␣prénom » si connu, comme aujourd'hui ; l'espace insécable avant « ! » est gardée.)
 
@@ -401,9 +401,9 @@ Les autres tests qui attendent après une erreur sur un jeu des phases 1 et 2 (`
 | D7 | Pendant l'explication, tous les boutons de la fenêtre sont désactivés (sauf 🔈) | Aujourd'hui, pendant les 0,9 s, la bonne réponse reste touchable ; avec 4 s et la réponse qui brille, ce serait une victoire gratuite | `engine.js:107-114`, `:141-144` |
 | D8 | Aucun effet visuel nouveau : seulement `hint-glow`, `hint-mark`, `hint-strike`, une case remplie et la bulle | Les détails décoratifs nuisent à l'apprentissage | https://news.wsu.edu/2020/03/19/seductive-details-inhibit-learning/ ; `hints.css:204`, `:218`, `:246` |
 | D9 | L'explication vide la file de paroles de l'équipe (`hintPolicy.onExplain` branché sur `teamSayClear`) | Une seule voix : `teamHintSpoken` reprendrait la bulle après `HINT_HOLD_MS` (3500 ms), avant la fin des 4 s, et `speak` couperait l'explication ; la consolation de Grisou (2 erreurs d'affilée) est donc abandonnée quand une explication est dite | `specialties.js:63-64`, `:108-129`, `:141-154` ; `voice.js:125` |
-| D10 | Pas d'explication à plusieurs ni sur un temps écoulé | À plusieurs, une erreur passe la main tout de suite ; sur un temps écoulé, rien de faux n'a été touché | `engine.js:131-136`, `:236-240` |
-| D11 | L'écran « Raté ! » attend la fin de l'explication | Sinon la dernière explication serait coupée à 520 ms | `engine.js:174-177` |
-| D12 | Phrases de réussite au passé composé, qui nomment l'action ; les éloges « fort », « champion », « malin » sont remplacés | Éloge du processus plutôt que de la personne ; changement peu coûteux mais à l'effet modeste | PubMed 9686450 (Mueller et Dweck 1998) ; https://pubmed.ncbi.nlm.nih.gov/29505339/ ; `engine.js:475-482` |
+| D10 | Pas d'explication à plusieurs ni sur un temps écoulé | À plusieurs, une erreur passe la main tout de suite ; sur un temps écoulé, rien de faux n'a été touché | `engine.js:131-135`, `:236-240` |
+| D11 | L'écran « Raté ! » attend la fin de l'explication | Sinon la dernière explication serait coupée à 520 ms | `engine.js:173-176` |
+| D12 | Phrases de réussite au passé composé, qui nomment l'action ; les éloges « fort », « champion », « malin » sont remplacés | Éloge du processus plutôt que de la personne ; changement peu coûteux mais à l'effet modeste | PubMed 9686450 (Mueller et Dweck 1998) ; https://pubmed.ncbi.nlm.nih.gov/29505339/ ; `engine.js:474-481` |
 | D13 | Le garde est un nouveau fichier `test/explications.test.js`, sur le modèle du garde des indices | Le lanceur trouve tout seul un nouveau test ; même harnais (temps ×0,1, voix notée) | `test/companions.test.js:1-40`, `:222-228` ; `AGENTS.md` (« Un nouveau fichier de test est trouvé tout seul ») |
 | D14 | `memory` et `simon` exemptés pour toujours | Pas de réponse fausse à expliquer (`memory`) ; la séquence est déjà rejouée (`simon`) | `memory.js:97` ; `simon.js:125-132` |
 | D15 | Les énigmes d'histoire gardent la phrase générique | Hors des mini-jeux, hors de cette track | `js/features/story/story.js:575` |
