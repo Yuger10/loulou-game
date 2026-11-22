@@ -15,3 +15,8 @@
 /js/entities/character/characters-art.js @Yuger10
 /test/holdout/                    @Yuger10
 /.github/                         @Yuger10
+/bunfig.toml                      @Yuger10
+/test/tools/sensitive.js          @Yuger10
+/.claude/                         @Yuger10
+/.mcp.json                        @Yuger10
+/.vscode/                         @Yuger10
