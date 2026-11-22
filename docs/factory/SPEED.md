@@ -113,3 +113,10 @@ Vérifié en conditions réelles : une variable inutilisée écrite par l'agent 
 | `bun run check` | 18,6 s | 18,3 s |
 
 Le reformatage est un commit purement mécanique, listé dans `.git-blame-ignore-revs`. Seule adaptation : 7 vérifications de thème de monde lisaient le CSS à l'octet près ; elles tolèrent maintenant espaces et guillemets (commit séparé, avant le reformatage).
+
+## TypeScript 7 en vérification du JavaScript (22 novembre 2026, ADR 0003)
+
+| Commande | Temps | Budget |
+|---|---|---|
+| `bun run typecheck` (`tsc -p .`, 167 modules) | **93 ms** | < 10 s |
+| Hook de l'agent (oxfmt, oxlint, tsc) | **211 ms** | < 300 ms |

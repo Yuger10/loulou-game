@@ -110,3 +110,8 @@ Registre des tracks Conductor, **dans l'ordre d'implémentation**. Feuille de ro
 
 - [ ] **Track: Lint complet : réactiver les 5 règles oxlint désactivées en corrigeant le code, et ajouter les règles utiles au projet** (technique, factory)
 *Link: [./tracks/lint-regles-completes_20261121/](./tracks/lint-regles-completes_20261121/)*
+
+---
+
+- [~] **Track: TypeScript en vérification du JavaScript (ADR 0003) : mode souple livré (66.3), strict couche par couche** (technique, factory)
+*Link: [./tracks/typescript-checkjs_20261122/](./tracks/typescript-checkjs_20261122/)*

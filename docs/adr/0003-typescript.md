@@ -1,6 +1,6 @@
 # ADR 0003 : Passer à TypeScript, par la vérification du JavaScript (TypeScript 7, `checkJs`), sans build
 
-- **Statut :** proposée (à décider par Amrou)
+- **Statut :** acceptée le 2026-11-22 (option 1) ; étape 1 livrée (mode souple, zéro erreur), étape 2 suivie par la track `typescript-checkjs`
 - **Date :** 2026-11-22
 - **Décideur :** Amrou
 - **Liens :** [ADR 0002](./0002-modules-es-natifs.md) (modules ES natifs, sans build) ; playbook cothon, section 4.2 (stack de référence : TypeScript 7) ; skill `cothon:migrating-to-tsgo` ; `docs/factory/SPEED.md`
@@ -39,7 +39,7 @@ En mode strict, les erreurs viennent surtout des paramètres sans type (1 166 TS
    - Gain par rapport à l'option 1 : une syntaxe plus courte que JSDoc pour les types. Rien de plus pour la sécurité : le compilateur et les vérifications sont les mêmes.
 3. **Rester en JavaScript sans typecheck** (la décision de la phase 0). Plus léger, aucun travail ; les erreurs de type restent à la charge des tests et de la relecture.
 
-## Décision proposée
+## Décision
 
 **Option 1.** Critères du playbook (4.2), dans l'ordre :
 - **Vitesse :** 0,12 s, négligeable dans `check` (18 s) et dans le hook de l'agent si on l'y ajoute plus tard.
@@ -55,4 +55,16 @@ En mode strict, les erreurs viennent surtout des paramètres sans type (1 166 TS
   - du JSDoc en plus dans un code compact, surtout en mode strict ;
   - pendant la migration, deux régimes cohabitent (couches strictes et souples) : `AGENTS.md` dit lequel s'applique où.
 - **Plan de repli :** retirer `typecheck` de `check` ; les annotations JSDoc sont des commentaires, sans effet sur le jeu.
-- **Si l'option 1 est acceptée :** une track Conductor `typescript-checkjs` (étape 1 en une PR, puis une PR par couche en strict), dans l'ordre du gain mesuré.
+- **Mise en œuvre :** track Conductor [`typescript-checkjs`](../../conductor/tracks/typescript-checkjs_20261122/plan.md).
+
+## Validation (étape 1, 22 novembre 2026)
+
+- TypeScript 7.0.2 en version exacte, `tsconfig.json` (checkJs, mode souple), `bun run typecheck` dans `check`, la CI et le hook de l'agent.
+- **284 erreurs → 0** :
+  - `types/dom.d.ts` (le jeu interroge son propre HTML : `querySelector` renvoie un `HTMLElement`) en fait tomber 200 sans toucher au code ;
+  - les champs et boutons sont annotés à leur déclaration (JSDoc) ;
+  - l'état partagé posé sur des fonctions (`bindQuit._last`, `showToast._t`) devient un état explicite du module (`forgetSpokenHint`, `rememberSpokenHint`) ;
+  - les points d'accroche (`hintPolicy`, `saveSlot`, préférences audio) ont leur type ;
+  - un `Set` réutilisé en tableau sous le même nom est séparé en deux.
+- **Une incohérence réelle attrapée** : un appel à `bellSVG(m, i)` n'avait pas suivi le retrait du paramètre `i` (étape oxlint de la factory).
+- Temps : `tsc` 93 ms ; hook de l'agent (format, lint, types) 211 ms, budget 300 ms. Test de mutation : un appel avec un argument de trop est refusé par la CI et renvoyé à l'agent juste après l'édition.

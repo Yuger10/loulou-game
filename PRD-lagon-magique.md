@@ -1662,3 +1662,9 @@ Les deux sont proposés dès 5 ans, sans minuteur. Le jeu de l'île est les poti
 - **Ce que voit l'enfant :** l'écran de victoire arrive toujours au même rythme après la bonne réponse (400 ms, 700 ms pour le puzzle qui finit sur une animation), au lieu de 6 délais différents selon le mini-jeu (350 à 700 ms).
 - **Pour le code :** `winSoon()` dans le moteur des mini-jeux (anti-pattern 4 de `docs/factory/AUDIT.md`), 33 minuteries remplacées, garde dans `test/gardes.test.js`.
 - Cache `lagon-v66.2`.
+
+# v66.3 : TypeScript vérifie le JavaScript du jeu (ADR 0003)
+
+- **Ce que voit l'enfant :** rien ne change (aucun changement de comportement).
+- **Pour le code :** TypeScript 7 vérifie tout le JavaScript, sans build ni fichiers `.ts` ([ADR 0003](docs/adr/0003-typescript.md), option 1 choisie par Amrou). Mode souple : 284 erreurs ramenées à 0 (types du DOM du jeu, annotations JSDoc, état partagé rendu explicite). `bun run typecheck` (93 ms) dans `check`, la CI et le hook de l'agent (211 ms en tout). Une incohérence laissée par un agent attrapée au passage (un appel qui n'avait pas suivi le retrait d'un paramètre). Le mode strict viendra couche par couche (track `typescript-checkjs`).
+- Cache `lagon-v66.3`.
