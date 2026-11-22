@@ -16,4 +16,6 @@ export {
   startMinigame,
   startTimerIfNeeded,
   stepOk,
+  WIN_DELAY_LONG,
+  winSoon,
 } from './engine.js';

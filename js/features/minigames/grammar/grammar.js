@@ -21,13 +21,13 @@ import {
   flashModal,
   livesBar,
   loseLife,
-  onMissionWin,
   registerGame,
   setSolution,
   setupLives,
   solSel,
   startTimerIfNeeded,
   stepOk,
+  winSoon,
 } from '../../minigame-engine/index.js';
 import { bindQuit, gameHeader } from '../../screen/index.js';
 
@@ -79,7 +79,7 @@ function renderDeterminants() {
         clearActiveTimer();
         stepOk(btn);
         flashModal('ok');
-        setTimeout(onMissionWin, 350);
+        winSoon();
       } else loseLife(btn, { onRetry: renderDeterminants });
     };
   });

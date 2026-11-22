@@ -17,15 +17,18 @@ import {
   flashModal,
   livesBar,
   loseLife,
-  onMissionWin,
   progressDots,
   registerGame,
   setSolution,
   setupLives,
   solSel,
   startTimerIfNeeded,
+  winSoon,
 } from '../../minigame-engine/index.js';
 import { bindQuit, gameHeader } from '../../screen/index.js';
+
+// en lecture, la dernière note jouée doit finir avant l'écran de victoire
+const READ_END_DELAY = 900;
 
 const RHYTHM_BEATS = {
   court: { sym: '●', label: 'Boum', aria: 'un coup court', freq: 262, dur: 0.25, units: 1 },
@@ -172,7 +175,7 @@ function renderRhythm() {
         if (s) s.classList.remove('covered');
         // au palier de lecture : Boumbo joue enfin le rythme que l'enfant a lu
         if (cfg.read) play(false, null);
-        setTimeout(onMissionWin, cfg.read ? 900 : 400);
+        winSoon(cfg.read ? READ_END_DELAY : undefined);
       }
     };
   });

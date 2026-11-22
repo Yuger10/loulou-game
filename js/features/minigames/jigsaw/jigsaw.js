@@ -24,13 +24,14 @@ import {
   flashModal,
   livesBar,
   loseLife,
-  onMissionWin,
   progressDots,
   registerGame,
   setSolution,
   setupLives,
   solSel,
   stepOk,
+  WIN_DELAY_LONG,
+  winSoon,
 } from '../../minigame-engine/index.js';
 import { bindQuit, gameHeader } from '../../screen/index.js';
 
@@ -147,7 +148,7 @@ function renderJigsaw() {
       if (placed >= n) {
         document.querySelector('.jg-board').classList.add('done');
         flashModal('ok');
-        setTimeout(onMissionWin, 700);
+        winSoon(WIN_DELAY_LONG);
       }
     } else {
       pieceEl.classList.remove('lifted');

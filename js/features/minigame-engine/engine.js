@@ -378,6 +378,16 @@ function onMissionFail() {
   };
 }
 
+/* Fin de mission : le délai entre la bonne réponse (étincelle, son) et
+   l'écran de victoire. Un seul endroit (anti-pattern 4 de l'audit) : chaque
+   mini-jeu appelle winSoon(), ou winSoon(WIN_DELAY_LONG) s'il finit sur une
+   animation. test/gardes.test.js refuse un setTimeout(onMissionWin, …) ailleurs. */
+const WIN_DELAY = 400;
+const WIN_DELAY_LONG = 700;
+function winSoon(delay = WIN_DELAY) {
+  setTimeout(onMissionWin, delay);
+}
+
 function onMissionWin() {
   recordMission(true); // avant le mode course, qui s'arrête plus bas
   emit('game:after', { win: true }); // fin naturelle : la pause peut venir ensuite (js/features/rest)
@@ -524,4 +534,6 @@ export {
   startMinigame,
   startTimerIfNeeded,
   stepOk,
+  WIN_DELAY_LONG,
+  winSoon,
 };

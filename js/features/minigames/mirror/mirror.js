@@ -18,12 +18,12 @@ import {
   flashModal,
   livesBar,
   loseLife,
-  onMissionWin,
   registerGame,
   setSolution,
   setupLives,
   startTimerIfNeeded,
   stepOk,
+  winSoon,
 } from '../../minigame-engine/index.js';
 import { bindQuit, gameHeader } from '../../screen/index.js';
 
@@ -119,7 +119,7 @@ function renderMirror() {
       clearActiveTimer();
       stepOk(e.currentTarget);
       flashModal('ok');
-      setTimeout(onMissionWin, 450);
+      winSoon();
       return;
     }
     errors++;

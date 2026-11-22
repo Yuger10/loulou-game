@@ -19,13 +19,13 @@ import {
   flashModal,
   livesBar,
   loseLife,
-  onMissionWin,
   registerGame,
   setSolution,
   setupLives,
   solSel,
   startTimerIfNeeded,
   stepOk,
+  winSoon,
 } from '../../minigame-engine/index.js';
 import { bindQuit, gameHeader } from '../../screen/index.js';
 
@@ -86,7 +86,7 @@ function renderLadybugs() {
     clearActiveTimer();
     stepOk(b);
     flashModal('ok');
-    setTimeout(onMissionWin, 400);
+    winSoon();
   };
   const q = { mode: r.mode, n: r.n, total: r.total };
 

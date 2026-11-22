@@ -19,7 +19,6 @@ import {
   flashModal,
   livesBar,
   loseLife,
-  onMissionWin,
   progressDots,
   registerGame,
   setSolution,
@@ -27,6 +26,7 @@ import {
   solSel,
   startTimerIfNeeded,
   stepOk,
+  winSoon,
 } from '../../minigame-engine/index.js';
 import { bindQuit, gameHeader } from '../../screen/index.js';
 
@@ -156,7 +156,7 @@ function renderPitch() {
             clearActiveTimer();
             stepOk(b);
             flashModal('ok');
-            setTimeout(onMissionWin, 350);
+            winSoon();
           } else loseLife(b, { onRetry: renderPitch });
         }),
     );
@@ -187,7 +187,7 @@ function renderPitch() {
         if (pos === target.length) {
           clearActiveTimer();
           flashModal('ok');
-          setTimeout(onMissionWin, 450);
+          winSoon();
         }
       }),
   );

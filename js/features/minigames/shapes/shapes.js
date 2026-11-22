@@ -15,13 +15,13 @@ import {
   flashModal,
   livesBar,
   loseLife,
-  onMissionWin,
   progressDots,
   registerGame,
   setSolution,
   setupLives,
   solSel,
   stepOk,
+  winSoon,
 } from '../../minigame-engine/index.js';
 import { bindQuit, gameHeader } from '../../screen/index.js';
 
@@ -275,7 +275,7 @@ function renderShapes() {
         stepOk(btn);
         if (q.found >= r.targets) {
           flashModal('ok');
-          setTimeout(onMissionWin, 500);
+          winSoon();
         }
       } else {
         loseLife(btn);
