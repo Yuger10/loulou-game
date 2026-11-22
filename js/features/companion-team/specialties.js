@@ -65,8 +65,7 @@ let teamSayQueue = [],
   teamSaying = null,
   teamSayTimer = null,
   teamHold = null;
-function teamSay(id, text, opts) {
-  opts = opts || {};
+function teamSay(id, text, opts = {}) {
   if (!COMPANIONS[id]) return;
   teamSayQueue.push({ id, text, onTap: opts.onTap || null });
   if (!teamSaying && !teamHold) teamSayNext();

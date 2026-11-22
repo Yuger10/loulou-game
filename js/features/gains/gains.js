@@ -48,8 +48,7 @@ function gainLayer() {
 }
 
 // un emoji qui vole en arc de `from` à `to` ; onLand est appelé à l'arrivée
-function flyEmoji(emoji, from, to, opts) {
-  opts = opts || {};
+function flyEmoji(emoji, from, to, opts = {}) {
   const onLand = opts.onLand || (() => {});
   if (!gainsCanAnimate()) {
     onLand();

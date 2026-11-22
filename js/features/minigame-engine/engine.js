@@ -108,8 +108,7 @@ function scheduleRetry(fn) {
   }, 900);
 }
 
-function loseLife(el, opts) {
-  opts = opts || {};
+function loseLife(el, opts = {}) {
   buddyReact('oops', 1300);
   hintNudge(true); // le bouton 💡 se propose (js/features/hints/hints.js)
   // multijoueur : la règle reste « une erreur = on passe la main »

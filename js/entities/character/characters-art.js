@@ -387,9 +387,9 @@ const CHAR_ART = (function () {
   };
   /* ---- Corrections v34 : visages dégagés, animaux reconnaissables ---- */
   const O = (w) => `stroke="${AI}" stroke-width="${w || 2.5}" stroke-linejoin="round"`;
-  function eyes(xl, xr, y, rx, ry) {
-    rx = rx || 5.2;
-    ry = ry || 6.6;
+  function eyes(xl, xr, y, rxArg, ryArg) {
+    const rx = rxArg || 5.2;
+    const ry = ryArg || 6.6;
     return [xl, xr]
       .map(
         (x) =>

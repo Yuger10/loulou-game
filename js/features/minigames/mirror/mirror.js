@@ -33,8 +33,7 @@ const MIRROR_INKS = { 1: { fill: '#FF8FB8', sym: '♥', name: 'rose' }, 2: { fil
 function mirrorOf(cell, axis, size) {
   return axis === 'v' ? { r: cell.r, c: size - 1 - cell.c, v: cell.v } : { r: size - 1 - cell.r, c: cell.c, v: cell.v };
 }
-function mirrorBuildRound(dd, rng) {
-  rng = rng || random;
+function mirrorBuildRound(dd, rng = random) {
   const cfg = mirrorRound(dd);
   const axis = cfg.axes[Math.floor(rng() * cfg.axes.length)];
   const two = rng() < cfg.two;

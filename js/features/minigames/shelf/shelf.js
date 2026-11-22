@@ -74,8 +74,7 @@ function shelfToySVG(shape, color, plain) {
 }
 const GIFT = '<span class="shelf-gift" aria-hidden="true">🎁</span>';
 
-function shelfBuildRound(dd, rng) {
-  rng = rng || random;
+function shelfBuildRound(dd, rng = random) {
   const cfg = shelfRound(dd);
   const rows = shuffle(SHELF_COLORS.slice()).slice(0, cfg.size);
   const cols = shuffle(Object.keys(SHELF_SHAPES)).slice(0, cfg.size);

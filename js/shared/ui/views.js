@@ -13,7 +13,8 @@ function registerView(name, fn) {
   (viewRenderers[name] = viewRenderers[name] || []).push(fn);
 }
 
-function switchView(name) {
+function switchView(nameArg) {
+  let name = nameArg;
   // alias pratiques
   if (name === 'lagon') name = 'ile';
   let sacTab = null;

@@ -33,7 +33,9 @@
     // rien dans la console du jeu (les tests restent libres, voir overrides)
     "no-console": "error",
     // cliquet : aucun fichier ne dépasse le plus gros actuel ; à abaisser vers 800
-    "max-lines": ["error", { "max": 1250 }]
+    "max-lines": ["error", { "max": 1250 }],
+    // une valeur par défaut s'écrit dans la signature (rng = random), ou dans une variable locale
+    "no-param-reassign": "error"
   },
   "overrides": [
     // la seule source de hasard, et les tests qui forcent un tirage en remplaçant Math.random

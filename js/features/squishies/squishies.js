@@ -154,8 +154,7 @@ function squishyRollRarity(rng) {
   if (r < SQUISHY_RARITY.commun.chance + SQUISHY_RARITY.rare.chance) return 'rare';
   return 'brille';
 }
-function openSquishyBox(rng) {
-  rng = rng || random;
+function openSquishyBox(rng = random) {
   const sq = sqState();
   if (!sq.boxes.length) return null;
   let series = sq.boxes.shift();
@@ -315,9 +314,7 @@ function sortSay(criteria) {
 /* Prépare une boîte de rangement, ou null si la collection ne le permet pas
    encore. `avoid` : la consigne précédente (après 2 erreurs, on en change).
    Renvoie { criteria, say, level, items:[8 ids], targets } */
-function makeSortingTask(owned, age, rng, opts) {
-  rng = rng || random;
-  opts = opts || {};
+function makeSortingTask(owned, age, rng = random, opts = {}) {
   const models = Object.keys(owned || {}).filter((id) => SQUISHIES[id] && owned[id] > 0);
   if (models.length < SQ_SORT_MIN_MODELS) return null;
   const copies = sortCopies(owned);

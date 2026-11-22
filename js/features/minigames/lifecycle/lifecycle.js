@@ -74,8 +74,7 @@ const stageArt = (s) =>
 const stageCard = (s, extra) =>
   `<button class="lc-card" data-s="${s}" aria-label="${LC_STAGES[s].name}"${extra || ''}>${stageArt(s)}<span class="lc-name">${LC_STAGES[s].name.replace(/^(la |le |l')/, '')}</span></button>`;
 
-function lifecycleBuildRound(dd, rng) {
-  rng = rng || random;
+function lifecycleBuildRound(dd, rng = random) {
   const cfg = lifecycleRound(dd);
   const pick = (arr) => arr[Math.floor(rng() * arr.length)];
   const mode = pick(cfg.modes);

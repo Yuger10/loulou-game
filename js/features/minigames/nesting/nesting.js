@@ -49,8 +49,7 @@ function nestBoxSVG(color) {
 
 /* Une série : les tailles (du plus petit au plus grand), l'ordre demandé et
    les boîtes mélangées sur le plateau. */
-function nestingBuildRound(dd, rng) {
-  rng = rng || random;
+function nestingBuildRound(dd, rng = random) {
   const cfg = nestingRound(dd);
   const reverse = rng() < cfg.reverse;
   const colors = shuffle(NEST_COLORS.slice()).slice(0, cfg.n);

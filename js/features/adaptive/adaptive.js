@@ -86,8 +86,8 @@ function placementTier(base) {
 
 // Niveau réellement joué pour ce jeu, à partir du palier de l'île (déjà
 // plafonné par l'âge). Appelé par gameDiff() en solo.
-function adaptTier(base, key) {
-  key = key || lastGame;
+function adaptTier(base, keyArg) {
+  const key = keyArg || lastGame;
   if (!key || inGroupPlay()) return base;
   const s = skillOf(key);
   const lvl = s && s.lvl ? s.lvl : placementTier(base);

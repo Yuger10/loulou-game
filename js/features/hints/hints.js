@@ -118,8 +118,7 @@ let hint = {
 };
 
 // Une question s'affiche (après openModal) : le bouton 💡 apparaît dans l'en-tête.
-function setHintQuestion(kind, q, opts) {
-  opts = opts || {};
+function setHintQuestion(kind, q, opts = {}) {
   if (hint.q !== q || hint.kind !== kind) {
     hint.level = 0;
     hint.nudged = hint.carry; // une erreur juste avant la relance : il brille déjà

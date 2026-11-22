@@ -37,8 +37,7 @@ const RHYTHM_BEATS = {
 };
 const RHYTHM_UNIT = 420; // ms par temps
 
-function rhythmBuildRound(dd, rng) {
-  rng = rng || random;
+function rhythmBuildRound(dd, rng = random) {
   const cfg = rhythmRound(dd);
   for (let t = 0; t < 300; t++) {
     // palier 1 : des coups tous pareils (tous courts, ou tous longs)

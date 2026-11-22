@@ -21,8 +21,8 @@ const SKILL_STATUS = {
 // tolère donc plus d'« erreurs » avant de dire que c'est difficile.
 const SKILL_ERR_TOLERANCE = { memory: 3 };
 
-function todayKey(d) {
-  d = d || new Date();
+function todayKey(dArg) {
+  const d = dArg || new Date();
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 }
 

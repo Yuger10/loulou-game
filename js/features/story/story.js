@@ -502,13 +502,13 @@ function renderStoryIntro(world, idx, onDone) {
 }
 
 // Le prologue d'une saison (v55) : récit lu ligne à ligne, avec Grisou.
-function openSeasonPrologue(saison, onDone, idx) {
+function openSeasonPrologue(saison, onDone, idxArg) {
   const pr = STORY_PROLOGUES[saison];
   if (!pr) {
     if (onDone) onDone();
     return;
   }
-  idx = idx || 0;
+  const idx = idxArg || 0;
   const last = idx >= pr.intro.length - 1;
   const line = pr.intro[idx];
   openModal(`

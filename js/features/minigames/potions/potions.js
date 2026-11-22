@@ -55,8 +55,7 @@ const COLOR_MIXES = [
 // l'arc-en-ciel, de l'extérieur (en haut) à l'intérieur ; l'indigo est laissé de côté
 const RAINBOW = ['rouge', 'orange', 'jaune', 'vert', 'bleu', 'violet'];
 
-function potionsBuildRound(dd, rng) {
-  rng = rng || random;
+function potionsBuildRound(dd, rng = random) {
   const cfg = potionsRound(dd);
   const pick = (arr) => arr[Math.floor(rng() * arr.length)];
   const mode = pick(cfg.modes);

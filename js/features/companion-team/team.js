@@ -250,8 +250,8 @@ const teamLater = {};
 function teamNewVisit() {
   teamVisit++;
 }
-function maybeTeamEncounter(world) {
-  world = world || currentWorld;
+function maybeTeamEncounter(worldArg) {
+  const world = worldArg || currentWorld;
   if (party.active || race.active) return false;
   if (document.getElementById('overlay').classList.contains('show')) return false;
   const id = teamEncounterOn(world);
