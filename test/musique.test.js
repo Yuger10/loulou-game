@@ -59,7 +59,7 @@ function startGame(key, tier, age){
     check('L\'Île de la Musique : saison 2, niveau 50 (conductor/niveaux.md), palier 6',
       ev('WORLDS.musique.saison') === 2 && ev('WORLDS.musique.level') === 50 && ev('WORLDS.musique.diff') === 6 && ev('WORLDS.musique.emoji') === '🎵');
     check('c\'est la 4ᵉ île du Ciel des Rêves', json(ev('worldsOf(2)').slice(0, 4)) === json(['boites', 'jouets', 'bonbons', 'musique']));
-    check('son thème de couleurs (nuit, or, turquoise)', css.includes('body[data-world="musique"]{--world-sky'));
+    check('son thème de couleurs (nuit, or, turquoise)', /body\[data-world=["']musique["']\]\s*\{\s*--world-sky/.test(css));
     check('son paysage (clavier-pont, arbres-flûtes, cascade de notes)', !!ev('ISLE_SCENERY.musique') && /2B2F6B/.test(ev('ISLE_SCENERY.musique(WORLDS.musique)')));
     check('sa musique : un thème joyeux au marimba, à 100 battements par minute', ev('MUSIC_THEMES.musique.lead') === 'marimba' && ev('MUSIC_THEMES.musique.bpm') === 100);
     const chars = ev('charsOf("musique").map(([id])=> id)');

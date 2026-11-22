@@ -66,7 +66,7 @@ function startGame(key, tier, age){
     const pos = ev('worldsOf(2).map(id=> WORLDS[id].map)');
     check('les 6 îles du Ciel tiennent dans le cadre, sans chevauchement', pos.every(p=> p.x >= 14 && p.x <= 86 && p.y >= 15 && p.y <= 85)
       && !pos.some((a, i)=> pos.slice(i + 1).some(b=> Math.abs(a.x - b.x) < 24 && Math.abs(a.y - b.y) < 30)));
-    check('son thème pastel irisé', css.includes('body[data-world="licornes"]{--world-sky'));
+    check('son thème pastel irisé', /body\[data-world=["']licornes["']\]\s*\{\s*--world-sky/.test(css));
     check('son paysage (île de nuages, cascade arc-en-ciel, château)', !!ev('ISLE_SCENERY.licornes') && /FF6F61/.test(ev('ISLE_SCENERY.licornes(WORLDS.licornes)')));
     check('sa musique (harpe et clochettes), et une variante joyeuse pour le final', ev('MUSIC_THEMES.licornes.lead') === 'harp' && !!ev('MUSIC_THEMES["licornes-fete"]') && ev('MUSIC_THEMES["licornes-fete"].bpm') > ev('MUSIC_THEMES.licornes.bpm'));
     const chars = ev('charsOf("licornes").map(([id])=> id)');

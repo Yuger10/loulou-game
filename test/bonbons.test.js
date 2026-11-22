@@ -59,7 +59,7 @@ function startGame(key, tier, age){
     check('Le Royaume des Bonbons : saison 2, niveau 44 (conductor/niveaux.md), palier 6',
       ev('WORLDS.bonbons.saison') === 2 && ev('WORLDS.bonbons.level') === 44 && ev('WORLDS.bonbons.diff') === 6 && ev('WORLDS.bonbons.emoji') === '🍭');
     check('c\'est la 3ᵉ île du Ciel des Rêves, après les Boîtes et les Jouets Doux', json(ev('worldsOf(2)').slice(0, 3)) === json(['boites', 'jouets', 'bonbons']));
-    check('son thème de couleurs (framboise, caramel, vanille)', css.includes('body[data-world="bonbons"]{--world-sky'));
+    check('son thème de couleurs (framboise, caramel, vanille)', /body\[data-world=["']bonbons["']\]\s*\{\s*--world-sky/.test(css));
     check('son paysage (maisons en pain d\'épices, rivière de sirop, arbres-sucettes)', !!ev('ISLE_SCENERY.bonbons') && /ls-lolly/.test(ev('ISLE_SCENERY.bonbons(WORLDS.bonbons)')));
     check('sa musique : une petite valse en pizzicato, à 92 battements par minute', ev('MUSIC_THEMES.bonbons.lead') === 'pluck' && ev('MUSIC_THEMES.bonbons.bpm') === 92);
     const chars = ev('charsOf("bonbons").map(([id])=> id)');

@@ -1132,7 +1132,7 @@ setTimeout(()=>{
       // toutes les feuilles de style du manifeste : les thèmes peuvent vivre dans leur slice
       const css = page.manifestCss().map(f=> page.read(f)).join('\n');
       const ids = ev('Object.keys(WORLDS)');
-      const sansTheme = ids.filter(id=>id!=='lagon' && !css.includes(`body[data-world="${id}"]{--world-sky`));
+      const sansTheme = ids.filter(id=>id!=='lagon' && !new RegExp(`body\\[data-world=["']${id}["']\\]\\s*\\{\\s*--world-sky`).test(css));
       check('carte : chaque monde a son thème de couleurs (--world-*)', sansTheme.length===0);
       if(sansTheme.length) console.log('   sans thème :', sansTheme.join(', '));
       const pos = ids.map(id=>({id, ...ev(`WORLDS[${JSON.stringify(id)}].map`)}));

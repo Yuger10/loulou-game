@@ -64,7 +64,7 @@ function startGame(key, tier, age){
     const pos = ev('worldsOf(2).map(id=> WORLDS[id].map)');
     const clash = pos.some((a, i)=> pos.slice(i + 1).some(b=> Math.abs(a.x - b.x) < 24 && Math.abs(a.y - b.y) < 30));
     check('la carte du Ciel a la place de ses 6 îles, sans chevauchement', !clash && pos.length <= 6);
-    check('son thème de couleurs (vert tendre, lilas, pêche)', css.includes('body[data-world="jardin"]{--world-sky'));
+    check('son thème de couleurs (vert tendre, lilas, pêche)', /body\[data-world=["']jardin["']\]\s*\{\s*--world-sky/.test(css));
     check('son paysage (fleurs géantes, champignons-maisons, gouttes de rosée)', !!ev('ISLE_SCENERY.jardin') && /E8344E/.test(ev('ISLE_SCENERY.jardin(WORLDS.jardin)')));
     check('sa musique : une flûte légère et de petites cloches, à 76 battements par minute', ev('MUSIC_THEMES.jardin.lead') === 'flute' && ev('MUSIC_THEMES.jardin.bpm') === 76);
     const chars = ev('charsOf("jardin").map(([id])=> id)');

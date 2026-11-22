@@ -155,7 +155,7 @@ function startGame(key, tier, age){
   section('Le Monde des Boîtes');
   {
     const css = page.manifestCss().map(f=> page.read(f)).join('\n');
-    check('l\'île : saison 2, niveau 32, son thème de couleurs', ev('WORLDS.boites.saison') === 2 && css.includes('body[data-world="boites"]{--world-sky'));
+    check('l\'île : saison 2, niveau 32, son thème de couleurs', ev('WORLDS.boites.saison') === 2 && /body\[data-world=["']boites["']\]\s*\{\s*--world-sky/.test(css));
     const chars = ev('charsOf("boites").map(([id])=> id)');
     check('4 personnages : Capucine, Kiki, Boulon, Lola', json(chars) === json(['capucine','kiki','boulon','lola']));
     check('chacun a son butin (2 objets de l\'île) et 3 répliques', chars.every(c=> ev(`CHARACTERS.${c}.loot.length===2 && CHARACTERS.${c}.loot.every(k=> ITEMS[k] && ITEMS[k].world==="boites") && CHARACTERS.${c}.texts.length===3`)));

@@ -60,7 +60,7 @@ function startGame(key, tier, age){
     check('Le Coffre aux Jouets Doux : saison 2, niveau 38 (conductor/niveaux.md), palier 6',
       ev('WORLDS.jouets.saison') === 2 && ev('WORLDS.jouets.level') === 38 && ev('WORLDS.jouets.diff') === 6 && ev('WORLDS.jouets.emoji') === '🧸');
     check('c\'est la 2ᵉ île du Ciel des Rêves, après les Boîtes', json(ev('worldsOf(2)').slice(0, 2)) === json(['boites', 'jouets']));
-    check('son thème de couleurs (crème, rose, menthe)', css.includes('body[data-world="jouets"]{--world-sky'));
+    check('son thème de couleurs (crème, rose, menthe)', /body\[data-world=["']jouets["']\]\s*\{\s*--world-sky/.test(css));
     check('son paysage (le grand coffre ouvert, l\'étagère, les cubes)', !!ev('ISLE_SCENERY.jouets') && /<rect/.test(ev('ISLE_SCENERY.jouets(WORLDS.jouets)')));
     check('sa musique : une boîte à musique (célesta), douce, à 80 battements par minute', ev('MUSIC_THEMES.jouets.lead') === 'celesta' && ev('MUSIC_THEMES.jouets.bpm') === 80);
     const chars = ev('charsOf("jouets").map(([id])=> id)');
