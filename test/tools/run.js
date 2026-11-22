@@ -9,7 +9,9 @@
    - Hasard rejouable : une graine est tirée à chaque passage (ou TEST_SEED=n)
      et transmise aux suites ; en cas d'échec, la commande pour rejouer
      exactement le même passage est affichée.
-   Le code de sortie est 1 si une suite échoue ou si aucune ne correspond. */
+   Sortie (contrat cothon) : 0 tout vert, 1 une suite échoue, 2 rien n'a pu
+   tourner (aucune suite ne correspond).
+     node test/tools/run.js --selftest   vérifie le lanceur sur de fausses suites */
 const { spawn } = require('child_process');
 const fs = require('fs');
 const os = require('os');
@@ -17,8 +19,11 @@ const path = require('path');
 
 // --holdout : les tests holdout (test/holdout/), lancés par `bun run verify` et la CI
 const holdout = process.argv.includes('--holdout');
-const dir = holdout ? path.join(__dirname, '..', 'holdout') : path.join(__dirname, '..');
-const filters = process.argv.slice(2).filter((a) => a !== '--holdout');
+// TEST_DIR : seulement pour le --selftest (de fausses suites dans un dossier temporaire)
+const dir = process.env.TEST_DIR || (holdout ? path.join(__dirname, '..', 'holdout') : path.join(__dirname, '..'));
+const filters = process.argv.slice(2).filter((a) => a !== '--holdout' && a !== '--selftest');
+
+if (process.argv.includes('--selftest')) selftest();
 const jobsMax = Number(process.env.TEST_JOBS) || os.availableParallelism();
 const seed =
   Number.isInteger(Number(process.env.TEST_SEED)) && process.env.TEST_SEED !== ''
@@ -30,8 +35,8 @@ const files = fs
   .filter((f) => f.endsWith('.test.js'))
   .filter((f) => !filters.length || filters.some((x) => f.includes(x)));
 if (!files.length) {
-  console.error(`❌ aucune suite ne correspond à : ${filters.join(' ')}`);
-  process.exit(1);
+  console.error(`⛔ aucune suite ne correspond à : ${filters.join(' ')}`);
+  process.exit(2); // rien n'a pu tourner : bloqué, pas réussi
 }
 
 const jobs = [];
@@ -83,3 +88,36 @@ function done() {
   process.exit(failures.length ? 1 : 0);
 }
 start();
+
+// Le lanceur vérifié sur de fausses suites : une verte, une rouge, une
+// découpée en 2 morceaux, et un filtre sans correspondance.
+function selftest() {
+  const { spawnSync } = require('child_process');
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'run-selftest-'));
+  fs.writeFileSync(path.join(tmp, 'verte.test.js'), 'process.exit(0);\n');
+  fs.writeFileSync(path.join(tmp, 'rouge.test.js'), "console.log('❌ faux échec'); process.exit(1);\n");
+  fs.writeFileSync(
+    path.join(tmp, 'morceaux.test.js'),
+    "// @shards 2\nconsole.log('morceau ' + process.env.TEST_SHARD);\n",
+  );
+  const go = (...args) =>
+    spawnSync(process.execPath, [__filename, ...args], { env: { ...process.env, TEST_DIR: tmp }, encoding: 'utf8' });
+  const all = go(),
+    green = go('verte', 'morceaux'),
+    none = go('introuvable');
+  const checks = [
+    ['une suite rouge fait sortir en 1', all.status === 1],
+    ['sa sortie est affichée', all.stdout.includes('faux échec')],
+    [
+      'une suite découpée tourne en 2 morceaux',
+      /morceaux \(1\/2\)/.test(all.stdout) && /morceaux \(2\/2\)/.test(all.stdout),
+    ],
+    ['le filtre ne lance que les suites voulues, vertes : 0', green.status === 0 && !green.stdout.includes('rouge')],
+    ['aucune suite ne correspond : bloqué, 2', none.status === 2],
+  ];
+  fs.rmSync(tmp, { recursive: true, force: true });
+  for (const [name, ok] of checks) if (!ok) console.log(`❌ ${name}`);
+  const ok = checks.every(([, v]) => v);
+  console.log(ok ? `run : selftest ok (${checks.length} cas)` : 'run : selftest en échec');
+  process.exit(ok ? 0 : 1);
+}

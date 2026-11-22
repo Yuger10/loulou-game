@@ -3,7 +3,7 @@
   "private": true,
   "packageManager": "bun@1.4.5",
   "scripts": {
-    "check": "node test/tools/lockfile.js && bun run lint && bun run typecheck && bun run docs && bun run test",
+    "check": "node test/tools/check.js",
     "lint": "oxlint --deny-warnings js test && oxfmt --check js test",
     "format": "oxfmt js test",
     "typecheck": "tsc -p .",
@@ -11,7 +11,8 @@
     "start": "python3 -m http.server 8080",
     "test": "node test/tools/run.js",
     "test:holdout": "node test/tools/run.js --holdout",
-    "verify": "bun run check && bun run test:holdout",
+    "verify": "node test/tools/check.js --verify",
+    "selftest": "node test/tools/check.js --selftest && node test/tools/run.js --selftest && node test/tools/sensitive.js --selftest && bash .claude/hooks/guard-resources.sh --selftest",
     "inventaire": "node test/tools/globals.js $(node -e \"console.log(require('./js/slices.cjs').SLICES.flatMap(s=>s.files).join(' '))\")",
     "sync": "node test/tools/sync.js",
     "sw": "node test/tools/sync.js",
