@@ -122,7 +122,7 @@ const SLICES = [
   {
     id: 'party',
     layer: 'features',
-    files: ['js/features/party/party.js', 'js/features/party/race.js'],
+    files: ['js/features/party/turn-bar.js', 'js/features/party/party.js', 'js/features/party/race.js'],
     css: ['js/features/party/party.css', 'js/features/party/race.css'],
   },
   {
