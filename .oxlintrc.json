@@ -2,6 +2,7 @@
   // Lint du projet (factory, phase 1 ; stack de référence cothon). Décisions : docs/factory/SPEED.md.
   // Les règles "off" ci-dessous sont provisoires : la track conductor/tracks/lint-regles-completes_20261121 les réactive en corrigeant le code.
   "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["eslint", "unicorn", "oxc", "typescript", "import"],
   "categories": { "correctness": "error", "suspicious": "error" },
   "env": { "browser": true, "node": true, "es2022": true },
   "rules": {
@@ -35,7 +36,11 @@
     // cliquet : aucun fichier ne dépasse le plus gros actuel ; à abaisser vers 800
     "max-lines": ["error", { "max": 1250 }],
     // une valeur par défaut s'écrit dans la signature (rng = random), ou dans une variable locale
-    "no-param-reassign": "error"
+    "no-param-reassign": "error",
+    // un cycle d'imports peut lire une valeur pas encore définie au démarrage des modules ES
+    "import/no-cycle": "error",
+    // main.js charge les slices par import à effet, et un mini-jeu s'y enregistre (ADR 0002)
+    "import/no-unassigned-import": "off"
   },
   "overrides": [
     // la seule source de hasard, et les tests qui forcent un tirage en remplaçant Math.random

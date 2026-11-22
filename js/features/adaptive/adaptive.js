@@ -27,7 +27,7 @@ import { state } from '../../entities/game-state/index.js';
 import { party } from '../../entities/player/index.js';
 import { pickRandom, random } from '../../shared/lib/index.js';
 import { lastGame } from './session.js';
-import { SKILL_ERR_TOLERANCE, skillStatus } from './skills.js';
+import { SKILL_ERR_TOLERANCE, skillStatus } from './skill-status.js';
 
 const GAME_TIER_MAX = { calc: 6, shapes: 6, planets: 6 };
 const ADAPT_UP_STREAK = 2; // réussites d'affilée pour monter d'un cran

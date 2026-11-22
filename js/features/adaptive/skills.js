@@ -7,19 +7,8 @@ import { save, state } from '../../entities/game-state/index.js';
 import { party } from '../../entities/player/index.js';
 import { adaptAfterMission } from './adaptive.js';
 import { gameDiff } from './game-diff.js';
+import { skillStatus } from './skill-status.js';
 import { inBonusChallenge, lastGame } from './session.js';
-
-const SKILL_STATUS = {
-  aise: { label: "À l'aise", cls: 'ok' },
-  encours: { label: 'En cours', cls: 'mid' },
-  difficile: { label: 'À travailler', cls: 'hard' },
-  nouveau: { label: 'Pas assez joué', cls: 'new' },
-  jamais: { label: 'Pas encore joué', cls: 'new' },
-};
-
-// Au mémo, retourner deux cartes différentes fait partie du jeu : on
-// tolère donc plus d'« erreurs » avant de dire que c'est difficile.
-const SKILL_ERR_TOLERANCE = { memory: 3 };
 
 function todayKey(dArg) {
   const d = dArg || new Date();
@@ -78,25 +67,4 @@ function recordMission(ok) {
   return step;
 }
 
-function skillStatus(s, key) {
-  if (!s || !(s.wins + s.fails)) return 'jamais';
-  const r = s.recent || [];
-  const last = r.slice(-6);
-  if (last.length < 2) return 'nouveau';
-  const fails = last.filter((x) => !x.ok).length / last.length;
-  const avgErr = last.reduce((a, x) => a + x.e, 0) / last.length / (SKILL_ERR_TOLERANCE[key] || 1);
-  if (fails >= 0.34 || avgErr >= 1.5) return 'difficile';
-  if (last.length >= 3 && avgErr <= 0.5 && fails === 0) return 'aise';
-  return 'encours';
-}
-
-export {
-  missionProgress,
-  noteAnswerError,
-  recordMission,
-  resetMissionErrors,
-  SKILL_ERR_TOLERANCE,
-  SKILL_STATUS,
-  skillStatus,
-  todayKey,
-};
+export { missionProgress, noteAnswerError, recordMission, resetMissionErrors, todayKey };

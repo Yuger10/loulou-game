@@ -9,14 +9,7 @@ export {
   lastGame,
   setLastGame,
 } from './session.js';
-export {
-  missionProgress,
-  noteAnswerError,
-  recordMission,
-  resetMissionErrors,
-  SKILL_STATUS,
-  skillStatus,
-  todayKey,
-} from './skills.js';
+export { missionProgress, noteAnswerError, recordMission, resetMissionErrors, todayKey } from './skills.js';
+export { SKILL_STATUS, skillStatus } from './skill-status.js';
 export { gameDiff, gameDiffIsland } from './game-diff.js';
 export { needsPractice, pickPracticeGame, progressCheer } from './adaptive.js';
