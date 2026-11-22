@@ -38,19 +38,20 @@ const file = (f) => path.join(page.root, f);
 
 /* ---------- un seul numéro de version ---------- */
 section('La version du jeu');
-const V = Number(
-  (/const APP_VERSION = (\d+);/.exec(fs.readFileSync(file('js/shared/lib/version.js'), 'utf8')) || [])[1],
-);
+// V : la version affichée (66, ou 66.1 pour une livraison sans track)
+const { major: MAJOR, patch: PATCH, label: V } = require('./tools/version.js').readVersion();
+// la version d'avant : 66 avant 66.1, 65 avant 66
+const PREV = PATCH > 0 ? String(MAJOR) : String(MAJOR - 1);
 const SW = fs.readFileSync(file('sw.js'), 'utf8');
-check('js/shared/lib/version.js donne un numéro de version', V > 0, String(V));
+check('js/shared/lib/version.js donne un numéro de version', MAJOR > 0, V);
 check(
-  'le cache du service worker porte ce numéro (lagon-vNN)',
+  'le cache du service worker porte ce numéro (lagon-v66, lagon-v66.1)',
   SW.includes(`const CACHE = 'lagon-v${V}';`),
   (/const CACHE = '([^']+)'/.exec(SW) || [])[1],
 );
 // bun run sync réécrit le nom du cache à partir de la version
 try {
-  fs.writeFileSync(file('sw.js'), SW.replace(/const CACHE = 'lagon-v\d+';/, "const CACHE = 'lagon-v1';"));
+  fs.writeFileSync(file('sw.js'), SW.replace(/const CACHE = 'lagon-v[\d.]+';/, "const CACHE = 'lagon-v1';"));
   execFileSync('node', [file('test/tools/sync.js')], { stdio: 'pipe' });
   check('bun run sync écrit la version dans le cache de sw.js', fs.readFileSync(file('sw.js'), 'utf8') === SW);
 } finally {
@@ -93,7 +94,12 @@ function openGame(flag) {
   const { w, d, jsdomErrors } = openGame();
   const ev = (code) => w.eval(code);
   await wait(150);
-  check('le jeu connaît sa version', ev('APP_VERSION') === V);
+  check('le jeu connaît sa version', ev('APP_LABEL') === V);
+  check(
+    'les versions se comparent dans le bon ordre : 66 < 66.1 < 66.2 < 66.10 < 67',
+    ev("['66', '66.1', '66.2', '66.10', '67'].map(versionBuild).every((b, i, a) => i === 0 || b > a[i - 1])") &&
+      ev("versionBuild('lagon-v66.1') === versionBuild('66.1')"),
+  );
 
   section("L'espace parents");
   ev('parentUnlockedUntil = Date.now() + 60000; openParentSpace()');
@@ -188,7 +194,7 @@ function openGame(flag) {
 
   await reopen();
   reg = { installing: null, waiting: null, update: async () => {} };
-  w.caches = { keys: async () => ['lagon-v' + (V + 1)] };
+  w.caches = { keys: async () => ['lagon-v' + (MAJOR + 1)] };
   check(
     'une version plus récente est déjà installée : le jeu redémarre pour la prendre',
     (await press()) === 'reload' && flag() === String(V),
@@ -202,7 +208,7 @@ function openGame(flag) {
 
   section('Après le redémarrage');
   const note = (g) => g.d.getElementById('splash-note');
-  const after = openGame(V - 1);
+  const after = openGame(PREV);
   await wait(300);
   check(
     `sur l'écran titre : « Le jeu est à jour : version ${V} »`,

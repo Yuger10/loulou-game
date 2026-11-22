@@ -3,14 +3,14 @@
    worker (sw.js) trouve la nouvelle version, l'installe, et la page se recharge
    (js/app/init.js). Mais sur iPad, une app laissée en arrière-plan ne redémarre
    pas : elle reprend l'ancienne page. Cette slice ajoute dans l'espace parents :
-   - la version du jeu (APP_VERSION, js/shared/lib/version.js) ;
+   - la version du jeu (APP_LABEL, js/shared/lib/version.js) ;
    - un bouton « Chercher une mise à jour », qui demande tout de suite au
      service worker s'il y a du neuf, et redémarre le jeu si oui ;
    - après ce redémarrage, un message « Le jeu est à jour : version N » (affiché
      sur l'écran titre par js/app/init.js).
    La progression n'est jamais touchée : elle est dans la sauvegarde, qui se
    migre toute seule (js/entities/game-state). */
-import { APP_VERSION } from '../../shared/lib/index.js';
+import { APP_LABEL, versionBuild } from '../../shared/lib/index.js';
 import { playSound } from '../../shared/ui/index.js';
 
 // mémorisé juste avant le redémarrage, pour l'annoncer ensuite
@@ -21,16 +21,16 @@ const UPDATE_MESSAGES = {
   searching: "🔍 Recherche d'une nouvelle version…",
   offline: "📴 Pas d'Internet : le jeu se mettra à jour à la prochaine connexion.",
   error: '😕 Le site ne répond pas. Vérifiez Internet, puis réessayez dans un moment.',
-  uptodate: `✅ Le jeu est à jour (version ${APP_VERSION}).`,
+  uptodate: `✅ Le jeu est à jour (version ${APP_LABEL}).`,
   found: '✨ Nouvelle version trouvée ! Le jeu redémarre dans quelques secondes…',
   reload: '🔄 Le jeu redémarre pour prendre la dernière version…',
 };
 
-// le plus grand numéro des caches `lagon-vNN` déjà installés (0 s'il n'y en a pas)
+// la plus récente des versions déjà installées (caches `lagon-v66`, `lagon-v66.1`…), 0 sinon
 async function installedVersion() {
   try {
     if (typeof caches === 'undefined') return 0;
-    const nums = (await caches.keys()).map((k) => Number((/^lagon-v(\d+)$/.exec(k) || [])[1]) || 0);
+    const nums = (await caches.keys()).filter((k) => /^lagon-v\d+(\.\d+)?$/.test(k)).map(versionBuild);
     return Math.max(0, ...nums);
   } catch {
     return 0;
@@ -62,7 +62,7 @@ async function checkForUpdate() {
     return 'found';
   }
   // un service worker plus récent que cette page est déjà installé
-  if ((await installedVersion()) > APP_VERSION) return 'reload';
+  if ((await installedVersion()) > versionBuild(APP_LABEL)) return 'reload';
   return 'uptodate';
 }
 
@@ -72,7 +72,7 @@ function reloadGame() {
 
 function rememberUpdate() {
   try {
-    sessionStorage.setItem(UPDATE_FLAG, String(APP_VERSION));
+    sessionStorage.setItem(UPDATE_FLAG, APP_LABEL);
   } catch {
     // session bloquée (navigation privée) : on ne montrera simplement pas « Le jeu est à jour »
   }
@@ -89,15 +89,15 @@ function announceUpdate() {
     // session bloquée : pas de message après la mise à jour, rien de grave
   }
   if (from === null) return null;
-  return Number(from) < APP_VERSION
-    ? `✨ Le jeu est à jour : version ${APP_VERSION}`
-    : `✅ Le jeu est à jour (version ${APP_VERSION})`;
+  return versionBuild(from) < versionBuild(APP_LABEL)
+    ? `✨ Le jeu est à jour : version ${APP_LABEL}`
+    : `✅ Le jeu est à jour (version ${APP_LABEL})`;
 }
 
 /* ---- la carte de l'espace parents ---- */
 function updateCardHTML() {
   return `<section class="bk-card ps-update"><h3>📲 Version du jeu</h3>
-    <p class="ps-version">Version <strong id="ps-version">${APP_VERSION}</strong></p>
+    <p class="ps-version">Version <strong id="ps-version">${APP_LABEL}</strong></p>
     <div class="ps-actions">
       <button type="button" class="btn-small" id="ps-update">🔄 Chercher une mise à jour</button>
     </div>
