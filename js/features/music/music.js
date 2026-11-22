@@ -205,12 +205,16 @@ function stopMusic() {
   try {
     master.gain.cancelScheduledValues(audioCtx.currentTime);
     master.gain.setTargetAtTime(0, audioCtx.currentTime, 0.15);
-  } catch {}
+  } catch {
+    // contexte audio déjà fermé : la musique est de toute façon coupée
+  }
   setTimeout(() => {
     try {
       master.disconnect();
       filter.disconnect();
-    } catch {}
+    } catch {
+      // nœuds audio déjà débranchés : rien à faire
+    }
   }, 900);
 }
 // À appeler dès qu'un réglage ou la situation change

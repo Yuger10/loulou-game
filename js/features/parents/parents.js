@@ -28,7 +28,7 @@ import {
 } from '../../entities/player/index.js';
 import { setCurrentWorld } from '../../entities/world/index.js';
 import { currentSeason, FETES, seasonPreview } from '../../entities/season/index.js';
-import { emit, on, random } from '../../shared/lib/index.js';
+import { emit, on, random, storageRemove, storageWrite } from '../../shared/lib/index.js';
 import { askConfirm, closeModal, openModal, playSound, showToast, speak } from '../../shared/ui/index.js';
 import { SKILL_STATUS, skillStatus, todayKey } from '../adaptive/index.js';
 import { openBackup } from '../backup/index.js';
@@ -37,6 +37,7 @@ import { renderSoundBtn } from '../profile/index.js';
 import { bindQuit, gameHeader } from '../screen/index.js';
 import { setSeasonPreview } from '../seasons/index.js';
 import { bindUpdateCard, updateCardHTML } from '../update/index.js';
+import './storage-alert.js'; // message et carte quand l'enregistrement échoue
 
 const SKILL_GROUPS = [
   { id: 'lire', emoji: '📖', name: 'Lecture et langage', games: ['reading', 'determinants'] },
@@ -163,7 +164,9 @@ function openParentGate(onOk, onCancel, onWrong) {
   setTimeout(() => {
     try {
       input.focus();
-    } catch {}
+    } catch {
+      // le focus peut échouer si la fenêtre vient de se fermer : rien de grave
+    }
   }, 50);
 }
 
@@ -337,9 +340,7 @@ function openParentSpace(selectedId) {
           renderSoundBtn();
         } else {
           st.music = musicOn;
-          try {
-            localStorage.setItem(profileSaveKey(p.id), JSON.stringify(st));
-          } catch {}
+          storageWrite(profileSaveKey(p.id), JSON.stringify(st));
         }
         document.querySelectorAll('[data-music]').forEach((x) => x.classList.toggle('on', x === b));
         showToast(musicOn ? "🎵 Musique d'ambiance" : 'Pas de musique');
@@ -356,9 +357,7 @@ function openParentSpace(selectedId) {
     } // une note pour entendre le nouveau volume
     else {
       st.soundVolume = v;
-      try {
-        localStorage.setItem(profileSaveKey(p.id), JSON.stringify(st));
-      } catch {}
+      storageWrite(profileSaveKey(p.id), JSON.stringify(st));
     }
   };
   document.getElementById('ps-backup').onclick = () => {
@@ -382,9 +381,7 @@ function openParentSpace(selectedId) {
       setCurrentWorld('lagon');
       refreshAll();
     } else {
-      try {
-        localStorage.removeItem(profileSaveKey(p.id));
-      } catch {}
+      storageRemove(profileSaveKey(p.id));
     }
     playSound('win');
     speak(`Nouvelle aventure pour ${p.name || 'toi'} !`);

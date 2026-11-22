@@ -578,7 +578,9 @@ function bindDecoDrag(sc, el) {
       el.classList.add('dragging');
       try {
         el.setPointerCapture(e.pointerId);
-      } catch {}
+      } catch {
+        // capture du pointeur refusée par certains navigateurs : le glisser marche quand même
+      }
     }
     const r = sc.getBoundingClientRect();
     if (!r.width) return;

@@ -20,7 +20,13 @@ const SLICES = [
   {
     id: 'shared-lib',
     layer: 'shared',
-    files: ['js/shared/lib/random.js', 'js/shared/lib/events.js', 'js/shared/lib/version.js', 'js/shared/lib/text.js'],
+    files: [
+      'js/shared/lib/random.js',
+      'js/shared/lib/events.js',
+      'js/shared/lib/version.js',
+      'js/shared/lib/text.js',
+      'js/shared/lib/storage.js',
+    ],
     css: [],
   },
   {
@@ -349,7 +355,7 @@ const SLICES = [
   {
     id: 'parents',
     layer: 'features',
-    files: ['js/features/parents/parents.js'],
+    files: ['js/features/parents/parents.js', 'js/features/parents/storage-alert.js'],
     css: ['js/features/parents/parents.css'],
   },
   { id: 'rest', layer: 'features', files: ['js/features/rest/rest.js'], css: ['js/features/rest/rest.css'] },

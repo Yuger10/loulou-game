@@ -73,7 +73,9 @@ function reloadGame() {
 function rememberUpdate() {
   try {
     sessionStorage.setItem(UPDATE_FLAG, String(APP_VERSION));
-  } catch {}
+  } catch {
+    // session bloquée (navigation privée) : on ne montrera simplement pas « Le jeu est à jour »
+  }
 }
 
 // au démarrage : si le jeu vient de redémarrer pour une mise à jour, le message
@@ -83,7 +85,9 @@ function announceUpdate() {
   try {
     from = sessionStorage.getItem(UPDATE_FLAG);
     sessionStorage.removeItem(UPDATE_FLAG);
-  } catch {}
+  } catch {
+    // session bloquée : pas de message après la mise à jour, rien de grave
+  }
   if (from === null) return null;
   return Number(from) < APP_VERSION
     ? `✨ Le jeu est à jour : version ${APP_VERSION}`

@@ -19,12 +19,17 @@
     // anti-pattern 2 : tout tirage passe par random() de js/shared/lib (graine fixable en test)
     "no-restricted-properties": [
       "error",
-      { "object": "Math", "property": "random", "message": "Utiliser random() (ou pickRandom, shuffle) de js/shared/lib : une seule source de hasard, rejouable en test." }
-    ]
+      { "object": "Math", "property": "random", "message": "Utiliser random() (ou pickRandom, shuffle) de js/shared/lib : une seule source de hasard, rejouable en test." },
+      // anti-pattern 3 : une écriture ratée ne doit jamais passer inaperçue
+      { "object": "localStorage", "property": "setItem", "message": "Utiliser storageWrite() de js/shared/lib : elle signale un enregistrement raté (message, espace parents)." },
+      { "object": "localStorage", "property": "removeItem", "message": "Utiliser storageRemove() de js/shared/lib : elle signale un échec." }
+    ],
+    // anti-pattern 3 : un bloc vide dit pourquoi, dans un commentaire (catch { /* raison */ })
+    "no-empty": "error"
   },
   "overrides": [
     // la seule source de hasard, et les tests qui forcent un tirage en remplaçant Math.random
-    { "files": ["js/shared/lib/random.js", "test/**"], "rules": { "no-restricted-properties": "off" } }
+    { "files": ["js/shared/lib/random.js", "js/shared/lib/storage.js", "test/**"], "rules": { "no-restricted-properties": "off" } }
   ],
   "ignorePatterns": ["node_modules/**"]
 }

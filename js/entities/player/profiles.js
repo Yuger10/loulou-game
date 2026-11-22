@@ -1,5 +1,5 @@
 /* ---------- Joueurs : profils et leur stockage ---------- */
-import { cleanName, random } from '../../shared/lib/index.js';
+import { cleanName, random, storageRemove, storageWrite } from '../../shared/lib/index.js';
 import { playSound, showToast, speak } from '../../shared/ui/index.js';
 import { avatarText, defaultCompanionFor } from '../companion/index.js';
 import { freshState, load, replaceState, save, setSaveSlot, state } from '../game-state/index.js';
@@ -26,16 +26,16 @@ function newId() {
 }
 
 function saveProfiles() {
-  try {
-    localStorage.setItem(PROFILES_KEY, JSON.stringify(profiles));
-  } catch {}
+  storageWrite(PROFILES_KEY, JSON.stringify(profiles));
 }
 
 function loadProfiles() {
   try {
     const raw = localStorage.getItem(PROFILES_KEY);
     if (raw) profiles = JSON.parse(raw);
-  } catch {}
+  } catch {
+    // profils illisibles ou stockage bloqué : on repart d'une liste vide, réparée juste après
+  }
   if (!profiles || !Array.isArray(profiles.list)) profiles = { list: [], current: null };
   profiles.list.forEach((p) => {
     p.name = cleanName(p.name); // porte d'entrée : profils enregistrés ou importés
@@ -47,14 +47,14 @@ function loadProfiles() {
     let legacy = null;
     try {
       legacy = JSON.parse(localStorage.getItem(LEGACY_SAVE_KEY) || 'null');
-    } catch {}
+    } catch {
+      // ancienne partie illisible : rien à migrer
+    }
     const id = newId();
     profiles.list = [{ id, name: (legacy && legacy.name) || '', avatar: (legacy && legacy.avatar) || '👧' }];
     profiles.current = id;
     if (legacy) {
-      try {
-        localStorage.setItem(profileSaveKey(id), JSON.stringify(legacy));
-      } catch {}
+      storageWrite(profileSaveKey(id), JSON.stringify(legacy));
     }
     saveProfiles();
   }
@@ -127,9 +127,7 @@ function addProfile(name, avatar, age, gender, companion) {
 function deleteProfile(id) {
   if (profiles.list.length <= 1) return false;
   profiles.list = profiles.list.filter((p) => p.id !== id);
-  try {
-    localStorage.removeItem(profileSaveKey(id));
-  } catch {}
+  storageRemove(profileSaveKey(id));
   party.players = party.players.filter((pid) => pid !== id);
   if (profiles.current === id) {
     profiles.current = profiles.list[0].id;
