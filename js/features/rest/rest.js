@@ -37,7 +37,24 @@ import { grisouSVG } from '../story/index.js';
    Mouvements et postures sûrs pour les 4-10 ans (pas d'équilibre sur la tête,
    pas de saut en hauteur). `art` : un personnage des îles (char) ou un
    compagnon (comp). `sec` : durée d'une étape. */
+/** @typedef {import('../../entities/game-state/index.js').GameState} GameState */
+/** @typedef {GameState['restLog'][string]} RestDay */
+/** Une étape guidée : un personnage des îles (`char`) ou un compagnon (`comp`).
+ * @typedef {{ char?: string, comp?: string, anim: string, say: string }} RestStep */
+/**
+ * Une activité : `steps` (bouger, yoga), `breaths` (respirer) ou `ideas` (hors écran).
+ * @typedef {{
+ *   emoji: string,
+ *   label: string,
+ *   said: string,
+ *   intro?: string,
+ *   steps?: RestStep[],
+ *   breaths?: number,
+ *   ideas?: string[],
+ * }} RestActivity
+ */
 const REST_STEP_SEC = 20;
+/** @type {Record<string, RestActivity>} */
 const REST_ACTIVITIES = {
   move: {
     emoji: '🤸',
@@ -107,14 +124,21 @@ function restLogToday() {
 }
 function restKeepDays() {
   const keys = Object.keys(state.restLog || {}).sort();
-  while (keys.length > 14) delete state.restLog[keys.shift()];
+  while (keys.length > 14) delete state.restLog[/** @type {string} */ (keys.shift())]; // plus de 14 clés : shift en rend une
 }
+/** @param {Date} d */
 const hhmm = (d) => `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
 
 /* ---- le voile ---- */
 let inMission = false; // une mission est en cours : on la laisse finir
+/** @type {ReturnType<typeof setTimeout>[]} */
 let restTimers = []; // étapes d'une activité (annulables)
+/** @type {{ id: string | null, until: number } | null} */
 let restGrace = null; // { id, until } : un adulte fait changer de joueur
+/**
+ * @param {() => void} fn
+ * @param {number} ms
+ */
 const restLater = (fn, ms) => {
   const t = setTimeout(fn, ms);
   restTimers.push(t);
@@ -142,6 +166,7 @@ function restActive() {
   const el = document.getElementById('rest-veil');
   return !!el && !el.hidden;
 }
+/** @param {boolean} inert */
 function setAppInert(inert) {
   const app = document.getElementById('app');
   if (app) {
@@ -156,6 +181,7 @@ function setAppInert(inert) {
 function restBuddyId() {
   return pauseAnnouncer() || currentCompanion();
 }
+/** @param {boolean} asleep */
 function restBuddyHTML(asleep) {
   return `<div class="rest-buddy sleepy ${asleep ? 'asleep' : 'yawn'}" aria-hidden="true">
     <span class="rest-nightcap"><svg viewBox="0 0 60 40"><path d="M4 36 Q20 4 52 10 Q40 18 44 34 Z" fill="#7C6CE0"/><path d="M2 34 h44 v6 h-44 Z" fill="#fff" opacity=".9"/><circle cx="53" cy="10" r="5" fill="#fff"/></svg></span>
@@ -175,6 +201,10 @@ function restAdultBtn() {
   return `<button type="button" class="rest-adult" id="rest-adult">🔒 Un adulte</button>`;
 }
 
+/**
+ * @param {string} stageName
+ * @param {string} [extra]
+ */
 function renderVeil(stageName, extra) {
   const el = veilEl();
   el.dataset.stage = stageName;
@@ -258,7 +288,11 @@ function showVeil() {
 // fermer une fenêtre (hors mission) sans que la fermeture relance maybeRest
 let closingQuietly = false;
 function closeModalQuietly() {
-  if (!document.getElementById('overlay') || !document.getElementById('overlay').classList.contains('show')) return;
+  if (
+    !document.getElementById('overlay') ||
+    !(/** @type {HTMLElement} */ (document.getElementById('overlay')).classList.contains('show'))
+  )
+    return;
   closingQuietly = true;
   closeModal();
   closingQuietly = false;
@@ -298,17 +332,20 @@ function restTick() {
 }
 
 /* ---- les activités ---- */
+/** @param {RestStep} step */
 function restArt(step) {
   if (step.comp) return `<span class="rest-step-art anim-${step.anim}">${companionSVG(step.comp, 'happy')}</span>`;
-  return `<span class="rest-step-art anim-${step.anim}">${charFace(step.char)}</span>`;
+  // sans compagnon, l'étape a un personnage
+  return `<span class="rest-step-art anim-${step.anim}">${charFace(/** @type {string} */ (step.char))}</span>`;
 }
+/** @param {string} key */
 function startRestActivity(key) {
   const a = REST_ACTIVITIES[key];
   if (!a) return;
   restClearTimers();
   const el = veilEl();
   if (key === 'offscreen') {
-    const idea = pickRandom(a.ideas);
+    const idea = pickRandom(/** @type {string[]} */ (a.ideas)); // l'activité hors écran a ses idées
     finishRestActivity(key, idea);
     return;
   }
@@ -321,19 +358,20 @@ function startRestActivity(key) {
         <p class="rest-say" id="rest-phase">${a.intro}</p>
         <div class="rest-progress" aria-hidden="true"><i></i></div>
       </div>`;
-    speak(a.intro);
-    const g = el.querySelector('.rest-grisou'),
-      phase = el.querySelector('#rest-phase'),
-      bar = el.querySelector('.rest-progress i');
+    // respirer : l'activité a son nombre de respirations (`breaths`)
+    speak(/** @type {string} */ (a.intro));
+    const g = /** @type {HTMLElement} */ (el.querySelector('.rest-grisou')),
+      phase = /** @type {HTMLElement} */ (el.querySelector('#rest-phase')),
+      bar = /** @type {HTMLElement} */ (el.querySelector('.rest-progress i'));
     const CYCLE = 8000;
-    for (let i = 0; i < a.breaths; i++) {
+    for (let i = 0; i < /** @type {number} */ (a.breaths); i++) {
       restLater(
         () => {
           g.classList.add('inhale');
           g.classList.remove('exhale');
           phase.textContent = 'On inspire…';
           speak('On inspire…');
-          bar.style.width = `${Math.round(((i + 0.5) / a.breaths) * 100)}%`;
+          bar.style.width = `${Math.round(((i + 0.5) / /** @type {number} */ (a.breaths)) * 100)}%`;
         },
         1500 + i * CYCLE,
       );
@@ -343,42 +381,47 @@ function startRestActivity(key) {
           g.classList.remove('inhale');
           phase.textContent = 'On souffle…';
           speak('On souffle…');
-          bar.style.width = `${Math.round(((i + 1) / a.breaths) * 100)}%`;
+          bar.style.width = `${Math.round(((i + 1) / /** @type {number} */ (a.breaths)) * 100)}%`;
         },
         1500 + i * CYCLE + CYCLE / 2,
       );
     }
-    restLater(() => finishRestActivity(key), 1500 + a.breaths * CYCLE);
+    restLater(() => finishRestActivity(key), 1500 + /** @type {number} */ (a.breaths) * CYCLE);
     return;
   }
-  // bouger, yoga : 3 étapes guidées
-  speak(a.intro);
+  // bouger, yoga : 3 étapes guidées (`steps`)
+  speak(/** @type {string} */ (a.intro));
+  /** @param {number} i */
   const runStep = (i) => {
-    if (i >= a.steps.length) {
+    if (i >= /** @type {RestStep[]} */ (a.steps).length) {
       finishRestActivity(key);
       return;
     }
-    const s = a.steps[i];
+    const s = /** @type {RestStep[]} */ (a.steps)[i];
     el.innerHTML = `${restNightHTML()}
       <div class="rest-box">
         <h2>${a.emoji} ${a.label}</h2>
         ${restArt(s)}
         <p class="rest-say">${s.say}</p>
-        <div class="rest-progress" aria-hidden="true"><i style="width:${Math.round((i / a.steps.length) * 100)}%"></i></div>
+        <div class="rest-progress" aria-hidden="true"><i style="width:${Math.round((i / /** @type {RestStep[]} */ (a.steps).length) * 100)}%"></i></div>
       </div>`;
     speak(s.say);
-    const bar = el.querySelector('.rest-progress i');
+    const bar = /** @type {HTMLElement} */ (el.querySelector('.rest-progress i'));
     restLater(() => {
-      bar.style.width = `${Math.round(((i + 1) / a.steps.length) * 100)}%`;
+      bar.style.width = `${Math.round(((i + 1) / /** @type {RestStep[]} */ (a.steps).length) * 100)}%`;
     }, 50);
     restLater(() => runStep(i + 1), REST_STEP_SEC * 1000);
   };
   restLater(() => runStep(0), 1500);
   // premier écran tout de suite (le temps que la voix lise l'intro)
-  const s0 = a.steps[0];
+  const s0 = /** @type {RestStep[]} */ (a.steps)[0];
   el.innerHTML = `${restNightHTML()}<div class="rest-box"><h2>${a.emoji} ${a.label}</h2>${restArt(s0)}<p class="rest-say">${a.intro}</p>
     <div class="rest-progress" aria-hidden="true"><i></i></div></div>`;
 }
+/**
+ * @param {string} key
+ * @param {string} [idea]
+ */
 function finishRestActivity(key, idea) {
   const log = restLogToday();
   log.activity = key;
@@ -390,11 +433,12 @@ function finishRestActivity(key, idea) {
 }
 
 /* ---- les boutons du voile ---- */
+/** @param {HTMLElement} el */
 function bindVeil(el) {
   el.querySelectorAll('[data-rest-act]').forEach((b) =>
     setHandler(b, 'click', () => {
       playSound('tap');
-      startRestActivity(b.dataset.restAct);
+      startRestActivity(/** @type {string} */ (b.dataset.restAct));
     }),
   );
   const skip = el.querySelector('#rest-skip');
@@ -429,6 +473,7 @@ function bindVeil(el) {
         },
       );
     });
+  /** @param {number} min */
   const addMin = (min) => {
     const k = todayKey();
     const cur = state.pauseExtra && state.pauseExtra.date === k ? state.pauseExtra.min : 0;
@@ -478,11 +523,17 @@ function restRecallYesterday() {
 }
 
 /* ---- espace parents : les pauses des 7 derniers jours ---- */
-on('parents:cards', ({ st }) => {
+on('parents:cards', (/** @type {{ st: Partial<GameState> }} */ { st }) => {
   const days = [];
   for (let i = 0; i < 7; i++) days.push(todayKey(new Date(Date.now() - i * 864e5)));
-  const logs = days.map((k) => [k, (st.restLog || {})[k]]).filter(([, l]) => l && (l.at || l.attempts));
+  // le filtre ne garde que les jours qui ont une pause notée
+  const logs = /** @type {Array<[string, RestDay]>} */ (
+    days
+      .map((k) => /** @type {[string, RestDay | undefined]} */ ([k, (st.restLog || {})[k]]))
+      .filter(([, l]) => l && (l.at || l.attempts))
+  );
   const fam = Number(profiles.familyPause) || 0;
+  /** @param {RestDay} l */
   const label = (l) =>
     l.activity
       ? `${REST_ACTIVITIES[l.activity].emoji} ${REST_ACTIVITIES[l.activity].label}`

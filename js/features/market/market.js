@@ -36,20 +36,21 @@ let currentTab = 'vendre';
 document.querySelectorAll('.tab-btn').forEach((btn) => {
   btn.addEventListener('click', () => {
     playSound('tap');
-    currentTab = btn.dataset.tab;
+    currentTab = /** @type {string} */ (btn.dataset.tab);
     document.querySelectorAll('.tab-btn').forEach((b) => b.classList.toggle('active', b === btn));
     renderMarche();
   });
 });
 
 function renderMarche() {
-  const el = document.getElementById('marche-content');
+  const el = /** @type {HTMLElement} */ (document.getElementById('marche-content'));
   if (currentTab === 'vendre') return renderVendre(el);
   if (currentTab === 'echanger') return renderEchanger(el);
   if (currentTab === 'acheter') return renderAcheter(el);
   return renderFusionner(el);
 }
 
+/** @param {HTMLElement} el */
 function renderVendre(el) {
   const owned = Object.keys(ALL_ITEMS).filter((k) => countItem(k) > 0);
   if (owned.length === 0) {
@@ -70,8 +71,8 @@ function renderVendre(el) {
   bindSpeakButtons();
   el.querySelectorAll('[data-sell]').forEach((btn) => {
     setHandler(btn, 'click', () => {
-      const k = btn.dataset.sell;
-      const rowEmoji = btn.closest('.market-row').querySelector('.emoji');
+      const k = /** @type {string} */ (btn.dataset.sell);
+      const rowEmoji = /** @type {HTMLElement} */ (btn.closest('.market-row')).querySelector('.emoji');
       removeItem(k, 1);
       addCoins(ALL_ITEMS[k].price);
       gainCoins(ALL_ITEMS[k].price, rowEmoji);
@@ -88,6 +89,7 @@ function renderVendre(el) {
    3 doubles, quels qu'ils soient, donnent 1 squishy manquant au choix (une
    silhouette des séries incomplètes). La boutique vend des boîtes surprises
    « mystère » : 15 pièces, 3 par jour au plus. */
+/** @type {string | null} le squishy manquant choisi */
 let sqWanted = null;
 function squishyTradeHTML() {
   const dupes = squishyDuplicates(),
@@ -108,11 +110,15 @@ function squishyTradeHTML() {
     <button type="button" class="btn-craft" id="sqm-trade" ${!need && sqWanted ? '' : 'disabled'}>${label}</button>
   </section>`;
 }
+/**
+ * @param {HTMLElement} el
+ * @param {() => void} rerender
+ */
 function bindSquishyTrade(el, rerender) {
   el.querySelectorAll('[data-want]').forEach((b) => {
     setHandler(b, 'click', () => {
       playSound('tap');
-      sqWanted = b.dataset.want;
+      sqWanted = /** @type {string} */ (b.dataset.want);
       const need = Math.max(0, SQ_TRADE_COST - squishyDuplicates());
       speak(
         need
@@ -125,10 +131,12 @@ function bindSquishyTrade(el, rerender) {
   const t = el.querySelector('#sqm-trade');
   if (t)
     setHandler(t, 'click', () => {
+      // tradeDuplicatesFor(null) répondait déjà { ok: false } : même effet, sans passer null
+      if (!sqWanted) return;
       const res = tradeDuplicatesFor(sqWanted);
       if (!res.ok) return;
       sqWanted = null;
-      const m = SQUISHIES[res.id];
+      const m = SQUISHIES[/** @type {string} */ (res.id)]; // res.ok : l'id est posé
       playSound('win');
       confetti();
       vibrate([40, 30, 80]);
@@ -157,6 +165,10 @@ function squishyShopHTML() {
     ${squishyBoxCount() ? `<button type="button" class="chip-btn sqm-go" id="sqm-go">🧸 Ouvrir mes boîtes (${squishyBoxCount()})</button>` : ''}
   </section>`;
 }
+/**
+ * @param {HTMLElement} el
+ * @param {() => void} rerender
+ */
 function bindSquishyShop(el, rerender) {
   const b = el.querySelector('#sqm-buy');
   if (b)
@@ -181,6 +193,7 @@ function bindSquishyShop(el, rerender) {
     });
 }
 
+/** @param {HTMLElement} el */
 function renderEchanger(el) {
   const owned = Object.keys(ITEMS).filter((k) => countItem(k) > 0);
   const sqPart = squishyTradeHTML();
@@ -207,13 +220,13 @@ function renderEchanger(el) {
   bindSquishyTrade(el, () => renderEchanger(el));
   el.querySelectorAll('[data-trade]').forEach((btn) => {
     setHandler(btn, 'click', () => {
-      const k = btn.dataset.trade;
+      const k = /** @type {string} */ (btn.dataset.trade);
       const others = Object.keys(ITEMS).filter((x) => x !== k);
       const gained = pickRandom(others);
       removeItem(k, 1);
       addItem(gained, 1);
       markSeen(gained);
-      gainItems([ITEMS[gained].emoji], btn.closest('.market-row').querySelector('.emoji'));
+      gainItems([ITEMS[gained].emoji], /** @type {HTMLElement} */ (btn.closest('.market-row')).querySelector('.emoji'));
       questProgress('collect', gained, 1);
       playSound('good');
       showToast(`Échangé contre ${ITEMS[gained].emoji} ${ITEMS[gained].name} !`);
@@ -223,6 +236,7 @@ function renderEchanger(el) {
   });
 }
 
+/** @param {HTMLElement} el */
 function renderAcheter(el) {
   el.innerHTML =
     `<div class="market-wallet">Tu as <span class="mw-coin">🪙</span> <strong>${state.coins}</strong> pièces</div>` +
@@ -243,10 +257,10 @@ function renderAcheter(el) {
   bindSquishyShop(el, () => renderAcheter(el));
   el.querySelectorAll('[data-buy]').forEach((btn) => {
     setHandler(btn, 'click', () => {
-      const k = btn.dataset.buy;
+      const k = /** @type {string} */ (btn.dataset.buy);
       const cost = ITEMS[k].price * 2;
       if (state.coins < cost) return;
-      const rowEmoji = btn.closest('.market-row').querySelector('.emoji');
+      const rowEmoji = /** @type {HTMLElement} */ (btn.closest('.market-row')).querySelector('.emoji');
       addCoins(-cost);
       addItem(k, 1);
       markSeen(k);
@@ -264,6 +278,7 @@ function renderAcheter(el) {
   });
 }
 
+/** @param {HTMLElement} el */
 function renderFusionner(el) {
   el.innerHTML = Object.entries(CRAFTED)
     .map(([key, c]) => {
@@ -291,12 +306,12 @@ function renderFusionner(el) {
   bindSpeakButtons();
   el.querySelectorAll('[data-craft]').forEach((btn) => {
     setHandler(btn, 'click', () => {
-      const key = btn.dataset.craft;
+      const key = /** @type {string} */ (btn.dataset.craft);
       const c = CRAFTED[key];
       Object.entries(c.recipe).forEach(([ik, qty]) => removeItem(ik, qty));
       addItem(key, 1);
       markSeen(key);
-      gainItems([c.emoji], btn.closest('.recipe-card').querySelector('.result .emoji'));
+      gainItems([c.emoji], /** @type {HTMLElement} */ (btn.closest('.recipe-card')).querySelector('.result .emoji'));
       questProgress('craft', key, 1);
       playSound('win');
       confetti();

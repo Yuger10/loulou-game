@@ -39,6 +39,9 @@ import { setSeasonPreview } from '../seasons/index.js';
 import { bindUpdateCard, updateCardHTML } from '../update/index.js';
 import './storage-alert.js'; // message et carte quand l'enregistrement échoue
 
+/** @typedef {import('../../entities/game-state/index.js').GameState} GameState */
+/** @typedef {Partial<GameState>} PlayerState la partie d'un joueur : l'état courant, ou une partie lue dans le stockage */
+
 const SKILL_GROUPS = [
   { id: 'lire', emoji: '📖', name: 'Lecture et langage', games: ['reading', 'determinants'] },
   { id: 'nombres', emoji: '🔢', name: 'Nombres', games: ['count', 'puzzle', 'compare', 'packs'] },
@@ -60,6 +63,7 @@ const SKILL_GROUPS = [
 ];
 // activités suivies qui ne sont pas des mini-jeux du choix des jeux
 // (les boîtes de rangement de la chambre à squishies, v53 : un tri)
+/** @type {Record<string, string>} */
 const SKILL_EXTRA_NAMES = { rangement: '📦 Boîtes de rangement' };
 const PAUSE_CHOICES = [0, 15, 20, 30, 45, 60];
 
@@ -74,15 +78,17 @@ let lastInteraction = Date.now();
     { passive: true },
   ),
 );
+/** @param {number} seconds */
 function tickPlayTime(seconds) {
   if (!state.playTime) state.playTime = {};
   const k = todayKey();
   state.playTime[k] = (state.playTime[k] || 0) + seconds;
   // on ne garde que les 60 derniers jours
   const keys = Object.keys(state.playTime).sort();
-  while (keys.length > 60) delete state.playTime[keys.shift()];
+  while (keys.length > 60) delete state.playTime[/** @type {string} */ (keys.shift())]; // plus de 60 clés : shift en rend une
   save();
 }
+/** @param {PlayerState} [stArg] */
 function playMinutesToday(stArg) {
   const st = stArg || state;
   return Math.floor(((st.playTime || {})[todayKey()] || 0) / 60);
@@ -121,6 +127,11 @@ function pauseDue() {
 /* ---- accès réservé aux adultes ---- */
 let parentUnlockedUntil = 0;
 // onWrong : appelée à chaque mauvaise réponse (tentatives notées pendant la pause)
+/**
+ * @param {() => void} onOk
+ * @param {() => void} [onCancel]
+ * @param {() => void} [onWrong]
+ */
 function openParentGate(onOk, onCancel, onWrong) {
   if (Date.now() < parentUnlockedUntil) {
     onOk();
@@ -146,7 +157,7 @@ function openParentGate(onOk, onCancel, onWrong) {
       onOk();
     } else {
       playSound('wrong');
-      document.getElementById('gate-err').textContent = "Ce n'est pas la bonne réponse.";
+      /** @type {HTMLElement} */ (document.getElementById('gate-err')).textContent = "Ce n'est pas la bonne réponse.";
       input.value = '';
       input.focus();
       if (onWrong) onWrong();
@@ -171,6 +182,10 @@ function openParentGate(onOk, onCancel, onWrong) {
 }
 
 /* ---- l'espace parents ---- */
+/**
+ * @param {string} id
+ * @returns {PlayerState}
+ */
 function profileState(id) {
   if (id === profiles.current) return state;
   try {
@@ -179,11 +194,13 @@ function profileState(id) {
     return {};
   }
 }
+/** @param {number} min */
 function minutesLabel(min) {
   if (min < 1) return "moins d'1 min";
   if (min < 60) return `${min} min`;
   return `${Math.floor(min / 60)} h ${String(min % 60).padStart(2, '0')}`;
 }
+/** @param {PlayerState} st */
 function playTimeHTML(st) {
   const days = [];
   for (let i = 6; i >= 0; i--) {
@@ -195,20 +212,30 @@ function playTimeHTML(st) {
   const max = Math.max(10, ...mins);
   const played = mins.filter((m) => m > 0);
   const avg = played.length ? Math.round(played.reduce((a, b) => a + b, 0) / played.length) : 0;
+  /**
+   * @param {Date} d
+   * @param {number} i
+   */
   const dayName = (d, i) => (i === 6 ? 'Auj.' : d.toLocaleDateString('fr-FR', { weekday: 'short' }).replace('.', ''));
   return `<p class="pt-today">Aujourd'hui : <b>${minutesLabel(mins[6])}</b>${played.length ? ` · moyenne les jours joués : <b>${minutesLabel(avg)}</b>` : ''}</p>
     <div class="pt-bars" role="img" aria-label="Temps de jeu des 7 derniers jours : ${days.map((d, i) => `${dayName(d, i)} ${mins[i]} minutes`).join(', ')}">
       ${days.map((d, i) => `<div class="pt-col"><div class="pt-track"><span class="pt-val">${mins[i] ? mins[i] : ''}</span><i style="height:${Math.round((mins[i] / max) * 82)}%" class="${i === 6 ? 'today' : ''}"></i></div><span class="pt-day">${dayName(d, i)}</span></div>`).join('')}
     </div>`;
 }
+/**
+ * @param {PlayerState} st
+ * @param {number | null} [age]
+ */
 function skillsHTML(st, age) {
   const sk = st.skills || {};
+  /** @param {string} k */
   const gameName = (k) => {
     const g = GAME_LIST.find((x) => x.key === k);
     return g ? `${g.emoji} ${g.name}` : SKILL_EXTRA_NAMES[k] || k;
   };
   // les jeux proposés à cet âge, plus ceux déjà joués (avant un changement d'âge)
   const allowed = new Set([...gameTypesForAge(age), ...Object.keys(sk)]);
+  /** @type {{ aise: string[], difficile: string[] }} */
   const summary = { aise: [], difficile: [] };
   const groups = SKILL_GROUPS.map((gr) => {
     const rows = gr.games
@@ -236,6 +263,7 @@ function skillsHTML(st, age) {
     </div>`;
   return sum + groups;
 }
+/** @param {string} [selectedId] */
 function openParentSpace(selectedId) {
   const id = selectedId || profiles.current;
   const p = profiles.list.find((x) => x.id === id) || currentProfile();
@@ -345,7 +373,7 @@ function openParentSpace(selectedId) {
   const vol = /** @type {HTMLInputElement} */ (document.getElementById('ps-volume'));
   setHandler(vol, 'input', () => {
     const v = Number(vol.value);
-    document.getElementById('ps-volume-v').textContent = v + ' %';
+    /** @type {HTMLElement} */ (document.getElementById('ps-volume-v')).textContent = v + ' %';
     if (p.id === profiles.current) {
       state.soundVolume = v;
       save();
@@ -402,6 +430,7 @@ function openParentSpace(selectedId) {
     });
 }
 // volume d'un joueur (0 à 100), 80 % s'il n'a jamais été réglé
+/** @param {PlayerState} st */
 function psVolumeOf(st) {
   return typeof (st && st.soundVolume) === 'number' ? st.soundVolume : 80;
 }
