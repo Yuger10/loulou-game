@@ -101,6 +101,7 @@ const AGE_GAME_TYPES = [
   // mental abstrait (calc), réservé au CP confirmé et plus.
 ];
 
+/** @param {unknown} age un nombre, une chaîne ou rien (âge non renseigné) : lu par Number */
 function gameTypesForAge(age) {
   const a = Number(age);
   if (!a) return GAME_TYPES;

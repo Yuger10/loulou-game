@@ -1686,3 +1686,9 @@ Les deux sont proposés dès 5 ans, sans minuteur. Le jeu de l'île est les poti
 - **Ce que voit l'enfant :** rien ne change.
 - **Pour le code :** la couche `js/shared/` passe en TypeScript **strict** (ADR 0003, étape 2) : 161 erreurs ramenées à 0, en JSDoc seulement, sans `any` ni `@ts-ignore` ; types partagés (`StorageError`, `ConfirmOptions`, `FormBinding`, `SoundBus`…), `pickRandom`, `shuffle` et `setHandler` génériques. `tsconfig.strict.json` grandit couche par couche ; `bun run typecheck` vérifie les deux modes. Les types plus précis ont demandé 2 annotations dans `features` (`share.js`, `music.js`). Restent `entities` (299), `features` (1 867) et `app` (23).
 - Cache `lagon-v66.6`.
+
+# v66.7 : TypeScript strict sur la couche entities
+
+- **Ce que voit l'enfant :** rien ne change.
+- **Pour le code :** la couche `js/entities/` passe en TypeScript **strict** (ADR 0003) : 299 erreurs ramenées à 0, en JSDoc seulement, sans `any`. La forme de la partie est maintenant décrite champ par champ (`GameState`, `Profile`, `Companion`, `World`, `Item`, `Squishy`…), réexportée par l'`index.js` de chaque slice. Dessins des personnages et sauvegarde : annotations seulement (vérifié : aucune ligne de dessin ni de migration modifiée, holdout vert). Ricochet : 3 annotations dans `features` et un `String()` explicite dans les quêtes. Ces types ont révélé un vrai bug, traité à part : la position des décorations déplacées était perdue au redémarrage.
+- Cache `lagon-v66.7`.

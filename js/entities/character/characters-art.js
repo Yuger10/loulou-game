@@ -18,6 +18,7 @@ const CHAR_ART = (function () {
       '" stroke-width="3" stroke-linecap="round"/>'
     );
   }
+  /** @param {string} [skin] */
   function face(skin = '#F2C6A5') {
     return (
       '<ellipse cx="60" cy="58" rx="33" ry="31.5" fill="' +
@@ -28,6 +29,14 @@ const CHAR_ART = (function () {
       features()
     );
   }
+  /**
+   * @param {string} skin
+   * @param {string} hair
+   * @param {string} cloth
+   * @param {string} hat
+   * @param {string} extra
+   * @param {string} [back]
+   */
   function human(skin, hair, cloth, hat, extra, back = '') {
     return (
       '<svg viewBox="0 0 120 130">' +
@@ -58,6 +67,12 @@ const CHAR_ART = (function () {
       '</svg>'
     );
   }
+  /**
+   * @param {string} fur
+   * @param {string} ears
+   * @param {string} extra
+   * @param {string} [body]
+   */
   function beast(fur, ears, extra, body = '') {
     return (
       '<svg viewBox="0 0 120 130">' +
@@ -77,6 +92,12 @@ const CHAR_ART = (function () {
       '</svg>'
     );
   }
+  /**
+   * @param {string} head
+   * @param {string} body
+   * @param {string} screen
+   * @param {string} addon
+   */
   function robot(head, body, screen, addon) {
     return (
       '<svg viewBox="0 0 120 130">' +
@@ -106,6 +127,7 @@ const CHAR_ART = (function () {
       '" stroke-width="2"/></svg>'
     );
   }
+  /** @type {Record<string, string>} */
   const ART = {
     pirate: human(
       '#A96848',
@@ -386,7 +408,15 @@ const CHAR_ART = (function () {
     ),
   };
   /* ---- Corrections v34 : visages dégagés, animaux reconnaissables ---- */
+  /** @param {number} [w] */
   const O = (w) => `stroke="${AI}" stroke-width="${w || 2.5}" stroke-linejoin="round"`;
+  /**
+   * @param {number} xl
+   * @param {number} xr
+   * @param {number} y
+   * @param {number} [rxArg]
+   * @param {number} [ryArg]
+   */
   function eyes(xl, xr, y, rxArg, ryArg) {
     const rx = rxArg || 5.2;
     const ry = ryArg || 6.6;
@@ -397,12 +427,24 @@ const CHAR_ART = (function () {
       )
       .join('');
   }
+  /**
+   * @param {number} xl
+   * @param {number} xr
+   * @param {number} y
+   */
   function cheeks(xl, xr, y) {
     return `<ellipse cx="${xl}" cy="${y}" rx="6" ry="3.6" fill="#FF8FA3" opacity=".55"/><ellipse cx="${xr}" cy="${y}" rx="6" ry="3.6" fill="#FF8FA3" opacity=".55"/>`;
   }
+  /**
+   * @param {number} x1
+   * @param {number} x2
+   * @param {number} y
+   * @param {number} d
+   */
   function smile(x1, x2, y, d) {
     return `<path d="M${x1} ${y} Q${(x1 + x2) / 2} ${y + d} ${x2} ${y}" fill="none" stroke="${AM}" stroke-width="3" stroke-linecap="round"/>`;
   }
+  /** @param {string} inner */
   const svg = (inner) => `<svg viewBox="0 0 120 130">${inner}</svg>`;
 
   // Sylvie la fée : les ailes passent DERRIÈRE la tête (elles cachaient le visage)
@@ -416,6 +458,10 @@ const CHAR_ART = (function () {
   );
 
   // Dragons : vraie tête de dragon (museau, cornes, crête), ailes derrière le corps
+  /**
+   * Les morceaux d'un dragon : `lashes` et `extra` sont facultatifs.
+   * @param {{ skin: string, belly: string, bellyLine: string, snout: string, wings: string, tail: string, crest: string, horns: string, lashes?: string, extra?: string }} o
+   */
   function dragon(o) {
     return svg(
       o.wings +
@@ -490,6 +536,10 @@ const CHAR_ART = (function () {
   );
 
   // Chevaux : museau allongé, crinière, oreilles en amande ; pégase = ailes, licorne = corne
+  /**
+   * Les morceaux d'un cheval : `wings` (pégase) et `horn` (licorne) sont facultatifs.
+   * @param {{ coat: string, muzzle: string, maneBack: string, forelock: string, wings?: string, horn?: string }} o
+   */
   function horse(o) {
     return svg(
       (o.wings || '') +
@@ -912,6 +962,10 @@ const CHAR_ART = (function () {
       `<rect x="90" y="104" width="22" height="20" rx="6" fill="#F2B04E" ${O(2)}/><path d="M90 110 H112" stroke="#B5702E" stroke-width="2"/>`,
   );
   // ---- Saison 2, le Royaume Arc-en-ciel ----
+  /**
+   * @param {string} base
+   * @param {string} extra
+   */
   const plus = (base, extra) => base.replace('</svg>', extra + '</svg>');
   // la Reine Arc-en-ciel : licorne blanche à crinière arc-en-ciel, couronne d'or
   ART.reine = plus(
@@ -974,9 +1028,14 @@ const CHAR_ART = (function () {
   );
   return ART;
 })();
+/** @param {string} id */
 function charArtSVG(id) {
   return CHAR_ART[id] || '';
 }
+/**
+ * @param {string} id
+ * @param {string} [cls]
+ */
 function charFace(id, cls) {
   const c = CHARACTERS[id],
     svg = charArtSVG(id);

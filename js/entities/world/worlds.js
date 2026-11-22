@@ -3,6 +3,27 @@ import { level } from '../game-state/index.js';
 
 // Les îles, dans l'ordre du voyage. `diff` = difficulté des mini-jeux (1 à 6) ;
 // `saison` = son archipel (voir ARCHIPELAGOS).
+/**
+ * Une île. `game` : son mini-jeu, un nom ou une fonction de l'âge du joueur.
+ * @typedef {{
+ *   name: string,
+ *   emoji: string,
+ *   level: number,
+ *   diff: number,
+ *   saison: number,
+ *   short: string,
+ *   subtitle: string,
+ *   map: { x: number, y: number },
+ *   shape: string,
+ *   icon: string,
+ *   sand: string,
+ *   land: string,
+ *   intro: string,
+ *   sceneEmpty: string,
+ *   game?: string | ((age: number) => string),
+ * }} World
+ */
+/** @type {Record<string, World>} */
 const WORLDS = {
   lagon: {
     name: 'Le Lagon',
@@ -260,10 +281,17 @@ const WORLDS = {
    plafonnée par l'âge et le niveau de chaque jeu).
    Ajouter une île à un archipel : une entrée dans WORLDS avec `saison` et
    son niveau ; le niveau de l'archipel en découle. */
-const ARCHIPELAGOS = {
-  1: { name: 'Le Lagon Magique', short: 'Le Lagon', emoji: '🌊', vehicle: '⛵', sky: false },
-  2: { name: 'Le Ciel des Rêves', short: 'Le Ciel', emoji: '☁️', vehicle: '🎈', sky: true },
-};
+/**
+ * Un archipel (une saison) ; `level` est calculé juste en dessous, d'après ses îles.
+ * @typedef {{ name: string, short: string, emoji: string, vehicle: string, sky: boolean, level: number }} Archipelago
+ */
+// écrit sans `level` (posé juste en dessous) : d'où la conversion en deux temps
+const ARCHIPELAGOS = /** @type {Record<number, Archipelago>} */ (
+  /** @type {Record<number, Omit<Archipelago, 'level'>>} */ ({
+    1: { name: 'Le Lagon Magique', short: 'Le Lagon', emoji: '🌊', vehicle: '⛵', sky: false },
+    2: { name: 'Le Ciel des Rêves', short: 'Le Ciel', emoji: '☁️', vehicle: '🎈', sky: true },
+  })
+);
 const ARCHIPELAGO_ORDER = [1, 2];
 
 // toutes les îles, dans l'ordre du voyage : la saison 1, puis la saison 2
@@ -275,9 +303,11 @@ ARCHIPELAGO_ORDER.forEach((s) => {
   );
 });
 // les îles d'un archipel, dans l'ordre de son voyage (sa carte, sa route)
+/** @param {number} saison */
 function worldsOf(saison) {
   return WORLD_ORDER.filter((id) => (WORLDS[id].saison || 1) === saison);
 }
+/** @param {string} id */
 function archipelagoOf(id) {
   return (WORLDS[id] && WORLDS[id].saison) || 1;
 }
@@ -286,18 +316,22 @@ function archipelagoOf(id) {
 let currentWorld = 'lagon';
 // Changer d'île courante : seul ce fichier écrit `currentWorld` (un module ne
 // peut pas réaffecter la variable d'un autre, v54).
+/** @param {string} id */
 function setCurrentWorld(id) {
   currentWorld = id;
 }
 
+/** @param {string} id */
 function worldUnlocked(id) {
   return level() >= WORLDS[id].level;
 }
+/** @param {number} saison */
 function archipelagoUnlocked(saison) {
   return level() >= ARCHIPELAGOS[saison].level;
 }
 
 // prochaine île à débloquer (de l'archipel donné, sinon de la saison 1)
+/** @param {number} [saison] */
 function nextLockedWorld(saison) {
   return worldsOf(saison || 1).find((id) => !worldUnlocked(id));
 }
@@ -310,6 +344,11 @@ function lastOpenedLevel() {
 
 // « son » mini-jeu, toujours proposé sur l'île : un nom, ou une fonction de
 // l'âge du joueur (le Monde des Boîtes)
+/**
+ * @param {string} id
+ * @param {number | null} [age] absent ou null : âge inconnu
+ * @returns {string | null}
+ */
 function worldGame(id, age) {
   const g = WORLDS[id] && WORLDS[id].game;
   return typeof g === 'function' ? g(Number(age) || 0) : g || null;

@@ -17,7 +17,25 @@
      shape   la forme du corps : 'rond', 'ovale' ou 'carre' (carré arrondi)
      size    'petit' ou 'grand' */
 
+/**
+ * Une série : `world` = elle n'apparaît qu'une fois cette île ouverte (saison 2).
+ * @typedef {{ name: string, emoji: string, world?: string }} SquishySeries
+ */
+/**
+ * Un modèle de squishy ; `how` (trésors seulement) dit comment l'obtenir.
+ * @typedef {{
+ *   series: string,
+ *   name: string,
+ *   say: string,
+ *   rarity: string,
+ *   color: string,
+ *   shape: string,
+ *   size: string,
+ *   how?: string,
+ * }} Squishy
+ */
 // `world` : la série n'apparaît qu'une fois cette île ouverte (saison 2)
+/** @type {Record<string, SquishySeries>} */
 const SQUISHY_SERIES = {
   capy: { name: 'Capybaras', emoji: '🦫' },
   desserts: { name: 'Desserts', emoji: '🍩' },
@@ -42,6 +60,7 @@ const SQUISHY_SERIES_ORDER = [
 ];
 
 // les trois raretés, et leur chance au tirage (voir openSquishyBox)
+/** @type {Record<string, { name: string, chance: number }>} */
 const SQUISHY_RARITY = {
   commun: { name: 'commun', chance: 0.7 },
   rare: { name: 'rare', chance: 0.25 },
@@ -49,6 +68,7 @@ const SQUISHY_RARITY = {
 };
 
 // `say` : ce que dit la voix à l'ouverture (« Un capy fraise ! »)
+/** @type {Record<string, Squishy>} */
 const SQUISHIES = {
   // 🦫 Capybaras
   'capy-fraise': {
@@ -549,6 +569,7 @@ const SQUISHIES = {
 
 // Les trésors : des squishies UNIQUES, jamais dans les boîtes ni à l'échange.
 // Ils ont leur case « Trésors » dans la chambre (js/features/squishies).
+/** @type {Record<string, Squishy>} */
 const SQUISHY_TREASURES = {
   'grisou-arc': {
     series: 'tresors',
@@ -563,6 +584,7 @@ const SQUISHY_TREASURES = {
 };
 
 // La série gagnée en résolvant l'énigme d'une île (une seule fois par île)
+/** @type {Record<string, string>} */
 const SQUISHY_ISLAND_SERIES = {
   lagon: 'animaux',
   foret: 'animaux',
@@ -580,10 +602,13 @@ const SQUISHY_ISLAND_SERIES = {
   licornes: 'licornes',
 };
 
+/** @param {string} series */
 function squishiesOf(series) {
   return Object.keys(SQUISHIES).filter((id) => SQUISHIES[id].series === series);
 }
 
+/** Une couleur : remplissage, contour, et l'adjectif accordé (m. sg., m. pl., f. sg., f. pl.).
+ * @type {Record<string, { fill: string, edge: string, adj: string[] }>} */
 const SQ_COLORS = {
   rose: { fill: '#FF9CC8', edge: '#C9497F', adj: ['rose', 'roses', 'rose', 'roses'] },
   bleu: { fill: '#6FB8F5', edge: '#2F7CC0', adj: ['bleu', 'bleus', 'bleue', 'bleues'] },

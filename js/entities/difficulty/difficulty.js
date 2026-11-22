@@ -83,15 +83,24 @@
 // sur les 5 paliers « historiques », pour éviter les lectures `|| valeur
 // piochée` au hasard. Les jeux qui vont au-delà (calcul mental, palier 6)
 // ont leur propre fonction de bornes qui n'utilise pas `tierValue`.
+/**
+ * @template T
+ * @param {Record<number, T>} table une valeur par palier (jamais vide)
+ * @param {number} dd le palier demandé
+ * @returns {T}
+ */
 function tierValue(table, dd) {
   const d = Math.max(1, Math.min(5, Number(dd) || 1));
   return d in table
     ? table[d]
     : table[
-        Object.keys(table)
-          .map(Number)
-          .sort((a, b) => a - b)
-          .pop()
+        // le plus haut palier de la table : elle n'est jamais vide, pop() trouve toujours un nombre
+        /** @type {number} */ (
+          Object.keys(table)
+            .map(Number)
+            .sort((a, b) => a - b)
+            .pop()
+        )
       ];
 }
 
@@ -101,6 +110,7 @@ function tierValue(table, dd) {
    palier, jusqu'à 7 (au-delà, la grille devient difficile à lire sur
    un écran de téléphone pour un enfant).
    --------------------------------------------------------------------- */
+/** @param {number} dd le palier de difficulté */
 function memoryPairs(dd) {
   return tierValue({ 1: 3, 2: 4, 3: 5, 4: 6, 5: 7 }, dd);
 }
@@ -112,6 +122,7 @@ function memoryPairs(dd) {
    dénombrement visuel un-par-un n'a plus de sens pédagogique — on passe
    au calcul, cf. mathBounds).
    --------------------------------------------------------------------- */
+/** @param {number} dd le palier de difficulté */
 function countRange(dd) {
   // { min, max } du nombre d'objets affichés
   return tierValue(
@@ -133,9 +144,11 @@ function countRange(dd) {
    « cet objet est différent »).
    Progression régulière : +2 images par palier (6 → 8 → 10 → 12 → 14).
    --------------------------------------------------------------------- */
+/** @param {number} dd le palier de difficulté */
 function diffTotal(dd) {
   return tierValue({ 1: 6, 2: 8, 3: 10, 4: 12, 5: 14 }, dd);
 }
+/** @param {number} dd le palier de difficulté */
 function diffMirrorChance(dd) {
   return tierValue({ 1: 0, 2: 0.3, 3: 0.45, 4: 0.55, 5: 0.6 }, dd);
 }
@@ -146,6 +159,7 @@ function diffMirrorChance(dd) {
    notion de « suite organisée » du programme de cycle 1, puis à la
    notion d'algorithme simple en cycle 2.
    --------------------------------------------------------------------- */
+/** @param {number} dd le palier de difficulté */
 function sequencePatternLength(dd) {
   // nombre de symboles affichés avant de demander le suivant
   return tierValue({ 1: 5, 2: 6, 3: 6, 4: 7, 5: 8 }, dd);
@@ -158,6 +172,7 @@ function sequencePatternLength(dd) {
    reste prudemment sous cette limite même au palier maximal, pour que
    l'exercice reste un jeu et non un test de mémoire éprouvant.
    --------------------------------------------------------------------- */
+/** @param {number} dd le palier de difficulté */
 function simonLength(dd) {
   return tierValue({ 1: 3, 2: 4, 3: 5, 4: 6, 5: 7 }, dd);
 }
@@ -170,9 +185,11 @@ function simonLength(dd) {
    where « start » était ajouté deux fois (probabilité doublée par
    erreur dans l'ancienne version).
    --------------------------------------------------------------------- */
+/** @param {number} dd le palier de difficulté */
 function puzzleCount(dd) {
   return tierValue({ 1: 4, 2: 5, 3: 6, 4: 7, 5: 8 }, dd);
 }
+/** @param {number} dd le palier de difficulté */
 function puzzleVariants(dd) {
   const d = Math.max(1, Math.min(5, Number(dd) || 1));
   // palier 1 : uniquement la suite la plus simple (1, 2, 3…)
@@ -184,6 +201,7 @@ function puzzleVariants(dd) {
   // palier 4-5 : + suite de 2 en 2 (dénombrement par groupements, CE1-CE2)
   return ['from1', 'start', 'desc', 'step2'];
 }
+/** @param {number} dd le palier de difficulté */
 function puzzleStartMax(dd) {
   return tierValue({ 1: 8, 2: 8, 3: 12, 4: 12, 5: 16 }, dd);
 }
@@ -197,6 +215,7 @@ function puzzleStartMax(dd) {
    fait sans support imagé, cf. proposition de 6e île en fin de document
    ANALYSE-DIFFICULTE.md).
    --------------------------------------------------------------------- */
+/** @param {number} dd le palier de difficulté */
 function mathBounds(dd) {
   return tierValue(
     {
@@ -217,9 +236,11 @@ function mathBounds(dd) {
    difficile). Le principe alphabétique est un objectif de fin de GS,
    la lecture autonome de mots simples un objectif CP.
    --------------------------------------------------------------------- */
+/** @param {number} dd le palier de difficulté */
 function readingWordOnly(dd) {
   return dd >= 3;
 }
+/** @param {number} dd le palier de difficulté */
 function readingOptions(dd) {
   return tierValue({ 1: 3, 2: 3, 3: 4, 4: 4, 5: 5 }, dd);
 }
@@ -230,12 +251,15 @@ function readingOptions(dd) {
    singulier est travaillé d'abord, le pluriel demande de reconnaître
    une marque supplémentaire — on l'augmente progressivement).
    --------------------------------------------------------------------- */
+/** @param {number} dd le palier de difficulté */
 function determinantsImageShown(dd) {
   return dd <= 2;
 }
+/** @param {number} dd le palier de difficulté */
 function determinantsPluralChance(dd) {
   return tierValue({ 1: 0.25, 2: 0.3, 3: 0.4, 4: 0.45, 5: 0.5 }, dd);
 }
+/** @param {number} dd le palier de difficulté */
 function determinantsExtraDistractor(dd) {
   return dd >= 3;
 }
@@ -252,15 +276,19 @@ function determinantsExtraDistractor(dd) {
    aussi (2 contenants au palier 1, 3 au palier 2, en demandant parfois
    le plus petit ET le plus grand), au lieu d'être identique partout.
    --------------------------------------------------------------------- */
+/** @param {number} dd le palier de difficulté */
 function volumeUsesCapacityCompare(dd) {
   return dd <= 2;
 }
+/** @param {number} dd le palier de difficulté */
 function volumeContainerCount(dd) {
   return tierValue({ 1: 2, 2: 3 }, dd); // n'est utilisé que pour dd 1-2
 }
+/** @param {number} dd le palier de difficulté */
 function volumeAskLessChance(dd) {
   return tierValue({ 1: 0.2, 2: 0.4 }, dd); // "le moins" = question plus exigeante
 }
+/** @param {number} dd le palier de difficulté */
 function solidOptions(dd) {
   return tierValue({ 3: 3, 4: 4, 5: 5 }, dd); // n'est utilisé que pour dd >= 3
 }
@@ -273,12 +301,15 @@ function solidOptions(dd) {
    aucune réflexion). La vraie compétence de comparaison se mesure sur
    des nombres voisins, pas seulement sur l'ordre de grandeur.
    --------------------------------------------------------------------- */
+/** @param {number} dd le palier de difficulté */
 function compareRange(dd) {
   return tierValue({ 1: 10, 2: 20, 3: 50, 4: 100, 5: 100 }, dd);
 }
+/** @param {number} dd le palier de difficulté */
 function compareCloseChance(dd) {
   return tierValue({ 1: 0, 2: 0.15, 3: 0.35, 4: 0.5, 5: 0.6 }, dd);
 }
+/** @param {number} dd le palier de difficulté */
 function compareEqualChance(dd) {
   return tierValue({ 1: 0.2, 2: 0.2, 3: 0.2, 4: 0.15, 5: 0.15 }, dd);
 }
@@ -289,6 +320,7 @@ function compareEqualChance(dd) {
    la pile à reconstituer (plus de pièces = plus de termes à additionner
    mentalement, donc plus dur, indépendamment des valeurs elles-mêmes).
    --------------------------------------------------------------------- */
+/** @param {number} dd le palier de difficulté */
 function moneyDenoms(dd) {
   return tierValue(
     {
@@ -301,6 +333,7 @@ function moneyDenoms(dd) {
     dd,
   );
 }
+/** @param {number} dd le palier de difficulté */
 function moneyPileSize(dd) {
   return tierValue(
     {
@@ -322,6 +355,8 @@ function moneyPileSize(dd) {
    Simon), où l'on garde un peu plus de marge pour ne pas sanctionner
    un enfant qui progresse normalement dans une tâche longue.
    --------------------------------------------------------------------- */
+/** Les essais par palier, par barème (un type de jeu, `default` ou `generous`).
+ * @type {Record<string, Record<number, number>>} */
 const LIVES_TABLE = {
   // mémoire : voir livesFor — les essais suivent le nombre de paires
   jigsaw: { 2: 5, 3: 4, 4: 4, 5: 3 }, // puzzle : beaucoup de morceaux, on essaie
@@ -332,6 +367,10 @@ const LIVES_TABLE = {
   // réflexion : on laisse un essai de plus que le barème par défaut.
   generous: { 2: 4, 3: 3, 4: 3, 5: 2 },
 };
+/**
+ * @param {string} kind le type de mini-jeu
+ * @param {number} dd le palier de difficulté
+ */
 function livesFor(kind, dd) {
   const d = Math.max(1, Math.min(5, Number(dd) || 1));
   if (d <= 1) return Infinity; // île 1 : on apprend sans pression
@@ -388,6 +427,8 @@ function livesFor(kind, dd) {
      elle compte comme un essai perdu (même système de cœurs ❤️), avec
      un message encourageant, jamais un échec immédiat.
    ===================================================================== */
+/** Les secondes du minuteur par palier, par type de jeu.
+ * @type {Record<string, Record<number, number>>} */
 const TIMER_SECONDS = {
   count: { 3: 20, 4: 18, 5: 16 },
   diff: { 3: 20, 4: 18, 5: 16 },
@@ -423,6 +464,11 @@ const NO_TIMER_KINDS = [
   'potions',
   'mirror',
 ];
+/**
+ * @param {string} kind le type de mini-jeu
+ * @param {number} dd le palier de difficulté
+ * @returns {number | null} secondes, ou null : pas de minuteur
+ */
 function timerFor(kind, dd) {
   if (NO_TIMER_KINDS.includes(kind)) return null;
   const table = TIMER_SECONDS[kind];
@@ -447,12 +493,14 @@ function timerFor(kind, dd) {
    (MS/GS) en heures pleines : lire « il est 3 heures » sur une horloge
    ne demande pas de savoir lire des chiffres composés.
    --------------------------------------------------------------------- */
+/** @param {number} dd le palier de difficulté */
 function clockGranularity(dd) {
   // minutes possibles affichées sur l'horloge, selon le palier
   if (dd <= 2) return [0]; // heures pleines : 3h, 7h…
   if (dd <= 4) return [0, 30]; // + demi-heures : 3h30
   return [0, 15, 30, 45]; // + quarts d'heure : 3h15, 3h45
 }
+/** @param {number} dd le palier de difficulté */
 function clockOptions(dd) {
   return dd >= 4 ? 4 : 3;
 }
@@ -468,9 +516,11 @@ function clockOptions(dd) {
    qui passe n'a pas à être elle-même chronométrée, ce serait un comble
    pédagogique contre-productif.
    --------------------------------------------------------------------- */
+/** @param {number} dd le palier de difficulté */
 function calendarUsesWeekdayOrder(dd) {
   return dd >= 2;
 }
+/** @param {number} dd le palier de difficulté */
 function calendarWeekdayCount(dd) {
   return tierValue({ 1: 3, 2: 3, 3: 4, 4: 5, 5: 6 }, dd);
 }
@@ -484,8 +534,10 @@ function calendarWeekdayCount(dd) {
    introduite au palier 5 (tables de 2, 5 et 10 : les plus régulières,
    toujours enseignées en premier).
    --------------------------------------------------------------------- */
+/** @param {number} dd le palier de difficulté */
 function calcBounds(dd) {
   const d = Math.max(1, Math.min(6, Number(dd) || 1));
+  /** @type {Record<number, { max: number, terms: number, allowMinus: boolean, allowMulti: boolean }>} */
   const table = {
     1: { max: 20, terms: 2, allowMinus: true, allowMulti: false },
     2: { max: 30, terms: 2, allowMinus: true, allowMulti: false },
@@ -516,6 +568,7 @@ const CALC_MULT_TABLES = [2, 5, 10];
    enfant qui ne lit pas encore ; aux paliers 5-6, compter les côtés ou
    les sommets EST l'exercice, la consigne n'a donc pas d'image.
    Pas de minuteur (jeu à plusieurs touches) ; essais généreux. */
+/** @param {number} dd le palier de difficulté */
 function shapesRound(dd) {
   const d = Math.max(1, Math.min(6, Number(dd) || 1));
   return [
@@ -573,6 +626,7 @@ function shapesRound(dd) {
    jusqu'à l'ordre des planètes et aux planètes rocheuses ou géantes.
    Pas de minuteur : on lit la question, ou on l'écoute, à son rythme.
    La banque de questions et les règles d'exactitude sont dans js/features/minigames/planets/planets.js. */
+/** @param {number} dd le palier de difficulté */
 function planetsTier(dd) {
   return Math.max(1, Math.min(6, Number(dd) || 1));
 }
@@ -601,6 +655,7 @@ function planetsTier(dd) {
                 (« de la plus grande à la plus petite »)
    `sizes` : tailles relatives (100 = la plus grande). Pas de minuteur.
    --------------------------------------------------------------------- */
+/** @param {number} dd le palier de difficulté */
 function nestingRound(dd) {
   return tierValue(
     {
@@ -626,6 +681,7 @@ function nestingRound(dd) {
                 cachés derrière ou dessous
    `w` × `d` : largeur et profondeur ; `h` : étages ; `min`/`max` : cubes.
    --------------------------------------------------------------------- */
+/** @param {number} dd le palier de difficulté */
 function cubesRound(dd) {
   return tierValue(
     {
@@ -651,6 +707,7 @@ function cubesRound(dd) {
    `extra` : chance d'un jouet tout seul en plus ; `label` : la phrase écrite.
    Pas de minuteur.
    --------------------------------------------------------------------- */
+/** @param {number} dd le palier de difficulté */
 function packsRound(dd) {
   return tierValue(
     {
@@ -676,6 +733,7 @@ function packsRound(dd) {
    `find` : chance de la question inverse ; `coords` : chance des coordonnées.
    Pas de minuteur.
    --------------------------------------------------------------------- */
+/** @param {number} dd le palier de difficulté */
 function shelfRound(dd) {
   return tierValue(
     {
@@ -700,6 +758,7 @@ function shelfRound(dd) {
      palier 5   l'écriture de la part colorée, ou « combien de… pour faire… ? »
    `whole` : chance de la question « combien de… ». Pas de minuteur.
    --------------------------------------------------------------------- */
+/** @param {number} dd le palier de difficulté */
 function shareRound(dd) {
   return tierValue(
     {
@@ -725,6 +784,7 @@ function shareRound(dd) {
      palier 5   grammes de 50 en 50 (nombres tous les 250) ou centilitres de 10 en 10
    Pas de minuteur.
    --------------------------------------------------------------------- */
+/** @param {number} dd le palier de difficulté */
 function recipeRound(dd) {
   return tierValue(
     {
@@ -754,6 +814,7 @@ function recipeRound(dd) {
      palier 5   6 symboles, deux silences : on lit le rythme écrit AVANT de l'entendre
    Pas de minuteur.
    --------------------------------------------------------------------- */
+/** @param {number} dd le palier de difficulté */
 function rhythmRound(dd) {
   return tierValue(
     {
@@ -778,6 +839,7 @@ function rhythmRound(dd) {
      palier 5   5 notes, ou « la mélodie monte ou descend ? »
    Pas de minuteur.
    --------------------------------------------------------------------- */
+/** @param {number} dd le palier de difficulté */
 function pitchRound(dd) {
   return tierValue(
     {
@@ -801,6 +863,7 @@ function pitchRound(dd) {
      palier 5   « que se passe-t-il ensuite ? », cycles mélangés, étape manquante
    Pas de minuteur.
    --------------------------------------------------------------------- */
+/** @param {number} dd le palier de difficulté */
 function lifecycleRound(dd) {
   return tierValue(
     {
@@ -824,6 +887,7 @@ function lifecycleRound(dd) {
      palier 5   les moitiés : « 14 points en tout, combien par aile ? »
    `min`/`max` : points par aile. Pas de minuteur.
    --------------------------------------------------------------------- */
+/** @param {number} dd le palier de difficulté */
 function ladybugsRound(dd) {
   return tierValue(
     {
@@ -847,6 +911,7 @@ function ladybugsRound(dd) {
      palier 5   le mélange inverse, l'arc-en-ciel à 4 trous
    `mixes` : nombre de mélanges utilisés (3 = les primaires). Pas de minuteur.
    --------------------------------------------------------------------- */
+/** @param {number} dd le palier de difficulté */
 function potionsRound(dd) {
   return tierValue(
     {
@@ -870,6 +935,7 @@ function potionsRound(dd) {
      palier 5   6 × 6, axe vertical ou horizontal, 6 cases ; souvent deux couleurs
    Pas de minuteur.
    --------------------------------------------------------------------- */
+/** @param {number} dd le palier de difficulté */
 function mirrorRound(dd) {
   return tierValue(
     {
@@ -883,6 +949,7 @@ function mirrorRound(dd) {
   );
 }
 
+/** @param {number} dd le palier de difficulté */
 function jigsawRound(dd) {
   return tierValue(
     {
