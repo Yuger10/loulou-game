@@ -23,4 +23,11 @@ if ! out="$("$bin/oxlint" --deny-warnings "$file" 2>&1)"; then
   printf 'oxlint a trouvé des problèmes dans %s :\n%s\n' "$file" "$out" >&2
   exit 2
 fi
+
+# Typecheck du projet (TypeScript 7, ADR 0003) : environ 0,1 s. Le projet est
+# propre sur main, donc une erreur vient presque toujours de l'édition en cours.
+if [[ -x "$bin/tsc" && -f tsconfig.json ]] && ! out="$("$bin/tsc" -p . 2>&1)"; then
+  printf 'TypeScript a trouvé des erreurs de type :\n%s\n' "$out" >&2
+  exit 2
+fi
 exit 0
