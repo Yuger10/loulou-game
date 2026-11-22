@@ -534,7 +534,7 @@ Même structure que `finale.js`. Déclenché dans `storyWin` juste après celui 
 
 - `season3Done: false` dans `DEFAULT_STATE` (`state.js:145`, à côté de `season2Done` ; l'état initial est `freshState()`, `state.js:194`, il n'y a plus de seconde copie) et `season3Done: boolean` dans le `@typedef` `GameState` (`state.js:97`, après `season2Done: boolean`), commentaire « le grand final de la saison 3 (Grand Concert) déjà joué : le xylophone d'or est gagné ».
 - `SAVE_VERSION` : la version suivante au moment de la livraison. La PR met à jour la valeur attendue de `ev('SAVE_VERSION') === 9` dans `test/licornes.test.js:499` au nouveau numéro (même force : ce n'est pas un affaiblissement, D16 s'applique de la même façon) ; les nouveaux tests de migration de `test/concert.test.js` lisent `ev('SAVE_VERSION')` et ne mettent jamais de numéro en dur (une migration `{ v: SAVE_VERSION - 1 }`). C'est une migration distincte de celle de `saison3-ouverture` (`expeditionIntroSeen`) : chacune prend « la version suivante » au moment où elle est livrée, et leurs étapes de `migrate()` se suivent. Étape de `migrate()` : `if (v < N) { saved.season3Done = false; }` avec un commentaire.
-- `load()` garde déjà les seules clés de `DEFAULT_STATE` (`state.js:294-301`) : une sauvegarde importée passe par la même porte (l'import écrit les clés puis appelle `load()`, `js/features/backup/backup.js:181-186`).
+- `load()` garde déjà les seules clés de `DEFAULT_STATE` (`state.js:294-301`) : une sauvegarde importée passe par la même porte (l'import écrit les clés puis appelle `load()`, `js/features/backup/backup.js:185-190`).
 
 ## Hors périmètre
 
