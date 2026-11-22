@@ -1,0 +1,201 @@
+---
+status: brouillon        # brouillon | validée | faite ; « validée » est posé par l'humain
+issue: 0
+size: M
+migration: true          # nouveau champ de sauvegarde : expeditionIntroSeen
+sensitive: true          # sauvegarde et migration (js/entities/game-state/), PWA (index.html et sw.js régénérés)
+files:
+  - js/entities/world/worlds.js
+  - js/entities/world/index.js
+  - js/entities/game-state/state.js
+  - js/features/island/island-view.js
+  - js/features/island/island-view.css
+  - js/features/island/index.js
+  - js/features/map/map.js
+  - js/features/map/map.css
+  - js/features/story/story.js
+  - js/features/story/zap-map.js
+  - js/features/story/story.css
+  - js/features/story/index.js
+  - js/app/init.js
+  - js/slices.cjs
+  - test/saison3.test.js
+  - test/saison2.test.js
+  - test/niveaux.test.js
+  - test/licornes.test.js
+  - conductor/niveaux.md
+  - conductor/checklist-ile.md
+taster: { facts: 0, decisions: 0, rounds: 3 }
+---
+
+<!-- Gabarit cothon 0.4.0 (setting-up-docs), adopté dans Conductor (cothon 0.2.0-2 et 0.4.0-6). -->
+
+# Spec : l'ouverture de la saison 3 « La Grande Expédition »
+
+- Nouveau projet : non
+
+## Problème
+
+La saison 3 « La Grande Expédition » arrive avec cinq îles (Crayons, Squishy Dumplings, Coffres, Chatouilles, Grand Concert). Le jeu ne sait montrer que deux archipels : l'écran d'ouverture, le prologue, le dessin de Grisou et le journal sont codés en dur pour la saison 2. Il faut un troisième onglet de carte, un écran « Une nouvelle expédition commence ! » vu une seule fois par profil, le prologue de Zap et sa carte déchirée en 5 morceaux dans le journal. Cette track est livrée **avant** toute île de la saison 3 (décision d'Amrou du 22/11/2026) : en production, rien de nouveau ne doit se voir tant que la première île n'existe pas.
+
+Ce n'est pas une spec d'île : elle ne donne aucun niveau d'ouverture d'île. Le tableau des niveaux reste `conductor/niveaux.md`.
+
+## Comportement attendu
+
+Les tests vivent dans un nouveau fichier `test/saison3.test.js` (même harnais que `test/saison2.test.js:1-75`). Une « île d'essai » est une entrée ajoutée par le test seul (voir Contrats partagés), jamais dans le code du jeu. Chaque section qui en a besoin retire d'abord les vraies îles de la saison 3 (s'il y en a), ajoute l'île d'essai, appelle `refreshArchipelagos()`, puis remet tout en place : les tests restent vrais après la livraison de `monde-crayons`.
+
+**Sans aucune île dans la saison 3 (l'état de production à la livraison)**
+
+1. Étant donné le jeu sans île de saison 3, quand on lit `ARCHIPELAGOS[3]`, alors il vaut `{ name: 'La Grande Expédition', short: "L'Expédition", emoji: '🧭', vehicle: '✈️', sky: false, paper: true, level: null }` et `ARCHIPELAGO_ORDER` vaut `[1, 2, 3]`.
+2. Étant donné le jeu sans île de saison 3 et une partie au niveau 200 (`state.missions = 995`), quand on appelle `archipelagoUnlocked(3)`, alors il renvoie `false`.
+3. Étant donné ce même état, quand on appelle `shownArchipelagos()`, alors il renvoie `[1, 2]`.
+4. Étant donné ce même état, quand on ouvre la carte (`switchView("carte")`), alors `#map-tabs` a exactement 2 onglets (`.map-tab`), aucun avec `data-saison="3"`, et le texte de `#map-tabs` et de `#map-next` ne contient ni « undefined », ni « null », ni « Infinity », ni « NaN ».
+5. Étant donné ce même état, quand on ouvre le journal (`openStoryJournal()`), alors il n'y a aucune `section.story-season[data-saison="3"]` et le texte du journal ne contient ni « undefined », ni « null », ni « Infinity ».
+6. Étant donné ce même état et `state.expeditionIntroSeen = false`, `state.skyIntroSeen = true`, quand on appelle `maybeSeasonOpening()`, alors il renvoie `false` et aucune fenêtre ne s'ouvre.
+7. Étant donné le jeu sans île de saison 3, quand on lance le jeu, alors aucune erreur JS n'est levée (liste `errs` vide, comme `test/saison2.test.js:38-39`).
+
+**Avec l'île d'essai `essai3` (saison 3, niveau 70)**
+
+8. Étant donné l'île d'essai, quand on appelle `refreshArchipelagos()`, alors `ARCHIPELAGOS[3].level === 70`, `worldsOf(3)` vaut `['essai3']`, `shownArchipelagos()` vaut `[1, 2, 3]` et `WORLD_ORDER` se termine par `'essai3'`.
+9. Étant donné l'île d'essai et une partie au niveau 69 (`state.missions = 340`, `state.skyIntroSeen = true`), quand on ouvre la carte, alors il y a 3 onglets ; le troisième a la classe `locked`, montre 🔒 et le texte « Niveau 70 » et « La Grande Expédition ».
+10. Étant donné l'état de la ligne 9, quand on touche le troisième onglet, alors la voix dit « La Grande Expédition s'ouvrira au niveau 70. Continue tes missions ! » et la carte ne change pas (toujours 8 `.map-island` du Lagon si l'île courante est `lagon`).
+11. Étant donné l'état de la ligne 9 avec toutes les îles des saisons 1 et 2 ouvertes avant elle (`state.missions = 340`), quand on ouvre la carte, alors `#map-next` contient « Prochain monde : La Grande Expédition au niveau 70 ».
+12. Étant donné l'île d'essai, `state.expeditionIntroSeen = false`, `state.visited` = toutes les îles ouvertes au niveau 69, une partie à 1 mission du niveau 70, quand une mission est gagnée (`playGame("count"); onMissionWin()`) puis « Continuer » (`#btn-yay`) est touché, alors une fenêtre `.expedition-open` s'affiche avec le titre « Une nouvelle expédition commence ! ✈️ », la voix dit « Lou, une nouvelle expédition commence ! La Grande Expédition. » (prénom du profil de test : Lou) et `state.expeditionIntroSeen === true` est sauvegardé.
+13. Étant donné l'écran de la ligne 12, quand on touche `#expedition-go`, alors le prologue « La carte déchirée » s'ouvre : `.char-header` contient un élément `[aria-label*="Zap"]`, `.story-zapmap svg.zap-map` est affiché avec `data-found="0"`, et la voix dit la première phrase du prologue.
+14. Étant donné le prologue, quand on touche « Suite ➡️ » deux fois, alors le bouton devient « En route ! ✈️ » ; quand on le touche, alors l'écran habituel « Nouvelle île ! » de `essai3` s'ouvre (l'île d'essai n'a pas de chapitre `STORY`).
+15. Étant donné la ligne 14 terminée, quand on appelle `maybeSeasonOpening()`, alors il renvoie `false` (une seule fois par profil) et `state.visited` contient `essai3`.
+16. Étant donné l'île d'essai et la partie au niveau 70, quand on ouvre la carte et qu'on touche l'onglet 3, alors `#island-map` a la classe `paper` (pas `sky`), affiche une seule `.map-island` (`essai3`), et `#map-boat` a la classe `plane`, contient ✈️ et a la classe `parked` (l'île courante est au Lagon).
+17. Étant donné l'île d'essai, quand on lit `WORLDS.essai3.map`, alors elle tient dans le cadre 14 à 86 % et 15 à 85 % (comme `test/saison2.test.js:213-217`).
+
+**Partie existante, migration, plusieurs ouvertures dues**
+
+18. Étant donné une sauvegarde de la version précédente (`v` = `SAVE_VERSION - 1`, lu dans la constante, jamais un numéro en dur), quand on appelle `migrate()`, alors `expeditionIntroSeen === false`, `v === SAVE_VERSION`, et pièces, missions, inventaire, squishies et `visited` sont gardés.
+19. Étant donné l'île d'essai et une partie chargée au niveau 75 (`missions: 370`), `skyIntroSeen: true`, `expeditionIntroSeen: false`, `visited` sans `essai3`, quand on appelle `maybeSeasonOpening()` (le lancement du jeu, `js/app/init.js:101`), alors il renvoie `true` et `.expedition-open` s'affiche.
+20. Étant donné l'île d'essai et une partie au niveau 75 avec `skyIntroSeen: false` et `expeditionIntroSeen: false`, `visited` limité aux îles de la saison 1, quand on appelle `maybeSeasonOpening()`, alors seul l'écran `.expedition-open` s'affiche (pas `.sky-open`), et après lui `state.skyIntroSeen === true` et `state.expeditionIntroSeen === true`.
+21. Étant donné l'île d'essai déjà dans `state.visited`, `expeditionIntroSeen: false` et la partie au niveau 75, quand on appelle `maybeSeasonOpening()`, alors il renvoie `true`, `.expedition-open` s'affiche, et `#expedition-go` ouvre le prologue, qui se ferme sur « En route ! ✈️ » sans autre écran.
+
+**La carte de Zap**
+
+22. Étant donné `ZAP_MAP_PIECES`, quand on le lit, alors il vaut `['crayons', 'dumplings', 'coffres', 'chatouilles', 'concert']`.
+23. Étant donné `state.storySolved = { lagon: true, crayons: true, dumplings: true }`, quand on appelle `zapMapPieces()`, alors il renvoie `2` (seules les îles de `ZAP_MAP_PIECES` comptent, même si elles ne sont pas encore dans `WORLDS`).
+24. Étant donné n de 0 à 5, quand on appelle `zapMapSVG(n)`, alors le SVG a la classe `zap-map`, `data-found="n"`, 5 éléments `.zm-piece`, dont exactement n avec `data-found="true"` (les n premiers de `ZAP_MAP_PIECES`), et un `aria-label` égal à `zapMapSay(n)`.
+25. Étant donné n, quand on appelle `zapMapSay(n)`, alors il renvoie exactement : n=0 « La carte de Zap : aucun morceau pour l'instant. Résous l'énigme de chaque île pour les retrouver ! » ; n=1 « La carte de Zap : tu as trouvé 1 morceau sur 5. » ; n de 2 à 4 « La carte de Zap : tu as trouvé n morceaux sur 5. » ; n=5 « La carte de Zap est complète ! Les 5 morceaux sont réunis. »
+26. Étant donné l'île d'essai, la partie au niveau 70 et `storySolved = { crayons: true }`, quand on ouvre le journal, alors la `section.story-season[data-saison="3"]` a le titre « 🧭 La Grande Expédition », une ligne de prologue « La carte déchirée » (`[data-prologue="3"]`), et une carte `.story-zapmap-row` qui contient `zapMapSVG(1)`, le texte « 🗺️ La carte de Zap : 1 / 5 » et un bouton 🔈 dont `data-say` vaut `zapMapSay(1)`.
+27. Étant donné l'île d'essai et la partie au niveau 69, quand on ouvre le journal, alors la section 3 a le titre « 🔒 La Grande Expédition (niveau 70) », sans ligne de prologue ni carte de Zap.
+28. Étant donné le journal de la ligne 26, quand on touche `[data-prologue="3"]`, alors le prologue de Zap se rejoue, sans changer `state` (le drapeau `expeditionIntroSeen` n'est pas lu ni écrit par la relecture).
+29. Étant donné une île de saison 3 qui a un chapitre (`STORY.essai3` ajouté par le test, avec une énigme), quand le chapitre s'ouvre, alors il montre `.story-zapmap svg.zap-map` (pas `.story-grisou`) ; quand l'énigme est résolue (`storyWin("essai3")`), alors la fenêtre de victoire montre `.story-zapmap.happy` contenant `zapMapSVG(zapMapPieces(), { fresh: 'essai3' })` et la voix ajoute `zapMapSay(zapMapPieces())` (compté après la victoire) à la phrase de victoire. Pour une île de `ZAP_MAP_PIECES`, le morceau de cette île porte alors `zm-new` (pour `essai3`, hors de la liste, aucun morceau ne le porte). À l'ouverture d'un chapitre, dans le prologue et dans le journal, la carte est dessinée sans `fresh` : aucun `zm-new`.
+
+**La saison 2 ne change pas**
+
+30. Étant donné les tests de `test/saison2.test.js`, quand ils tournent avec le seul renommage `maybeSkyOpening` en `maybeSeasonOpening`, alors ils passent tous (écran `.sky-open`, bouton `#sky-go`, prologue de Capucine avec Grisou, « En route ! ☁️ »).
+31. Étant donné `test/niveaux.test.js`, quand la vérification « chaque archipel s'ouvre au niveau de sa première île » parcourt `shownArchipelagos()` au lieu de `ARCHIPELAGO_ORDER`, alors elle passe sans lever d'erreur.
+
+## Décisions
+
+| Id | Décision | Pourquoi | Source |
+|---|---|---|---|
+| D1 | Un archipel sans île n'a pas de niveau (`level: null`), n'est jamais ouvert, et n'apparaît ni en onglet ni dans le journal. Les vues parcourent `shownArchipelagos()` (les archipels qui ont au moins une île), jamais `ARCHIPELAGO_ORDER` directement. | Aujourd'hui le niveau d'un archipel est `Math.min(...)` des niveaux de ses îles : sans île, `Math.min()` vaut `Infinity`, l'onglet afficherait « Niveau Infinity » et le journal « (niveau Infinity) ». Chaque merge part en production. | `js/entities/world/worlds.js:272-276`, `js/entities/world/worlds.js:296-298`, `js/features/map/map.js:61-67`, `js/features/story/story.js:647-652` |
+| D2 | `archipelagoUnlocked(s)` renvoie `false` si `worldsOf(s)` est vide, avant de comparer les niveaux. | Défense en profondeur : même un appel oublié ne peut pas ouvrir un archipel vide. | `js/entities/world/worlds.js:296-298` |
+| D3 | Les niveaux des archipels et `WORLD_ORDER` sont calculés par une fonction exportée `refreshArchipelagos()`, appelée une fois au chargement du module (à la place de la boucle actuelle). `WORLD_ORDER` reste le même tableau, rempli sur place. | Les tests ajoutent une île d'essai après le chargement ; aujourd'hui `WORLD_ORDER` et les niveaux sont figés au chargement. Le bundle de test expose chaque nom de haut niveau. | `js/entities/world/worlds.js:270-276`, `test/tools/page.js:8-12` |
+| D4 | Les tests utilisent une île d'essai `essai3` ajoutée et retirée par `test/saison3.test.js` seul ; le code du jeu n'en contient aucune. | Livrable seul sans rien montrer de cassé, et testable. Les tests lisent et règlent l'état interne par son nom. | `test/tools/page.js:8-12`, `test/saison2.test.js:40` |
+| D5 | Le champ de sauvegarde `expeditionIntroSeen` (booléen, `false` par défaut), sur le modèle de `skyIntroSeen` ; `SAVE_VERSION` passe à la version suivante au moment de la livraison, et `migrate()` pose `expeditionIntroSeen = false`. | « Une seule fois par profil, y compris pour une partie déjà au-delà du niveau d'ouverture » : même mécanisme que le Ciel (migration à `false`, ouverture au lancement). `load()` ne garde que les clés de `DEFAULT_STATE`. | `js/entities/game-state/state.js:47`, `js/entities/game-state/state.js:178-183`, `js/entities/game-state/state.js:215-218` |
+| D6 | `skyIntroSeen` garde son nom ; pas de fusion dans un objet `seasonIntros`. | Renommer casserait 5 fichiers de tests qui posent `state.skyIntroSeen = true` et demanderait une migration de plus. | `test/licornes.test.js:84`, `test/musique.test.js:80`, `test/bonbons.test.js:80`, `test/saison2.test.js:123` |
+| D7 | Une table `SEASON_OPENINGS` (dans `island-view.js`) décrit l'écran d'ouverture de chaque saison à partir de 2 : drapeau d'état, classe, dessin, titre, texte, phrase dite, bouton. `openSkyOpening` devient `openSeasonOpening(s, onDone)`, `maybeSkyOpening` devient `maybeSeasonOpening()`. La saison 2 garde exactement ses textes, sa classe `.sky-open` et son bouton `#sky-go`. | Généraliser sans changer ce que voit l'enfant en saison 2. | `js/features/island/island-view.js:112-151` |
+| D8 | Quand plusieurs ouvertures sont dues (partie qui saute deux saisons), seule celle de l'archipel le plus haut s'affiche ; les drapeaux des saisons plus basses passent aussi à `true`. Leur prologue reste lisible dans le journal. | Ne pas enchaîner deux longues séquences pour une enfant de 6 ans. Défaut du rédacteur, à juger à la revue. | `js/features/island/island-view.js:114` (aujourd'hui une seule ouverture testée) |
+| D9 | `maybeSeasonOpening()` : s'il y a une ouverture due et une île nouvellement ouverte, c'est `checkNewIsland()` qui la montre (ouverture, prologue, chapitre) ; s'il n'y a pas d'île nouvelle (île déjà visitée), l'ouverture et le prologue s'affichent seuls. | Aujourd'hui `maybeSkyOpening` renvoie le résultat de `checkNewIsland()` : sans île nouvelle, l'ouverture ne se montrerait jamais. La ligne 21 couvre ce cas. | `js/features/island/island-view.js:148-151`, `js/features/island/island-view.js:65-67` |
+| D10 | Le prologue peut être raconté par un compagnon : `STORY_PROLOGUES[3] = { companion: 'zap', … }` affiche `companionSVG('zap', 'cheer')` dans un `<span class="char-art" role="img" aria-label="Zap le super-héros">` à la place de `charFace(guide)`. | Zap est un compagnon, pas un personnage d'île : `charFace` lit `CHARACTERS[id]` et échouerait. `finale.js` importe déjà `companionSVG` depuis `entities/companion`. | `js/entities/companion/companions.js:98-110`, `js/entities/companion/companions.js:324`, `js/entities/character/characters-art.js:980-988`, `js/features/story/finale.js:12` |
+| D11 | Le dessin d'accompagnement de l'histoire dépend de la saison par une table `SEASON_STORY_ART` (dans `story.js`) : saison 2, `grisouSVG(skyIslandsFreed())` dans `.story-grisou` ; saison 3, `zapMapSVG(zapMapPieces())` dans `.story-zapmap`. Elle sert au prologue, au chapitre et à la victoire ; à la victoire seulement, l'appel passe `{ fresh: <id de l'île> }` (`zapMapSVG(zapMapPieces(), { fresh: world })`) et la voix ajoute `zapMapSay(zapMapPieces())`. Les îles de la saison 3 consomment ce contrat sans écrire de code de carte. | Trois endroits testent aujourd'hui `archipelagoOf(world) === 2` en dur. | `js/features/story/story.js:471-477`, `js/features/story/story.js:520`, `js/features/story/story.js:593` |
+| D12 | La carte de Zap ne stocke rien : son nombre de morceaux est le nombre d'îles de `ZAP_MAP_PIECES` dont l'énigme est résolue (`state.storySolved`). | Un morceau par chapitre résolu (décision d'Amrou) ; `storySolved` existe déjà et migre déjà. Pas de nouvel état à garder cohérent. | `js/features/story/story.js:431-433`, `js/entities/game-state/state.js:29` |
+| D13 | Le dessin de la carte (`zapMapSVG`) vit dans un nouveau fichier `js/features/story/zap-map.js`, sur le modèle de `grisou.js`, déclaré dans la slice `story` de `js/slices.cjs`, puis `bun run sync`. | Même découpage que Grisou ; ajouter un fichier à sa slice ne touche pas aux règles de la garde. | `js/slices.cjs:137-145`, `js/features/story/grisou.js:1-47` |
+| D14 | Véhicule ✈️ (avion en papier), carte au fond de vieux papier (`paper: true`, classe `.paper` sur `#island-map`, classe `.plane` sur `#map-boat`), emoji de l'archipel 🧭. | Véhicule décidé par Amrou. L'emoji 🧭 et le fond « vieux papier » (la carte d'explorateur) sont des défauts du rédacteur, à juger à la revue. | `js/entities/world/worlds.js:264-265`, `js/features/map/map.js:100-115`, `js/features/map/map.js:149` |
+| D15 | Le grand final (`finale.js`) ne change pas. Le trésor de la carte (xylophone d'or) et le final de saison 3 appartiennent à la track `monde-concert`. | Hors du périmètre de l'ouverture. | `js/features/story/finale.js:1-11` |
+| D16 | Les tests existants qui changent : `test/saison2.test.js:275` et `:314` (renommage `maybeSkyOpening` en `maybeSeasonOpening`), `test/niveaux.test.js:204` (`ARCHIPELAGO_ORDER` remplacé par `shownArchipelagos()`), et en phase 2 `test/licornes.test.js:499` (`ev('SAVE_VERSION') === 9` : la valeur attendue devient le nouveau numéro, la version suivante au moment de la livraison ; même force, pas un affaiblissement). Aucun autre. Les 2 onglets de `test/saison2.test.js:126-129` restent vrais jusqu'à la première île ; c'est la track `monde-crayons` qui les passe à 3. | Sans ce changement, `test/niveaux.test.js:204` lève une `TypeError` (`WORLDS[undefined].level`) dès que `ARCHIPELAGO_ORDER` contient 3. Aucun test n'est affaibli : la règle est la même pour chaque archipel affiché, et `test/saison3.test.js` vérifie en plus l'archipel vide. | `test/niveaux.test.js:202-207`, `test/saison2.test.js:120-133`, `test/saison2.test.js:275`, `test/saison2.test.js:314` |
+
+## Politiques
+
+- **Arbitrages** :
+  - Quand « livrer la saison 3 » et « rien de visible avant la première île » se percutent, le second gagne : l'archipel vide est invisible partout (D1), la track livre du code et des tests, pas d'écran.
+  - Quand la généralisation et « la saison 2 ne bouge pas » se percutent, la saison 2 gagne : mêmes textes, mêmes classes et mêmes identifiants (`.sky-open`, `#sky-go`, `.story-grisou`, « En route ! ☁️ »).
+  - Quand le prénom et la voix préenregistrée (track `voix-naturelle`) se percutent : le prénom reste une partie à part de la phrase (« Lou, » puis la phrase fixe), jamais fondu dans un clip.
+- **Défauts** : constantes dans le code (pas de réglage) ; aucune dépendance ; un archipel sans île ne lève jamais d'erreur ; un compagnon inconnu dans un prologue retombe sur `charFace(guide)`.
+- **Textes montrés ou dits à l'enfant** (exacts, tous lus à voix haute) :
+
+| Où | Texte |
+|---|---|
+| Écran d'ouverture, titre `h2` | Une nouvelle expédition commence ! ✈️ |
+| Écran d'ouverture, bulle | **La Grande Expédition** : une troisième carte, avec ses îles et son histoire. Tu passes d'une carte à l'autre avec les onglets. |
+| Écran d'ouverture, phrase dite | `{Prénom}, une nouvelle expédition commence ! La Grande Expédition.` ; sans prénom : « Une nouvelle expédition commence ! La Grande Expédition. » |
+| Écran d'ouverture, bouton `#expedition-go` | Partir en expédition ✈️ |
+| Prologue, titre | La carte déchirée |
+| Prologue, phrase 1 | Zap le super-héros, à ton service ! En rangeant mon grenier, j'ai trouvé une vieille carte d'explorateur 🗺️ |
+| Prologue, phrase 2 | Mais elle est déchirée en cinq morceaux, et le vent les a emportés sur cinq îles ! |
+| Prologue, phrase 3 | Au bout de la carte, il y a un trésor. Aide-moi à retrouver les morceaux, île après île ! |
+| Prologue, boutons | « Suite ➡️ », puis « En route ! ✈️ » sur la dernière phrase |
+| Onglet de carte | « La Grande Expédition » ; fermé : 🔒 et « Niveau 70 » (niveau calculé, jamais écrit en dur) |
+| Onglet fermé, voix et toast | Les phrases existantes de `js/features/map/map.js:76-77`, avec le nom et le niveau de l'archipel |
+| Sous la carte | La phrase existante de `js/features/map/map.js:188` (« Prochain monde : La Grande Expédition au niveau 70 · encore X missions ») |
+| Journal, titre de section | « 🧭 La Grande Expédition » ; fermé : « 🔒 La Grande Expédition (niveau 70) » |
+| Journal, ligne de prologue | La carte déchirée (pastille 🧭, icône 📜) |
+| Journal, carte de Zap | « 🗺️ La carte de Zap : n / 5 » et le bouton 🔈 qui dit `zapMapSay(n)` (ligne 25) |
+| Victoire d'une énigme de saison 3 | La phrase de victoire existante, suivie de `zapMapSay(n)` avec n déjà compté après cette victoire |
+
+- **Données** :
+  - `ARCHIPELAGOS[3] = { name: 'La Grande Expédition', short: "L'Expédition", emoji: '🧭', vehicle: '✈️', sky: false, paper: true }` ; `ARCHIPELAGOS[2]` gagne `paper: false`, `ARCHIPELAGOS[1]` aussi.
+  - `SEASON_OPENINGS[2] = { seen: 'skyIntroSeen', cls: 'sky-open', go: 'sky-go', … }` avec les textes actuels (`js/features/island/island-view.js:131-140`) ; `SEASON_OPENINGS[3] = { seen: 'expeditionIntroSeen', cls: 'expedition-open', go: 'expedition-go', … }` avec les textes ci-dessus. Dessin de la saison 3 : `<div class="expedition-open-art" aria-hidden="true"><span class="eo-map">🗺️</span><span class="eo-plane">✈️</span><span class="eo-compass">🧭</span></div>`.
+  - `STORY_PROLOGUES[2]` gagne `go: 'En route ! ☁️'` ; `STORY_PROLOGUES[3] = { companion: 'zap', title: 'La carte déchirée', intro: [3 phrases], go: 'En route ! ✈️' }`. Le bouton final lit `pr.go`.
+  - `ZAP_MAP_PIECES = ['crayons', 'dumplings', 'coffres', 'chatouilles', 'concert']` (ordre des niveaux 70 à 102 de `conductor/niveaux.md`).
+  - `zapMapSVG(n)` : `viewBox="0 0 200 120"`, un rectangle de vieux papier découpé en 5 morceaux à bords déchirés (5 chemins `.zm-piece`, de gauche à droite, `data-piece` = l'id de l'île, `data-found="true|false"`). Morceau trouvé : remplissage `#F3DDAF`, contour `#8A5A2B`, un bout de chemin en pointillés rouges `#C0392B` qui traverse la carte ; le 5ᵉ morceau porte une croix rouge (le trésor). Morceau manquant : pas de remplissage, contour en tirets `#C9B79A`. Option `{ fresh: id }` : le morceau de cette île a la classe `zm-new` (il brille, animation coupée par `prefers-reduced-motion`).
+- **Référence visuelle** :
+  - écran d'ouverture : celui du Ciel, `.sky-open` (`js/features/island/island-view.js:132-141`, `js/features/island/island-view.css:19-50`), avec l'avion qui traverse au lieu de la montgolfière qui flotte ;
+  - carte vieux papier : `.island-map.sky` (`js/features/map/map.css`, règles `.island-map.sky` et `.boat.balloon`) comme modèle ; fond dégradé `#F7E9C9` vers `#EED7A6`, décor 🧭, deux ☁️, deux ✨, route en tirets `#9A6B3C` ; l'avion `.boat.plane` plane doucement (montée et descente de 4 px, rotation de 3°, 3,4 s), immobile avec `prefers-reduced-motion` ; onglet actif `.map-tab.paper.active` couleur papier ;
+  - carte de Zap dans le prologue, le chapitre et la victoire : même place et même taille que `.story-grisou` (`js/features/story/story.css:76-125`).
+- **Détails non écrits** : l'agent prend le défaut de la référence (saison 2) ou l'option la plus simple, le note dans le journal de décisions du plan, l'humain juge à la revue.
+
+## Hors périmètre
+
+- Toute île de la saison 3 (tracks `monde-crayons`, `monde-dumplings`, `monde-coffres`, `monde-chatouilles`, `monde-concert`).
+- Le trésor au bout de la carte, le final de saison 3 et ses récompenses (track `monde-concert`).
+- La musique d'un archipel, les squishies, les épisodes.
+- Le passage de `test/saison2.test.js` à 3 onglets (track `monde-crayons`, quand l'onglet devient réel).
+
+## Contrats partagés
+
+| Contrat | Forme (ou lien) | Propriétaire | Consommateurs |
+|---|---|---|---|
+| `refreshArchipelagos()` | recalcule sur place `WORLD_ORDER` (`Object.keys(WORLDS)`) et `ARCHIPELAGOS[s].level` (minimum des niveaux de ses îles, `null` sans île) ; appelée au chargement de `worlds.js` | `entities/world` | `test/saison3.test.js`, les tracks d'îles de la saison 3 (leurs tests) |
+| `shownArchipelagos()` | `ARCHIPELAGO_ORDER.filter((s) => worldsOf(s).length > 0)` | `entities/world` | `features/map`, `features/story`, `test/niveaux.test.js` |
+| `archipelagoUnlocked(s)` | `false` sans île, sinon `level() >= ARCHIPELAGOS[s].level` | `entities/world` | carte, île, histoire |
+| `maybeSeasonOpening()` | `boolean` : vrai si une ouverture de saison s'est affichée | `features/island` | `js/app/init.js:101`, tests |
+| `openSeasonOpening(s, onDone)` | écran de la table `SEASON_OPENINGS[s]`, pose les drapeaux de `s` et des saisons plus basses, `emit('map:archipelago', s)` | `features/island` | `checkNewIsland`, `maybeSeasonOpening` |
+| `STORY_PROLOGUES[s]` | `{ guide?: id de personnage, companion?: id de compagnon, title, intro: string[3], go }` | `features/story` | `openSeasonPrologue`, journal |
+| `ZAP_MAP_PIECES`, `zapMapPieces()`, `zapMapSVG(n, opts)`, `zapMapSay(n)` | voir Comportement attendu 22 à 25 et 29 ; exportés par `js/features/story/index.js`. `storyWin` d'une île de la saison 3 affiche `zapMapSVG(zapMapPieces(), { fresh: world })` (le morceau gagné porte `zm-new`) et ajoute `zapMapSay(zapMapPieces())` à la voix ; chapitre, prologue et journal : sans `fresh`. Les îles n'écrivent aucun code de carte | `features/story` | journal, chapitres, tracks des îles de la saison 3 (leur `success` et leurs tests) |
+| Île d'essai des tests | `WORLDS.essai3 = { name: "L'Île d'essai", emoji: '🧪', level: 70, diff: 6, saison: 3, short: 'Essai', subtitle: 'Une île pour les tests', map: { x: 50, y: 50 }, shape: 'lagon', icon: '🧪', sand: '#FFE2A8', land: '#7FD7C4', intro: 'Une île pour les tests', sceneEmpty: 'Rien ici' }` puis `refreshArchipelagos()` | `test/saison3.test.js` | ce fichier seul |
+| Champ de sauvegarde | `expeditionIntroSeen: boolean` | `entities/game-state` | `features/island` |
+
+## Surface d'attaque
+
+Aucune nouvelle entrée. Le nouveau champ `expeditionIntroSeen` arrive aussi par l'import de sauvegarde (`js/features/backup/`) : `load()` ne garde que les clés connues (`js/entities/game-state/state.js:215-218`) et le champ n'est lu que comme booléen (`!state.expeditionIntroSeen`). Aucun texte de l'état n'est inséré dans du HTML par cette track.
+
+## Zones sensibles touchées
+
+- Sauvegarde et migration : `js/entities/game-state/state.js` (`SAVE_VERSION`, `DEFAULT_STATE`, l'objet `state` initial, `migrate()`). Revue humaine obligatoire.
+- PWA : `index.html` et `sw.js` régénérés par `bun run sync` (nouveau fichier `zap-map.js`), jamais modifiés à la main.
+- Le test holdout `test/holdout/sauvegardes.test.js` (non modifiable) doit rester vert : les anciennes parties se chargent et passent à la nouvelle `SAVE_VERSION`.
+
+## Smoke test
+
+| Id | Qui | Étapes | Attendu | Niveau visé |
+|---|---|---|---|---|
+| S1 | 🤖 | `bun run test saison3` | lignes 1 à 7 : archipel 3 vide invisible, aucune erreur, aucun « Infinity » | test-verified |
+| S2 | 🤖 | `bun run test saison3` | lignes 8 à 17 : onglet, voix, prochain monde, ouverture au passage du niveau, prologue de Zap, avion | test-verified |
+| S3 | 🤖 | `bun run test saison3` | lignes 18 à 21 : migration, ouverture au lancement, une seule ouverture quand deux sont dues | test-verified |
+| S4 | 🤖 | `bun run test saison3` | lignes 22 à 29 : carte de Zap, journal, chapitre et victoire | test-verified |
+| S5 | 🤖 | `bun run test saison2` et `bun run test niveaux` | lignes 30 et 31 : la saison 2 et les niveaux inchangés | test-verified |
+| S6 | 🤖 | `bun run verify` | holdout des sauvegardes vert, `check` vert | test-verified |
+| S7 | 👤 | En local seulement, ajouter `essai3` dans `WORLDS` (sans commit), `bun run start`, ouvrir `http://localhost:8080` en vue téléphone, passer le niveau 70 | l'écran « Une nouvelle expédition commence ! » est joli et lisible, l'avion traverse, le prologue de Zap se lit et s'écoute bien | runtime-verified |
+| S8 | 👤 | Même installation locale, onglet 3 de la carte | fond vieux papier, avion qui plane, rien ne déborde à 360 px | runtime-verified |
+| S9 | 👤 | Même installation locale, 📖 Mon histoire | la carte de Zap en 5 morceaux se comprend sans lire (morceaux trouvés et manquants), le bouton 🔈 la décrit | runtime-verified |
+| S10 | 👤 | En production après le merge, sur le téléphone de la joueuse | rien de nouveau ne s'affiche (2 onglets, journal inchangé) | runtime-verified |
+
+## Questions ouvertes
+

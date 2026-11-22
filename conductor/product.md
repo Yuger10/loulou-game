@@ -40,4 +40,4 @@ Donner envie d'apprendre (lecture, nombres, calcul, heure, formes, planètes…)
 
 ## Prochaines grandes étapes
 - **Les niveaux** suivent une seule règle, dans `conductor/niveaux.md` : un niveau = 5 missions ; les saisons se suivent ; l'écart entre deux îles grandit de 2 niveaux à chaque saison (4, 6, 8).
-- La saison 3 « La Grande Expédition », une île tous les 8 niveaux, du niveau 70 au niveau 102 (5 îles : Nuages, Dinosaures, Fête Foraine, Bibliothèque, Étoiles), d'après les idées de la joueuse.
+- La saison 3 « La Grande Expédition », une île tous les 8 niveaux, du niveau 70 au niveau 102 (5 îles : Crayons, Squishy Dumplings, Coffres, Chatouilles, Grand Concert), d'après les idées de la joueuse.

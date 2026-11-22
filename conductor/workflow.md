@@ -56,6 +56,7 @@
 ## Fin de track : livraison
 - Après un rebase sur `main` : **`bun run release track "résumé"`** (ou `patch` pour une livraison sans track). Il augmente la version (`js/shared/lib/version.js`), lance `bun run sync` (cache de `sw.js`, `FILES`, `index.html`), ajoute la ligne du TODO et une section à compléter dans le PRD. `test/update.test.js` vérifie que la version et le cache disent la même chose.
 - **Livraison sans track** (outillage, corrections, nettoyages) : `bun run release patch "résumé"` (version 66.1, 66.2…, cache `lagon-v66.1`), puis compléter la courte section du PRD.
+- **Track livrée en plusieurs PR** (une PR par phase, chacune en production à son merge) : chaque PR intermédiaire se livre par `bun run release patch "résumé"` (67.1, 67.2…), la dernière par `bun run release track "résumé"` (68), pour qu'une track ne prenne qu'un numéro entier. Règle proposée par Claude le 22/11/2026 pour les tracks de la saison 3, d'après l'[ADR 0005](../docs/adr/0005-versions-66x.md) : à confirmer par Amrou.
 - Si l'état change : incrémenter `SAVE_VERSION` et ajouter l'étape `migrate()`.
 - Compléter la section de la version dans `PRD-lagon-magique.md` ; mettre à jour `README.md` (structure) si besoin.
 - Branche, puis PR sur `main`, `bun run check` vert, puis merge.

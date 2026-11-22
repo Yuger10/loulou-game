@@ -7,6 +7,7 @@ Remplacer `<cle>` par la clé du jeu (ex. `nesting`) et `<Jeu>` par son nom de f
 - [ ] `test/smoke.test.js` : le jeu s'ouvre, une bonne réponse avance, une mauvaise relance une **autre** question (anti-devinette), la difficulté suit le palier et l'âge.
 - [ ] `test/games.test.js` : le jeu est joué jusqu'à la victoire à chaque palier (ajouter son « solveur » s'il en faut un).
 - [ ] `test/companions.test.js` : ses indices sont vérifiés automatiquement (2 niveaux, anti-devinette, jeu gagnable après les indices).
+- [ ] `test/smoke.test.js`, test « variété : les 2 jeux jamais essayés remontent en priorité » : ajouter `state.gameCounts["<cle>"]=1` à la liste. Un jeu absent de cette liste compte 0 partie, comme les deux jeux que le test attend en tête, et le fait échouer au hasard. C'est un ajout, aucune vérification n'est affaiblie.
 - [ ] `bun run check` échoue pour la bonne raison.
 
 ## 2. La slice du jeu
@@ -38,6 +39,8 @@ Remplacer `<cle>` par la clé du jeu (ex. `nesting`) et `<Jeu>` par son nom de f
   - `test/companions.test.js` parcourt chaque jeu inscrit : il échoue si le jeu n'a pas d'indices.
 
 ## 4. Brancher et vérifier
+- [ ] `js/app/main.js` : l'import de la slice du jeu (`import '../features/minigames/<cle>/index.js';`), avec les autres mini-jeux. Sans lui, le jeu n'est jamais chargé.
+- [ ] `js/entities/difficulty/index.js` : la fonction de palier du jeu (`<cle>Round` ou équivalent) dans les exports. Sans elle, la slice du jeu ne peut pas l'importer.
 - [ ] `bun run sync` : met à jour `index.html` et la liste des fichiers mis en cache par `sw.js` depuis le manifeste.
 - [ ] Si le jeu expose volontairement un nom à d'autres slices : l'exporter et l'ajouter à son `index.js`.
 - [ ] `bun run check` vert : architecture et imports, vrais modules, test de fumée, tests de jeu.

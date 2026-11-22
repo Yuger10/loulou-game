@@ -1,0 +1,216 @@
+---
+status: brouillon
+issue: 0
+size: M
+migration: true
+sensitive: true
+files:
+  - js/features/squishies/squishies.js
+  - js/features/squishies/squishy-art.js
+  - js/features/squishies/squishy-crates.js
+  - js/features/squishies/squishy-room.js
+  - js/features/squishies/squishies.css
+  - js/features/squishies/index.js
+  - js/features/market/market.js
+  - js/entities/game-state/state.js
+  - js/slices.cjs
+  - test/squishy-boites.test.js
+  - test/squishies.test.js
+  - test/licornes.test.js
+taster: { facts: 0, decisions: 0, rounds: 2 }
+---
+
+<!-- Gabarit cothon 0.4.0 (setting-up-docs), adopté dans Conductor (cothon 0.2.0-2 et 0.4.0-6). -->
+
+# Spec : les boîtes de rangement durables de la chambre à squishies
+
+- Nouveau projet : non
+
+## Problème
+
+Idée de la joueuse : « on range dans des boîtes les squishies ». Aujourd'hui l'onglet « 📦 Ranger » de la chambre est un exercice de tri à consigne : 8 squishies tirés au hasard, une boîte de 4 cases, puis tout disparaît (`js/features/squishies/squishy-room.js:1054-1179`, « Ranger n'enlève rien à la collection : les squishies sont rangés symboliquement », `conductor/tracks/squishy-collection_20261109/spec.md:59`). L'étagère de 12 places est décorative (`squishy-room.js:965-1052`). La joueuse veut ranger **pour de bon** : ses boîtes à elle, avec une étiquette qu'elle choisit, qu'elle retrouve remplies à la prochaine visite. C'est aussi un apprentissage : trier selon un critère choisi soi-même, puis selon deux critères.
+
+## Comportement attendu
+
+Vocabulaire : une **boîte de rangement** (dans le code `crate`) est une boîte durable de la chambre ; une **boîte surprise** (`boxes`, inchangée) s'ouvre pour gagner un squishy. Un **exemplaire** est une unité possédée (`owned[id]` en compte plusieurs). Un exemplaire est **libre** s'il n'est ni sur l'étagère ni dans une boîte de rangement. Le **cran d'étiquettes** (1, 2 ou 3) dit quelles étiquettes l'enfant peut choisir (voir D7).
+
+### État, migration, import (phase 1)
+
+1. Étant donné une partie neuve, quand on lit `state.squishies.crates`, alors c'est un tableau de 3 boîtes `{ label: null, items: [], done: false }`.
+2. Étant donné une sauvegarde de la version précédente (sans `crates`), quand elle est chargée (`load()` puis `migrate()`), alors `state.squishies.crates` vaut 3 boîtes vides, `v` vaut le nouveau `SAVE_VERSION`, et `owned`, `boxes`, `shelf`, `sorted`, `day`, `treasures` sont inchangés.
+3. Étant donné une sauvegarde importée (fichier ou code de transfert) dont `crates` n'est pas un tableau, quand elle est appliquée (`applyBackup`), alors la partie se charge sans erreur JS et `crates` vaut 3 boîtes vides.
+4. Étant donné un `crates` importé de plus de 8 boîtes, quand il est lu par la logique, alors seules les 8 premières restent.
+5. Étant donné un `crates` importé de moins de 3 boîtes, quand il est lu, alors des boîtes vides sont ajoutées à la fin jusqu'à 3.
+6. Étant donné une boîte importée dont un élément de `items` n'est pas un id de `SQUISHIES` (id inconnu, trésor `grisou-arc`, nombre, objet), quand elle est lue, alors cet élément est retiré.
+7. Étant donné une boîte importée de plus de 6 éléments, quand elle est lue, alors seuls les 6 premiers restent.
+8. Étant donné des boîtes importées qui contiennent, pour un même id, plus d'exemplaires que permis, quand elles sont lues, alors les exemplaires en trop sont retirés en partant de la dernière boîte et du dernier élément. Permis = `max(0, owned[id] - étagère(id))`, où `étagère(id)` est le nombre de places de `shelf` égales à `id`. Exemple : `owned = { donut: 2 }`, 1 donut sur l'étagère, boîtes `[['donut'], ['donut']]` : permis 1, il reste `[['donut'], []]`.
+9. Étant donné une boîte importée dont `label` n'est pas une étiquette valide (grammaire D5), quand elle est lue, alors `label` devient `null` et `items` devient `[]`.
+10. Étant donné une boîte importée dont un exemplaire ne respecte pas son étiquette (sauf `fav`), quand elle est lue, alors cet exemplaire est retiré.
+11. Étant donné une boîte importée dont `done` n'est pas un booléen, quand elle est lue, alors `done` vaut `false`.
+12. Étant donné une collection avec des boîtes remplies, quand on fait `buildBackup()` puis `applyBackup()` (fichier) ou le code `LAGON1:` (code de transfert), alors `crates` revient à l'identique.
+13. Étant donné un exemplaire libre et une boîte étiquetée `color:rose` non pleine, quand `crateAdd(i, 'donut')` est appelé (donut est rose), alors il renvoie `{ ok: true, full: false, coins: 0, newCrate: false, unlock: false }` et `crates[i].items` se termine par `'donut'`, et la partie est sauvegardée.
+14. Étant donné une boîte étiquetée `color:rose`, quand `crateAdd(i, 'cupcake')` est appelé (cupcake est bleu), alors il renvoie `{ ok: false, reason: 'wrong' }` et rien ne change.
+15. Étant donné une boîte étiquetée `fav`, quand on y ajoute n'importe quel exemplaire libre, alors il est accepté.
+16. Étant donné une boîte sans étiquette, quand `crateAdd` est appelé, alors il renvoie `{ ok: false, reason: 'nolabel' }`.
+17. Étant donné une boîte de 6 éléments, quand `crateAdd` est appelé, alors il renvoie `{ ok: false, reason: 'full' }`.
+18. Étant donné un id dont aucun exemplaire n'est libre (tous sur l'étagère ou dans des boîtes), quand `crateAdd` est appelé, alors il renvoie `{ ok: false, reason: 'none' }`.
+19. Étant donné une boîte non vide, quand `crateRemove(i, pos)` est appelé, alors l'exemplaire à la position `pos` redevient libre ; `crateEmpty(i)` les rend tous libres.
+20. Étant donné une boîte non vide, quand `crateSetLabel(i, key, age)` est appelé, alors il renvoie `false` et l'étiquette ne change pas ; étant donné une boîte vide et une étiquette permise (D7), alors il renvoie `true` et l'étiquette est posée ; une étiquette invalide ou non permise renvoie `false`.
+21. Étant donné une boîte étiquetée d'une règle de tri (pas `fav`) avec `done: false`, quand son 6ᵉ élément y entre, alors `crateAdd` renvoie `{ ok: true, full: true, coins: 5, newCrate: true, unlock }` tant qu'il y a moins de 8 boîtes (`unlock` vaut `true` seulement si ce remplissage fait passer le profil du cran 2 au cran 3, voir D7), `state.coins` augmente de 5, une boîte vide `{ label: null, items: [], done: false }` s'ajoute à la fin, et `done` passe à `true`.
+22. Étant donné 8 boîtes, quand une boîte de tri est remplie pour la première fois, alors `crateAdd` renvoie `full: true`, `coins: 5` et `newCrate: false` : aucune 9ᵉ boîte.
+23. Étant donné une boîte avec `done: true` (vidée puis remplie à nouveau, même avec une autre étiquette), quand son 6ᵉ élément entre, alors `{ ok: true, full: true, coins: 0, newCrate: false }`.
+24. Étant donné une boîte `fav`, quand son 6ᵉ élément entre, alors `{ ok: true, full: true, coins: 0, newCrate: false }` et `done` reste `false`.
+25. Étant donné un profil de moins de 6 ans ou sans âge, quand on demande `crateLabelsFor(age)`, alors on obtient `fav`, les 6 couleurs et les séries disponibles, sans forme ni taille (cran 1).
+26. Étant donné un profil de 6 ou 7 ans, quand on demande `crateLabelsFor(age)`, alors on obtient aussi les 3 formes et les 2 tailles (cran 2), et `crateLabelAllowed('size:petit+color:rose', age)` est `false` tant que moins de 2 boîtes ont `done: true`, puis `true` (cran 3).
+27. Étant donné un profil de 8 ans ou plus, quand on demande `crateLevel(age)`, alors c'est 3, et les étiquettes à deux règles de D5 sont permises.
+28. Étant donné des doubles rangés, quand on compte les doubles (formules de « Valeurs calculées » dans les Politiques), alors `squishyDuplicates()` = somme sur les modèles de `min(owned[id] - 1, libre(id))` et `squishyStoredDuplicates()` = somme de `(owned[id] - 1) - min(owned[id] - 1, libre(id))`, modèles avec `owned[id] >= 1`. Exemple : `owned = { donut: 3 }`, 1 donut dans une boîte, 1 sur l'étagère : `libre = 3 - 1 - 1 = 1`, `squishyDuplicates() = min(2, 1) = 1`, `squishyStoredDuplicates() = 2 - 1 = 1`. Autre exemple : `owned = { donut: 3 }`, rien de rangé : 2 et 0. `owned = { donut: 2 }`, 2 donuts dans des boîtes : `libre = 0`, 0 et 1.
+29. Étant donné des doubles libres et des doubles rangés, quand `tradeDuplicatesFor(id)` réussit, alors il retire 3 exemplaires, un par un : à chaque retrait, il prend le modèle dont `min(owned[x] - 1, libre(x))` est le plus grand (égalité : le premier dans l'ordre des clés de `owned`, tri stable comme aujourd'hui), décrémente `owned[x]` de 1, puis recalcule. Étagère et boîtes ne changent pas. Exemple : `owned = { donut: 4, mochi: 3, chat: 1 }`, 2 donuts dans une boîte : échangeables donut `min(3, 2) = 2`, mochi 2 ; retraits donut, mochi, puis donut ou mochi à égalité 1 : donut (premier dans `owned`) ; fin `owned = { donut: 2, mochi: 2, chat: 1 }`, les 2 donuts de la boîte sont toujours là.
+30. Étant donné un exemplaire dans une boîte, quand on le pose sur l'étagère alors qu'il n'en reste aucun libre, alors `shelfPlace` renvoie `false`.
+31. Étant donné des boîtes de rangement remplies, quand on joue l'exercice « 📦 Ranger », alors ses 8 squishies sont tirés de toute la collection comme avant (`makeSortingTask(sqState().owned, …)`), il paie toujours 5 pièces 3 fois par jour, et `state.skills.rangement` évolue comme avant.
+
+### L'onglet « 🗃️ Mes boîtes » (phase 2)
+
+32. Étant donné la chambre ouverte, quand on regarde les onglets, alors il y en a 4, dans cet ordre : 📚 Collection, 🗄️ Étagère, 🗃️ Mes boîtes, 📦 Ranger.
+33. Étant donné l'onglet « Mes boîtes » et une collection vide, quand il s'ouvre, alors il montre et dit : « Tes boîtes t'attendent ! Ouvre une boîte surprise pour trouver ton premier squishy. »
+34. Étant donné l'onglet « Mes boîtes » et au moins un squishy, quand il s'ouvre, alors il montre une carte par boîte (2 par rangée), chacune avec son étiquette en image, ses squishies en petit et « N / 6 ». La consigne de l'en-tête affiche « Range tes squishies dans tes boîtes ! » ; la voix dit « Range tes squishies dans tes boîtes ! Une boîte pleine t'en fait gagner une autre. » s'il y a moins de 8 boîtes, sinon seulement la première phrase.
+35. Étant donné une carte de boîte sans étiquette, quand on la touche, alors le choix de l'étiquette s'ouvre (D7, D8) et la voix dit le texte du cran : cran 1 « Choisis l'étiquette de ta boîte : une couleur, une famille, ou tes préférés ! » ; crans 2 et 3 « Choisis l'étiquette de ta boîte : une couleur, une forme, une taille, une famille, ou tes préférés ! »
+36. Étant donné le choix de l'étiquette, quand on touche une option, alors elle se met en avant et la voix dit son nom (D9) ; une seule option à la fois est en avant au premier rang.
+37. Étant donné le cran 3, quand on touche au premier rang une option couleur, forme ou taille, alors le second rang apparaît avec seulement les compléments permis par D5 (une couleur appelle une forme ou une taille ; une forme appelle une couleur ou une taille ; une taille appelle une couleur ou une forme), et la voix dit en un seul appel le nom de l'option, un point, puis « Tu peux ajouter une deuxième règle, ou toucher Choisir. » (exemple : « Les roses. Tu peux ajouter une deuxième règle, ou toucher Choisir. ») ; toucher un complément le met en avant (le retoucher l'enlève) et la voix dit seulement le nom de l'étiquette à deux règles (D9). Au cran 3, une option famille ou préférés ne montre pas de second rang et ne dit que son nom (36).
+38. Étant donné une option en avant, quand on touche « ✓ Choisir », alors l'étiquette est posée (`crateSetLabel`), la boîte s'ouvre et la voix dit « Voilà <nom de la boîte> ! Fais glisser tes squishies dedans. » (nom de la boîte : D9).
+39. Étant donné une carte de boîte étiquetée, quand on la touche, alors la boîte s'ouvre : la boîte en grand (6 cases, 3 par rangée), en dessous un tapis horizontal des exemplaires libres (un bouton par modèle, « ×N » s'il y en a plusieurs libres), et la voix dit « <Nom de la boîte>. Fais glisser tes squishies dedans ! ». S'il n'y a aucun exemplaire libre, le tapis est remplacé par « Tous tes squishies sont déjà rangés ! », et la voix dit « <Nom de la boîte>. Tous tes squishies sont déjà rangés ! »
+40. Étant donné une boîte ouverte, quand on fait glisser un squishy du tapis et qu'on le lâche sur la boîte, alors c'est la même chose que `crateAdd` : s'il va dans la boîte, il apparaît dans la case suivante avec le son `good` et une vibration de 30 ms, sans voix ; le tapis perd un exemplaire.
+41. Étant donné une boîte ouverte, quand on touche un squishy du tapis, alors il est choisi (en avant) et la voix dit « <Nom du squishy>. Touche la boîte pour le ranger ! » ; quand on touche ensuite la boîte, alors c'est `crateAdd` comme en 40 ; toucher à nouveau le squishy choisi le repose.
+42. Étant donné une boîte ouverte sans squishy choisi, quand on touche une case vide de la boîte, alors la voix dit « Choisis d'abord un squishy, en dessous. »
+43. Étant donné un squishy qui ne respecte pas l'étiquette, quand il est lâché ou posé, alors il rebondit (classe `sr-bounce` ; l'animation de `.sr-item.sr-bounce` est reprise pour `.cb-item.sr-bounce`), revient sur le tapis, avec le son `wrong`, une vibration de 80 ms et l'indice parlé de D10 ; rien n'est retiré, rien n'est compté.
+44. Étant donné 3 erreurs d'affilée dans la même boîte ouverte, quand la 3ᵉ arrive, alors les squishies du tapis qui vont dans cette boîte brillent 3 secondes (classe `cb-glow`) et la voix dit en un seul appel l'indice de D10 suivi de « Regarde ceux qui brillent ! » (exemple : « Lui, il est bleu. On cherche des roses ! Regarde ceux qui brillent ! ») ; le compteur repart à zéro après ce 3ᵉ rebond et après chaque réussite.
+45. Étant donné une boîte pleine, quand on y lâche ou pose un squishy, alors il rebondit et la voix dit « Cette boîte est pleine ! Range-le dans une autre boîte. »
+46. Étant donné une boîte ouverte, quand on touche un squishy dans une case de la boîte, alors il sort (`crateRemove`), revient sur le tapis, avec le son `pop`, sans voix.
+47. Étant donné une boîte ouverte non vide, quand on touche « ↩️ Tout sortir », alors elle se vide (`crateEmpty`) et la voix dit « Tes squishies sont sortis de la boîte. » ; le bouton « 🏷️ Changer l'étiquette » n'est visible que si la boîte est vide, et ouvre le choix de l'étiquette (35).
+48. Étant donné une boîte de tri remplie pour la première fois (21), quand le 6ᵉ squishy entre, alors confettis, son `win`, pièces qui volent (`gainCoins(5, …)`), et la voix dit en un seul appel « Bravo, ta boîte est pleine ! Tu gagnes 5 pièces et une nouvelle boîte ! » (ou « Bravo, ta boîte est pleine ! Tu gagnes 5 pièces ! » à 8 boîtes) ; si `unlock` est vrai, la même chaîne se termine par « Maintenant, une étiquette peut avoir deux règles ! » (exemple complet : « Bravo, ta boîte est pleine ! Tu gagnes 5 pièces et une nouvelle boîte ! Maintenant, une étiquette peut avoir deux règles ! »).
+49. Étant donné une boîte déjà payée (`done: true`) remplie à nouveau, quand le 6ᵉ squishy entre, alors son `win`, sans pièces, et la voix dit « Ta boîte est pleine, bravo ! » ; pour une boîte `fav` : « Ta boîte de préférés est pleine ! »
+50. Étant donné une boîte ouverte, quand on touche « ⬅️ Mes boîtes », alors on revient aux cartes, sans voix.
+51. Étant donné des boîtes remplies, quand on ferme la chambre, recharge la page et rouvre l'onglet, alors chaque boîte a la même étiquette et les mêmes squishies dans le même ordre.
+52. Étant donné un squishy dont au moins un exemplaire est dans une boîte, quand l'onglet Collection s'affiche, alors sa case porte la petite marque `🗃️` (classe `sq-in-crate`) ; le compteur « ×N » reste le nombre possédé. En le pressant, la voix dit « <Nom> ! Il est rangé dans une boîte. » s'il n'en a qu'un, ou « <Nom>. Tu en as N, dont K dans tes boîtes. » sinon.
+53. Étant donné l'onglet Étagère et un modèle dont aucun exemplaire n'est libre parce qu'au moins un est dans une boîte, quand on le touche dans la collection de l'étagère, alors la voix dit « Il est déjà rangé dans une boîte ! » (sinon le texte actuel « Il est déjà sur l'étagère ! » reste).
+54. Étant donné le marché, onglet Échanger, et au moins un double rangé (étagère ou boîte), quand la section « Mes doubles de squishies » s'affiche, alors son message se termine par « Tes squishies rangés restent à leur place. » et, quand on touche une silhouette sans assez de doubles libres, la voix dit « Il te faut encore N double(s) pour l'échanger. Tes squishies rangés restent à leur place. »
+55. Étant donné un navigateur sans `PointerEvent`, quand on ouvre une boîte, alors aucun écouteur de glisser n'est posé et le toucher puis toucher (41) marche.
+56. Étant donné une largeur de 360 px, quand l'onglet et une boîte ouverte s'affichent, alors rien ne déborde horizontalement de la fenêtre (seul le tapis défile de côté) et chaque bouton fait au moins 64 px de côté.
+
+## Décisions
+
+| Id | Décision | Pourquoi | Source |
+|---|---|---|---|
+| D1 | On **garde** l'exercice « 📦 Ranger » tel quel (consigne, 8 squishies, 4 cases, 5 pièces 3 fois par jour, `state.skills.rangement`, niveau adaptatif), et on **ajoute** les boîtes durables dans un onglet à part. Les boîtes durables n'écrivent rien dans `state.skills` | L'exercice nourrit l'espace parents (groupe « Mémoire et logique ») et son niveau adaptatif ; le casser ferait perdre des statistiques. Les boîtes durables sont libres : une boîte choisie par l'enfant n'est pas une question notée. Ne pas toucher `js/features/parents/` (zone sensible) | `squishies.js:394-433` (`recordSorting`, `sortingDone`), `js/features/parents/parents.js:58`, `parents.js:63`, `AGENTS.md:60` |
+| D2 | Nouvel onglet `boites`, « 🗃️ Mes boîtes », inséré entre Étagère et Ranger. Écran de référence : l'onglet Étagère (une zone de places en haut, « Ta collection » à choisir en dessous, toucher puis toucher) | Même geste que l'étagère, que l'enfant connaît déjà ; l'étagère reste décorative et inchangée | `squishy-room.js:742-746` (`SQ_TABS`), `squishy-room.js:967-1052` (`renderSquishyShelf`) |
+| D3 | 3 boîtes au départ, +1 boîte à la première fois qu'une boîte de tri (étiquette autre que `fav`) est pleine, plafond 8 boîtes ; capacité 6 exemplaires par boîte. Constantes : `CRATE_START = 3`, `CRATE_MAX = 8`, `CRATE_SLOTS = 6`, `CRATE_REWARD = 5` | 3 boîtes permettent d'essayer tout de suite une couleur, une famille et les préférés ; 6 cases tiennent en 3 × 2 à 360 px ; 8 boîtes × 6 = 48 places pour un catalogue de 54 modèles plus les doubles. Défaut du rédacteur, à juger à la revue | `js/entities/squishy/squishies.js:52-548` (54 modèles, compte vérifié par `test/squishies.test.js:91-93`) |
+| D4 | Un exemplaire est à **un seul endroit** : libre, sur l'étagère, ou dans une boîte. Libre = `owned[id]` moins étagère moins boîtes. Les doubles rangés restent dans le compteur « ×N » de la Collection (ranger ne retire rien de la collection) mais ne s'échangent pas : `squishyDuplicates()` ne compte que les doubles libres et `tradeDuplicatesFor` ne prend que des exemplaires libres. Un modèle peut aller dans plusieurs boîtes si on en a plusieurs exemplaires | Ranger « pour de bon » : un squishy rangé ne doit pas disparaître de sa boîte à cause d'un échange. Aujourd'hui l'échange retire les doubles les plus nombreux sans regarder l'étagère, ce qui peut laisser l'étagère montrer plus d'exemplaires qu'on n'en a : la règle corrige aussi ce cas | `squishies.js:204-222` (`squishyDuplicates`, `tradeDuplicatesFor`), `squishies.js:229-236` (`shelfPlace`), `squishy-room.js:992` |
+| D5 | Grammaire d'une étiquette (`label`, chaîne) : `fav` ; ou une règle `type:valeur` avec `color` ∈ clés de `SQ_COLORS`, `shape` ∈ `rond`, `ovale`, `carre`, `size` ∈ `petit`, `grand`, `series` ∈ clés de `SQUISHY_SERIES` ; ou deux règles jointes par `+`, d'un des trois couples `size+color`, `color+shape`, `size+shape`, dans cet ordre (canonique). `series` ne se combine pas. Toute autre chaîne est invalide | Même forme de clé que l'exercice (`type:valeur` joints par `+`), mêmes couples de deux critères ; `sortMatches` lit `SQUISHIES[id][type]`, ce qui marche aussi pour `series` | `squishies.js:321` (clé), `squishies.js:285-299` (`sortCandidates`, couples), `squishies.js:275-278` (`sortMatches`), `js/entities/squishy/squishies.js:21-31`, `:587-594` |
+| D6 | Les trésors (`SQUISHY_TREASURES`, Grisou arc-en-ciel) ne se rangent pas : seuls les ids de `SQUISHIES` vont dans une boîte | Les trésors ont leur case à part et ne sont pas dans `SQUISHIES` ; `owned` ne les compte pas | `js/entities/squishy/squishies.js:550-563`, `squishies.js:438-454` |
+| D7 | Cran d'étiquettes `crateLevel(age)` : on part de `sortLevelCap(age)` (moins de 6 ans ou sans âge : 1 ; 6-7 ans : 2 ; 8 ans et plus : 3). Cran 1 : `fav`, couleurs, séries disponibles. Cran 2 : en plus formes et tailles. Cran 3 : en plus les deux règles. Un profil au cran 2 passe au cran 3 dès que 2 boîtes ont `done: true`. Le niveau adaptatif de l'exercice (`skills.rangement.lvl`) n'est pas utilisé | Même plafond d'âge que l'exercice. La famille (série) est au cran 1 car elle se reconnaît au dessin et à l'emoji. Le passage à deux règles après deux boîtes réussies donne à une enfant de 6 ans le « puis deux critères » demandé, sans attendre ses 8 ans, puisque c'est elle qui choisit. Défaut du rédacteur (série au cran 1, déblocage après 2 boîtes), à juger à la revue. Si la track `aller-plus-loin` remplace l'âge par la classe, seule `sortLevelCap` change | `squishies.js:263-273` (`sortLevelCap`, `sortLevelFor`), `squishies.js:83-89` (`squishySeriesAvailable`), `js/entities/player/party-state.js:28-31` (`currentPlayerAge`) |
+| D8 | Choix de l'étiquette : un premier rang d'options en image (couleur : pastille ; forme : icône `sr-shape-*` ; taille : paire `sr-size-*` ; famille : emoji de la série ; préférés : ❤️), un second rang au cran 3, puis « ✓ Choisir ». On ne peut changer l'étiquette que d'une boîte vide | Images déjà utilisées par l'exercice pour les enfants qui ne lisent pas ; une boîte vide à changer évite de perdre en silence un rangement | `squishy-room.js:1063-1075` (`sortIconsHTML`), `squishy-room.js:1077-1083` |
+| D9 | Noms dits à voix haute. Option : couleur « Les » + `SQ_COLORS[v].adj[1]`, déjà au pluriel (« Les roses », « Les orange ») ; forme « Les ronds », « Les ovales », « Les carrés » ; taille « Les petits », « Les grands » ; famille « Les » + nom de la série (« Les Capybaras ») ; préférés « Tes préférés : tu mets ceux que tu veux ! » ; deux règles : `sortSay(criteria)` où « Range les » devient « Les » (« Les petits squishies roses »). Nom de boîte (`crateName`) : `fav` « ta boîte de préférés » ; série « ta boîte des » + nom (« ta boîte des Capybaras ») ; règles « ta boîte des » + `sortSay(criteria)` sans « Range les » (« ta boîte des squishies roses », « ta boîte des petits squishies roses », « ta boîte des squishies roses et ronds »). En début de phrase, la première lettre passe en majuscule | Réutilise les phrases déjà accordées de l'exercice | `squishies.js:256-261` (`SQ_SORT_SHAPES`, `SQ_SORT_SIZES`), `squishies.js:306-312` (`sortSay`), `js/entities/squishy/squishies.js:587-594` |
+| D10 | Indice parlé d'un mauvais squishy : pour une règle couleur, forme ou taille, `sortWrongHint(id, criteria)` tel quel (« Lui, il est bleu. On cherche des roses ! ») ; pour une série, « Lui, c'est <say du squishy>. On cherche des <nom de la série> ! » (« Lui, c'est un donut. On cherche des Capybaras ! »). La boîte `fav` n'a jamais d'indice : tout y va | Même indice que l'exercice ; `sortWrongHint` ne connaît pas `series` | `squishies.js:377-386`, `squishy-room.js:1150-1153` |
+| D11 | Glisser-déposer au doigt sur le modèle du puzzle : `pointerdown` sur un bouton du tapis, seuil de 8 px avant de soulever, fantôme cloné en `position: fixed` qui suit le doigt, `setPointerCapture` dans un `try`, cible trouvée par `document.elementFromPoint` puis `closest('.cb-crate')` au `pointerup`, `pointercancel` annule, drapeau `justDragged` 350 ms pour ignorer le `click` qui suit. Repli toucher puis toucher toujours actif. Écouteurs posés seulement si `window.PointerEvent` existe | Code éprouvé sur téléphone et tablette dans le jeu ; le repli marche partout | `js/features/minigames/jigsaw/jigsaw.js:168-233`, `jigsaw.js:114`, `js/features/minigames/jigsaw/jigsaw.css:102`, `jigsaw.css:120-127`, `AGENTS.md:33` |
+| D12 | Le tapis est **une seule rangée qui défile de côté**, au-dessous de la boîte ; ses boutons ont `touch-action: pan-x` : un geste de côté fait défiler le tapis, un geste vers le haut soulève le squishy vers la boîte | Le puzzle met `touch-action: none` sur ses morceaux, ce qui bloquerait le défilement d'une collection de 54 modèles ; ici on glisse vers le haut, le défilement est de côté. Défaut du rédacteur, à vérifier sur l'iPad (ligne 👤 S12) | `jigsaw.css:102`, `squishy-room.js:989-997` |
+| D13 | `pointerdown` se branche avec `setHandler(el, 'pointerdown', fn)` ; `pointermove`, `pointerup`, `pointercancel` sont des écouteurs temporaires avec `addEventListener` et retirés à la fin, comme le puzzle | Convention du projet : `setHandler` pour l'écouteur durable, sans doublon au rebranchement | `js/shared/ui/handlers.js:17-34`, `AGENTS.md:32`, `jigsaw.js:213-231` |
+| D14 | Anti-devinette : pas de relance de consigne (l'enfant choisit l'étiquette, il n'y a pas de question à changer), pas de limite d'essais ; une erreur ne coûte rien ; après 3 erreurs d'affilée, les bons squishies du tapis brillent. Ce que rapporte une boîte est borné (D15), donc deviner ne paie pas | « Pas de punition », « anti-devinette » quand il y a peu de choix : ici le choix est large (toute la collection libre) | `conductor/product-guidelines.md:6-7` |
+| D15 | Paiement borné : 5 pièces et une boîte de plus, **une seule fois par boîte** (`done`), seulement pour une étiquette de tri. Au plus 8 boîtes, donc au plus 40 pièces sur toute la partie. `done` ne revient jamais à `false`. La boîte `fav` ne paie jamais | Pas de boucle de paiement sans fin ; l'exercice garde son paiement quotidien borné à 3 | `conductor/product-guidelines.md:9`, `squishies.js:39-40`, `squishies.js:423-433` |
+| D16 | La mission du jour « Range une boîte de squishies » est **hors périmètre** et reste dans la boîte à idées | Les missions vivent dans la slice `quests`, qui importe `squishies` : il faudrait un événement et un nouveau modèle de mission, une autre track. Défaut du rédacteur, à juger à la revue | `TODO.md:167`, `js/features/quests/quests.js:20`, `quests.js:24-67` |
+| D17 | Forme de l'état : `state.squishies.crates`, tableau de 3 à 8 objets `{ label: string \| null, items: string[], done: boolean }` (`items` : 0 à 6 ids de `SQUISHIES`, un id par exemplaire, dans l'ordre de rangement). `squishyFreshState()` le crée. `SAVE_VERSION` passe à la version suivante au moment de la livraison, avec une étape `migrate()` qui pose 3 boîtes vides si `saved.squishies` existe sans tableau `crates` | Règle du projet : tout champ nouveau augmente `SAVE_VERSION` avec sa migration ; `sqState()` complète déjà une clé manquante, mais la migration rend le changement explicite et testable | `js/entities/game-state/state.js:11`, `state.js:51-77`, `state.js:138-201`, `squishies.js:44-55`, `AGENTS.md:53` |
+| D18 | Validation des boîtes (entrée non fiable) : une fonction pure `cleanSquishyCrates(raw, owned, shelf)` applique 3 à 11 et renvoie un tableau neuf. `sqState()` l'appelle **une fois par objet** `state.squishies` (mémo du dernier objet nettoyé), donc après chaque `load()` : partie normale, changement de joueur, `applyBackup`. `js/features/backup/` n'est pas modifié | `applyBackup` écrit le texte brut dans le stockage puis appelle `load()`, qui ne garde que les clés connues sans regarder leur contenu : la validation doit se faire à la lecture | `js/features/backup/backup.js:123-143` (`load()` à la ligne 137), `state.js:203-226` |
+| D19 | Un squishy rangé qui n'existe plus (id retiré du catalogue) disparaît de sa boîte au chargement (6), sans message ; un exemplaire qu'on ne possède plus (8) aussi | Rien à montrer à l'enfant : la boîte garde tout ce qui existe ; aucune erreur JS | `squishies.js:281-283` (même filtre `SQUISHIES[id]` pour l'exercice) |
+| D20 | Découpage du code : la logique des boîtes va dans `squishies.js` (elle doit être lue par `shelfPlace` et `tradeDuplicatesFor`, dans ce fichier) ; l'interface va dans un nouveau fichier `squishy-crates.js`. Les dessins (`SQ_BODIES`, `sqFace`, `SQ_ART`, `SQ_SPARKLE`, `squishyArtSVG`), `squishyPress` et `sortIconsHTML` sont d'abord **déplacés tels quels** de `squishy-room.js` vers un nouveau `squishy-art.js` (phase 0, avec `node test/tools/move.js`), sans changer un seul dessin | `squishy-room.js` a 1 223 lignes pour un plafond de 1 250 ; `import/no-cycle` interdit que `squishy-crates.js` importe `squishy-room.js` qui l'importe. Déplacer sans modifier n'est pas toucher aux dessins | `.oxlintrc.json:40`, `.oxlintrc.json:44`, `conductor/workflow.md:38`, `squishy-room.js:74-651`, `:715-722`, `:1063-1075` |
+| D21 | Les nouveaux noms de haut niveau commencent par `crate`, `CRATE_` ou `cb` (CSS `.cb-…`), et aucun ne reprend un nom existant | Les tests regroupent tout le jeu sans renommer : chaque nom de haut niveau doit être unique | `test/tools/page.js:9-12`, recherche `crate` dans `js/` : seules la classe CSS `sr-crate` et une variable locale de `squishySortWin` |
+| D23 | La PR qui augmente `SAVE_VERSION` (phase 1) met à jour la valeur attendue de `ev('SAVE_VERSION') === 9` dans `test/licornes.test.js:499` au nouveau numéro (la version suivante sur `main` au moment de la livraison, plusieurs tracks en augmentent une). Même force, ce n'est pas un affaiblissement. Les nouveaux tests de migration lisent la constante (`SAVE_VERSION`, `SAVE_VERSION - 1`), jamais un numéro en dur | Règle commune aux tracks qui augmentent `SAVE_VERSION` ; sinon `check` échoue sur une assertion devenue fausse | `test/licornes.test.js:499`, `js/entities/game-state/state.js:11`, `AGENTS.md:51` |
+| D22 | Le test existant « 3 onglets » devient « 4 onglets : Collection, Étagère, Mes boîtes, Ranger », plus précis (il vérifie aussi l'ordre). C'est la seule ligne modifiée dans `test/squishies.test.js` ; le seul autre test existant touché est `test/licornes.test.js:499` (D23) | Le comportement change exprès (32) ; le test est mis à jour, pas affaibli. À relire par Amrou | `test/squishies.test.js:390`, `AGENTS.md:51` |
+
+## Politiques
+
+- **Arbitrages** :
+  - Ranger durablement contre échanger : le rangement gagne. Un double rangé ne s'échange pas tant qu'il n'est pas sorti (D4).
+  - Ranger durablement contre exercice « Ranger » : indépendants. L'exercice tire toujours de toute la collection et ne déplace rien (31).
+  - Plafond d'âge contre déblocage : le déblocage des deux règles au cran 2 (D7) est la seule exception, et seulement pour les étiquettes que l'enfant choisit ; l'exercice garde son plafond strict.
+  - Import abîmé contre conservation : on garde tout ce qui est valide, on retire le reste sans message à l'enfant (D18, D19). Jamais d'erreur JS.
+  - Ordre des refus de `crateAdd(i, id)` : le premier qui s'applique gagne. 1. `i` n'est pas un index entier de `crates` ou `id` n'est pas dans `SQUISHIES` : `{ ok: false, reason: 'bad' }` ; 2. étiquette `null` : `'nolabel'` ; 3. 6 éléments : `'full'` ; 4. `libre(id) = 0` : `'none'` ; 5. `id` ne respecte pas l'étiquette : `'wrong'`. Exemple : une boîte pleine étiquetée `color:rose` et un cupcake bleu sans exemplaire libre donne `'full'`. Réaction de l'interface : `'full'` donne 45, `'wrong'` donne 43 ; `'bad'`, `'nolabel'` et `'none'` ne peuvent pas venir de l'interface (une boîte sans étiquette ouvre le choix, le tapis ne montre que des exemplaires libres) : rien ne se passe, sans voix.
+  - Ordre des refus des autres fonctions à plusieurs refus, toutes renvoient `false` sans rien changer, l'ordre ne change que le chemin du code : `crateSetLabel(i, key, age)` : index invalide, boîte non vide, `crateLabelValid(key)` faux, `crateLabelAllowed(key, age)` faux. `crateRemove(i, pos)` : index invalide, `pos` hors de `items`. `crateEmpty(i)` : index invalide (une boîte déjà vide renvoie `true`). `shelfPlace` et `tradeDuplicatesFor` gardent leurs refus actuels (`squishies.js:229-236`, `squishies.js:208-210`), avec « libre » à la place du compte de l'étagère ou des doubles.
+  - Voix : **un seul appel à `speak()` par événement**, car un nouvel appel coupe la phrase en cours. Quand plusieurs phrases se suivent (indice puis « Regarde ceux qui brillent ! », bravo puis déblocage, nom de boîte puis consigne, phrase du marché), elles sont jointes par une seule espace dans une seule chaîne, et le test compare cette chaîne exacte au dernier texte noté (`lastSaid()`). Aucune phrase de la spec n'est dite par deux appels.
+  - Ordre de nettoyage (D18) : longueur de la liste (4, 5), puis par boîte : `done` (11), étiquette (9), éléments non valides (6), éléments hors étiquette (10), longueur (7), puis exemplaires en trop sur toutes les boîtes (8).
+- **Valeurs calculées** (chaque nombre affiché ou dit) :
+  - `étagère(id)` = nombre de places de `shelf` égales à `id` ; `boîtes(id)` (`squishyCrateCount`) = nombre d'occurrences de `id` dans tous les `items` ; `libre(id)` (`squishyFree`) = `max(0, owned[id] - étagère(id) - boîtes(id))`. Exemple : `owned.donut = 3`, 1 sur l'étagère, 1 en boîte : libre 1.
+  - « ×N » du tapis (39) = `libre(id)`, affiché si `libre(id) >= 2` ; un modèle avec `libre(id) = 0` n'est pas sur le tapis.
+  - « N / 6 » d'une carte (34) = `items.length`.
+  - K de la Collection (52) = `boîtes(id)` ; N = `owned[id]` ; la marque 🗃️ si `boîtes(id) >= 1` ; l'étagère ne compte pas dans K.
+  - « Il est déjà rangé dans une boîte ! » (53) si `libre(id) = 0` et `boîtes(id) >= 1`.
+  - Doubles du marché (28, 54) : formules de 28 ; « Encore N doubles » avec N = `max(0, 3 - squishyDuplicates())` ; la phrase sur les squishies rangés s'ajoute si `squishyStoredDuplicates() >= 1`. Exemple : `owned = { donut: 3 }`, 1 en boîte, 1 sur l'étagère : 1 double, « Encore 2 doubles », phrase ajoutée.
+  - Boîtes payées pour le cran (D7) = nombre de boîtes avec `done: true` ; `unlock` vrai si `sortLevelCap(age) = 2`, ce nombre passe de 1 à 2 pendant ce `crateAdd`.
+  - Pièces : +5 par première boîte de tri pleine ; au plus 8 boîtes, donc au plus `8 × 5 = 40` pièces sur toute la partie.
+- **Défauts** :
+  - Constantes en tête de `squishies.js`, à côté de `SQ_SHELF_SLOTS` ; pas de réglage parents.
+  - Aucune dépendance nouvelle. Pas d'API récente : pas de `toSorted`, `structuredClone`, `Array.prototype.at`.
+  - Hasard : aucun (rien n'est tiré au sort dans les boîtes durables).
+  - Sauvegarde : chaque appel qui change une boîte appelle `save()` ; un échec d'écriture est déjà signalé par `storageWrite`.
+  - Ordre du tapis : l'ordre du catalogue (`Object.keys(SQUISHIES)`), filtré sur les séries disponibles et les exemplaires libres. Jamais les bons d'abord (ce serait donner la réponse).
+  - Une carte de boîte sans étiquette montre « 🏷️ ? ». Une boîte pleine montre « 6 / 6 » et la classe `full`.
+  - Sons : `tap` en ouvrant une carte ou un bouton, `good` pour un bon rangement, `wrong` pour un rebond, `pop` pour une sortie, `win` pour une boîte pleine.
+  - Textes : tous écrits dans « Comportement attendu ». Une phrase non écrite ici se rédige au présent, au tutoiement, en une phrase courte, et se note dans le journal du plan.
+- **Référence visuelle** : onglet Étagère (`squishy-room.js:967-1052`, styles `.sq-shelf`, `.sq-slot` dans `squishies.css:388-440`) pour les cases et le choix au toucher ; boîte de l'exercice (`.sr-crate`, `squishies.css:504-544`, rebond `squishies.css:576`) pour l'allure d'une boîte en carton ; icônes de consigne (`sortIconsHTML`) pour les étiquettes ; fantôme du puzzle (`.jg-drag`, `jigsaw.css:120-127`) pour le glisser. Couleurs et ombres des variables existantes, aucune image externe.
+- **Détails non écrits** : l'agent prend le défaut de la référence ou l'option la plus simple, le note dans le journal de décisions du plan, l'humain juge à la revue.
+
+## Hors périmètre
+
+- La mission du jour « Range une boîte de squishies » (D16).
+- Toute statistique des boîtes durables dans l'espace parents (D1).
+- Changer l'exercice « 📦 Ranger », son paiement, ses consignes ou `state.skills.rangement`.
+- Glisser un squishy d'une boîte à une autre, ou de la boîte vers le tapis : on sort un squishy en le touchant.
+- Renommer une boîte par un texte, la recolorier, la déplacer dans la liste.
+- Ranger les trésors (D6). Ranger un squishy de l'étagère sans le retirer d'abord de l'étagère.
+- Changer les dessins des squishies (D20 les déplace seulement).
+- L'échange entre profils.
+
+## Contrats partagés
+
+| Contrat | Forme (ou lien) | Propriétaire | Consommateurs |
+|---|---|---|---|
+| `state.squishies.crates` | D17 : `Array<{ label: string \| null, items: string[], done: boolean }>`, longueur 3 à 8, `items` de 0 à 6 ids | `js/entities/game-state/state.js` (`squishyFreshState`, `migrate`) | `js/features/squishies/squishies.js`, sauvegarde et code de transfert (`js/features/backup/`) |
+| Étiquette `label` | Grammaire D5 | `js/features/squishies/squishies.js` (`crateLabelValid`, `crateCriteria`) | `squishy-crates.js` |
+| API logique (exportée de `squishies.js`) | `CRATE_START`, `CRATE_MAX`, `CRATE_SLOTS`, `CRATE_REWARD`, `squishyCrates()`, `cleanSquishyCrates(raw, owned, shelf)`, `crateLabelValid(key)`, `crateCriteria(key)` (tableau `{ type, value }` ou `null` pour `fav`), `crateLevel(age)`, `crateLabelsFor(age)` (étiquettes à une règle et `fav`, dans l'ordre d'affichage : `fav`, couleurs dans l'ordre de `SQ_COLORS`, séries disponibles dans l'ordre de `SQUISHY_SERIES_ORDER`, puis formes `rond`, `ovale`, `carre` et tailles `petit`, `grand` à partir du cran 2), `crateLabelAllowed(key, age)`, `crateName(key)`, `crateOptionSay(key)`, `crateWrongHint(id, key)`, `squishyCrateCount(id)`, `squishyFree(id)`, `crateAdd(i, id)`, `crateRemove(i, pos)`, `crateEmpty(i)`, `crateSetLabel(i, key, age)` ; retours de `crateAdd` décrits en 13 à 24 | `squishies.js` | `squishy-crates.js`, `squishy-room.js`, `js/features/market/market.js` (`squishyDuplicates`, inchangé de nom) |
+| Rendu de l'onglet | `renderSquishyCrates()` de `squishy-crates.js`, appelée par `openSquishyRoom('boites')` | `squishy-crates.js` | `squishy-room.js` |
+| Nouveau compteur pour le marché | `squishyStoredDuplicates()` : somme de `(owned[id] - 1) - min(owned[id] - 1, libre(id))` (spec 28) | `squishies.js` | `market.js` (54) |
+
+## Surface d'attaque
+
+| Entrée | Données ou appelant | Limites et vérifications | Peut atteindre | Jamais |
+|---|---|---|---|---|
+| `state.squishies.crates` d'une sauvegarde importée (fichier, code de transfert) ou d'un stockage modifié à la main | Tout JSON | `cleanSquishyCrates` (D18) : tableau sinon neuf ; 3 à 8 boîtes ; `label` selon D5 sinon `null` et boîte vidée ; `items` : ids de `SQUISHIES` seulement, 6 au plus, conformes à l'étiquette, jamais plus d'exemplaires que possédés moins l'étagère ; `done` booléen | L'état de la chambre du joueur courant | Insérer du HTML : un id n'est jamais écrit dans la page sans être d'abord trouvé dans `SQUISHIES` (seuls des noms du catalogue s'affichent) ; faire planter le chargement ; créer des pièces ou des squishies |
+| Gestes de l'enfant (toucher, glisser) | `crateAdd`, `crateRemove`, `crateEmpty`, `crateSetLabel` | Index de boîte borné à la liste, position bornée à `items`, id vérifié dans `SQUISHIES`, exemplaire libre exigé, étiquette permise au cran | Les boîtes, `state.coins` (+5 une fois par boîte) | Retirer un exemplaire de `owned` |
+
+## Zones sensibles touchées
+
+- Sauvegarde et migrations (`js/entities/game-state/state.js` : `SAVE_VERSION`, `migrate`, `squishyFreshState`) : relecture humaine obligatoire.
+- Import de sauvegarde : pas de modification de `js/features/backup/`, mais une nouvelle donnée importée et sa validation (D18).
+- PWA : `index.html` et `sw.js` régénérés par `bun run sync` après l'ajout de `squishy-art.js` et `squishy-crates.js` (jamais à la main).
+- Manifeste des slices `js/slices.cjs` : deux fichiers ajoutés à la slice `squishies`, aucune règle assouplie.
+- Deux tests existants mis à jour : `test/squishies.test.js:390` (D22) et `test/licornes.test.js:499` (D23).
+
+## Smoke test
+
+🤖 : un agent la prouve et joint la preuve. 👤 : seul l'humain peut juger (rendu, ressenti, téléphone).
+
+| Id | Qui | Étapes | Attendu | Niveau visé |
+|---|---|---|---|---|
+| S1 | 🤖 | `bun run test squishies` après la phase 0 | Tous les tests existants passent, aucun dessin changé (`git diff` de `SQ_ART` vide hors déplacement) | test-verified |
+| S2 | 🤖 | `bun run test squishy-boites` : état neuf, migration, import abîmé (1 à 12) | Lignes 1 à 12 vérifiées | test-verified |
+| S3 | 🤖 | Idem : logique (13 à 31) | Lignes 13 à 31 vérifiées | test-verified |
+| S4 | 🤖 | Idem : onglet, étiquette, toucher puis toucher, rebond, indices, boîte pleine, persistance (32 à 51), avec `speak` noté par le harnais | Textes dits exactement ceux de la spec | test-verified |
+| S5 | 🤖 | Idem : glisser simulé (événements `pointerdown`, `pointermove` à plus de 8 px, `pointerup`, `document.elementFromPoint` remplacé pour renvoyer la boîte) ; puis `w.PointerEvent` supprimé et la boîte rouverte (55) | Le squishy entre ; sans `PointerEvent`, le toucher puis toucher marche | test-verified |
+| S6 | 🤖 | Idem : Collection, Étagère, marché (52 à 54) | Marque `🗃️`, phrases dites, doubles rangés non échangeables | test-verified |
+| S7 | 🤖 | `bun run check` à la fin de chaque phase | Code de sortie 0, aucune erreur JS | test-verified |
+| S8 | 👤 | Téléphone, 360 px : ouvrir la chambre, onglet « 🗃️ Mes boîtes » | 4 onglets lisibles, 2 cartes par rangée, rien ne déborde | runtime-verified |
+| S9 | 👤 | La joueuse choisit une étiquette couleur, range au doigt 6 squishies, ferme le jeu, le rouvre le lendemain | Elle retrouve sa boîte remplie ; elle comprend l'étiquette sans lire | runtime-verified |
+| S10 | 👤 | Ranger un mauvais squishy | Le rebond et l'indice sont doux, pas vécus comme une punition | runtime-verified |
+| S11 | 👤 | Écouter les noms des étiquettes et des boîtes (« ta boîte des squishies roses ») | Phrases naturelles ; sinon, noter la phrase préférée dans le journal | runtime-verified |
+| S12 | 👤 | iPad d'Amrou : faire défiler le tapis de côté, puis glisser un squishy vers le haut dans la boîte | Le tapis défile, le glisser marche (D12) ; sinon le toucher puis toucher suffit et D12 se revoit | runtime-verified |
+| S13 | 👤 | Profil de 6 ans : remplir deux boîtes de tri | La voix annonce les étiquettes à deux règles, le second rang apparaît | runtime-verified |
+
+## Questions ouvertes
+

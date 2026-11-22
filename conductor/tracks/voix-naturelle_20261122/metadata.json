@@ -1,0 +1,8 @@
+{
+  "track_id": "voix-naturelle_20261122",
+  "type": "feature",
+  "status": "new",
+  "created_at": "2026-11-22T00:00:00Z",
+  "updated_at": "2026-11-22T00:00:00Z",
+  "description": "Une voix chaleureuse : clips audio générés à l'avance par une voix neuronale du cloud (Azure ou Google, choisie à l'écoute), livrés avec le jeu et joués hors ligne, Web Speech en repli ; le prénom n'est jamais envoyé ; un garde vérifie que toute phrase fixe a son clip à jour."
+}

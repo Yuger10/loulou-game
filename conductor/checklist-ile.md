@@ -16,7 +16,7 @@ Remplacer `<ile>` par la clé de l'île (ex. `boites`).
   - textes d'intro et de scène vide.
 - [ ] `js/entities/character/characters.js` : ses 4 personnages (`world:'<ile>'`, butin `loot`, 3 répliques), et leur dessin dans `js/entities/character/characters-art.js` (`CHAR_ART`).
 - [ ] `js/entities/item/items.js` : ses objets (`world:'<ile>'`), au moins 3 qui ne sont donnés par personne (pour les 2 objets préférés de chaque personnage, `favoritesOf`), ses recettes de fusion et ses décorations.
-- [ ] `js/entities/difficulty/difficulty.js` : son palier dans `DIFFICULTY_TIERS`.
+- [ ] Son palier : le champ `diff` de `WORLDS.<ile>` (1 à 6, expliqué en tête de `js/entities/difficulty/difficulty.js`). Les îles des saisons 2 et 3 sont au palier 6.
 
 ## 3. Features
 - [ ] `js/shared/styles/design-system-v21.css` (ou une feuille de la slice île) : le thème `body[data-world="<ile>"]{--world-sky:…; --world-sea:…}`.
