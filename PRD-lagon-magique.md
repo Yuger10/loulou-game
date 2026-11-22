@@ -1710,3 +1710,9 @@ Les deux sont proposés dès 5 ans, sans minuteur. Le jeu de l'île est les poti
 - **Ce que voit l'enfant :** rien ne change.
 - **Pour le code :** TypeScript **strict** sur le lot 2 de `features` (`story`, `wardrobe`, `bag`, `quests`, `seasons`, `profile`, `gifts`, `island`, `companion-team`, `map`) : 304 erreurs ramenées à 0, en JSDoc, sans `any`. Seules retouches de code : des conversions en texte que le navigateur faisait déjà (`dataset`, `style.zIndex`). Restent le moteur et les mini-jeux, `market` → `settings`, puis `app`.
 - Cache `lagon-v66.10`.
+
+# v66.11 : TypeScript strict sur tout le jeu
+
+- **Ce que voit l'enfant :** rien ne change.
+- **Pour le code :** fin de l'étape 2 de l'ADR 0003 : le moteur des mini-jeux, les 30 mini-jeux, `market` → `settings` et `app` passent en TypeScript **strict** (678 erreurs ramenées à 0, en JSDoc, sans `any`), en trois lots menés en parallèle puis réunis. `strict: true` dans `tsconfig.json`, `tsconfig.strict.json` supprimé : tout le jeu (171 modules) est vérifié en mode strict en 0,1 s. Au total, 2 663 erreurs strictes corrigées depuis 66.3. Les types ont signalé des points fragiles, notés pour des PR à part (import de sauvegarde, mémoire en multijoueur, rythme au palier de lecture).
+- Cache `lagon-v66.11`.
