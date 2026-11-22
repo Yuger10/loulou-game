@@ -23,7 +23,9 @@ const SENSITIVE = [
   /^js\/features\/(rest|parents)\//, // pause et porte des parents
   /^(sw\.js|manifest\.json|index\.html)$/, // PWA
   /^(js\/slices\.cjs|test\/slices\.test\.js|test\/tools\/boundaries\.js)$/, // garde d'architecture
-  /^(package\.json|bun\.lock)$/, // dépendances
+  /^(package\.json|bun\.lock|bunfig\.toml)$/, // dépendances et chaîne d'approvisionnement
+  /^(\.claude\/|\.mcp\.json$|\.vscode\/)/, // config de l'agent et de l'éditeur (cothon 0.4.0-4)
+  /^test\/tools\/sensitive\.js$/, // ce garde lui-même
   /^js\/entities\/character\/characters-art\.js$/, // dessins des personnages
 ];
 const PROTECTED = [/^test\/holdout\//, /^\.github\//];
@@ -43,6 +45,12 @@ if (process.argv.includes('--selftest')) {
     ['la CI bloque', classify(['.github/workflows/ci.yml'], []), { s: 1, p: 1, b: true }],
     ['approuvée par Amrou', classify(['.github/workflows/ci.yml'], ['human:approved']), { s: 1, p: 1, b: false }],
     ['les dépendances sont sensibles', classify(['package.json', 'bun.lock'], []), { s: 2, p: 0, b: false }],
+    [
+      "la config de l'agent est sensible",
+      classify(['.claude/settings.json', '.mcp.json', '.vscode/settings.json'], []),
+      { s: 3, p: 0, b: false },
+    ],
+    ['le garde lui-même est sensible', classify(['test/tools/sensitive.js'], []), { s: 1, p: 0, b: false }],
   ];
   let ok = true;
   for (const [name, got, want] of cases) {

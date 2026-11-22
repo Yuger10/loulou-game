@@ -1,9 +1,9 @@
 # cothon dans ce projet
 
-Version : 0.3.0
+Version : 0.3.0 (mise à jour vers 0.4.0 en cours : `0.4.0-4` et `0.3.0-2` finissent avec la PR protégée #68)
 Appliqué le : 2026-11-22
 Étapes installées : 1 et 2 (playbook 9.1) ; 3 à 5 écartées (ADR 0006)
-Fichiers copiés de cothon : `test/tools/check-docs.sh` (de `setting-up-docs`), `.claude/hooks/lint-edited-file.sh` (de `wiring-fast-feedback`, complété par `tsc`), gabarits `conductor/templates/spec.md` et `plan.md` (de `setting-up-docs`, adoptés dans Conductor)
+Fichiers copiés de cothon : `test/tools/check-docs.sh` (de `setting-up-docs`, version 0.4.0), `.claude/hooks/lint-edited-file.sh` (de `wiring-fast-feedback`, complété par `tsc`), gabarits `conductor/templates/spec.md` et `plan.md` (de `setting-up-docs`, adoptés dans Conductor)
 
 `Version` = la dernière version de cothon dont toutes les actions du `CHANGELOG.md` sont faites ou en exception. Retour d'expérience envoyé à la session qui maintient cothon le 2026-11-22.
 
@@ -16,6 +16,16 @@ Fichiers copiés de cothon : `test/tools/check-docs.sh` (de `setting-up-docs`), 
 - `0.3.0-1` : ce fichier.
 - `0.3.0-2` : étiquette `agent` posée sur les PR d'agent (#45 à #66), convention `agent-generated: true` et titres `fix:` dans `AGENTS.md`. Le marqueur dans le gabarit de PR (`.github/`, zone protégée) suit dans sa propre PR.
 - `0.3.0-4` : bloc calculé par `measuring-the-factory` en tête de `docs/factory/METRICS.md`.
+
+## Actions 0.4.0 traitées
+
+- `0.4.0-1` : `test/tools/check-docs.sh` recopié (sortie 0/1/2, `--selftest`, noms accentués).
+- `0.4.0-2` : déjà fait avant la 0.4.0 (`"prepare": "lefthook install"`, hook de l'agent sur `Edit|MultiEdit|Write`) ; c'était un point du retour d'expérience de ce projet.
+- `0.4.0-3` : `bunfig.toml` avec `minimumReleaseAge = "3d"` ; actions GitHub déjà épinglées par SHA.
+- `0.4.0-4` : `.claude/`, `.mcp.json`, `.vscode/` (et `bunfig.toml`, `test/tools/sensitive.js`) dans les zones sensibles du garde et de `AGENTS.md` ; la partie `CODEOWNERS` (zone protégée) est dans la PR #68.
+- `0.4.0-5` : cible d'exécution dans `AUDIT.md` (1 bis : « marcher partout »), tableau « règle, cas, décision, raison » dans `SPEED.md`.
+- `0.4.0-6` : gabarits `conductor/templates/` en 0.4.0 ; en-tête YAML posé sur la seule spec en cours (`typescript-checkjs`). Les tracks de la saison 3, pas commencées, le recevront à leur démarrage.
+- `0.4.0-7` : déjà fait (`bun run release patch|track`, ADR 0005).
 
 ## Exceptions
 

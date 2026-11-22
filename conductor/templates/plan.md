@@ -1,4 +1,4 @@
-<!-- Gabarit cothon 0.3.0 (setting-up-docs), adopté dans Conductor (cothon 0.2.0-2) : une nouvelle track part de ce fichier. -->
+<!-- Gabarit cothon 0.4.0 (setting-up-docs), adopté dans Conductor (cothon 0.2.0-2 et 0.4.0-6) : une nouvelle track part de ce fichier. -->
 # Plan : titre de la feature
 
 Spec : [spec.md](spec.md)

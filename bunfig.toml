@@ -1,0 +1,3 @@
+[install]
+# cothon 0.4.0-3 (playbook 5.7) : pas de version publiée depuis moins de 3 jours (vers de la chaîne npm)
+minimumReleaseAge = "3d"
