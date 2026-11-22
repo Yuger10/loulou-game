@@ -4,7 +4,8 @@ import { onProfileRefresh } from '../../entities/player/index.js';
 import { playSound, showToast, soundModeLabel, uiIcon } from '../../shared/ui/index.js';
 import { updateMusic } from '../music/index.js';
 
-document.getElementById('sound-btn').addEventListener('click', () => {
+// le bouton son fait partie de l'en-tête de la page (index.html)
+/** @type {HTMLElement} */ (document.getElementById('sound-btn')).addEventListener('click', () => {
   // cycle : musique (+ sons + voix) → sons + voix → sons seuls → silence → musique…
   if (state.sound && state.voice && state.music) {
     state.music = false;
@@ -25,7 +26,7 @@ document.getElementById('sound-btn').addEventListener('click', () => {
 });
 function renderSoundBtn() {
   const k = state.sound ? (state.music && state.voice ? 'musique' : state.voice ? 'voix' : 'son') : 'muet';
-  const b = document.getElementById('sound-btn');
+  const b = /** @type {HTMLElement} */ (document.getElementById('sound-btn'));
   b.innerHTML = uiIcon(k);
   b.setAttribute('aria-label', soundModeLabel().replace(/^\S+\s/, ''));
   updateMusic();

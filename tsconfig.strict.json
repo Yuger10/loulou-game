@@ -15,6 +15,16 @@
     "js/features/music/**/*.js",
     "js/features/party/**/*.js",
     "js/features/squishies/**/*.js",
+    "js/features/story/**/*.js",
+    "js/features/wardrobe/**/*.js",
+    "js/features/bag/**/*.js",
+    "js/features/quests/**/*.js",
+    "js/features/seasons/**/*.js",
+    "js/features/profile/**/*.js",
+    "js/features/gifts/**/*.js",
+    "js/features/island/**/*.js",
+    "js/features/companion-team/**/*.js",
+    "js/features/map/**/*.js",
     "types/**/*.d.ts"
   ]
 }

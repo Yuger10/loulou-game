@@ -40,6 +40,7 @@ import { openSeasonPrologue, openStoryChapter, STORY, storySolved } from '../sto
 import { addCoins } from '../wallet/index.js';
 import { renderLiveIsland } from './island.js';
 
+/** @param {string} id l'île @param {boolean} [silent] sans son ni annonce */
 function setWorld(id, silent) {
   const w = WORLDS[id];
   if (!worldUnlocked(id)) {
@@ -119,6 +120,7 @@ function checkNewIsland() {
 /* L'ouverture du Ciel des Rêves (saison 2, v55) : un écran spécial, une seule
    fois, au passage à son niveau d'ouverture (ou au premier lancement d'une
    partie qui l'a déjà). La carte montre ensuite le Ciel. */
+/** @param {() => void} onDone la suite (le prologue de la saison) */
 function openSkyOpening(onDone) {
   const a = ARCHIPELAGOS[2];
   state.skyIntroSeen = true;
@@ -198,7 +200,7 @@ function renderLagon() {
   if (ttl) ttl.innerHTML = `${w.emoji} ${w.name}`;
   renderLevelPill();
   // les personnages vivent maintenant dans le paysage de l'île (js/features/island/island.js)
-  document.getElementById('islands').innerHTML = '';
+  /** @type {HTMLElement} */ (document.getElementById('islands')).innerHTML = ''; // fait partie de la vue Île (index.html)
   renderQuests();
   renderScene();
   renderRaceTrack();
@@ -234,10 +236,12 @@ function openDecoShop() {
   bindQuit();
   document.querySelectorAll('[data-deco]').forEach((btn) => {
     setHandler(btn, 'click', () => {
-      const k = btn.dataset.deco;
+      // le sélecteur [data-deco] garantit l'attribut
+      const k = /** @type {string} */ (btn.dataset.deco);
       const d = DECOS[k];
       if (state.coins < d.price || state.decos.includes(k)) return;
-      const rowEmoji = btn.closest('.market-row').querySelector('.emoji');
+      // chaque bouton d'achat est dans sa ligne .market-row (juste au-dessus)
+      const rowEmoji = /** @type {HTMLElement} */ (btn.closest('.market-row')).querySelector('.emoji');
       const fromPt = gainCenter(rowEmoji);
       addCoins(-d.price);
       {
@@ -267,15 +271,19 @@ function openDecoShop() {
 }
 
 /* ---------- Personnages / dialogue ---------- */
+/** @type {string | null} */
 let currentChar = null;
+/** @param {string | null} id */
 function setCurrentChar(id) {
   currentChar = id;
 }
 
 /* Phrases qui dépendent de la partie en cours */
+/** @param {string} charId @returns {string | null} */
 function contextualLine(charId) {
   const c = CHARACTERS[charId];
   const who = hello();
+  /** @type {string[]} */
   const lines = [];
   const q = ensureQuests();
   const quest = q.list.find((i) => i.n < i.goal && i.type === 'char' && i.target === charId);
@@ -322,6 +330,7 @@ function contextualLine(charId) {
   return lines.length && random() < 0.6 ? pickRandom(lines) : null;
 }
 
+/** @param {string} charId */
 function openDialogue(charId) {
   const c = CHARACTERS[charId];
   currentChar = charId;

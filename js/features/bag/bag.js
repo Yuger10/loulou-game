@@ -21,6 +21,9 @@ import { clearLookTry, renderLook } from '../wardrobe/index.js';
 
 let currentSacTab = 'sac';
 
+/** @typedef {(typeof ALL_ITEMS)[string]} Item un objet ou une décoration */
+
+/** @param {string} tab 'sac', 'album' ou 'look' */
 function setSacTab(tab) {
   currentSacTab = tab;
   document.querySelectorAll('[data-sactab]').forEach((b) => b.classList.toggle('active', b.dataset.sactab === tab));
@@ -41,7 +44,8 @@ function setSacTab(tab) {
 }
 
 function renderBadge() {
-  const b = document.getElementById('sac-badge');
+  // la pastille fait partie de la barre du bas, toujours présente (index.html)
+  const b = /** @type {HTMLElement} */ (document.getElementById('sac-badge'));
   b.hidden = state.newItems === 0;
   b.textContent = String(state.newItems);
 }
@@ -49,7 +53,8 @@ function renderBadge() {
 /* ---------- Sac ---------- */
 function renderSac() {
   const owned = Object.keys(ALL_ITEMS).filter((k) => countItem(k) > 0);
-  const el = document.getElementById('sac-content');
+  // l'onglet n'est rendu que par setSacTab, qui a vérifié #sac-content
+  const el = /** @type {HTMLElement} */ (document.getElementById('sac-content'));
   if (owned.length === 0) {
     el.innerHTML = `<div class="empty-state"><span class="es-art">🎒</span>Ton sac est vide !<br>Va aider Marina, Étincelle ou Luna pour gagner des objets ✨</div>`;
     speak('Ton sac est vide. Va aider un personnage pour gagner des objets !');
@@ -70,6 +75,7 @@ function renderSac() {
 }
 
 /* ---------- Album ---------- */
+/** @param {string} key l'id de l'objet vu @returns {boolean} true s'il est nouveau */
 function markSeen(key) {
   if (!state.seen) state.seen = {};
   if (!state.seen[key]) {
@@ -120,8 +126,10 @@ function checkAlbumComplete() {
 }
 
 function renderAlbum() {
-  const el = document.getElementById('album-content');
+  // l'onglet n'est rendu que par setSacTab, qui a vérifié #album-content
+  const el = /** @type {HTMLElement} */ (document.getElementById('album-content'));
   const seen = state.seen || {};
+  /** @param {string} k @param {Item} it @param {boolean} unlocked */
   const cell = (k, it, unlocked) => `
     <div class="album-cell ${unlocked ? '' : 'locked'}">
       <span class="emoji">${unlocked ? it.emoji : '❓'}</span>
@@ -130,9 +138,13 @@ function renderAlbum() {
   const objKeys = Object.keys(ALL_ITEMS);
   const decoKeys = Object.keys(DECOS);
   const { found, total } = albumStats();
+  /** @param {string[]} keys @param {Record<string, Item>} src @param {(k: string) => boolean} isUnlocked */
   const group = (keys, src, isUnlocked) => keys.map((k) => cell(k, src[k], isUnlocked(k))).join('');
+  /** @param {string} k */
   const isObj = (k) => !!(seen[k] || countItem(k) > 0);
+  /** @param {string} k */
   const isDeco = (k) => state.decos.includes(k);
+  /** @param {Item} o */
   const worldOf = (o) => o.world || 'lagon';
   el.innerHTML = `
     <div class="album-progress">

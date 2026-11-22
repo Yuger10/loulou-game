@@ -30,6 +30,9 @@ import { seasonSceneSVG } from '../seasons/index.js';
 // selon la taille réelle de la scène : un personnage reste sur la plage et
 // un dauphin dans l'eau, quel que soit le format d'écran.
 
+/** @typedef {(typeof WORLDS)[string]} World une île (entities/world) */
+/** @typedef {{ x: number, y: number }} IslePoint une place, en coordonnées du dessin */
+
 const ISLE_W = 480,
   ISLE_H = 360;
 const ISLE_CHAR_SLOTS = [
@@ -49,6 +52,7 @@ const ISLE_CHAR_SLOTS_5 = [
   { x: 220, y: 350 },
   { x: 330, y: 352 },
 ];
+/** @param {number} n le nombre de personnages de l'île */
 const isleCharSlots = (n) => (n === 5 ? ISLE_CHAR_SLOTS_5 : ISLE_CHAR_SLOTS);
 const ISLE_GROUND_SLOTS = [
   { x: 242, y: 262 },
@@ -80,6 +84,7 @@ const SKY_DECO_EMOJIS = ['🌈', '🌙', '☁️', '⭐', '🌟', '🎈', '🦋'
 const SEA_DECO_EMOJIS = ['🐠', '🐟', '🐬', '🦈', '🐢', '🐙', '🐳', '🐋', '🦀', '⛵', '🏴‍☠️', '🚤', '🧜‍♀️'];
 
 /* ---- moment de la journée (heure réelle) ---- */
+/** @param {Date} [date] l'instant, par défaut maintenant */
 function isleTimeOfDay(date) {
   const h = (date || new Date()).getHours();
   if (h >= 20 || h < 6) return 'nuit';
@@ -93,6 +98,7 @@ function isleToday() {
 }
 
 /* ---- personnages aidés aujourd'hui ---- */
+/** @param {string | null} [charId] */
 function markHelped(charId) {
   if (!charId) return;
   const today = isleToday();
@@ -101,9 +107,11 @@ function markHelped(charId) {
   state.charsHelped = Object.assign({}, state.charsHelped || {}, { [charId]: true }); // pour Sam le guide
   save();
 }
+/** @param {string} charId */
 function helpedToday(charId) {
   return !!(state.helped && state.helped.date === isleToday() && state.helped.ids[charId]);
 }
+/** @param {string} charId */
 function charMood(charId) {
   const q = ensureQuests();
   const quest = q && q.list.find((i) => i.type === 'char' && i.target === charId && i.n < i.goal);
@@ -127,6 +135,7 @@ function isleSky() {
     <g class="ls-cloud c2" fill="#fff" opacity=".75"><ellipse cx="300" cy="110" rx="28" ry="9"/><ellipse cx="314" cy="102" rx="15" ry="10"/></g>`;
 }
 
+/** @type {Record<string, (w: World) => string>} le paysage, par forme d'île */
 const ISLE_SCENERY = {
   lagon: (w) => `
     <rect y="150" width="480" height="210" fill="#5ED0D2"/>
@@ -405,6 +414,7 @@ const ISLE_SCENERY = {
     <g fill="#fff" opacity=".8"><circle cx="110" cy="306" r="2.4"/><circle cx="340" cy="310" r="2"/><circle cx="60" cy="290" r="1.8"/></g>`,
 };
 // paysage générique, aux couleurs du monde (toute nouvelle île en profite)
+/** @param {World} w */
 function isleGenericScenery(w) {
   return `
     <path d="M0 214 C90 170 190 178 260 200 C340 170 420 168 480 196 L480 360 L0 360 Z" fill="${w.land}" opacity=".45"/>
@@ -412,6 +422,7 @@ function isleGenericScenery(w) {
     <path d="M196 360 C212 320 246 298 256 260" fill="none" stroke="${w.sand}" stroke-width="16" stroke-linecap="round" opacity=".9"/>
     <g fill="${w.sand}" opacity=".9"><ellipse cx="80" cy="300" rx="22" ry="7"/><ellipse cx="402" cy="312" rx="26" ry="8"/></g>`;
 }
+/** @param {string} worldId */
 function landscapeSVG(worldId) {
   const w = WORLDS[worldId] || WORLDS.lagon;
   const draw = ISLE_SCENERY[w.shape] || ISLE_SCENERY[worldId] || isleGenericScenery;
@@ -426,6 +437,7 @@ function landscapeSVG(worldId) {
 }
 
 /* ---- places des décorations ---- */
+/** @param {string} emoji @param {string} [worldShape] @returns {'sky' | 'sea' | 'ground'} */
 function decoZone(emoji, worldShape) {
   if (SKY_DECO_EMOJIS.includes(emoji)) return 'sky';
   if (worldShape === 'lagon' && SEA_DECO_EMOJIS.includes(emoji)) return 'sea';
@@ -434,9 +446,11 @@ function decoZone(emoji, worldShape) {
 const ISLE_ZONE_SLOTS = { sky: ISLE_SKY_SLOTS, sea: ISLE_SEA_SLOTS, ground: ISLE_GROUND_SLOTS };
 // place de chaque décoration : celle choisie par l'enfant, sinon la
 // prochaine place libre de sa zone (ciel, mer ou sol)
+/** @param {string[]} keys les décorations posées @returns {Record<string, IslePoint>} */
 function decoPositions(keys) {
   const shape = (WORLDS[currentWorld] || {}).shape;
   const used = { sky: 0, sea: 0, ground: 0 };
+  /** @type {Record<string, IslePoint>} */
   const out = {};
   keys.forEach((k) => {
     const zone = decoZone(DECOS[k].emoji, shape);
@@ -446,6 +460,7 @@ function decoPositions(keys) {
   });
   return out;
 }
+/** @param {string} key @param {number} x @param {number} y */
 function moveDeco(key, x, y) {
   if (!state.decoPos) state.decoPos = {};
   state.decoPos[key] = {
@@ -454,9 +469,11 @@ function moveDeco(key, x, y) {
   };
   save();
 }
+/** @param {number} y */
 const isleZ = (y) => 10 + Math.round(y / 4);
 
 /* ---- dessin ↔ écran : même cadrage que le SVG (xMidYMax slice) ---- */
+/** @param {HTMLElement} sc la scène */
 function isleFrame(sc) {
   const W = sc.clientWidth || 400,
     H = sc.clientHeight || 440;
@@ -477,11 +494,14 @@ function isleFrame(sc) {
     maxY: ISLE_H - pad * 0.4,
   };
 }
+/** @typedef {ReturnType<typeof isleFrame>} IsleFrame le cadrage du dessin dans la scène */
+/** @param {IsleFrame} f @param {number} x @param {number} y */
 function isleToScreen(f, x, y) {
   const cx = Math.max(f.minX, Math.min(f.maxX, x)),
     cy = Math.max(f.minY, Math.min(f.maxY, y));
   return { left: ((f.ox + cx * f.s) / f.W) * 100, top: ((f.oy + cy * f.s) / f.H) * 100 };
 }
+/** @param {IsleFrame} f @param {number} px @param {number} py */
 function isleFromScreen(f, px, py) {
   return {
     x: Math.max(f.minX, Math.min(f.maxX, (px - f.ox) / f.s)),
@@ -489,6 +509,7 @@ function isleFromScreen(f, px, py) {
   };
 }
 // place chaque élément (data-vx / data-vy) selon la taille actuelle de la scène
+/** @param {HTMLElement | null} sc */
 function layoutIsle(sc) {
   if (!sc) return;
   const f = isleFrame(sc);
@@ -499,9 +520,11 @@ function layoutIsle(sc) {
     el.style.top = p.top + '%';
   });
 }
+/** @type {ResizeObserver | null} */
 let isleResizeObs = null;
 
 /* ---- rendu ---- */
+/** @param {HTMLElement | null} sc la scène de la vue Île */
 function renderLiveIsland(sc) {
   if (!sc) return;
   const w = WORLDS[currentWorld];
@@ -562,7 +585,9 @@ function renderLiveIsland(sc) {
 }
 
 /* ---- glisser une décoration ---- */
+/** @param {HTMLElement} sc @param {HTMLElement} el une décoration (.deco[data-deco-key]) */
 function bindDecoDrag(sc, el) {
+  /** @type {{ x: number, y: number, id: number } | null} */
   let start = null,
     dragging = false;
   el.addEventListener('pointerdown', (e) => {
@@ -588,17 +613,20 @@ function bindDecoDrag(sc, el) {
     const p = isleToScreen(f, v.x, v.y);
     el.style.left = p.left + '%';
     el.style.top = p.top + '%';
-    el.style.zIndex = 200;
-    el.dataset.vx = v.x;
-    el.dataset.vy = v.y;
+    // style et dataset ne gardent que du texte : String donne la même valeur qu'avant
+    el.style.zIndex = '200';
+    el.dataset.vx = String(v.x);
+    el.dataset.vy = String(v.y);
   });
+  /** @param {PointerEvent} e */
   const end = (e) => {
     if (!start) return;
     if (dragging) {
       const x = Number(el.dataset.vx),
         y = Number(el.dataset.vy);
-      moveDeco(el.dataset.decoKey, x, y);
-      el.style.zIndex = isleZ(y);
+      // le sélecteur .deco[data-deco-key] garantit l'attribut
+      moveDeco(/** @type {string} */ (el.dataset.decoKey), x, y);
+      el.style.zIndex = String(isleZ(y));
       el.classList.remove('dragging');
       playSound('pop');
       if (!state.tipDragDeco) {
@@ -613,7 +641,7 @@ function bindDecoDrag(sc, el) {
       void el.offsetWidth;
       el.classList.add('wiggle');
       playSound('tap');
-      const d = DECOS[el.dataset.decoKey];
+      const d = DECOS[/** @type {string} */ (el.dataset.decoKey)];
       if (d) speak(d.name);
     }
     start = null;

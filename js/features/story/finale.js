@@ -54,6 +54,10 @@ onModalClose(() => {
   }
 });
 
+/**
+ * @param {(() => void) | null} [onDone] appelée à la fin du final
+ * @param {{ replay?: boolean }} [opts] replay : revoir le final, sans cadeaux
+ */
 function openSeasonFinale(onDone, opts) {
   const replay = !!(opts && opts.replay);
   // données dès le début : fermer la fenêtre en route ne les fait pas perdre
