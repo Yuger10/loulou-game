@@ -1,5 +1,5 @@
 /* ---------- État de la partie du joueur courant : sauvegarde, migrations, niveau ---------- */
-import { cleanName, storageWrite } from '../../shared/lib/index.js';
+import { cleanName, reportUnreadable, storageWrite } from '../../shared/lib/index.js';
 import { setAudioPrefsSource } from '../../shared/ui/index.js';
 import { SQUISHY_ISLAND_SERIES } from '../squishy/index.js';
 
@@ -221,7 +221,7 @@ function load() {
     saveSlot.afterLoad(state);
     save();
   } catch (e) {
-    console.warn('Sauvegarde illisible, on repart à zéro', e);
+    reportUnreadable(saveSlot.key(), e); // la progression est perdue : un adulte doit le savoir
   }
 }
 
