@@ -1716,3 +1716,9 @@ Les deux sont proposés dès 5 ans, sans minuteur. Le jeu de l'île est les poti
 - **Ce que voit l'enfant :** rien ne change.
 - **Pour le code :** fin de l'étape 2 de l'ADR 0003 : le moteur des mini-jeux, les 30 mini-jeux, `market` → `settings` et `app` passent en TypeScript **strict** (678 erreurs ramenées à 0, en JSDoc, sans `any`), en trois lots menés en parallèle puis réunis. `strict: true` dans `tsconfig.json`, `tsconfig.strict.json` supprimé : tout le jeu (171 modules) est vérifié en mode strict en 0,1 s. Au total, 2 663 erreurs strictes corrigées depuis 66.3. Les types ont signalé des points fragiles, notés pour des PR à part (import de sauvegarde, mémoire en multijoueur, rythme au palier de lecture).
 - Cache `lagon-v66.11`.
+
+# v66.12 : un avatar importé ne peut plus injecter de HTML
+
+- **Ce que voit l'enfant :** rien, sauf avec un fichier de sauvegarde piégé : son avatar redevient 👧 au lieu d'insérer du HTML dans la page. Une date de sauvegarde illisible n'affiche plus « Invalid Date ».
+- **Pour le code :** `fixAvatar` devient la porte d'entrée de tout avatar (comme `cleanName` pour les prénoms) : il garde un avatar proposé ou un emoji d'une ancienne version, sinon 👧. Il sert à l'aperçu de restauration, au chargement des joueurs, de la partie et d'une ancienne partie unique ; une sauvegarde piégée déjà restaurée est donc réparée au lancement. La date `at` d'une sauvegarde importée est vérifiée. Faille révélée par TypeScript strict (66.11). `test/avatars.test.js` (19 vérifications), écrit avant la correction.
+- Cache `lagon-v66.12`.

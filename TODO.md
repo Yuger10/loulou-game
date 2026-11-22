@@ -156,6 +156,7 @@ Chaque mini-jeu a maintenant son propre niveau pour chaque enfant (`js/adaptive.
 | v66.9 | TypeScript strict sur 8 slices de features, dessins des squishies dans leur fichier |
 | v66.10 | TypeScript strict lot 2 de features (story → map) |
 | v66.11 | TypeScript strict sur tout le jeu |
+| v66.12 | un avatar importé ne peut plus injecter de HTML |
 
 ---
 
