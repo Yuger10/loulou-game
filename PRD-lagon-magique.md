@@ -1722,3 +1722,9 @@ Les deux sont proposés dès 5 ans, sans minuteur. Le jeu de l'île est les poti
 - **Ce que voit l'enfant :** rien, sauf avec un fichier de sauvegarde piégé : son avatar redevient 👧 au lieu d'insérer du HTML dans la page. Une date de sauvegarde illisible n'affiche plus « Invalid Date ».
 - **Pour le code :** `fixAvatar` devient la porte d'entrée de tout avatar (comme `cleanName` pour les prénoms) : il garde un avatar proposé ou un emoji d'une ancienne version, sinon 👧. Il sert à l'aperçu de restauration, au chargement des joueurs, de la partie et d'une ancienne partie unique ; une sauvegarde piégée déjà restaurée est donc réparée au lancement. La date `at` d'une sauvegarde importée est vérifiée. Faille révélée par TypeScript strict (66.11). `test/avatars.test.js` (21 vérifications), écrit avant la correction.
 - Cache `lagon-v66.12`.
+
+# v66.13 : une partie importée ne fait plus planter l'espace parents
+
+- **Ce que voit l'enfant :** rien, sauf avec une sauvegarde abîmée ou piégée : l'espace parents s'ouvre au lieu de planter, et le rappel « Hier, on a fait… » se tait si l'activité est inconnue.
+- **Pour le code :** `readSave()` (`js/entities/game-state`) devient la porte unique de lecture d'une partie, pour jouer comme pour l'espace parents (qui lisait la partie d'un autre joueur sans migration). Elle remet en forme le suivi des jeux (nombres, listes) et le journal des pauses (heure HH:MM, nom d'activité, tentatives), qui s'insèrent dans le HTML de l'espace parents ; un champ absent d'une partie réelle reste absent (holdout). `rest` ignore une activité inconnue. Révélé par TypeScript strict (66.11). `test/parties-importees.test.js` (15 vérifications), écrit avant la correction.
+- Cache `lagon-v66.13`.
