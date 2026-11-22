@@ -1728,3 +1728,9 @@ Les deux sont proposés dès 5 ans, sans minuteur. Le jeu de l'île est les poti
 - **Ce que voit l'enfant :** rien, sauf avec une sauvegarde abîmée ou piégée : l'espace parents s'ouvre au lieu de planter, et le rappel « Hier, on a fait… » se tait si l'activité est inconnue.
 - **Pour le code :** `readSave()` (`js/entities/game-state`) devient la porte unique de lecture d'une partie, pour jouer comme pour l'espace parents (qui lisait la partie d'un autre joueur sans migration). Elle remet en forme le suivi des jeux (nombres, listes) et le journal des pauses (heure HH:MM, nom d'activité, tentatives), qui s'insèrent dans le HTML de l'espace parents ; un champ absent d'une partie réelle reste absent (holdout). `rest` ignore une activité inconnue. Révélé par TypeScript strict (66.11). `test/parties-importees.test.js` (15 vérifications), écrit avant la correction.
 - Cache `lagon-v66.13`.
+
+# v66.14 : en multijoueur, une paire ratée ou le temps écoulé passent la main
+
+- **Ce que voit l'enfant :** en mode chacun son tour, une paire ratée au jeu de mémoire, ou le temps écoulé, passe la main au joueur suivant (avec l'écran de changement de joueur) ; avant, le jeu se bloquait sur le même joueur.
+- **Pour le code :** `wrongFeedback` accepte une erreur sans bouton fautif (`null`) : le son, la vibration et le passage de main restent, le tremblement du bouton seulement s'il y en a un. Révélé par TypeScript strict (66.11). `test/multijoueur.test.js` (9 vérifications), écrit avant la correction.
+- Cache `lagon-v66.14`.
