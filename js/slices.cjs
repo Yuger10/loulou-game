@@ -72,7 +72,11 @@ const SLICES = [
   {
     id: 'character',
     layer: 'entities',
-    files: ['js/entities/character/characters.js', 'js/entities/character/characters-art.js'],
+    files: [
+      'js/entities/character/characters.js',
+      'js/entities/character/characters-art-s2.js',
+      'js/entities/character/characters-art.js',
+    ],
     css: ['js/entities/character/characters.css'],
   },
   {
