@@ -403,6 +403,8 @@ onProfileRefresh(() => {
   teamSayClear();
   renderTeamHelpers();
 });
+// l'île vient d'être redessinée (après les têtes de l'équipe, dessinées par team.js)
+on('lagon:rendered', renderTeamHelpers);
 
 // Rose : dans le Sac, l'Album et « Mon look » (événement du Sac)
 on('bag:tab', roseTip);
