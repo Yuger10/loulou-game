@@ -15,7 +15,7 @@ permissions:
 
 jobs:
   lint:
-    name: lint, format, types, docs
+    name: lint, format, types, docs, selftests
     runs-on: ubuntu-latest
     timeout-minutes: 3
     steps:
@@ -28,6 +28,7 @@ jobs:
       - run: bun run lint
       - run: bun run typecheck
       - run: bun run docs
+      - run: bun run selftest
 
   test:
     name: tests
