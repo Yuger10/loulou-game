@@ -60,6 +60,7 @@ function renderCount() {
 
 // Indices (v52) : 1. compter un par un avec le doigt ; 2. les premiers
 // objets numérotés (jamais jusqu'au dernier : la réponse reste à trouver).
+/** @param {{ n: number, emoji: string }} q */
 function countHints(q) {
   const k = Math.min(3, q.n - 1);
   const what = emojiWord(q.emoji) || 'image';

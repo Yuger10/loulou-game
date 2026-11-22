@@ -31,6 +31,11 @@ const SEASONS = [
   { name: 'automne', scene: '🍂🎃🌧️', tip: 'Les feuilles tombent des arbres, et il pleut souvent.' },
   { name: 'hiver', scene: '⛄❄️🧣', tip: 'Il fait très froid, il peut neiger : on met une écharpe.' },
 ];
+/** @typedef {typeof SEASONS[number]} Season */
+/**
+ * La question, pour les indices : une saison à deviner, ou des jours à ranger.
+ * @typedef {{ kind: 'season', correct: Season } | { kind: 'week', seq: string[], idx: number }} CalendarQuestion
+ */
 const WEEKDAYS = ['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche'];
 
 function renderCalendar() {
@@ -78,11 +83,13 @@ function renderSeasonGuess() {
 
 // À partir du CP confirmé : remettre les jours de la semaine dans l'ordre
 // (même interaction que le puzzle des nombres, avec des mots à la place).
+/** @param {number} dd le palier de difficulté */
 function renderWeekdayOrder(dd) {
   const count = calendarWeekdayCount(dd);
   const startIdx = Math.floor(random() * (7 - count + 1));
   const seq = WEEKDAYS.slice(startIdx, startIdx + count);
   const nums = shuffle(seq.slice());
+  /** @type {CalendarQuestion} */
   const q = { kind: 'week', seq, idx: 0 }; // q.idx : où en est l'enfant (pour les indices)
 
   openModal(`
@@ -119,6 +126,7 @@ function renderWeekdayOrder(dd) {
 // Indices (v52). Saisons : 1. chaud ou froid ? que font les plantes ? ;
 // 2. ce que montre la scène. Jours : 1. réciter la comptine des jours ;
 // 2. le chemin déjà fait, avec un « ? » pour le jour suivant.
+/** @param {CalendarQuestion} q */
 function calendarHints(q) {
   if (q.kind === 'season')
     return [

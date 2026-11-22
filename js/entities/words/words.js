@@ -2,6 +2,8 @@
    illustrés par un emoji, avec leur genre pour le jeu des déterminants.
    syl : le mot découpé en syllabes écrites, comme à l'école (pour les
    indices de lecture, v52). */
+/** @typedef {{ word: string, plural: string, emoji: string, gender: 'm' | 'f', syl: string[] }} Word */
+/** @type {Word[]} */
 const WORDS_CP = [
   { word: 'chat', plural: 'chats', emoji: '🐱', gender: 'm', syl: ['chat'] },
   { word: 'chien', plural: 'chiens', emoji: '🐶', gender: 'm', syl: ['chien'] },

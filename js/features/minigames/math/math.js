@@ -94,7 +94,7 @@ function renderMath() {
         clearActiveTimer();
         const q = document.querySelector('.eq-q');
         if (q) {
-          q.textContent = result;
+          q.textContent = String(result);
           q.classList.add('filled');
         }
         stepOk(btn);
@@ -110,6 +110,7 @@ function renderMath() {
 // Indices (v52). Addition : 1. tout compter ensemble ; 2. partir du premier
 // groupe et continuer (« il y en a déjà 4… 5… »). Soustraction : 1. barrer ceux
 // qui partent ; 2. ils sont barrés, il reste à compter. Jamais le résultat.
+/** @param {{ a: number, b: number, op: string, result: number, emoji: string }} q */
 function mathHints(q) {
   const word = emojiWord(q.emoji, true) || 'images';
   const g1 = '.math-illustration .math-group:first-child',

@@ -83,6 +83,7 @@ function renderPuzzle() {
 }
 
 // Indices (v52) : voir hintOrderStep (js/features/hints/hints.js).
+/** @param {{ seq: number[], idx: number, variant: string }} q */
 function puzzleHints(q) {
   const done = q.seq.slice(0, q.idx),
     last = done[done.length - 1];

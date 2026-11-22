@@ -80,10 +80,11 @@ function renderCompare() {
 
 // Indices (v52) : 1. le sens du signe (la bouche vers le plus grand) ;
 // 2. comparer d'abord les dizaines, puis les unités.
+/** @param {{ a: number, b: number, answer: string }} q */
 function compareHints(q) {
   const ta = Math.floor(q.a / 10),
     tb = Math.floor(q.b / 10);
-  const plural = (n, w) => `${n} ${w}${n > 1 ? 's' : ''}`;
+  const plural = (/** @type {number} */ n, /** @type {string} */ w) => `${n} ${w}${n > 1 ? 's' : ''}`;
   let say2;
   if (q.a < 10 && q.b < 10)
     say2 = `Compte dans ta tête : 1, 2, 3… Lequel arrive en dernier, ${q.a} ou ${q.b} ? Ou bien sont-ils pareils ?`;

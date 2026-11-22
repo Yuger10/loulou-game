@@ -24,6 +24,13 @@ import {
 } from '../../minigame-engine/index.js';
 import { bindQuit, gameHeader } from '../../screen/index.js';
 
+/** @typedef {import('../../../entities/words/index.js').Word} Word */
+
+/**
+ * @param {Word[]} pool
+ * @param {Word} correct
+ * @param {number} count
+ */
 function pickDistractors(pool, correct, count) {
   const others = pool.filter((w) => w.word !== correct.word);
   return shuffle(others).slice(0, count);
@@ -84,9 +91,11 @@ function renderReading() {
    - image → mot : 1. dire le nom de l'image dans sa tête, écouter le premier
      son ; 2. la première lettre du bon mot.
    Avec Perle la conteuse, les syllabes arrivent dès l'indice 1. */
+/** @param {string} w */
 function readingFirstLetter(w) {
   return `<span class="hint-syl"><b>${w[0]}</b>${w.slice(1)}</span>`;
 }
+/** @param {{ correct: Word, wordToImage: boolean, options: Word[] }} q */
 function readingHints(q) {
   const w = q.correct.word,
     syl = q.correct.syl || [w];
@@ -95,7 +104,7 @@ function readingHints(q) {
   const wrong = q.options
     .filter((o) => o.word !== w)
     .sort((a, b) => Number(a.word[0] === w[0]) - Number(b.word[0] === w[0]))[0];
-  const dim = wrong ? solSel('.reading-opt', 'w', wrong.word) : null;
+  const dim = wrong ? solSel('.reading-opt', 'w', wrong.word) : undefined;
   const cut =
     syl.length > 1
       ? {
@@ -124,6 +133,7 @@ function readingHints(q) {
       {
         say: 'Je découpe chaque mot en syllabes : lis-les doucement.',
         fx: {
+          /** @param {HTMLElement} root */
           run(root) {
             root.querySelectorAll('.reading-word-btn').forEach((b) => {
               const o = WORDS_CP.find((x) => x.word === b.dataset.w);

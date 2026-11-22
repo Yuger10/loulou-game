@@ -51,6 +51,8 @@ import {
 } from '../../minigame-engine/index.js';
 import { bindQuit, gameHeader } from '../../screen/index.js';
 
+/** @typedef {{ name: string, the: string, order: number, diameter: number, temp: number, kind: string }} SolarBody */
+/** @type {Record<string, SolarBody>} */
 const SOLAR_DATA = {
   // order : rang depuis le Soleil ; diameter : km ; temp : température moyenne (°C)
   mercure: { name: 'Mercure', the: 'Mercure', order: 1, diameter: 4879, temp: 167, kind: 'rocheuse' },
@@ -63,21 +65,32 @@ const SOLAR_DATA = {
   neptune: { name: 'Neptune', the: 'Neptune', order: 8, diameter: 49528, temp: -200, kind: 'géante' },
 };
 const PLANET_IDS = Object.keys(SOLAR_DATA).sort((a, b) => SOLAR_DATA[a].order - SOLAR_DATA[b].order);
+/** @type {Record<string, { name: string }>} */
 const SKY_BODIES = { soleil: { name: 'le Soleil' }, lune: { name: 'la Lune' } };
 
+// la liste des planètes n'est jamais vide : il y a toujours une gagnante
+/** @param {(a: SolarBody, b: SolarBody) => boolean} fn */
 const planetBy = (fn) =>
-  PLANET_IDS.reduce((best, id) => (best === null || fn(SOLAR_DATA[id], SOLAR_DATA[best]) ? id : best), null);
+  /** @type {string} */ (
+    PLANET_IDS.reduce(
+      (best, id) => (best === null || fn(SOLAR_DATA[id], SOLAR_DATA[best]) ? id : best),
+      /** @type {string | null} */ (null),
+    )
+  );
 const closestPlanet = () => planetBy((a, b) => a.order < b.order);
 const farthestPlanet = () => planetBy((a, b) => a.order > b.order);
 const largestPlanet = () => planetBy((a, b) => a.diameter > b.diameter);
 const smallestPlanet = () => planetBy((a, b) => a.diameter < b.diameter);
 const hottestPlanet = () => planetBy((a, b) => a.temp > b.temp);
-const planetAt = (n) => PLANET_IDS.find((id) => SOLAR_DATA[id].order === n);
+// n est toujours un rang de 1 à 8 (une planète existe à ce rang)
+const planetAt = (/** @type {number} */ n) =>
+  /** @type {string} */ (PLANET_IDS.find((id) => SOLAR_DATA[id].order === n));
 
 /* ---- dessins (SVG 100×100, sans visage, pas à l'échelle) ---- */
 // rayon du disque de chaque planète dans son dessin : toutes sont ramenées au
 // même rayon, pour qu'aucune image ne suggère une fausse taille (ex. Neptune,
 // 4 fois plus large que la Terre, ne doit jamais paraître plus petite)
+/** @type {Record<string, number>} */
 const PLANET_DISC_R = {
   mercure: 36,
   venus: 38,
@@ -89,9 +102,10 @@ const PLANET_DISC_R = {
   neptune: 30,
 };
 const PLANET_DRAW_R = 30;
+/** @param {string} id */
 function bodySVG(id) {
   const k = PLANET_DISC_R[id] ? PLANET_DRAW_R / PLANET_DISC_R[id] : 1;
-  const g = (inner) =>
+  const g = (/** @type {string} */ inner) =>
     `<svg class="pl-svg" viewBox="0 0 100 100" aria-hidden="true">${k === 1 ? inner : `<g transform="translate(50 50) scale(${k.toFixed(3)}) translate(-50 -50)">${inner}</g>`}</svg>`;
   switch (id) {
     case 'soleil':
@@ -141,6 +155,17 @@ function bodySVG(id) {
    Chaque question : say (lue et affichée), answer, options (ids ou textes),
    type 'pic' (images) ou 'txt' (texte), fact (une phrase vraie montrée et
    dite après la bonne réponse). */
+/**
+ * Une question à choix : des dessins (pic) ou des mots (txt).
+ * @typedef {{ type: 'pic' | 'txt', sameSize?: boolean, say: string, answer: string, options: string[], fact: string }} PlanetChoice
+ */
+/**
+ * Ranger des planètes (palier 6) ; seq et next sont posés au moment de jouer.
+ * @typedef {{ type: 'order', say: string, fact: string, seq?: string[], next?: number }} PlanetOrderAsk
+ */
+/** @typedef {PlanetChoice | PlanetOrderAsk} PlanetQuestion */
+/** @typedef {PlanetOrderAsk & { seq: string[], next: number }} PlanetOrderRun l'ordre en cours : la suite et la prochaine à toucher */
+/** @type {Record<number, Array<() => PlanetQuestion>>} */
 const PLANET_QUESTIONS = {
   1: [
     () => ({
@@ -391,7 +416,9 @@ const PLANET_QUESTIONS = {
   ],
 };
 
+/** @type {string | null} */
 let lastPlanetQ = null;
+/** @param {number} dd le palier de difficulté */
 function pickPlanetQuestion(dd) {
   const tier = planetsTier(dd);
   const pool = PLANET_QUESTIONS[tier];
@@ -404,8 +431,8 @@ function pickPlanetQuestion(dd) {
   return Object.assign({ tier }, pool[i]());
 }
 
-const bodyName = (id) => (SKY_BODIES[id] ? SKY_BODIES[id].name : SOLAR_DATA[id].the);
-const bodyLabel = (id) =>
+const bodyName = (/** @type {string} */ id) => (SKY_BODIES[id] ? SKY_BODIES[id].name : SOLAR_DATA[id].the);
+const bodyLabel = (/** @type {string} */ id) =>
   SKY_BODIES[id]
     ? SKY_BODIES[id].name.replace(/^l[ea] /, '').replace(/^./, (c) => c.toUpperCase())
     : SOLAR_DATA[id].name;
@@ -413,7 +440,8 @@ const bodyLabel = (id) =>
 function renderPlanets() {
   setupLives('planets');
   const q = pickPlanetQuestion(gameDiff());
-  if (q.type === 'order') return renderPlanetOrder(q);
+  // seq et next sont posés en tête de renderPlanetOrder
+  if (q.type === 'order') return renderPlanetOrder(/** @type {PlanetOrderRun} */ (q));
   const opts = shuffle(q.options.slice());
   const body =
     q.type === 'pic'
@@ -427,7 +455,7 @@ function renderPlanets() {
   bindQuit();
   setSolution([solSel('.pl-opt', 'v', q.answer)]);
   setHintQuestion('planets', q, { choices: '.pl-opt' });
-  document.querySelectorAll('.pl-opt').forEach((/** @type {HTMLButtonElement} */ btn) => {
+  /** @type {NodeListOf<HTMLButtonElement>} */ (document.querySelectorAll('.pl-opt')).forEach((btn) => {
     setHandler(btn, 'click', () => {
       if (btn.dataset.v === q.answer) {
         stepOk(btn);
@@ -439,6 +467,7 @@ function renderPlanets() {
 }
 
 // palier 6 : toucher 4 planètes voisines dans l'ordre depuis le Soleil
+/** @param {PlanetOrderRun} q */
 function renderPlanetOrder(q) {
   const start = 1 + Math.floor(random() * (PLANET_IDS.length - 3));
   const seq = PLANET_IDS.filter((id) => SOLAR_DATA[id].order >= start && SOLAR_DATA[id].order < start + 4);
@@ -460,7 +489,7 @@ function renderPlanetOrder(q) {
   bindQuit();
   setSolution(seq.map((id) => solSel('.pl-opt', 'v', id)));
   setHintQuestion('planets', q, { choices: '.pl-opt' });
-  document.querySelectorAll('.pl-opt').forEach((/** @type {HTMLButtonElement} */ btn) => {
+  /** @type {NodeListOf<HTMLButtonElement>} */ (document.querySelectorAll('.pl-opt')).forEach((btn) => {
     setHandler(btn, 'click', () => {
       if (btn.dataset.v === seq[q.next]) {
         q.next++;
@@ -479,6 +508,7 @@ function renderPlanetOrder(q) {
 }
 
 // la bonne réponse : on montre et on dit une phrase vraie, puis la victoire
+/** @param {{ fact: string }} q */
 function planetWin(q) {
   setMissionFact(q.fact);
   winSoon();
@@ -488,6 +518,7 @@ function planetWin(q) {
    repenser à la question ; 2. une piste propre à chaque question
    (PLANET_TIPS), vraie et vérifiée comme le reste du quiz, qui ne nomme
    jamais la réponse. Pour l'ordre des planètes : le chemin déjà fait. */
+/** @type {Record<string, string>} */
 const PLANET_TIPS = {
   'Touche le Soleil': 'Il est jaune, avec des rayons tout autour.',
   'Touche la Lune': 'Elle est grise, avec des petits creux ronds : des cratères.',
@@ -530,6 +561,7 @@ const PLANET_TIPS = {
   'Quelle planète tourne couchée sur le côté ?':
     'Regarde ses anneaux : ils ne sont pas couchés comme les autres, ils sont debout !',
 };
+/** @param {PlanetChoice | PlanetOrderRun} q */
 function planetsHints(q) {
   const tip = PLANET_TIPS[q.say] || 'Pense à ce que tu sais du ciel.';
   if (q.type === 'order') {

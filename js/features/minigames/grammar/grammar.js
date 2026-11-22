@@ -31,6 +31,9 @@ import {
 } from '../../minigame-engine/index.js';
 import { bindQuit, gameHeader } from '../../screen/index.js';
 
+/** @typedef {import('../../../entities/words/index.js').Word} Word */
+
+/** @type {Record<'defini' | 'indefini', Record<'m' | 'f' | 'p', string>>} */
 const DET_FAMILIES = {
   defini: { m: 'le', f: 'la', p: 'les' },
   indefini: { m: 'un', f: 'une', p: 'des' },
@@ -88,9 +91,20 @@ function renderDeterminants() {
 // Indices (v52) : 1. un seul ou plusieurs ? ; 2. la marque du pluriel
 // montrée, ou « un … / une … » à dire dans sa tête pour entendre le genre.
 // Avec 4 choix, l'intrus de l'autre famille peut être écarté.
+/**
+ * @param {{
+ *   noun: Word,
+ *   plural: boolean,
+ *   shown: string,
+ *   family: 'defini' | 'indefini',
+ *   answer: string,
+ *   options: string[],
+ * }} q
+ */
 function determinantsHints(q) {
   const intrus = q.options.find((o) => !Object.values(DET_FAMILIES[q.family]).includes(o));
   const end = q.shown.slice(-1);
+  /** @type {{ say: string, fx: { html?: string, glow: string, dim?: string } }} */
   const two = q.plural
     ? {
         say: 'Il y en a plusieurs : regarde la petite lettre muette à la fin du mot. Le petit mot doit dire « plusieurs » lui aussi.',

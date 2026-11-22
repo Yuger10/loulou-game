@@ -20,6 +20,8 @@ import {
 } from '../../minigame-engine/index.js';
 import { bindQuit, gameHeader } from '../../screen/index.js';
 
+/** @typedef {{ k: string, emoji: string, freq: number, name: string }} SimonPad une pastille et sa note */
+
 function renderSimon() {
   setupLives('simon');
   const PADS = [
@@ -44,12 +46,21 @@ function renderSimon() {
   `);
   bindQuit();
 
-  const padEl = (k) => document.querySelector(`.simon-pad[data-k="${k}"]`);
+  const padEl = (/** @type {string} */ k) => document.querySelector(`.simon-pad[data-k="${k}"]`);
   // chaque pastille a sa propre note : elle peut reconnaître la couleur à
   // l'oreille. Note de marimba exacte (sans variation), pour être mémorisée.
+  /**
+   * @param {SimonPad} p
+   * @param {number} [dur]
+   * @param {number} [vol]
+   */
   function padTone(p, dur = 0.3, vol = 0.16) {
     playNote(p.freq, dur, vol);
   }
+  /**
+   * @param {SimonPad} p
+   * @param {number} i son rang (des fractions pour rejouer plus lentement)
+   */
   function flash(p, i) {
     setTimeout(
       () => {
@@ -99,7 +110,7 @@ function renderSimon() {
     setHandler(btn, 'click', () => {
       if (playing) return;
       const k = btn.dataset.k;
-      const p = PADS.find((x) => x.k === k);
+      const p = /** @type {SimonPad} */ (PADS.find((x) => x.k === k)); // chaque bouton porte la clé d'une pastille
       btn.classList.add('lit');
       setTimeout(() => btn.classList.remove('lit'), 200);
       padTone(p, 0.22, 0.15); // le son de la pastille joue toujours, même si c'est la mauvaise
@@ -133,6 +144,7 @@ function renderSimon() {
 
 // Indices (v52) : 1. dire le nom des couleurs dans sa tête pendant qu'elles
 // s'allument ; 2. la suite rejouée plus lentement, depuis le début.
+/** @param {{ len: number, replay: () => void }} q */
 function simonHints(q) {
   return [
     {
