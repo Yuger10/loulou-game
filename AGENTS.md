@@ -8,6 +8,7 @@ Jeu éducatif en français pour une enfant de 6 ans (mathématiques, lecture, lo
 - Vérifier avant de terminer : `bun run check` (obligatoire, doit passer) : garde des lockfiles, lint et format, docs, tests en parallèle (environ 20 s).
 - Tests ciblés : `bun run test jardin` (filtre sur le nom des suites).
 - Avant une PR : `bun run verify` (`check` puis les tests holdout de `test/holdout/`). La CI GitHub lance la même chose ; `ci-ok` doit être vert pour merger.
+- Contrat de sortie de `check`, `verify` et des scripts : `0` réussi, `1` échec, `2` bloqué (un outil n'a pas pu tourner) ; bloqué n'est jamais une réussite. Les scripts non triviaux ont un `--selftest` (`bun run selftest`).
 - Types : `bun run typecheck` (TypeScript 7 vérifie le JavaScript, [ADR 0003](docs/adr/0003-typescript.md), 0,1 s), déjà dans `check` et dans le hook de l'agent.
 - Mettre en forme : `bun run format` (le hook de l'agent et le commit le font déjà).
 - Après un ajout ou un déplacement de fichier : `bun run sync` (régénère `index.html` et `sw.js`).
@@ -53,6 +54,9 @@ Jeu éducatif en français pour une enfant de 6 ans (mathématiques, lecture, lo
 - Ajouter une dépendance (`package.json`, `bun.lock`) sans le demander.
 - Toucher aux dessins des personnages et compagnons (`characters-art.js`, SVG) sans demande explicite.
 
+## Ressources protégées (cothon 0.2.0-1)
+Jamais supprimées, vidées ni réécrites par l'agent : la branche `main` (pas de `push --force`, `reset --hard`, `clean -f`, merge `--admin`, ni changement de sa protection), et les dossiers `js/`, `docs/`, `conductor/`, `test/`, `test/holdout/`, `.git/`, `.github/`. Le hook `PreToolUse` `.claude/hooks/guard-resources.sh` refuse ces commandes (sortie 2, `--selftest`). L'agent ne supprime que ce qu'il a créé.
+
 ## Zones sensibles (relecture humaine obligatoire)
 Sauvegarde et migrations (`js/entities/game-state/`), import de sauvegarde (`js/features/backup/`, entrée non fiable), pause et porte des parents (`js/features/rest/`, `js/features/parents/`), PWA (`sw.js`, `manifest.json`, `index.html`), garde d'architecture, dépendances. Liste complète : [docs/factory/AUDIT.md](docs/factory/AUDIT.md#8-zones-sensibles-proposées).
 
@@ -60,4 +64,4 @@ Sauvegarde et migrations (`js/entities/game-state/`), import de sauvegarde (`js/
 - `bun run check` passe.
 - Les critères d'acceptation de la spec sont couverts par des tests.
 - La doc touchée par le changement est à jour dans la même PR (ce fichier, `conductor/`, `docs/`, ADR si décision).
-- Résumé du changement et risques écrits dans le corps de la PR.
+- Résumé du changement et risques écrits dans le corps de la PR ; une PR d'agent porte `agent-generated: true` dans son corps et l'étiquette `agent`, un correctif a un titre `fix: …` (métriques : `docs/factory/METRICS.md`).

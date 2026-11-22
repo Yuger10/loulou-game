@@ -1,6 +1,26 @@
 # Métriques de la factory
 
-Version légère (ADR 0006 : pas de pipeline automatique, donc pas d'evals ni de coût par PR). On suit la vitesse, qui est une fonctionnalité (playbook cothon, principe 5) : un dépassement de budget est un bug.
+Deux parties : la **qualité du travail des agents**, calculée par le script de cothon (skill `measuring-the-factory`, cothon 0.3.0-4 : jamais de chiffre écrit à la main), puis la **vitesse** des outils (un dépassement de budget est un bug).
+
+Une PR d'agent porte l'étiquette `agent` ou `agent-generated: true` dans son corps ; un correctif est titré `fix:` (ou porte l'étiquette `bug`). Sans eux, rien n'est compté.
+
+```bash
+bash ~/.claude/plugins/cache/cothon/cothon/0.3.0/skills/measuring-the-factory/scripts/factory-metrics.sh --days 7
+```
+
+## Du 2026-11-15 au 2026-11-22
+
+| Métrique | Valeur | Détail |
+|---|---|---|
+| PR d'agent mergées | 18 | unité de mesure des taux |
+| Taux de reprise | 0 pour 100 | 0 correctif(s) à 7 jours, 0 PR rejetée(s) en revue |
+| Correctif attribuable à 14 jours | 0 pour 100 | 0 correctif(s) dont plus de 50 % des fichiers viennent d'une PR d'agent |
+| Stock | 1 PR ouverte(s) | dont 0 brouillon(s), âge médian 0 jours |
+| Attente humaine | 0,2 heures | médiane, de l'ouverture à la première revue humaine (ou au merge) |
+
+Lecture : première mesure. Les 18 PR de l'installation de la factory, sans reprise ni correctif ; l'attente humaine est courte parce qu'Amrou merge au fil de la session.
+
+## Vitesse
 
 À relever de temps en temps (par exemple à chaque livraison 66.x) :
 ```bash

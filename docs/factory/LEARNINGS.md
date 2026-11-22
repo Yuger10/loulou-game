@@ -14,5 +14,6 @@ Boucle d'amélioration du playbook cothon (7.3). Après chaque correction d'Amro
 | 2026-11-22 | Une PR empilée visait encore la branche de la PR précédente au moment du merge (#52) | GitHub ne la réoriente pas tout seul si la branche reste | Réorienter vers `main` avant de merger une PR empilée | ⏳ consigne, pas de check |
 | 2026-11-22 | L'agent a voulu poser lui-même l'étiquette `human:approved` sur sa PR, sur délégation (refusé par le garde-fou) | Confusion entre « vérifier » et « approuver » | L'étiquette est posée par un humain, jamais par l'agent, même sur délégation (`AGENTS.md`) | ✅ garde-fou de l'agent ; la CI exige l'étiquette |
 | 2026-11-22 | « ok go » et « Oui » n'ont pas suffi à autoriser un merge | Un merge exige un ordre explicite | Demander « merge la PR N » | ✅ garde-fou de l'agent |
+| 2026-11-22 | Une PR qui mélangeait du code et une ligne de CI (`.github/`) est restée bloquée par le garde des zones sensibles (#61) | La zone protégée bloque toute la PR | Toute modification de zone protégée dans sa propre PR | ✅ le garde la sépare de fait ; consigne dans le REX cothon |
 
 Les lignes ⏳ sont des candidates : si elles reviennent, elles deviennent un check (script, test ou règle).
