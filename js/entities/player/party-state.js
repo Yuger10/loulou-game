@@ -1,6 +1,6 @@
 /* ---------- Mode chacun son tour ---------- */
 import { setCompanionPlayerSource } from '../companion/index.js';
-import { currentProfile, profiles } from './profiles.js';
+import { currentProfile, onProfileDelete, profiles } from './profiles.js';
 
 let party = { active: false, mode: null, players: [], turn: 0, scores: {}, lastWinner: null };
 
@@ -45,5 +45,10 @@ let race = { active: false, players: [], pos: {}, turn: 0, goal: RACE_STEPS, win
 function raceCurrent() {
   return profiles.list.find((p) => p.id === race.players[race.turn]);
 }
+
+// un joueur supprimé quitte la partie en cours
+onProfileDelete((id) => {
+  party.players = party.players.filter((pid) => pid !== id);
+});
 
 export { currentPlayerAge, party, partyCurrent, partyPlayers, race, RACE_STEPS, raceCurrent, setParty, setRace };

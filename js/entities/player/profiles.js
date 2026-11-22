@@ -5,7 +5,6 @@ import { avatarText, defaultCompanionFor } from '../companion/index.js';
 import { freshState, load, replaceState, save, setSaveSlot, state } from '../game-state/index.js';
 import { currentWorld, setCurrentWorld, worldUnlocked } from '../world/index.js';
 import { fixAvatar } from './avatars.js';
-import { party } from './party-state.js';
 
 const PROFILES_KEY = 'lagon-magique-profiles';
 
@@ -124,11 +123,19 @@ function addProfile(name, avatar, age, gender, companion) {
   return id;
 }
 
+// à la suppression d'un joueur (party-state.js le retire de la partie en cours) ;
+// un point d'accroche plutôt qu'un import, pour éviter un cycle profiles ↔ party-state
+/** @type {((id: string) => void)[]} */
+const profileDeleteHooks = [];
+function onProfileDelete(fn) {
+  profileDeleteHooks.push(fn);
+}
+
 function deleteProfile(id) {
   if (profiles.list.length <= 1) return false;
   profiles.list = profiles.list.filter((p) => p.id !== id);
   storageRemove(profileSaveKey(id));
-  party.players = party.players.filter((pid) => pid !== id);
+  profileDeleteHooks.forEach((fn) => fn(id)); // party-state.js le retire de la partie en cours
   if (profiles.current === id) {
     profiles.current = profiles.list[0].id;
     load();
@@ -171,6 +178,7 @@ export {
   deleteProfile,
   LEGACY_SAVE_KEY,
   loadProfiles,
+  onProfileDelete,
   onProfileRefresh,
   playerGender,
   profiles,

@@ -450,6 +450,15 @@ setTimeout(() => {
     check('victoire : point pour le joueur courant', ev(`party.scores[${JSON.stringify(p2)}]`) === 1);
     check('récompense dans le sac du bon joueur', ev('state.newItems') > 0);
 
+    // un joueur supprimé quitte la partie en cours (point d'accroche onProfileDelete)
+    const p3 = ev("addProfile('Noé','🦊')");
+    ev(`party.players.push(${JSON.stringify(p3)})`);
+    ev(`deleteProfile(${JSON.stringify(p3)})`);
+    check(
+      'un joueur supprimé quitte la partie en cours',
+      !ev('party.players').includes(p3) && ev('party.players').length === 2,
+    );
+
     ev('stopParty()');
     check('mode solo rétabli', ev('party.active') === false && d.getElementById('turn-bar').hidden);
 
