@@ -1704,3 +1704,9 @@ Les deux sont proposés dès 5 ans, sans minuteur. Le jeu de l'île est les poti
 - **Ce que voit l'enfant :** rien ne change.
 - **Pour le code :** TypeScript **strict** sur le lot 1 de `features` (`wallet`, `gains`, `screen`, `hints`, `adaptive`, `music`, `party`, `squishies`) : 402 erreurs ramenées à 0, en JSDoc, sans `any`. `squishy-room.js` atteignait la limite `max-lines` (1 250) ; plutôt que de tasser ses annotations, ses dessins (corps, visages, modèles, boîtes surprises) passent tels quels dans `squishy-art.js` (590 lignes de dessin vérifiées identiques). Cliquet `max-lines` abaissé à 1 100. Restent 3 lots (973 erreurs) et `app`.
 - Cache `lagon-v66.9`.
+
+# v66.10 : TypeScript strict lot 2 de features (story → map)
+
+- **Ce que voit l'enfant :** rien ne change.
+- **Pour le code :** TypeScript **strict** sur le lot 2 de `features` (`story`, `wardrobe`, `bag`, `quests`, `seasons`, `profile`, `gifts`, `island`, `companion-team`, `map`) : 304 erreurs ramenées à 0, en JSDoc, sans `any`. Seules retouches de code : des conversions en texte que le navigateur faisait déjà (`dataset`, `style.zIndex`). Restent le moteur et les mini-jeux, `market` → `settings`, puis `app`.
+- Cache `lagon-v66.10`.

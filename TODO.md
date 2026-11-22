@@ -154,6 +154,7 @@ Chaque mini-jeu a maintenant son propre niveau pour chaque enfant (`js/adaptive.
 | v66.7 | TypeScript strict sur la couche entities |
 | v66.8 | La place des décorations survit au redémarrage |
 | v66.9 | TypeScript strict sur 8 slices de features, dessins des squishies dans leur fichier |
+| v66.10 | TypeScript strict lot 2 de features (story → map) |
 
 ---
 
