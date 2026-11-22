@@ -676,7 +676,7 @@ Aucun `@typedef` existant n'est étendu : toutes les entrées de l'île tiennent
 | `SQUISHIES` | `Squishy` (`js/entities/squishy/squishies.js:26`) | 6 modèles, sans `how` |
 | `SQUISHY_ISLAND_SERIES`, `SQUISHY_SERIES_ORDER` | `Record<string, string>`, `string[]` | une clé, un id |
 | `LIVES_TABLE` | `Record<string, Record<number, number>>` (`js/entities/difficulty/difficulty.js:360`) | `problems: { 2: 4, 3: 4, 4: 3, 5: 3 }` |
-| `state.skills.problems` | `SkillRecord` (`js/entities/game-state/state.js:22-35`, `lvl?`, `atLvl?`) | lu seulement (E1) ; aucun champ de sauvegarde nouveau |
+| `state.skills.problems` | `SkillRecord` (`js/entities/game-state/state.js:22-36`, `lvl?`, `atLvl?`) | lu seulement (E1) ; aucun champ de sauvegarde nouveau |
 
 Nouvelles fonctions, dans `js/entities/difficulty/rounds-saison3.js` (et non dans `difficulty.js`, presque plein : règle « 2 bis » de `conductor/checklist-ile.md`), typées strictement, sur le modèle de `rhythmRound` (`js/entities/difficulty/difficulty.js:818`) et de `tierValue` (`js/entities/difficulty/difficulty.js:92-105`) :
 
