@@ -90,6 +90,7 @@ const SLICES = [
     layer: 'entities',
     files: [
       'js/entities/difficulty/difficulty.js',
+      'js/entities/difficulty/difficulty-s2.js',
       'js/entities/difficulty/game-types.js',
       'js/entities/difficulty/age.js',
     ],

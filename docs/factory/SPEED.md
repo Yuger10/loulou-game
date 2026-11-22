@@ -143,6 +143,6 @@ Catégories `correctness` et `suspicious` en erreur, `--deny-warnings`. Toute r�
 | `eqeqeq` (`null` permis) | 10 | Ajoutée | `x == null` est l'idiome du projet, le reste en `===` |
 | `no-use-before-define` (même portée) | 0 avec ce réglage | Ajoutée | Les vrais risques d'ordre d'initialisation des modules |
 | `no-console` (hors `test/`) | 1 | Ajoutée | Révélait une sauvegarde illisible passée en silence |
-| `max-lines` (1 250, hors `test/`) | 0 | Ajoutée | Cliquet : à abaisser vers 800 en découpant les 3 plus gros fichiers |
+| `max-lines` (800, hors `test/`) | 0 | Ajoutée | Cliquet atteint (66.16) : 1 250 → 1 100 (`squishy-art.js`) → 800 (`characters-art-s2.js`, `difficulty-s2.js`), dessins et paliers déplacés tels quels |
 | `no-param-reassign` | 40 | Ajoutée | Valeurs par défaut dans la signature, variables locales quand `0` ou `null` comptent |
 | `import/no-cycle` | 12 (5 cycles) | Ajoutée | Un cycle peut lire une valeur pas encore définie au démarrage des modules ES |

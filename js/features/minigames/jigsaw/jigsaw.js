@@ -4,7 +4,7 @@
    à sa place :
    - en le faisant glisser du doigt jusqu'à sa case ;
    - ou en touchant le morceau, puis la case (plus facile pour les petits).
-   Selon le palier (voir `jigsawRound` dans js/entities/difficulty/difficulty.js) : 2×2 avec
+   Selon le palier (voir `jigsawRound` dans js/entities/difficulty/difficulty-s2.js) : 2×2 avec
    l'image en transparence dans le cadre, puis 3×3, puis 4×3 avec seulement
    un petit modèle à côté. Un morceau posé au mauvais endroit revient dans
    la réserve (et coûte un essai à partir de l'île 2).

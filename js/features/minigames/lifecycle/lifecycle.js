@@ -2,7 +2,7 @@
    Remettre dans l'ordre les étapes de la vie d'une plante, d'un papillon ou
    d'une poule. Chaque étape est dessinée et nommée (« Questionner le monde
    du vivant », cycle 2 : naissance, croissance, reproduction).
-   Selon le palier (`lifecycleRound`, js/entities/difficulty/difficulty.js) :
+   Selon le palier (`lifecycleRound`, js/entities/difficulty/difficulty-s2.js) :
      order    toucher les étapes dans l'ordre (3, 4 puis 5 étapes)
      missing  une étape manque dans le cycle : la retrouver parmi 3
      mixed    deux cycles mélangés : ranger seulement ceux de la plante
