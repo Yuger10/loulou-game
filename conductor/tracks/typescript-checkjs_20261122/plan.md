@@ -8,7 +8,7 @@ Spec : [spec.md](./spec.md). Une PR par couche. Mesure de départ du mode strict
 - [x] Task: `bun run typecheck` dans `check`, la CI et le hook de l'agent
 
 ## Phase 2 : mode strict, couche par couche
-- [ ] Task: `js/shared/` en strict
+- [x] Task: `js/shared/` en strict : 161 erreurs → 0, en JSDoc seulement (aucun `any`), `tsconfig.strict.json` (include de la couche), `bun run typecheck` lance les deux modes ; 2 annotations dans `features` rendues nécessaires par les types de `shared` (`share.js`, `music.js`)
 - [ ] Task: `js/entities/` en strict (dont la sauvegarde)
 - [ ] Task: `js/features/` en strict, slice par slice
 - [ ] Task: `js/app/` en strict, puis `strict: true` dans `tsconfig.json`

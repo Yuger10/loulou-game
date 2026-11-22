@@ -3,6 +3,7 @@ import { audioPrefs, setVoiceDuck } from './sound.js';
 import { setHandler } from './handlers.js';
 
 // Mots prononcés pour chaque emoji (singulier, pluriel)
+/** @type {Record<string, [string, string]>} */
 const EMOJI_WORDS = {
   '🐚': ['coquillage', 'coquillages'],
   '🦪': ['perle', 'perles'],
@@ -35,16 +36,22 @@ const EMOJI_WORDS = {
   '🔈': ['', ''],
 };
 
+/**
+ * @param {string} emoji
+ * @param {boolean} [plural]
+ */
 function emojiWord(emoji, plural = false) {
   const w = EMOJI_WORDS[emoji];
   return w ? w[plural ? 1 : 0] : '';
 }
 
 // "de étoiles" → "d'étoiles"
+/** @param {string} s */
 function elide(s) {
-  return s.replace(/\b(de|que|le|la|ne|se|je|me|te) (?=[aéèêàeiouôûh])/gi, (m, a) => a[0] + "'");
+  return s.replace(/\b(de|que|le|la|ne|se|je|me|te) (?=[aéèêàeiouôûh])/gi, (m, /** @type {string} */ a) => a[0] + "'");
 }
 
+/** @param {string} text */
 function toSpoken(text) {
   // remplace chaque emoji connu par son mot, puis enlève le reste
   let s = text.replace(/<[^>]+>/g, '');
@@ -84,12 +91,14 @@ const VOICE_PREFS = [
 
 const VOICE_MALE = /thomas|jacques|eddy|reed|rocko|grandpa|nicolas|paul|henri|daniel|claude|yannick/i;
 
+/** @type {SpeechSynthesisVoice | null} */
 let chosenVoice = null;
 
 function pickVoice() {
   if (!('speechSynthesis' in window)) return null;
   const voices = window.speechSynthesis.getVoices().filter((v) => /^fr/i.test(v.lang));
   if (!voices.length) return null;
+  /** @param {SpeechSynthesisVoice} v */
   const score = (v) => {
     let s = 0;
     const i = VOICE_PREFS.findIndex((p) => v.name.toLowerCase().startsWith(p.toLowerCase()));
@@ -106,6 +115,10 @@ function pickVoice() {
 }
 
 // opts.rate : plus lent pour relire (Perle la conteuse, v52)
+/**
+ * @param {string} text
+ * @param {{ rate?: number }} [opts]
+ */
 function speak(text, opts) {
   if (!audioPrefs().voice || !('speechSynthesis' in window)) return;
   try {
@@ -130,11 +143,15 @@ function bindSpeakButtons() {
   document.querySelectorAll('[data-say]').forEach((b) => {
     setHandler(b, 'click', (e) => {
       e.stopPropagation();
-      speak(b.dataset.say);
+      speak(/** @type {string} */ (b.dataset.say)); // le sélecteur garantit data-say
     });
   });
 }
 
+/**
+ * @param {string} text
+ * @param {string} [extraStyle]
+ */
 function speechBubble(text, extraStyle = '') {
   return `<div class="speech with-voice" style="${extraStyle}">
     <span class="txt">${text}</span>

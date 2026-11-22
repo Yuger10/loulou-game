@@ -9,13 +9,23 @@ function random() {
   return Math.random();
 }
 
+/**
+ * @template T
+ * @param {readonly T[]} arr
+ * @returns {T}
+ */
 function pickRandom(arr) {
   return arr[Math.floor(random() * arr.length)];
 }
 
+/**
+ * @template T
+ * @param {readonly T[]} arr
+ * @returns {T[]}
+ */
 function shuffle(arr) {
   return arr
-    .map((v) => [random(), v])
+    .map((v) => /** @type {[number, T]} */ ([random(), v]))
     .sort((a, b) => a[0] - b[0])
     .map((v) => v[1]);
 }

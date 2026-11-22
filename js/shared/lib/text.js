@@ -9,8 +9,12 @@
 const NAME_MAX = 12;
 
 // un caractère de contrôle (saut de ligne, tabulation…) n'a rien à faire dans un prénom
-const isControl = (ch) => ch.charCodeAt(0) < 32 || ch.charCodeAt(0) === 127;
+const isControl = (/** @type {string} */ ch) => ch.charCodeAt(0) < 32 || ch.charCodeAt(0) === 127;
 
+/**
+ * @param {unknown} s
+ * @returns {string}
+ */
 export function cleanName(s) {
   const noTags = String(s ?? '').replace(/<[^>]*>/g, ''); // balises entières
   return [...noTags]

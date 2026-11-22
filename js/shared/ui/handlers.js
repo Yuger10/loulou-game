@@ -9,27 +9,41 @@
 /** @type {WeakMap<object, Map<string, EventListener>>} */
 const handlers = new WeakMap();
 
+/* Une cible : un élément du DOM, un objet audio ou voix, ou un objet
+   incomplet qui n'a que ses propriétés `onX` (vieux navigateurs). */
+/** @typedef {EventTarget | Record<string, unknown>} HandlerTarget */
+/* L'événement reçu : celui que le navigateur associe à ce type pour un
+   élément HTML ('click' → MouseEvent, 'keydown' → KeyboardEvent), sinon Event. */
 /**
- * @param {any} el élément du DOM ou autre cible d'événements
- * @param {string} type 'click', 'input', 'load'…
- * @param {((e: any) => void) | null} fn
+ * @template {string} K
+ * @typedef {K extends keyof HTMLElementEventMap ? HTMLElementEventMap[K] : Event} HandlerEvent
+ */
+
+/**
+ * @template {string} K
+ * @param {HandlerTarget | null | undefined} el élément du DOM ou autre cible d'événements
+ * @param {K} type 'click', 'input', 'load'…
+ * @param {((e: HandlerEvent<K>) => void) | null} fn
  */
 function setHandler(el, type, fn) {
   if (!el) return;
   if (typeof el.addEventListener !== 'function') {
-    el['on' + type] = fn; // pas d'addEventListener : la propriété, qui ne double jamais
+    /** @type {Record<string, unknown>} */ (el)['on' + type] = fn; // pas d'addEventListener : la propriété, qui ne double jamais
     return;
   }
-  let byType = handlers.get(el);
+  const target = /** @type {EventTarget} */ (el);
+  let byType = handlers.get(target);
   if (!byType) {
     byType = new Map();
-    handlers.set(el, byType);
+    handlers.set(target, byType);
   }
   const previous = byType.get(type);
-  if (previous) el.removeEventListener(type, previous);
+  if (previous) target.removeEventListener(type, previous);
   if (fn) {
-    el.addEventListener(type, fn);
-    byType.set(type, fn);
+    // le navigateur passe bien à fn l'événement de ce type (voir HandlerEvent)
+    const listener = /** @type {EventListener} */ (fn);
+    target.addEventListener(type, listener);
+    byType.set(type, listener);
   } else byType.delete(type);
 }
 

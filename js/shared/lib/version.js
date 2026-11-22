@@ -7,11 +7,15 @@
    (sw.js : `lagon-v66.1`), et l'espace parents l'affiche.
    test/update.test.js vérifie que sw.js et ce fichier disent la même chose. */
 const APP_VERSION = 66;
-const APP_PATCH = 5;
+const APP_PATCH = 6;
 const APP_LABEL = APP_PATCH ? `${APP_VERSION}.${APP_PATCH}` : String(APP_VERSION);
 
 // « 66 », « 66.1 » ou « lagon-v66.1 » → un nombre à comparer (66.1 → 66001) ;
 // 0 si ce n'est pas une version
+/**
+ * @param {unknown} label
+ * @returns {number}
+ */
 function versionBuild(label) {
   const m = /(\d+)(?:\.(\d+))?$/.exec(String(label ?? ''));
   return m ? Number(m[1]) * 1000 + Number(m[2] || 0) : 0;

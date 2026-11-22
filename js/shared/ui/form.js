@@ -17,7 +17,17 @@ import { playSound } from './sound.js';
 import { speak } from './voice.js';
 import { setHandler } from './handlers.js';
 
+/** @typedef {{ title?: string, html: string }} FormSection */
+/**
+ * @typedef {object} FormSheetOptions
+ * @property {string} title
+ * @property {FormSection[]} [sections]
+ * @property {string} [primary]
+ * @property {string} [secondary]
+ */
+
 // sections : [{ title, html }] (une section sans titre : { html })
+/** @param {FormSheetOptions} options */
 function formSheet({ title, sections, primary, secondary }) {
   const body = (sections || [])
     .map((s) =>
@@ -45,13 +55,29 @@ function formSheet({ title, sections, primary, secondary }) {
    required : [{ value: () => texte, say: 'ce qui manque', focus: () => élément }]
    onSave   : enregistre et passe à la suite (renvoie false pour rester)
    onCancel : où aller après « Retour » sans enregistrer (par défaut : fermer) */
+/**
+ * @typedef {object} FormRequirement
+ * @property {() => unknown} value
+ * @property {string} say
+ * @property {() => HTMLElement | null | undefined} [focus]
+ */
+/**
+ * @typedef {object} FormBinding
+ * @property {unknown} initial
+ * @property {() => unknown} current
+ * @property {FormRequirement[]} [required]
+ * @property {() => unknown} onSave
+ * @property {() => void} [onCancel]
+ */
+/** @param {FormBinding} binding */
 function bindForm({ initial, current, required, onSave, onCancel }) {
   const root = document.getElementById('modal');
   if (!root) return;
   root.classList.add('has-form');
-  const primary = root.querySelector('.form-primary');
-  const secondary = root.querySelector('.form-secondary');
-  const closeBtn = root.querySelector('.form-close');
+  // la fenêtre contient un formSheet : ses trois boutons sont là
+  const primary = /** @type {HTMLElement} */ (root.querySelector('.form-primary'));
+  const secondary = /** @type {HTMLElement} */ (root.querySelector('.form-secondary'));
+  const closeBtn = /** @type {HTMLElement} */ (root.querySelector('.form-close'));
   const fields = [...root.querySelectorAll('.form-body input, .form-body select, .form-body textarea')];
   const missing = () => (required || []).find((r) => !String(r.value() || '').trim());
   const refresh = () => primary.setAttribute('aria-disabled', missing() ? 'true' : 'false');
@@ -74,6 +100,7 @@ function bindForm({ initial, current, required, onSave, onCancel }) {
   }
   // « Garder tes changements ? » : garder = enregistrer ; ne pas garder = partir ;
   // ne rien choisir (Échap, toucher à côté) = rester dans le formulaire
+  /** @param {() => void} after */
   function askKeep(after) {
     askConfirm({
       text: 'Garder tes changements ?',

@@ -1,19 +1,23 @@
 import { pickRandom, random } from '../lib/index.js';
 import { playSound } from './sound.js';
 
-let toastTimer = null; // le message en cours disparaît 1,6 s après le dernier
+/** @type {number | undefined} */
+let toastTimer; // le message en cours disparaît 1,6 s après le dernier
+/** @param {string} msg */
 function showToast(msg) {
-  const t = document.getElementById('toast');
+  const t = /** @type {HTMLElement} */ (document.getElementById('toast'));
   t.textContent = msg;
   t.classList.add('show');
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => t.classList.remove('show'), 1600);
 }
 
+/** @param {VibratePattern} pattern */
 function vibrate(pattern) {
   if (navigator.vibrate) navigator.vibrate(pattern);
 }
 
+/** @param {HTMLElement} el */
 function shakeEl(el) {
   el.classList.remove('shake');
   void el.offsetWidth;
@@ -21,24 +25,27 @@ function shakeEl(el) {
 }
 
 // fonctions appelées après chaque retour d'erreur (voir onWrongFeedback)
+/** @type {Array<(el: HTMLElement) => void>} */
 const wrongFeedbackHooks = [];
+/** @param {(el: HTMLElement) => void} fn */
 function onWrongFeedback(fn) {
   wrongFeedbackHooks.push(fn);
 }
 
+/** @param {HTMLElement} el */
 function wrongFeedback(el) {
   playSound('wrong');
   vibrate(80);
   shakeEl(el);
-  el.style.opacity = 0.4;
-  setTimeout(() => (el.style.opacity = 1), 400);
+  el.style.opacity = '0.4';
+  setTimeout(() => (el.style.opacity = '1'), 400);
   // abonnés (par exemple le mode chacun son tour, qui passe la main)
   wrongFeedbackHooks.forEach((fn) => fn(el));
 }
 
 /* ---------- Confettis ---------- */
 function confetti() {
-  const box = document.getElementById('confetti');
+  const box = /** @type {HTMLElement} */ (document.getElementById('confetti'));
   const colors = ['#FF8969', '#FFAAD4', '#FFCB4C', '#2EC4C6', '#FFFFFF', '#B388FF'];
   for (let i = 0; i < 50; i++) {
     const p = document.createElement('div');

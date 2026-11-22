@@ -5,6 +5,7 @@ import { random } from '../lib/index.js';
 /** @typedef {{ sound?: boolean, voice?: boolean, music?: boolean, soundVolume?: number }} AudioPrefs */
 /** @type {() => AudioPrefs} */
 let audioPrefsSource = () => ({ sound: true, voice: true, music: false, soundVolume: 80 });
+/** @param {() => AudioPrefs} fn */
 function setAudioPrefsSource(fn) {
   audioPrefsSource = fn;
 }
@@ -29,7 +30,20 @@ function audioPrefs() {
    comme une machine, et un même son n'est pas rejoué à moins de 60 ms
    (pas de crépitement quand un enfant tape vite).
    Choix validés à l'écoute : https://claude.ai/artifact/F5xuENW8ePFKLk4QogwH8K */
+/**
+ * Le bus principal (voir le schéma ci-dessus).
+ * @typedef {object} SoundBus
+ * @property {GainNode} master
+ * @property {GainNode} duck
+ * @property {DynamicsCompressorNode | GainNode} comp
+ * @property {GainNode} dry
+ * @property {GainNode} wet
+ * @property {ConvolverNode | null} reverb
+ * @property {GainNode} music
+ */
+/** @type {AudioContext | null} */
 let audioCtx = null;
+/** @type {SoundBus | null} */
 let soundBus = null;
 const SOUND_MASTER_LEVEL = 0.9; // volume général à 100 %
 const SOUND_VOICE_DUCK = 0.4; // part du volume gardée pendant que la voix parle
@@ -54,8 +68,10 @@ function ensureAudioCtx() {
   return audioCtx;
 }
 
+// appelée par ensureAudioCtx, une fois le contexte créé
 function buildSoundBus() {
-  const ctx = audioCtx;
+  const ctx = /** @type {AudioContext} */ (audioCtx);
+  /** @type {SoundBus} */
   const b = {
     master: ctx.createGain(), // volume général
     duck: ctx.createGain(), // réduction pendant la voix
@@ -65,12 +81,14 @@ function buildSoundBus() {
     reverb: ctx.createConvolver ? ctx.createConvolver() : null,
     music: ctx.createGain(), // entrée de la musique (features/music)
   };
-  if (b.comp.threshold) {
-    b.comp.threshold.value = -14;
-    b.comp.knee.value = 10;
-    b.comp.ratio.value = 6;
-    b.comp.attack.value = 0.003;
-    b.comp.release.value = 0.2;
+  // sans compresseur (vieux navigateurs), comp est un simple GainNode, sans réglages
+  if (/** @type {Partial<DynamicsCompressorNode>} */ (b.comp).threshold) {
+    const comp = /** @type {DynamicsCompressorNode} */ (b.comp);
+    comp.threshold.value = -14;
+    comp.knee.value = 10;
+    comp.ratio.value = 6;
+    comp.attack.value = 0.003;
+    comp.release.value = 0.2;
   }
   b.master.gain.value = soundVolumeLevel();
   b.wet.gain.value = SOUND_REVERB_SEND;
@@ -88,8 +106,12 @@ function buildSoundBus() {
 }
 
 // réponse impulsionnelle de l'écho : un bruit qui s'éteint doucement (générée une seule fois)
+/**
+ * @param {number} seconds
+ * @param {number} decay
+ */
 function reverbImpulse(seconds, decay) {
-  const ctx = audioCtx,
+  const ctx = /** @type {AudioContext} */ (audioCtx),
     n = Math.max(1, Math.floor(ctx.sampleRate * seconds));
   const buf = ctx.createBuffer(2, n, ctx.sampleRate);
   for (let c = 0; c < 2; c++) {
@@ -105,9 +127,12 @@ function soundVolumeLevel() {
 }
 
 // la voix parle : tout le bus baisse (sons et musique), puis remonte
+/** @param {boolean} on */
 function setVoiceDuck(on) {
   if (!soundBus) return;
-  soundBus.duck.gain.setTargetAtTime(on ? SOUND_VOICE_DUCK : 1, audioCtx.currentTime, 0.12);
+  // le bus n'existe qu'avec son contexte
+  const ctx = /** @type {AudioContext} */ (audioCtx);
+  soundBus.duck.gain.setTargetAtTime(on ? SOUND_VOICE_DUCK : 1, ctx.currentTime, 0.12);
 }
 
 // entrée du bus pour la musique (features/music)
@@ -117,27 +142,52 @@ function musicBusNode() {
 }
 
 /* ---------- Instrument : le marimba ---------- */
+/**
+ * @param {number} x
+ * @param {number} amount
+ * @param {boolean} [exact]
+ */
 const soundVary = (x, amount, exact) => (exact ? x : x * (1 + (random() * 2 - 1) * amount));
 
+/* Les fonctions de l'instrument ne sont appelées que par playSound et playNote,
+   après ensureAudioCtx : le contexte et le bus existent alors. */
+const liveCtx = () => /** @type {AudioContext} */ (audioCtx);
+const liveBus = () => /** @type {SoundBus} */ (soundBus);
+
 // une composante : attaque très courte, extinction exponentielle
+/**
+ * @param {number} freq
+ * @param {number} t
+ * @param {number} vol
+ * @param {number} decay
+ * @param {OscillatorType} [type]
+ * @param {boolean} [wet]
+ */
 function marimbaPartial(freq, t, vol, decay, type, wet) {
-  const o = audioCtx.createOscillator(),
-    g = audioCtx.createGain();
+  const o = liveCtx().createOscillator(),
+    g = liveCtx().createGain();
   o.type = type || 'sine';
   o.frequency.setValueAtTime(freq, t);
   g.gain.setValueAtTime(0, t);
   g.gain.linearRampToValueAtTime(vol, t + 0.006);
   g.gain.exponentialRampToValueAtTime(0.0008, t + decay);
   o.connect(g);
-  g.connect(soundBus.dry);
-  if (wet !== false) g.connect(soundBus.wet);
+  g.connect(liveBus().dry);
+  if (wet !== false) g.connect(liveBus().wet);
   o.start(t);
   o.stop(t + decay + 0.05);
 }
 
 // une note de marimba : fondamentale, partiel à ~4× qui s'éteint vite, petit clic de bois (3 oscillateurs)
+/**
+ * @param {number} freq
+ * @param {number} delay
+ * @param {number} vol
+ * @param {number} [decay]
+ * @param {boolean} [exact]
+ */
 function marimbaNote(freq, delay, vol, decay, exact) {
-  const t = audioCtx.currentTime + (delay || 0);
+  const t = liveCtx().currentTime + (delay || 0);
   const f = soundVary(freq, SOUND_PITCH_VARIATION, exact),
     v = soundVary(vol, SOUND_GAIN_VARIATION, exact);
   const d = decay || 0.45;
@@ -147,10 +197,16 @@ function marimbaNote(freq, delay, vol, decay, exact) {
 }
 
 // un glissé doux (pouic, ouverture de boîte)
+/**
+ * @param {Array<[number, number]>} points [instant en s, fréquence en Hz]
+ * @param {number} delay
+ * @param {number} vol
+ * @param {OscillatorType} [type]
+ */
 function soundGlide(points, delay, vol, type) {
-  const t = audioCtx.currentTime + (delay || 0),
-    o = audioCtx.createOscillator(),
-    g = audioCtx.createGain();
+  const t = liveCtx().currentTime + (delay || 0),
+    o = liveCtx().createOscillator(),
+    g = liveCtx().createGain();
   o.type = type || 'sine';
   o.frequency.setValueAtTime(soundVary(points[0][1], 0.02), t);
   points.slice(1).forEach(([dt, f]) => o.frequency.exponentialRampToValueAtTime(f, t + dt));
@@ -159,8 +215,8 @@ function soundGlide(points, delay, vol, type) {
   g.gain.linearRampToValueAtTime(soundVary(vol, SOUND_GAIN_VARIATION), t + 0.02);
   g.gain.exponentialRampToValueAtTime(0.0008, t + end + 0.05);
   o.connect(g);
-  g.connect(soundBus.dry);
-  g.connect(soundBus.wet);
+  g.connect(liveBus().dry);
+  g.connect(liveBus().wet);
   o.start(t);
   o.stop(t + end + 0.1);
 }
@@ -199,7 +255,8 @@ const SOUND_FAMILY = {
   box: 1,
 };
 const SN = SOUND_NOTES,
-  sfam = (k) => SOUND_FAMILY[k];
+  sfam = (/** @type {keyof typeof SOUND_FAMILY} */ k) => SOUND_FAMILY[k];
+/** @type {Record<string, () => void>} */
 const SOUND_PALETTE = {
   tap: () => marimbaNote(SN.G5, 0, 0.16 * sfam('tap'), 0.18),
   good: () => {
@@ -257,8 +314,10 @@ const SOUND_PALETTE = {
 };
 
 /* ---------- Jouer ---------- */
+/** @type {Record<string, number>} */
 const soundLastPlayed = {};
 // joue un son de la palette ; renvoie true s'il a été joué
+/** @param {string} kind */
 function playSound(kind) {
   if (!audioPrefs().sound) return false;
   const fn = SOUND_PALETTE[kind];
@@ -268,7 +327,7 @@ function playSound(kind) {
   try {
     if (!ensureAudioCtx()) return false;
     soundLastPlayed[kind] = now;
-    soundBus.master.gain.value = soundVolumeLevel();
+    liveBus().master.gain.value = soundVolumeLevel();
     fn();
     return true;
   } catch {
@@ -277,11 +336,16 @@ function playSound(kind) {
 }
 
 // une note exacte (Simon) : pas de variation, pas d'anti-rafale
+/**
+ * @param {number} freq
+ * @param {number} [dur]
+ * @param {number} [vol]
+ */
 function playNote(freq, dur, vol) {
   if (!audioPrefs().sound) return false;
   try {
     if (!ensureAudioCtx()) return false;
-    soundBus.master.gain.value = soundVolumeLevel();
+    liveBus().master.gain.value = soundVolumeLevel();
     marimbaNote(freq, 0, vol || 0.18, Math.max(0.3, dur || 0.45), true);
     return true;
   } catch {
