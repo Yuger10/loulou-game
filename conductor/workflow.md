@@ -50,10 +50,10 @@
 6. Commit de checkpoint, puis noter `[checkpoint: <sha>]` sur le titre de la phase dans `plan.md`.
 
 ## Fin de track : livraison
-- Incrémenter `APP_VERSION` et remettre `APP_PATCH` à 0 (`js/shared/lib/version.js`), puis `bun run sync` (ou `bun run sw`) : il écrit le cache de `sw.js` (`lagon-vNN`), `FILES` et `index.html`. `test/update.test.js` vérifie que la version et le cache disent la même chose.
-- **Livraison sans track** (outillage, corrections, nettoyages) : incrémenter seulement `APP_PATCH` (version 66.1, 66.2…, cache `lagon-v66.1`), puis `bun run sync`, et une courte section `v66.N` dans le PRD.
+- Après un rebase sur `main` : **`bun run release track "résumé"`** (ou `patch` pour une livraison sans track). Il augmente la version (`js/shared/lib/version.js`), lance `bun run sync` (cache de `sw.js`, `FILES`, `index.html`), ajoute la ligne du TODO et une section à compléter dans le PRD. `test/update.test.js` vérifie que la version et le cache disent la même chose.
+- **Livraison sans track** (outillage, corrections, nettoyages) : `bun run release patch "résumé"` (version 66.1, 66.2…, cache `lagon-v66.1`), puis compléter la courte section du PRD.
 - Si l'état change : incrémenter `SAVE_VERSION` et ajouter l'étape `migrate()`.
-- Mettre à jour `PRD-lagon-magique.md` (section de la version), `TODO.md` et `README.md` (structure).
+- Compléter la section de la version dans `PRD-lagon-magique.md` ; mettre à jour `README.md` (structure) si besoin.
 - Branche, puis PR sur `main`, `bun run check` vert, puis merge.
 
 ## Critères de qualité (avant de cocher une tâche)
