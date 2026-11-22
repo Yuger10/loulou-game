@@ -45,7 +45,7 @@ Trois PR. Les phases 1 et 2 ne changent rien pour l'enfant (`VOICE_CLIPS` vide) 
 - [ ] 2.6 Téléchargement de fond (ligne 25) et nettoyage de `lagon-voix`, dans `voice.js` ; `voiceOfflineState()` exporté par `js/shared/ui/index.js` et `emit('voice:offline', état)` après chaque lot.
 - [ ] 2.7 `test/tools/sync.js` : les trois insertions idempotentes de D24 (constante, bloc entre marqueurs, filtre d'`activate`), puis `bun run sync` deux fois : le second passage ne change aucun octet (test de 2.3). Les expressions déjà testées par `test/update.test.js:60-69` restent identiques.
 - [ ] 2.8 `js/features/parents/voice-card.js` (déclaré dans la slice `parents` de `js/slices.cjs`, importé par `js/features/parents/parents.js` comme `storage-alert.js` ; importe `VOICE_SERVICE` et `voiceOfflineState` de `../../shared/ui/index.js`, `on` de `../../shared/lib/index.js`) : écoute `parents:cards` et rend la carte des lignes 27 et 28 d'après `voiceOfflineState()` ; ne rend rien tant que `VOICE_SERVICE` est vide.
-- [ ] 2.9 `bun run typecheck` (souple et strict : `voice-clips.js`, `voiceOfflineState`, `setVoiceClips` typés selon la spec) puis `bun run check` verts ; PR 2 (zones sensibles : PWA, parents).
+- [ ] 2.9 `bun run typecheck` (tout `js/` en strict : `voice-clips.js`, `voiceOfflineState`, `setVoiceClips` typés selon la spec) puis `bun run check` verts ; PR 2 (zones sensibles : PWA, parents).
 
 ### Phase 3 : la belle voix (PR 3, livrée par `bun run release track "une voix plus naturelle"`)
 
