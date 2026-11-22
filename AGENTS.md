@@ -19,7 +19,7 @@ Jeu éducatif en français pour une enfant de 6 ans (mathématiques, lecture, lo
 - `js/slices.cjs` est le manifeste (ordre des slices, CSS). Où ajouter quoi : [conductor/workflow.md](conductor/workflow.md#où-ajouter-quoi-feature-slices-v51-modules-es-v54).
 - Ajouter un mini-jeu : [checklist-mini-jeu](conductor/checklist-mini-jeu.md). Une île : [checklist-ile](conductor/checklist-ile.md). Niveaux : [conductor/niveaux.md](conductor/niveaux.md).
 - Sauvegarde versionnée : `SAVE_VERSION` et `migrate()` dans `js/entities/game-state/state.js`.
-- Décisions : `docs/adr/` (lire les ADR avant de changer un outil ou un pattern). Outillage et mesures : `docs/factory/`.
+- Décisions : `docs/adr/` (lire les ADR avant de changer un outil ou un pattern). Outillage et mesures : `docs/factory/` (dont `LEARNINGS.md` : chaque correction d'Amrou y devient un check).
 
 ## Comment on travaille
 - **Conductor** est la seule convention de spec et de plan : `conductor/tracks/<id>/spec.md` et `plan.md`, registre `conductor/tracks.md`. Cycle et livraison : [conductor/workflow.md](conductor/workflow.md).
@@ -42,6 +42,8 @@ Jeu éducatif en français pour une enfant de 6 ans (mathématiques, lecture, lo
 
 ## Interdits
 - Merger sans ordre explicite d'Amrou, `push --force`, activer l'auto-merge.
+- Poser l'étiquette `human:approved` : seul un humain la pose, jamais l'agent, même sur délégation.
+- Annuler une expérience (`git checkout`, `reset`) sans avoir commité son travail avant.
 - Modifier à la main `sw.js` et `index.html` (générés par `bun run sync`).
 - Assouplir la garde d'architecture (`test/slices.test.js`, `test/tools/boundaries.js`, `js/slices.cjs`) pour faire passer du code.
 - Désactiver, affaiblir ou supprimer un test existant pour faire passer `check`.
