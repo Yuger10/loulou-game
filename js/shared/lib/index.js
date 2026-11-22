@@ -3,3 +3,4 @@
 export { pickRandom, shuffle } from './random.js';
 export { emit, on } from './events.js';
 export { APP_VERSION } from './version.js';
+export { cleanName } from './text.js';

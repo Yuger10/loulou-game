@@ -1,4 +1,5 @@
 /* ---------- Joueurs : profils et leur stockage ---------- */
+import { cleanName } from '../../shared/lib/index.js';
 import { playSound, showToast, speak } from '../../shared/ui/index.js';
 import { avatarText, defaultCompanionFor } from '../companion/index.js';
 import { freshState, load, replaceState, save, setSaveSlot, state } from '../game-state/index.js';
@@ -37,6 +38,7 @@ function loadProfiles() {
   } catch {}
   if (!profiles || !Array.isArray(profiles.list)) profiles = { list: [], current: null };
   profiles.list.forEach((p) => {
+    p.name = cleanName(p.name); // porte d'entrée : profils enregistrés ou importés
     p.avatar = fixAvatar(p.avatar);
   });
 
@@ -106,7 +108,7 @@ function addProfile(name, avatar, age, gender, companion) {
   // la pause du nouveau joueur : le réglage familial (la dernière durée choisie par un adulte)
   profiles.list.push({
     id,
-    name: name || '',
+    name: cleanName(name),
     avatar: avatar || '👧',
     age: age || null,
     gender: gender || '',

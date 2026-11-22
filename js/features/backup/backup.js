@@ -22,7 +22,7 @@ import {
   saveProfiles,
 } from '../../entities/player/index.js';
 import { setCurrentWorld } from '../../entities/world/index.js';
-import { on } from '../../shared/lib/index.js';
+import { cleanName, on } from '../../shared/lib/index.js';
 import { closeModal, openModal, playSound, showToast } from '../../shared/ui/index.js';
 import { renderMap } from '../map/index.js';
 import { stopParty } from '../party/index.js';
@@ -94,7 +94,7 @@ function parseBackupObject(obj) {
     try {
       missions = JSON.parse(obj.data[profileSaveKey(p.id)] || '{}').missions || 0;
     } catch {}
-    return { name: p.name || 'Sans nom', avatar: p.avatar, missions };
+    return { name: cleanName(p.name) || 'Sans nom', avatar: p.avatar, missions };
   });
   if (!players.length && !obj.data[LEGACY_SAVE_KEY])
     return { ok: false, error: 'Cette sauvegarde ne contient aucun joueur.' };

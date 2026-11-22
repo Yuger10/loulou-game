@@ -20,7 +20,7 @@ const SLICES = [
   {
     id: 'shared-lib',
     layer: 'shared',
-    files: ['js/shared/lib/random.js', 'js/shared/lib/events.js', 'js/shared/lib/version.js'],
+    files: ['js/shared/lib/random.js', 'js/shared/lib/events.js', 'js/shared/lib/version.js', 'js/shared/lib/text.js'],
     css: [],
   },
   {
