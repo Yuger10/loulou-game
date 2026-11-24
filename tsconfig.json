@@ -2,17 +2,16 @@
   // ADR 0003 : TypeScript 7 vérifie le JavaScript du jeu (checkJs), sans build.
   // Mode strict sur tout le jeu (v66.11), atteint couche par couche
   // (track conductor/tracks/typescript-checkjs_20261122).
+  "extends": "./.cothon/presets/typescript/strict.json",
   "compilerOptions": {
     "noEmit": true,
     "allowJs": true,
     "checkJs": true,
-    "strict": true,
     "target": "es2022",
     "module": "esnext",
     "moduleResolution": "bundler",
     "lib": ["es2022", "dom", "dom.iterable"],
-    "types": [],
-    "skipLibCheck": true
+    "types": []
   },
   "include": ["js/**/*.js", "types/**/*.d.ts"]
 }

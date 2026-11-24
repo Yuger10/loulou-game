@@ -2,8 +2,9 @@
   // Lint du projet (factory, phase 1 ; stack de référence cothon). Décisions : docs/factory/SPEED.md.
   // Les règles "off" ci-dessous sont provisoires : la track conductor/tracks/lint-regles-completes_20261121 les réactive en corrigeant le code.
   "$schema": "./node_modules/oxlint/configuration_schema.json",
+  // Règles communes : presets de cothon (ADR 0011), posés par scripts/presets.sh ; ce fichier ne garde que les écarts.
+  "extends": ["./.cothon/presets/oxlint/base.json"],
   "plugins": ["eslint", "unicorn", "oxc", "typescript", "import"],
-  "categories": { "correctness": "error", "suspicious": "error" },
   "env": { "browser": true, "node": true, "es2022": true },
   "rules": {
     // un paramètre imposé par une signature mais inutile se préfixe par _
@@ -27,8 +28,8 @@
       { "object": "localStorage", "property": "setItem", "message": "Utiliser storageWrite() de js/shared/lib : elle signale un enregistrement raté (message, espace parents)." },
       { "object": "localStorage", "property": "removeItem", "message": "Utiliser storageRemove() de js/shared/lib : elle signale un échec." }
     ],
-    // anti-pattern 3 : un bloc vide dit pourquoi, dans un commentaire (catch { /* raison */ })
-    "no-empty": "error",
+    // anti-pattern 3 : un bloc vide dit pourquoi, dans un commentaire (catch { /* raison */ }) :
+    // `no-empty` vient du preset oxlint/base de cothon
     // track lint-regles-completes : règles ajoutées pour ce projet (coût mesuré : < 1 ms)
     // `x == null` (null ou undefined) reste permis, c'est l'idiome du projet
     "eqeqeq": ["error", "always", { "null": "ignore" }],

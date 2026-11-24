@@ -44,7 +44,9 @@ check() {
   fi
 
   # 4. Au moins un ADR (MADR) dans docs/adr/.
-  compgen -G 'docs/adr/[0-9][0-9][0-9][0-9]-*.md' >/dev/null || fail "aucun ADR dans docs/adr/ (format NNNN-titre.md)"
+  # NNNN-titre.md (MADR) ou ADR-NNN-titre.md (convention déjà en place, vue sur moly-safety).
+  compgen -G 'docs/adr/[0-9][0-9][0-9][0-9]-*.md' >/dev/null || compgen -G 'docs/adr/ADR-[0-9][0-9][0-9]-*.md' >/dev/null \
+    || fail "aucun ADR dans docs/adr/ (format NNNN-titre.md ou ADR-NNN-titre.md)"
 
   # 5. Les liens Markdown internes existent (liens externes : lychee dans un job CI planifié).
   local md dir target path
@@ -54,7 +56,15 @@ check() {
       path=${target%%#*}
       [[ -z "$path" || "$path" == *"<"* || "$path" == *" "* ]] && continue
       [[ -e "$dir/$path" ]] || fail "lien cassé dans $md : $target"
-    done < <(grep -oE '\]\([^)]+\)' "$md" | sed -E 's/^\]\((.*)\)$/\1/' | grep -vE '^(https?:|mailto:|#)')
+    # Les liens dans un bloc de code délimité (``` ou ~~~) sont des exemples, pas des liens (vu sur moly-safety).
+    done < <(awk '
+      /^[[:space:]]*(```|~~~)/ {
+        match($0, /(`{3,}|~{3,})/); fence = substr($0, RSTART, RLENGTH)
+        if (open == "") { open = fence; next }
+        if (substr(fence, 1, 1) == substr(open, 1, 1) && length(fence) >= length(open) && $0 ~ /^[[:space:]]*(`+|~+)[[:space:]]*$/) { open = ""; next }
+      }
+      open == "" { print }
+    ' "$md" | grep -oE '\]\([^)]+\)' | sed -E 's/^\]\((.*)\)$/\1/' | grep -vE '^(https?:|mailto:|#)')
   done < <(git ls-files -z --cached --others --exclude-standard '*.md')
 
   if (( errors > 0 )); then printf 'docs: %d problème(s)\n' "$errors" >&2; exit 1; fi
@@ -78,6 +88,14 @@ selftest() {
   bash "$self" >/dev/null 2>&1; (( $? == 1 )) || { echo "selftest : lien cassé (fichier accentué) non vu"; ok=1; }
   printf '# guide\n' > docs/guide.md && printf -- '- `make deploy`\n' >> AGENTS.md
   bash "$self" >/dev/null 2>&1; (( $? == 1 )) || { echo "selftest : cible make absente non vue"; ok=1; }
+  # ADR nommés ADR-NNN-titre.md (retour de moly-safety) ; lien d'exemple dans un bloc de code ignoré.
+  printf '# p\n\n## Commandes\n- `make check`\n' > AGENTS.md
+  git mv -q 'docs/adr/0001-décision.md' docs/adr/ADR-001-décision.md 2>/dev/null || mv 'docs/adr/0001-décision.md' docs/adr/ADR-001-décision.md
+  bash "$self" >/dev/null 2>&1; (( $? == 0 )) || { echo "selftest : ADR au format ADR-NNN-titre.md refusé"; ok=1; }
+  printf '# exemple\n\n```md\nvoir [la spec](./spec.md)\n```\n' > docs/exemple.md
+  bash "$self" >/dev/null 2>&1; (( $? == 0 )) || { echo "selftest : lien dans un bloc de code pris pour un vrai lien"; ok=1; }
+  printf 'puis [absent](./absent.md)\n' >> docs/exemple.md
+  bash "$self" >/dev/null 2>&1; (( $? == 1 )) || { echo "selftest : lien cassé après un bloc de code non vu"; ok=1; }
   cd / && rm -rf "$t"
   (( ok == 0 )) && echo "selftest : ok"
   exit "$ok"

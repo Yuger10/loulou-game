@@ -1,7 +1,19 @@
 {
   "$schema": "./node_modules/oxfmt/configuration_schema.json",
-  "printWidth": 120,
   "singleQuote": true,
-  "ignorePatterns": ["sw.js", "index.html"],
-  "overrides": [{ "files": ["*.css"], "options": { "singleQuote": false } }]
+  "printWidth": 120,
+  "ignorePatterns": [
+    "sw.js",
+    "index.html"
+  ],
+  "overrides": [
+    {
+      "files": [
+        "*.css"
+      ],
+      "options": {
+        "singleQuote": false
+      }
+    }
+  ]
 }

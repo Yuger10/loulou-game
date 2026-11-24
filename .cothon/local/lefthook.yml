@@ -1,0 +1,8 @@
+# Écarts de loulou-game au preset lefthook/base de cothon, appliqués après lui (ADR 0011).
+# Les tests restent dans `bun run check`, trop longs pour chaque commit.
+pre-commit:
+  commands:
+    format:
+      glob: '*.{js,cjs,mjs,css}'
+    lint:
+      glob: '*.{js,cjs,mjs}'

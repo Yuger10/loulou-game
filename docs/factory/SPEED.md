@@ -49,6 +49,21 @@ Premier passage d'oxfmt (réglages par défaut) : **232 fichiers** reformatés. 
 
 Rien n'est perdu : aucun outil existant n'est remplacé, sauf npm, et bun lit le `package-lock.json` actuel.
 
+Adaptateur déclaré par rôle (cothon 0.10.0, principe 7 du playbook) : paquets **bun** (`packageManager`, gardé : budgets tenus), lint **oxlint**, format **oxfmt**, types **TypeScript 7** (`tsc`, `checkJs`), tests **runner Node + jsdom** du projet, hooks **lefthook**.
+
+## Presets cothon (24 novembre 2026, cothon 0.11.0)
+
+Les règles communes viennent des presets de cothon (ADR 0011 de cothon), copiés dans `.cothon/presets/` et vérifiés par `make fleet`. Ce dépôt n'écrit plus que ses écarts.
+
+| Preset | Étendu par | Écarts du projet (où, pourquoi) |
+| --- | --- | --- |
+| `oxlint/base` | `.oxlintrc.json` | Plugins `unicorn`, `oxc`, `typescript`, `import` ; règles des anti-patterns de l'audit ; règles coupées pour la cible Safari 16 (voir « Règles de lint ») ; `ignorePatterns` (oxlint ne les hérite pas d'un fichier étendu) |
+| `typescript/strict` | `tsconfig.json` | `checkJs` sans build, cible `es2022`, `types: []` (ADR 0003) |
+| `oxfmt/base` | `.oxfmtrc.json`, généré | `.cothon/local/oxfmt.json` : `printWidth` 120, CSS en guillemets doubles (tests qui lisent le CSS), `sw.js` et `index.html` ignorés |
+| `lefthook/base` | `lefthook.yml`, généré | `.cothon/local/lefthook.yml` : globs limités au JavaScript et au CSS du jeu |
+
+**Preuve d'identité** (avant et après, sur la branche de la PR #89) : diagnostics d'oxlint sur `js` et `test` (avec des fichiers sonde qui violent les règles du projet), `tsc --showConfig`, `lefthook dump` et config d'oxfmt : **identiques**. `bun run check` : vert (32 suites).
+
 ## Ordre des migrations (une PR chacune)
 
 1. **bun** : `packageManager`, `bun.lock`, scripts en `bun run`, `check` créé.
