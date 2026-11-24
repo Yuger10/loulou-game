@@ -1,0 +1,12 @@
+# Presets cothon déclarés par ce projet (ADR 0011 de cothon). Les lignes « preset » s'écrivent à la main ;
+# « cothon » et « sha256 » sont écrites par scripts/presets.sh de cothon (apply), qui pose aussi les fichiers.
+# Pas de oxlint/typescript (jeu en JavaScript) ni de pnpm/securite (projet sous bun, délai dans bunfig.toml).
+preset oxlint/base
+preset typescript/strict
+preset oxfmt/base
+preset lefthook/base
+cothon 0.11.0
+sha256 ffa2e64e800842a8dff2f56290fa566c41836045f9e7c19b4601e43527df0897 oxlint/base
+sha256 f89bee8f88023654910b486d5cf71c52e55e95345ca5dd12922df6ac476e0785 typescript/strict
+sha256 90525fb22e6fd10def201d51063abd9defdda15b86bb725e8dda76796fa3a75a oxfmt/base
+sha256 a5de76c487848eeaf800b4fff2b39e8ccf971e5b5942c4c5e6ceb42e4f800e29 lefthook/base
