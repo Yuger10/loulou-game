@@ -1,0 +1,7 @@
+{
+  "plugins": ["eslint"],
+  "categories": { "correctness": "error", "suspicious": "error" },
+  "rules": {
+    "no-empty": "error"
+  }
+}

@@ -1,13 +1,13 @@
-# Hooks git (factory, phase 1 ; skill cothon:wiring-fast-feedback).
-# Installés par `bun install` (script prepare). Rapides par construction :
-# formatage et lint des seuls fichiers indexés (quelques dizaines de ms).
-# Les tests restent dans `bun run check`, trop longs pour chaque commit.
+# Généré par cothon (scripts/presets.sh, ADR 0011) depuis le preset lefthook/base. Ne pas modifier :
+# les écarts du projet vont dans .cothon/local/lefthook.yml, appliqué après ce fichier.
+extends:
+  - .cothon/local/lefthook.yml
 pre-commit:
   commands:
     format:
-      glob: "*.{js,cjs,mjs,css}"
+      glob: '*.{js,jsx,mjs,cjs,ts,tsx,json,css,md}'
       run: ./node_modules/.bin/oxfmt --no-error-on-unmatched-pattern {staged_files}
       stage_fixed: true
     lint:
-      glob: "*.{js,cjs,mjs}"
+      glob: '*.{js,jsx,mjs,cjs,ts,tsx}'
       run: ./node_modules/.bin/oxlint --deny-warnings {staged_files}

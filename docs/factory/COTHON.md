@@ -1,11 +1,12 @@
 # cothon dans ce projet
 
-Version : 0.9.3
-Appliqué le : 2026-11-22
+Version : 0.11.0
+Appliqué le : 2026-11-24
 Profil : petit projet, script, jeu HTML (playbook 9) ; étapes 3 à 5 hors profil (ADR 0006)
 Étapes installées : 0, 1, 2
 Étapes écartées : 3, 4, 5
 Fichiers copiés de cothon : `test/tools/check-docs.sh` (de `setting-up-docs`, version 0.8.1), `.claude/hooks/lint-edited-file.sh` (de `wiring-fast-feedback`, complété par `tsc`), gabarits `conductor/templates/spec.md` et `plan.md` (de `setting-up-docs`, adoptés dans Conductor)
+Presets cothon (ADR 0011 de cothon) : déclarés dans `.cothon/presets.lock` (oxlint `base`, TypeScript `strict`, oxfmt `base`, lefthook `base`), posés par `scripts/presets.sh` de cothon ; écarts du projet dans `.oxlintrc.json`, `tsconfig.json` et `.cothon/local/` (détail : `SPEED.md`, section « Presets cothon »).
 
 `Version` = la dernière version de cothon dont toutes les actions du `CHANGELOG.md` sont faites ou en exception. Retour d'expérience envoyé à la session qui maintient cothon le 2026-11-22.
 
@@ -47,6 +48,14 @@ Faites :
 - `0.8.1-1` : `test/tools/check-docs.sh` remplacé par la version de cothon 0.8.1 (ADR `ADR-NNN-titre.md` acceptés, liens des blocs de code ignorés) ; `--selftest` et `bun run docs` passent. Aucune exception à retirer : ce projet n'en avait pas sur ces deux points.
 - `0.8.3-1` : champ `epic` dans le `metadata.json` des 14 tracks ouverts : « Saison 3 » (ouverture et 5 îles), « Voix » (voix-partout, voix-naturelle), « Mieux apprendre » (aller-plus-loin, erreurs-expliquees, revision-espacee, bilan-parents), « Squishies » (squishy-boites), « Factory » (typescript-checkjs).
 - `0.8.0`, `0.8.2`, `0.9.0` à `0.9.3` : rien à faire dans le projet (tableau de bord, côté cothon).
+
+## Actions 0.10.0 et 0.11.0
+
+- `0.10.0-1` : déjà en place, `packageManager` épinglé (`bun@1.4.5`) et `AGENTS.md` interdit npm, yarn et pnpm. Le projet garde bun : budgets tenus (`SPEED.md`).
+- `0.10.0-2` : sans objet, le projet n'est pas sous pnpm.
+- `0.10.0-3` : `SPEED.md` nomme l'adaptateur déclaré par rôle.
+- `0.11.0-1` : `.gitignore` n'ignore plus que `.cothon/handoff.md`.
+- `0.11.0-2` : presets déclarés et posés, configs qui les étendent ; preuve d'identité dans `SPEED.md`.
 
 ## Exceptions
 
