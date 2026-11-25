@@ -72,9 +72,36 @@ jobs:
           echo "Zone protégée (test/holdout/, .github/) modifiée sans l'étiquette human:approved."
           exit 1
 
+  # cothon 0.12.1 (ADR 0012) : seul ce que la PR ajoute peut échouer (lint, complexité, environnement).
+  # Scripts posés par `preset bin/*` (.cothon/presets.lock). Le rapport qualité va dans le résumé du
+  # job et ne bloque jamais (décisions : docs/factory/SPEED.md, « Contrôles qualité »).
+  new-violations:
+    name: violations ajoutées
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+        with:
+          bun-version-file: package.json
+      - run: bun install --frozen-lockfile
+      - name: lint, ajouts seulement
+        run: bash .cothon/bin/new-violations.sh --base "origin/$GITHUB_BASE_REF" -- ./node_modules/.bin/oxlint -f unix js test
+      - name: complexité et taille, ajouts seulement
+        run: bash .cothon/bin/new-violations.sh --base "origin/$GITHUB_BASE_REF" -- bash "$GITHUB_WORKSPACE/.cothon/bin/quality-check.sh" complexite --project .
+      - name: environnement, ajouts seulement
+        run: bash .cothon/bin/new-violations.sh --base "origin/$GITHUB_BASE_REF" -- bash "$GITHUB_WORKSPACE/.cothon/bin/quality-check.sh" env --project .
+      - name: rapport qualité (résumé du job, jamais bloquant)
+        if: always()
+        continue-on-error: true
+        run: bash .cothon/bin/quality-check.sh rapport --project . --base "origin/$GITHUB_BASE_REF" >> "$GITHUB_STEP_SUMMARY"
+
   ci-ok:
     name: ci-ok
-    needs: [lint, test, guard]
+    needs: [lint, test, guard, new-violations]
     if: always()
     runs-on: ubuntu-latest
     timeout-minutes: 1
