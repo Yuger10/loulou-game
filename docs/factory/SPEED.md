@@ -64,6 +64,21 @@ Les règles communes viennent des presets de cothon (ADR 0011 de cothon), copié
 
 **Preuve d'identité** (avant et après, sur la branche de la PR #89) : diagnostics d'oxlint sur `js` et `test` (avec des fichiers sonde qui violent les règles du projet), `tsc --showConfig`, `lefthook dump` et config d'oxfmt : **identiques**. `bun run check` : vert (32 suites).
 
+## Contrôles qualité (25 novembre 2026, cothon 0.12.1)
+
+Rapport de `bash .cothon/bin/quality-check.sh rapport --project .` sur `origin/main` `3608542` (skill `cothon:checking-code-quality`). Chaque famille est une **barrière** (la CI, job `violations ajoutées`, ne bloque que ce qu'une PR ajoute) ou un **rapport** (résumé du job, jamais bloquant).
+
+| Famille | Outil | Constats | Sur quoi | Décision | Raison |
+|---|---|---|---|---|---|
+| Lint | oxlint (`js test`) | 0 | dépôt | barrière | bloque aussi un avertissement ajouté |
+| Complexité et taille | oxlint, preset `oxlint/qualite` | 169 | 219 fichiers | barrière | 67 fonctions de plus de 50 lignes, 47 fichiers de plus de 300 lignes, 27 fonctions à plus de 3 paramètres, 23 trop complexes ; l'existant reste (le cliquet `max-lines` 800 du lint principal aussi), rien de neuf n'entre |
+| Environnement | bash | 0 | 219 fichiers | barrière | `.env.example` créé : le jeu n'a pas de variable, les réglages du lanceur de tests (`TEST_SEED`, `TEST_JOBS`, `TEST_SHARD`, `TEST_DIR`) y sont documentés en commentaire ; `GITHUB_OUTPUT` et `PR_LABELS` viennent de la CI (`env_ignore` dans `.cothon/quality.conf`) |
+| Code mort | knip, `knip.json` | 39 | 219 fichiers | rapport | sans points d'entrée, knip voyait 208 fichiers « inutilisés » (le jeu est chargé par `index.html`) ; `knip.json` déclare `js/app/main.js`, `js/app/init.js`, `sw.js` et les tests. Restent 39 exports à trier : les tests lisent le jeu par nom |
+| Duplication | jscpd | 270 | 219 fichiers | rapport | à trier d'abord (tests compris) |
+| Migrations SQL | squawk | 0 | 0 fichier | sans objet | pas de base de données |
+
+Preuve que les nouveaux presets (`oxlint/qualite`, `bin/new-violations`, `bin/quality-check`, `bin/prove-identity`) ne changent rien à l'outillage : `prove-identity.sh` avant et après, `compare` sortie 0 (lint avec 9 diagnostics de sondes, `tsconfig.json`, lefthook, oxfmt). Sondes : `.cothon/probes/` (ignorées par oxlint et oxfmt au quotidien). Essai sur la flotte : `.cothon/trial.check` (`node test/tools/check.js`).
+
 ## Ordre des migrations (une PR chacune)
 
 1. **bun** : `packageManager`, `bun.lock`, scripts en `bun run`, `check` créé.

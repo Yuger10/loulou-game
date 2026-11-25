@@ -1,0 +1,2 @@
+# Vérification lancée par make fleet-trial de cothon : le check complet du jeu (lint, types, docs, autotests, tests).
+node test/tools/check.js

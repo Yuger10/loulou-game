@@ -52,5 +52,5 @@
     // les tests affichent leurs résultats, et la suite de fumée est longue par nature
     { "files": ["test/**"], "rules": { "no-console": "off", "max-lines": "off" } }
   ],
-  "ignorePatterns": ["node_modules/**"]
+  "ignorePatterns": ["node_modules/**", ".cothon/probes/**"]
 }

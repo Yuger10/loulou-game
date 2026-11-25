@@ -1,0 +1,21 @@
+{
+  "plugins": ["eslint", "import"],
+  "categories": {
+    "correctness": "off",
+    "suspicious": "off",
+    "pedantic": "off",
+    "perf": "off",
+    "style": "off",
+    "restriction": "off",
+    "nursery": "off"
+  },
+  "rules": {
+    "complexity": ["error", 20],
+    "max-depth": ["error", 4],
+    "max-lines": ["error", 300],
+    "max-lines-per-function": ["error", 50],
+    "max-params": ["error", 3],
+    "max-nested-callbacks": ["error", 10],
+    "import/no-cycle": "error"
+  }
+}

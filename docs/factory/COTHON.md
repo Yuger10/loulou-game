@@ -1,12 +1,12 @@
 # cothon dans ce projet
 
-Version : 0.11.0
-Appliqué le : 2026-11-24
+Version : 0.12.1
+Appliqué le : 2026-11-25
 Profil : petit projet, script, jeu HTML (playbook 9) ; étapes 3 à 5 hors profil (ADR 0006)
 Étapes installées : 0, 1, 2
 Étapes écartées : 3, 4, 5
 Fichiers copiés de cothon : `test/tools/check-docs.sh` (de `setting-up-docs`, version 0.8.1), `.claude/hooks/lint-edited-file.sh` (de `wiring-fast-feedback`, complété par `tsc`), gabarits `conductor/templates/spec.md` et `plan.md` (de `setting-up-docs`, adoptés dans Conductor)
-Presets cothon (ADR 0011 de cothon) : déclarés dans `.cothon/presets.lock` (oxlint `base`, TypeScript `strict`, oxfmt `base`, lefthook `base`), posés par `scripts/presets.sh` de cothon ; écarts du projet dans `.oxlintrc.json`, `tsconfig.json` et `.cothon/local/` (détail : `SPEED.md`, section « Presets cothon »).
+Presets cothon (ADR 0011 de cothon) : déclarés dans `.cothon/presets.lock` (oxlint `base`, TypeScript `strict`, oxfmt `base`, lefthook `base`), posés par `scripts/presets.sh` de cothon, plus `oxlint/qualite` (passe séparée) et les scripts `bin/new-violations`, `bin/quality-check`, `bin/prove-identity` ; écarts du projet dans `.oxlintrc.json`, `tsconfig.json` et `.cothon/local/` (détail : `SPEED.md`, section « Presets cothon »).
 
 `Version` = la dernière version de cothon dont toutes les actions du `CHANGELOG.md` sont faites ou en exception. Retour d'expérience envoyé à la session qui maintient cothon le 2026-11-22.
 
@@ -56,6 +56,14 @@ Faites :
 - `0.10.0-3` : `SPEED.md` nomme l'adaptateur déclaré par rôle.
 - `0.11.0-1` : `.gitignore` n'ignore plus que `.cothon/handoff.md`.
 - `0.11.0-2` : presets déclarés et posés, configs qui les étendent ; preuve d'identité dans `SPEED.md`.
+
+## Actions 0.12.0 et 0.12.1
+
+- `0.12.0-1` : `preset bin/new-violations` ; le job `violations ajoutées` de la CI est dans une PR à part (zone protégée `.github/`, `LEARNINGS.md`), qui attend l'étiquette `human:approved`.
+- `0.12.0-2` : contrôles qualité décidés famille par famille dans `SPEED.md` (« Contrôles qualité ») ; `preset bin/quality-check`, `preset oxlint/qualite`, `knip.json`, `.cothon/quality.conf`.
+- `0.12.0-3` : sondes dans `.cothon/probes/`, `.cothon/trial.check` ; pas de `.cothon/trial.links` (rien de généré).
+- `0.12.1-1` : sans objet, `bin/quality-check` posé directement en 0.12.1.
+- `0.12.1-2` : preset `lefthook/base` reposé (`--no-error-on-unmatched-pattern` sur le lint).
 
 ## Exceptions
 
