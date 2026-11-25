@@ -1,0 +1,6 @@
+{
+  "$schema": "https://unpkg.com/knip@6/schema.json",
+  "entry": ["js/app/main.js", "js/app/init.js", "sw.js", "test/**/*.test.js", "test/tools/*.js"],
+  "project": ["js/**/*.{js,cjs}", "test/**/*.js", "sw.js"],
+  "ignore": [".cothon/**"]
+}

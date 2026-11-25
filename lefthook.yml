@@ -10,4 +10,4 @@ pre-commit:
       stage_fixed: true
     lint:
       glob: '*.{js,jsx,mjs,cjs,ts,tsx}'
-      run: ./node_modules/.bin/oxlint --deny-warnings {staged_files}
+      run: ./node_modules/.bin/oxlint --deny-warnings --no-error-on-unmatched-pattern {staged_files}

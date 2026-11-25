@@ -4,7 +4,8 @@
   "printWidth": 120,
   "ignorePatterns": [
     "sw.js",
-    "index.html"
+    "index.html",
+    ".cothon/probes"
   ],
   "overrides": [
     {
