@@ -177,6 +177,20 @@ function startClip(a, url, slow) {
   return Promise.resolve(a.play());
 }
 
+// Le clip se fait entendre (`playing`) : le lecteur est déverrouillé, le texte lu est marqué.
+/**
+ * @param {ClipTurn} turn
+ * @param {SpeechItem} item
+ */
+function clipStarted(turn, item) {
+  if (!turn.live) return;
+  clearTimeout(turn.timer);
+  clipsUnlocked = true;
+  if (item.el) item.el.classList.add('voix-lu');
+  // tout le bus audio baisse pendant que la voix parle (js/shared/ui/sound.js)
+  setVoiceDuck(true);
+}
+
 // Lecteur d'une phrase par son clip. Même contrat que le lecteur Web Speech
 // (`hooks.speech`) : `hooks.done` une seule fois, et la fonction rendue arrête la lecture.
 /**
@@ -209,20 +223,12 @@ function playClip(item, clip, hooks) {
     clipsOff = true;
     fallback();
   };
-  const onPlaying = () => {
-    if (!turn.live) return;
-    clearTimeout(turn.timer);
-    clipsUnlocked = true;
-    if (item.el) item.el.classList.add('voix-lu');
-    // tout le bus audio baisse pendant que la voix parle (js/shared/ui/sound.js)
-    setVoiceDuck(true);
-  };
   turn.timer = setTimeout(fallback, CLIP_TIMEOUT);
   fetchClip(clip.hash)
     .then((blob) => {
       if (!turn.live) return; // arrivé trop tard : Web Speech a déjà pris la place
       turn.url = URL.createObjectURL(blob);
-      setHandler(a, 'playing', onPlaying);
+      setHandler(a, 'playing', () => clipStarted(turn, item));
       setHandler(a, 'ended', end);
       setHandler(a, 'error', end);
       turn.started = true;

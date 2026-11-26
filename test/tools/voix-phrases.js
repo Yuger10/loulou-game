@@ -1,6 +1,6 @@
 /* ---------- Les phrases fixes du jeu et leurs clips ----------
    Module partagé par `bun run voix` (test/tools/voix.js) et par la garde
-   (test/voix-clips.test.js), track voix-naturelle :
+   (test/tools/voix-garde.js, test/voix-clips.test.js), track voix-naturelle :
    - extractPhrases(root) : les phrases dites sans partie variable, trouvées
      dans le code par les règles R1 à R5 de la spec (analyse statique, acorn) ;
    - clipHash(config, key) : l'empreinte d'un clip (D9), qui nomme son fichier ;
@@ -55,12 +55,61 @@ function fixedString(node) {
   return null;
 }
 
+// R4 : data-say="…" écrit en dur dans un morceau de chaîne (un morceau de gabarit s'arrête à ${)
+function attrPhrases(piece, node) {
+  return [...String(piece).matchAll(/data-say="([^"]*)"/g)].map((m) => ({
+    text: m[1].replace(/&quot;/g, '"'),
+    line: node.loc.start.line,
+  }));
+}
+
+// R1 à R3 : les nœuds qu'un appel ou une propriété fait dire
+function saidNodes(node) {
+  const said = [];
+  if (node.type === 'CallExpression' && node.callee.type === 'Identifier') {
+    const name = node.callee.name,
+      args = node.arguments;
+    // R1 : ce que dit speak ou speechBubble
+    if (name === 'speak' || name === 'speechBubble') said.push(args[0]);
+    // R2 : la consigne dite d'un mini-jeu (le 3e argument s'il existe, sinon le 2e)
+    if (name === 'gameHeader') said.push(args.length >= 3 ? args[2] : args[1]);
+  }
+  // R3 : toute propriété nommée `say`
+  if (node.type === 'Property' && !node.computed) {
+    const key = node.key.type === 'Identifier' ? node.key.name : node.key.value;
+    if (key === 'say') said.push(node.value);
+  }
+  return said;
+}
+
+// L'arbre d'un fichier et ses déclarations marquées `// voix: phrases` (R5)
+function parseSource(src) {
+  const markers = new Set(); // lignes des commentaires `// voix: phrases`
+  const ast = acorn.parse(src, {
+    ecmaVersion: 'latest',
+    sourceType: 'module',
+    locations: true,
+    // where : début, fin, puis la position { line, column } du début du commentaire
+    onComment: (block, text, ...where) => {
+      if (!block && text.trim() === MARKER) markers.add(where[2].line);
+    },
+  });
+  // les déclarations de haut niveau portent parfois un `export` : la ligne du marqueur précède l'ensemble
+  const exported = new Set();
+  walk.full(ast, (node) => {
+    if (node.type === 'ExportNamedDeclaration' && node.declaration && markers.has(node.loc.start.line - 1))
+      exported.add(node.declaration);
+  });
+  const isMarked = (node) => exported.has(node) || markers.has(node.loc.start.line - 1);
+  return { ast, isMarked };
+}
+
 // les phrases candidates d'un fichier : [{ text, line }], avant toSpoken
 function candidates(src) {
   const found = [];
-  const add = (node, at) => {
+  const add = (node) => {
     const text = fixedString(node);
-    if (text != null) found.push({ text, line: (at || node).loc.start.line });
+    if (text != null) found.push({ text, line: node.loc.start.line });
   };
   // R5 : chaque chaîne d'un tableau ou d'un objet, récursivement
   const addAll = (node) => {
@@ -69,45 +118,12 @@ function candidates(src) {
     else if (node.type === 'ObjectExpression') node.properties.forEach((p) => p.type === 'Property' && addAll(p.value));
     else add(node);
   };
-  // R4 : data-say="…" écrit en dur dans un morceau de chaîne (un morceau de gabarit s'arrête à ${)
-  const addAttrs = (piece, node) => {
-    for (const m of String(piece).matchAll(/data-say="([^"]*)"/g))
-      found.push({ text: m[1].replace(/&quot;/g, '"'), line: node.loc.start.line });
-  };
-
-  const markers = new Set(); // lignes des commentaires `// voix: phrases`
-  const ast = acorn.parse(src, {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-    locations: true,
-    onComment: (block, text, _start, _end, loc) => {
-      if (!block && text.trim() === MARKER) markers.add(loc.line);
-    },
-  });
-  // les déclarations de haut niveau portent parfois un `export` : la ligne du marqueur précède l'ensemble
-  const marked = new Set();
+  const { ast, isMarked } = parseSource(src);
   walk.full(ast, (node) => {
-    if (node.type === 'ExportNamedDeclaration' && node.declaration && markers.has(node.loc.start.line - 1))
-      marked.add(node.declaration);
-  });
-  walk.full(ast, (node) => {
-    if (node.type === 'CallExpression' && node.callee.type === 'Identifier') {
-      const name = node.callee.name,
-        args = node.arguments;
-      // R1 : ce que dit speak ou speechBubble
-      if (name === 'speak' || name === 'speechBubble') add(args[0]);
-      // R2 : la consigne dite d'un mini-jeu (le 3e argument s'il existe, sinon le 2e)
-      if (name === 'gameHeader') add(args.length >= 3 ? args[2] : args[1]);
-    }
-    // R3 : toute propriété nommée `say`
-    if (node.type === 'Property' && !node.computed) {
-      const key = node.key.type === 'Identifier' ? node.key.name : node.key.value;
-      if (key === 'say') add(node.value);
-    }
-    if (node.type === 'Literal' && typeof node.value === 'string') addAttrs(node.value, node);
-    if (node.type === 'TemplateLiteral') node.quasis.forEach((q) => addAttrs(q.value.cooked, q));
-    if (node.type === 'VariableDeclaration' && (marked.has(node) || markers.has(node.loc.start.line - 1)))
-      node.declarations.forEach((d) => addAll(d.init));
+    saidNodes(node).forEach(add);
+    if (node.type === 'Literal' && typeof node.value === 'string') found.push(...attrPhrases(node.value, node));
+    if (node.type === 'TemplateLiteral') node.quasis.forEach((q) => found.push(...attrPhrases(q.value.cooked, q)));
+    if (node.type === 'VariableDeclaration' && isMarked(node)) node.declarations.forEach((d) => addAll(d.init));
   });
   return found;
 }
@@ -157,17 +173,20 @@ function configProblem(c) {
     return 'voice doit correspondre à ^fr-FR-[A-Za-z0-9:-]+$';
   if (typeof c.style !== 'string' || !/^[a-z-]*$/.test(c.style))
     return "style doit valoir '' ou correspondre à ^[a-z-]+$";
-  if (c.service === 'azure') {
-    if (typeof c.rate !== 'string' || !/^[+-]?\d{1,2}%$/.test(c.rate))
-      return 'rate (azure) doit correspondre à ^[+-]?\\d{1,2}%$';
-    if (c.format !== 'audio-24khz-48kbitrate-mono-mp3')
-      return 'format (azure) doit valoir audio-24khz-48kbitrate-mono-mp3';
-  } else {
-    if (typeof c.rate !== 'number' || !(c.rate >= 0.25 && c.rate <= 2))
-      return 'rate (google) doit être un nombre entre 0.25 et 2';
-    if (c.style !== '') return "style (google) doit valoir ''";
-    if (c.format !== 'MP3') return 'format (google) doit valoir MP3';
-  }
+  return c.service === 'azure' ? azureProblem(c) : googleProblem(c);
+}
+function azureProblem(c) {
+  if (typeof c.rate !== 'string' || !/^[+-]?\d{1,2}%$/.test(c.rate))
+    return 'rate (azure) doit correspondre à ^[+-]?\\d{1,2}%$';
+  if (c.format !== 'audio-24khz-48kbitrate-mono-mp3')
+    return 'format (azure) doit valoir audio-24khz-48kbitrate-mono-mp3';
+  return '';
+}
+function googleProblem(c) {
+  if (typeof c.rate !== 'number' || !(c.rate >= 0.25 && c.rate <= 2))
+    return 'rate (google) doit être un nombre entre 0.25 et 2';
+  if (c.style !== '') return "style (google) doit valoir ''";
+  if (c.format !== 'MP3') return 'format (google) doit valoir MP3';
   return '';
 }
 
@@ -188,6 +207,24 @@ function readConfig(root) {
 // La table générée, lue comme un texte : { service, unlock, clips, bad }.
 // Fichier absent ou vide, export manquant : '' ou {}. Export d'une autre forme
 // qu'un littéral : `bad` porte son nom.
+const TABLE_FIELDS = { VOICE_SERVICE: 'service', VOICE_UNLOCK: 'unlock', VOICE_CLIPS: 'clips' };
+const stringLiteral = (node) => (node && node.type === 'Literal' && typeof node.value === 'string' ? node.value : null);
+
+// les entrées de VOICE_CLIPS, ou null si ce n'est pas un objet de chaînes
+function clipEntries(init) {
+  if (!init || init.type !== 'ObjectExpression') return null;
+  const clips = {};
+  for (const p of init.properties) {
+    if (p.type !== 'Property' || p.computed) return null;
+    // oxfmt retire les guillemets d'une clé quand toutes s'écrivent sans
+    const key = p.key.type === 'Identifier' ? p.key.name : stringLiteral(p.key);
+    const value = stringLiteral(p.value);
+    if (key == null || value == null) return null;
+    clips[key] = value;
+  }
+  return clips;
+}
+
 function readClipsTable(text) {
   const table = { service: '', unlock: '', clips: {}, bad: '' };
   if (!text.trim()) return table;
@@ -198,29 +235,17 @@ function readClipsTable(text) {
     // le fichier ne s'analyse pas : aucun de ses exports n'est lisible
     return { ...table, bad: 'VOICE_CLIPS' };
   }
-  const str = (node) => (node && node.type === 'Literal' && typeof node.value === 'string' ? node.value : null);
-  for (const node of ast.body) {
-    if (node.type !== 'ExportNamedDeclaration' || !node.declaration || node.declaration.type !== 'VariableDeclaration')
-      continue;
-    for (const d of node.declaration.declarations) {
-      const name = d.id.name;
-      if (name === 'VOICE_SERVICE' || name === 'VOICE_UNLOCK') {
-        const v = str(d.init);
-        if (v == null) return { ...table, bad: name };
-        table[name === 'VOICE_SERVICE' ? 'service' : 'unlock'] = v;
-      }
-      if (name === 'VOICE_CLIPS') {
-        if (!d.init || d.init.type !== 'ObjectExpression') return { ...table, bad: name };
-        for (const p of d.init.properties) {
-          // oxfmt retire les guillemets d'une clé quand toutes s'écrivent sans
-          const key =
-            p.type !== 'Property' || p.computed ? null : p.key.type === 'Identifier' ? p.key.name : str(p.key);
-          const value = p.type === 'Property' ? str(p.value) : null;
-          if (key == null || value == null) return { ...table, bad: name };
-          table.clips[key] = value;
-        }
-      }
-    }
+  const exported = ast.body
+    .map((node) => node.type === 'ExportNamedDeclaration' && node.declaration)
+    .filter((decl) => decl && decl.type === 'VariableDeclaration')
+    .flatMap((decl) => decl.declarations);
+  for (const d of exported) {
+    const name = d.id.name;
+    const field = Object.prototype.hasOwnProperty.call(TABLE_FIELDS, name) ? TABLE_FIELDS[name] : null;
+    if (!field) continue;
+    const value = field === 'clips' ? clipEntries(d.init) : stringLiteral(d.init);
+    if (value == null) return { ...table, bad: name };
+    table[field] = value;
   }
   return table;
 }
@@ -231,86 +256,11 @@ function isMp3(buf) {
   return buf.length >= 2 && buf[0] === 0xff && [0xfb, 0xf3, 0xf2].includes(buf[1]);
 }
 
-/* La garde (test/voix-clips.test.js, lignes 10 à 13 de la spec) : la liste des
-   problèmes d'une racine, vide si tout va bien. Tant que voix/voix.json
-   n'existe pas, la table doit être vide et voix/ sans clip. Ensuite : chaque
-   phrase fixe a son clip à jour, aucun clip ni entrée en trop, le budget tenu. */
-const CLIP_NAME = /^[0-9a-f]{12}\.mp3$/;
-const UNLOCK_MAX = 8000; // caractères de VOICE_UNLOCK
-const RUN = 'lance bun run voix';
-async function auditClips(root) {
-  const problems = [];
-  const voixDir = path.join(root, 'voix');
-  const files = fs.existsSync(voixDir) ? fs.readdirSync(voixDir).sort() : [];
-  const tableFile = path.join(root, CLIPS_FILE);
-  const table = readClipsTable(fs.existsSync(tableFile) ? fs.readFileSync(tableFile, 'utf8') : '');
-  if (table.bad) return [`${CLIPS_FILE} illisible : ${table.bad} (${RUN})`];
-  const entries = Object.keys(table.clips).length;
-
-  // ligne 12 : rien d'autre dans voix/ que voix.json et des clips nommés par leur empreinte
-  for (const f of files)
-    if (f !== 'voix.json' && !CLIP_NAME.test(f))
-      problems.push(`voix/${f} : ni voix.json ni un clip nommé par son empreinte (^[0-9a-f]{12}\\.mp3$)`);
-  const mp3 = files.filter((f) => CLIP_NAME.test(f));
-  if (!!table.unlock !== entries > 0)
-    problems.push(`VOICE_UNLOCK et VOICE_CLIPS vont ensemble : l'un est vide et pas l'autre (${RUN})`);
-  if (table.unlock && !table.unlock.startsWith('data:audio/mpeg;base64,'))
-    problems.push('VOICE_UNLOCK ne commence pas par data:audio/mpeg;base64,');
-  if (table.unlock.length > UNLOCK_MAX)
-    problems.push(`VOICE_UNLOCK dépasse ${UNLOCK_MAX} caractères (${table.unlock.length})`);
-
-  const read = readConfig(root);
-  if (read.absent) {
-    // phases 1 et 2 : pas encore de voix choisie, le lecteur du jeu reste inerte
-    if (entries) problems.push("VOICE_CLIPS doit être vide tant que voix/voix.json n'existe pas");
-    if (table.service) problems.push("VOICE_SERVICE doit être vide tant que voix/voix.json n'existe pas");
-    if (mp3.length) problems.push(`voix/ contient ${mp3.length} clip(s) alors que voix/voix.json n'existe pas`);
-    return problems;
-  }
-  // ligne 13 : la forme exacte de voix/voix.json
-  if (read.problem) return [...problems, 'voix/voix.json invalide : ' + read.problem];
-  const config = read.config;
-  if (table.service !== SERVICE_NAMES[config.service])
-    problems.push(`VOICE_SERVICE vaut « ${table.service} » au lieu de « ${SERVICE_NAMES[config.service]} » (${RUN})`);
-
-  // ligne 12 : le budget
-  let total = 0;
-  for (const f of mp3) {
-    const size = fs.statSync(path.join(voixDir, f)).size;
-    total += size;
-    if (size > CLIP_MAX) problems.push(`voix/${f} pèse ${size} octets : plus de 300 Ko (${CLIP_MAX})`);
-  }
-  if (total > TOTAL_MAX) problems.push(`voix/ pèse ${total} octets : plus de 8 Mo (${TOTAL_MAX})`);
-
-  // ligne 10 : chaque phrase fixe a son entrée, à son empreinte actuelle, et son fichier
-  const present = new Set(mp3);
-  const keys = new Set();
-  for (const o of await extractPhrases(root)) {
-    keys.add(o.key);
-    const where = `${o.file}:${o.line} « ${o.text} »`;
-    const hash = clipHash(config, o.key);
-    const entry = Object.prototype.hasOwnProperty.call(table.clips, o.key) ? table.clips[o.key] : null;
-    if (entry == null) problems.push(`${where} n'a pas d'entrée dans VOICE_CLIPS : ${RUN}`);
-    else if (entry !== hash) problems.push(`${where} : son entrée n'est pas son empreinte actuelle : ${RUN}`);
-    else if (!present.has(hash + '.mp3')) problems.push(`${where} : le clip voix/${hash}.mp3 manque : ${RUN}`);
-  }
-  // ligne 11 : entrée en trop, fichier orphelin
-  for (const key of Object.keys(table.clips))
-    if (!keys.has(key))
-      problems.push(`VOICE_CLIPS : entrée en trop « ${key} » (plus une phrase fixe du code) : ${RUN}`);
-  const wanted = new Set(Object.values(table.clips).map((h) => h + '.mp3'));
-  for (const f of mp3)
-    if (!wanted.has(f))
-      problems.push(`voix/${f} : fichier orphelin (l'empreinte d'aucune entrée de VOICE_CLIPS) : ${RUN}`);
-  return problems;
-}
-
 module.exports = {
   CLIPS_FILE,
   CLIP_MAX,
   TOTAL_MAX,
   SERVICE_NAMES,
-  auditClips,
   clipHash,
   configProblem,
   extractPhrases,

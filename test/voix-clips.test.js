@@ -7,7 +7,8 @@
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
-const { auditClips, clipHash, readConfig, CLIPS_FILE } = require('./tools/voix-phrases.js');
+const { clipHash, readConfig, CLIPS_FILE } = require('./tools/voix-phrases.js');
+const { auditClips } = require('./tools/voix-garde.js');
 const { main } = require('./tools/voix.js');
 const { MP3, fakeService } = require('./tools/voix-selftest.js');
 
