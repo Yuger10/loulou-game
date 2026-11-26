@@ -32,7 +32,7 @@ La voix du jeu est celle de l'appareil (Web Speech). Amrou la trouve robotique, 
 
 ## Vérification
 - `bun run voix --selftest` (dans `bun run selftest`, donc dans `bun run check`) : extraction, empreinte, nombre d'appels au service, messages et codes de sortie, avec un faux service. Il n'appelle jamais le vrai.
-- `test/voix-clips.test.js` : la garde. `test/voix-lecteur.test.js` : le lecteur, le repli, le téléchargement de fond. `test/update.test.js` : le cache `lagon-voix` du service worker.
+- `test/voix-clips.test.js` : la garde. `test/voix-lecteur.test.js`, `test/voix-lecteur-repli.test.js`, `test/voix-lecteur-cache.test.js` : le lecteur, le repli, le téléchargement de fond. `test/update.test.js` (par `test/tools/sw-voice-checks.js`) : le cache `lagon-voix` du service worker.
 - **Non vérifié par un check** : la qualité de la voix (écoute d'Amrou et de sa fille), le comportement sur iPad avec l'interrupteur de sonnerie sur silence, et la lecture des conditions des services.
 
 ## Conséquences
