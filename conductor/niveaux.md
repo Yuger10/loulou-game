@@ -49,7 +49,8 @@
 Dans le jeu, aujourd'hui (v65) :
 - les îles de la saison 1 et toutes celles de la saison 2 (Boîtes, Jouets Doux, Bonbons, Musique, Jardin des Fées, Licornes) existent ;
 - les autres îles ont chacune leur track dans `conductor/tracks.md` ;
-- une saison s'ouvre au niveau de sa première île, que le jeu calcule lui-même (`ARCHIPELAGOS[s].level`).
+- une saison s'ouvre au niveau de sa première île, que le jeu calcule lui-même (`ARCHIPELAGOS[s].level`) ;
+- un archipel sans île n'a pas de niveau (`level: null`) et ne s'affiche nulle part (`shownArchipelagos()`).
 
 ## Ce que voit l'enfant
 

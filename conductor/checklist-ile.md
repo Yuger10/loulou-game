@@ -9,6 +9,8 @@ Remplacer `<ile>` par la clé de l'île (ex. `boites`).
 ## 2. Entités
 > Tout `js/` est vérifié en TypeScript strict (`strict: true` dans `tsconfig.json` depuis la v66.11, [ADR 0003](../docs/adr/0003-typescript.md)) : `bun run typecheck` vérifie tout nouveau code, sans rien à déclarer. Une entrée qui ajoute un champ à une table typée (`World`, `Archipelago`, `Character`, `Item`, `Squishy`, `GameState`…) étend d'abord son `@typedef` ; chaque nouvelle fonction a ses `@param` et `@returns`. Jamais `any` ni `@ts-ignore`.
 
+> Archipels (`ARCHIPELAGOS`, `js/entities/world/availability.js`) : `saison` 1 = Le Lagon Magique, 2 = Le Ciel des Rêves, 3 = La Grande Expédition. Un archipel sans île n'a pas de niveau (`level: null`) et reste caché partout (pas d'onglet, pas de section dans le journal, pas d'ouverture) : les vues parcourent `shownArchipelagos()`, jamais `ARCHIPELAGO_ORDER`. Il apparaît tout seul à la première île qui porte sa `saison`.
+
 ## 2 bis. Taille des fichiers (`max-lines` à 800, `.oxlintrc.json`, v66.16)
 Avant d'ajouter à un fichier partagé, mesurer sa marge (`wc -l`). Relever `max-lines` est exclu : c'est un cliquet qui ne fait que descendre (`.oxlintrc.json`). La v66.16 a posé le modèle pour la saison 2 :
 - ses dessins sont dans `characters-art-s2.js`, avec une fonction `season2Art(ART, kit)` qui reçoit les outils de dessin (`@typedef ArtKit` dans `characters-art.js`) ;
