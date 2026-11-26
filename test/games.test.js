@@ -5,6 +5,7 @@
 // en quelques secondes ; l'ordre des événements, lui, ne change pas.
 const { JSDOM } = require('jsdom');
 const { inShard } = require('./tools/shard.js');
+const { playStep } = require('./tools/gestures.js');
 
 // CSS et JS inlinés dans l'ordre du manifeste des slices (js/slices.cjs)
 const html = require('./tools/page.js').buildHtml();
@@ -301,6 +302,32 @@ const INDEPENDENT = {
       )
     );
   },
+  // trace : chaque élément porte les points de son trait, et la solution couvre
+  // tous les traits de tous les glyphes de la bande, dans l'ordre
+  trace(sol) {
+    const strip = [...d.querySelectorAll('.tr-strip .tr-ms')];
+    const minis = d.querySelectorAll('.tr-strip .tr-mini');
+    const glyphs = ev('traceGame.glyphs').map((id) => ev('TRACE_GLYPHS')[id]);
+    const near = (a, b) => Math.abs(a[0] - b[0]) < 0.06 && Math.abs(a[1] - b[1]) < 0.06;
+    return (
+      strip.length > 0 &&
+      minis.length === glyphs.length &&
+      sol.length === strip.length &&
+      sol.length === glyphs.reduce((n, g) => n + g.strokes.length, 0) &&
+      sol.every((s, i) => {
+        const el = d.querySelector(s);
+        const stroke = glyphs[Number(el.dataset.g)].strokes[Number(el.dataset.s)];
+        const model = ev('traceStrokePoints')(stroke),
+          pts = JSON.parse(el.dataset.pts);
+        return (
+          el === strip[i] &&
+          el.dataset.pad === 'tr-pad' &&
+          pts.length === model.length &&
+          pts.every((p, k) => near(p, model[k]))
+        );
+      })
+    );
+  },
 };
 
 async function playToWin(key, tier) {
@@ -314,7 +341,8 @@ async function playToWin(key, tier) {
   for (const s of sol) {
     const el = d.querySelector(s);
     if (!el) return 'élément disparu : ' + s;
-    el.click();
+    // un élément tracé (data-pts, « Trace avec ton doigt ») se joue au doigt, les autres d'un clic
+    if (!playStep(w, el)) return "le carré n'attend pas ce trait : " + s;
     await wait(key === 'memory' ? 45 : 5);
   }
   if (!(await waitFor(() => !!d.querySelector('.win-box')))) return "pas d'écran de victoire";

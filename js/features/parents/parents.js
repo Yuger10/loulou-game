@@ -43,7 +43,7 @@ import './storage-alert.js'; // message et carte quand l'enregistrement échoue
 /** @typedef {Partial<GameState>} PlayerState la partie d'un joueur : l'état courant, ou une partie lue dans le stockage */
 
 const SKILL_GROUPS = [
-  { id: 'lire', emoji: '📖', name: 'Lecture et langage', games: ['reading', 'determinants'] },
+  { id: 'lire', emoji: '📖', name: 'Lecture et langage', games: ['reading', 'determinants', 'trace'] },
   { id: 'nombres', emoji: '🔢', name: 'Nombres', games: ['count', 'puzzle', 'compare', 'packs'] },
   { id: 'calcul', emoji: '➕', name: 'Calcul', games: ['math', 'calc', 'money', 'share', 'ladybugs'] },
   { id: 'mesures', emoji: '🕐', name: 'Temps et mesures', games: ['clock', 'calendar', 'volume', 'recipe'] },

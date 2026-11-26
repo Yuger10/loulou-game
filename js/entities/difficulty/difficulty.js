@@ -362,6 +362,7 @@ const LIVES_TABLE = {
   jigsaw: { 2: 5, 3: 4, 4: 4, 5: 3 }, // puzzle : beaucoup de morceaux, on essaie
   simon: { 2: 3, 3: 3, 4: 2, 5: 2 },
   rhythm: { 2: 3, 3: 3, 4: 2, 5: 2 }, // comme Simon : une suite à rejouer
+  trace: { 2: 4, 3: 4, 4: 3, 5: 3 }, // tracer : plusieurs traits par mission, un essai ne part qu'au 3ᵉ raté
   default: { 2: 3, 3: 2, 4: 2, 5: 1 }, // jeux « une seule bonne réponse »
   // les jeux plus récents (calcul, lecture…) demandent un temps de
   // réflexion : on laisse un essai de plus que le barème par défaut.
@@ -463,6 +464,7 @@ const NO_TIMER_KINDS = [
   'ladybugs',
   'potions',
   'mirror',
+  'trace',
 ];
 /**
  * @param {string} kind le type de mini-jeu
