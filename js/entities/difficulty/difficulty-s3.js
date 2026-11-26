@@ -188,4 +188,51 @@ function orderRound(dd) {
   return tierValue(ORDER_TIERS, dd);
 }
 
-export { lengthRound, orderRound, tensRound, traceRound };
+/* ---------------------------------------------------------------------
+   LE TRÉSOR RACONTÉ (Île des Coffres, saison 3) : la résolution de problèmes
+   additifs (cycle 2 : comprendre, modéliser, calculer, répondre).
+     palier 1   GS, début CP   réunion, ajout, retrait jusqu'à 6, objets à toucher
+     palier 2   CP             jusqu'à 10, les objets deviennent des barres
+     palier 3   fin CP, CE1    jusqu'à 20, schéma en barres, comparaisons
+     palier 4   CE1            jusqu'à 50, deux étapes, « est-ce possible ? »
+     palier 5   fin CE1, CE2   jusqu'à 100, l'égalité seule
+   `min`/`max` : bornes du tout ; `ecart` : écart maximal d'une comparaison ;
+   `rep` : représentation ; `eqUnder` : l'égalité s'écrit sous le schéma ;
+   `choices` : réponses au calcul ; `gap` : écart maximal d'un leurre ;
+   `tens` : leurres à plus ou moins dix. Pas de minuteur.
+   --------------------------------------------------------------------- */
+/** @typedef {'concret' | 'concret-barre' | 'barres' | 'egalite'} ProblemsRep */
+/**
+ * Une ligne de « Le trésor raconté » (tables T1 et R1 de la spec).
+ * @typedef {{ types: string[], min: number, max: number, ecart: number, rep: ProblemsRep,
+ *   eqUnder: boolean, choices: number, gap: number, tens: boolean }} ProblemsRound
+ */
+const PB_EARLY = ['reunion', 'ajout', 'retrait', 'partie', 'ajoutInconnu', 'compPlus', 'compEcart'];
+const PB_LATE = ['partie', 'ajoutInconnu', 'compEcart', 'compMoinsPlus', 'deuxEtapes', 'possible'];
+const PB_SMALL = { ecart: 0, eqUnder: false, choices: 3, gap: 3, tens: false };
+const PB_BIG = { choices: 4, gap: 10, tens: true };
+/** @type {Record<number, ProblemsRound>} */
+const PROBLEMS_TIERS = {
+  1: { types: PB_EARLY.slice(0, 3), min: 2, max: 6, rep: 'concret', ...PB_SMALL },
+  2: { types: PB_EARLY.slice(0, 4), min: 4, max: 10, rep: 'concret-barre', ...PB_SMALL },
+  3: { types: PB_EARLY, min: 5, max: 20, rep: 'barres', ...PB_SMALL, ecart: 9, choices: 4 },
+  4: {
+    types: ['retrait', 'partie', 'ajoutInconnu', 'compPlus', 'compEcart', 'compMoinsPlus', 'deuxEtapes', 'possible'],
+    min: 10,
+    max: 50,
+    ecart: 20,
+    rep: 'barres',
+    eqUnder: true,
+    ...PB_BIG,
+  },
+  5: { types: PB_LATE, min: 20, max: 100, ecart: 40, rep: 'egalite', eqUnder: false, ...PB_BIG },
+};
+/**
+ * @param {number} dd le palier de difficulté
+ * @returns {ProblemsRound}
+ */
+function problemsRound(dd) {
+  return tierValue(PROBLEMS_TIERS, dd);
+}
+
+export { lengthRound, orderRound, problemsRound, tensRound, traceRound };

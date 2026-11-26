@@ -1,0 +1,287 @@
+/* ---------- Mini-jeu : Le trésor raconté (problems) ----------
+   Tout tient sur un écran de 360 px de large, sans défilement horizontal.
+   Ce qui se touche fait au moins 64 px (objets : 44 px, serrés dans leur
+   vignette, mais chacun a sa marge). */
+.pb-steps {
+  display: flex;
+  gap: 4px;
+  margin: 6px 0 10px;
+}
+.pb-step {
+  flex: 1;
+  padding: 6px 2px;
+  border-radius: 12px;
+  background: #f1ece3;
+  color: #8a7f70;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.pb-step.on {
+  background: #ffd76a;
+  color: #5a3d00;
+  box-shadow: 0 2px 0 #e0a800;
+}
+.pb-coach {
+  margin: 0 0 8px;
+  padding: 8px 12px;
+  border-radius: 14px;
+  background: #eef7ff;
+  color: #24506e;
+  font-size: 0.9rem;
+}
+.pb-scene {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: center;
+}
+.pb-vignette {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  min-width: 96px;
+  max-width: 100%;
+  min-height: 64px;
+  padding: 6px;
+  border: 2px solid #e6dcc8;
+  border-radius: 14px;
+  background: #fffdf7;
+  animation: pb-pop 0.4s ease both;
+}
+.pb-vignette:nth-child(2) {
+  animation-delay: 0.6s;
+}
+.pb-vignette:nth-child(3) {
+  animation-delay: 1.2s;
+}
+.pb-vignette:nth-child(4) {
+  animation-delay: 1.8s;
+}
+.pb-vignette[data-q] {
+  border-style: dashed;
+  border-color: #e0a800;
+}
+@keyframes pb-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+}
+.pb-who {
+  font-size: 1.7rem;
+  margin-right: 4px;
+}
+.pb-obj {
+  font-size: 1.35rem;
+  line-height: 1;
+}
+.pb-count,
+.pb-qm {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: #5a3d00;
+}
+button.pb-token {
+  min-width: 44px;
+  min-height: 44px;
+  padding: 4px;
+  border: 0;
+  border-radius: 50%;
+  background: #fff3c9;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+button.pb-token:active {
+  transform: scale(1.2);
+}
+.pb-nexts {
+  display: flex;
+  justify-content: center;
+  margin: 10px 0;
+}
+.pb-next {
+  min-width: 96px;
+  min-height: 64px;
+  font-size: 1.8rem;
+}
+.pb-block,
+.pb-reply {
+  margin-top: 10px;
+}
+.pb-chest-zone {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.pb-chest,
+.pb-out {
+  display: flex;
+  flex-wrap: wrap;
+  align-content: center;
+  justify-content: center;
+  gap: 2px;
+  min-height: 72px;
+  border-radius: 16px;
+}
+.pb-chest {
+  flex: 1 1 200px;
+  padding: 8px;
+  border: 4px solid #8a5a2b;
+  background: #c8955a;
+  box-shadow: inset 0 6px 0 #e0a800;
+}
+.pb-out {
+  flex: 1 1 100px;
+  border: 2px dashed #e6dcc8;
+}
+.pb-out:empty {
+  display: none;
+}
+.pb-done {
+  min-height: 64px;
+}
+.pb-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 8px 0;
+}
+.pb-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.pb-face {
+  width: 36px;
+  font-size: 1.5rem;
+  text-align: center;
+}
+.pb-track {
+  display: flex;
+  flex: 1;
+  gap: 2px;
+}
+.pb-bar {
+  /* une barre garde de quoi être touchée, même pour un petit nombre */
+  min-width: 56px;
+  min-height: 64px;
+  padding: 0;
+  border: 3px solid #2f7cc0;
+  border-radius: 12px;
+  background: #dcecfa;
+  color: #173f63;
+  font-size: 1.4rem;
+  font-weight: 800;
+  text-align: center;
+  line-height: 58px;
+}
+.pb-bar.pb-dash {
+  border-style: dashed;
+  background: #fff;
+}
+.pb-bar.filled {
+  background: #bfe0ff;
+}
+.pb-bar.over {
+  border-color: #e8344e;
+  background: #ffe1e6;
+}
+.pb-labels,
+.pb-signs,
+.pb-eq-nums,
+.pb-yesnos {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin: 8px 0;
+}
+.pb-label,
+.pb-sign,
+.pb-eq-num,
+.pb-yesno,
+.pb-answer {
+  min-width: 64px;
+  min-height: 64px;
+  border: 3px solid #e0a800;
+  border-radius: 16px;
+  background: #fff8e1;
+  color: #5a3d00;
+  font-size: 1.6rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+.pb-label.picked {
+  background: #ffd76a;
+  transform: translateY(-4px);
+}
+.pb-sign.on,
+.pb-num.on,
+.pb-yesno.on,
+.pb-answer.on {
+  border-color: #2f9551;
+  background: #d9f5e1;
+}
+.pb-eq-num.used {
+  opacity: 0.45;
+}
+.pb-eq-line,
+.pb-eq-text {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin: 8px 0;
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: #5a3d00;
+}
+.pb-eq-case {
+  min-width: 56px;
+  min-height: 56px;
+  border: 3px solid #2f7cc0;
+  border-radius: 12px;
+  line-height: 50px;
+  text-align: center;
+}
+.pb-eq-op {
+  min-width: 40px;
+  text-align: center;
+}
+.pb-reply {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+.pb-sentence {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #24506e;
+}
+.pb-mini {
+  max-width: 220px;
+}
+.pb-mini .pb-bar {
+  display: block;
+  min-width: 28px;
+  min-height: 32px;
+  line-height: 26px;
+  font-size: 0.95rem;
+}
+[hidden].pb-box,
+.pb-box [hidden] {
+  display: none !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  .pb-vignette {
+    animation: none;
+  }
+}

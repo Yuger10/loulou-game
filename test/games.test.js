@@ -360,6 +360,31 @@ const INDEPENDENT = {
       counts(picks) === counts(ticket)
     );
   },
+  // problems : le résultat recalculé depuis les nombres de #pb-root (table A1 de la spec),
+  // comparé au dernier nombre (ou au pouce) de la solution
+  problems(sol) {
+    const ds = d.getElementById('pb-root').dataset;
+    const n = (k) => Number(ds[k]);
+    const R = {
+      reunion: () => n('a') + n('b'),
+      ajout: () => n('a') + n('b'),
+      retrait: () => n('a') - n('b'),
+      partie: () => n('t') - n('a'),
+      ajoutInconnu: () => n('t') - n('a'),
+      compPlus: () => n('a') + n('b'),
+      compEcart: () => n('b') - n('a'),
+      compMoinsPlus: () => n('t') - n('b'),
+      deuxEtapes: () => n('a') + n('b') - n('c'),
+      possible: () => (n('b') <= n('a') ? 'oui' : 'non'),
+    };
+    const want = String(R[ds.type]());
+    const last = sol.filter((s) => /pb-num|pb-yesno/.test(s)).pop();
+    return (
+      ds.r === want &&
+      d.querySelector(last).dataset.v === want &&
+      (ds.type !== 'deuxEtapes' || ds.r1 === String(n('a') + n('b')))
+    );
+  },
   // trace : chaque élément porte les points de son trait, et la solution couvre
   // tous les traits de tous les glyphes de la bande, dans l'ordre
   trace(sol) {
