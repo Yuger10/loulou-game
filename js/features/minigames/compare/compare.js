@@ -29,17 +29,7 @@ import { bindQuit, gameHeader } from '../../screen/index.js';
 function renderCompare() {
   setupLives('compare');
   const dd = gameDiff();
-  const max = compareRange(dd);
-  let a = 1 + Math.floor(random() * max);
-  let b;
-  if (random() < compareCloseChance(dd)) {
-    // nombre voisin de a (écart de 1 à 5), toujours dans les bornes
-    const delta = 1 + Math.floor(random() * 5);
-    b = random() < 0.5 ? Math.max(1, a - delta) : Math.min(max, a + delta);
-  } else {
-    b = 1 + Math.floor(random() * max);
-  }
-  if (random() < compareEqualChance(dd)) b = a; // teste aussi l'égalité
+  const { a, b } = comparePair(dd);
   const answer = a < b ? '<' : a > b ? '>' : '=';
   const options = shuffle(['<', '>', '=']);
 
@@ -76,6 +66,25 @@ function renderCompare() {
       }
     });
   });
+}
+
+/**
+ * Les deux nombres à comparer : souvent voisins, parfois égaux.
+ * @param {number} dd le palier de difficulté
+ */
+function comparePair(dd) {
+  const max = compareRange(dd);
+  let a = 1 + Math.floor(random() * max);
+  let b;
+  if (random() < compareCloseChance(dd)) {
+    // nombre voisin de a (écart de 1 à 5), toujours dans les bornes
+    const delta = 1 + Math.floor(random() * 5);
+    b = random() < 0.5 ? Math.max(1, a - delta) : Math.min(max, a + delta);
+  } else {
+    b = 1 + Math.floor(random() * max);
+  }
+  if (random() < compareEqualChance(dd)) b = a; // teste aussi l'égalité
+  return { a, b };
 }
 
 // Indices (v52) : 1. le sens du signe (la bouche vers le plus grand) ;

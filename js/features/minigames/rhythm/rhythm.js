@@ -70,6 +70,10 @@ function rhythmBuildRound(dd, rng = random) {
 
 let rhythmToken = 0,
   rhythmLast = '';
+/**
+ * Une partie de rythme en cours : la position de l'enfant change à chaque coup.
+ * @typedef {{ cfg: ReturnType<typeof rhythmRound>, seq: RhythmBeat[], alive: () => boolean, pos: number }} RhythmPlay
+ */
 function renderRhythm() {
   setupLives('rhythm');
   const dd = gameDiff();
@@ -78,14 +82,47 @@ function renderRhythm() {
   rhythmLast = r.seq.join();
   const { cfg, seq } = r;
   const token = ++rhythmToken;
-  const alive = () => token === rhythmToken && !!document.getElementById('rh-score');
+  /** @type {RhythmPlay} */
+  const g = { cfg, seq, alive: () => token === rhythmToken && !!document.getElementById('rh-score'), pos: 0 };
   /** @type {RhythmBeat[]} */
   const kinds = cfg.rests ? ['court', 'long', 'silence'] : ['court', 'long'];
-  let pos = 0;
+  openModal(rhythmMarkup(cfg, seq, kinds));
+  bindQuit();
+  startTimerIfNeeded('rhythm');
+  setSolution(seq.map((k) => solSel('.rh-btn', 'k', k)));
+
+  if (cfg.read) rhythmSetState('📖 Lis le rythme, puis joue-le !');
+  else rhythmPlay(g, false, () => rhythmYourTurn(cfg));
+
+  // indices (v52) : réécouter et revoir le rythme, plus lentement, depuis le début
+  /** @type {RhythmQuestion} */
+  const q = {
+    n: seq.length,
+    rests: cfg.rests,
+    read: !!cfg.read,
+    replay() {
+      rhythmResetAnswer(g);
+      rhythmSetState('👂 Écoute encore…');
+      rhythmPlay(g, true, () => rhythmYourTurn(cfg));
+    },
+  };
+  setHintQuestion('rhythm', q, { choices: '.rh-btn' });
+
+  document.querySelectorAll('.rh-btn').forEach((btn) => {
+    setHandler(btn, 'click', () => rhythmPress(g, btn));
+  });
+}
+
+/**
+ * @param {ReturnType<typeof rhythmRound>} cfg
+ * @param {RhythmBeat[]} seq
+ * @param {RhythmBeat[]} kinds les boutons du tambour
+ */
+function rhythmMarkup(cfg, seq, kinds) {
   const intro = cfg.read
     ? 'Lis le rythme écrit, puis joue-le avec le tambour. Boumbo te le fera écouter après !'
     : 'Écoute et regarde le rythme de Boumbo, puis rejoue-le avec le tambour.';
-  openModal(`
+  return `
     ${gameHeader('🥁 Le rythme magique', cfg.read ? 'Lis le rythme, puis joue-le !' : 'Rejoue le rythme de Boumbo', intro)}
     ${livesBar()}
     <div class="rh-score" id="rh-score" aria-label="Le rythme">
@@ -97,104 +134,91 @@ function renderRhythm() {
     <div class="rh-pads">
       ${kinds.map((k) => `<button class="rh-btn rh-${k}" data-k="${k}" aria-label="${RHYTHM_BEATS[k].aria}"><b>${RHYTHM_BEATS[k].sym}</b><span>${RHYTHM_BEATS[k].label}</span></button>`).join('')}
     </div>
-  `);
-  bindQuit();
-  startTimerIfNeeded('rhythm');
-  setSolution(seq.map((k) => solSel('.rh-btn', 'k', k)));
+  `;
+}
 
-  const beatSound = (/** @type {RhythmBeat} */ k) => {
-    const b = RHYTHM_BEATS[k];
-    if (b.freq) playNote(b.freq, b.dur, 0.2);
-  };
-  const setState = (/** @type {string} */ t) => {
-    const s = document.getElementById('rh-state');
-    if (s) s.textContent = t;
-  };
-  // le rythme joué : chaque symbole s'allume avec son son ; `slow` : plus lentement (indice)
-  /**
-   * @param {boolean} slow
-   * @param {(() => void) | null} then
-   * @returns {number} le moment où finit la dernière note (ms après l'appel)
-   */
-  function play(slow, then) {
-    const unit = RHYTHM_UNIT * (slow ? 1.6 : 1);
-    const score = document.getElementById('rh-score');
-    if (score) score.classList.remove('covered');
-    let t = 500;
-    seq.forEach((k, i) => {
-      setTimeout(() => {
-        if (!alive()) return;
-        const el = document.querySelector(`.rh-beat[data-i="${i}"]`);
-        if (el) {
-          el.classList.add('lit');
-          setTimeout(() => el.classList.remove('lit'), unit * RHYTHM_BEATS[k].units - 80);
-        }
-        beatSound(k);
-      }, t);
-      t += unit * RHYTHM_BEATS[k].units;
-    });
+const rhythmBeatSound = (/** @type {RhythmBeat} */ k) => {
+  const b = RHYTHM_BEATS[k];
+  if (b.freq) playNote(b.freq, b.dur, 0.2);
+};
+const rhythmSetState = (/** @type {string} */ t) => {
+  const s = document.getElementById('rh-state');
+  if (s) s.textContent = t;
+};
+// le rythme joué : chaque symbole s'allume avec son son ; `slow` : plus lentement (indice)
+/**
+ * @param {RhythmPlay} g
+ * @param {boolean} slow
+ * @param {(() => void) | null} then
+ * @returns {number} le moment où finit la dernière note (ms après l'appel)
+ */
+function rhythmPlay(g, slow, then) {
+  const unit = RHYTHM_UNIT * (slow ? 1.6 : 1);
+  const score = document.getElementById('rh-score');
+  if (score) score.classList.remove('covered');
+  let t = 500;
+  g.seq.forEach((k, i) => {
     setTimeout(() => {
-      if (alive() && then) then();
-    }, t + 250);
-    return t;
-  }
-  const yourTurn = () => {
-    if (cfg.hide) {
-      const s = document.getElementById('rh-score');
-      if (s) s.classList.add('covered');
-    }
-    setState('👆 À toi !');
-  };
-  if (cfg.read) setState('📖 Lis le rythme, puis joue-le !');
-  else play(false, yourTurn);
-
-  const resetAnswer = () => {
-    pos = 0;
-    const a = document.getElementById('rh-answer');
-    if (a) a.innerHTML = '';
-    const p = document.getElementById('rh-progress');
-    if (p) p.innerHTML = progressDots(0, seq.length);
-  };
-  // indices (v52) : réécouter et revoir le rythme, plus lentement, depuis le début
-  /** @type {RhythmQuestion} */
-  const q = {
-    n: seq.length,
-    rests: cfg.rests,
-    read: !!cfg.read,
-    replay() {
-      resetAnswer();
-      setState('👂 Écoute encore…');
-      play(true, yourTurn);
-    },
-  };
-  setHintQuestion('rhythm', q, { choices: '.rh-btn' });
-
-  document.querySelectorAll('.rh-btn').forEach((btn) => {
-    setHandler(btn, 'click', () => {
-      const k = /** @type {RhythmBeat} */ (btn.dataset.k); // data-k : un des boutons de `kinds`
-      beatSound(k);
-      btn.classList.add('lit');
-      setTimeout(() => btn.classList.remove('lit'), 200);
-      if (seq[pos] !== k) {
-        loseLife(btn, { onRetry: renderRhythm, disable: false });
-        return;
+      if (!g.alive()) return;
+      const el = document.querySelector(`.rh-beat[data-i="${i}"]`);
+      if (el) {
+        el.classList.add('lit');
+        setTimeout(() => el.classList.remove('lit'), unit * RHYTHM_BEATS[k].units - 80);
       }
-      const a = document.getElementById('rh-answer');
-      if (a) a.insertAdjacentHTML('beforeend', `<span class="rh-beat rh-${k}">${RHYTHM_BEATS[k].sym}</span>`);
-      pos++;
-      const p = document.getElementById('rh-progress');
-      if (p) p.innerHTML = progressDots(pos, seq.length);
-      if (pos === seq.length) {
-        clearActiveTimer();
-        flashModal('ok');
-        const s = document.getElementById('rh-score');
-        if (s) s.classList.remove('covered');
-        // au palier de lecture : Boumbo joue enfin le rythme que l'enfant a lu
-        if (cfg.read) winSoon(play(false, null) + READ_END_PAUSE);
-        else winSoon();
-      }
-    });
+      rhythmBeatSound(k);
+    }, t);
+    t += unit * RHYTHM_BEATS[k].units;
   });
+  setTimeout(() => {
+    if (g.alive() && then) then();
+  }, t + 250);
+  return t;
+}
+/** @param {ReturnType<typeof rhythmRound>} cfg */
+function rhythmYourTurn(cfg) {
+  if (cfg.hide) {
+    const s = document.getElementById('rh-score');
+    if (s) s.classList.add('covered');
+  }
+  rhythmSetState('👆 À toi !');
+}
+/** @param {RhythmPlay} g */
+function rhythmResetAnswer(g) {
+  g.pos = 0;
+  const a = document.getElementById('rh-answer');
+  if (a) a.innerHTML = '';
+  const p = document.getElementById('rh-progress');
+  if (p) p.innerHTML = progressDots(0, g.seq.length);
+}
+/**
+ * Un coup de tambour de l'enfant.
+ * @param {RhythmPlay} g
+ * @param {HTMLElement} btn
+ */
+function rhythmPress(g, btn) {
+  const { cfg, seq } = g;
+  const k = /** @type {RhythmBeat} */ (btn.dataset.k); // data-k : un des boutons de `kinds`
+  rhythmBeatSound(k);
+  btn.classList.add('lit');
+  setTimeout(() => btn.classList.remove('lit'), 200);
+  if (seq[g.pos] !== k) {
+    loseLife(btn, { onRetry: renderRhythm, disable: false });
+    return;
+  }
+  const a = document.getElementById('rh-answer');
+  if (a) a.insertAdjacentHTML('beforeend', `<span class="rh-beat rh-${k}">${RHYTHM_BEATS[k].sym}</span>`);
+  g.pos++;
+  const p = document.getElementById('rh-progress');
+  if (p) p.innerHTML = progressDots(g.pos, seq.length);
+  if (g.pos === seq.length) {
+    clearActiveTimer();
+    flashModal('ok');
+    const s = document.getElementById('rh-score');
+    if (s) s.classList.remove('covered');
+    // au palier de lecture : Boumbo joue enfin le rythme que l'enfant a lu
+    if (cfg.read) winSoon(rhythmPlay(g, false, null) + READ_END_PAUSE);
+    else winSoon();
+  }
 }
 
 // Indices (v52) : 1. ce que veulent dire ●, ▬ et 🤫 ; 2. le rythme réécouté

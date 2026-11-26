@@ -32,9 +32,6 @@ const FINALE_LINES = [
   "« Mais j'ai compris : un rêve partagé ne se perd jamais, il grandit ! Est-ce que je peux être ton ami ? »",
 ];
 
-function season2Done() {
-  return !!state.season2Done;
-}
 // les récompenses, une seule fois : vrai si elles viennent d'être données
 function giveSeason2Rewards() {
   if (state.season2Done) return false;
@@ -64,106 +61,130 @@ function openSeasonFinale(onDone, opts) {
   const rewards = !replay && giveSeason2Rewards();
   finaleActive = true;
   emit('music:theme', 'licornes-fete');
-  const end = () => {
-    closeModal();
-    if (onDone) onDone();
+  /** @type {FinalePlay} */
+  const f = {
+    i: 0,
+    rewards,
+    replay,
+    end: () => {
+      closeModal();
+      if (onDone) onDone();
+    },
   };
-  let i = 0;
-
-  const scene = () => {
-    const last = i === FINALE_LINES.length - 1;
-    openModal(`
-      <div class="finale" id="finale" data-step="${i}">
-        <div class="finale-sky" aria-hidden="true"></div>
-        <div class="finale-grisou">${grisouSVG(i === 0 ? 5 : 6)}</div>
-        <h2>${i === 0 ? 'Grisou retrouve ses couleurs !' : "Grisou, l'ami de tous"}</h2>
-        <div class="speech">${FINALE_LINES[i]}</div>
-      </div>
-      <button class="btn-primary" id="finale-next">${!last ? 'Suite ➡️' : rewards ? 'Mes cadeaux 🎁' : 'Le Ciel des Rêves ✅'}</button>
-    `);
-    speak(FINALE_LINES[i]);
-    if (i === 0) {
-      playSound('win');
-      confetti();
-      vibrate([80, 60, 80, 60, 200]);
-    }
-    setHandler(document.getElementById('finale-next'), 'click', () => {
-      playSound('tap');
-      i++;
-      if (i < FINALE_LINES.length) scene();
-      else if (rewards) companionReward();
-      else seasonComplete();
-    });
-  };
-
-  const companionReward = () => {
-    const say =
-      "Grisou devient ton compagnon ! Tu peux le choisir : il te fera un câlin quand c'est difficile, et te dira quand c'est l'heure de la pause.";
-    openModal(`
-      <div class="reward-box finale-gift">
-        <span class="finale-buddy">${companionSVG('grisou', 'cheer')}</span>
-        <h2>Grisou devient ton compagnon ! ☁️</h2>
-        <div class="speech">${say}</div>
-      </div>
-      <button class="btn-primary" id="finale-pick">☁️ Choisir ${COMPANIONS.grisou.name}</button>
-      <button class="btn-ghost" id="finale-later">Plus tard</button>
-    `);
-    speak(say);
-    setHandler(document.getElementById('finale-pick'), 'click', () => {
-      playSound('good');
-      const p = currentProfile();
-      if (p) {
-        p.companion = 'grisou';
-        saveProfiles();
-        refreshAll();
-      }
-      treasureReward();
-    });
-    setHandler(document.getElementById('finale-later'), 'click', () => {
-      playSound('tap');
-      treasureReward();
-    });
-  };
-
-  const treasureReward = () => {
-    const say =
-      "Et un trésor unique : Grisou arc-en-ciel ! Il t'attend dans la case Trésors de ta chambre à squishies.";
-    openModal(`
-      <div class="reward-box finale-gift">
-        <span class="finale-treasure">${squishyArtSVG('grisou-arc')}</span>
-        <h2>Un trésor unique ✨</h2>
-        <div class="speech">${say}</div>
-      </div>
-      <button class="btn-primary" id="finale-treasure">Super ! ✨</button>
-    `);
-    speak(say);
-    confetti();
-    setHandler(document.getElementById('finale-treasure'), 'click', () => {
-      playSound('tap');
-      seasonComplete();
-    });
-  };
-
-  const seasonComplete = () => {
-    const say = replay
-      ? 'Le Ciel des Rêves est terminé : tous les rêves du ciel sont libres, grâce à toi !'
-      : 'Bravo ! Tu as libéré tous les rêves du ciel. La saison 2, le Ciel des Rêves, est terminée !';
-    openModal(`
-      <div class="reward-box finale-done">
-        <span class="big-emoji">🌈</span>
-        <h2>Le Ciel des Rêves ✅</h2>
-        <div class="speech">${say}</div>
-      </div>
-      <button class="btn-primary" id="finale-end">Continuer ✨</button>
-    `);
-    speak(say);
-    setHandler(document.getElementById('finale-end'), 'click', () => {
-      playSound('tap');
-      end();
-    });
-  };
-
-  scene();
+  finaleScene(f);
 }
 
-export { openSeasonFinale, season2Done };
+/**
+ * Le final en cours : la page affichée, les cadeaux à donner, la fin.
+ * @typedef {{ i: number, rewards: boolean, replay: boolean, end: () => void }} FinalePlay
+ */
+
+/**
+ * Une page du final : Grisou retrouve ses couleurs.
+ * @param {FinalePlay} f
+ */
+function finaleScene(f) {
+  const last = f.i === FINALE_LINES.length - 1;
+  openModal(`
+    <div class="finale" id="finale" data-step="${f.i}">
+      <div class="finale-sky" aria-hidden="true"></div>
+      <div class="finale-grisou">${grisouSVG(f.i === 0 ? 5 : 6)}</div>
+      <h2>${f.i === 0 ? 'Grisou retrouve ses couleurs !' : "Grisou, l'ami de tous"}</h2>
+      <div class="speech">${FINALE_LINES[f.i]}</div>
+    </div>
+    <button class="btn-primary" id="finale-next">${!last ? 'Suite ➡️' : f.rewards ? 'Mes cadeaux 🎁' : 'Le Ciel des Rêves ✅'}</button>
+  `);
+  speak(FINALE_LINES[f.i]);
+  if (f.i === 0) {
+    playSound('win');
+    confetti();
+    vibrate([80, 60, 80, 60, 200]);
+  }
+  setHandler(document.getElementById('finale-next'), 'click', () => {
+    playSound('tap');
+    f.i++;
+    if (f.i < FINALE_LINES.length) finaleScene(f);
+    else if (f.rewards) finaleCompanion(f);
+    else finaleComplete(f);
+  });
+}
+
+/**
+ * Le premier cadeau : Grisou devient un compagnon.
+ * @param {FinalePlay} f
+ */
+function finaleCompanion(f) {
+  const say =
+    "Grisou devient ton compagnon ! Tu peux le choisir : il te fera un câlin quand c'est difficile, et te dira quand c'est l'heure de la pause.";
+  openModal(`
+    <div class="reward-box finale-gift">
+      <span class="finale-buddy">${companionSVG('grisou', 'cheer')}</span>
+      <h2>Grisou devient ton compagnon ! ☁️</h2>
+      <div class="speech">${say}</div>
+    </div>
+    <button class="btn-primary" id="finale-pick">☁️ Choisir ${COMPANIONS.grisou.name}</button>
+    <button class="btn-ghost" id="finale-later">Plus tard</button>
+  `);
+  speak(say);
+  setHandler(document.getElementById('finale-pick'), 'click', () => {
+    playSound('good');
+    const p = currentProfile();
+    if (p) {
+      p.companion = 'grisou';
+      saveProfiles();
+      refreshAll();
+    }
+    finaleTreasure(f);
+  });
+  setHandler(document.getElementById('finale-later'), 'click', () => {
+    playSound('tap');
+    finaleTreasure(f);
+  });
+}
+
+/**
+ * Le second cadeau : le trésor unique.
+ * @param {FinalePlay} f
+ */
+function finaleTreasure(f) {
+  const say = "Et un trésor unique : Grisou arc-en-ciel ! Il t'attend dans la case Trésors de ta chambre à squishies.";
+  openModal(`
+    <div class="reward-box finale-gift">
+      <span class="finale-treasure">${squishyArtSVG('grisou-arc')}</span>
+      <h2>Un trésor unique ✨</h2>
+      <div class="speech">${say}</div>
+    </div>
+    <button class="btn-primary" id="finale-treasure">Super ! ✨</button>
+  `);
+  speak(say);
+  confetti();
+  setHandler(document.getElementById('finale-treasure'), 'click', () => {
+    playSound('tap');
+    finaleComplete(f);
+  });
+}
+
+/**
+ * La saison est terminée.
+ * @param {FinalePlay} f
+ */
+function finaleComplete(f) {
+  const say = f.replay
+    ? 'Le Ciel des Rêves est terminé : tous les rêves du ciel sont libres, grâce à toi !'
+    : 'Bravo ! Tu as libéré tous les rêves du ciel. La saison 2, le Ciel des Rêves, est terminée !';
+  openModal(`
+    <div class="reward-box finale-done">
+      <span class="big-emoji">🌈</span>
+      <h2>Le Ciel des Rêves ✅</h2>
+      <div class="speech">${say}</div>
+    </div>
+    <button class="btn-primary" id="finale-end">Continuer ✨</button>
+  `);
+  speak(say);
+  setHandler(document.getElementById('finale-end'), 'click', () => {
+    playSound('tap');
+    f.end();
+  });
+}
+
+export { openSeasonFinale };

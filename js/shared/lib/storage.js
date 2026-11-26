@@ -21,11 +21,10 @@ function causeOf(thrown) {
 /**
  * @param {string} op
  * @param {string} key
- * @param {unknown} e
- * @param {string} [cause]
+ * @param {string} cause
  * @returns {false}
  */
-function fail(op, key, e, cause = causeOf(e)) {
+function fail(op, key, cause) {
   /** @type {StorageError} */
   const err = { at: new Date().toISOString(), op, key, cause };
   errors.push(err);
@@ -44,7 +43,7 @@ function storageWrite(key, value) {
     localStorage.setItem(key, value);
     return true;
   } catch (e) {
-    return fail('écriture', key, e);
+    return fail('écriture', key, causeOf(e));
   }
 }
 /**
@@ -56,17 +55,17 @@ function storageRemove(key) {
     localStorage.removeItem(key);
     return true;
   } catch (e) {
-    return fail('suppression', key, e);
+    return fail('suppression', key, causeOf(e));
   }
 }
 // une partie enregistrée qu'on ne peut pas relire (abîmée) : signalée comme un
 // échec d'écriture (message à l'enfant, carte dans l'espace parents)
 /**
  * @param {string} key
- * @param {unknown} e
+ * @param {unknown} _e
  */
-function reportUnreadable(key, e) {
-  return fail('lecture', key, e, 'sauvegarde illisible : la partie repart de zéro');
+function reportUnreadable(key, _e) {
+  return fail('lecture', key, 'sauvegarde illisible : la partie repart de zéro');
 }
 /** @returns {StorageError[]} */
 function storageErrors() {

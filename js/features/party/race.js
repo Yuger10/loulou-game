@@ -78,6 +78,24 @@ function raceAdvance() {
   return false;
 }
 
+// le classement de fin de course, du plus avancé au moins avancé
+function raceResultsHTML() {
+  const classement = race.players
+    // un joueur supprimé quitte la course (party-state.js) : chacun existe
+    .map((id) => ({ p: /** @type {Profile} */ (profiles.list.find((x) => x.id === id)), n: race.pos[id] || 0 }))
+    .sort((a, b) => b.n - a.n);
+  return classement
+    .map(
+      (r, i) => `<div class="race-result">
+          <span class="medal">${['🥇', '🥈', '🥉'][i] || '🏅'}</span>
+          <span class="av">${avatarHTML(r.p.avatar, r.p.look)}</span>
+          <span class="nm">${r.p.name || 'Joueur'}</span>
+          <span class="sc">${r.n}/${race.goal}</span>
+        </div>`,
+    )
+    .join('');
+}
+
 /** @param {Profile} p */
 function raceWin(p) {
   race.winner = p.id;
@@ -88,10 +106,6 @@ function raceWin(p) {
   playSound('win');
   confetti();
   vibrate([80, 50, 80, 50, 220]);
-  const classement = race.players
-    // un joueur supprimé quitte la course (party-state.js) : chacun existe
-    .map((id) => ({ p: /** @type {Profile} */ (profiles.list.find((x) => x.id === id)), n: race.pos[id] || 0 }))
-    .sort((a, b) => b.n - a.n);
   speak(`Bravo ${p.name || ''} ! Tu gagnes la course et ${RACE_PRIZE} pièces !`);
   openModal(`
     <div class="reward-box">
@@ -102,16 +116,7 @@ function raceWin(p) {
         <span><strong>+${RACE_PRIZE} pièces</strong> <span data-gain-coins>🪙</span></span>
       </div>
       <div class="race-results">
-        ${classement
-          .map(
-            (r, i) => `<div class="race-result">
-          <span class="medal">${['🥇', '🥈', '🥉'][i] || '🏅'}</span>
-          <span class="av">${avatarHTML(r.p.avatar, r.p.look)}</span>
-          <span class="nm">${r.p.name || 'Joueur'}</span>
-          <span class="sc">${r.n}/${race.goal}</span>
-        </div>`,
-          )
-          .join('')}
+        ${raceResultsHTML()}
       </div>
     </div>
     <button class="btn-primary" id="race-again">🔁 Refaire une course</button>

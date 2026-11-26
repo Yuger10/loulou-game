@@ -80,6 +80,26 @@ function bellSVG(m) {
   </svg>`;
 }
 
+/** @type {Record<PitchRound['ask'], string[]>} le titre et la consigne dite */
+const PITCH_ASKS = {
+  high: [
+    'Quelle cloche sonne le plus aigu ?',
+    'Écoute les cloches. Laquelle sonne le plus aigu, comme un petit oiseau ?',
+  ],
+  low: [
+    'Quelle cloche sonne le plus grave ?',
+    'Écoute les cloches. Laquelle sonne le plus grave, comme un gros ours ?',
+  ],
+  order: [
+    'Range les cloches, de la plus grave à la plus aiguë',
+    "Touche les cloches dans l'ordre, de la plus grave à la plus aiguë.",
+  ],
+  melody: [
+    'La mélodie monte ou descend ?',
+    "Écoute la mélodie de Flûtine. Est-ce qu'elle monte, ou est-ce qu'elle descend ?",
+  ],
+};
+
 let pitchToken = 0,
   pitchLast = '';
 function renderPitch() {
@@ -90,31 +110,34 @@ function renderPitch() {
   pitchLast = `${r.ask}${r.notes.join()}`;
   const token = ++pitchToken;
   const alive = () => token === pitchToken && !!document.getElementById('pitch-stage');
-  /** @type {Record<PitchRound['ask'], string[]>} */
-  const asks = {
-    high: [
-      'Quelle cloche sonne le plus aigu ?',
-      'Écoute les cloches. Laquelle sonne le plus aigu, comme un petit oiseau ?',
-    ],
-    low: [
-      'Quelle cloche sonne le plus grave ?',
-      'Écoute les cloches. Laquelle sonne le plus grave, comme un gros ours ?',
-    ],
-    order: [
-      'Range les cloches, de la plus grave à la plus aiguë',
-      "Touche les cloches dans l'ordre, de la plus grave à la plus aiguë.",
-    ],
-    melody: [
-      'La mélodie monte ou descend ?',
-      "Écoute la mélodie de Flûtine. Est-ce qu'elle monte, ou est-ce qu'elle descend ?",
-    ],
+  openModal(pitchMarkup(r));
+  bindQuit();
+  startTimerIfNeeded('pitch');
+
+  // écouter : les cloches (ou les notes de la mélodie) de gauche à droite
+  const listen = (/** @type {boolean} */ slow) => pitchListen(r, alive, slow);
+  setHandler(document.getElementById('pitch-listen'), 'click', () => listen(false));
+  if (r.ask === 'melody') listen(false);
+
+  /** @type {PitchQuestion} */
+  const q = {
+    ask: r.ask,
+    replay() {
+      listen(true);
+    },
   };
-  const [title, say] = asks[r.ask];
+  if (r.ask === 'melody') return pitchAskMelody(r, q);
+  pitchAskBells(r, q);
+}
+
+/** @param {PitchRound} r */
+function pitchMarkup(r) {
+  const [title, say] = PITCH_ASKS[r.ask];
   const stage =
     r.ask === 'melody'
       ? `<div class="pitch-melody" id="pitch-stage" data-ask="melody">${r.notes.map((m, i) => `<span class="pm-dot" data-i="${i}" data-m="${m}" style="bottom:${8 + ((m - 60) / 24) * 76}%"></span>`).join('')}</div>`
       : `<div class="pitch-bells" id="pitch-stage" data-ask="${r.ask}">${r.notes.map((m, i) => `<button class="bell" data-i="${i}" data-m="${m}" aria-label="Cloche ${i + 1}">${bellSVG(m)}<b class="bell-n"></b></button>`).join('')}</div>`;
-  openModal(`
+  return `
     ${gameHeader('🔔 Grave ou aigu ?', title, say)}
     ${livesBar()}
     ${stage}
@@ -127,55 +150,57 @@ function renderPitch() {
       <button class="num-btn pitch-dir" data-v="down" aria-label="Elle descend"><b>⬇️</b><span>Elle descend</span></button></div>`
         : ''
     }
-  `);
-  bindQuit();
-  startTimerIfNeeded('pitch');
+  `;
+}
 
-  // écouter : les cloches (ou les notes de la mélodie) de gauche à droite
-  /** @param {boolean} slow */
-  function listen(slow) {
-    const step = slow ? 900 : 620;
-    r.notes.forEach((m, i) =>
-      setTimeout(
-        () => {
-          if (!alive()) return;
-          const el = document.querySelector(`#pitch-stage [data-i="${i}"]`);
-          if (el) {
-            el.classList.add('lit');
-            setTimeout(() => el.classList.remove('lit'), step - 120);
-          }
-          playNote(pitchHz(m), 0.5, 0.2);
-        },
-        300 + i * step,
-      ),
-    );
-  }
-  setHandler(document.getElementById('pitch-listen'), 'click', () => listen(false));
-  if (r.ask === 'melody') listen(false);
+/**
+ * @param {PitchRound} r
+ * @param {() => boolean} alive
+ * @param {boolean} slow
+ */
+function pitchListen(r, alive, slow) {
+  const step = slow ? 900 : 620;
+  r.notes.forEach((m, i) =>
+    setTimeout(
+      () => {
+        if (!alive()) return;
+        const el = document.querySelector(`#pitch-stage [data-i="${i}"]`);
+        if (el) {
+          el.classList.add('lit');
+          setTimeout(() => el.classList.remove('lit'), step - 120);
+        }
+        playNote(pitchHz(m), 0.5, 0.2);
+      },
+      300 + i * step,
+    ),
+  );
+}
 
-  /** @type {PitchQuestion} */
-  const q = {
-    ask: r.ask,
-    replay() {
-      listen(true);
-    },
-  };
-  if (r.ask === 'melody') {
-    const good = r.up ? 'up' : 'down';
-    setSolution([solSel('.pitch-dir', 'v', good)]);
-    setHintQuestion('pitch', q, { choices: '.pitch-dir' });
-    document.querySelectorAll('.pitch-dir').forEach((b) =>
-      setHandler(b, 'click', () => {
-        if (b.dataset.v === good) {
-          clearActiveTimer();
-          stepOk(b);
-          flashModal('ok');
-          winSoon();
-        } else loseLife(b, { onRetry: renderPitch });
-      }),
-    );
-    return;
-  }
+/**
+ * @param {Extract<PitchRound, { ask: 'melody' }>} r
+ * @param {PitchQuestion} q
+ */
+function pitchAskMelody(r, q) {
+  const good = r.up ? 'up' : 'down';
+  setSolution([solSel('.pitch-dir', 'v', good)]);
+  setHintQuestion('pitch', q, { choices: '.pitch-dir' });
+  document.querySelectorAll('.pitch-dir').forEach((b) =>
+    setHandler(b, 'click', () => {
+      if (b.dataset.v === good) {
+        clearActiveTimer();
+        stepOk(b);
+        flashModal('ok');
+        winSoon();
+      } else loseLife(b, { onRetry: renderPitch });
+    }),
+  );
+}
+
+/**
+ * @param {Extract<PitchRound, { ask: 'high' | 'low' | 'order' }>} r
+ * @param {PitchQuestion} q
+ */
+function pitchAskBells(r, q) {
   const target = r.ask === 'high' ? [Math.max(...r.notes)] : r.ask === 'low' ? [Math.min(...r.notes)] : r.sorted;
   setSolution(target.map((m) => solSel('.bell', 'm', m)));
   setHintQuestion('pitch', q, { choices: '.bell' });

@@ -118,12 +118,11 @@ function adaptTier(base, keyArg) {
 /**
  * @param {string} key
  * @param {SkillRecord} s
- * @param {number} tier
- * @param {boolean} ok
- * @param {number} errors
+ * @param {{ tier: number, ok: boolean, errors: number }} played le niveau joué, réussi ou non, les erreurs
  * @returns {AdaptStep | null}
  */
-function adaptAfterMission(key, s, tier, ok, errors) {
+function adaptAfterMission(key, s, played) {
+  const { tier, ok, errors } = played;
   if (!s.lvl) s.lvl = tier; // premier passage : on part du niveau joué
   if (tier !== s.lvl) return null; // joué plus bas (île plus facile) : ne compte pas
   s.atLvl = (s.atLvl || []).concat({ ok: !!ok, e: errors }).slice(-3);

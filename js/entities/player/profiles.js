@@ -134,11 +134,9 @@ function switchProfile(id, silent) {
 /**
  * @param {string} name
  * @param {string} avatar
- * @param {number | null} age
- * @param {string} gender
- * @param {string} companion
+ * @param {{ age?: number | null, gender?: string, companion?: string | null }} [details]
  */
-function addProfile(name, avatar, age, gender, companion) {
+function addProfile(name, avatar, { age, gender, companion } = {}) {
   const id = newId();
   // la pause du nouveau joueur : le réglage familial (la dernière durée choisie par un adulte)
   profiles.list.push({

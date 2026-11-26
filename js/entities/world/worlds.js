@@ -1,5 +1,5 @@
-/* ---------- Les îles (mondes), île courante, îles débloquées ---------- */
-import { level } from '../game-state/index.js';
+/* ---------- Les îles (mondes) : leurs données, leur ordre, leur mini-jeu ----------
+   Archipels, île courante et îles débloquées : availability.js. */
 
 // Les îles, dans l'ordre du voyage. `diff` = difficulté des mini-jeux (1 à 6) ;
 // `saison` = son archipel (voir ARCHIPELAGOS).
@@ -269,78 +269,8 @@ const WORLDS = {
   },
 };
 
-/* Les archipels (v55) : chaque île appartient à un archipel (`saison`), qui a
-   sa carte, son fond et son véhicule. Les saisons se suivent : une saison
-   s'ouvre avec sa première île, et l'écart entre deux îles grandit de 2
-   niveaux à chaque saison (saison 1 : tous les 4 niveaux après le départ ;
-   saison 2 : tous les 6 ; saison 3 : tous les 8). Le Lagon Magique est ouvert
-   dès le départ (sa dernière île, le Pays Squishy, au niveau 26) ; le Ciel
-   des Rêves au niveau 32. Tableau de référence : conductor/niveaux.md
-   (test/niveaux.test.js vérifie qu'il dit la même chose que WORLDS).
-   Les îles du Ciel gardent la difficulté la plus haute (palier 6, toujours
-   plafonnée par l'âge et le niveau de chaque jeu).
-   Ajouter une île à un archipel : une entrée dans WORLDS avec `saison` et
-   son niveau ; le niveau de l'archipel en découle. */
-/**
- * Un archipel (une saison) ; `level` est calculé juste en dessous, d'après ses îles.
- * @typedef {{ name: string, short: string, emoji: string, vehicle: string, sky: boolean, level: number }} Archipelago
- */
-// écrit sans `level` (posé juste en dessous) : d'où la conversion en deux temps
-const ARCHIPELAGOS = /** @type {Record<number, Archipelago>} */ (
-  /** @type {Record<number, Omit<Archipelago, 'level'>>} */ ({
-    1: { name: 'Le Lagon Magique', short: 'Le Lagon', emoji: '🌊', vehicle: '⛵', sky: false },
-    2: { name: 'Le Ciel des Rêves', short: 'Le Ciel', emoji: '☁️', vehicle: '🎈', sky: true },
-  })
-);
-const ARCHIPELAGO_ORDER = [1, 2];
-
 // toutes les îles, dans l'ordre du voyage : la saison 1, puis la saison 2
 const WORLD_ORDER = Object.keys(WORLDS);
-// un archipel s'ouvre avec sa première île : un seul chiffre à tenir à jour
-ARCHIPELAGO_ORDER.forEach((s) => {
-  ARCHIPELAGOS[s].level = Math.min(
-    ...WORLD_ORDER.filter((id) => (WORLDS[id].saison || 1) === s).map((id) => WORLDS[id].level),
-  );
-});
-// les îles d'un archipel, dans l'ordre de son voyage (sa carte, sa route)
-/** @param {number} saison */
-function worldsOf(saison) {
-  return WORLD_ORDER.filter((id) => (WORLDS[id].saison || 1) === saison);
-}
-/** @param {string} id */
-function archipelagoOf(id) {
-  return (WORLDS[id] && WORLDS[id].saison) || 1;
-}
-
-/* ---------- Carte des îles ---------- */
-let currentWorld = 'lagon';
-// Changer d'île courante : seul ce fichier écrit `currentWorld` (un module ne
-// peut pas réaffecter la variable d'un autre, v54).
-/** @param {string} id */
-function setCurrentWorld(id) {
-  currentWorld = id;
-}
-
-/** @param {string} id */
-function worldUnlocked(id) {
-  return level() >= WORLDS[id].level;
-}
-/** @param {number} saison */
-function archipelagoUnlocked(saison) {
-  return level() >= ARCHIPELAGOS[saison].level;
-}
-
-// prochaine île à débloquer (de l'archipel donné, sinon de la saison 1)
-/** @param {number} [saison] */
-function nextLockedWorld(saison) {
-  return worldsOf(saison || 1).find((id) => !worldUnlocked(id));
-}
-
-// le niveau de la dernière île ouverte (toutes saisons) : le départ de la
-// barre de progression vers la prochaine île
-function lastOpenedLevel() {
-  return Math.max(1, ...WORLD_ORDER.map((id) => WORLDS[id].level).filter((l) => l <= level()));
-}
 
 // « son » mini-jeu, toujours proposé sur l'île : un nom, ou une fonction de
 // l'âge du joueur (le Monde des Boîtes)
@@ -354,18 +284,4 @@ function worldGame(id, age) {
   return typeof g === 'function' ? g(Number(age) || 0) : g || null;
 }
 
-export {
-  ARCHIPELAGO_ORDER,
-  ARCHIPELAGOS,
-  archipelagoOf,
-  archipelagoUnlocked,
-  currentWorld,
-  lastOpenedLevel,
-  nextLockedWorld,
-  setCurrentWorld,
-  WORLD_ORDER,
-  worldGame,
-  WORLDS,
-  worldsOf,
-  worldUnlocked,
-};
+export { WORLD_ORDER, worldGame, WORLDS };

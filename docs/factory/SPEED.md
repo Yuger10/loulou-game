@@ -74,10 +74,29 @@ Rapport de `bash .cothon/bin/quality-check.sh rapport --project .` sur `origin/m
 | Complexité et taille | oxlint, preset `oxlint/qualite` | 169 | 219 fichiers | barrière | 67 fonctions de plus de 50 lignes, 47 fichiers de plus de 300 lignes, 27 fonctions à plus de 3 paramètres, 23 trop complexes ; l'existant reste (le cliquet `max-lines` 800 du lint principal aussi), rien de neuf n'entre |
 | Environnement | bash | 0 | 219 fichiers | barrière | `.env.example` créé : le jeu n'a pas de variable, les réglages du lanceur de tests (`TEST_SEED`, `TEST_JOBS`, `TEST_SHARD`, `TEST_DIR`) y sont documentés en commentaire ; `GITHUB_OUTPUT` et `PR_LABELS` viennent de la CI (`env_ignore` dans `.cothon/quality.conf`) |
 | Code mort | knip, `knip.json` | 39 | 219 fichiers | rapport | sans points d'entrée, knip voyait 208 fichiers « inutilisés » (le jeu est chargé par `index.html`) ; `knip.json` déclare `js/app/main.js`, `js/app/init.js`, `sw.js` et les tests. Restent 39 exports à trier : les tests lisent le jeu par nom |
-| Duplication | jscpd | 270 | 219 fichiers | rapport | à trier d'abord (tests compris) |
-| Migrations SQL | squawk | 0 | 0 fichier | sans objet | pas de base de données |
+| Duplication | jscpd, `.jscpd.json` | 270, puis 18 | 219 fichiers | rapport | trié le 26 novembre 2026 : 252 constats relèvent d'une copie acceptée (ci-dessous), restent 9 clones dans le code du jeu |
+| Migrations SQL | squawk et règles maison S1, S2 (cothon 0.13.0) | 0 | 0 fichier | sans objet | pas de base de données ni de migration ; les règles Prisma (P3015, P3018, P3, P4) aussi |
+| Secrets (cothon 0.13.0) | gitleaks 8.30.1, épinglé par `.cothon/bin/gitleaks.pin` | 0 | 479 fichiers suivis | barrière | aucun constat, environ 1 s ; une fuite ajoutée bloque la PR. Un faux positif irait dans `.gitleaksignore` avec son empreinte |
 
-Preuve que les nouveaux presets (`oxlint/qualite`, `bin/new-violations`, `bin/quality-check`, `bin/prove-identity`) ne changent rien à l'outillage : `prove-identity.sh` avant et après, `compare` sortie 0 (lint avec 9 diagnostics de sondes, `tsconfig.json`, lefthook, oxfmt). Sondes : `.cothon/probes/` (ignorées par oxlint et oxfmt au quotidien). Essai sur la flotte : `.cothon/trial.check` (`node test/tools/check.js`).
+**Mise à jour cothon 0.13.1 (26 novembre 2026)**, rapport sur `origin/main` `0e061a0`, puis `7a17121` pour la duplication : complexité et taille 147 constats (169 avant les PR de correction #93 à #95), code mort 18 (39), duplication 14 après le tri de la #96 (jscpd 5.4.3 ; la #96 en comptait 18, ci-dessous). Environnement : les règles E4 à E9 de la 0.13.0 (secret non vidé, variable morte, préfixe public, Dockerfile) ne trouvent rien, le jeu n'a ni variable ni Dockerfile ; la famille reste en barrière. Nouvelle famille `secrets` en barrière (ligne ci-dessus). La barrière tourne par `.cothon/bin/ci.sh quality`, qui lit `Barrière qualité : complexite, env, secrets` dans `COTHON.md` (job `violations ajoutées`, PR à part pour `.github/`). `new-violations.sh` 0.13.1 ne compte plus la mesure du message dans la clé : raccourcir un fichier ou une fonction déjà au-delà du seuil n'est plus une violation ajoutée, donc la limite citée pour `engine.js` et `profiles-ui.js` dans « Duplication acceptée » ne tient plus.
+
+Preuve que les presets (`oxlint/qualite`, `bin/new-violations`, `bin/quality-check`, `bin/prove-identity`, puis `bin/ci` et les scripts de la 0.13.1 par `adopt-preset.sh --migrate`) ne changent rien à l'outillage : `prove-identity.sh` avant et après, `compare` sortie 0 (lint avec 9 diagnostics de sondes, `tsconfig.json`, lefthook, oxfmt). Sondes : `.cothon/probes/` (ignorées par oxlint et oxfmt au quotidien). Essai sur la flotte : `.cothon/trial.check` (`node test/tools/check.js`).
+
+### Duplication acceptée
+
+Tri des 270 constats de `quality-check.sh duplication` sur `origin/main` `eae8c22` (135 clones, deux constats chacun). Une copie acceptée est exclue de jscpd par `.jscpd.json` (lu par jscpd lui-même : `quality-check.sh` ne passe aucune option d'exclusion), pour que le rapport ne montre que ce qui reste à corriger.
+
+| Règle (`.jscpd.json`) | Ce qui est accepté | Constats | Raison |
+|---|---|---|---|
+| `ignore` : `test/**` | les tests, holdout compris | 194 | Chaque suite monte son propre faux navigateur et ses propres données : une suite se lit seule, sans aller chercher une fixture ailleurs. Factoriser les mises en place lierait des suites indépendantes, et `test/holdout/` est une zone protégée (Amrou seul) |
+| `ignorePattern` : `import { … } from '…';` | les blocs d'import des mini-jeux | 56 | Structure parallèle voulue : chaque mini-jeu est une slice qui importe nommément l'API publique du moteur, des indices et de l'écran (ADR 0001 et 0002, modules ES natifs sans build). Les listes se ressemblent parce que les jeux utilisent les mêmes fonctions, pas parce qu'une logique est copiée |
+| `ignorePattern` : `export { … } from '…';` | l'`index.js` d'une slice qui reliste l'API publique de son module | 2 | L'`index.js` est l'API publique déclarée de la slice (vérifiée par `test/slices.test.js`) : la liste explicite choisit ce qui sort (par exemple `tierValue` reste interne à `difficulty`). Un `export *` exposerait tout |
+
+Restent 18 constats (9 clones) dans le code du jeu, de vraies copies de logique, laissées pour des PR à part :
+
+- `js/entities/game-state/state.js` (2 fonctions de nettoyage) et `js/features/backup/backup.js` (conversion base64) : zones sensibles, relecture humaine.
+- Le geste « bonne réponse » d'un mini-jeu à choix (`clock`, `grammar`, `volume`, `calc`, `math`), la progression d'une suite (`calendar`, `puzzle`) et l'étoile en SVG (`shapes`, `shelf`) : la partie commune irait dans le moteur, mais `engine.js` dépasse déjà 300 lignes et la barrière `violations ajoutées` compte un fichier trop long dont le nombre de lignes change comme une violation ajoutée (la clé contient le nombre). Un nouveau module du moteur passe par `js/slices.cjs`, `index.html` et `sw.js` : zones sensibles.
+- `js/features/players/profiles-ui.js` (fiche du nouveau joueur et réglages d'un joueur, boutons « chacun son tour » et « course ») : même limite, le fichier fait 507 lignes.
 
 ## Ordre des migrations (une PR chacune)
 

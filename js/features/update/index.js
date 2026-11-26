@@ -1,3 +1,3 @@
 /* Slice « update » (couche features) : son API publique. Les autres slices
    n'importent que ce fichier (vérifié par test/slices.test.js). */
-export { announceUpdate, bindUpdateCard, checkForUpdate, updateCardHTML } from './update.js';
+export { announceUpdate, bindUpdateCard, updateCardHTML } from './update.js';

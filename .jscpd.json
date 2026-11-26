@@ -1,0 +1,4 @@
+{
+  "ignore": ["test/**"],
+  "ignorePattern": ["import\\s*\\{[^}]*\\}\\s*from\\s*'[^']*';", "export\\s*\\{[^}]*\\}\\s*from\\s*'[^']*';"]
+}

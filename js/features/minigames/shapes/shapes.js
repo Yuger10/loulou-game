@@ -35,11 +35,9 @@ const SQ_SIZES = {
 /**
  * @param {number} n
  * @param {number} r
- * @param {number} cx
- * @param {number} cy
- * @param {number} a0
+ * @param {{ cx: number, cy: number, a0: number }} at le centre et l'angle du premier sommet
  */
-function sqPolygon(n, r, cx, cy, a0) {
+function sqPolygon(n, r, { cx, cy, a0 }) {
   return Array.from({ length: n }, (_, i) => {
     const a = ((a0 + (i * 360) / n) * Math.PI) / 180;
     return `${(cx + r * Math.cos(a)).toFixed(1)},${(cy + r * Math.sin(a)).toFixed(1)}`;
@@ -120,7 +118,7 @@ const SQ_SHAPES = {
     sides: 5,
     vertices: 5,
     face: [50, 57],
-    el: `<polygon points="${sqPolygon(5, 46, 50, 55, -90)}"/>`,
+    el: `<polygon points="${sqPolygon(5, 46, { cx: 50, cy: 55, a0: -90 })}"/>`,
   },
   hexagone: {
     g: 'm',
@@ -129,7 +127,7 @@ const SQ_SHAPES = {
     sides: 6,
     vertices: 6,
     face: [50, 53],
-    el: `<polygon points="${sqPolygon(6, 46, 50, 52, 0)}"/>`,
+    el: `<polygon points="${sqPolygon(6, 46, { cx: 50, cy: 52, a0: 0 })}"/>`,
   },
   octogone: {
     g: 'm',
@@ -138,7 +136,7 @@ const SQ_SHAPES = {
     sides: 8,
     vertices: 8,
     face: [50, 53],
-    el: `<polygon points="${sqPolygon(8, 46, 50, 52, 22.5)}"/>`,
+    el: `<polygon points="${sqPolygon(8, 46, { cx: 50, cy: 52, a0: 22.5 })}"/>`,
   },
   etoile: {
     g: 'f',
@@ -185,67 +183,85 @@ function squishySVG(shape, color, plain) {
   </svg>`;
 }
 
-/* Une manche : la consigne (dite et écrite), son image, et les squishies
-   du plateau (dont exactement `targets` répondent à la consigne). */
-/** @param {number} dd le palier de difficulté */
-function shapesBuildRound(dd) {
-  // le palier est borné de 1 à 6 : jamais la case vide (null) du tableau
-  const cfg = /** @type {NonNullable<ReturnType<typeof shapesRound>>} */ (shapesRound(dd));
-  /**
-   * @template T
-   * @param {T[]} a
-   * @returns {T}
-   */
-  const pick = (a) => a[Math.floor(random() * a.length)];
-  /**
-   * @param {string[]} forms
-   * @param {string} g
-   * @param {boolean} plural
-   */
-  const agree = (forms, g, plural) => forms[(g === 'f' ? 2 : 0) + (plural ? 1 : 0)];
-  const tous = (/** @type {string} */ g) => (g === 'f' ? 'toutes' : 'tous');
-  /** @type {(it: SqItem) => boolean} */
-  let test;
-  let say, icon;
-  if (cfg.criterion === 'color') {
-    const col = pick(cfg.colors);
-    test = (it) => it.color === col;
-    say = `Touche tous les squishies ${agree(SQ_COLORS[col].adj, 'm', true)}`;
-    icon = `<span class="sq-dot" style="background:${SQ_COLORS[col].fill};border-color:${SQ_COLORS[col].edge}"></span>`;
-  } else if (cfg.criterion === 'shape') {
-    const sh = pick(cfg.shapes),
-      S = SQ_SHAPES[sh];
-    test = (it) => it.shape === sh;
-    say = `Touche ${tous(S.g)} les ${S.p}`;
-    icon = `<span class="sq-hint-shape">${squishySVG(sh, null, true)}</span>`;
-  } else if (cfg.criterion === 'shapeColor') {
-    const sh = pick(cfg.shapes),
-      col = pick(cfg.colors),
-      S = SQ_SHAPES[sh];
-    test = (it) => it.shape === sh && it.color === col;
-    say = `Touche ${tous(S.g)} les ${S.p} ${agree(SQ_COLORS[col].adj, S.g, true)}`;
-    icon = `<span class="sq-hint-shape">${squishySVG(sh, col, true)}</span>`;
-  } else if (cfg.criterion === 'sizeShape') {
-    const sh = pick(cfg.shapes),
-      size = pick(['grand', 'petit']),
-      S = SQ_SHAPES[sh];
-    test = (it) => it.shape === sh && it.size === size;
-    say = `Touche ${tous(S.g)} les ${agree(SQ_SIZES[size], S.g, true)} ${S.p}`;
-    icon = `<span class="sq-hint-shape ${size === 'petit' ? 'is-small' : ''}">${squishySVG(sh, null, true)}</span>`;
-  } else {
-    const key = /** @type {'sides' | 'vertices'} */ (cfg.criterion); // 'sides' ou 'vertices'
-    const counts = [...new Set(cfg.shapes.map((s) => SQ_SHAPES[s][key]).filter((n) => n >= 3))];
-    const n = pick(counts);
-    test = (it) => SQ_SHAPES[it.shape][key] === n;
-    say = `Touche toutes les formes qui ont ${n} ${key === 'sides' ? 'côtés' : 'sommets'}`;
-    icon = '';
-  }
+/**
+ * @template T
+ * @param {T[]} a
+ * @returns {T}
+ */
+const shapesPick = (a) => a[Math.floor(random() * a.length)];
+/**
+ * @param {string[]} forms
+ * @param {string} g
+ * @param {boolean} plural
+ */
+const shapesAgree = (forms, g, plural) => forms[(g === 'f' ? 2 : 0) + (plural ? 1 : 0)];
+const shapesAll = (/** @type {string} */ g) => (g === 'f' ? 'toutes' : 'tous');
 
+/** @typedef {NonNullable<ReturnType<typeof shapesRound>>} SqRound */
+/* La consigne d'une manche : le critère tiré, la phrase dite et écrite, son image. */
+/**
+ * @param {SqRound} cfg
+ * @returns {{ test: (it: SqItem) => boolean, say: string, icon: string }}
+ */
+function shapesCriterion(cfg) {
+  if (cfg.criterion === 'color') {
+    const col = shapesPick(cfg.colors);
+    return {
+      test: (it) => it.color === col,
+      say: `Touche tous les squishies ${shapesAgree(SQ_COLORS[col].adj, 'm', true)}`,
+      icon: `<span class="sq-dot" style="background:${SQ_COLORS[col].fill};border-color:${SQ_COLORS[col].edge}"></span>`,
+    };
+  }
+  if (cfg.criterion === 'shape') {
+    const sh = shapesPick(cfg.shapes),
+      S = SQ_SHAPES[sh];
+    return {
+      test: (it) => it.shape === sh,
+      say: `Touche ${shapesAll(S.g)} les ${S.p}`,
+      icon: `<span class="sq-hint-shape">${squishySVG(sh, null, true)}</span>`,
+    };
+  }
+  if (cfg.criterion === 'shapeColor') {
+    const sh = shapesPick(cfg.shapes),
+      col = shapesPick(cfg.colors),
+      S = SQ_SHAPES[sh];
+    return {
+      test: (it) => it.shape === sh && it.color === col,
+      say: `Touche ${shapesAll(S.g)} les ${S.p} ${shapesAgree(SQ_COLORS[col].adj, S.g, true)}`,
+      icon: `<span class="sq-hint-shape">${squishySVG(sh, col, true)}</span>`,
+    };
+  }
+  if (cfg.criterion === 'sizeShape') {
+    const sh = shapesPick(cfg.shapes),
+      size = shapesPick(['grand', 'petit']),
+      S = SQ_SHAPES[sh];
+    return {
+      test: (it) => it.shape === sh && it.size === size,
+      say: `Touche ${shapesAll(S.g)} les ${shapesAgree(SQ_SIZES[size], S.g, true)} ${S.p}`,
+      icon: `<span class="sq-hint-shape ${size === 'petit' ? 'is-small' : ''}">${squishySVG(sh, null, true)}</span>`,
+    };
+  }
+  const key = /** @type {'sides' | 'vertices'} */ (cfg.criterion); // 'sides' ou 'vertices'
+  const counts = [...new Set(cfg.shapes.map((s) => SQ_SHAPES[s][key]).filter((n) => n >= 3))];
+  const n = shapesPick(counts);
+  return {
+    test: (it) => SQ_SHAPES[it.shape][key] === n,
+    say: `Touche toutes les formes qui ont ${n} ${key === 'sides' ? 'côtés' : 'sommets'}`,
+    icon: '',
+  };
+}
+
+/* Les squishies du plateau : exactement `targets` répondent à la consigne. */
+/**
+ * @param {SqRound} cfg
+ * @param {(it: SqItem) => boolean} test
+ */
+function shapesItems(cfg, test) {
   const sized = cfg.criterion === 'sizeShape';
   const rnd = () => ({
-    shape: pick(cfg.shapes),
-    color: pick(cfg.colors),
-    size: sized ? pick(['grand', 'petit']) : 'moyen',
+    shape: shapesPick(cfg.shapes),
+    color: shapesPick(cfg.colors),
+    size: sized ? shapesPick(['grand', 'petit']) : 'moyen',
   });
   const items = [];
   // les bonnes réponses
@@ -258,12 +274,12 @@ function shapesBuildRound(dd) {
   const ref = items[0];
   const near = [];
   if (cfg.criterion === 'shapeColor') {
-    near.push({ ...ref, color: pick(cfg.colors.filter((c) => c !== ref.color)) });
-    near.push({ ...ref, shape: pick(cfg.shapes.filter((s) => s !== ref.shape)) });
+    near.push({ ...ref, color: shapesPick(cfg.colors.filter((c) => c !== ref.color)) });
+    near.push({ ...ref, shape: shapesPick(cfg.shapes.filter((s) => s !== ref.shape)) });
   }
   if (cfg.criterion === 'sizeShape') {
     near.push({ ...ref, size: ref.size === 'grand' ? 'petit' : 'grand' });
-    near.push({ ...ref, shape: pick(cfg.shapes.filter((s) => s !== ref.shape)) });
+    near.push({ ...ref, shape: shapesPick(cfg.shapes.filter((s) => s !== ref.shape)) });
   }
   near.forEach((it) => {
     if (!test(it)) items.push({ ...it, ok: false });
@@ -274,6 +290,17 @@ function shapesBuildRound(dd) {
     const it = rnd();
     if (!test(it)) items.push({ ...it, ok: false });
   }
+  return items;
+}
+
+/* Une manche : la consigne (dite et écrite), son image, et les squishies
+   du plateau (dont exactement `targets` répondent à la consigne). */
+/** @param {number} dd le palier de difficulté */
+function shapesBuildRound(dd) {
+  // le palier est borné de 1 à 6 : jamais la case vide (null) du tableau
+  const cfg = /** @type {SqRound} */ (shapesRound(dd));
+  const { test, say, icon } = shapesCriterion(cfg);
+  const items = shapesItems(cfg, test);
   return { cfg, say, icon, items: shuffle(items), targets: items.filter((i) => i.ok).length };
 }
 

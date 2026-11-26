@@ -62,24 +62,14 @@ function setWorld(id, silent) {
   return true;
 }
 
-// signale et ouvre une île fraîchement débloquée
-function checkNewIsland() {
-  const newly = WORLD_ORDER.filter((id) => worldUnlocked(id) && !(state.visited || []).includes(id));
-  if (!newly.length) return false;
-  const id = newly[newly.length - 1];
-  state.visited = (state.visited || []).concat(newly);
-  save();
-  if (id === 'lagon') return false;
+// l'écran « Nouvelle île ! » : y aller tout de suite, ou plus tard
+/** @param {string} id @param {string} who le prénom à saluer (ou rien) */
+function openIslandUnlock(id, who) {
   const w = WORLDS[id];
-  playSound('island');
-  confetti();
-  vibrate([70, 50, 70, 50, 180]);
-  const who = hello();
-  const showUnlockModal = () => {
-    speak(
-      `Nouvelle île débloquée${who ? ', ' + who : ''} ! ${w.name} : ${w.subtitle}. Attention, les défis y sont plus difficiles !`,
-    );
-    openModal(`
+  speak(
+    `Nouvelle île débloquée${who ? ', ' + who : ''} ! ${w.name} : ${w.subtitle}. Attention, les défis y sont plus difficiles !`,
+  );
+  openModal(`
       <div class="reward-box">
         <span class="big-emoji">${w.emoji}</span>
         <h2>Nouvelle île !</h2>
@@ -93,17 +83,31 @@ function checkNewIsland() {
       <button class="btn-primary" id="btn-go">Y aller ! ${w.emoji}</button>
       <button class="btn-ghost" id="btn-stay">Plus tard</button>
     `);
-    setHandler(document.getElementById('btn-go'), 'click', () => {
-      playSound('tap');
-      closeModal();
-      setWorld(id);
-    });
-    setHandler(document.getElementById('btn-stay'), 'click', () => {
-      playSound('tap');
-      closeModal();
-      renderLagon();
-    });
-  };
+  setHandler(document.getElementById('btn-go'), 'click', () => {
+    playSound('tap');
+    closeModal();
+    setWorld(id);
+  });
+  setHandler(document.getElementById('btn-stay'), 'click', () => {
+    playSound('tap');
+    closeModal();
+    renderLagon();
+  });
+}
+
+// signale et ouvre une île fraîchement débloquée
+function checkNewIsland() {
+  const newly = WORLD_ORDER.filter((id) => worldUnlocked(id) && !(state.visited || []).includes(id));
+  if (!newly.length) return false;
+  const id = newly[newly.length - 1];
+  state.visited = (state.visited || []).concat(newly);
+  save();
+  if (id === 'lagon') return false;
+  playSound('island');
+  confetti();
+  vibrate([70, 50, 70, 50, 180]);
+  const who = hello();
+  const showUnlockModal = () => openIslandUnlock(id, who);
   // le fil de l'histoire (js/features/story/story.js) précède l'écran habituel : une
   // nouvelle île est d'abord racontée, avec son énigme à résoudre.
   const chapter = () => {
@@ -164,7 +168,7 @@ function renderLevelPill() {
 // la v44 (identique sur tous les appareils, contrairement aux emoji).
 function refreshIslandNav() {
   const w = WORLDS[currentWorld] || WORLDS.lagon;
-  setNavLabel('ile', uiIcon('ile'), w.short || w.name, 'ile');
+  setNavLabel('ile', { icon: uiIcon('ile'), label: w.short || w.name, iconKey: 'ile' });
 }
 
 function renderIslandCard() {
@@ -215,6 +219,45 @@ function renderScene() {
   renderLiveIsland(document.getElementById('scene'));
 }
 
+// acheter une décoration : les pièces partent, la décoration vole jusqu'à l'île
+/** @param {HTMLElement} btn */
+function buyDeco(btn) {
+  // le sélecteur [data-deco] garantit l'attribut
+  const k = /** @type {string} */ (btn.dataset.deco);
+  const d = DECOS[k];
+  if (state.coins < d.price || state.decos.includes(k)) return;
+  // chaque bouton d'achat est dans sa ligne .market-row (juste au-dessus)
+  const rowEmoji = /** @type {HTMLElement} */ (btn.closest('.market-row')).querySelector('.emoji');
+  const fromPt = gainCenter(rowEmoji);
+  addCoins(-d.price);
+  {
+    spendCoins(d.price, rowEmoji);
+    const scene = document.getElementById('scene');
+    flyEmoji(
+      d.emoji,
+      { from: fromPt, to: gainCenter(scene) },
+      {
+        delay: 480,
+        size: '2.6rem',
+        endScale: 0.9,
+        onLand: () => {
+          playSound('pop');
+          gainLand(scene, true);
+        },
+      },
+    );
+  }
+  state.decos.push(k);
+  save();
+  setTimeout(checkAlbumComplete, 900);
+  playSound('win');
+  confetti();
+  speak(`Super ! ${d.name} est dans ${WORLDS[currentWorld].name} !`);
+  showToast(`${d.emoji} ${d.name} ajouté !`);
+  renderScene();
+  openDecoShop();
+}
+
 function openDecoShop() {
   const w = WORLDS[currentWorld];
   openModal(`
@@ -235,38 +278,7 @@ function openDecoShop() {
   `);
   bindQuit();
   document.querySelectorAll('[data-deco]').forEach((btn) => {
-    setHandler(btn, 'click', () => {
-      // le sélecteur [data-deco] garantit l'attribut
-      const k = /** @type {string} */ (btn.dataset.deco);
-      const d = DECOS[k];
-      if (state.coins < d.price || state.decos.includes(k)) return;
-      // chaque bouton d'achat est dans sa ligne .market-row (juste au-dessus)
-      const rowEmoji = /** @type {HTMLElement} */ (btn.closest('.market-row')).querySelector('.emoji');
-      const fromPt = gainCenter(rowEmoji);
-      addCoins(-d.price);
-      {
-        spendCoins(d.price, rowEmoji);
-        const scene = document.getElementById('scene');
-        flyEmoji(d.emoji, fromPt, gainCenter(scene), {
-          delay: 480,
-          size: '2.6rem',
-          endScale: 0.9,
-          onLand: () => {
-            playSound('pop');
-            gainLand(scene, true);
-          },
-        });
-      }
-      state.decos.push(k);
-      save();
-      setTimeout(checkAlbumComplete, 900);
-      playSound('win');
-      confetti();
-      speak(`Super ! ${d.name} est dans ${WORLDS[currentWorld].name} !`);
-      showToast(`${d.emoji} ${d.name} ajouté !`);
-      renderScene();
-      openDecoShop();
-    });
+    setHandler(btn, 'click', () => buyDeco(btn));
   });
 }
 
@@ -276,6 +288,19 @@ let currentChar = null;
 /** @param {string | null} id */
 function setCurrentChar(id) {
   currentChar = id;
+}
+
+// recette presque complète : il ne manque qu'un seul objet
+/** @returns {string | null} */
+function almostCraftedLine() {
+  for (const [key, cr] of Object.entries(CRAFTED)) {
+    if (countItem(key) > 0) continue;
+    const need = Object.entries(cr.recipe);
+    const missing = need.filter(([ik, qty]) => countItem(ik) < qty);
+    if (missing.length === 1 && countItem(missing[0][0]) === missing[0][1] - 1)
+      return `Il ne te manque qu'un ${ALL_ITEMS[missing[0][0]].name.toLowerCase()} ${ALL_ITEMS[missing[0][0]].emoji} pour fabriquer ${cr.name} ${cr.emoji} !`;
+  }
+  return null;
 }
 
 /* Phrases qui dépendent de la partie en cours */
@@ -296,18 +321,8 @@ function contextualLine(charId) {
       `Oh, tu as déjà ${countItem(k)} ${ITEMS[k].name.toLowerCase()}s ${ITEMS[k].emoji} ! Tu pourrais en vendre au marché.`,
     );
   }
-  // recette presque complète
-  for (const [key, cr] of Object.entries(CRAFTED)) {
-    if (countItem(key) > 0) continue;
-    const need = Object.entries(cr.recipe);
-    const missing = need.filter(([ik, qty]) => countItem(ik) < qty);
-    if (missing.length === 1 && countItem(missing[0][0]) === missing[0][1] - 1) {
-      lines.push(
-        `Il ne te manque qu'un ${ALL_ITEMS[missing[0][0]].name.toLowerCase()} ${ALL_ITEMS[missing[0][0]].emoji} pour fabriquer ${cr.name} ${cr.emoji} !`,
-      );
-      break;
-    }
-  }
+  const almost = almostCraftedLine();
+  if (almost) lines.push(almost);
   if (state.decos.length === 0 && state.coins >= 8)
     lines.push(`Avec tes ${state.coins} pièces, tu pourrais décorer ${WORLDS[currentWorld].name} 🌴 !`);
   if (!Object.values(state.look || {}).some(Boolean) && state.coins >= 8)

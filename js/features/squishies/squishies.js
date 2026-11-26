@@ -394,27 +394,16 @@ function sortSay(criteria) {
   return `Range les ${size ? SQ_SORT_SIZES[size.value].p + ' ' : ''}squishies${adj.length ? ' ' + adj.join(' et ') : ''}`;
 }
 
-/* Prépare une boîte de rangement, ou null si la collection ne le permet pas
-   encore. `avoid` : la consigne précédente (après 2 erreurs, on en change).
-   Renvoie { criteria, say, level, items:[8 ids], targets } */
+/** @param {SortCriterion[]} cr */
+const sortKey = (cr) => cr.map((c) => c.type + ':' + c.value).join('+');
+
+/* Les consignes possibles au palier voulu ; deux critères impossibles avec
+   cette collection : un seul, en attendant. */
 /**
- * @param {Record<string, number> | null | undefined} owned
- * @param {unknown} age
- * @param {Rng} [rng]
- * @param {{ level?: number, avoid?: string }} [opts]
- * @returns {SortingTask | null}
+ * @param {string[]} copies
+ * @param {number} wanted
  */
-function makeSortingTask(owned, age, rng = random, opts = {}) {
-  // owned existe dans le filtre : sans lui, Object.keys n'a rien donné
-  const models = Object.keys(owned || {}).filter(
-    (id) => SQUISHIES[id] && /** @type {Record<string, number>} */ (owned)[id] > 0,
-  );
-  if (models.length < SQ_SORT_MIN_MODELS) return null;
-  const copies = sortCopies(owned);
-  /** @param {SortCriterion[]} cr */
-  const key = (cr) => cr.map((c) => c.type + ':' + c.value).join('+');
-  const wanted = opts.level || sortLevelFor(age);
-  // deux critères impossibles avec cette collection : un seul, en attendant
+function sortPool(copies, wanted) {
   let level = wanted,
     /** @type {SortCriterion[][]} */
     pool = [];
@@ -422,43 +411,76 @@ function makeSortingTask(owned, age, rng = random, opts = {}) {
     pool = sortCandidates(level).filter((cr) => sortFeasible(copies, cr));
     if (pool.length) break;
   }
-  if (!pool.length) return null;
-  if (opts.avoid && pool.length > 1) pool = pool.filter((cr) => key(cr) !== opts.avoid);
-  const criteria = sqPick(pool, rng);
-  // le plateau : 4 ou 5 qui vont dans la boîte, le reste non (au moins 2)
-  /**
-   * @param {string[]} list
-   * @param {number} n
-   */
-  const take = (list, n) => {
-    const bag = shuffleWith(list.slice(), rng),
-      /** @type {string[]} */
-      out = [];
-    // bag.length vérifié : shift donne un id
-    while (out.length < n && bag.length) out.push(/** @type {string} */ (bag.shift()));
-    let i = 0;
-    while (out.length < n && list.length) out.push(list[i++ % list.length]); // collection trop petite : on répète
-    return out;
-  };
+  return { level, pool };
+}
+
+// n squishies pris au hasard dans la liste ; collection trop petite : on répète
+/**
+ * @param {string[]} list
+ * @param {number} n
+ * @param {Rng} rng
+ */
+function sortTake(list, n, rng) {
+  const bag = shuffleWith(list.slice(), rng),
+    /** @type {string[]} */
+    out = [];
+  // bag.length vérifié : shift donne un id
+  while (out.length < n && bag.length) out.push(/** @type {string} */ (bag.shift()));
+  let i = 0;
+  while (out.length < n && list.length) out.push(list[i++ % list.length]); // collection trop petite : on répète
+  return out;
+}
+
+// le plateau : 4 ou 5 qui vont dans la boîte, le reste non (au moins 2)
+/**
+ * @param {string[]} copies
+ * @param {SortCriterion[]} criteria
+ * @param {Rng} rng
+ */
+function sortBoard(copies, criteria, rng) {
   const yes = copies.filter((id) => sortMatches(id, criteria));
   const no = copies.filter((id) => !sortMatches(id, criteria));
   const nYes = Math.min(SQ_SORT_SLOTS + 1, yes.length, SQ_SORT_CHOICES - 2);
   // deux critères : d'abord des « presque » (un seul des deux), pour regarder les deux
   const near = criteria.length > 1 ? no.filter((id) => criteria.some((c) => SQUISHIES[id][c.type] === c.value)) : [];
   const nNear = Math.min(near.length, 2);
-  const noPart = take(near, nNear);
+  const noPart = sortTake(near, nNear, rng);
   const rest = no.slice();
   noPart.forEach((id) => {
     const i = rest.indexOf(id);
     if (i >= 0) rest.splice(i, 1);
   });
-  const items = shuffleWith(
-    [...take(yes, nYes), ...noPart, ...take(rest.length ? rest : no, SQ_SORT_CHOICES - nYes - nNear)],
+  return shuffleWith(
+    [...sortTake(yes, nYes, rng), ...noPart, ...sortTake(rest.length ? rest : no, SQ_SORT_CHOICES - nYes - nNear, rng)],
     rng,
   );
+}
+
+/* Prépare une boîte de rangement, ou null si la collection ne le permet pas
+   encore. `avoid` : la consigne précédente (après 2 erreurs, on en change).
+   Renvoie { criteria, say, level, items:[8 ids], targets } */
+/**
+ * @param {Record<string, number> | null | undefined} owned
+ * @param {unknown} age
+ * @param {{ rng?: Rng, level?: number, avoid?: string }} [opts]
+ * @returns {SortingTask | null}
+ */
+function makeSortingTask(owned, age, opts = {}) {
+  const rng = opts.rng || random;
+  // owned existe dans le filtre : sans lui, Object.keys n'a rien donné
+  const models = Object.keys(owned || {}).filter(
+    (id) => SQUISHIES[id] && /** @type {Record<string, number>} */ (owned)[id] > 0,
+  );
+  if (models.length < SQ_SORT_MIN_MODELS) return null;
+  const copies = sortCopies(owned);
+  let { level, pool } = sortPool(copies, opts.level || sortLevelFor(age));
+  if (!pool.length) return null;
+  if (opts.avoid && pool.length > 1) pool = pool.filter((cr) => sortKey(cr) !== opts.avoid);
+  const criteria = sqPick(pool, rng);
+  const items = sortBoard(copies, criteria, rng);
   return {
     criteria,
-    key: key(criteria),
+    key: sortKey(criteria),
     say: sortSay(criteria),
     level,
     items,
@@ -508,11 +530,10 @@ function sortWrongHint(id, criteria) {
    2 réussites d'affilée avec au plus 1 erreur, jusqu'au plafond de l'âge. */
 /**
  * @param {boolean} ok
- * @param {number} errors
- * @param {number} level
- * @param {unknown} age
+ * @param {{ errors: number, level: number, age: unknown }} box les erreurs, le niveau de la boîte, l'âge
  */
-function recordSorting(ok, errors, level, age) {
+function recordSorting(ok, box) {
+  const { errors, level, age } = box;
   if (!state.skills) state.skills = {};
   const s =
     state.skills.rangement ||
@@ -552,7 +573,7 @@ function sortingDone(errors, level, age) {
   sq.sorted++;
   const paid = day.sorted < SQ_SORT_PAID_MAX;
   day.sorted++;
-  recordSorting(true, errors, level, age);
+  recordSorting(true, { errors, level, age });
   if (paid) addCoins(SQ_SORT_REWARD);
   save();
   return paid ? SQ_SORT_REWARD : 0;
