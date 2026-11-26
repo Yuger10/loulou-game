@@ -13,6 +13,7 @@
        won      défis étoile réussis (une étoile sur le jeu dès 1)
        offered  dernier jour où le défi a été proposé (AAAA-MM-JJ)
    Dans le profil : starChallenges (false = un adulte a coupé les défis).
+   Les réglages de l'espace parents (fermer toutes les portes) : star-doors.js.
 
    Ce fichier n'importe ni skills.js ni game-diff.js, qui l'importent tous les
    deux (import/no-cycle). */
@@ -25,13 +26,13 @@ import { bonusChallenge, inBonusChallenge, lastGame } from './session.js';
 import { SKILL_ERR_TOLERANCE } from './skill-status.js';
 
 /** @typedef {import('../../entities/game-state/index.js').StarRecord} StarRecord */
-/** @typedef {Partial<import('../../entities/game-state/index.js').GameState>} StarsHolder une partie : la courante, ou celle d'un autre enfant */
 
 const STAR_STREAK = 3; // missions maîtrisées d'affilée avant de proposer le défi
 const STAR_MISS_LIMIT = 2; // erreurs d'affilée qui referment la porte
 
 // La mission étoile en cours (variable de session, comme le défi de Zap dans
-// session.js) : posée au démarrage d'une partie, retirée à la fin de la mission.
+// session.js) : posée au démarrage d'une partie, retirée à la fin de la mission
+// ou à la fermeture de la fenêtre du jeu (croix, Échap : le moteur s'en charge).
 /** @type {{ key: string } | null} */
 let starMission = null;
 // Une seule offre de défi étoile par ouverture du jeu, tous jeux confondus :
@@ -255,45 +256,8 @@ function starAfterMission(ok, errors, t) {
   s.streak = ok && errors <= (SKILL_ERR_TOLERANCE[k] || 1) ? s.streak + 1 : 0;
 }
 
-/**
- * Change toutes les portes d'une partie (celle du joueur courant, ou celle
- * d'un autre enfant lue par l'espace parents, qui l'enregistre ensuite).
- * @param {StarsHolder} st
- * @param {boolean} resetStreak remettre aussi les compteurs de maîtrise à 0
- * @returns {boolean} true si quelque chose a changé (il faut enregistrer)
- */
-function shutStarDoors(st, resetStreak) {
-  let changed = false;
-  Object.values(st.stars || {}).forEach((s) => {
-    if (s.open || s.miss || (resetStreak && s.streak)) changed = true;
-    s.open = false;
-    s.miss = 0;
-    if (resetStreak) s.streak = 0;
-  });
-  return changed;
-}
-/**
- * Un adulte coupe les défis étoile : toutes les portes se ferment ; les
- * compteurs de maîtrise et les étoiles gagnées restent.
- * @param {StarsHolder} st
- * @returns {boolean} true si quelque chose a changé
- */
-function closeAllStarDoors(st) {
-  return shutStarDoors(st, false);
-}
-/**
- * Un adulte change la classe : le plafond change, donc toutes les portes se
- * ferment et la maîtrise se prouve de nouveau ; les étoiles gagnées restent.
- * @param {StarsHolder} st
- * @returns {boolean} true si quelque chose a changé
- */
-function starsResetFor(st) {
-  return shutStarDoors(st, true);
-}
-
 export {
   beginStarMission,
-  closeAllStarDoors,
   closeStarDoor,
   endStarMission,
   inStarMission,
@@ -305,6 +269,5 @@ export {
   starAfterMission,
   starOf,
   starOfferDue,
-  starsResetFor,
   starTier,
 };

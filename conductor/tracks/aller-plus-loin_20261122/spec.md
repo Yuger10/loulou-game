@@ -12,6 +12,7 @@ files:
   - js/features/adaptive/game-diff.js
   - js/features/adaptive/skills.js
   - js/features/adaptive/stars.js
+  - js/features/adaptive/star-doors.js
   - js/features/adaptive/day.js
   - js/features/adaptive/index.js
   - js/features/adaptive/adaptive.css
@@ -22,6 +23,13 @@ files:
   - js/features/parents/parents.js
   - js/slices.cjs
   - test/aller-plus-loin.test.js
+  - test/aller-plus-loin-classe-parents.test.js
+  - test/aller-plus-loin-etoile.test.js
+  - test/aller-plus-loin-mission.test.js
+  - test/aller-plus-loin-reglages.test.js
+  - test/aller-plus-loin-offre.test.js
+  - test/aller-plus-loin-croix.test.js
+  - test/tools/aller-plus-loin.js
   - ANALYSE-DIFFICULTE.md
   - conductor/product-guidelines.md
 taster: { facts: 0, decisions: 0, rounds: 8 }
@@ -72,6 +80,7 @@ Les « paliers » sont ceux de `js/entities/difficulty/difficulty.js:75-80`. « 
 24. Étant donné une mission étoile, quand elle démarre, alors le nombre d'essais et la durée du minuteur sont ceux du palier habituel (`normalDiff()`, 2 ici) : pas de minuteur pour un enfant au plafond 2, même si le palier de la question est 3.
 25. Étant donné une mission étoile, quand l'enfant fait une erreur, alors `miss` augmente de 1 ; une bonne étape (`stepOk`) ou une mission gagnée remet `miss` à 0.
 26. Étant donné une mission étoile et `miss` à 1, quand l'enfant fait une 2e erreur d'affilée (`loseLife`), alors `noteStarError()` ferme la porte aussitôt (`open` à `false`, `streak` à 0, `miss` à 0) et renvoie `true` ; le moteur retire alors `.star-badge` de la fenêtre ; `inStarMission()` reste vrai jusqu'à la fin de la mission, mais `gameDiff()` revient au palier habituel (règle « Palier étoile », Politiques) : la mission continue au palier habituel jusqu'à sa fin, sans badge.
+    - 26 bis (ajout après la relecture de la PR 108). Étant donné une mission étoile en cours, quand l'enfant ferme la fenêtre du jeu (croix, Échap, clic à côté), alors la mission étoile s'arrête (`inStarMission()` faux, `gameDiff()` revient au palier habituel) et aucune autre fenêtre ne porte `.star-badge` ; la porte reste ouverte et `miss` reste tel quel : le jeu rejoué est de nouveau une mission étoile.
 27. Étant donné une mission étoile gagnée **porte encore ouverte**, quand l'écran de victoire s'affiche, alors la récompense est la récompense normale (pas de doublement), `won` augmente de 1, et l'écran ajoute « Défi étoile réussi ! Ce jeu gagne son étoile ⭐ » si `won` vaut 1, sinon « Défi étoile réussi ⭐ » ; la même phrase est dite à voix haute ; aucun texte du point 30.
 28. Étant donné une mission étoile, gagnée ou ratée, que sa porte se soit fermée pendant la mission ou non, quand elle est enregistrée, alors `wins`, `fails`, `errors` et `last` sont comptés comme pour Zap, mais `recent`, `atLvl`, `lvl`, `support` et `streak` ne changent pas (comme `skills.js:58-62`).
 29. Étant donné une mission étoile ratée (plus d'essais) **porte encore ouverte**, quand l'écran d'échec s'affiche, alors son titre est « Bien essayé ! » (au lieu de « Raté ! ») et son message « Le défi étoile était très difficile. C'était courageux d'essayer ! », suivi du texte du point 30 ; la porte se ferme (`open` à `false`, `streak` à 0, `miss` à 0), et rien de ce qui a été gagné avant n'est retiré.
@@ -171,7 +180,7 @@ Relevé par `grep -rn "ageToDiff\|\.age\b\|currentPlayerAge()" js` dans le workt
 | `gradeToDiff(grade)`, `playerCap(p)` | nombre de 1 à 5, ou `null` | `js/entities/difficulty/age.js` | game-diff, stars, parents, profiles-ui |
 | `p.grade`, `p.starChallenges` | `'' \| 'GS' \| 'CP' \| 'CE1' \| 'CE2'` ; booléen, absent = `true` | `js/entities/player/profiles.js` | game-diff, stars, parents |
 | `state.stars[jeu]` | `{ streak: number, open: boolean, miss: number, won: number, offered: 'AAAA-MM-JJ' \| null }` | `js/features/adaptive/stars.js` | engine, players, parents, bilan-parents (option) |
-| API de `stars.js` | `starOf(k)`, `starTier(k)`, `beginStarMission(k)`, `endStarMission()`, `inStarMission()`, `starActive()`, `starOfferDue(k)`, `noteStarOffered(k)`, `openStarDoor(k)`, `closeStarDoor(k)`, `noteStarError()` (renvoie `true` si la porte vient de se fermer), `noteStarGood()`, `starAfterMission(ok, errors, t)`, `closeAllStarDoors(st)`, `starsResetFor(st)` | `js/features/adaptive/stars.js` | engine, specialties, players, parents |
+| API de `stars.js` | `starOf(k)`, `starTier(k)`, `beginStarMission(k)`, `endStarMission()`, `inStarMission()`, `starActive()`, `starOfferDue(k)`, `noteStarOffered(k)`, `openStarDoor(k)`, `closeStarDoor(k)`, `noteStarError()` (renvoie `true` si la porte vient de se fermer), `noteStarGood()`, `starAfterMission(ok, errors, t)`, `closeAllStarDoors(st)`, `starsResetFor(st)` (ces deux dernières dans `star-doors.js`) | `js/features/adaptive/stars.js` | engine, specialties, players, parents |
 | `normalDiff()` | palier sans la porte étoile | `js/features/adaptive/game-diff.js` | engine (essais, minuteur) |
 
 ## Surface d'attaque
@@ -191,8 +200,8 @@ Espace parents (`js/features/parents/`), sauvegarde et migration (`js/entities/g
 
 | Id | Qui | Étapes | Attendu | Niveau visé |
 |---|---|---|---|---|
-| S1 | 🤖 | `test/aller-plus-loin.test.js` : points 1 à 14 | tous verts | test-verified |
-| S2 | 🤖 | même fichier : points 15 à 38, avec `Math.random` remplacé pour les tirages | tous verts | test-verified |
+| S1 | 🤖 | `test/aller-plus-loin.test.js` et `test/aller-plus-loin-classe-parents.test.js` : points 1 à 14 | tous verts | test-verified |
+| S2 | 🤖 | `test/aller-plus-loin-etoile.test.js`, `-mission`, `-reglages`, `-offre` et `-croix` : points 15 à 38 et 26 bis, avec `Math.random` remplacé pour les tirages | tous verts | test-verified |
 | S3 | 🤖 | `bun run check` | sortie 0 | runtime-verified |
 | S4 | 👤 | Amrou règle la classe dans l'espace parents sur le téléphone, puis repasse sur « Selon l'âge » | la carte est claire, le palier suit | e2e-verified |
 | S5 | 👤 | La joueuse maîtrise un jeu, entend l'offre, l'accepte puis la refuse un autre jour | l'offre est comprise à l'oral, ne la presse pas, le retour au jeu habituel ne la vexe pas | e2e-verified |

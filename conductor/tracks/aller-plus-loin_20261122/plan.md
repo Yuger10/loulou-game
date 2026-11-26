@@ -33,6 +33,8 @@ Deux phases, deux PR. Chacune est livrable seule : la phase 1 ne montre que la c
 - [x] 19. `js/features/adaptive/adaptive.css` : `.star-offer`, `.star-badge`, `.star-mark` (boutons d'au moins 64 px de haut au doigt).
 - [x] 20. Doc : `ANALYSE-DIFFICULTE.md` (le défi étoile, D8 à D11), `conductor/product-guidelines.md` (une ligne : « Aller plus loin sans pression : défi étoile refusable, retiré sans rien perdre »). `bun run check` passe.
 - [x] 21. Livraison : rebase sur `main`, `bun run release track "aller plus loin : classe du profil et défi étoile"`, compléter la section du PRD, PR (zones sensibles : sauvegarde et migration, espace parents).
+- [x] 22. Relecture de la PR 108, garde « violations ajoutées » (complexité et taille) : `onMissionWin` et `onMissionFail` repassent sous 50 lignes (`winStar`, `failTexts`) ; `closeAllStarDoors` et `starsResetFor` passent dans `js/features/adaptive/star-doors.js` (`stars.js` sous 300 lignes) ; la suite de tests est découpée en 6 fichiers `test/aller-plus-loin*.test.js` et un outil partagé `test/tools/aller-plus-loin.js`, mêmes vérifications.
+- [x] 23. Relecture de la PR 108, point 26 bis : `test/aller-plus-loin-croix.test.js` (rouge d'abord), puis `engine.js` termine la mission étoile à la fermeture de la fenêtre (`onModalClose`).
 
 ## Preuves
 
@@ -41,6 +43,8 @@ Deux phases, deux PR. Chacune est livrable seule : la phase 1 ne montre que la c
 | S1 | vert | test-verified | `bun run test aller-plus-loin` : sortie 1 sans le changement (168 en échec, dont « gradeToDiff is not defined »), sortie 0 avec (`prove-red-green.sh --base origin/conductor/specs-validees`) |
 | S2 | vert | test-verified | même commande : les points 15 à 38 rouges avant le code (127 en échec après la phase 1), verts après ; 209 vérifications |
 | S3 | vert | runtime-verified | `bun run check` (exit 0) |
+| 26 bis | vert | test-verified | `bun run test aller-plus-loin-croix` : sortie 1 sans la correction (5 en échec, dont « l'espace parents ne porte pas le badge → 👪 Espace parents⭐ »), sortie 0 avec (`prove-red-green.sh`) |
+| Garde « violations ajoutées » | vert | runtime-verified | `bash .cothon/bin/new-violations.sh --base origin/main -- bash "$PWD/.cothon/bin/quality-check.sh" complexite --project .` : sortie 1 avant (6 ajoutées), sortie 0 après (0 ajoutée) |
 | S4 | à faire | e2e-verified | 👤 Amrou |
 | S5 | à faire | e2e-verified | 👤 Amrou et sa fille |
 | S6 | à faire | e2e-verified | 👤 Amrou et sa fille |
@@ -61,6 +65,8 @@ Deux phases, deux PR. Chacune est livrable seule : la phase 1 ne montre que la c
 | 10 | `test/licornes.test.js` : deux assertions passent de 9 à 10 (lignes 499 et 526), la spec ne nommait que la 499 | Claude | la ligne 526 (`m.v === 9` après `migrate`) fige la même version dans le même test ; même force, seul le numéro change | diff du test | à signaler dans la PR |
 | 11 | Toasts des puces de défi : « ⭐ Défis étoile » et « Pas de défi étoile » | Claude | détail non écrit : le libellé de la puce, comme le toast de la musique | lecture du code | à juger à la revue |
 | 12 | Une mission étoile quittée par la croix garde `miss` tel quel ; changer l'âge dans le formulaire du joueur ne ferme pas les portes | Claude | la spec ne parle que d'erreurs « d'affilée » et du changement de classe ; rien ajouté hors spec | lecture du code | question pour Amrou |
+| 13 | Une mission étoile quittée par la croix (ou Échap, clic à côté) s'arrête à la fermeture de la fenêtre ; la porte reste ouverte, `miss` reste tel quel | relecteur de la PR 108, Claude | sans cela le badge ⭐ réapparaissait sur le choix des jeux et l'espace parents, et `gameDiff()` restait au palier du défi | `test/aller-plus-loin-croix.test.js` | point 26 bis ajouté à la spec, à valider par Amrou |
+| 14 | La suite de tests est découpée en 6 fichiers et un outil partagé, sans changer une vérification | Claude | le garde CI « violations ajoutées » refuse un fichier de plus de 300 lignes et une fonction de complexité 150 | 209 vérifications avant, 213 après (une ligne « aucune erreur JS » par page) plus 10 pour la croix | à juger à la revue |
 
 ## Écarts et non vérifié
 

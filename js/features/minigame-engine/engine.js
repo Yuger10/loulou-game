@@ -461,6 +461,18 @@ function winStarLine(star, key) {
   if (!star.open) return starBackText(key);
   return starOf(key).won === 1 ? 'Défi étoile réussi ! Ce jeu gagne son étoile ⭐' : 'Défi étoile réussi ⭐';
 }
+/**
+ * Le défi étoile sur l'écran de victoire : la phrase de la mission étoile qui se
+ * termine, ou l'offre si le jeu vient d'être maîtrisé (elle est alors notée).
+ * @param {{ on: boolean, open: boolean }} star
+ * @param {string | null} key le jeu
+ * @returns {{ starLine: string | null, starOffer: boolean }}
+ */
+function winStar(star, key) {
+  const starOffer = !star.on && !!key && starOfferDue(key);
+  if (starOffer && key) noteStarOffered(key);
+  return { starLine: winStarLine(star, key), starOffer };
+}
 // le bloc de l'offre, sur l'écran de victoire (comme l'offre de Zap sur l'île)
 function starOfferHTML() {
   return `<div class="speech team-extra star-offer">
@@ -493,6 +505,24 @@ function winBindStarOffer(key) {
   });
 }
 
+/**
+ * Ce que l'écran d'échec dit. Défi étoile raté, porte encore ouverte : on salue le
+ * courage ; dans tous les cas d'une mission étoile, on dit le retour au jeu habituel.
+ * @param {{ on: boolean, open: boolean }} star
+ * @param {string} who le prénom, ou une chaîne vide
+ * @returns {{ msg: string, back: string }}
+ */
+function failTexts(star, who) {
+  const msg = star.open
+    ? STAR_FAIL_TEXT
+    : pickRandom([
+        `Ce n'est pas grave${who ? ' ' + who : ''} ! On réessaie ?`,
+        `Presque ! Tu vas y arriver la prochaine fois.`,
+        `Oups ! Regarde bien et réessaie 👀`,
+      ]);
+  return { msg, back: star.on ? starBackText(lastGame) : '' };
+}
+
 /* Mission ratée : on encourage, on ne punit pas — mais pas de récompense. */
 function onMissionFail() {
   const star = starMissionState();
@@ -507,16 +537,7 @@ function onMissionFail() {
   const who = hello();
   playSound('wrong');
   vibrate([120, 60, 120]);
-  // défi étoile raté, porte encore ouverte : on salue le courage ; dans tous les
-  // cas d'une mission étoile, on dit le retour au jeu habituel
-  const msg = star.open
-    ? STAR_FAIL_TEXT
-    : pickRandom([
-        `Ce n'est pas grave${who ? ' ' + who : ''} ! On réessaie ?`,
-        `Presque ! Tu vas y arriver la prochaine fois.`,
-        `Oups ! Regarde bien et réessaie 👀`,
-      ]);
-  const back = star.on ? starBackText(lastGame) : '';
+  const { msg, back } = failTexts(star, who);
   speak(`${msg}${back ? ' ' + back : ''}`);
 
   openModal(`
@@ -588,31 +609,12 @@ function onMissionWin() {
   // progrès ; Zap fête le défi bonus ; Tom rapporte le trésor du jour
   const cheerBy = cheer ? teamCheerBy() : null;
   const extras = teamWinExtras();
-  // défi étoile : la phrase de la mission étoile qui se termine, ou l'offre si le
-  // jeu vient d'être maîtrisé (règle « Offre due », lue avant la fin du défi de Zap)
   const starKey = lastGame;
-  const starLine = winStarLine(star, starKey);
-  const starOffer = !star.on && !!starKey && starOfferDue(starKey);
-  if (starOffer && starKey) noteStarOffered(starKey);
+  const shown = winStar(star, starKey); // avant la fin du défi de Zap (règle « Offre due »)
   endBonusChallenge();
   endStarMission();
   /** @type {MissionWin} */
-  const w = {
-    c,
-    it: ITEMS[key],
-    bonus,
-    boost,
-    levelUp,
-    praise,
-    fact,
-    lookWon,
-    cheer,
-    cheerBy,
-    extras,
-    solo,
-    starLine,
-    starOffer,
-  };
+  const w = { c, it: ITEMS[key], bonus, boost, levelUp, praise, fact, lookWon, cheer, cheerBy, extras, solo, ...shown };
   setTimeout(() => speak(winSpeech(w)), 300);
 
   openModal(winMarkup(w));
@@ -745,8 +747,13 @@ onModalChange(() => {
   clearActiveTimer();
   clearPendingRetry();
 });
+// La fenêtre se ferme (croix, Échap, clic à côté, « Plus tard ») : une mission
+// étoile quittée en route s'arrête là. Sans ça, son badge ⭐ réapparaîtrait sur
+// la prochaine fenêtre à en-tête (choix des jeux, espace parents) et le palier
+// lu resterait celui du défi. La porte reste ouverte : le jeu rejoué est un défi.
 onModalClose(() => {
   forgetSpokenHint();
+  endStarMission();
 });
 
 export {
