@@ -1,4 +1,4 @@
-// @shards 6
+// @shards 8
 // Les erreurs expliquées (track erreurs-expliquees) : après une erreur, une
 // phrase dite et un geste sur l'écran pendant 4 secondes, puis une autre
 // question. Garde des jeux exemptés, table de chaque jeu, parcours par palier.
@@ -6,7 +6,7 @@
 // la voix est notée au lieu d'être dite. Les délais demandés à setTimeout sont
 // notés tels quels : un délai se vérifie alors sans dépendre de la machine.
 const { JSDOM } = require('jsdom');
-const { inShard } = require('./tools/shard.js');
+const { inShard, shard } = require('./tools/shard.js');
 const html = require('./tools/page.js').buildHtml();
 
 const SPEED = 0.1;
@@ -143,18 +143,12 @@ const EXPLAIN_EXEMPT = [
   'lifecycle',
   'potions',
   'mirror',
-  // phase 1 seulement : retirés par la phase 2
-  'puzzle',
-  'money',
-  'packs',
-  'share',
-  'ladybugs',
 ];
-const EXPLAIN_EXEMPT_MAX = 23;
+const EXPLAIN_EXEMPT_MAX = 18;
 // couples jeu et palier qui n'ont qu'une question possible (ligne 5 sans objet) : aucun
 const SINGLE_QUESTION = [];
 // les jeux qui ont leurs explications, phase par phase
-const EXPLAINED = ['count', 'compare', 'math', 'calc', 'clock'];
+const EXPLAINED = ['count', 'compare', 'math', 'calc', 'clock', 'puzzle', 'money', 'packs', 'share', 'ladybugs'];
 
 // Le garde, pur : la liste des erreurs (vide si tout va bien)
 function explainGuard(games, explained, exempt, never, legacy, max) {
@@ -205,6 +199,38 @@ const clockQ = (hour, minute) => ({
   options: [],
 });
 const clockFx = (hand, answer) => ({ glow: `.clock-hand-${hand}, .clock-opt-btn[data-v="${answer}"]` });
+
+const MONEY_Q = {
+  target: 8,
+  piles: [
+    { pile: [5, 2, 2], total: 9 },
+    { pile: [5, 2, 1], total: 8 },
+    { pile: [2, 2, 1], total: 5 },
+  ],
+};
+const pileSel = (v) => `.money-pile-btn[data-v="${v}"]`;
+const moneyFx = (v, sum) => ({
+  marks: [
+    { sel: pileSel(v), text: sum },
+    { sel: pileSel(8), text: '5 + 2 + 1 = 8' },
+  ],
+  glow: pileSel(8),
+});
+const PACKS_Q = { size: 5, n: 3, extra: 0, label: false, total: 15 },
+  PACKS_Q1 = { size: 2, n: 4, extra: 1, label: false, total: 9 };
+const packsFx = (size, n, extra) => ({
+  marks: Array.from({ length: n }, (_, i) => ({ sel: `.pack[data-pack="${i}"]`, text: String(size * (i + 1)) })).concat(
+    extra ? [{ sel: '.pack-single', text: String(size * n + 1) }] : [],
+  ),
+  glow: `.pack-opt[data-v="${size * n + extra}"]`,
+});
+const wholeQ = (whole, n) => ({ ask: 'whole', n, whole, trap: false });
+const WHOLE_V = '({ equal: false, n: NaN, k: "9" })';
+const wholeFx = (ans) => ({ glow: `.share-stage, .share-opt[data-k="${ans}"]` });
+const lbFx = (answer, n, total) => ({
+  glow: `#lb-stage, .lb-opt[data-v="${answer}"]`,
+  html: strip(`${n} + ${n} = ${total}`),
+});
 
 // chaque ligne : [jeu, question, mauvaise réponse (source JS), say attendu, fx attendu, run attendu ?]
 const ROWS = [
@@ -421,6 +447,162 @@ const ROWS = [
     clockFx('m', '3 h 45'),
     true,
   ],
+  // puzzle : la question continue, jamais la réponse
+  [
+    'puzzle',
+    { seq: [3, 4, 5, 6, 7], idx: 2, variant: 'start' },
+    '6',
+    '6 vient plus tard. Quel nombre vient juste après 4 ?',
+    { glow: '.puzzle-btn.done' },
+  ],
+  [
+    'puzzle',
+    { seq: [1, 2, 3, 4], idx: 2, variant: 'from1' },
+    '4',
+    '4 vient plus tard. Quel nombre vient juste après 2 ?',
+    { glow: '.puzzle-btn.done' },
+  ],
+  [
+    'puzzle',
+    { seq: [9, 8, 7, 6], idx: 1, variant: 'desc' },
+    '6',
+    '6 vient plus tard. Quel nombre vient juste avant 9 ?',
+    { glow: '.puzzle-btn.done' },
+  ],
+  [
+    'puzzle',
+    { seq: [2, 4, 6, 8], idx: 1, variant: 'step2' },
+    '8',
+    '8 vient plus tard. On compte de 2 en 2 après 2.',
+    { glow: '.puzzle-btn.done' },
+  ],
+  [
+    'puzzle',
+    { seq: [1, 2, 3], idx: 0, variant: 'from1' },
+    '3',
+    "3 n'est pas le plus petit. Cherche le plus petit nombre.",
+    { glow: '.puzzle-row' },
+  ],
+  [
+    'puzzle',
+    { seq: [4, 5, 6], idx: 0, variant: 'start' },
+    '6',
+    "6 n'est pas le plus petit. Cherche le plus petit nombre.",
+    { glow: '.puzzle-row' },
+  ],
+  [
+    'puzzle',
+    { seq: [2, 4, 6], idx: 0, variant: 'step2' },
+    '6',
+    "6 n'est pas le plus petit. Cherche le plus petit nombre.",
+    { glow: '.puzzle-row' },
+  ],
+  [
+    'puzzle',
+    { seq: [9, 8, 7], idx: 0, variant: 'desc' },
+    '7',
+    "7 n'est pas le plus grand. Cherche le plus grand nombre.",
+    { glow: '.puzzle-row' },
+  ],
+  // money
+  ['money', MONEY_Q, '9', "Cette pile fait 9 : c'est plus que 8.", moneyFx(9, '5 + 2 + 2 = 9')],
+  ['money', MONEY_Q, '5', "Cette pile fait 5 : c'est moins que 8.", moneyFx(5, '2 + 2 + 1 = 5')],
+  // packs
+  ['packs', PACKS_Q, '10', 'Il manque un paquet. 3 paquets de 5 : 15.', packsFx(5, 3, 0)],
+  ['packs', PACKS_Q, '8', 'On ne fait pas 3 plus 5. On compte par paquets : 15.', packsFx(5, 3, 0)],
+  ['packs', PACKS_Q, '20', 'Un paquet de trop. 3 paquets de 5 : 15.', packsFx(5, 3, 0)],
+  ['packs', PACKS_Q, '16', 'Je compte de 5 en 5 : 15.', packsFx(5, 3, 0)],
+  ['packs', PACKS_Q1, '8', "N'oublie pas le jouet seul : 9.", packsFx(2, 4, 1)],
+  ['packs', PACKS_Q1, '7', 'Il manque un paquet. 4 paquets de 2 et 1 : 9.', packsFx(2, 4, 1)],
+  ['packs', PACKS_Q1, '11', 'Un paquet de trop. 4 paquets de 2 et 1 : 9.', packsFx(2, 4, 1)],
+  // share
+  [
+    'share',
+    { ask: 'fair', n: 4, whole: null, trap: false },
+    '({ equal: false, n: 4, k: "1" })',
+    'Ces parts ne sont pas pareilles : une est plus grosse.',
+    { glow: '.share-opt[data-equal="1"]' },
+  ],
+  [
+    'share',
+    { ask: 'show', n: 2, whole: null, trap: false },
+    '({ equal: true, n: 3, k: "0" })',
+    "Ce gâteau a 3 parts. La moitié, c'est 2 parts égales.",
+    { glow: '.share-opt[data-equal="1"][data-n="2"]' },
+  ],
+  [
+    'share',
+    { ask: 'show', n: 3, whole: null, trap: false },
+    '({ equal: true, n: 4, k: "0" })',
+    "Ce gâteau a 4 parts. Le tiers, c'est 3 parts égales.",
+    { glow: '.share-opt[data-equal="1"][data-n="3"]' },
+  ],
+  [
+    'share',
+    { ask: 'show', n: 4, whole: null, trap: true },
+    '({ equal: false, n: 4, k: "2" })',
+    "Ces parts ne sont pas égales : ce n'est pas le quart.",
+    { glow: '.share-opt[data-equal="1"][data-n="4"]' },
+  ],
+  [
+    'share',
+    { ask: 'write', n: 3, whole: null, trap: false },
+    '({ equal: false, n: NaN, k: "4" })',
+    "Le gâteau a 3 parts égales : c'est un tiers.",
+    { glow: '.share-stage, .share-opt[data-k="3"]', html: strip('⅓') },
+  ],
+  [
+    'share',
+    { ask: 'write', n: 2, whole: null, trap: false },
+    '({ equal: false, n: NaN, k: "4" })',
+    "Le gâteau a 2 parts égales : c'est un demi.",
+    { glow: '.share-stage, .share-opt[data-k="2"]', html: strip('½') },
+  ],
+  [
+    'share',
+    { ask: 'write', n: 4, whole: null, trap: false },
+    '({ equal: false, n: NaN, k: "2" })',
+    "Le gâteau a 4 parts égales : c'est un quart.",
+    { glow: '.share-stage, .share-opt[data-k="4"]', html: strip('¼') },
+  ],
+  ['share', wholeQ('quarts-moitie', 2), WHOLE_V, 'Deux quarts font une moitié.', wholeFx(2)],
+  ['share', wholeQ('quarts-entier', 4), WHOLE_V, 'Quatre quarts font le gâteau entier.', wholeFx(4)],
+  ['share', wholeQ('moities-entier', 2), WHOLE_V, 'Deux moitiés font le gâteau entier.', wholeFx(2)],
+  ['share', wholeQ('tiers-entier', 3), WHOLE_V, 'Trois tiers font le gâteau entier.', wholeFx(3)],
+  // ladybugs
+  [
+    'ladybugs',
+    { mode: 'double', n: 4, total: 8 },
+    '4',
+    'Tu as compté une seule aile. 4 plus 4, ça fait 8.',
+    lbFx(8, 4, 8),
+  ],
+  ['ladybugs', { mode: 'double', n: 4, total: 8 }, '9', '4 points sur chaque aile : 4 plus 4, 8.', lbFx(8, 4, 8)],
+  ['ladybugs', { mode: 'count', n: 1, total: 2 }, '3', '1 point sur chaque aile : 1 plus 1, 2.', lbFx(2, 1, 2)],
+  [
+    'ladybugs',
+    { mode: 'count', n: 3, total: 6 },
+    '3',
+    'Tu as compté une seule aile. 3 plus 3, ça fait 6.',
+    lbFx(6, 3, 6),
+  ],
+  ['ladybugs', { mode: 'half', n: 7, total: 14 }, '9', "9 plus 9, ça fait 18, pas 14. C'est 7.", lbFx(7, 7, 14)],
+  [
+    'ladybugs',
+    { mode: 'complete', n: 5, total: 10 },
+    '3',
+    'Il manque des points : il en faut 5, comme à gauche.',
+    { glow: '#lb-stage' },
+    true,
+  ],
+  [
+    'ladybugs',
+    { mode: 'complete', n: 5, total: 10 },
+    '7',
+    'Trop de points : il en faut 5, comme à gauche.',
+    { glow: '#lb-stage' },
+    true,
+  ],
 ];
 
 // JSON aux clés triées : deux objets égaux en profondeur donnent le même texte
@@ -488,7 +670,52 @@ const GAMES = {
     key: () => ev('hint.q.hour + "-" + hint.q.minute'),
     shows: () => glows(solEl()) && !!d.querySelector('.clock-face .clock-nums'),
   },
+  // la question continue : pas de clé, pas de bonne réponse montrée (ligne 7)
+  puzzle: {
+    continued: true,
+    wrong: () => [...d.querySelectorAll('.puzzle-btn:not(.done)')].find((b) => b !== puzzleNext()),
+    v: (b) => b.dataset.n,
+  },
+  money: {
+    wrong: () => otherChoice('.money-pile-btn'),
+    v: (b) => b.dataset.v,
+    key: () => ev('String(hint.q.target)'),
+    shows: (q) =>
+      glows(solEl()) && new RegExp(`= ${q.target}$`).test((solEl().querySelector('.explain-mark') || {}).textContent),
+  },
+  packs: {
+    wrong: () => otherChoice('.pack-opt'),
+    v: (b) => b.dataset.v,
+    key: () => ev('hint.q.size + "-" + hint.q.n + "-" + hint.q.extra'),
+    shows: () => glows(solEl()),
+  },
+  share: {
+    wrong: () => otherChoice('.share-opt'),
+    v: (b) => `({ equal: ${b.dataset.equal === '1'}, n: ${Number(b.dataset.n)}, k: ${JSON.stringify(b.dataset.k)} })`,
+    key: () => ev('shareLast'),
+    shows: (q) => {
+      const sel =
+        q.ask === 'fair'
+          ? '.share-opt[data-equal="1"]'
+          : q.ask === 'show'
+            ? `.share-opt[data-equal="1"][data-n="${q.n}"]`
+            : `.share-opt[data-k="${q.n}"]`;
+      const els = [...d.querySelectorAll(sel)];
+      return els.length === 1 && els[0] === solEl() && glows(els[0]);
+    },
+  },
+  ladybugs: {
+    wrong: () => (ev('hint.q.mode') === 'complete' ? d.getElementById('lb-done') : otherChoice('.lb-opt')),
+    v: (b) => (b.id === 'lb-done' ? '0' : b.dataset.v),
+    key: () => ev('hint.q.mode + hint.q.n'),
+    shows: (q) =>
+      q.mode === 'complete'
+        ? glows(d.getElementById('lb-stage')) && d.querySelectorAll('#lb-right .lb-dot').length === q.n
+        : glows(solEl()),
+  },
 };
+// puzzle : le bouton du prochain nombre attendu
+const puzzleNext = () => d.querySelector(ev('gameSolution')[ev('hint.q.idx')]);
 const MAX_TIER = { calc: 6 };
 const WRONG_HINTS = () => (ev('WRONG_HINTS') || []).map(toSpoken);
 const EXPLAIN_MS = () => ev('EXPLAIN_MS');
@@ -518,7 +745,7 @@ async function errorRound(key, tier) {
   const exp = ev(`explainFor(${JSON.stringify(key)}, hint.q, ${cfg.v(btn)})`);
   if (!exp) return [`${where} : pas d'explication pour ${cfg.v(btn)}`];
   const q = ev('JSON.parse(JSON.stringify(hint.q))'),
-    key0 = cfg.key(),
+    key0 = cfg.key ? cfg.key() : '',
     sol0 = ev('gameSolution').slice();
   const lastTry = ev('lives') === 1,
     missions = ev('state.missions');
@@ -691,6 +918,42 @@ async function failAfterExplain(key, tier, where, asked, since) {
     if (out.length) console.log('   ' + out.join('\n   '));
   }
 
+  if (shard.k === 0) {
+    section('Puzzle : une erreur à chaque rang, jamais la réponse (ligne 7, S3)');
+    startGame('puzzle', 1);
+    const len = ev('hint.q.seq.length'),
+      body = d.getElementById('modal-body'),
+      problems = [];
+    for (let idx = 0; idx < len - 1; idx++) {
+      const next = puzzleNext(),
+        btn = GAMES.puzzle.wrong();
+      const exp = ev(`explainFor("puzzle", hint.q, ${btn.dataset.n})`);
+      btn.click();
+      const text = (d.querySelector('.explain-text') || {}).textContent;
+      if (!exp || text !== exp.say) problems.push(`rang ${idx} : pas la bonne explication`);
+      else if (new RegExp(`(^|[^0-9])${next.dataset.n}([^0-9]|$)`).test(text))
+        problems.push(`rang ${idx} : « ${text} » donne la réponse (${next.dataset.n})`);
+      if (glows(next)) problems.push(`rang ${idx} : la bonne réponse brille`);
+      if (![...body.querySelectorAll('.puzzle-btn')].every((b) => b.disabled))
+        problems.push(`rang ${idx} : des boutons restent actifs`);
+      await waitFor(() => !d.querySelector('.explain-bubble'));
+      if (body.classList.contains('explaining') || next.disabled || btn.disabled)
+        problems.push(`rang ${idx} : le verrou n'est pas levé après l'explication`);
+      next.click();
+      if (ev('hint.q.idx') !== idx + 1) problems.push(`rang ${idx} : la bonne réponse n'avance plus`);
+    }
+    check(
+      `puzzle : ${len - 1} rangs, la réponse n'est jamais dite ni montrée, le verrou se lève`,
+      problems.length === 0,
+    );
+    if (problems.length) console.log('   ' + problems.join('\n   '));
+    startGame('puzzle', 5);
+    check('puzzle au palier 5 : un seul essai', ev('lives') === 1);
+    const out = await errorRound('puzzle', 5);
+    check('puzzle, dernier essai : explication, puis « Raté ! » après EXPLAIN_MS', out.length === 0);
+    if (out.length) console.log('   ' + out.join('\n   '));
+  }
+
   section('Jeu exempté : comme avant (ligne 9, S6)');
   {
     startGame('reading', 1);
@@ -817,6 +1080,26 @@ async function failAfterExplain(key, tier, where, asked, since) {
         (t) => `clockQuestion(${t})`,
         'q.hour + "-" + q.minute',
         () => `q.hour >= 1 && q.hour <= 12 && q.answer === timeLabel(q.hour, q.minute)`,
+      ],
+      [
+        'money',
+        (t) => `moneyQuestion(${t})`,
+        'String(q.correct.total)',
+        (t) =>
+          `q.options.length === 3 && q.options[0] === q.correct && q.options.slice(1).every((o) => o.total !== q.correct.total) && q.correct.pile.every((c) => moneyDenoms(${t}).includes(c)) && q.correct.pile.reduce((a, b) => a + b, 0) === q.correct.total && q.correct.pile.every((c, i, l) => i === 0 || l[i - 1] >= c)`,
+      ],
+      [
+        'packs',
+        (t) => `packsQuestion(${t})`,
+        'q.size + "-" + q.n + "-" + q.extra',
+        (t) => `q.n >= packsRound(${t}).min && q.n <= packsRound(${t}).max && q.total === q.size * q.n + q.extra`,
+      ],
+      ['share', (t) => `shareQuestion(${t})`, 'shareKey(q)', () => `q.shape === 'rond' || q.shape === 'carre'`],
+      [
+        'ladybugs',
+        (t) => `ladybugsQuestion(${t})`,
+        'q.mode + q.n',
+        (t) => `q.n >= ladybugsRound(${t}).min && q.n <= ladybugsRound(${t}).max && q.total === 2 * q.n`,
       ],
     ].filter((c) => EXPLAINED.includes(c[0]));
     const problems = [];

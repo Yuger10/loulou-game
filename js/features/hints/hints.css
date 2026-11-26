@@ -252,9 +252,14 @@
   z-index: 2;
   font-family: "Baloo 2", system-ui, sans-serif;
 }
+/* une étiquette d'explication peut porter une addition entière (« 5 + 2 + 1 = 8 ») */
+.explain-mark {
+  white-space: nowrap;
+}
 .count-row span,
 .math-group span,
 .money-pile-btn,
+.pack,
 .clock-face,
 .seq-row span,
 .reading-word-box,

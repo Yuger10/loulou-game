@@ -12,9 +12,10 @@ import { shareRound } from '../../../entities/difficulty/index.js';
 import { random, shuffle } from '../../../shared/lib/index.js';
 import { openModal, setHandler } from '../../../shared/ui/index.js';
 import { gameDiff } from '../../adaptive/index.js';
-import { registerHints, setHintQuestion } from '../../hints/index.js';
+import { registerExplain, registerHints, setHintQuestion } from '../../hints/index.js';
 import {
   clearActiveTimer,
+  drawOther,
   flashModal,
   livesBar,
   loseLife,
@@ -239,12 +240,25 @@ function shareView(r) {
 }
 
 let shareLast = '';
+/**
+ * Un gâteau, jamais le même que le précédent.
+ * @param {number} dd le palier de difficulté
+ * @returns {ShareRound}
+ */
+function shareQuestion(dd) {
+  const r = drawOther(
+    () => shareBuildRound(dd),
+    shareKey,
+    shareLast,
+    // après 8 tirages identiques : le même partage sur l'autre forme de gâteau
+    (x) => ({ ...x, shape: /** @type {ShareRound['shape']} */ (x.shape === 'rond' ? 'carre' : 'rond') }),
+  );
+  shareLast = shareKey(r);
+  return r;
+}
 function renderShare() {
   setupLives('share');
-  const dd = gameDiff();
-  let r = shareBuildRound(dd);
-  for (let k = 0; k < 8 && shareKey(r) === shareLast; k++) r = shareBuildRound(dd);
-  shareLast = shareKey(r);
+  const r = shareQuestion(gameDiff());
   /** @type {ShareQuestion} */
   const q = { ask: r.ask, n: r.n, whole: r.whole ? r.whole.key : null, trap: !!r.cfg.trap };
   const { title, say, stage, options, good } = shareView(r);
@@ -265,7 +279,11 @@ function renderShare() {
         stepOk(btn);
         flashModal('ok');
         winSoon();
-      } else loseLife(btn, { onRetry: renderShare });
+      } else
+        loseLife(btn, {
+          onRetry: renderShare,
+          wrong: { equal: btn.dataset.equal === '1', n: Number(btn.dataset.n), k: btn.dataset.k },
+        });
     });
   });
 }
@@ -324,5 +342,49 @@ function shareHints(q) {
   ];
 }
 
+// Explication d'une erreur (track erreurs-expliquees) : ce que le gâteau touché
+// a de faux (parts inégales, pas le bon nombre de parts), ou la règle que la
+// réponse ne suit pas ; le bon gâteau ou la bonne écriture brille.
+/** @type {Record<number, string>} */
+const SHARE_ONE = { 2: 'un demi', 3: 'un tiers', 4: 'un quart' };
+/** @type {Record<string, string>} */
+const SHARE_WHOLE_WHY = {
+  'quarts-moitie': 'Deux quarts font une moitié.',
+  'quarts-entier': 'Quatre quarts font le gâteau entier.',
+  'moities-entier': 'Deux moitiés font le gâteau entier.',
+  'tiers-entier': 'Trois tiers font le gâteau entier.',
+};
+/** @typedef {{ equal: boolean, n: number, k: string | undefined }} ShareWrong ce que porte le bouton touché */
+/**
+ * @param {ShareQuestion} q
+ * @param {ShareWrong} w
+ * @returns {import('../../hints/index.js').Explain | null}
+ */
+function shareExplain(q, w) {
+  if (q.ask === 'fair')
+    return {
+      say: 'Ces parts ne sont pas pareilles : une est plus grosse.',
+      fx: { glow: '.share-opt[data-equal="1"]' },
+    };
+  if (q.ask === 'show') {
+    const part = SHARE_FRACS[q.n].word;
+    return {
+      say: w.equal
+        ? `Ce gâteau a ${w.n} parts. ${part[0].toUpperCase()}${part.slice(1)}, c'est ${q.n} parts égales.`
+        : `Ces parts ne sont pas égales : ce n'est pas ${part}.`,
+      fx: { glow: `.share-opt[data-equal="1"][data-n="${q.n}"]` },
+    };
+  }
+  const glow = `.share-stage, ${solSel('.share-opt', 'k', q.n)}`;
+  if (q.ask === 'write')
+    return {
+      say: `Le gâteau a ${q.n} parts égales : c'est ${SHARE_ONE[q.n]}.`,
+      fx: { glow, html: `<span class="hint-strip"><i>${SHARE_FRACS[q.n].sym}</i></span>` },
+    };
+  const why = q.whole ? SHARE_WHOLE_WHY[q.whole] : '';
+  return why ? { say: why, fx: { glow } } : null;
+}
+
 registerGame('share', renderShare);
 registerHints('share', shareHints);
+registerExplain('share', { wrong: shareExplain });

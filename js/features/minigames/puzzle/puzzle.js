@@ -7,7 +7,7 @@ import { puzzleCount, puzzleStartMax, puzzleVariants } from '../../../entities/d
 import { pickRandom, random, shuffle } from '../../../shared/lib/index.js';
 import { openModal, setHandler } from '../../../shared/ui/index.js';
 import { gameDiff } from '../../adaptive/index.js';
-import { hintOrderStep, registerHints, setHintQuestion } from '../../hints/index.js';
+import { hintOrderStep, registerExplain, registerHints, setHintQuestion } from '../../hints/index.js';
 import {
   flashModal,
   livesBar,
@@ -22,6 +22,8 @@ import {
 } from '../../minigame-engine/index.js';
 import { bindQuit, gameHeader } from '../../screen/index.js';
 
+/** @typedef {{ seq: number[], idx: number, variant: string }} PuzzleQuestion `idx` : où en est l'enfant */
+
 function renderPuzzle() {
   setupLives('puzzle');
   const dd = gameDiff();
@@ -32,6 +34,7 @@ function renderPuzzle() {
   const { seq, hint } = puzzleSeq(dd, count, variant);
 
   const nums = shuffle(seq.slice());
+  /** @type {PuzzleQuestion} */
   const q = { seq, idx: 0, variant }; // q.idx : où en est l'enfant (pour les indices)
   openModal(`
     ${gameHeader('🧩 Petit puzzle', hint)}
@@ -58,7 +61,7 @@ function renderPuzzle() {
           winSoon();
         }
       } else {
-        loseLife(btn, { disable: false }); // le bon nombre reste cliquable ensuite
+        loseLife(btn, { disable: false, wrong: n }); // le bon nombre reste cliquable ensuite
       }
     });
   });
@@ -94,7 +97,7 @@ function puzzleSeq(dd, count, variant) {
 }
 
 // Indices (v52) : voir hintOrderStep (js/features/hints/hints.js).
-/** @param {{ seq: number[], idx: number, variant: string }} q */
+/** @param {PuzzleQuestion} q */
 function puzzleHints(q) {
   const done = q.seq.slice(0, q.idx),
     last = done[done.length - 1];
@@ -118,6 +121,29 @@ function puzzleHints(q) {
   ];
 }
 
+// Explication d'une erreur (track erreurs-expliquees). La question continue :
+// la phrase dit pourquoi le nombre touché ne va pas, et la règle à suivre,
+// jamais le nombre attendu ; seuls les nombres déjà rangés brillent.
+/**
+ * @param {PuzzleQuestion} q
+ * @param {number} v le nombre touché
+ * @returns {import('../../hints/index.js').Explain}
+ */
+function puzzleExplain(q, v) {
+  const desc = q.variant === 'desc';
+  if (q.idx === 0) {
+    const most = desc ? 'grand' : 'petit';
+    return { say: `${v} n'est pas le plus ${most}. Cherche le plus ${most} nombre.`, fx: { glow: '.puzzle-row' } };
+  }
+  const last = q.seq[q.idx - 1];
+  const rule =
+    q.variant === 'step2'
+      ? `On compte de 2 en 2 après ${last}.`
+      : `Quel nombre vient juste ${desc ? 'avant' : 'après'} ${last} ?`;
+  return { say: `${v} vient plus tard. ${rule}`, fx: { glow: '.puzzle-btn.done' } };
+}
+
 // inscription auprès du moteur de mini-jeux (js/features/minigame-engine)
 registerGame('puzzle', renderPuzzle);
 registerHints('puzzle', puzzleHints);
+registerExplain('puzzle', { wrong: puzzleExplain });

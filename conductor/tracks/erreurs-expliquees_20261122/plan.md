@@ -22,8 +22,8 @@ Trois phases, trois PR livrables seules (défaut de Claude, à juger à la revue
 
 ### Phase 2 : `puzzle`, `money`, `packs`, `share`, `ladybugs`
 
-- [ ] 10. Tests : lignes des tables de ces 5 jeux, parcours par palier, `puzzle` (ligne 7, S3). Ils échouent.
-- [ ] 11. Les 5 jeux : `wrong`, `registerExplain`, clé `moneyLast`, clé de `packs` ramenée à `size-n-extra`, replis de la table « Clés de question », table « Où est la bonne réponse » (dont `ladybugs` `complete`). Retrait des 5 de `EXPLAIN_EXEMPT`, `EXPLAIN_EXEMPT_MAX = 18`.
+- [x] 10. Tests : lignes des tables de ces 5 jeux, parcours par palier, `puzzle` (ligne 7, S3). Ils échouent.
+- [x] 11. Les 5 jeux : `wrong`, `registerExplain`, clé `moneyLast`, clé de `packs` ramenée à `size-n-extra`, replis de la table « Clés de question », table « Où est la bonne réponse » (dont `ladybugs` `complete`). Retrait des 5 de `EXPLAIN_EXEMPT`, `EXPLAIN_EXEMPT_MAX = 18`.
 - [ ] 12. `bun run check` vert ; `bun run release patch "erreurs expliquées : 5 jeux de plus"`, puis compléter la section ajoutée à la fin de `PRD-lagon-magique.md` avant la PR.
 
 ### Phase 3 : les phrases de stratégie et l'éloge du processus
@@ -51,6 +51,7 @@ En ajout seul : une décision fausse reçoit une nouvelle ligne qui la remplace,
 | 4 | Le tirage « jamais la même question » est une fonction du moteur, `drawOther(tirage, clé, précédente, repli)`, et chaque jeu a sa fonction `<jeu>Question(dd)` qui tire la question avant les réponses | agent | Une seule écriture de la boucle des 8 tirages pour 10 jeux ; le test du repli force `Math.random` sur le tirage de la question seule (un `Math.random` constant ferait tourner sans fin la boucle des réponses proposées) | `test/explications.test.js`, section « le repli » | gardée |
 | 5 | Une étiquette déjà posée (`.hint-mark`) n'est jamais la cible d'un effet (`applyHintFx`) | agent | Les sélecteurs de la spec (`span:nth-child(k)`, `span:nth-last-child(-n+b)`) désignent aussi les étiquettes posées juste avant : elles seraient étiquetées ou barrées à leur tour | `js/features/hints/hints.js`, `applyHintFx` | gardée |
 | 6 | `explainClear()` ne rouvre pas un bouton que le moteur a refermé entre-temps (classe `ko`) ; à essais illimités sans relance, le moteur le rouvre lui-même à la fin des 4 s | agent | À essais limités sans relance, la mauvaise réponse reste fermée comme avant ; la spec ne dit pas qui la rouvre | `engine.js`, `loseLifeUnlimited` | gardée |
+| 8 | `money` : pas d'explication (comportement d'avant) quand la pile touchée est la pile de secours de `moneyOptions`, dont le total affiché n'est pas la somme de ses pièces | agent | La phrase « Cette pile fait {v} » serait fausse ; cas rare (30 tirages sans trouver deux autres totaux), qui existait avant la track | `money.js`, `moneyExplain` | gardée |
 | 7 | `test/smoke.test.js`, « 2e erreur : il reste 1 essai » : la 2e erreur se joue sur `diff` (exempté, même île, mêmes 3 essais) au lieu de `count` | agent, **à valider par Amrou** | La spec affirmait que les tests de fumée restaient justes : c'est faux pour cette assertion, qui touche une 2e mauvaise réponse tout de suite après la 1re ; sur `count`, le verrou (ligne 3, D7) ferme les réponses pendant 4 s, puis la question suivante repart avec 3 essais. Réécriture de même force (même scénario sur un cas équivalent, règle de `conductor/workflow.md`), plus une assertion ajoutée | `bun run test smoke` rouge avant la réécriture (« 2e erreur : il reste 1 essai »), vert après | à juger à la revue |
 
 ## Écarts et non vérifié
