@@ -57,12 +57,7 @@ function isDayKey(v) {
 }
 
 /* ---- les paramètres d'une question, jeu par jeu ---- */
-/**
- * @param {unknown} v
- * @param {number} min
- * @param {number} max
- * @returns {v is number} un entier entre min et max
- */
+/** @param {unknown} v @param {number} min @param {number} max @returns {v is number} un entier entre min et max */
 function intIn(v, min, max) {
   return typeof v === 'number' && Number.isInteger(v) && v >= min && v <= max;
 }
@@ -157,12 +152,7 @@ function reviewKey(p) {
 }
 
 /* ---- lire une file enregistrée ---- */
-/**
- * Un item lu du stockage, vérifié et recopié, ou null.
- * @param {unknown} raw
- * @param {string} today
- * @returns {ReviewItem | null}
- */
+/** @param {unknown} raw @param {string} today @returns {ReviewItem | null} un item lu du stockage, vérifié et recopié */
 function cleanItem(raw, today) {
   if (!raw || typeof raw !== 'object') return null;
   const r = /** @type {RawParams} */ (raw);
