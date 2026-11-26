@@ -1,9 +1,9 @@
 {
   "track_id": "bilan-parents_20261122",
   "type": "feature",
-  "status": "new",
+  "status": "completed",
   "created_at": "2026-11-22T00:00:00Z",
-  "updated_at": "2026-11-22T00:00:00Z",
+  "updated_at": "2026-11-26T00:00:00Z",
   "description": "Bilan de la semaine dans l'espace parents : ce qui va bien, au plus 3 jeux qui résistent, et pour chacun une idée à faire sans écran ; aucune note, aucune comparaison, rien ne quitte l'appareil.",
   "epic": "Mieux apprendre"
 }
