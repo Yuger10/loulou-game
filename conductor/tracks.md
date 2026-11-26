@@ -95,7 +95,7 @@ Registre des tracks Conductor, **dans l'ordre d'implémentation**. Feuille de ro
 
 ---
 
-- [ ] **Track: Aller plus loin : la classe du profil et le défi étoile, un cran au-dessus (demande du parent)**
+- [x] **Track: Aller plus loin : la classe du profil et le défi étoile, un cran au-dessus (demande du parent) (v67)**
 *Link: [./tracks/aller-plus-loin_20261122/](./tracks/aller-plus-loin_20261122/)*
 
 ---

@@ -32,18 +32,18 @@ Deux phases, deux PR. Chacune est livrable seule : la phase 1 ne montre que la c
 - [x] 18. `js/entities/player/profiles.js` : `starChallenges?: boolean` dans le `@typedef Profile` (D21). `js/features/parents/parents.js` : puces des défis dans la carte « 🎒 Classe » (35) ; « Pas de défi étoile » appelle `closeAllStarDoors(st)` (36) ; un changement de classe appelle `starsResetFor(st)` (37) ; pour le profil courant `st` est `state` puis `save()`, pour un autre profil écriture comme `parents.js:356-371` ; ligne « défi étoile réussi » (38) ; phrase d'aide de « Progrès par compétence » dans sa version **phase 2**, et aide sous les puces de défi (Politiques, « Textes du parent »).
 - [x] 19. `js/features/adaptive/adaptive.css` : `.star-offer`, `.star-badge`, `.star-mark` (boutons d'au moins 64 px de haut au doigt).
 - [x] 20. Doc : `ANALYSE-DIFFICULTE.md` (le défi étoile, D8 à D11), `conductor/product-guidelines.md` (une ligne : « Aller plus loin sans pression : défi étoile refusable, retiré sans rien perdre »). `bun run check` passe.
-- [ ] 21. Livraison : rebase sur `main`, `bun run release track "aller plus loin : classe du profil et défi étoile"`, compléter la section du PRD, PR (zones sensibles : sauvegarde et migration, espace parents).
+- [x] 21. Livraison : rebase sur `main`, `bun run release track "aller plus loin : classe du profil et défi étoile"`, compléter la section du PRD, PR (zones sensibles : sauvegarde et migration, espace parents).
 
 ## Preuves
 
 | Ligne du smoke test | Résultat | Niveau | Preuve |
 |---|---|---|---|
-| S1 | | test-verified | `bun run test aller-plus-loin` (exit 0) |
-| S2 | | test-verified | `bun run test aller-plus-loin` (exit 0) |
-| S3 | | runtime-verified | `bun run check` (exit 0) |
-| S4 | | e2e-verified | 👤 Amrou |
-| S5 | | e2e-verified | 👤 Amrou et sa fille |
-| S6 | | e2e-verified | 👤 Amrou et sa fille |
+| S1 | vert | test-verified | `bun run test aller-plus-loin` : sortie 1 sans le changement (168 en échec, dont « gradeToDiff is not defined »), sortie 0 avec (`prove-red-green.sh --base origin/conductor/specs-validees`) |
+| S2 | vert | test-verified | même commande : les points 15 à 38 rouges avant le code (127 en échec après la phase 1), verts après ; 209 vérifications |
+| S3 | vert | runtime-verified | `bun run check` (exit 0) |
+| S4 | à faire | e2e-verified | 👤 Amrou |
+| S5 | à faire | e2e-verified | 👤 Amrou et sa fille |
+| S6 | à faire | e2e-verified | 👤 Amrou et sa fille |
 
 ## Journal de décisions
 
@@ -63,6 +63,10 @@ Deux phases, deux PR. Chacune est livrable seule : la phase 1 ne montre que la c
 | 12 | Une mission étoile quittée par la croix garde `miss` tel quel ; changer l'âge dans le formulaire du joueur ne ferme pas les portes | Claude | la spec ne parle que d'erreurs « d'affilée » et du changement de classe ; rien ajouté hors spec | lecture du code | question pour Amrou |
 
 ## Écarts et non vérifié
+
+- Une seule PR au lieu de deux (journal, décision 2) : la v67 livre la classe et le défi étoile ensemble.
+- S4 à S6 (téléphone, ressenti de la joueuse) restent à faire par Amrou ; la vérification manuelle proposée est dans le corps de la PR.
+- Le rendu visuel du bloc d'offre, du badge et de l'étoile du choix des jeux n'a pas été regardé dans un navigateur par l'agent (jsdom seulement).
 
 - Le rédacteur n'a pas pu lire le PDF de Deci, Koestner et Ryan (1999) avec son outil : D12 repose sur la source fournie par le brief.
 - Le ressenti de l'offre et du retour au jeu habituel (S5, S6) ne se prouve pas par un test.
