@@ -40,8 +40,8 @@ const FILES = [
   './js/features/minigames/rhythm/index.js','./js/features/minigames/pitch/pitch.js','./js/features/minigames/pitch/index.js','./js/features/minigames/lifecycle/lifecycle.js','./js/features/minigames/lifecycle/index.js','./js/features/minigames/ladybugs/ladybugs.js',
   './js/features/minigames/ladybugs/index.js','./js/features/minigames/potions/potions.js','./js/features/minigames/potions/index.js','./js/features/minigames/mirror/mirror.js','./js/features/minigames/mirror/index.js','./js/features/market/market.js',
   './js/features/market/index.js','./js/features/backup/backup.js','./js/features/backup/index.js','./js/features/players/profiles-ui.js','./js/features/players/index.js','./js/features/update/update.js',
-  './js/features/update/index.js','./js/features/parents/bilan.js','./js/features/parents/parents.js','./js/features/parents/storage-alert.js','./js/features/parents/index.js','./js/features/rest/rest.js',
-  './js/features/rest/index.js','./js/features/settings/settings.js','./js/features/settings/index.js','./js/app/init.js','./js/app/main.js'
+  './js/features/update/index.js','./js/features/parents/bilan-tips.js','./js/features/parents/bilan.js','./js/features/parents/parents.js','./js/features/parents/storage-alert.js','./js/features/parents/index.js',
+  './js/features/rest/rest.js','./js/features/rest/index.js','./js/features/settings/settings.js','./js/features/settings/index.js','./js/app/init.js','./js/app/main.js'
 ];
 self.addEventListener('install', e=>{
   // cache:'reload' : les fichiers viennent du site, jamais du cache HTTP du navigateur

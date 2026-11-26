@@ -14,6 +14,7 @@
 import { GAME_LIST } from '../../entities/difficulty/index.js';
 import { emit, on } from '../../shared/lib/index.js';
 import { skillStatus, todayKey } from '../adaptive/index.js';
+import { BILAN_TIPS } from './bilan-tips.js';
 
 /** Le suivi d'un jeu, tel que readSave le remet en forme.
  * @typedef {import('../../entities/game-state/index.js').GameState['skills'][string]} BilanSkill */
@@ -30,94 +31,6 @@ const BILAN_TIER_LABELS = {
   4: 'CE1',
   5: 'fin CE1, CE2',
   6: 'CE2',
-};
-// Une idée sans écran par jeu suivi (les clés de GAME_LIST et de SKILL_GROUPS).
-// Un nouveau mini-jeu ajoute la sienne (conductor/checklist-mini-jeu.md) : sans
-// elle, test/bilan.test.js échoue. Textes constants, sans <, >, & ni " : ils
-// s'insèrent tels quels dans la carte. `name` : pour une activité absente de
-// GAME_LIST (les boîtes de rangement de la chambre à squishies).
-/** @type {Record<string, { tip: string, name?: string }>} */
-const BILAN_TIPS = {
-  memory: {
-    tip: 'Posez 5 objets de la maison sur la table, laissez votre enfant les regarder, cachez-en un sous un torchon : lequel a disparu ?',
-  },
-  count: {
-    tip: 'En mettant la table, comptez ensemble les couverts en touchant chacun une seule fois, puis demandez : « Combien en tout ? »',
-  },
-  diff: {
-    tip: "Posez 4 cuillères et 1 fourchette, puis demandez lequel n'est pas de la même famille, et pourquoi.",
-  },
-  puzzle: {
-    tip: 'Écrivez 5 nombres sur des bouts de papier, mélangez-les et rangez-les ensemble du plus petit au plus grand.',
-  },
-  sequence: {
-    tip: 'Faites une suite avec des couverts (fourchette, cuillère, fourchette, cuillère) et demandez ce qui vient après.',
-  },
-  simon: {
-    tip: "Montrez 3 objets de couleurs différentes dans un ordre, cachez-les, et demandez de refaire l'ordre ; ajoutez-en un quand c'est réussi.",
-  },
-  math: {
-    tip: "À table, avec de vrais objets : « Tu as 3 pâtes, j'en ajoute 2, combien en as-tu ? » Puis la même question sans regarder.",
-  },
-  reading: {
-    tip: 'Lisez ensemble un mot court sur un paquet ou une étiquette, en montrant chaque syllabe du doigt.',
-  },
-  determinants: {
-    tip: 'Montrez un objet de la cuisine et jouez à « un ou une ? » : une cuillère, un verre, une assiette.',
-  },
-  volume: {
-    tip: "Prenez deux verres de formes différentes : lequel contient le plus ? Vérifiez en transvasant l'eau.",
-  },
-  compare: { tip: 'Lancez deux dés ou tirez deux cartes : chacun dit quel nombre est le plus grand.' },
-  money: {
-    tip: 'Jouez à la marchande avec de vraies pièces : « Ça coûte 5 euros, quelles pièces donnes-tu ? »',
-  },
-  clock: {
-    tip: 'Regardez ensemble une horloge à aiguilles plusieurs fois dans la journée : « La petite aiguille est sur le 7, il est 7 heures. »',
-  },
-  calendar: {
-    tip: "Au dîner : « Quel jour sommes-nous ? Et demain ? » ; à la fenêtre : « Quelle saison, d'après les arbres ? »",
-  },
-  calc: {
-    tip: 'En voiture ou à table, posez un calcul court à voix haute (« 5 plus 5 ? ») et laissez le temps de répondre, sans presser.',
-  },
-  shapes: {
-    tip: "Cherchez dans la cuisine un objet rond, un carré, un triangle, puis comptez ensemble les coins d'une boîte.",
-  },
-  planets: {
-    tip: "Avec une lampe et une orange : la lampe est le Soleil ; tournez l'orange pour montrer le jour et la nuit.",
-  },
-  jigsaw: { tip: 'Découpez une image de magazine en 4 morceaux et reconstituez-la ensemble.' },
-  nesting: { tip: 'Rangez 3 ou 4 bols du plus petit au plus grand, puis emboîtez-les.' },
-  cubes: {
-    tip: "Empilez quelques morceaux de sucre ou des briques, puis demandez combien il y en a, même ceux qu'on ne voit pas.",
-  },
-  packs: { tip: 'Faites des tas de 2 pâtes et comptez tas par tas : « 2, 4, 6. »' },
-  shelf: {
-    tip: 'Posez des petits objets dans une boîte à œufs et décrivez leur place : « en haut, à gauche ».',
-  },
-  share: { tip: 'En coupant une crêpe ou une pomme, demandez : « Est-ce que chacun a la même part ? »' },
-  recipe: {
-    tip: 'Faites une vraie recette ensemble : votre enfant verse et mesure avec le verre doseur, les cuillères ou la balance.',
-  },
-  rhythm: { tip: 'Tapez dans les mains un rythme court (long, court, court) et demandez de le refaire.' },
-  pitch: {
-    tip: "Tapez doucement sur des verres plus ou moins remplis d'eau : lequel fait le son le plus aigu ?",
-  },
-  lifecycle: {
-    tip: 'Faites germer une lentille ou un haricot dans du coton mouillé et regardez-le pousser chaque jour.',
-  },
-  ladybugs: { tip: 'Avec des pâtes : « Fais le double de 3 », puis « Partage 8 en deux tas pareils. »' },
-  potions: {
-    tip: 'Mélangez deux couleurs de peinture ou de pâte à modeler : « Jaune et bleu, ça donne quoi ? »',
-  },
-  mirror: {
-    tip: "Posez un ruban sur la table ; placez 3 objets d'un côté et demandez de les placer en miroir de l'autre côté.",
-  },
-  rangement: {
-    name: '📦 Boîtes de rangement',
-    tip: "Triez ensemble le linge ou les jouets selon une règle choisie par votre enfant : la couleur, la taille ou l'usage.",
-  },
 };
 
 /**
@@ -219,15 +132,10 @@ function bilanHardRow(key, s) {
 }
 
 /**
- * La carte « 🧭 Cette semaine » d'une partie (celle de l'enfant affiché).
- * @param {{ skills?: unknown, stars?: unknown }} st
- * @returns {string}
+ * Les jeux suivis de la partie, chacun avec ce que la carte doit en savoir.
+ * @param {Record<string, BilanSkill | undefined>} skills
  */
-function bilanHTML(st) {
-  // toute partie vue ici est passée par readSave (load ou profileState), qui
-  // garantit la forme des entrées ; une lecture échouée donne {}
-  const skills =
-    st.skills && typeof st.skills === 'object' ? /** @type {Record<string, BilanSkill | undefined>} */ (st.skills) : {};
+function bilanRows(skills) {
   // calendrier local, sans dérive à l'heure d'été (contrairement à Date.now() - 6 jours)
   const start = new Date();
   start.setDate(start.getDate() - (BILAN_DAYS - 1));
@@ -253,8 +161,16 @@ function bilanHTML(st) {
       missed: s.recent.slice(-6).filter((r) => !r.ok).length,
     });
   }
-  const played = rows.some((r) => r.inWeek);
-  const hard = rows
+  return rows;
+}
+
+/**
+ * Les jeux qui résistent : le soutien d'abord, puis le plus de ratés récents,
+ * puis le plus récent, puis par clé.
+ * @param {ReturnType<typeof bilanRows>} rows
+ */
+function bilanHard(rows) {
+  return rows
     .filter((r) => r.hard)
     .sort(
       (a, b) =>
@@ -264,11 +180,34 @@ function bilanHTML(st) {
         bilanCompare(a.key, b.key),
     )
     .slice(0, BILAN_MAX);
-  // un jeu qui résiste n'est jamais cité dans « va bien », même coupé par la limite
-  const good = rows
+}
+
+/**
+ * Les jeux qui vont bien, du plus récent au plus ancien : un jeu qui résiste
+ * n'y est jamais cité, même coupé par la limite.
+ * @param {ReturnType<typeof bilanRows>} rows
+ */
+function bilanGood(rows) {
+  return rows
     .filter((r) => r.status === 'aise' && !r.hard)
     .sort((a, b) => bilanCompare(b.last, a.last) || bilanCompare(a.key, b.key))
     .slice(0, BILAN_MAX);
+}
+
+/**
+ * La carte « 🧭 Cette semaine » d'une partie (celle de l'enfant affiché).
+ * @param {{ skills?: unknown, stars?: unknown }} st
+ * @returns {string}
+ */
+function bilanHTML(st) {
+  // toute partie vue ici est passée par readSave (load ou profileState), qui
+  // garantit la forme des entrées ; une lecture échouée donne {}
+  const skills =
+    st.skills && typeof st.skills === 'object' ? /** @type {Record<string, BilanSkill | undefined>} */ (st.skills) : {};
+  const rows = bilanRows(skills);
+  const played = rows.some((r) => r.inWeek);
+  const hard = bilanHard(rows);
+  const good = bilanGood(rows);
 
   const parts = [];
   if (!played) parts.push(`<p>Pas de partie ces ${BILAN_DAYS} derniers jours.</p>`);
