@@ -121,6 +121,41 @@ const ESSAI3 = {
     ev('state.skyIntroSeen = true; save()');
   }
 
+  /* ================= Les fichiers -s3 (spec D19) ================= */
+  section('fichiers -s3');
+  {
+    // ligne 32 : retirée par la première île de la saison 3 (monde-crayons), qui remplit les tables
+    check(
+      'les cinq tables de la saison 3 existent et sont vides',
+      ['CHARACTERS_S3', 'SQUISHIES_S3', 'STORY_S3', 'ISLE_SCENERY_S3', 'SQ_ART_S3'].every(
+        (t) => ev(`typeof ${t}`) === 'object' && ev(`Object.keys(${t}).length`) === 0,
+      ),
+    );
+    check(
+      'season3Art existe et ne dessine encore rien',
+      ev('typeof season3Art') === 'function' &&
+        ev('(() => { const a = {}; season3Art(a, {}); return Object.keys(a).length; })()') === 0,
+    );
+    // ligne 32b : gardée après les îles
+    const PAIRS = [
+      ['CHARACTERS', 'CHARACTERS_S3'],
+      ['SQUISHIES', 'SQUISHIES_S3'],
+      ['STORY', 'STORY_S3'],
+      ['ISLE_SCENERY', 'ISLE_SCENERY_S3'],
+      ['SQ_ART', 'SQ_ART_S3'],
+    ];
+    PAIRS.forEach(([t, t3]) => {
+      check(
+        `${t3} est étalée à la fin de ${t}`,
+        ev(`typeof ${t3}`) === 'object' &&
+          ev(`Object.keys(${t3}).every((k) => ${t}[k] === ${t3}[k])`) &&
+          ev(
+            `(() => { const k3 = Object.keys(${t3}); return JSON.stringify(Object.keys(${t}).slice(Object.keys(${t}).length - k3.length)) === JSON.stringify(k3); })()`,
+          ),
+      );
+    });
+  }
+
   await wait(200);
   check('aucune erreur JS', errs.length === 0);
   if (errs.length) console.log(errs);

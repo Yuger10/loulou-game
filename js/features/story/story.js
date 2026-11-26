@@ -50,6 +50,7 @@ import { addCoins } from '../wallet/index.js';
 import { EPISODES, episodesSeen, openEpisode } from './episodes.js';
 import { openSeasonFinale } from './finale.js';
 import { grisouSVG } from './grisou.js';
+import { STORY_S3 } from './story-s3.js';
 
 /** @typedef {{ e: string, ok?: boolean }} RiddleOption un choix (emoji) ; `ok` sur la bonne réponse */
 /** @typedef {{ q: string, tip: string, opts: RiddleOption[] }} Riddle une énigme et son indice */
@@ -418,6 +419,7 @@ const STORY = {
     success: 'Bravo ! Les couleurs reviennent dans tout le royaume… Regarde, Grisou arrive !',
     reward: 20,
   },
+  ...STORY_S3,
 };
 
 /* Les prologues des saisons (v55) : lus à l'ouverture d'un archipel, avant le
