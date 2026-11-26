@@ -89,7 +89,7 @@ const SLICES = [
   {
     id: 'world',
     layer: 'entities',
-    files: ['js/entities/world/worlds.js', 'js/entities/world/availability.js'],
+    files: ['js/entities/world/worlds-s3.js', 'js/entities/world/worlds.js', 'js/entities/world/availability.js'],
     css: ['js/entities/world/world-themes.css'],
   },
   {

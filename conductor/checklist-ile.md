@@ -46,6 +46,7 @@ Avec cinq îles, cinq fichiers dépasseraient 800 lignes : `characters.js`, `sto
 
 | Fichier frère | Ce qu'il exporte | Qui le lit |
 |---|---|---|
+| `js/entities/world/worlds-s3.js` (créé par `monde-crayons`) | `WORLDS_S3` (`Record<string, World>`, type lu par `import('./worlds.js').World`) | `worlds.js` l'importe et l'étale à la fin de `WORLDS` (`...WORLDS_S3`) |
 | `js/entities/character/characters-s3.js` | `CHARACTERS_S3` (`Record<string, Character>`, type lu par `import('./characters.js').Character`) | `characters.js` l'importe et l'étale à la fin de `CHARACTERS` (`...CHARACTERS_S3`) |
 | `js/entities/character/characters-art-s3.js` | `season3Art(ART, kit)` (même signature que `season2Art`) | `characters-art.js` l'importe et l'appelle juste après `season2Art`, avec le même objet d'outils |
 | `js/entities/squishy/squishies-s3.js` | `SQUISHIES_S3` (`Record<string, Squishy>`, les modèles) | `squishies.js` l'étale à la fin de `SQUISHIES` |
@@ -53,7 +54,9 @@ Avec cinq îles, cinq fichiers dépasseraient 800 lignes : `characters.js`, `sto
 | `js/features/story/story-s3.js` | `STORY_S3` (`Record<string, StoryChapter>`) | `story.js` l'étale à la fin de `STORY` |
 | `js/features/island/island-s3.js` | `ISLE_SCENERY_S3` (`Record<string, (w: World) => string>`, comme `ISLE_SCENERY`) | `island.js` l'étale à la fin de `ISLE_SCENERY` |
 
-- **Ce que chaque île met dans les fichiers `-s3`** : ses 4 personnages, ses 4 dessins, ses 6 squishies et leurs 6 dessins, son chapitre et son paysage.
+- **Ce que chaque île met dans les fichiers `-s3`** : son entrée de `WORLDS_S3`, ses 4 personnages, ses 4 dessins, ses 6 squishies et leurs 6 dessins, son chapitre et son paysage.
+- **Le plafond qui compte en CI est plus bas que `max-lines`** : le job « violations ajoutées » compare la PR à sa base avec le preset `.cothon/presets/oxlint/qualite.json` (300 lignes par fichier, 50 lignes et 3 paramètres par fonction, complexité 20). Un fichier déjà au-dessus de 300 lignes peut grandir ; un fichier en dessous ne doit pas passer au-dessus (c'est pourquoi `worlds.js`, 287 lignes, a son fichier frère) ; une fonction ne dépasse pas 50 lignes (dans `characters-art-s3.js`, `season3Art` appelle une ou deux fonctions par île, par exemple `crayonsArt`). Les tests d'une île tiennent en plusieurs suites courtes `test/<ile>*.test.js` et un harnais `test/tools/<ile>.js`. Vérifier avant la PR : `bash .cothon/bin/new-violations.sh --base origin/main -- bash "$PWD/.cothon/bin/quality-check.sh" complexite --project .`
+- **Les suites de la saison 3** (`test/saison3*.test.js`) mettent de côté les vraies îles de la saison 3 le temps de leurs essais (`setIslands` de `test/tools/saison3.js`), avec leurs objets, recettes, décorations, personnages et série de squishies : une île qui ajoute une autre table lue par son île (`T[k].world`) l'ajoute à `WITH_ISLAND`.
 - **Ce qui reste dans le fichier d'origine** :
   - les lignes courtes : sa série dans `SQUISHY_SERIES`, `SQUISHY_SERIES_ORDER` et `SQUISHY_ISLAND_SERIES` (une ligne chacune), la couleur de sa boîte dans `SQ_BOX_COLORS` (`squishy-art.js`, une ligne ; une série sans couleur propre prend la couleur par défaut, comme la série « Coffres ») ;
   - son thème `MUSIC_THEMES` (`music.js`, 276 lignes) ;
@@ -75,7 +78,7 @@ Avec cinq îles, cinq fichiers dépasseraient 800 lignes : `characters.js`, `sto
 Le jeu doit marcher sur les appareils anciens (AGENTS.md) : un emoji trop récent s'y affiche en carré vide. Un emoji ajouté appartient à Emoji 13.1 ou avant (2020), ou figure déjà dans `js/`. Les emojis d'Emoji 14 et 15 (par exemple 🫛, 🪭, 🫙, 🪷, 🫧, 🪸) sont exclus. Règle proposée par Claude le 22/11/2026 : à confirmer par Amrou.
 
 ## 2 quater. Tests existants à effectif figé
-Trois vérifications existantes comptent le contenu du jeu en dur. Chaque île les met à jour dans sa PR, au titre de la règle « Tests existants touchés par un changement voulu » (`conductor/workflow.md`). Chaque fois, c'est un ajout du même genre que celui des îles précédentes, et aucune vérification n'est affaiblie :
+Trois vérifications existantes comptent le contenu du jeu en dur (après l'Île des Crayons : 61 personnages, 10 séries, 60 squishies). Chaque île les met à jour dans sa PR, au titre de la règle « Tests existants touchés par un changement voulu » (`conductor/workflow.md`). Chaque fois, c'est un ajout du même genre que celui des îles précédentes, et aucune vérification n'est affaiblie :
 - `test/smoke.test.js`, « personnages : les N ids possèdent un SVG » (vers la ligne 755) : `N` vaut le nombre trouvé sur `main` après le rebase, plus les personnages de l'île (57 + 4 = 61 pour la première île livrée), dans le libellé et dans l'expression.
 - `test/squishies.test.js`, « 3 séries au lancement… » (vers la ligne 86) : la série de l'île s'ajoute **à la fin** du tableau attendu, après les séries déjà livrées ; le libellé nomme la nouvelle série.
 - `test/squishies.test.js`, « 6 modèles par série (N squishies) » et « noms uniques » (vers les lignes 91 et 107) : `N` augmente de 6, dans le libellé et dans les deux expressions.

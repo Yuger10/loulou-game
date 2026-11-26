@@ -752,8 +752,8 @@ setTimeout(() => {
     );
     // ---- Illustrations SVG des personnages ----
     check(
-      'personnages : les 57 ids possèdent un SVG',
-      ev('Object.keys(CHARACTERS).length===57 && Object.keys(CHARACTERS).every(k=>charArtSVG(k).startsWith("<svg"))'),
+      'personnages : les 61 ids possèdent un SVG',
+      ev('Object.keys(CHARACTERS).length===61 && Object.keys(CHARACTERS).every(k=>charArtSVG(k).startsWith("<svg"))'),
     );
     check(
       'personnages : viewBox et longueur SVG valides',

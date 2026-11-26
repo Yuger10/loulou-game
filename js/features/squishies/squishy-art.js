@@ -613,6 +613,7 @@ const SQ_BOX_COLORS = {
   instruments: ['#BFE9EC', '#2B2F6B'],
   petitesbetes: ['#CDEBC4', '#4F8A45'],
   licornes: ['#E3D6FB', '#6A4FB3'],
+  papeterie: ['#FFE9A8', '#B8901A'], // jaune crayon
 };
 
 // String : sans série (boîte mystère), null et undefined restent des clés absentes

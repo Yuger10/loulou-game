@@ -127,6 +127,15 @@ const ITEMS = {
   etoilefilante: { emoji: '🌠', name: 'Étoile filante', price: 9, world: 'licornes' },
   paillettes: { emoji: '✨', name: 'Pot de paillettes', price: 6, world: 'licornes' },
   plumearc: { emoji: '🪶', name: 'Plume irisée', price: 8, world: 'licornes' },
+  // Île des Crayons (saison 3)
+  cahier: { emoji: '📒', name: 'Cahier à lignes', price: 6, world: 'crayons' },
+  craie: { emoji: '🖍️', name: 'Craie grasse', price: 6, world: 'crayons' },
+  gomme: { emoji: '🧽', name: 'Gomme rose', price: 5, world: 'crayons' },
+  copeaux: { emoji: '🪵', name: 'Copeaux de crayon', price: 5, world: 'crayons' },
+  palette: { emoji: '🎨', name: 'Palette de couleurs', price: 8, world: 'crayons' },
+  regle: { emoji: '📏', name: 'Règle magique', price: 7, world: 'crayons' },
+  feutre: { emoji: '🖊️', name: 'Feutre pailleté', price: 7, world: 'crayons' },
+  equerre: { emoji: '📐', name: 'Équerre', price: 6, world: 'crayons' },
 };
 
 /** @type {Record<string, CraftedItem>} */
@@ -406,6 +415,21 @@ const CRAFTED = {
     world: 'licornes',
     recipe: { etoilefilante: 1, cornescintillante: 1 },
   },
+  // Île des Crayons (saison 3)
+  trousse: {
+    emoji: '👝',
+    name: 'Trousse arc-en-ciel',
+    price: 22,
+    world: 'crayons',
+    recipe: { craie: 2, gomme: 1 },
+  },
+  fresque: {
+    emoji: '🌄',
+    name: 'Fresque du matin',
+    price: 20,
+    world: 'crayons',
+    recipe: { palette: 1, feutre: 1, cahier: 1 },
+  },
 };
 
 /** @type {Record<string, Item>} */
@@ -540,6 +564,12 @@ const DECOS = {
   carrouselD: { emoji: '🎠', name: 'Carrousel de licornes', price: 18, world: 'licornes' },
   fontainearcD: { emoji: '⛲', name: 'Fontaine irisée', price: 14, world: 'licornes' },
   ecurieD: { emoji: '🛖', name: 'Écurie étoilée', price: 12, world: 'licornes' },
+  // Île des Crayons (saison 3)
+  potcrayonsD: { emoji: '🏺', name: 'Pot à crayons géant', price: 40, world: 'crayons' },
+  chevaletD: { emoji: '🖼️', name: 'Chevalet de peintre', price: 30, world: 'crayons' },
+  fanionsD: { emoji: '🚩', name: 'Fanions dessinés', price: 18, world: 'crayons' },
+  lampeD: { emoji: '💡', name: 'Lampe de bureau', price: 14, world: 'crayons' },
+  marquepageD: { emoji: '🔖', name: 'Marque-page géant', price: 12, world: 'crayons' },
 };
 
 const ALBUM_REWARD = 100;

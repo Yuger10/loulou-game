@@ -46,12 +46,13 @@
 | 3 | 🪶 Le Monde des Chatouilles | `chatouilles` | 94 | 8 | 40 | 465 |
 | 3 | 🎼 L'Île du Grand Concert | `concert` | 102 | 8 | 40 | 505 |
 
-Dans le jeu, aujourd'hui (v65) :
+Dans le jeu, aujourd'hui (v68) :
 - les îles de la saison 1 et toutes celles de la saison 2 (Boîtes, Jouets Doux, Bonbons, Musique, Jardin des Fées, Licornes) existent ;
+- la première île de la saison 3 existe : ✏️ l'Île des Crayons, au niveau 70 ;
 - les autres îles ont chacune leur track dans `conductor/tracks.md` ;
 - une saison s'ouvre au niveau de sa première île, que le jeu calcule lui-même (`ARCHIPELAGOS[s].level`) ;
 - un archipel sans île n'a pas de niveau (`level: null`) et ne s'affiche nulle part (`shownArchipelagos()`) ;
-- la saison 3 « La Grande Expédition » est déclarée (v67) sans île : elle aura son onglet, son écran d'ouverture, son prologue et la carte de Zap dès sa première île (les Crayons, niveau 70), sans autre code d'archipel.
+- la saison 3 « La Grande Expédition », déclarée sans île en v67, a sa première île depuis la v68 (les Crayons) : son onglet, son écran d'ouverture, son prologue et la carte de Zap se montrent donc au niveau 70, sans autre code d'archipel. Les îles suivantes s'ajoutent à sa carte, sans nouvel onglet.
 
 ## Ce que voit l'enfant
 
