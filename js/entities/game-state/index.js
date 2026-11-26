@@ -3,7 +3,12 @@
 // ses types aussi : les autres slices les lisent ici, par import('…/game-state/index.js')
 /** @typedef {import('./state.js').GameState} GameState */
 /** @typedef {import('./state.js').Look} Look */
+/** @typedef {import('./state.js').SquishyCrate} SquishyCrate */
+/** @typedef {import('./state.js').CrateRule} CrateRule */
 export {
+  cleanSquishyCrates,
+  crateCriteria,
+  crateLabelValid,
   freshState,
   gameCount,
   hello,

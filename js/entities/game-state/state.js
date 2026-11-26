@@ -1,14 +1,19 @@
 /* ---------- État de la partie du joueur courant : sauvegarde, migrations, niveau ---------- */
 import { cleanName, reportUnreadable, storageWrite } from '../../shared/lib/index.js';
 import { setAudioPrefsSource } from '../../shared/ui/index.js';
-import { SQUISHY_ISLAND_SERIES } from '../squishy/index.js';
+import { SQ_COLORS, SQUISHIES, SQUISHY_ISLAND_SERIES, SQUISHY_SERIES } from '../squishy/index.js';
 
 const MISSIONS_PER_LEVEL = 5;
 
 const SAVE_KEY = 'lagon-magique-save';
 
+// les boîtes de rangement des squishies : 3 au départ, 8 au plus, 6 places chacune
+const CRATE_COUNT_MIN = 3;
+const CRATE_COUNT_MAX = 8;
+const CRATE_ITEMS_MAX = 6;
+
 /* ---------- État ---------- */
-const SAVE_VERSION = 9;
+const SAVE_VERSION = 10;
 
 /* Les types de la partie : ils décrivent DEFAULT_STATE, champ par champ.
    Les tables (inventaire, amitiés…) sont indexées par un id d'objet, de
@@ -44,6 +49,14 @@ const SAVE_VERSION = 9;
  * @typedef {{ date: string, zap: Record<string, boolean>, tom: boolean }} TeamDay */
 /** @typedef {{ open: boolean, met: string[], mates: string[], day: TeamDay | null }} TeamState */
 /**
+ * Une boîte de rangement de la chambre : son étiquette (grammaire dans
+ * crateCriteria, null = pas encore choisie), ses squishies (un id par
+ * exemplaire, dans l'ordre de rangement), et `done` = déjà payée.
+ * @typedef {{ label: string | null, items: string[], done: boolean }} SquishyCrate
+ */
+/** Une règle d'étiquette (« les roses », « les Capybaras »).
+ * @typedef {{ type: 'color' | 'shape' | 'size' | 'series', value: string }} CrateRule */
+/**
  * La collection de squishies (détail des champs dans squishyFreshState).
  * @typedef {{
  *   owned: Record<string, number>,
@@ -56,6 +69,7 @@ const SAVE_VERSION = 9;
  *   sorted: number,
  *   hello: boolean,
  *   treasures: string[],
+ *   crates: SquishyCrate[],
  * }} SquishyState
  */
 /**
@@ -163,7 +177,10 @@ const DEFAULT_STATE = {
      sorted     boîtes de rangement remplies, en tout
      hello      la chambre a déjà été annoncée (première ouverture)
      treasures  les squishies uniques (case « Trésors »), jamais dans les boîtes :
-                ✨ Grisou arc-en-ciel, donné par le grand final de la saison 2 */
+                ✨ Grisou arc-en-ciel, donné par le grand final de la saison 2
+     crates     les boîtes de rangement durables, 3 à 8 : { label, items, done }
+                (label : l'étiquette choisie ou null ; items : 0 à 6 ids de
+                SQUISHIES, un par exemplaire rangé ; done : boîte déjà payée) */
 /** @returns {SquishyState} */
 function squishyFreshState() {
   return {
@@ -177,6 +194,7 @@ function squishyFreshState() {
     sorted: 0,
     hello: false,
     treasures: [],
+    crates: Array.from({ length: CRATE_COUNT_MIN }, crateBlank),
   };
 }
 
@@ -277,6 +295,12 @@ function migrate(saved) {
     saved.season2Done = false;
     if (saved.squishies && !Array.isArray(saved.squishies.treasures)) saved.squishies.treasures = [];
   }
+  if (v < 10) {
+    // les boîtes de rangement durables de la chambre à squishies : 3 boîtes vides
+    const sq = saved.squishies;
+    if (sq && typeof sq === 'object' && !Array.isArray(sq.crates))
+      sq.crates = Array.from({ length: CRATE_COUNT_MIN }, crateBlank);
+  }
   saved.v = SAVE_VERSION;
   return saved;
 }
@@ -344,6 +368,108 @@ function cleanRestLog(raw) {
   }
   return out;
 }
+/* ---- les boîtes de rangement des squishies : étiquettes et nettoyage ----
+   Une étiquette est `fav` (les préférés : tout y va), une règle `type:valeur`
+   (color, shape, size ou series), ou deux règles jointes par `+`, d'un des
+   trois couples size+color, color+shape, size+shape, dans cet ordre. */
+/** @returns {SquishyCrate} */
+function crateBlank() {
+  return { label: null, items: [], done: false };
+}
+/** @type {Record<string, string[]>} les valeurs permises des règles de forme et de taille */
+const CRATE_RULE_VALUES = { shape: ['rond', 'ovale', 'carre'], size: ['petit', 'grand'] };
+const CRATE_RULE_PAIRS = ['size+color', 'color+shape', 'size+shape'];
+/** @param {object} table @param {string} k une clé de la table elle-même (pas « constructor ») */
+const crateHasKey = (table, k) => Object.prototype.hasOwnProperty.call(table, k);
+/**
+ * Une règle `type:valeur` lue, ou null si elle n'existe pas.
+ * @param {string} part
+ * @returns {CrateRule | null}
+ */
+function crateRule(part) {
+  const cut = part.indexOf(':'),
+    type = part.slice(0, cut),
+    value = part.slice(cut + 1);
+  if (type === 'color') return crateHasKey(SQ_COLORS, value) ? { type, value } : null;
+  if (type === 'series') return crateHasKey(SQUISHY_SERIES, value) ? { type, value } : null;
+  if (type === 'shape' || type === 'size') return CRATE_RULE_VALUES[type].includes(value) ? { type, value } : null;
+  return null;
+}
+/**
+ * Les règles d'une étiquette ; null pour `fav` (pas de règle) comme pour une
+ * étiquette invalide : crateLabelValid les distingue.
+ * @param {unknown} key
+ * @returns {CrateRule[] | null}
+ */
+function crateCriteria(key) {
+  if (typeof key !== 'string' || key === 'fav') return null;
+  const rules = key.split('+').map(crateRule);
+  if (rules.length > 2 || rules.some((r) => !r)) return null;
+  const list = /** @type {CrateRule[]} */ (rules); // aucune règle nulle : vérifié juste au-dessus
+  if (list.length === 2 && !CRATE_RULE_PAIRS.includes(list[0].type + '+' + list[1].type)) return null;
+  return list;
+}
+/** @param {unknown} key @returns {boolean} */
+function crateLabelValid(key) {
+  return key === 'fav' || crateCriteria(key) !== null;
+}
+/**
+ * Une boîte lue telle quelle, remise en forme : `done`, étiquette, éléments
+ * (ids du catalogue, conformes à l'étiquette, 6 au plus).
+ * @param {unknown} raw
+ * @returns {SquishyCrate}
+ */
+function cleanSquishyCrate(raw) {
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return crateBlank();
+  const c = /** @type {Record<string, unknown>} */ (raw);
+  // sans étiquette valide : une boîte vide (on ne range que dans une boîte étiquetée)
+  if (!crateLabelValid(c.label)) return crateBlank();
+  const label = /** @type {string} */ (c.label);
+  const rules = crateCriteria(label);
+  /** @type {unknown[]} */
+  const list = Array.isArray(c.items) ? c.items : [];
+  /** @type {string[]} */
+  const ids = [];
+  list.forEach((x) => {
+    if (typeof x === 'string' && crateHasKey(SQUISHIES, x)) ids.push(x);
+  });
+  const items = ids
+    .filter((id) => !rules || rules.every((r) => SQUISHIES[id][r.type] === r.value))
+    .slice(0, CRATE_ITEMS_MAX);
+  return { label, items, done: c.done === true };
+}
+/**
+ * Les boîtes de rangement d'une partie importée (entrée non fiable), remises en
+ * forme : 3 à 8 boîtes, et jamais plus d'exemplaires d'un modèle que possédés
+ * moins ceux de l'étagère (les exemplaires en trop partent de la dernière boîte).
+ * @param {unknown} raw
+ * @param {unknown} owned les exemplaires possédés, lus tels quels
+ * @param {unknown} shelf l'étagère, lue telle quelle
+ * @returns {SquishyCrate[]}
+ */
+function cleanSquishyCrates(raw, owned, shelf) {
+  /** @type {unknown[]} */
+  const list = Array.isArray(raw) ? raw : [];
+  const out = list.slice(0, CRATE_COUNT_MAX).map(cleanSquishyCrate);
+  while (out.length < CRATE_COUNT_MIN) out.push(crateBlank());
+  const have = /** @type {Record<string, unknown>} */ (owned && typeof owned === 'object' ? owned : {});
+  /** @type {unknown[]} */
+  const onShelf = Array.isArray(shelf) ? shelf : [];
+  /** @type {Record<string, number>} ce qu'il reste à ranger, par modèle */
+  const left = {};
+  out.forEach((c) => {
+    // on garde les premiers exemplaires permis : ceux en trop partent donc de la fin
+    c.items = c.items.filter((id) => {
+      if (left[id] === undefined) {
+        const n = have[id];
+        const own = typeof n === 'number' && Number.isInteger(n) && n > 0 ? n : 0;
+        left[id] = Math.max(0, own - onShelf.filter((x) => x === id).length);
+      }
+      return left[id]-- > 0;
+    });
+  });
+  return out;
+}
 /**
  * Une partie enregistrée (texte JSON) devenue une partie jouable : migrée vers
  * la forme actuelle, réduite aux champs connus, prénom, avatar, suivi des jeux
@@ -365,6 +491,10 @@ function readSave(raw) {
   st.name = cleanName(st.name); // porte d'entrée : partie enregistrée ou importée
   st.skills = cleanSkills(st.skills);
   st.restLog = cleanRestLog(st.restLog);
+  // les boîtes de rangement : un champ absent reste absent (holdout), la chambre le complète
+  const sq = st.squishies;
+  if (sq && typeof sq === 'object' && sq.crates !== undefined)
+    sq.crates = cleanSquishyCrates(sq.crates, sq.owned, sq.shelf);
   saveSlot.afterLoad(st);
   return st;
 }
@@ -452,6 +582,9 @@ function hello() {
 }
 
 export {
+  cleanSquishyCrates,
+  crateCriteria,
+  crateLabelValid,
   freshState,
   gameCount,
   hello,

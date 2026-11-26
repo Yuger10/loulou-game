@@ -42,7 +42,8 @@ const SQ_SORT_MAX_ERRORS = 2; // erreurs avant une nouvelle consigne
 
 /** @typedef {import('../../entities/game-state/index.js').GameState['squishies']} SquishyState */
 /** Un critère de rangement (« les roses », « les ronds »…).
- * @typedef {{ type: 'color' | 'shape' | 'size', value: string }} SortCriterion */
+ * `series` ne sert qu'aux étiquettes des boîtes durables (squishy-crate-rules.js).
+ * @typedef {{ type: 'color' | 'shape' | 'size' | 'series', value: string }} SortCriterion */
 /**
  * Une boîte de rangement : `key` identifie la consigne, `targets` = combien
  * des `items` proposés vont dans la boîte.
@@ -250,22 +251,44 @@ function squishyCheckSeriesDone(series) {
   return true;
 }
 
+/* ---- où est chaque exemplaire : libre, sur l'étagère, ou dans une boîte ----
+   Un exemplaire est à un seul endroit. Ranger ne retire rien de la collection
+   (`owned` ne change pas), mais un exemplaire rangé ne s'échange pas et ne se
+   pose pas ailleurs tant qu'il n'est pas sorti. */
+/** @param {string} id @returns {number} les exemplaires rangés dans les boîtes de rangement */
+function squishyCrateCount(id) {
+  return sqState().crates.reduce((n, c) => n + c.items.filter((x) => x === id).length, 0);
+}
+/** @param {string} id @returns {number} les exemplaires ni sur l'étagère ni dans une boîte */
+function squishyFree(id) {
+  return Math.max(0, squishyCount(id) - squishyShelfCount(id) - squishyCrateCount(id));
+}
+
 /* ---- échanger ses doubles ----
    Un double est un exemplaire au-delà du premier. 3 doubles, quels qu'ils
    soient, donnent 1 squishy manquant au choix. On donne d'abord ceux qu'on
-   a en plus grand nombre. */
+   a en plus grand nombre. Seuls les doubles libres s'échangent : un squishy
+   rangé (étagère, boîte) reste à sa place. */
+/** @param {string} id @returns {number} les doubles libres de ce modèle */
+function squishyTradable(id) {
+  return Math.max(0, Math.min(squishyCount(id) - 1, squishyFree(id)));
+}
 function squishyDuplicates() {
-  const owned = sqState().owned;
-  return Object.keys(owned).reduce((n, id) => n + Math.max(0, (owned[id] || 0) - 1), 0);
+  return Object.keys(sqState().owned).reduce((n, id) => n + squishyTradable(id), 0);
+}
+// les doubles rangés (étagère ou boîte) : ils ne s'échangent pas
+function squishyStoredDuplicates() {
+  return Object.keys(sqState().owned).reduce((n, id) => n + Math.max(0, squishyCount(id) - 1) - squishyTradable(id), 0);
 }
 /** @param {string} id le squishy manquant voulu */
 function tradeDuplicatesFor(id) {
   const sq = sqState();
   if (!SQUISHIES[id] || squishyCount(id) > 0 || squishyDuplicates() < SQ_TRADE_COST) return { ok: false };
   for (let i = 0; i < SQ_TRADE_COST; i++) {
+    // recalculé à chaque retrait ; à égalité, le premier dans l'ordre de `owned` (tri stable)
     const most = Object.keys(sq.owned)
-      .filter((x) => sq.owned[x] > 1)
-      .sort((a, b) => sq.owned[b] - sq.owned[a])[0];
+      .filter((x) => squishyTradable(x) > 0)
+      .sort((a, b) => squishyTradable(b) - squishyTradable(a))[0];
     sq.owned[most]--;
   }
   sq.owned[id] = 1;
@@ -280,7 +303,7 @@ function tradeDuplicatesFor(id) {
 function squishyShelfCount(id) {
   return sqState().shelf.filter((x) => x === id).length;
 }
-// on ne pose pas plus d'exemplaires qu'on n'en a
+// on ne pose que des exemplaires libres (ni déjà sur l'étagère, ni dans une boîte)
 /**
  * @param {number} slot
  * @param {string} id
@@ -288,7 +311,7 @@ function squishyShelfCount(id) {
 function shelfPlace(slot, id) {
   const sq = sqState();
   if (slot < 0 || slot >= SQ_SHELF_SLOTS || !SQUISHIES[id]) return false;
-  if (sq.shelf[slot] !== id && squishyShelfCount(id) >= squishyCount(id)) return false;
+  if (sq.shelf[slot] !== id && squishyFree(id) <= 0) return false;
   sq.shelf[slot] = id;
   save();
   return true;
@@ -614,6 +637,7 @@ export {
   shelfRemove,
   sortingDone,
   sortingPaidLeft,
+  sortLevelCap,
   sortMatches,
   sortSay,
   sortWrongHint,
@@ -629,13 +653,16 @@ export {
   sqState,
   squishyBoxCount,
   squishyCount,
+  squishyCrateCount,
   squishyDuplicates,
+  squishyFree,
   squishyMissing,
   squishyOwnedIds,
   squishySeriesAvailable,
   squishySeriesProgress,
   squishyShelfCount,
   squishyShopState,
+  squishyStoredDuplicates,
   squishyTreasureOwned,
   squishyTreasures,
   grantSquishyTreasure,
