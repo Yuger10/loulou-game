@@ -1,1 +1,31 @@
 /* Les souvenirs (révision espacée, js/features/review) */
+
+/* le badge « 🌟 1/3 » : une pastille à droite du titre du jeu
+   (.game-head est déjà en position relative, js/features/hints/hints.css) */
+.review-badge {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--tint-sun);
+  color: #8a5a00;
+  font-weight: 800;
+  font-size: 0.95rem;
+  white-space: nowrap;
+}
+/* le titre ne passe pas sous la pastille */
+.game-head.has-review h2,
+#modal .game-head.has-review h2 {
+  padding-right: 64px;
+}
+
+/* la proposition : le compagnon, sa phrase, deux boutons (comme une rencontre) */
+.review-offer .buddy-slot {
+  display: block;
+  margin: 0 auto 2px;
+}
+.review-offer .speech {
+  text-align: left;
+}

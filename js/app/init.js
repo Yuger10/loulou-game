@@ -16,6 +16,7 @@ import { announceUpdate } from '../features/update/index.js';
 import { renderRaceTrack, renderTurnBar } from '../features/party/index.js';
 import { closeWelcome, openWelcome, renderProfile, renderSoundBtn } from '../features/profile/index.js';
 import { ensureQuests, openQuestsModal } from '../features/quests/index.js';
+import { maybeOfferReview } from '../features/review/index.js';
 import { initSeasons, maybeSeasonGift } from '../features/seasons/index.js';
 import { renderSquishyBadge, squishySessionHello } from '../features/squishies/index.js';
 import { openStoryJournal } from '../features/story/index.js';
@@ -97,8 +98,9 @@ function hideSplash() {
     // une fois par saison : un cadeau (chapeau pour l'avatar + pièces) ;
     // sinon l'équipe des compagnons : son ouverture (niveau 10) ou une rencontre
     // le Ciel des Rêves (v55) : son ouverture, pour une partie qui a déjà son niveau
+    // en dernier, si rien d'autre n'a été montré : les souvenirs (révision espacée)
     setTimeout(() => {
-      if (!maybeSeasonGift() && !maybeSkyOpening()) teamOnSessionStart();
+      if (!maybeSeasonGift() && !maybeSkyOpening() && !teamOnSessionStart()) maybeOfferReview();
     }, 700);
     // v53 : des boîtes surprises attendent dans la chambre à squishies (une fois)
     setTimeout(squishySessionHello, 2600);

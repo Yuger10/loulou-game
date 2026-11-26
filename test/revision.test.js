@@ -1030,10 +1030,535 @@ async function captureTests() {
   w.close();
 }
 
+/* ============ S6 et S7 : la mission « souvenirs » ============ */
+// Nina, déjà connue, avec une file donnée, à un jour donné ; minuteries ×0,1
+async function ninaPage(review, day) {
+  const pg = boot({
+    day,
+    fast: true,
+    saved: {
+      'lagon-magique-profiles': profilesOf(),
+      'lagon-magique-save:p1': J({ v: 9, name: 'Nina', avatar: '👧', coins: 12, missions: 7, review }),
+    },
+  });
+  await wait(200);
+  // les appels de la pause (game:before, game:after) sont comptés
+  pg.ev(`window.__before = []; window.__after = [];
+    on('game:before', (k) => { __before.push(k); }); on('game:after', (r) => { __after.push(r); });
+    window.__badges = [];
+    const body = document.getElementById('modal-body');
+    new MutationObserver(() => {
+      const b = body.querySelector('.review-badge');
+      if (b && __badges[__badges.length - 1] !== b.textContent) __badges.push(b.textContent);
+    }).observe(body, { childList: true, subtree: true });`);
+  return pg;
+}
+// une séance commence : l'enfant touche « Jouer » sur l'écran titre
+async function startSession(pg) {
+  if (!pg.d.getElementById('splash').classList.contains('show')) pg.ev('closeModal(); showSplash()');
+  pg.d.getElementById('btn-splash-play').click();
+  await wait(200); // la chaîne de début de séance passe 700 ms après (70 ms ici)
+}
+// la phrase a été dite (la voix reçoit le texte mis en forme par toSpoken)
+const heard = (pg, text) => pg.spoken.includes(pg.ev(`toSpoken(${J(text)})`));
+const offerOpen = (pg) => !!pg.d.getElementById('review-offer') && modalOpen(pg);
+const modalOpen = (pg) => pg.d.getElementById('overlay').classList.contains('show');
+const badge = (pg) => (pg.d.querySelector('.review-badge') || { textContent: '' }).textContent;
+const currentGame = (pg) => pg.ev('lastGame');
+const REVIEW_SHOW = 1500 * SPEED,
+  WIN = 400 * SPEED;
+// tout ce que la mission ne doit pas changer (le temps de jeu, lui, avance tout seul)
+const untouched = (pg) => pg.js('Object.assign({}, state, { review: 0, playTime: 0 })');
+// le palier 3 pour tous : un jeu normal y a des cœurs et un minuteur
+const tier3 = (pg) =>
+  pg.ev(`currentProfile().age = 0; state.missions = 200; currentWorld = 'montagne';
+    ['math', 'calc', 'compare', 'clock', 'reading', 'count'].forEach((k) => {
+      state.skills[k] = { wins: 0, fails: 0, errors: 0, last: null, recent: [], lvl: 3 };
+    }); save()`);
+
+async function missionTests() {
+  const D = '2026-11-21';
+  const queue = (pg) => JSON.parse(pg.js('state.review'));
+  const byKey = (pg, k) => queue(pg).items.find((x) => x.k === k);
+
+  section('S6 : la proposition du compagnon (ligne 9)');
+  {
+    const pg = await ninaPage({ items: [item('math')], offered: null }, D);
+    const { ev, d, errs, spoken, w } = pg;
+    check('rien avant « Jouer »', !offerOpen(pg));
+    await startSession(pg);
+    check("la proposition s'ouvre en début de séance (#review-offer)", offerOpen(pg));
+    const name = ev('COMPANIONS[currentCompanion()].name');
+    check('son titre : 🌟 Les souvenirs', () => d.querySelector('#review-offer h2').textContent === '🌟 Les souvenirs');
+    check(
+      'le compagnon principal propose, sa phrase est écrite avec son nom',
+      () =>
+        d
+          .getElementById('review-offer')
+          .textContent.replace(/\s+/g, ' ')
+          .includes(`${name} : J'ai un souvenir pour toi. On joue ensemble ?`) &&
+        !!d.querySelector('#review-offer .buddy-slot svg'),
+      () => d.getElementById('review-offer').textContent,
+    );
+    check('sa phrase est dite, sans le nom', heard(pg, "J'ai un souvenir pour toi. On joue ensemble ?"), J(spoken));
+    check(
+      'deux boutons : « 🌟 On joue ! » et « Plus tard »',
+      () =>
+        d.getElementById('review-yes').textContent === '🌟 On joue !' &&
+        d.getElementById('review-later').textContent === 'Plus tard',
+    );
+    check("`offered` vaut aujourd'hui, et c'est enregistré", () => {
+      const saved = JSON.parse(w.localStorage.getItem('lagon-magique-save:p1')).review;
+      return ev('state.review.offered') === D && saved.offered === D;
+    });
+    check('la pause a été consultée une seule fois, pour « souvenirs »', pg.js('__before') === J(['souvenirs']));
+    check(
+      'jamais « erreur », « raté » ni « faux » dans la proposition',
+      () => !/erreur|rat[ée]|faux/i.test(d.getElementById('modal-body').textContent),
+    );
+
+    section('S7 : refuser (ligne 10)');
+    const before = pg.js('state.review');
+    d.getElementById('review-later').click();
+    check('« Plus tard » ferme la fenêtre, la file ne change pas', !modalOpen(pg) && pg.js('state.review') === before);
+    check("la proposition ne revient pas aujourd'hui", ev('maybeOfferReview()') === false && !modalOpen(pg));
+    await startSession(pg);
+    check('ni à la séance suivante du même jour', !offerOpen(pg));
+    pg.setDay('2026-11-22');
+    await startSession(pg);
+    check('elle revient le lendemain', offerOpen(pg) && ev('state.review.offered') === '2026-11-22');
+    d.getElementById('modal-close').click();
+    check('fermer la fenêtre (croix) : rien ne change non plus', () => {
+      const q = queue(pg);
+      return !modalOpen(pg) && J(q.items) === J([item('math')]) && ev('maybeOfferReview()') === false;
+    });
+    check("un refus n'annonce aucune fin de mission", pg.js('__after') === '[]');
+
+    section('S6 : quand la proposition ne vient pas');
+    const fresh = (more = '') =>
+      ev(`closeModal(); state.review = ${J({ items: [item('math')], offered: null })}; ${more}`);
+    fresh();
+    check('contrôle : avec ces réglages, elle vient', ev('maybeOfferReview()') === true && offerOpen(pg));
+    fresh(`state.review.items[0].due = ${J(ev('addDays(dayKey(new Date()), 1)'))}`);
+    check("aucun item dû aujourd'hui", ev('maybeOfferReview()') === false && !modalOpen(pg));
+    fresh('party.active = true');
+    check('à plusieurs, chacun son tour (ligne 18)', ev('maybeOfferReview()') === false && !modalOpen(pg));
+    await startSession(pg);
+    check('à plusieurs : rien non plus en début de séance (ligne 18)', !offerOpen(pg));
+    fresh('party.active = false; race.active = true');
+    check('à plusieurs, en course (ligne 18)', ev('maybeOfferReview()') === false && !modalOpen(pg));
+    fresh('race.active = false; openModal("<p id=autre>autre fenêtre</p>")');
+    check('une fenêtre est déjà ouverte', ev('maybeOfferReview()') === false && !!d.getElementById('autre'));
+    fresh('window.__name = state.name; state.name = ""');
+    check('pas de prénom', ev('maybeOfferReview()') === false && !modalOpen(pg));
+    ev('state.name = __name');
+    check('dans tous ces cas, `offered` reste libre', ev('state.review.offered') === null);
+
+    section('S7 : la pause gagne toujours');
+    fresh(
+      'window.__before.length = 0; currentProfile().pauseMin = 20; saveProfiles(); state.pauseExtra = null; state.playTime = { [todayKey()]: 25 * 60 }; save()',
+    );
+    const offered = ev('maybeOfferReview()');
+    const veil = d.getElementById('rest-veil');
+    check('pause due : aucune proposition', offered === false && !offerOpen(pg));
+    check('le voile de la pause est là', !!veil && !veil.hidden);
+    check('la pause a été consultée une fois', pg.js('__before') === J(['souvenirs']));
+    check('`offered` reste libre : la proposition viendra après la pause', ev('state.review.offered') === null);
+    ev('currentProfile().pauseMin = 0; saveProfiles(); state.playTime = {}; save(); restWake()');
+
+    section('S6 : un, deux ou trois souvenirs');
+    for (const [names, words] of [
+      [['math', 'clock'], 'deux souvenirs'],
+      [['math', 'clock', 'compare'], 'trois souvenirs'],
+      [['math', 'clock', 'compare', 'reading', 'calc'], 'trois souvenirs'],
+    ]) {
+      ev(`closeModal(); state.review = ${J({ items: names.map((n) => item(n)), offered: null })}`);
+      spoken.length = 0;
+      ev('maybeOfferReview()');
+      check(
+        `${names.length} items dus : « ${words} »`,
+        heard(pg, `J'ai ${words} pour toi. On joue ensemble ?`),
+        J(spoken),
+      );
+    }
+    check('aucune erreur JS', errs.length === 0, errs.join(' | '));
+    w.close();
+  }
+
+  section("S6 : une mission, de la proposition à l'écran de fin (lignes 11 à 16)");
+  {
+    // l'exemple 1 de pickDue, au jour J : B (math, box 3), F (calc, box 3), C (clock, box 1)
+    const items = [
+      item('math', { due: '2026-11-20' }), // A : même jeu que B, refusé à la passe 1
+      item('minus', { box: 3, due: '2026-11-19', t: 5 }), // B
+      item('clock', { due: '2026-11-21' }), // C
+      item('compare', { box: 7, due: '2026-11-22' }), // D : pas encore dû
+      item('reading', { due: '2026-11-23' }), // E : pas encore dû
+      item('calc', { box: 3, due: '2026-11-21' }), // F
+    ];
+    const pg = await ninaPage({ items, offered: null }, D);
+    const { ev, d, errs, spoken, w } = pg;
+    await startSession(pg);
+    tier3(pg);
+    check('la proposition annonce trois souvenirs', heard(pg, "J'ai trois souvenirs pour toi. On joue ensemble ?"));
+    const state0 = untouched(pg);
+    d.getElementById('review-yes').click();
+
+    // question 1 : B (9 − 4), une bonne réponse
+    check('ligne 11 : la première question est celle choisie par pickDue (9 − 4)', () => SHOWN.math(d, P.minus));
+    check('ligne 11 : son jeu est le jeu courant (setLastGame)', currentGame(pg) === 'math');
+    check(
+      "ligne 11 : le badge 🌟 1/3, dans l'en-tête",
+      () =>
+        badge(pg) === '🌟 1/3' &&
+        d.querySelector('.game-head .review-badge').getAttribute('aria-label') === 'Souvenir 1 sur 3',
+      () => badge(pg),
+    );
+    check('ligne 12 : ni minuteur, ni cœurs', !d.getElementById('challenge-timer') && !d.getElementById('lives-bar'));
+    check('ligne 12 : le bouton 💡 est là et donne un indice', () => {
+      d.querySelector('.hint-btn').click();
+      return ev('hintLevel()') === 1;
+    });
+    ev('delete state.skills.math.hints; save()'); // l'indice demandé pour ce test n'est pas compté plus bas
+    spoken.length = 0;
+    rightBtn(pg).click();
+    check(
+      'ligne 13 : rien ne change avant WIN_DELAY',
+      J(byKey(pg, KEY.minus)) === J(items[1]) && badge(pg) === '🌟 1/3',
+    );
+    const t1 = Date.now();
+    check('ligne 13 : la question suivante arrive', await waitFor(() => badge(pg) === '🌟 2/3', 1000));
+    check(`ligne 13 : … WIN_DELAY après (${Date.now() - t1} ms)`, Date.now() - t1 >= WIN - 15);
+    check(
+      'ligne 13 : box 3 devient box 7, dû 7 jours après (le palier `t` ne change pas)',
+      J(byKey(pg, KEY.minus)) === J(item('minus', { box: 7, due: '2026-11-28', t: 5 })),
+      J(byKey(pg, KEY.minus)),
+    );
+    check(
+      'ligne 13 : la partie est enregistrée',
+      () => J(JSON.parse(w.localStorage.getItem('lagon-magique-save:p1')).review) === pg.js('state.review'),
+    );
+
+    // question 2 : F (23 + 14), une erreur
+    check('ligne 11 : deuxième question, 23 + 14 (calc)', () => SHOWN.calc(d, P.calc) && currentGame(pg) === 'calc');
+    check(
+      'ligne 12 : toujours ni minuteur, ni cœurs',
+      !d.getElementById('challenge-timer') && !d.getElementById('lives-bar'),
+    );
+    spoken.length = 0;
+    const right = rightBtn(pg);
+    wrongBtn(pg, 'calc').click();
+    const t2 = Date.now();
+    const buttons = [...d.querySelectorAll('#modal-body button')];
+    check(
+      'ligne 14 : tous les boutons sont désactivés (sauf « écouter »)',
+      buttons.length > 3 && buttons.every((b) => b.disabled === !b.classList.contains('btn-speak')),
+      J(buttons.map((b) => [b.className, b.disabled])),
+    );
+    check('ligne 14 : la bonne réponse brille', right.classList.contains('hint-glow'));
+    check(
+      'ligne 14 : une seule phrase est dite',
+      J(spoken) === J([ev(`toSpoken("Regarde, c'était celle-ci.")`)]),
+      J(spoken),
+    );
+    right.click();
+    right.disabled = false; // même si le bouton était encore actif, la première réponse compte seule
+    right.click();
+    await wait(REVIEW_SHOW / 2);
+    // à mi-délai, rien n'a bougé (sans objet si la machine a pris du retard : le délai est déjà passé)
+    const late = (t) => Date.now() - t >= REVIEW_SHOW - 30;
+    check('ligne 14 : la bonne réponse touchée ensuite ne compte pas', () => {
+      const it = byKey(pg, KEY.calc);
+      return late(t2) || (badge(pg) === '🌟 2/3' && J(it) === J(items[5]));
+    });
+    check('ligne 14 : on passe à la suite', await waitFor(() => badge(pg) === '🌟 3/3', 1000));
+    check(`ligne 14 : … REVIEW_SHOW_MS après l'erreur (${Date.now() - t2} ms)`, Date.now() - t2 >= REVIEW_SHOW - 15);
+    check(
+      'ligne 14 : box 1, dû le lendemain, fails + 1',
+      J(byKey(pg, KEY.calc)) === J(item('calc', { box: 1, due: '2026-11-22', fails: 1 })),
+      J(byKey(pg, KEY.calc)),
+    );
+    check(
+      "ligne 14 : la même question n'est pas reposée",
+      () => SHOWN.clock(d, P.clock) && currentGame(pg) === 'clock',
+    );
+
+    // question 3 : C (3 h 30), une bonne réponse, puis l'écran de fin
+    spoken.length = 0;
+    rightBtn(pg).click();
+    check("ligne 16 : l'écran de fin s'ouvre", await waitFor(() => d.getElementById('review-end'), 1000));
+    const phrase = `Bravo, tu t'en es ${ev('ac("souvenu", "souvenue")')} ! On garde les autres pour bientôt.`;
+    check(
+      'ligne 16 : il dit et montre la phrase « au moins une juste »',
+      heard(pg, phrase) && d.getElementById('review-end').textContent.includes(phrase),
+      J(spoken),
+    );
+    check('ligne 16 : son bouton « Super ! »', () => d.getElementById('review-done').textContent === 'Super !');
+    check(
+      'ligne 16 : ni objet gagné, ni minuteur, ni cœurs',
+      !d.querySelector('.reward-item, [data-gain-item], #lives-bar, #challenge-timer'),
+    );
+    check(
+      'ligne 16 : une fin de mission est annoncée, une seule',
+      pg.js('__after') === J([{ win: true }]),
+      pg.js('__after'),
+    );
+    check("la pause n'a été consultée qu'une fois, avant la proposition", pg.js('__before') === J(['souvenirs']));
+    check(
+      'ligne 13 : box 1 devient box 3, dû 3 jours après',
+      J(byKey(pg, KEY.clock)) === J(item('clock', { box: 3, due: '2026-11-24' })),
+    );
+    check(
+      'les items non choisis ne changent pas',
+      J([items[0], items[3], items[4]].map((x) => byKey(pg, x.k))) === J([items[0], items[3], items[4]]),
+    );
+    check('les badges vus : 1/3, 2/3, 3/3', pg.js('__badges') === J(['🌟 1/3', '🌟 2/3', '🌟 3/3']), pg.js('__badges'));
+    d.getElementById('review-done').click();
+    check('« Super ! » ferme la fenêtre', !modalOpen(pg));
+    check(
+      'ligne 16 : rien gagné, rien compté (pièces, objets, missions, progrès, quêtes, parties jouées)',
+      untouched(pg) === state0,
+      `${untouched(pg)}\n     ≠ ${state0}`,
+    );
+    check('ligne 16 : aucun défi bonus', ev('bonusChallenge') === null);
+    check('après la mission, un jeu normal retrouve ses cœurs et son minuteur', () => {
+      ev('playGame("math")');
+      return (
+        !!d.getElementById('lives-bar') && !!d.getElementById('challenge-timer') && !d.querySelector('.review-badge')
+      );
+    });
+    ev('closeModal()');
+    check('aucune erreur JS', errs.length === 0, errs.join(' | '));
+    w.close();
+  }
+
+  section('S6 : arrêt après deux erreurs (ligne 15), et les autres phrases de fin');
+  {
+    const items = [item('math', { box: 7 }), item('clock', { box: 3 }), item('compare')];
+    const pg = await ninaPage({ items, offered: null }, D);
+    const { ev, d, errs, spoken, w } = pg;
+    await startSession(pg);
+    d.getElementById('review-yes').click();
+    check("question 1 (la mieux sue d'abord : box 7)", () => SHOWN.math(d, P.math) && badge(pg) === '🌟 1/3');
+    wrongBtn(pg, 'math').click();
+    const t1 = Date.now();
+    check(
+      'T + 1500 ms : question 2',
+      (await waitFor(() => badge(pg) === '🌟 2/3', 1000)) && Date.now() - t1 >= REVIEW_SHOW - 5,
+    );
+    spoken.length = 0;
+    const right = rightBtn(pg);
+    wrongBtn(pg, 'clock').click();
+    const t2 = Date.now();
+    check(
+      'deuxième erreur : la bonne réponse est montrée comme la première fois',
+      right.classList.contains('hint-glow') &&
+        J(spoken) === J([ev(`toSpoken("Regarde, c'était celle-ci.")`)]) &&
+        [...d.querySelectorAll('#modal-body button:not(.btn-speak)')].every((b) => b.disabled),
+    );
+    await wait(REVIEW_SHOW / 2);
+    check(
+      '… et elle reste affichée',
+      Date.now() - t2 >= REVIEW_SHOW - 30 || (badge(pg) === '🌟 2/3' && !d.getElementById('review-end')),
+    );
+    check("T2 + 1500 ms : l'écran de fin", await waitFor(() => d.getElementById('review-end'), 1000));
+    check(`… pas avant (${Date.now() - t2} ms)`, Date.now() - t2 >= REVIEW_SHOW - 15);
+    await wait(REVIEW_SHOW * 2);
+    check(
+      "la question 3 n'est jamais affichée",
+      pg.js('__badges') === J(['🌟 1/3', '🌟 2/3']) && !!d.getElementById('review-end'),
+    );
+    check("l'item de la question 3 est identique", J(byKey(pg, KEY.compare)) === J(items[2]));
+    check(
+      'les deux items ratés : box 1, dû le lendemain, fails + 1',
+      J([byKey(pg, KEY.math), byKey(pg, KEY.clock)]) ===
+        J([item('math', { due: '2026-11-22', fails: 1 }), item('clock', { due: '2026-11-22', fails: 1 })]),
+    );
+    const none = "Merci d'avoir joué avec moi ! On en reparle bientôt.";
+    check(
+      'fin, aucune juste : la phrase',
+      heard(pg, none) && d.getElementById('review-end').textContent.includes(none),
+      J(spoken),
+    );
+    check('une fin de mission annoncée', pg.js('__after') === J([{ win: true }]));
+    check(
+      "jamais « erreur », « raté » ni « faux » à l'écran de fin",
+      !/erreur|rat[ée]|faux/i.test(d.getElementById('modal-body').textContent),
+    );
+    d.getElementById('review-done').click();
+
+    // tout juste, avec les dernières transitions : box 7 sort, box 3 passe à 7
+    pg.setDay('2026-11-25');
+    ev(`state.review = ${J({ items: [item('math', { box: 7 }), item('clock', { box: 3 })], offered: null })}`);
+    await startSession(pg);
+    d.getElementById('review-yes').click();
+    spoken.length = 0;
+    rightBtn(pg).click();
+    await waitFor(() => badge(pg) === '🌟 2/2', 1000);
+    rightBtn(pg).click();
+    await waitFor(() => d.getElementById('review-end'), 1000);
+    const all = 'Bravo, ta mémoire a bien travaillé !';
+    check(
+      'fin, tout juste : la phrase',
+      heard(pg, all) && d.getElementById('review-end').textContent.includes(all),
+      J(spoken),
+    );
+    check(
+      'réussite en box 7 : sorti de la file ; en box 3 : box 7, dû 7 jours après',
+      pg.js('state.review.items') === J([item('clock', { box: 7, due: '2026-12-02' })]),
+      pg.js('state.review.items'),
+    );
+    d.getElementById('review-done').click();
+
+    // une 3ᵉ erreur de révision fait sortir l'item
+    pg.setDay('2026-11-26');
+    ev(`state.review = ${J({ items: [item('math', { fails: 2 }), item('clock')], offered: null })}`);
+    await startSession(pg);
+    d.getElementById('review-yes').click();
+    wrongBtn(pg, ev('lastGame')).click();
+    await waitFor(() => badge(pg) === '🌟 2/2', 1000);
+    check(
+      'échec avec fails 2 : sorti de la file',
+      pg.js('state.review.items') === J([item('clock')]),
+      pg.js('state.review.items'),
+    );
+    ev('closeModal()');
+    check('aucune erreur JS', errs.length === 0, errs.join(' | '));
+    w.close();
+  }
+
+  section('S7 : la fenêtre se ferme en cours de mission (ligne 17)');
+  {
+    const items = [item('math', { box: 7 }), item('clock', { box: 3 }), item('compare')];
+    const pg = await ninaPage({ items, offered: null }, D);
+    const { ev, d, errs, w } = pg;
+    await startSession(pg);
+    tier3(pg);
+    d.getElementById('review-yes').click();
+    rightBtn(pg).click();
+    await waitFor(() => badge(pg) === '🌟 2/3', 1000);
+    const after1 = pg.js('state.review');
+    // pendant WIN_DELAY, après une bonne réponse
+    rightBtn(pg).click();
+    d.getElementById('modal-close').click();
+    await wait(WIN * 2 + 50);
+    check('fermée pendant WIN_DELAY : aucune fenêtre ne revient', !modalOpen(pg));
+    check(
+      "… l'item de la question affichée ne change pas, les autres non plus",
+      pg.js('state.review') === after1,
+      pg.js('state.review'),
+    );
+    check("… l'item déjà joué garde son nouvel état (sorti après box 7)", !byKey(pg, KEY.math));
+    // pendant REVIEW_SHOW_MS, après une erreur (Échap)
+    ev('state.review.offered = null; maybeOfferReview()');
+    d.getElementById('review-yes').click();
+    check('une nouvelle mission repart de la question 1', badge(pg) === '🌟 1/2');
+    wrongBtn(pg, ev('lastGame')).click();
+    d.dispatchEvent(new w.KeyboardEvent('keydown', { key: 'Escape' }));
+    await wait(REVIEW_SHOW * 2);
+    check('fermée (Échap) pendant REVIEW_SHOW_MS : aucune fenêtre ne revient', !modalOpen(pg));
+    check(
+      "… l'item de la question affichée ne change pas",
+      pg.js('state.review.items') === J(JSON.parse(after1).items),
+      pg.js('state.review.items'),
+    );
+    check("un abandon n'annonce aucune fin de mission", pg.js('__after') === '[]');
+    check('après un abandon, un jeu normal a ses cœurs et son minuteur', () => {
+      ev('playGame("math")');
+      return !!d.getElementById('lives-bar') && !!d.getElementById('challenge-timer');
+    });
+    ev('closeModal()');
+
+    section('S7 : un jeu normal lancé par-dessus la mission, sans la fermer');
+    ev('state.review.offered = null; maybeOfferReview()');
+    d.getElementById('review-yes').click();
+    const open = pg.js('state.review');
+    ev('playGame("count")');
+    check(
+      'le jeu a ses cœurs et son minuteur',
+      !!d.getElementById('lives-bar') && !!d.getElementById('challenge-timer'),
+    );
+    check('plus de badge de souvenir', !d.querySelector('.review-badge'));
+    const lives = () => d.querySelectorAll('#lives-bar .life.on').length;
+    const full = lives();
+    [...d.querySelectorAll('.num-btn')].find((b) => b !== rightBtn(pg)).click();
+    check("une erreur y coûte un essai, comme d'habitude", lives() === full - 1);
+    await wait(REVIEW_SHOW * 2);
+    check(
+      'une autre question du même jeu est reposée, jamais un souvenir',
+      !!d.querySelector('.count-row') &&
+        !d.querySelector('.review-badge') &&
+        !d.getElementById('review-end') &&
+        [...d.querySelectorAll('.num-btn')].every((b) => !b.disabled),
+    );
+    check('la file ne change pas (count ne se garde pas)', pg.js('state.review') === open);
+    rightBtn(pg).click();
+    check('et une bonne réponse y mène à la victoire normale', await waitFor(() => d.getElementById('btn-yay'), 1000));
+    ev('closeModal()');
+    check('aucune erreur JS', errs.length === 0, errs.join(' | '));
+    w.close();
+  }
+
+  section('Lignes 1, 9, 13, 19 : du premier raté à la sortie de la file');
+  {
+    const pg = await newPlayer({ day: '2026-12-01', fast: true });
+    const { ev, d, errs, w } = pg;
+    ev('closeModal(); playGame("compare")'); // sur le lagon, au palier 1
+    const p = EXPECTED_PARAMS.compare(hintQ(pg));
+    wrongBtn(pg, 'compare').click();
+    ev('closeModal()');
+    const due = () => (queue(pg).items[0] || { due: 'sorti' }).due;
+    check('raté le 1er : dû le 2', due() === '2026-12-02', due());
+    await startSession(pg);
+    check('le 1er : pas de proposition', !offerOpen(pg));
+    const playOn = async (day, ok) => {
+      pg.setDay(day);
+      await startSession(pg);
+      if (!offerOpen(pg)) return false;
+      d.getElementById('review-yes').click();
+      if (!SHOWN.compare(d, p)) return false;
+      (ok ? rightBtn(pg) : wrongBtn(pg, 'compare')).click();
+      await waitFor(() => d.getElementById('review-end'), 1000);
+      d.getElementById('review-done').click();
+      return true;
+    };
+    check('le 2 : proposée, réussie : dû le 5', (await playOn('2026-12-02', true)) && due() === '2026-12-05', due());
+    pg.setDay('2026-12-04');
+    await startSession(pg);
+    check('le 4 : pas de proposition', !offerOpen(pg));
+    check('le 5 : proposée, réussie : dû le 12', (await playOn('2026-12-05', true)) && due() === '2026-12-12', due());
+    check(
+      'le 12 : proposée, réussie : sortie de la file',
+      (await playOn('2026-12-12', true)) && due() === 'sorti',
+      due(),
+    );
+    pg.setDay('2026-12-13');
+    await startSession(pg);
+    check('le 13 : plus rien à proposer', !offerOpen(pg));
+    // l'autre branche : raté en révision le lendemain, dû le surlendemain
+    pg.setDay('2026-12-20');
+    ev('closeModal(); playGame("compare")');
+    wrongBtn(pg, 'compare').click();
+    ev('closeModal()');
+    const p2 = queue(pg).items[0].p;
+    pg.setDay('2026-12-21');
+    await startSession(pg);
+    d.getElementById('review-yes').click();
+    check('le lendemain, la question ratée est reposée', () => SHOWN.compare(d, p2));
+    wrongBtn(pg, 'compare').click();
+    await waitFor(() => d.getElementById('review-end'), 1000);
+    check('ratée en révision le 21 : due le 22', due() === '2026-12-22', due());
+    ev('closeModal()');
+    check('aucune erreur JS', errs.length === 0, errs.join(' | '));
+    w.close();
+  }
+}
+
 (async () => {
   await pureTests();
   await saveTests();
   await captureTests();
+  await missionTests();
   console.log(`\n${failed ? '❌' : '✅'} révision : ${passed} vérifications réussies, ${failed} en échec`);
   process.exit(failed ? 1 : 0);
 })();
