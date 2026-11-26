@@ -1,12 +1,19 @@
 # cothon dans ce projet
 
-Version : 0.12.1
-Appliqué le : 2026-11-25
+Version : 0.13.1
+Appliqué le : 2026-11-26
 Profil : petit projet, script, jeu HTML (playbook 9) ; étapes 3 à 5 hors profil (ADR 0006)
 Étapes installées : 0, 1, 2
 Étapes écartées : 3, 4, 5
 Fichiers copiés de cothon : `test/tools/check-docs.sh` (de `setting-up-docs`, version 0.8.1), `.claude/hooks/lint-edited-file.sh` (de `wiring-fast-feedback`, complété par `tsc`), gabarits `conductor/templates/spec.md` et `plan.md` (de `setting-up-docs`, adoptés dans Conductor)
-Presets cothon (ADR 0011 de cothon) : déclarés dans `.cothon/presets.lock` (oxlint `base`, TypeScript `strict`, oxfmt `base`, lefthook `base`), posés par `scripts/presets.sh` de cothon, plus `oxlint/qualite` (passe séparée) et les scripts `bin/new-violations`, `bin/quality-check`, `bin/prove-identity` ; écarts du projet dans `.oxlintrc.json`, `tsconfig.json` et `.cothon/local/` (détail : `SPEED.md`, section « Presets cothon »).
+Presets cothon (ADR 0011 de cothon) : déclarés dans `.cothon/presets.lock` (oxlint `base`, TypeScript `strict`, oxfmt `base`, lefthook `base`), posés par `scripts/presets.sh` de cothon, plus `oxlint/qualite` (passe séparée) et les scripts `bin/new-violations`, `bin/quality-check`, `bin/prove-identity`, `bin/ci` ; `.cothon/bin/gitleaks.pin` copié de `scripts/gitleaks.pin` de cothon (gitleaks 8.30.1, lu par `quality-check.sh secrets`) ; écarts du projet dans `.oxlintrc.json`, `tsconfig.json` et `.cothon/local/` (détail : `SPEED.md`, section « Presets cothon »).
+Commande check : bun run verify
+Commande build : aucune
+Sortie du build : aucune (PWA servie telle quelle, sans build)
+Budget du build : aucun (sans build)
+Lighthouse CI : non
+A11y statique : non
+Barrière qualité : complexite, env, secrets
 
 `Version` = la dernière version de cothon dont toutes les actions du `CHANGELOG.md` sont faites ou en exception. Retour d'expérience envoyé à la session qui maintient cothon le 2026-11-22.
 
@@ -65,9 +72,18 @@ Faites :
 - `0.12.1-1` : sans objet, `bin/quality-check` posé directement en 0.12.1.
 - `0.12.1-2` : preset `lefthook/base` reposé (`--no-error-on-unmatched-pattern` sur le lint).
 
+## Actions 0.13.0 et 0.13.1
+
+- `0.13.0-1` : `preset bin/ci` posé et lignes `Commande check` à `Barrière qualité` ci-dessus. Le workflow reste `.github/workflows/ci.yml` (exception ci-dessous) : son job `violations ajoutées` appelle `.cothon/bin/ci.sh quality` dans une PR à part (zone protégée `.github/`), qui attend l'étiquette `human:approved`.
+- `0.13.0-2` : presets reposés (`presets.sh apply .`), `quality-check.sh rapport` relancé : `sql` sans objet (pas de base), `env` en barrière avec les règles E4 à E9 (0 constat), `secrets` en barrière (gitleaks 8.30.1, 0 constat). Décisions dans `SPEED.md` (« Contrôles qualité »).
+- `0.13.0-3` : sans objet, pas de JSX (exception ci-dessous).
+- `0.13.1-1` : `presets.sh apply .` : `new-violations.sh` corrigé (la mesure d'un message ne compte plus dans la clé, raccourcir un fichier trop long n'est plus un ajout). Preuve d'identité : `adopt-preset.sh --migrate`, identique.
+
 ## Exceptions
 
 | Action | Raison |
 |---|---|
 | `0.3.0-3` | Pas de script d'orchestration : pas de pipeline automatique dans ce projet (ADR 0006) |
 | `0.6.0-1` | L'architecture est déjà décidée et vérifiée : feature slices et modules ES natifs (ADR 0001 et 0002), garde `test/slices.test.js`, `import/no-cycle`. Pas de besoin d'architecture ouvert ; un nouveau besoin passera par une RFC (skill `proposing-architecture`). Décision d'Amrou, 2026-11-22 |
+| `0.13.0-1` | Workflow existant `.github/workflows/ci.yml` gardé au lieu de `cothon.yml` : lint, tests et holdout y sont des jobs parallèles (budget de temps, `SPEED.md`) et `ci-ok`, requis sur `main`, les attend tous. Il appelle `.cothon/bin/ci.sh quality` depuis son job `violations ajoutées` ; pas de `ci.sh check`, qui referait en série ce que les jobs `lint` et `test` font déjà |
+| `0.13.0-3` | Pas de JSX : le jeu écrit son HTML dans des gabarits de chaînes (`js/`), le preset `oxlint/a11y` n'a rien à analyser |
