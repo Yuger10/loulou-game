@@ -1,5 +1,5 @@
 /* ---------- Difficulté jouée : île, âge, et niveau adaptatif de chaque mini-jeu ---------- */
-import { ageToDiff } from '../../entities/difficulty/index.js';
+import { playerCap } from '../../entities/difficulty/index.js';
 import { currentProfile, party, partyCurrent } from '../../entities/player/index.js';
 import { currentWorld, WORLDS } from '../../entities/world/index.js';
 import { adaptTier, gameMaxTier } from './adaptive.js';
@@ -19,21 +19,21 @@ function gameDiffIsland() {
 // « Trouve l'intrus »), que l'enfant ne peut résoudre qu'au hasard.
 function gameDiff() {
   const island = gameDiffIsland();
-  // multijoueur (chacun son tour / course) : l'âge prime totalement,
+  // multijoueur (chacun son tour / course) : la classe (ou l'âge) prime totalement,
   // sans plafond lié à l'île — c'est le mécanisme d'équité déjà en
   // place (chacun joue à son niveau, peu importe où se déroule la partie).
   if (party.active) {
     const p = partyCurrent() || currentProfile();
-    const d = p && ageToDiff(p.age);
+    const d = playerCap(p);
     if (d) return d;
   }
-  // solo : l'âge, s'il est renseigné, plafonne la difficulté de l'île —
+  // solo : la classe (sinon l'âge), si elle est renseignée, plafonne la difficulté de l'île —
   // jamais l'inverse (un enfant plus âgé qu'une île facile n'est pas
   // artificiellement ralenti, seul le cas « trop dur pour son âge »
   // est corrigé).
   {
     const p = currentProfile();
-    const d = p && ageToDiff(p.age);
+    const d = playerCap(p);
     if (d) return adaptedDiff(Math.min(d, island));
   }
   return adaptedDiff(island);
@@ -42,15 +42,14 @@ function gameDiff() {
 // Phase 3 : chaque mini-jeu a son propre niveau par enfant (js/features/adaptive/adaptive.js) ;
 // on ne joue jamais au-dessus de ce qui est acquis dans CE jeu.
 // Défi bonus de Zap (v52) : un cran au-dessus du niveau du jeu, sans jamais
-// dépasser le plafond de l'âge ni le palier maximal du jeu.
+// dépasser le plafond de l'enfant (sa classe, sinon son âge) ni le palier maximal du jeu.
 /** @param {number} base */
 function adaptedDiff(base) {
   const t = adaptTier(base);
   if (!inBonusChallenge()) return t;
-  const p = currentProfile();
-  const ageCap = (p && ageToDiff(p.age)) || 6;
+  const cap = playerCap(currentProfile()) || 6;
   // un défi bonus en cours vaut pour le jeu en cours : lastGame est connu
-  return Math.max(t, Math.min(t + 1, ageCap, gameMaxTier(/** @type {string} */ (lastGame))));
+  return Math.max(t, Math.min(t + 1, cap, gameMaxTier(/** @type {string} */ (lastGame))));
 }
 
 export { gameDiff, gameDiffIsland };

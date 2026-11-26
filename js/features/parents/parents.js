@@ -6,6 +6,7 @@
      les erreurs, le palier atteint, et un état simple (à l'aise / en cours /
      difficile / pas encore assez joué) ;
    - le réglage de la pause douce (après X minutes de jeu dans la journée) ;
+   - la classe de l'enfant (GS à CE2), qui remplace son âge comme plafond de difficulté ;
    - les réglages adultes : sauvegarde, réglages du joueur, remise à zéro ;
    - la version du jeu et le bouton « Chercher une mise à jour » (v66, js/features/update).
 
@@ -14,9 +15,10 @@
                           (hints : indices demandés au compagnon, v52)
      state.playTime[jour] = secondes de jeu ACTIF ce jour-là (60 jours gardés)
      state.pauseExtra   = { date, min }  minutes ajoutées par un adulte aujourd'hui
-   Réglage dans le profil : profile.pauseMin (0 = pas de pause). */
+   Réglages dans le profil : profile.pauseMin (0 = pas de pause), profile.grade
+   ('' = selon l'âge, sinon 'GS', 'CP', 'CE1' ou 'CE2'). */
 import { avatarHTML } from '../../entities/companion/index.js';
-import { GAME_LIST, gameTypesForAge } from '../../entities/difficulty/index.js';
+import { GAME_LIST, gameTypesForAge, GRADES, gradeToDiff, playerCap } from '../../entities/difficulty/index.js';
 import { readSave, resetState, save, state } from '../../entities/game-state/index.js';
 import {
   currentProfile,
@@ -41,6 +43,7 @@ import './storage-alert.js'; // message et carte quand l'enregistrement échoue
 
 /** @typedef {import('../../entities/game-state/index.js').GameState} GameState */
 /** @typedef {Partial<GameState>} PlayerState la partie d'un joueur : l'état courant, ou une partie lue dans le stockage */
+/** @typedef {(typeof profiles.list)[number]} Profile */
 
 const SKILL_GROUPS = [
   { id: 'lire', emoji: '📖', name: 'Lecture et langage', games: ['reading', 'determinants'] },
@@ -266,6 +269,47 @@ function skillsHTML(st, age) {
     </div>`;
   return sum + groups;
 }
+/* ---- la classe de l'enfant (track aller-plus-loin) ----
+   Réglage d'adulte, derrière la porte : la classe remplace l'âge comme plafond
+   de palier (playerCap, js/entities/difficulty/age.js). « Selon l'âge » = ''. */
+// jusqu'où vont les jeux de cet enfant, en une phrase
+/** @param {Profile} p */
+function gradeHelp(p) {
+  const cap = playerCap(p);
+  if (!cap) return "Sans âge ni classe : la difficulté suit l'île.";
+  const from = gradeToDiff(p.grade) ? p.grade : `Selon l'âge (${Number(p.age)} ans)`;
+  return `${from} : jusqu'au palier ${'⭐'.repeat(cap)}.`;
+}
+/** @param {Profile} p */
+function gradeCardHTML(p) {
+  const grade = p.grade || '';
+  /** @param {string} id @param {string} label */
+  const chip = (id, label) =>
+    `<button type="button" class="ps-chip ${grade === id ? 'on' : ''}" data-grade="${id}">${label}</button>`;
+  return `<section class="bk-card"><h3>🎒 Classe</h3>
+      <div class="ps-chips" role="group" aria-label="Classe de l'enfant">
+        ${chip('', "Selon l'âge")}${GRADES.map((g) => chip(g.id, g.label)).join('')}
+      </div>
+      <p class="bk-help" id="ps-grade-help">${gradeHelp(p)}</p>
+    </section>`;
+}
+/** @param {Profile} p */
+function bindGradeCard(p) {
+  document.querySelectorAll('[data-grade]').forEach((b) =>
+    setHandler(b, 'click', () => {
+      playSound('tap');
+      // la puce vient de GRADES (ou '') : la liste blanche est gardée
+      const grade = b.dataset.grade || '';
+      p.grade = gradeToDiff(grade) ? grade : '';
+      saveProfiles();
+      document.querySelectorAll('[data-grade]').forEach((x) => x.classList.toggle('on', x === b));
+      const help = document.getElementById('ps-grade-help');
+      if (help) help.textContent = gradeHelp(p);
+      showToast(p.grade ? `🎒 Classe : ${p.grade}` : "🎒 Classe selon l'âge");
+    }),
+  );
+}
+
 /** @param {string} [selectedId] */
 function openParentSpace(selectedId) {
   const id = selectedId || profiles.current;
@@ -283,11 +327,12 @@ function openParentSpace(selectedId) {
         ${PAUSE_CHOICES.map((m) => `<button type="button" class="ps-chip ${(Number(p.pauseMin) || 0) === m ? 'on' : ''}" data-pause="${m}">${m ? m + ' min' : 'Pas de pause'}</button>`).join('')}
       </div>
     </section>
+    ${gradeCardHTML(p)}
     ${emit('parents:cards', { st, p }).filter(Boolean).join('')}
     <section class="bk-card"><h3>📈 Progrès par compétence</h3>${skillsHTML(st, p.age)}
       <p class="bk-help">« À l'aise » : réussi sans erreur ou presque ces dernières fois. « À travailler » : souvent raté ou beaucoup d'erreurs.</p>
       <p class="bk-help">Les indices du compagnon (💡) sont comptés pour information : ils ne changent ni les récompenses ni le niveau du jeu.</p>
-      <p class="bk-help">Chaque jeu a son propre niveau : il monte d'un cran après 2 réussites d'affilée presque sans erreur, redescend d'un cran après 2 missions ratées, et ne dépasse jamais celui de l'île ni l'âge de l'enfant. Les jeux à travailler reviennent plus souvent.</p></section>
+      <p class="bk-help">Chaque jeu a son propre niveau : il monte d'un cran après 2 réussites d'affilée presque sans erreur, redescend d'un cran après 2 missions ratées, et ne dépasse jamais celui de l'île ni la classe de l'enfant (ou son âge, sans classe choisie). Les jeux à travailler reviennent plus souvent.</p></section>
     <section class="bk-card"><h3>🎉 Fêtes et saisons</h3>
       <p>Le jeu se décore tout seul : Halloween (20 oct. – 2 nov.), Noël (1er déc. – 6 janv.) et le jour de l'anniversaire de l'enfant (à régler dans ses réglages). Chaque fois, un petit cadeau : un chapeau pour son avatar et quelques pièces.</p>
       <p class="bk-help">Aperçu (sans cadeau, jusqu'à la fermeture du jeu) :</p>
@@ -344,6 +389,7 @@ function openParentSpace(selectedId) {
       showToast(p.pauseMin ? `😴 Pause après ${p.pauseMin} min` : 'Pas de pause');
     }),
   );
+  bindGradeCard(p);
   document.querySelectorAll('[data-season-preview]').forEach((b) =>
     setHandler(b, 'click', () => {
       playSound('tap');

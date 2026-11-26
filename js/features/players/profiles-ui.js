@@ -9,7 +9,7 @@ import {
   companionSVG,
   defaultCompanionFor,
 } from '../../entities/companion/index.js';
-import { ageToDiff, GAME_LIST, gameTypesForAge } from '../../entities/difficulty/index.js';
+import { ageToDiff, GAME_LIST, gameTypesForAge, gradeToDiff } from '../../entities/difficulty/index.js';
 import { gameCount, levelOf, save, state } from '../../entities/game-state/index.js';
 import {
   addProfile,
@@ -188,14 +188,24 @@ function playerSummary(id) {
   }
 }
 
-/** @param {number | null} sel l'âge choisi */
-function ageSelector(sel) {
+// Sous les âges : le palier qui en découle. Si un adulte a choisi la classe de
+// l'enfant (espace parents), c'est elle qui règle le palier : l'aide le dit.
+/** @param {number | null} sel l'âge choisi @param {string} [grade] la classe du profil */
+function ageHint(sel, grade) {
+  if (!sel) return 'Sert à adapter la difficulté en course 🏁';
+  const byGrade = gradeToDiff(grade);
+  if (byGrade) return `Défi adapté : ${'⭐'.repeat(byGrade)} (classe ${grade}, choisie par un adulte)`;
+  return `Défi adapté : ${'⭐'.repeat(/** @type {number} */ (ageToDiff(sel)))}`;
+}
+
+/** @param {number | null} sel l'âge choisi @param {string} [grade] la classe du profil */
+function ageSelector(sel, grade) {
   const ages = [4, 5, 6, 7, 8, 9, 10, 11, 12];
   return `<label class="mini-label">🎂 Quel âge ?</label>
     <div class="age-grid">
       ${ages.map((a) => `<button class="age-opt ${Number(sel) === a ? 'sel' : ''}" data-age="${a}">${a}</button>`).join('')}
     </div>
-    <p class="mode-hint" id="age-hint">${sel ? `Défi adapté : ${'⭐'.repeat(/** @type {number} */ (ageToDiff(sel)))}` : 'Sert à adapter la difficulté en course 🏁'}</p>`;
+    <p class="mode-hint" id="age-hint">${ageHint(sel, grade)}</p>`;
 }
 
 /* --- Formulaires des joueurs (modèle commun de js/shared/ui/form.js) --- */
@@ -223,6 +233,7 @@ const escAttr = (v) => String(v || '').replace(/"/g, '&quot;');
  *   gen: string,
  *   comp: string,
  *   allBuddies: boolean,
+ *   grade?: string,
  * }} PlayerFormValues
  */
 // les sections communes : Moi (prénom, âge), Mon avatar, Mon compagnon
@@ -231,7 +242,7 @@ function playerFormSections(o) {
   return [
     {
       title: '🙂 Moi',
-      html: `<input id="${o.nameId}" class="name-input-modal" ${NAME_INPUT_ATTRS} value="${escAttr(o.name)}">${ageSelector(o.age)}`,
+      html: `<input id="${o.nameId}" class="name-input-modal" ${NAME_INPUT_ATTRS} value="${escAttr(o.name)}">${ageSelector(o.age, o.grade)}`,
     },
     {
       title: '🎨 Mon avatar',
@@ -399,7 +410,7 @@ function openPlayerSettings(id) {
       formSheet({
         title: `⚙️ ${p.name || 'Joueur'}`,
         sections: [
-          ...playerFormSections({ ...f, nameId: 'pe-name', comp: /** @type {string} */ (f.comp) }),
+          ...playerFormSections({ ...f, nameId: 'pe-name', comp: /** @type {string} */ (f.comp), grade: p.grade }),
           bdaySection(f.bday),
           { html: `<div class="speech" style="font-size:.82rem;">${playerSummary(id)}</div>` },
         ],

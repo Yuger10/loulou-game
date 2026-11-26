@@ -2,6 +2,7 @@
 import { cleanName, random, storageRemove, storageWrite } from '../../shared/lib/index.js';
 import { playSound, showToast, speak } from '../../shared/ui/index.js';
 import { avatarText, defaultCompanionFor } from '../companion/index.js';
+import { gradeToDiff } from '../difficulty/index.js';
 import { freshState, load, replaceState, save, setSaveSlot, state } from '../game-state/index.js';
 import { currentWorld, setCurrentWorld, worldUnlocked } from '../world/index.js';
 import { fixAvatar } from './avatars.js';
@@ -14,7 +15,9 @@ const LEGACY_SAVE_KEY = 'lagon-magique-save';
  * La fiche d'un joueur. Les champs facultatifs manquent aux fiches anciennes ou
  * migrées : `age` (null = non précisé), `gender` ('f', 'm' ou '' neutre),
  * `companion` (id), `pauseMin` (durée de pause choisie par un adulte),
- * `birthday` ('MM-JJ' ou ''), `look` (copie de state.look, pour dessiner l'avatar).
+ * `birthday` ('MM-JJ' ou ''), `look` (copie de state.look, pour dessiner l'avatar),
+ * `grade` (la classe choisie par un adulte : 'GS', 'CP', 'CE1', 'CE2', ou '' =
+ * « selon l'âge » ; toujours l'une de ces valeurs après loadProfiles).
  * @typedef {{
  *   id: string,
  *   name: string,
@@ -24,6 +27,7 @@ const LEGACY_SAVE_KEY = 'lagon-magique-save';
  *   companion?: string,
  *   pauseMin?: number,
  *   birthday?: string,
+ *   grade?: string,
  *   look?: import('../game-state/index.js').Look | null,
  * }} Profile
  */
@@ -63,6 +67,8 @@ function loadProfiles() {
   profiles.list.forEach((p) => {
     p.name = cleanName(p.name); // porte d'entrée : profils enregistrés ou importés
     p.avatar = fixAvatar(p.avatar);
+    // la classe : liste blanche (profil ancien, importé ou abîmé : « selon l'âge »)
+    p.grade = typeof p.grade === 'string' && gradeToDiff(p.grade) ? p.grade : '';
   });
 
   // migration : une ancienne partie unique devient le premier joueur
@@ -147,6 +153,7 @@ function addProfile(name, avatar, { age, gender, companion } = {}) {
     gender: gender || '',
     companion: companion || defaultCompanionFor(gender || ''),
     pauseMin: Number(profiles.familyPause) || 0,
+    grade: '', // « selon l'âge » : la classe se choisit dans l'espace parents
   });
   profiles.current = id;
   saveProfiles();

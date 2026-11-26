@@ -188,3 +188,35 @@ Le seul mini-jeu du jeu à dépasser le palier 5 :
 - `gameTypesForAge` a été étendu : « Quelle saison ? » dès 3-4 ans
   (aucune lecture nécessaire), + lecture de l'heure (heures pleines) et
   calendrier dès 5 ans. Le calcul mental reste réservé à 6 ans et plus.
+
+## 7. Classe du profil (track aller-plus-loin)
+
+Un adulte peut dire la classe de l'enfant dans l'espace parents (carte
+« 🎒 Classe », derrière la porte des adultes). La classe remplace alors
+l'âge comme plafond de palier (`playerCap`, `js/entities/difficulty/age.js`).
+
+| Classe | Plafond de palier | Repère du palier |
+|---|---|---|
+| GS | 1 | GS / début CP |
+| CP | 2 | CP |
+| CE1 | 4 | CE1 |
+| CE2 | 5 | fin CE1 / CE2 |
+
+Règle : chaque classe vaut le palier dont le repère scolaire est la classe
+elle-même. Les paliers « de fin d'année » (3 : fin CP ; 5 : fin CE1) ne sont
+le plafond d'aucune classe : ils s'atteignent un cran au-dessus de la classe
+d'en dessous.
+
+Ordre de priorité :
+- la classe plafonne ; sans classe (« Selon l'âge », valeur par défaut de
+  tous les profils), l'âge plafonne, exactement comme avant : aucun profil
+  existant ne change de palier ;
+- en solo, l'île plafonne aussi (`min(plafond de l'enfant, île)`) ;
+- le niveau propre à chaque jeu plafonne enfin (`adaptTier`) ;
+- à plusieurs, chacun joue au plafond de sa classe (ou de son âge), sans
+  regarder l'île ;
+- le défi bonus de Zap joue un cran au-dessus du niveau du jeu, jamais
+  au-dessus du plafond de l'enfant.
+
+Ce que la classe ne change pas : les jeux proposés (`gameTypesForAge`) et la
+règle « jamais de minuteur avant 6 ans » restent liés à l'âge.

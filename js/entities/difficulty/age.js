@@ -24,4 +24,38 @@ function ageLabel(age) {
   return `${a} ans`;
 }
 
-export { ageLabel, ageToDiff };
+/* ---------- La classe du profil (track aller-plus-loin) ----------
+   Un adulte peut dire la classe de l'enfant dans l'espace parents : elle remplace
+   alors l'âge comme plafond de palier. Chaque classe vaut le palier dont le repère
+   scolaire est la classe elle-même ; les paliers « de fin d'année » (3 : fin CP,
+   5 : fin CE1) s'atteignent par le défi étoile de la classe d'en dessous. */
+/** @typedef {{ id: string, label: string, diff: number }} Grade */
+/** @type {Grade[]} */
+const GRADES = [
+  { id: 'GS', label: 'GS', diff: 1 },
+  { id: 'CP', label: 'CP', diff: 2 },
+  { id: 'CE1', label: 'CE1', diff: 4 },
+  { id: 'CE2', label: 'CE2', diff: 5 },
+];
+
+/**
+ * @param {unknown} grade l'id d'une classe, ou '' (« selon l'âge »)
+ * @returns {number | null} le palier de la classe, null sans classe connue
+ */
+function gradeToDiff(grade) {
+  const g = GRADES.find((x) => x.id === grade);
+  return g ? g.diff : null;
+}
+
+// Le plafond de palier d'un enfant : sa classe (choisie par un adulte) prime,
+// sinon son âge ; null si aucun des deux n'est connu (la difficulté suit l'île).
+/**
+ * @param {{ age?: number | null, grade?: string } | null | undefined} p
+ * @returns {number | null}
+ */
+function playerCap(p) {
+  if (!p) return null;
+  return gradeToDiff(p.grade) || ageToDiff(p.age) || null;
+}
+
+export { ageLabel, ageToDiff, GRADES, gradeToDiff, playerCap };

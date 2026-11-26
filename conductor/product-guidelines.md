@@ -5,7 +5,7 @@
 - **Phrases courtes,** au présent, en tutoyant, sur un ton chaleureux. Le prénom de l'enfant est utilisé quand on le connaît (`hello()`).
 - **Pas de game over, pas de punition.** Un échec mène à réessayer, avec un indice parlé. On ne perd jamais ce qu'on a gagné.
 - **Anti-devinette.** Quand il y a peu de choix et pas de limite d'essais, une mauvaise réponse relance une autre question au lieu de laisser deviner par élimination.
-- **Adapté à l'âge.** La difficulté dépend de l'île (paliers 1 à 6) et de l'âge du profil. Pas de minuteur avant le CP.
+- **Adapté à l'âge.** La difficulté dépend de l'île (paliers 1 à 6) et de la classe du profil, ou de son âge. Pas de minuteur avant le CP.
 - **Surprise et collection, sans manipulation.** Les récompenses se gagnent en jouant, jamais avec de l'argent réel. Pas de compte à rebours anxiogène, pas de « dernière chance », pas de boucle sans fin de tirages : les mécaniques de hasard restent bornées et bienveillantes.
 - **Égalité filles et garçons.** Les personnages et compagnons sont présentés en mettant en avant le même genre que le joueur, sans rien exclure.
 
