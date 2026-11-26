@@ -150,4 +150,42 @@ function tensRound(dd) {
   return tierValue(TENS_TIERS, dd);
 }
 
-export { lengthRound, tensRound, traceRound };
+/* ---------------------------------------------------------------------
+   LA COMMANDE DU CHEF (Île des Squishy Dumplings, saison 3) : retenir un
+   ensemble (des sortes de dumplings et leur quantité), pour le plaisir et
+   l'attention. L'empan d'un enfant de 6 à 7 ans est d'environ 4 à 5
+   éléments : le palier de cet âge reste en dessous.
+     palier 1   1 sorte, 1 à 3 dumplings, la couleur seule
+     palier 2   2 sortes, 3 ou 4 dumplings, 4 couleurs
+     palier 3   2 sortes, 3 à 5 dumplings, couleur et forme
+     palier 4   3 sortes, 4 à 6 dumplings, couleur et forme
+     palier 5   3 sortes, 5 ou 6 dumplings, couleur, forme et visage
+   `kinds` : sortes commandées ; `min`/`max` : total de dumplings ; `attrs` :
+   attributs actifs ; `colors` : couleurs possibles ; `palette` : sortes
+   proposées. Pas de minuteur : l'enfant cache la commande lui-même.
+   --------------------------------------------------------------------- */
+/** @typedef {{ kinds: number, min: number, max: number, attrs: Array<'color' | 'shape' | 'face'>, colors: string[], palette: number }} OrderRound */
+/** @type {Record<number, OrderRound>} */
+const ORDER_TIERS = {
+  1: { kinds: 1, min: 1, max: 3, attrs: ['color'], colors: ['rose', 'vert', 'jaune'], palette: 3 },
+  2: { kinds: 2, min: 3, max: 4, attrs: ['color'], colors: ['rose', 'vert', 'jaune', 'violet'], palette: 4 },
+  3: { kinds: 2, min: 3, max: 5, attrs: ['color', 'shape'], colors: ['rose', 'vert', 'jaune'], palette: 6 },
+  4: { kinds: 3, min: 4, max: 6, attrs: ['color', 'shape'], colors: ['rose', 'vert', 'jaune'], palette: 6 },
+  5: {
+    kinds: 3,
+    min: 5,
+    max: 6,
+    attrs: ['color', 'shape', 'face'],
+    colors: ['rose', 'vert', 'jaune', 'violet'],
+    palette: 8,
+  },
+};
+/**
+ * @param {number} dd le palier de difficulté
+ * @returns {OrderRound}
+ */
+function orderRound(dd) {
+  return tierValue(ORDER_TIERS, dd);
+}
+
+export { lengthRound, orderRound, tensRound, traceRound };

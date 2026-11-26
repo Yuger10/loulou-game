@@ -58,7 +58,7 @@ const SKILL_GROUPS = [
     id: 'logique',
     emoji: '🧠',
     name: 'Mémoire et logique',
-    games: ['memory', 'simon', 'diff', 'sequence', 'rangement', 'rhythm', 'pitch'],
+    games: ['memory', 'simon', 'diff', 'sequence', 'rangement', 'rhythm', 'pitch', 'order'],
   },
 ];
 // activités suivies qui ne sont pas des mini-jeux du choix des jeux

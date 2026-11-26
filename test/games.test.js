@@ -343,6 +343,23 @@ const INDEPENDENT = {
       sol.length === count('#tens-add100') + count('#tens-add10') + count('#tens-add1') + 1
     );
   },
+  // order : la solution retient, pose exactement le ticket (mêmes sortes, mêmes nombres), puis sert (contrat C2)
+  order(sol) {
+    const counts = (els) => {
+      const n = {};
+      els.forEach((el) => (n[el.dataset.k] = (n[el.dataset.k] || 0) + 1));
+      return JSON.stringify(Object.entries(n).sort());
+    };
+    const picks = sol.slice(1, -1).map((s) => d.querySelector(s));
+    const ticket = [...d.querySelectorAll('#order-ticket .order-item')];
+    return (
+      sol[0] === '#order-ready' &&
+      sol[sol.length - 1] === '#order-serve' &&
+      ticket.length > 0 &&
+      picks.every((el) => el.matches('#order-palette .order-pick')) &&
+      counts(picks) === counts(ticket)
+    );
+  },
   // trace : chaque élément porte les points de son trait, et la solution couvre
   // tous les traits de tous les glyphes de la bande, dans l'ordre
   trace(sol) {
