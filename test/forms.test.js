@@ -306,7 +306,7 @@ function key(el, k) {
     check('bon mot : la partie recommence', ev('state.coins') !== 77 && !layerOpen());
     ev('closeModal()');
     // supprimer un autre joueur
-    ev('addProfile("Tom", "🦁", 7, "m", null); switchProfile(profiles.list[0].id, true)');
+    ev('addProfile("Tom", "🦁", { age: 7, gender: "m" }); switchProfile(profiles.list[0].id, true)');
     await wait(20);
     const tomId = ev('profiles.list.find(p=> p.name === "Tom").id');
     ev(`parentUnlockedUntil = Date.now() + 60000; openParentSpace("${tomId}")`);

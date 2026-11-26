@@ -183,7 +183,7 @@ function answerGate(right) {
   /* ================= Phase 2 : plus de portes de sortie ================= */
   section('Plus de portes de sortie');
   {
-    ev('addProfile("Tom", "🦁", 7, "m", null); switchProfile(profiles.list[0].id, true)');
+    ev('addProfile("Tom", "🦁", { age: 7, gender: "m" }); switchProfile(profiles.list[0].id, true)');
     overLimit();
     ev('restWake(); maybeRest()');
     check(
@@ -221,7 +221,7 @@ function answerGate(right) {
     d.querySelector('[data-pause="30"]').click();
     ev('closeModal()');
     check("le dernier choix d'un adulte devient le réglage familial", ev('profiles.familyPause') === 30);
-    ev('addProfile("Léa", "👧", 6, "f", null)');
+    ev('addProfile("Léa", "👧", { age: 6, gender: "f" })');
     check(
       'un nouveau joueur reçoit la pause familiale',
       ev('profiles.list.find(p=> p.name === "Léa").pauseMin') === 30,

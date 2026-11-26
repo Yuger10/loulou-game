@@ -124,6 +124,14 @@ function readingHints(q) {
       ? [cut, { say: 'Regarde la première lettre et lis encore une fois.', fx: { html: readingFirstLetter(w), dim } }]
       : [first, Object.assign({}, cut, { fx: Object.assign({}, cut.fx, { dim }) })];
   }
+  return readingImageHints(w, dim);
+}
+// image → mot : d'abord le premier son (ou les syllabes avec Perle), puis la première lettre
+/**
+ * @param {string} w
+ * @param {string | undefined} dim
+ */
+function readingImageHints(w, dim) {
   const last = {
     say: 'Cherche le mot qui commence par cette lettre.',
     fx: { html: `<span class="hint-syl"><b>${w[0]}</b>…</span>`, dim },
