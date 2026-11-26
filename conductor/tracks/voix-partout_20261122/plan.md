@@ -1,7 +1,7 @@
 <!-- Gabarit cothon 0.4.0 (setting-up-docs), adopté dans Conductor. -->
 # Plan : une voix partout
 
-Spec : [spec.md](spec.md). Quatre PR, chacune complète et en production une minute après son merge. Les phases 1 à 3 se livrent par `bun run release patch "…"`, la phase 4 par `bun run release track "une voix partout"`. Chaque PR : tests d'abord, `bun run check` puis `bun run verify` verts, aucun test existant modifié pour passer, corps avec `agent-generated: true`, étiquette `agent`, zones sensibles citées. [voix-naturelle](../voix-naturelle_20261122/plan.md) attend la phase 1.
+Spec : [spec.md](spec.md). **Livrée en une seule PR (v67)**, à la demande d'Amrou le 26/11/2026 (une PR par track, `bun run release track` une seule fois) : le découpage en quatre PR ci-dessous reste comme découpage en phases, un commit par phase. Prévu au départ : quatre PR, chacune complète et en production une minute après son merge. Les phases 1 à 3 se livrent par `bun run release patch "…"`, la phase 4 par `bun run release track "une voix partout"`. Chaque PR : tests d'abord, `bun run check` puis `bun run verify` verts, aucun test existant modifié pour passer, corps avec `agent-generated: true`, étiquette `agent`, zones sensibles citées. [voix-naturelle](../voix-naturelle_20261122/plan.md) attend la phase 1.
 
 ## Tâches
 
@@ -41,27 +41,42 @@ Spec : [spec.md](spec.md). Quatre PR, chacune complète et en production une min
 
 - [x] 4.1 Test d'abord : pour chaque jeu de la table J, au palier 1 et au palier 5, les choix sont dits après la consigne à la première question avec `voix-lu`, pas aux suivantes, et le 🔈 de la consigne relit consigne puis choix (ligne 20) ; états de `rhythm` et `simon` dits à chaque changement.
 - [x] 4.2 `data-voix="choix"` et `data-say` sur les choix (dont les saisons de `calendar`, dont le `speak` de `calendar.js:70` est retiré) (formes dites de la table J) ; `bindQuit` met les choix en file après la consigne à la première question et rebranche le 🔈 de la consigne (mécanisme unique de la ligne 20). `resetChoicesRead()` dans `screen.js`, appelé par `engine.js:347` (`playGame`), `385` (`onMissionFail`), `439` (`onMissionWin`), `563` (`onModalClose`), pas par `scheduleRetry` (ligne 20).
-- [ ] 4.3 Docs : `conductor/product-guidelines.md` (« Toute phrase importante est lue » devient la règle D1), section du PRD.
-- [ ] 4.4 `bun run check` et `bun run verify` verts ; PR 4.
+- [x] 4.3 Docs : `conductor/product-guidelines.md` (« Toute phrase importante est lue » devient la règle D1), section du PRD.
+- [x] 4.4 `bun run check` et `bun run verify` verts ; PR 4.
 - [ ] 4.5 👤 S5 à S9 sur les appareils de la famille, après le merge ordonné par Amrou.
 
 ## Preuves
 
 | Ligne du smoke test | Résultat | Niveau | Preuve |
 |---|---|---|---|
-| S1 | à faire | test-verified | `bun run test voix-file` (exit 0) |
-| S2 | à faire | test-verified | `bun run test voix-partout` (exit 0), ligne « voix : N scénarios, M textes, 0 sans voix » |
-| S3 | à faire | test-verified | sortie du test en échec jointe à la PR 2 |
-| S4 | à faire | test-verified | `bun run check` (exit 0) |
-| S5 à S9 | à faire | runtime-verified | compte rendu d'Amrou |
+| S1 | fait | test-verified | `bun run test voix-file` (exit 0), 40 vérifications ; rouge constaté avant le code : `ReferenceError: stopSpeech is not defined` |
+| S2 | fait | test-verified | `bun run test voix-partout` (exit 0), 4 morceaux : 115 scénarios, environ 5 300 textes, 0 sans voix ; rouge constaté avant le code (20 vérifications des lignes 10 à 18, puis la table O, puis la table J) |
+| S3 | fait | test-verified | section « La garde échoue sur un écran cassé exprès » de `test/voix-partout.test.js` : un `button[disabled]`, un champ sans étiquette, un `openModal` sans scénario font échouer la garde avec le message attendu, puis elle repasse |
+| S4 | fait | test-verified | `bun run check` (exit 0), 37 suites ; seules les six assertions de D24 ont changé dans les tests existants, plus un ajout dans `test/handlers.test.js` |
+| S5 à S9 | à faire (👤, tâche 4.5) | runtime-verified | compte rendu d'Amrou, sur les appareils de la famille |
 
 ## Journal de décisions
 
 | # | Décision | Décidé par | Pourquoi | Preuve | Résultat |
 |---|---|---|---|---|---|
 | 1 | La garde arrive en phase 2 avec l'écouteur délégué, pas avant | spec | une garde stricte sans le mécanisme échouerait sur tout le jeu ; avec lui, elle passe dès la phase 2 et ne s'assouplit jamais | spec D5, D16 | gardée |
+| 2 | Une seule PR pour toute la track, une seule livraison (`release track`, v67) | Amrou (consigne du 26/11/2026) | prime sur le découpage en quatre PR du plan | consigne du workflow | à juger à la revue |
+| 3 | Le retour sonore d'un bouton (son libellé, ligne 11) coupe la phrase en cours (`interrupt`), sans être une demande (muet si la voix est coupée) | Claude | il répond à un toucher : mis en file, il serait dit en retard, et trois touchers rapides empileraient trois libellés ; S6 n'admet une coupure que par un toucher ou un changement d'écran | `js/shared/ui/listen.js` (`listenActive`) | à juger à la revue |
+| 4 | `bindSpeakButtons` branche les 🔈, les `[data-say]` non actifs, et les boutons `[data-say]` qui n'ont aucun handler de clic (image d'un objet du marché, carte d'un objet du sac) ; jamais un élément `data-voix` | Claude | ces boutons ne font qu'écouter : sans cela ils deviendraient un simple libellé, muet quand la voix est coupée (ligne 17). La règle de la ligne 14 tient : un élément qui a un handler le garde | `js/shared/ui/voice.js`, `hasHandler` (`js/shared/ui/handlers.js`) | à juger à la revue |
+| 5 | Les choix écrits d'une question (lus avec `el`) ne comptent pas dans la limite de 3 phrases en attente | Claude | la ligne 5 (3 en attente) retirait les premiers choix dès qu'une question en a plus de 3 (7 jours, 6 étapes), contre la ligne 20 (chaque choix, dans l'ordre) ; une liste de choix est finie | `test/voix-file.test.js` (« les choix surlignés ne comptent pas ») | à juger à la revue |
+| 6 | `keepSpeech(texte)` (nouveau, `voice.js`) : l'arrivée sur une île, dite au départ du bateau, n'est pas coupée par l'intro de la vue Île | Claude | la table O veut l'arrivée puis l'intro, mais la vue s'ouvre 350 ms après l'arrivée et une nouvelle scène coupe la phrase de la précédente (ligne 2) | `js/features/island/island-view.js` (`sayIslandOpening`), `test/voix-file.test.js` | à juger à la revue |
+| 7 | `switchView(nom, { silent: true })` : au lancement et après « Jouer », la carte ne dit pas « La carte » | Claude | au lancement rien ne doit être dit (avant le premier geste) ; après « Jouer », « Coucou Lina ! L'aventure t'attend. » suffit, une seule voix | `js/shared/ui/views.js`, `js/app/init.js` | à juger à la revue |
+| 8 | Visibilité dans la garde : `display: none` est calculé par la garde elle-même (dernière règle `display` qui s'applique, puis le style de l'élément), pas par `getComputedStyle` | Claude | `getComputedStyle` de jsdom coûtait 4 s par écran (2 min 30 par morceau) ; le calcul maison rend le même résultat, vérifié à chaque passage sur 150 éléments | `test/voix-partout.test.js` (`isDisplayNone`, « la visibilité de la garde dit comme getComputedStyle ») | gardée |
+| 9 | Scénarios : chaque jeu est ouvert aux paliers 1 et 5 ; `covers` cite toutes les fonctions de rendu du jeu, même si le hasard n'ouvre qu'une variante par passage ; champ `close` en plus du contrat, pour refermer ce que `closeModal` ne ferme pas (écran titre, pause) | Claude | les variantes d'un jeu dépendent du palier et du hasard ; la garde statique (ligne 24) oblige de toute façon à déclarer chaque fonction | `test/voix-ecrans.js` | à juger à la revue |
+| 10 | Choix d'un jeu : une carte par ligne (grille à une colonne), le 🔈 de 56 px à droite ; les teintes alternées suivent la ligne ; Perle n'ajoute pas son bouton « relire » à ces 🔈 | Claude | trois cartes par ligne avec un 🔈 de 56 px chacune ne tiennent pas sur un téléphone ; la ligne 22 fixe exactement deux éléments par ligne | `js/shared/styles/voice.css`, `js/features/companion-team/specialties.js` | à juger à la revue (S5, sur l'appareil) |
+| 11 | Le fond de la confirmation (`#confirm-layer`) perd son `data-act` ; le 🔈 de la porte des parents est branché | Claude | sans cela, toucher le texte de la confirmation actionnait le fond au lieu de lire le texte ; le 🔈 de la porte était inerte | `js/shared/ui/confirm.js`, `js/features/parents/parents.js` | à juger à la revue |
+| 12 | Simon : « Regarde… » du départ n'est pas dit (la consigne vient de le dire) ; les changements suivants le sont (« À toi ! », « Regarde encore… », « On recommence… ») | Claude | « dits à chaque changement d'état » : l'état de départ n'est pas un changement | `js/features/minigames/simon/simon.js` | à juger à la revue |
+| 13 | Offre de Zap : dite quand la vue Île s'ouvre avec l'offre affichée, une fois par île et par session, après l'intro de l'île | Claude | l'offre n'est pas une fenêtre : elle se redessine à chaque rendu de l'île, qui ne doit pas la redire | `js/features/companion-team/specialties.js` (`zapOfferSaid`) | à juger à la revue |
 
 ## Écarts et non vérifié
 
 - Non vérifié : qu'iOS refuse la synthèse vocale avant un geste (page officielle trouvée pour les médias seulement) : S8.
 - Non vérifié : la réussite d'une enfant de 6 ans avec le 🔈 de 56 px à côté d'un bouton : S5.
+- Non vérifié : le rendu à l'écran des changements de CSS (🔈 de 56 px dans la bulle de consigne, choix d'un jeu sur une colonne, contour `voix-lu`) : aucun navigateur pilotable dans la session, les tests jsdom ne voient pas la mise en page. À regarder sur l'appareil (S5).
+- Non vérifié : `speechSynthesis.speaking` juste après `speak()` sur chaque navigateur. La file teste aussi `pending` ; si un navigateur disait « rien ne parle », la phrase suivante partirait dans la file du navigateur, sans rien couper (S6).
+- Écart : une seule PR au lieu de quatre (journal, ligne 2). La tâche 4.5 (👤, après le merge) reste ouverte.

@@ -85,7 +85,7 @@ Registre des tracks Conductor, **dans l'ordre d'implémentation**. Feuille de ro
 
 > **Souhaits de la joueuse (22/11/2026) :** une île des crayons, une île des squishy dumplings, une île des coffres, un monde des chatouilles, ranger les squishies dans des boîtes, des jeux de mémoire et de résolution de problèmes, plus de maths, de la musique et des notes. Demandes du parent : des jeux pour aller plus loin que le niveau de l'âge, une voix partout et plus naturelle, de nouvelles idées pour mieux apprendre. Les cinq îles prévues avant pour la saison 3 (Nuages, Dinosaures, Fête Foraine, Bibliothèque, Étoiles) sont remplacées ; leurs mini-jeux utiles sont repris dans les nouvelles îles.
 
-- [ ] **Track: Une voix partout : tout texte montré à l'enfant se lit ou s'écoute au doigt (demande du parent)**
+- [x] **Track: Une voix partout : tout texte montré à l'enfant se lit ou s'écoute au doigt (demande du parent) (v67)**
 *Link: [./tracks/voix-partout_20261122/](./tracks/voix-partout_20261122/)*
 
 ---
