@@ -135,6 +135,24 @@ function pauseDue() {
 }
 /* ---- accès réservé aux adultes ---- */
 let parentUnlockedUntil = 0;
+// La question de calcul porte `data-voix="muet"` : la voix ne la dit jamais,
+// elle ouvrirait la porte à une enfant de 6 ans.
+/**
+ * @param {number} a
+ * @param {number} b
+ */
+function parentGateHTML(a, b) {
+  return `
+    ${gameHeader('🔒 Pour les adultes', 'Répondez à cette question pour continuer')}
+    <div class="gate-box">
+      <label for="gate-in" class="gate-q" data-voix="muet">Combien font ${a} × ${b} ?</label>
+      <input id="gate-in" class="name-input-modal gate-in" type="number" inputmode="numeric" autocomplete="off" aria-describedby="gate-err">
+      <p class="gate-err" id="gate-err" aria-live="polite"></p>
+    </div>
+    <button class="btn-primary" id="gate-ok">Valider</button>
+    <button class="btn-ghost" id="gate-cancel">Retour</button>
+  `;
+}
 // onWrong : appelée à chaque mauvaise réponse (tentatives notées pendant la pause)
 /**
  * @param {() => void} onOk
@@ -148,18 +166,8 @@ function openParentGate(onOk, onCancel, onWrong) {
   }
   const a = 6 + Math.floor(random() * 4),
     b = 6 + Math.floor(random() * 4);
-  openModal(`
-    ${gameHeader('🔒 Pour les adultes', 'Répondez à cette question pour continuer')}
-    <div class="gate-box">
-      <label for="gate-in" class="gate-q" data-voix="muet">Combien font ${a} × ${b} ?</label>
-      <input id="gate-in" class="name-input-modal gate-in" type="number" inputmode="numeric" autocomplete="off" aria-describedby="gate-err">
-      <p class="gate-err" id="gate-err" aria-live="polite"></p>
-    </div>
-    <button class="btn-primary" id="gate-ok">Valider</button>
-    <button class="btn-ghost" id="gate-cancel">Retour</button>
-  `);
-  // la voix dit seulement que c'est pour les adultes : jamais la question de
-  // calcul (`data-voix="muet"`), qui ouvrirait la porte à une enfant de 6 ans
+  openModal(parentGateHTML(a, b));
+  // la voix dit seulement que c'est pour les adultes, jamais la question de calcul
   bindSpeakButtons();
   speak("C'est pour les adultes.");
   const input = /** @type {HTMLInputElement} */ (document.getElementById('gate-in'));

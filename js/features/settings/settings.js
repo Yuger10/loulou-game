@@ -28,13 +28,14 @@ import { renderProfile, renderSoundBtn } from '../profile/index.js';
 /** @typedef {'sound' | 'voice' | 'music'} SoundKey un interrupteur du son (un champ de l'état) */
 
 // un interrupteur lisible au doigt : libellé, état, et désactivé si besoin
+// (inactif : il porte sa raison, `data-say-why`, que son handler dit lui-même)
 /**
  * @param {SoundKey} key
  * @param {string} label
  * @param {{ on: boolean, disabled?: boolean }} st
  */
 function rgSwitch(key, label, { on, disabled }) {
-  return `<button type="button" class="rg-switch" role="switch" data-sound="${key}" aria-checked="${on}"${disabled ? ' aria-disabled="true"' : ''}>
+  return `<button type="button" class="rg-switch" role="switch" data-sound="${key}" aria-checked="${on}"${disabled ? ` aria-disabled="true" data-say-why="Allume d'abord les bruitages."` : ''}>
     <span class="rg-switch-label">${label}</span><span class="rg-switch-track" aria-hidden="true"><span class="rg-switch-knob"></span></span>
   </button>`;
 }

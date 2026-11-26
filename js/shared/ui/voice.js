@@ -138,6 +138,15 @@ function playNow(entry) {
   });
 }
 
+// Une fin perdue (événement `end` jamais reçu, connu sur iOS) : la phrase
+// d'avant est oubliée, et son surlignage retiré, car sa fin n'arrivera plus
+// pour le faire. Sans `cancel()` : il couperait la phrase sur un navigateur
+// qui dirait « rien ne parle » juste après `speak()`.
+function forgetSpeaking() {
+  if (speaking && speaking.item.el) speaking.item.el.classList.remove('voix-lu');
+  speaking = null;
+}
+
 // arrête la phrase en cours et vide la file
 function cutSpeech() {
   speechQueue = [];
@@ -216,7 +225,7 @@ function speak(text, opts = {}) {
   }
   // rien ne parle vraiment (ou une fin perdue) : la phrase part tout de suite
   if (!speaking || !(synth.speaking || synth.pending)) {
-    speaking = null; // une fin perdue : la phrase d'avant est oubliée
+    forgetSpeaking();
     playNow(entry);
     return;
   }

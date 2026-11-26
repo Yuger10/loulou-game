@@ -8,7 +8,7 @@ Remplacer `<cle>` par la clé du jeu (ex. `nesting`) et `<Jeu>` par son nom de f
 - [ ] `test/games.test.js` : le jeu est joué jusqu'à la victoire à chaque palier (ajouter son « solveur » s'il en faut un).
 - [ ] `test/companions.test.js` : ses indices sont vérifiés automatiquement (2 niveaux, anti-devinette, jeu gagnable après les indices).
 - [ ] `test/smoke.test.js`, test « variété : les 2 jeux jamais essayés remontent en priorité » : ajouter `state.gameCounts["<cle>"]=1` à la liste. Un jeu absent de cette liste compte 0 partie, comme les deux jeux que le test attend en tête, et le fait échouer au hasard. C'est un ajout, aucune vérification n'est affaiblie.
-- [ ] `test/voix-ecrans.js` : le jeu a ses scénarios (clé `game:<cle>` et la clé `<chemin>#<fonction>` de chaque fonction qui appelle `openModal(`, dans `GAME_RENDERERS`). Sans eux, `test/voix-partout.test.js` échoue : « Écran sans passage dans la garde de la voix ».
+- [ ] `test/voix-ecrans-jeux.js` : le jeu a ses scénarios (clé `game:<cle>` et la clé `<chemin>#<fonction>` de chaque fonction qui appelle `openModal(`, dans `GAME_RENDERERS`). Sans eux, `test/voix-partout.test.js` échoue : « Écran sans passage dans la garde de la voix ».
 - [ ] Voix : un choix écrit (un mot, une heure, une fraction) porte `data-voix="choix"` et `data-say` (sa forme dite), il est alors lu après la consigne à la première question ; un mot à lire (jeu de lecture) porte `data-voix="lire"` et n'est jamais dit ; jamais `disabled` sur un bouton, sauf une réponse neutralisée en cours de jeu.
 - [ ] `bun run check` échoue pour la bonne raison.
 

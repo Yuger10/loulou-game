@@ -287,7 +287,7 @@ function useHint() {
   hint.level++;
   hint.nudged = false;
   clearTimeout(hint.idle);
-  showHint(h, hint.level, undefined, true);
+  showHint(h, hint.level, { demand: true });
   countHint(kind);
   buddyReact(hint.level >= HINT_LEVELS ? 'cheer' : 'think', 1400);
   renderHintButton();
@@ -305,7 +305,7 @@ function hintShowFirst(giver) {
   if (!h) return false;
   hint.level = 1;
   hint.nudged = false;
-  showHint(h, 1, giver);
+  showHint(h, 1, { giver });
   renderHintButton();
   armHintIdle();
   if (hintPolicy.onUse) hintPolicy.onUse(kind, 1);
@@ -316,10 +316,10 @@ function hintShowFirst(giver) {
 /**
  * @param {Hint} h
  * @param {number} level
- * @param {string} [giverOverride]
- * @param {boolean} [demand] l'enfant a demandé l'indice (bouton 💡) : dit même voix coupée
+ * @param {{ giver?: string, demand?: boolean }} [opts] `giver` : le compagnon qui montre l'indice à la place
+ *   de celui du jour ; `demand` : l'enfant a demandé l'indice (bouton 💡), dit même voix coupée
  */
-function showHint(h, level, giverOverride, demand) {
+function showHint(h, level, opts = {}) {
   const body = document.getElementById('modal-body');
   if (!body) return;
   let bub = body.querySelector('.hint-bubble');
@@ -332,7 +332,7 @@ function showHint(h, level, giverOverride, demand) {
     if (anchor) anchor.insertAdjacentElement('afterend', bub);
     else body.prepend(bub);
   }
-  const who = giverOverride || hintPolicy.giver(hint.kind, level);
+  const who = opts.giver || hintPolicy.giver(hint.kind, level);
   bub.dataset.level = String(level);
   // espaces insécables avant « : ! ? » (typographie française, pas de « : » seul en début de ligne)
   const text = h.say.replace(/ ([:;!?»])/g, '\u00a0$1').replace(/« /g, '«\u00a0');
@@ -344,7 +344,7 @@ function showHint(h, level, giverOverride, demand) {
   void bub.offsetWidth;
   bub.classList.add('pop');
   applyHintFx(h.fx, level);
-  speak(h.say, { interrupt: true, demand: !!demand });
+  speak(h.say, { interrupt: true, demand: !!opts.demand });
 }
 
 function hintChoicesLeft() {
