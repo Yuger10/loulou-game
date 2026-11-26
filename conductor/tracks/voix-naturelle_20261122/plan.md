@@ -3,7 +3,7 @@
 
 Spec : [spec.md](spec.md). Prérequis : la phase 1 de [voix-partout](../voix-partout_20261122/plan.md) est sur `main` (file de parole, `stopSpeech()`, `toSpoken()` dans `js/shared/lib/spoken.js`, lecteur interne `playItem`).
 
-> **État au 26/11/2026 :** phases 1 et 2 faites (commits `0218bc6` puis le suivant), dans **une seule PR** en brouillon (consigne d'Amrou pour ce lancement, qui prime sur les trois PR ci-dessous). La phase 3 attend Amrou : l'essai d'écoute (1.7), le choix de la voix, puis la génération (3.3), sur son poste, avec sa clé. `bun run release track` n'est lancé qu'à la fin de la phase 3.
+> **État au 26/11/2026 :** phases 1 et 2 faites (commits `0218bc6` et `7007a27`), dans **une seule PR** en brouillon (consigne d'Amrou pour ce lancement, qui prime sur les trois PR ci-dessous). La phase 3 attend Amrou : l'essai d'écoute (1.7), le choix de la voix, puis la génération (3.3), sur son poste, avec sa clé. `bun run release track` n'est lancé qu'à la fin de la phase 3.
 
 Trois PR. Les phases 1 et 2 ne changent rien pour l'enfant (`VOICE_CLIPS` vide) ; la phase 3 allume la belle voix d'un coup. Chaque PR : `bun run check` vert, puis `bun run verify`, corps de PR avec `agent-generated: true`, étiquette `agent`, zones sensibles citées.
 
