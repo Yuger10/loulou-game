@@ -7,7 +7,7 @@ Deux phases, **une PR chacune**, chacune livrable seule (chaque merge est en pro
 
 ## Tâches
 
-### Phase 1 : l'état et la logique des boîtes (PR 1, rien de visible, zone sensible)
+### Phase 1 : l'état et la logique des boîtes (PR 1, rien de visible, zone sensible) [checkpoint: f3a0b6a]
 
 Tests d'abord, dans un nouveau fichier `test/squishy-boites.test.js` (harnais copié des lignes 1 à 75 de `test/squishies.test.js` : jsdom, temps ×0,1, voix notée dans `spoken`, `ev`, `check`, `setOwned`).
 
@@ -23,7 +23,7 @@ Tests d'abord, dans un nouveau fichier `test/squishy-boites.test.js` (harnais co
 - [x] 1.9 `bun run check` vert (sortie 0, dont `max-lines` 800), `bun run typecheck` vert (tout `js/` en strict), sans `any` ni `@ts-ignore` ; les fonctions nouvelles de `squishies.js` et `squishy-crate-rules.js` annotées (`@param`, `@returns`, `@typedef` du retour de `crateAdd`).
 - [x] 1.10 Sans objet (journal #4 : une seule PR pour toute la track, livrée en 2.13). Prévu : `bun run release patch "squishies : état des boîtes de rangement"`. Corps de PR : zones sensibles sauvegarde et PWA (`index.html`, `sw.js` régénérés par `bun run sync`), `migration: true`, risques (anciennes sauvegardes, import).
 
-### Phase 2 : l'onglet « 🗃️ Mes boîtes » (PR 2, visible)
+### Phase 2 : l'onglet « 🗃️ Mes boîtes » (PR 2, visible) [checkpoint: ebb83aa]
 
 - [x] 2.0 Déplacer tels quels `sortIconsHTML` et `squishyPress` de `squishy-room.js` vers `squishy-art.js` : `node test/tools/move.js js/features/squishies/squishy-room.js js/features/squishies/squishy-art.js sortIconsHTML squishyPress`, puis les `import` et `export` (spec D20) ; `bun run test squishies` vert avant toute autre tâche.
 
@@ -39,7 +39,7 @@ Tests d'abord, dans un nouveau fichier `test/squishy-boites.test.js` (harnais co
 - [x] 2.10 `squishies.css` : styles `.cb-…` (cartes 2 par rangée, boîte 3 × 2, tapis d'une rangée qui défile de côté, `.cb-glow`, `.cb-item.sr-bounce`, fantôme comme `.jg-drag`) ; vérifier 360 px.
 - [x] 2.11 (check vert ; la vérification manuelle S8 à S13 est proposée dans le corps de la PR, Amrou n'étant pas joignable) `bun run check` vert (sortie 0) ; vérification manuelle (workflow, fin de phase) : `bun run start`, vue téléphone 360 px, les étapes de S8 à S13.
 - [x] 2.12 Doc : ne pas toucher la spec livrée `squishy-collection_20261109` ; mettre à jour le commentaire d'en-tête de `squishy-room.js` (4 onglets) ; `TODO.md` garde l'idée de mission du jour (D16).
-- [ ] 2.13 Livrer : `bun run release track "Squishies : des boîtes de rangement qui restent (idée de la joueuse)"`, compléter la section du PRD (idée de la joueuse visible), PR avec `agent-generated: true` et l'étiquette `agent`.
+- [x] 2.13 (v67, une seule PR pour les deux phases, journal #4) Livrer : `bun run release track "Squishies : des boîtes de rangement qui restent (idée de la joueuse)"`, compléter la section du PRD (idée de la joueuse visible), PR avec `agent-generated: true` et l'étiquette `agent`.
 
 ## Preuves
 
@@ -47,7 +47,7 @@ Chaque affirmation pointe vers une preuve : commande exacte, code de sortie, che
 
 | Ligne du smoke test | Résultat | Niveau | Preuve |
 |---|---|---|---|
-| S1 | fait | test-verified | `bun run test squishies` (exit 0) après chaque phase |
+| S1 | fait | test-verified | `bun run test squishies` (exit 0) après chaque phase ; rouge puis vert prouvé par `prove-red-green.sh --base origin/conductor/specs-validees -- bun run test squishy-boites` (sortie 1 sans le changement, 0 avec) |
 | S2 | fait | test-verified | `bun run test squishy-boites` (exit 0) |
 | S3 | fait | test-verified | `bun run test squishy-boites` (exit 0) |
 | S4 | fait | test-verified | `bun run test squishy-boites` (exit 0) |

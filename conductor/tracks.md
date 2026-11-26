@@ -110,7 +110,7 @@ Registre des tracks Conductor, **dans l'ordre d'implémentation**. Feuille de ro
 
 ---
 
-- [ ] **Track: Les boîtes de rangement : ranger pour de bon ses squishies dans des boîtes à étiquette (idée de la joueuse)**
+- [x] **Track: Les boîtes de rangement : ranger pour de bon ses squishies dans des boîtes à étiquette (idée de la joueuse) (v67)**
 *Link: [./tracks/squishy-boites_20261122/](./tracks/squishy-boites_20261122/)*
 
 ---
