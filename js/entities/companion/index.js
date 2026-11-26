@@ -14,7 +14,6 @@ export {
   companionSelector,
   companionsFor,
   companionSVG,
-  companionUnlocked,
   currentCompanion,
   defaultCompanionFor,
   isArtAvatar,

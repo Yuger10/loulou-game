@@ -32,9 +32,6 @@ const FINALE_LINES = [
   "« Mais j'ai compris : un rêve partagé ne se perd jamais, il grandit ! Est-ce que je peux être ton ami ? »",
 ];
 
-function season2Done() {
-  return !!state.season2Done;
-}
 // les récompenses, une seule fois : vrai si elles viennent d'être données
 function giveSeason2Rewards() {
   if (state.season2Done) return false;
@@ -166,4 +163,4 @@ function openSeasonFinale(onDone, opts) {
   scene();
 }
 
-export { openSeasonFinale, season2Done };
+export { openSeasonFinale };

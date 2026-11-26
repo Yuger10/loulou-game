@@ -21,4 +21,4 @@ function versionBuild(label) {
   return m ? Number(m[1]) * 1000 + Number(m[2] || 0) : 0;
 }
 
-export { APP_LABEL, APP_PATCH, APP_VERSION, versionBuild };
+export { APP_LABEL, versionBuild };

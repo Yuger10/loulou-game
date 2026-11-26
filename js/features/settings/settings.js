@@ -177,5 +177,3 @@ onProfileRefresh(() => {
   const v = document.getElementById('view-reglages');
   if (v && v.classList.contains('active')) renderSettings();
 });
-
-export { renderSettings };
