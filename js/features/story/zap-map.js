@@ -95,7 +95,14 @@ function zapMapSVG(found, opts = {}) {
       : 'fill="none" stroke="#C9B79A" stroke-width="1.6" stroke-dasharray="4 4"';
     return `<path class="${cls}" data-piece="${id}" data-found="${has}" d="${zapPiecePath(i)}" ${look} stroke-linejoin="round"/>${has ? zapPieceRoute(i) : ''}`;
   }).join('');
-  return `<svg class="zap-map" viewBox="0 0 200 120" role="img" aria-label="${zapMapSay(found.length)}" data-found="${found.length}">${pieces}</svg>`;
+  // le contour des morceaux trouvés est redessiné par-dessus : le bord en tirets
+  // d'un voisin manquant ne le recouvre pas
+  const edges = ZAP_MAP_PIECES.map((id, i) =>
+    found.includes(id)
+      ? `<path class="zm-edge" d="${zapPiecePath(i)}" fill="none" stroke="#8A5A2B" stroke-width="2" stroke-linejoin="round"/>`
+      : '',
+  ).join('');
+  return `<svg class="zap-map" viewBox="0 0 200 120" role="img" aria-label="${zapMapSay(found.length)}" data-found="${found.length}">${pieces}${edges}</svg>`;
 }
 
 // la ligne « carte de Zap » du journal : le dessin, le compte et le bouton 🔈
