@@ -76,7 +76,7 @@ function renderMapTabs(saison) {
         a = ARCHIPELAGOS[s];
       if (!archipelagoUnlocked(s)) {
         playSound('wrong');
-        speak(`${a.name} s'ouvrira au niveau ${a.level}. Continue tes missions !`);
+        speak(`${a.name} s'ouvrira au niveau ${a.level}. Continue tes missions !`, { interrupt: true, demand: true });
         showToast(`🔒 ${a.name} : niveau ${a.level}`);
         return;
       }

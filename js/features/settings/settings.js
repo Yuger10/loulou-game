@@ -10,7 +10,15 @@
 import { avatarHTML, COMPANIONS, companionOf } from '../../entities/companion/index.js';
 import { save, state } from '../../entities/game-state/index.js';
 import { currentProfile, onProfileRefresh, profiles, switchProfile } from '../../entities/player/index.js';
-import { playSound, registerView, setHandler, showToast, soundModeLabel, speak } from '../../shared/ui/index.js';
+import {
+  playSound,
+  registerView,
+  setHandler,
+  showToast,
+  soundModeLabel,
+  speak,
+  stopSpeech,
+} from '../../shared/ui/index.js';
 import { backupDue, openBackup } from '../backup/index.js';
 import { renderTeamHeads } from '../companion-team/index.js';
 import { openParentGate, openParents } from '../parents/index.js';
@@ -119,7 +127,7 @@ function setSound(key) {
   }
   save();
   renderSoundBtn();
-  if (!state.voice && window.speechSynthesis) speechSynthesis.cancel();
+  if (!state.voice) stopSpeech();
   if (state.sound) playSound('tap');
   showToast(soundModeLabel());
 }
@@ -130,7 +138,7 @@ function bindSoundCard(el) {
   el.querySelectorAll('[data-sound]').forEach((b) =>
     setHandler(b, 'click', () => {
       if (b.getAttribute('aria-disabled') === 'true') {
-        speak("Allume d'abord les bruitages.");
+        speak("Allume d'abord les bruitages.", { interrupt: true, demand: true });
         return;
       }
       setSound(/** @type {SoundKey} */ (b.dataset.sound));

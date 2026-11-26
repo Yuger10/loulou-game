@@ -25,6 +25,7 @@ const SLICES = [
       'js/shared/lib/events.js',
       'js/shared/lib/version.js',
       'js/shared/lib/text.js',
+      'js/shared/lib/spoken.js',
       'js/shared/lib/storage.js',
     ],
     css: [],

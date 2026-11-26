@@ -26,6 +26,7 @@ import {
   showToast,
   speak,
   speechBubble,
+  stopSpeech,
   switchView,
   uiIcon,
   vibrate,
@@ -46,7 +47,10 @@ function setWorld(id, silent) {
   if (!worldUnlocked(id)) {
     playSound('wrong');
     const miss = missionsUntil(w.level);
-    speak(`${w.name} s'ouvrira au niveau ${w.level}. Encore ${miss} mission${miss > 1 ? 's' : ''} !`);
+    speak(`${w.name} s'ouvrira au niveau ${w.level}. Encore ${miss} mission${miss > 1 ? 's' : ''} !`, {
+      interrupt: true,
+      demand: true,
+    });
     showToast(`🔒 ${w.name} : niveau ${w.level}`);
     return false;
   }
@@ -384,7 +388,7 @@ function openDialogue(charId) {
       openGiftPicker(charId);
     });
   setHandler(document.getElementById('btn-close'), 'click', () => {
-    if (window.speechSynthesis) speechSynthesis.cancel();
+    stopSpeech();
     closeModal();
   });
 }

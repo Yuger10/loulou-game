@@ -19,12 +19,14 @@ import { onProfileRefresh, party, profiles } from '../../entities/player/index.j
 import { on, pickRandom } from '../../shared/lib/index.js';
 import {
   closeModal,
+  newVoiceScene,
   onModalClose,
   onViewChange,
   playSound,
   setHandler,
   showToast,
   speak,
+  stopSpeech,
   switchView,
 } from '../../shared/ui/index.js';
 import { todayKey } from '../adaptive/index.js';
@@ -207,6 +209,7 @@ function restAdultBtn() {
  */
 function renderVeil(stageName, extra) {
   const el = veilEl();
+  newVoiceScene(); // chaque écran de la pause est une scène
   el.dataset.stage = stageName;
   if (stageName === 'choose') {
     el.innerHTML = `${restNightHTML()}
@@ -448,7 +451,8 @@ function bindVeil(el) {
       const log = restLogToday();
       log.skipped = true;
       save();
-      speak("D'accord. Bonne nuit, à demain !");
+      stopSpeech();
+      speak("D'accord. Bonne nuit, à demain !", { interrupt: true });
       renderVeil('asleep');
     });
   const adult = el.querySelector('#rest-adult');

@@ -19,7 +19,7 @@ const WRONG_HINTS = [
 ];
 
 function speakWrongHint() {
-  if (random() < 0.7) speak(pickRandom(WRONG_HINTS));
+  if (random() < 0.7) speak(pickRandom(WRONG_HINTS), { interrupt: true });
 }
 
 // En-tête d'une fenêtre de jeu : titre, consigne et bouton pour l'écouter.

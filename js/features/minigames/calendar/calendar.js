@@ -66,8 +66,8 @@ function renderSeasonGuess() {
     </div>
   `);
   bindQuit();
-  // annonce les 3 mots proposés (vocabulaire), un peu après la consigne
-  setTimeout(() => speak(shown.map((o) => o.name).join(', ')), 1600);
+  // annonce les 3 mots proposés (vocabulaire), après la consigne (file de parole)
+  speak(shown.map((o) => o.name).join(', '));
   setSolution([solSel('.season-btn', 'v', correct.name)]);
   setHintQuestion('calendar', { kind: 'season', correct }, { choices: '.season-btn' });
   document.querySelectorAll('.season-btn').forEach((btn) => {

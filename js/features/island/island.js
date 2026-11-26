@@ -629,7 +629,7 @@ function decoTapped(el) {
   el.classList.add('wiggle');
   playSound('tap');
   const d = DECOS[/** @type {string} */ (el.dataset.decoKey)];
-  if (d) speak(d.name);
+  if (d) speak(d.name, { interrupt: true, demand: true });
 }
 
 /* ---- glisser une décoration ---- */

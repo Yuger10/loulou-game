@@ -193,7 +193,7 @@ function perleDecorate() {
       e.stopPropagation();
       playSound('tap');
       // le sélecteur [data-say] garantit l'attribut
-      speak(/** @type {string} */ (b.dataset.say), { rate: 0.7 });
+      speak(/** @type {string} */ (b.dataset.say), { rate: 0.7, interrupt: true, demand: true });
     });
     b.insertAdjacentElement('afterend', r);
   });

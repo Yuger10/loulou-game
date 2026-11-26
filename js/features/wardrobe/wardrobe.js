@@ -424,7 +424,7 @@ function lookBindTiles(el) {
       if (!id || ownsLookItem(id)) {
         lookTry = null;
         wearLook(lookSlot, id);
-        if (it) speak(it.name);
+        if (it) speak(it.name, { interrupt: true, demand: true });
       } else {
         lookTry = { slot: lookSlot, id };
         // les tuiles ne portent que des ids de WARDROBE : l'habit existe
@@ -435,6 +435,7 @@ function lookBindTiles(el) {
             : w.unlock
               ? `${w.name}. À gagner après ${w.unlock} missions.`
               : `${w.name}. ${w.price} pièces.`,
+          { interrupt: true, demand: true },
         );
       }
       renderLook();

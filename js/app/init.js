@@ -20,7 +20,7 @@ import { initSeasons, maybeSeasonGift } from '../features/seasons/index.js';
 import { renderSquishyBadge, squishySessionHello } from '../features/squishies/index.js';
 import { openStoryJournal } from '../features/story/index.js';
 import { renderCoins } from '../features/wallet/index.js';
-import { playSound, requestCloseModal, showToast, speak, switchView } from '../shared/ui/index.js';
+import { newVoiceScene, playSound, requestCloseModal, showToast, speak, switchView } from '../shared/ui/index.js';
 
 loadProfiles();
 load();
@@ -51,6 +51,7 @@ switchView('carte');
 /* Écran titre : sert aussi à débloquer le son et la voix (geste utilisateur requis sur iOS) */
 function showSplash() {
   const sp = /** @type {HTMLElement} */ (document.getElementById('splash'));
+  newVoiceScene();
   const season = currentSeason();
   /** @type {HTMLElement} */ (document.getElementById('splash-hello')).textContent = season
     ? `${FETES[season].greet(state.name)} ${FETES[season].emoji}`

@@ -275,7 +275,7 @@ function useHint() {
   if (!hint.on) return null;
   playSound('hint');
   if (hint.level >= HINT_LEVELS) {
-    speak(pickRandom(HINT_CHEERS));
+    speak(pickRandom(HINT_CHEERS), { interrupt: true, demand: true });
     buddyReact('cheer', 1200);
     return null;
   }
@@ -287,7 +287,7 @@ function useHint() {
   hint.level++;
   hint.nudged = false;
   clearTimeout(hint.idle);
-  showHint(h, hint.level);
+  showHint(h, hint.level, undefined, true);
   countHint(kind);
   buddyReact(hint.level >= HINT_LEVELS ? 'cheer' : 'think', 1400);
   renderHintButton();
@@ -317,8 +317,9 @@ function hintShowFirst(giver) {
  * @param {Hint} h
  * @param {number} level
  * @param {string} [giverOverride]
+ * @param {boolean} [demand] l'enfant a demandé l'indice (bouton 💡) : dit même voix coupée
  */
-function showHint(h, level, giverOverride) {
+function showHint(h, level, giverOverride, demand) {
   const body = document.getElementById('modal-body');
   if (!body) return;
   let bub = body.querySelector('.hint-bubble');
@@ -341,7 +342,7 @@ function showHint(h, level, giverOverride) {
   void bub.offsetWidth;
   bub.classList.add('pop');
   applyHintFx(h.fx, level);
-  speak(h.say);
+  speak(h.say, { interrupt: true, demand: !!demand });
 }
 
 function hintChoicesLeft() {

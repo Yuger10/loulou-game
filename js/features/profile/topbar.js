@@ -1,7 +1,7 @@
 /* ---------- Bouton son de l'en-tête ---------- */
 import { save, state } from '../../entities/game-state/index.js';
 import { onProfileRefresh } from '../../entities/player/index.js';
-import { playSound, showToast, soundModeLabel, uiIcon } from '../../shared/ui/index.js';
+import { playSound, showToast, soundModeLabel, stopSpeech, uiIcon } from '../../shared/ui/index.js';
 import { updateMusic } from '../music/index.js';
 
 // le bouton son fait partie de l'en-tête de la page (index.html)
@@ -20,7 +20,7 @@ import { updateMusic } from '../music/index.js';
   }
   save();
   renderSoundBtn();
-  if (!state.voice && window.speechSynthesis) speechSynthesis.cancel();
+  if (!state.voice) stopSpeech();
   if (state.sound) playSound('tap');
   showToast(soundModeLabel());
 });

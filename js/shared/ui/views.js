@@ -2,6 +2,7 @@
    Chaque feature inscrit le rendu de sa vue avec registerView(nom, rendu) ;
    switchView affiche la section puis appelle ces rendus. */
 import { playSound } from './sound.js';
+import { newVoiceScene } from './voice.js';
 
 /** @typedef {{ sacTab: string | null }} ViewOptions */
 /** @type {Record<string, Array<(opts: ViewOptions) => void>>} */
@@ -35,6 +36,7 @@ function switchView(nameArg) {
 
   const sec = document.getElementById('view-' + name);
   if (!sec) return;
+  newVoiceScene();
   document.querySelectorAll('.view').forEach((v) => v.classList.remove('active'));
   sec.classList.add('active');
   document.querySelectorAll('.navbtn').forEach((b) => b.classList.toggle('active', b.dataset.view === name));

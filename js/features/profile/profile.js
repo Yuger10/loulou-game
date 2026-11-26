@@ -11,7 +11,7 @@ import {
 import { save, state } from '../../entities/game-state/index.js';
 import { AVATARS, currentProfile, onProfileRefresh, saveProfiles } from '../../entities/player/index.js';
 import { cleanName, emit, on } from '../../shared/lib/index.js';
-import { playSound, setHandler, showToast, speak } from '../../shared/ui/index.js';
+import { newVoiceScene, playSound, setHandler, showToast, speak } from '../../shared/ui/index.js';
 import { applySeason } from '../seasons/index.js';
 import { openStoryChapter, storySolved } from '../story/index.js';
 
@@ -87,6 +87,7 @@ function openWelcome() {
   pendingCompanion = (p0 && p0.companion) || null;
   welcomeAllBuddies = false;
   renderWelcomeExtra();
+  newVoiceScene();
   /** @type {HTMLElement} */ (document.getElementById('welcome')).classList.add('show');
 }
 function closeWelcome() {
