@@ -136,32 +136,59 @@ function openGiftPicker(charId) {
       const key = /** @type {string} */ (b.dataset.gift);
       const from = /** @type {HTMLElement} */ (b.querySelector('.gi-emoji')).getBoundingClientRect();
       const res = giveGift(charId, key);
-      if (res) showGiftThanks(charId, key, res, from);
+      if (res) showGiftThanks(charId, { key, res, fromRect: from });
     }),
   );
 }
 
 /* ---- le merci ---- */
+/** @param {string} name l'objet offert @param {boolean} fav */
+function thanksLine(name, fav) {
+  const who = hello();
+  const to = who ? ' ' + who : '';
+  if (fav) return `Oh, ${name} ! C'est mon cadeau préféré ! Merci${to} !`;
+  return pickRandom([
+    `Un cadeau pour moi ? Merci${to}, ça me fait très plaisir !`,
+    `Oh, merci${to} ! Je vais en prendre grand soin.`,
+    `Comme c'est gentil ! Merci${to} !`,
+  ]);
+}
+
+/** @param {GiftResult} res */
+function bestFriendsLine(res) {
+  if (!res.bestFriends) return '';
+  return `Tu es ${ac('mon meilleur ami', 'ma meilleure amie')} !${res.reward ? ` Voici ${res.reward} pièces, pour toi !` : ''}`;
+}
+
+// l'objet s'envole du sac jusqu'au personnage
+/** @param {string} emoji @param {DOMRect} [fromRect] d'où l'objet s'envole */
+function flyGift(emoji, fromRect) {
+  const face = document.querySelector('.gt-face');
+  const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (!fromRect || !face || reduce) return;
+  const to = face.getBoundingClientRect();
+  const fly = document.createElement('span');
+  fly.className = 'gift-fly';
+  fly.textContent = emoji;
+  fly.style.left = fromRect.left + 'px';
+  fly.style.top = fromRect.top + 'px';
+  document.body.appendChild(fly);
+  requestAnimationFrame(() => {
+    fly.style.transform = `translate(${to.left + to.width / 2 - fromRect.left - 20}px, ${to.top + to.height * 0.55 - fromRect.top - 20}px) scale(1.4)`;
+    fly.style.opacity = '0';
+  });
+  setTimeout(() => fly.remove(), 800);
+}
+
 /**
  * @param {string} charId
- * @param {string} key
- * @param {GiftResult} res
- * @param {DOMRect} [fromRect] d'où l'objet s'envole
+ * @param {{ key: string, res: GiftResult, fromRect?: DOMRect }} gift l'objet, ce qu'il a donné, d'où il s'envole
  */
-function showGiftThanks(charId, key, res, fromRect) {
+function showGiftThanks(charId, { key, res, fromRect }) {
   const c = CHARACTERS[charId],
     it = ALL_ITEMS[key];
-  const who = hello();
-  const msg = res.fav
-    ? `Oh, ${it.name} ! C'est mon cadeau préféré ! Merci${who ? ' ' + who : ''} !`
-    : pickRandom([
-        `Un cadeau pour moi ? Merci${who ? ' ' + who : ''}, ça me fait très plaisir !`,
-        `Oh, merci${who ? ' ' + who : ''} ! Je vais en prendre grand soin.`,
-        `Comme c'est gentil ! Merci${who ? ' ' + who : ''} !`,
-      ]);
-  const best = res.bestFriends
-    ? `Tu es ${ac('mon meilleur ami', 'ma meilleure amie')} !${res.reward ? ` Voici ${res.reward} pièces, pour toi !` : ''}`
-    : '';
+  const msg = thanksLine(it.name, res.fav);
+  const best = bestFriendsLine(res);
   openModal(`
     <div class="gift-thanks">
       <div class="gt-stage">
@@ -182,23 +209,7 @@ function showGiftThanks(charId, key, res, fromRect) {
   if (res.bestFriends) confetti();
   if (res.reward) gainCoins(res.reward, document.querySelector('.gt-face'));
   speak(`${msg} ${best}`);
-  // l'objet s'envole du sac jusqu'au personnage
-  const face = document.querySelector('.gt-face');
-  const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  if (fromRect && face && !reduce) {
-    const to = face.getBoundingClientRect();
-    const fly = document.createElement('span');
-    fly.className = 'gift-fly';
-    fly.textContent = it.emoji;
-    fly.style.left = fromRect.left + 'px';
-    fly.style.top = fromRect.top + 'px';
-    document.body.appendChild(fly);
-    requestAnimationFrame(() => {
-      fly.style.transform = `translate(${to.left + to.width / 2 - fromRect.left - 20}px, ${to.top + to.height * 0.55 - fromRect.top - 20}px) scale(1.4)`;
-      fly.style.opacity = '0';
-    });
-    setTimeout(() => fly.remove(), 800);
-  }
+  flyGift(it.emoji, fromRect);
   const more = document.getElementById('gift-more');
   if (more)
     setHandler(more, 'click', () => {
