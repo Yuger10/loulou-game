@@ -26,6 +26,14 @@ function pbShow(sel) {
 function pbHide(sel) {
   pbAll(sel).forEach((el) => el.setAttribute('hidden', ''));
 }
+// l'étape allumée en haut de la fenêtre, pour chaque moment (l'opération fait partie du calcul)
+/** @type {Record<string, string>} */
+const PB_LIGHT = { operation: 'calculer', possible: 'repondre' };
+/** @param {string} moment allume une des 4 étapes */
+function pbLight(moment) {
+  const step = PB_LIGHT[moment] || moment;
+  pbAll('.pb-steps .pb-step').forEach((el) => el.classList.toggle('on', el.dataset.step === step));
+}
 /**
  * Le bloc d'une étape de calcul.
  * @param {PbView} v
@@ -35,6 +43,25 @@ function pbBlockSel(v, e) {
   return `#${v.box}-e${e + 1}`;
 }
 
+/**
+ * Le dessin est fini : « C'est fait » a servi ; au palier 2, le coffre laisse la place aux barres.
+ * @param {PbView} v
+ * @param {number} e
+ */
+function pbTidyDraw(v, e) {
+  const B = pbBlockSel(v, e);
+  pbHide(`${B} .pb-done${v.row.rep === 'concret-barre' ? `, ${B} .pb-chest-zone` : ''}`);
+}
+/**
+ * Une étape de calcul est finie (problème à deux étapes) : il n'en reste que
+ * son égalité, pour laisser la place à l'étape suivante.
+ * @param {PbView} v
+ * @param {number} e
+ */
+function pbTidyStage(v, e) {
+  const B = pbBlockSel(v, e);
+  pbHide(`${B} .pb-bars, ${B} .pb-labels, ${B} .pb-signs, ${B} .pb-nums, ${B} .pb-eq-nums`);
+}
 /**
  * Une étiquette se fixe dans une case ; la barre prend la longueur de son nombre
  * (deux parties posées à l'envers échangent ainsi leurs longueurs).
@@ -99,6 +126,7 @@ function pbAutoTokens(v, B, s) {
       .slice(0, s.n2)
       .forEach((el) => out.appendChild(el));
   pbShow(`${B} .pb-bars`); // palier 2 : les objets rangés en barres
+  pbHide(`${B} .pb-done`);
 }
 /**
  * Le compagnon dessine l'étape `e` : tout est posé d'un coup.
@@ -176,6 +204,9 @@ export {
   pbEqSign,
   pbFill,
   pbHide,
+  pbLight,
   pbShow,
+  pbTidyDraw,
+  pbTidyStage,
   pbWriteEq,
 };

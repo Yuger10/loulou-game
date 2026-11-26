@@ -86,11 +86,12 @@
 }
 .code-wheels {
   display: flex;
-  gap: 8px;
-  padding: 12px;
+  /* 4 roues de 64 px tiennent sur 360 px ; un corps sombre, pour que les 4 couleurs se voient */
+  gap: 6px;
+  padding: 10px 8px;
   border-radius: 20px;
-  background: #e0a800;
-  box-shadow: inset 0 -6px 0 #b98500;
+  background: #5a6472;
+  box-shadow: inset 0 -6px 0 #3f4854;
 }
 .code-wheel,
 .code-sym {

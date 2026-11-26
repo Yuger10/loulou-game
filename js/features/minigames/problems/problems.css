@@ -13,11 +13,12 @@
   border-radius: 12px;
   background: #f1ece3;
   color: #8a7f70;
-  font-size: 0.72rem;
+  /* quatre étapes sur 360 px : l'emoji au-dessus du mot, qui tient alors en entier */
+  font-size: 0.66rem;
   font-weight: 700;
+  line-height: 1.2;
   text-align: center;
-  white-space: nowrap;
-  overflow: hidden;
+  word-spacing: 100vw;
 }
 .pb-step.on {
   background: #ffd76a;
@@ -51,7 +52,8 @@
   border: 2px solid #e6dcc8;
   border-radius: 14px;
   background: #fffdf7;
-  animation: pb-pop 0.4s ease both;
+  /* chaque vignette saute à son tour, sans jamais disparaître */
+  animation: pb-pop 0.4s ease;
 }
 .pb-vignette:nth-child(2) {
   animation-delay: 0.6s;
@@ -67,9 +69,8 @@
   border-color: #e0a800;
 }
 @keyframes pb-pop {
-  from {
-    opacity: 0;
-    transform: scale(0.8);
+  50% {
+    transform: scale(1.12);
   }
 }
 .pb-who {

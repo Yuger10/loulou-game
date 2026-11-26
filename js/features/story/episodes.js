@@ -504,6 +504,36 @@ const EPISODES = {
       ],
     },
   ],
+  // saison 3, l'Île des Coffres : les traces de Zap, le compte de Grignote, et la plume de l'île suivante
+  coffres: [
+    {
+      by: 'kadi',
+      title: 'Les traces de Zap',
+      find: '👣',
+      lines: [
+        "J'ai vu des traces de pas devant le grand coffre. Des petites bottes de super-héros !",
+        'Zap est passé par ici. Il cherche lui aussi les morceaux de sa carte.',
+      ],
+    },
+    {
+      by: 'grignote',
+      title: 'Le compte est bon',
+      find: '🪙',
+      lines: [
+        "J'ai compté toutes les pièces de l'île : il y en a cent, pas une de moins !",
+        "Mais dans le grand coffre, j'ai entendu un bruit de papier. Un morceau de carte, peut-être ?",
+      ],
+    },
+    {
+      by: 'pincou',
+      title: 'La plume qui chatouille',
+      find: '🪶',
+      lines: [
+        "Avec mes pinces, j'ai attrapé une plume qui volait au-dessus de la mer.",
+        "Elle m'a chatouillé, hi hi ! Elle vient sûrement d'une île plus loin sur la carte. On ira voir !",
+      ],
+    },
+  ],
 };
 
 /** @param {string} world */

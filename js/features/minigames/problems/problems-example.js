@@ -5,11 +5,21 @@
    où l'enfant calcule et répond. Chaque 👉 joue le pas suivant tout de suite. */
 import { setHandler, speak } from '../../../shared/ui/index.js';
 import { setHintQuestion } from '../../hints/index.js';
-import { pbAll, pbAutoAnswer, pbAutoCalc, pbAutoDraw, pbAutoJudge, pbEl, pbHide, pbShow } from './problems-auto.js';
+import {
+  pbAll,
+  pbAutoAnswer,
+  pbAutoCalc,
+  pbAutoDraw,
+  pbAutoJudge,
+  pbEl,
+  pbHide,
+  pbLight,
+  pbShow,
+} from './problems-auto.js';
 import { pbStatement, pbStory } from './problems-bank.js';
 import { PB_COACH_END, PB_COACH_TWIN, pbCoach } from './problems-coach.js';
 import { pbNote, pbStages } from './problems-draw.js';
-import { pbLight, pbStartStage } from './problems-play.js';
+import { pbStartStage } from './problems-play.js';
 
 /** @typedef {import('../../../entities/difficulty/index.js').ProblemsRound} ProblemsRound */
 /** @typedef {import('./problems-bank.js').PbProblem} PbProblem */

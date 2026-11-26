@@ -40,6 +40,24 @@ const WORLDS_S3 = {
     intro: "Bienvenue sur l'Île des Squishy Dumplings, où ça sent bon la vapeur 🥟",
     sceneEmpty: 'Ta cuisine attend ses décorations toutes chaudes !',
   },
+  coffres: {
+    name: "L'Île des Coffres",
+    emoji: '🗝️',
+    level: 86,
+    diff: 6,
+    saison: 3,
+    short: 'Coffres',
+    subtitle: "L'île aux mille serrures",
+    // son mini-jeu, à tout âge : les problèmes racontés (le parent demande « plus de maths »)
+    game: 'problems',
+    map: { x: 82, y: 70 },
+    shape: 'coffres',
+    icon: '🗝️',
+    sand: '#F6E3B4',
+    land: '#C8955A',
+    intro: "Bienvenue sur l'Île des Coffres, où chaque coffre garde un secret 🗝️",
+    sceneEmpty: 'Ton île attend ses décorations pleines de secrets !',
+  },
 };
 
 export { WORLDS_S3 };

@@ -56,6 +56,8 @@ const MUSIC_THEMES = {
   crayons: { root: 64, scale: [0, 2, 4, 7, 9], bpm: 96, lead: 'pluck', prog: [0, 5, 9, 7], tick: true },
   // l'Île des Squishy Dumplings : une flûte qui siffle comme la vapeur, et le shaker des grains de riz
   dumplings: { root: 62, scale: [0, 2, 4, 7, 9], bpm: 84, lead: 'flute', prog: [0, 5, 9, 7], shaker: true },
+  // l'Île des Coffres : un pincé léger, et les petits « tic » des serrures
+  coffres: { root: 64, scale: [0, 2, 4, 7, 9], bpm: 90, lead: 'pluck', prog: [0, 9, 5, 7], tick: true },
 };
 const MUSIC_VOLUME = 1.0; // crête ≈ 0,11, bien sous les bruitages ; passe ensuite par le volume général du bus
 

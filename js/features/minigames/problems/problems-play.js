@@ -8,9 +8,22 @@ import { party } from '../../../entities/player/index.js';
 import { setHandler, speak } from '../../../shared/ui/index.js';
 import { setHintQuestion } from '../../hints/index.js';
 import { flashModal, loseLife, stepOk, winSoon } from '../../minigame-engine/index.js';
-import { pbAll, pbAutoDraw, pbBlockSel, pbEl, pbEqPut, pbEqSign, pbFill, pbShow, pbWriteEq } from './problems-auto.js';
+import {
+  pbAll,
+  pbAutoDraw,
+  pbBlockSel,
+  pbEl,
+  pbEqPut,
+  pbEqSign,
+  pbFill,
+  pbLight,
+  pbShow,
+  pbTidyDraw,
+  pbTidyStage,
+  pbWriteEq,
+} from './problems-auto.js';
 import { PB_COUNT, PB_STEP_SAY } from './problems-bank.js';
-import { pbIsConcrete } from './problems-schema.js';
+import { pbAfterDraw, pbIsConcrete } from './problems-schema.js';
 
 /** @typedef {import('./problems-schema.js').PbView} PbView */
 /**
@@ -22,13 +35,6 @@ import { pbIsConcrete } from './problems-schema.js';
  *   dead: boolean, helped: boolean, retry: () => void, drawn: (e: number) => void }} PbRun
  */
 
-// l'étape allumée en haut de la fenêtre, pour chaque moment
-/** @type {Record<string, string>} */
-const PB_LIGHT = { operation: 'calculer', possible: 'repondre' };
-/** @param {string} step allume une des 4 étapes */
-function pbLight(step) {
-  pbAll('.pb-steps .pb-step').forEach((el) => el.classList.toggle('on', el.dataset.step === step));
-}
 /**
  * Entre dans un moment : ce qu'il faut est montré, l'étape s'allume, les
  * indices repartent de zéro avec une nouvelle question (table H0).
@@ -43,7 +49,7 @@ function pbEnter(run, moment) {
   if (moment === 'calculer') pbShow(`${B} .pb-nums`);
   if (moment === 'repondre') pbShow(`#${run.box} .pb-reply`);
   if (moment === 'possible') pbShow(`#${run.box} .pb-bars, #${run.box} .pb-yesnos`);
-  pbLight(PB_LIGHT[moment] || moment);
+  pbLight(moment);
   const choices = { calculer: `${B} .pb-num`, operation: `${B} .pb-sign` }[moment];
   const q = { moment, x: run.x, s: run.stages[run.e] || null, rep: run.row.rep, box: run.box, block: B };
   setHintQuestion('problems', q, choices ? { choices } : {});
@@ -80,14 +86,10 @@ function pbStartStage(run, e) {
   pbEnter(run, 'dessiner');
   speak(PB_STEP_SAY.dessiner);
 }
-/** @param {PbRun} run le moment qui suit le dessin : l'opération s'il y a un schéma, sinon le calcul */
-function pbAfterDraw(run) {
-  if (run.x.type === 'possible') return 'possible';
-  return run.row.rep === 'barres' || run.row.rep === 'concret-barre' ? 'operation' : 'calculer';
-}
 /** @param {PbRun} run l'enfant a fini de dessiner */
 function pbDrawDone(run) {
   const next = pbAfterDraw(run);
+  pbTidyDraw(run, run.e);
   pbEnter(run, next);
   // palier 2 : les objets du coffre se rangent en barres, le schéma apparaît rempli
   if (run.row.rep === 'concret-barre') speak(PB_STEP_SAY.barres);
@@ -213,6 +215,7 @@ function pbOnNum(run, el) {
   const res = pbEl(`${pbBlockSel(run, run.e)} .pb-eq-res`);
   if (res) res.textContent = String(s.r);
   if (run.e + 1 < run.stages.length) {
+    pbTidyStage(run, run.e);
     pbStartStage(run, run.e + 1);
     return;
   }
@@ -293,4 +296,4 @@ function pbBindRun(run) {
   );
 }
 
-export { pbBindRun, pbEnter, pbLight, pbStartStage };
+export { pbBindRun, pbEnter, pbStartStage };

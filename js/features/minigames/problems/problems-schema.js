@@ -40,6 +40,11 @@ function pbAddsTokens(v) {
   return pbIsConcrete(v) && v.stages.length === 1 && v.stages[0].op === '+';
 }
 
+/** @param {PbView} v le moment qui suit le dessin : l'opération s'il y a un schéma, sinon le calcul */
+function pbAfterDraw(v) {
+  if (v.x.type === 'possible') return 'possible';
+  return v.row.rep === 'barres' || v.row.rep === 'concret-barre' ? 'operation' : 'calculer';
+}
 /**
  * Les objets d'une vignette : un emoji par objet jusqu'à 10, au-delà le nombre
  * et un seul emoji. `from` : le rang du premier objet à toucher (−1 : aucun).
@@ -216,4 +221,4 @@ function pbBoxHTML(v, steps, shown) {
     </div>`;
 }
 
-export { pbAddsTokens, pbBarsHTML, pbBoxHTML, pbIsConcrete, pbStepsHTML };
+export { pbAddsTokens, pbAfterDraw, pbBarsHTML, pbBoxHTML, pbIsConcrete, pbStepsHTML };
