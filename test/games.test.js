@@ -385,6 +385,31 @@ const INDEPENDENT = {
       (ds.type !== 'deuxEtapes' || ds.r1 === String(n('a') + n('b')))
     );
   },
+  // code : le cadenas résolu depuis ses indices seuls (table A2 de la spec). Toutes les suites
+  // de symboles distincts de la palette sont essayées : une seule respecte tous les indices,
+  // c'est le code, et la solution pose ce code roue par roue puis ouvre.
+  code(sol) {
+    const ds = d.getElementById('code-root').dataset;
+    const [palette, code, clues] = [ds.palette, ds.code, ds.clues].map((x) => JSON.parse(x));
+    const N = Number(ds.wheels);
+    const lists = (n) =>
+      n === 0 ? [[]] : lists(n - 1).flatMap((c) => palette.filter((s) => !c.includes(s)).map((s) => [...c, s]));
+    const TRUE = {
+      est: (c, k) => c[k.w] === k.s,
+      pas: (c, k) => c.includes(k.s) && c[k.w] !== k.s,
+      absent: (c, k) => !c.includes(k.s),
+      voisins: (c, k) => c.some((s, i) => s === k.s && c[i + 1] === k.s2),
+      bout: (c, k) => c[0] === k.s || c[N - 1] === k.s,
+    };
+    const left = lists(N).filter((c) => clues.every((k) => TRUE[k.t](c, k)));
+    const want = code.flatMap((s, i) => [`.code-wheel[data-w="${i}"]`, `.code-sym[data-s="${s}"]`]);
+    return (
+      left.length === 1 &&
+      JSON.stringify(left[0]) === ds.code &&
+      d.querySelectorAll('.code-clue').length === clues.length &&
+      JSON.stringify(sol) === JSON.stringify([...want, '#code-open'])
+    );
+  },
   // trace : chaque élément porte les points de son trait, et la solution couvre
   // tous les traits de tous les glyphes de la bande, dans l'ordre
   trace(sol) {

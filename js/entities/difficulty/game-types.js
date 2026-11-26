@@ -35,6 +35,7 @@ const GAME_TYPES = [
   'tens',
   'order',
   'problems',
+  'code',
 ];
 
 /* Quels types de défis proposer selon l'âge (programme de l'école
@@ -158,6 +159,7 @@ const GAME_LIST = [
   { key: 'tens', emoji: '🧺', name: 'Les paniers de dix' },
   { key: 'order', emoji: '🥟', name: 'La commande du chef' },
   { key: 'problems', emoji: '🪙', name: 'Le trésor raconté' },
+  { key: 'code', emoji: '🔐', name: 'Le code secret' },
 ];
 
 export { GAME_LIST, gameTypesForAge };

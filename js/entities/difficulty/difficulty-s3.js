@@ -235,4 +235,36 @@ function problemsRound(dd) {
   return tierValue(PROBLEMS_TIERS, dd);
 }
 
-export { lengthRound, orderRound, problemsRound, tensRound, traceRound };
+/* ---------------------------------------------------------------------
+   LE CODE SECRET (Île des Coffres, saison 3) : la déduction. Un cadenas, des
+   indices tous vrais, un seul code possible : tout se déduit avant d'ouvrir.
+     palier 1   2 roues, 4 symboles : un symbole chassé, un symbole placé
+     palier 2   3 roues : « n'est pas sur la roue… »
+     palier 3   5 symboles : deux symboles voisins
+     palier 4   4 roues
+     palier 5   6 symboles, plus aucun symbole placé : « une roue du bout »
+   `wheels` : roues ; `palette` : symboles proposés ; `types` : indices
+   permis ; `maxEst` : indices « est sur la roue » au plus ; `maxClues` :
+   indices au plus. Pas de minuteur.
+   --------------------------------------------------------------------- */
+/**
+ * Une ligne du « Code secret » (table T2 de la spec).
+ * @typedef {{ wheels: number, palette: number, types: string[], maxEst: number, maxClues: number }} CodeRound
+ */
+/** @type {Record<number, CodeRound>} */
+const CODE_TIERS = {
+  1: { wheels: 2, palette: 4, types: ['est', 'absent'], maxEst: 1, maxClues: 3 },
+  2: { wheels: 3, palette: 4, types: ['est', 'pas', 'absent'], maxEst: 1, maxClues: 4 },
+  3: { wheels: 3, palette: 5, types: ['est', 'pas', 'absent', 'voisins'], maxEst: 1, maxClues: 4 },
+  4: { wheels: 4, palette: 5, types: ['est', 'pas', 'absent', 'voisins'], maxEst: 1, maxClues: 5 },
+  5: { wheels: 4, palette: 6, types: ['pas', 'absent', 'voisins', 'bout'], maxEst: 0, maxClues: 6 },
+};
+/**
+ * @param {number} dd le palier de difficulté
+ * @returns {CodeRound}
+ */
+function codeRound(dd) {
+  return tierValue(CODE_TIERS, dd);
+}
+
+export { codeRound, lengthRound, orderRound, problemsRound, tensRound, traceRound };

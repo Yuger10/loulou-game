@@ -1,0 +1,135 @@
+/* ---------- Mini-jeu : Le code secret (code) ----------
+   Cartes d'indice, cadenas, palette : tout tient sur 360 px de large.
+   Roues, symboles et « Ouvrir » font au moins 64 px. */
+#code-root {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+.code-clues {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+}
+.code-clue {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 64px;
+  padding: 6px 10px;
+  border: 2px solid #e6dcc8;
+  border-radius: 14px;
+  background: #fffdf7;
+  cursor: pointer;
+}
+.code-box {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 34px;
+  border: 3px solid #d9d2c3;
+  border-radius: 8px;
+  background: #fff;
+  font-size: 1.15rem;
+  font-style: normal;
+}
+.code-box.dashed {
+  border-style: dashed;
+}
+.code-box.joined {
+  border-color: #8a7f70;
+}
+.code-link {
+  width: 10px;
+  height: 4px;
+  margin: 0 -4px;
+  background: #8a7f70;
+}
+.code-cross {
+  position: absolute;
+  inset: 0;
+  color: #e8344e;
+  font-size: 1.6rem;
+  line-height: 28px;
+  text-align: center;
+}
+.code-mark {
+  font-size: 1.1rem;
+}
+.code-or {
+  font-size: 0.85rem;
+  font-style: normal;
+  font-weight: 700;
+  color: #5a3d00;
+}
+.code-lock {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.code-shackle {
+  width: 96px;
+  height: 44px;
+  margin-bottom: -6px;
+  border: 10px solid #9aa3ad;
+  border-bottom: 0;
+  border-radius: 48px 48px 0 0;
+  transition: transform 0.5s;
+  transform-origin: 90% 100%;
+}
+.code-lock.open .code-shackle {
+  transform: translateY(-14px) rotate(24deg);
+}
+.code-wheels {
+  display: flex;
+  gap: 8px;
+  padding: 12px;
+  border-radius: 20px;
+  background: #e0a800;
+  box-shadow: inset 0 -6px 0 #b98500;
+}
+.code-wheel,
+.code-sym {
+  width: 64px;
+  height: 64px;
+  border-radius: 16px;
+  background: #fff;
+  font-size: 2rem;
+  cursor: pointer;
+}
+.code-wheel {
+  border: 4px solid #d9d2c3;
+}
+.code-wheel.sel {
+  border-width: 8px;
+  transform: translateY(-3px);
+}
+.code-palette {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+}
+.code-sym {
+  border: 3px solid #e6dcc8;
+  border-radius: 50%;
+}
+.code-sym.used {
+  opacity: 0.45;
+}
+#code-open {
+  min-height: 64px;
+}
+#code-open:disabled {
+  opacity: 0.45;
+  filter: grayscale(1);
+}
+@media (prefers-reduced-motion: reduce) {
+  .code-shackle {
+    transition: none;
+  }
+}

@@ -74,6 +74,7 @@ const PROGRESS_CHEERS = {
   tens: 'Tu ranges les nombres en dizaines de mieux en mieux !',
   order: 'Tu retiens les commandes de mieux en mieux !',
   problems: 'Tu résous les problèmes de mieux en mieux !',
+  code: 'Tu trouves les codes secrets de mieux en mieux !',
 };
 
 /** @typedef {import('./skill-status.js').SkillRecord} SkillRecord */
