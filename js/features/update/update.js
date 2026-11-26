@@ -128,4 +128,4 @@ function bindUpdateCard() {
   });
 }
 
-export { announceUpdate, bindUpdateCard, checkForUpdate, updateCardHTML };
+export { announceUpdate, bindUpdateCard, updateCardHTML };

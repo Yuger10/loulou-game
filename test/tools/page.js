@@ -17,7 +17,8 @@ const fs = require('fs');
 const path = require('path');
 
 const root = path.join(__dirname, '..', '..');
-const { SLICES, CSS_ORDER } = require(path.join(root, 'js', 'slices.cjs'));
+// chemin littéral : knip suit alors cet import (CSS_ORDER n'est lu qu'ici)
+const { SLICES, CSS_ORDER } = require('../../js/slices.cjs');
 const ENTRY = 'js/app/main.js';
 
 const read = (f) => fs.readFileSync(path.join(root, f), 'utf8');
