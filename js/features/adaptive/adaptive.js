@@ -38,6 +38,7 @@ let PRACTICE_CHANCE = 0.5; // part des choix où revient un jeu à travailler
 // Ce que dit le compagnon quand un jeu progresse (sans accord : valable
 // pour une fille comme pour un garçon).
 /** @type {Record<string, string>} */
+// voix: phrases
 const PROGRESS_CHEERS = {
   reading: 'Tu lis de mieux en mieux !',
   determinants: 'Les petits mots, tu les connais de mieux en mieux !',

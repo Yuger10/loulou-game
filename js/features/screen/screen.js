@@ -11,6 +11,7 @@ import { bindSpeakButtons, setHandler, speak } from '../../shared/ui/index.js';
 // seul un son « faux » jouait — aucune voix pendant le jeu lui-même
 // (juste au tout début, pour la consigne). Varié pour ne pas lasser.
 
+// voix: phrases
 const WRONG_HINTS = [
   'Pas tout à fait, regarde encore',
   'Essaie encore, tu vas trouver',

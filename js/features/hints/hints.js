@@ -270,6 +270,7 @@ if (typeof document !== 'undefined')
   );
 
 /* ---- utiliser un indice ---- */
+// voix: phrases
 const HINT_CHEERS = ['Tu peux le faire !', 'Je crois en toi !', 'Prends ton temps, tu vas trouver !'];
 function useHint() {
   if (!hint.on) return null;

@@ -47,6 +47,7 @@ import { bindQuit, gameHeader } from '../screen/index.js';
 import { setSeasonPreview } from '../seasons/index.js';
 import { bindUpdateCard, updateCardHTML } from '../update/index.js';
 import './storage-alert.js'; // message et carte quand l'enregistrement échoue
+import './voice-card.js'; // carte « Voix » : voix de synthèse, clips disponibles sans Internet
 
 /** @typedef {import('../../entities/game-state/index.js').GameState} GameState */
 /** @typedef {Partial<GameState>} PlayerState la partie d'un joueur : l'état courant, ou une partie lue dans le stockage */

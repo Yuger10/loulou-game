@@ -618,4 +618,4 @@ async function selftest(main) {
   return 0;
 }
 
-module.exports = { selftest };
+module.exports = { MP3, fakeService, selftest };

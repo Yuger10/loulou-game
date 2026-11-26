@@ -90,7 +90,7 @@ Registre des tracks Conductor, **dans l'ordre d'implémentation**. Feuille de ro
 
 ---
 
-- [ ] **Track: Une voix plus naturelle : phrases enregistrées à l'avance par une voix neuronale, la voix de l'appareil en repli (demande du parent)**
+- [~] **Track: Une voix plus naturelle : phrases enregistrées à l'avance par une voix neuronale, la voix de l'appareil en repli (demande du parent)**
 *Link: [./tracks/voix-naturelle_20261122/](./tracks/voix-naturelle_20261122/)*
 
 ---

@@ -51,6 +51,7 @@ const SLICES = [
       'js/shared/ui/handlers.js',
       'js/shared/ui/icons.js',
       'js/shared/ui/sound.js',
+      'js/shared/ui/voice-clips.js',
       'js/shared/ui/voice.js',
       'js/shared/ui/listen.js',
       'js/shared/ui/feedback.js',
@@ -369,7 +370,11 @@ const SLICES = [
   {
     id: 'parents',
     layer: 'features',
-    files: ['js/features/parents/parents.js', 'js/features/parents/storage-alert.js'],
+    files: [
+      'js/features/parents/parents.js',
+      'js/features/parents/storage-alert.js',
+      'js/features/parents/voice-card.js',
+    ],
     css: ['js/features/parents/parents.css'],
   },
   { id: 'rest', layer: 'features', files: ['js/features/rest/rest.js'], css: ['js/features/rest/rest.css'] },
