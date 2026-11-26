@@ -26,7 +26,7 @@ Tests de 1a aux paliers 4 et 5 : la « règle de repli 1a » de la spec (section
 - [x] 1.8 Indices H1 (`registerHints('problems', …)`, `setHintQuestion` à chaque étape notée) ; `test/companions.test.js` vert.
 - [x] 1.9 `PROGRESS_CHEERS.problems`, `SKILL_GROUPS` groupe `calcul`.
 - [x] 1.10 `bun run typecheck` et `bun run check` verts ; S1, S2, S4 prouvés sur ce contenu (et paliers 4 et 5 joués avec la table du palier 3) ; S7 proposé à Amrou.
-- [ ] 1.11 Doc : PRD (section de la version), `conductor/tracks.md` (phase 1a cochée), `README.md` si la structure l'exige ; livraison `bun run release patch "…"`.
+- [x] 1.11 Doc : PRD (section de la version), `conductor/tracks.md` (phase 1a cochée), `README.md` si la structure l'exige ; livraison `bun run release patch "…"`.
 
 ### Phase 1b : « Le trésor raconté », paliers 4 et 5, PR 1b
 
@@ -36,7 +36,7 @@ Tests de 1a aux paliers 4 et 5 : la « règle de repli 1a » de la spec (section
 - [x] 1b.2 `problemsRound` : clés 4 et 5.
 - [x] 1b.3 Fenêtre : égalité (palier 4 sous le schéma dans `.pb-eq-text`, forme et exemples du critère 9, palier 5 seule, jugée au toucher du signe quand les deux cases sont pleines, critère 10), deux étapes, possible ; exemple résolu et jumeau de ces types (N1).
 - [x] 1b.4 Indices H1 des nouvelles étapes ; `test/companions.test.js` vert.
-- [ ] 1b.5 `bun run typecheck` et `bun run check` verts ; S1, S2, S4 prouvés sur toute la table ; doc (PRD, `conductor/tracks.md`) ; livraison `bun run release patch "…"`.
+- [x] 1b.5 `bun run typecheck` et `bun run check` verts ; S1, S2, S4 prouvés sur toute la table ; doc (PRD, `conductor/tracks.md`) ; livraison `bun run release patch "…"`.
 
 ### Phase 2 : « Le code secret » (`code`), PR 2
 
@@ -48,7 +48,7 @@ Tests de 1a aux paliers 4 et 5 : la « règle de repli 1a » de la spec (section
 - [x] 2.6 Indices H2 ; `test/companions.test.js` vert.
 - [x] 2.7 `PROGRESS_CHEERS.code`, `SKILL_GROUPS` groupe `logique`.
 - [x] 2.8 `bun run typecheck` et `bun run check` verts ; S1, S3, S4 prouvés ; S8 proposé à Amrou.
-- [ ] 2.9 Doc : PRD, `conductor/tracks.md` ; livraison `bun run release patch "…"`.
+- [x] 2.9 Doc : PRD, `conductor/tracks.md` ; livraison `bun run release patch "…"`.
 
 ### Phase 3 : l'île, PR 3 (après 1a, 1b, 2, `saison3-ouverture` et `monde-dumplings` : table P0 de la spec)
 
@@ -61,7 +61,7 @@ Tests de 1a aux paliers 4 et 5 : la « règle de repli 1a » de la spec (section
 - [x] 3.5 `squishies.js` (Q1 : les trois lignes de la série), `js/entities/squishy/squishies-s3.js` (les 6 modèles dans `SQUISHIES_S3`) et `js/features/squishies/squishy-art-s3.js` (6 entrées de `SQ_ART_S3`, type `SqArt`, sur le modèle de `'lyre-doree'` de `squishy-art.js`, ligne 438 ; `squishy-art.js` n'est pas modifié).
 - [x] 3.6 `js/features/story/story-s3.js` (C1 dans `STORY_S3` ; `story.js` n'est pas modifié ; la carte de Zap vient de `zapMapSVG`, `zapMapSay`, `zapMapPieces`, rien à stocker), `episodes.js` (P1 à P3), `music.js` (M1).
 - [x] 3.7 `bun run sync`, `bun run test niveaux`, `bun run typecheck` (les entrées tiennent dans les types de Y1, aucun `@typedef` étendu ; tout le code vérifié en strict), `bun run check` vert ; S5, S6 prouvés ; S9, S10 proposés à Amrou et à la joueuse.
-- [ ] 3.8 Doc : PRD (idée de la joueuse), `conductor/niveaux.md` (l'île existe dans le jeu), `conductor/tracks.md` (track cochée) ; livraison `bun run release track "…"`.
+- [x] 3.8 Doc : PRD (idée de la joueuse), `conductor/niveaux.md` (l'île existe dans le jeu), `conductor/tracks.md` (track cochée) ; livraison `bun run release track "…"`.
 
 ## Preuves
 
@@ -69,18 +69,13 @@ Chaque affirmation pointe vers une preuve : commande exacte, code de sortie, che
 
 | Ligne du smoke test | Résultat | Niveau | Preuve |
 |---|---|---|---|
-| S1 (1a) | à faire | test-verified | `bun run test games` (exit 0) : `problems` gagné aux paliers 1 à 5, paliers 4 et 5 sur la ligne 3 |
-| S1 (1b) | à faire | test-verified | `bun run test games` (exit 0) : `problems` gagné aux paliers 1 à 5 sur toute la table T1, `INDEPENDENT` couvre `deuxEtapes` et `possible` |
-| S1 (2) | à faire | test-verified | `bun run test games` (exit 0) : `code` gagné aux paliers 1 à 5 |
-| S2 (1a) | à faire | test-verified | `bun run test problems` (exit 0) : critères 1 à 9 (sans l'égalité du palier 4), 11 à 13, 16 à 20, bloc « repli 1a : paliers 4 et 5 = ligne 3 » |
-| S2 (1b) | à faire | test-verified | `bun run test problems` (exit 0) : égalité du palier 4 (critère 9), critères 10, 14, 15, et 2, 11, 16, 19 pour les nouveaux types ; bloc de repli remplacé par les clés 4 et 5 |
-| S3 | à faire | test-verified | `bun run test code` (exit 0) |
-| S4 (1a) | à faire | test-verified | `bun run test companions` (exit 0) : indices H1 des types des lignes 1 à 3 |
-| S4 (1b) | à faire | test-verified | `bun run test companions` (exit 0) : indices H1 « Égalité » et « possible », étapes de `deuxEtapes` |
-| S4 (2) | à faire | test-verified | `bun run test companions` (exit 0) : indices H2 de `code` |
-| S5 | à faire | test-verified | `bun run test coffres` (exit 0) |
-| S6 | à faire | test-verified | `bun run check` (exit 0) |
-| S7 à S10 | à faire | runtime-verified | retour d'Amrou et de la joueuse, noté ici |
+| S1 | réussi | test-verified | `bun run test games` (sortie 0) : `problems` et `code` gagnés aux paliers 1 à 5, 3 tirages ; `INDEPENDENT.problems` recalcule le résultat depuis `#pb-root` (dont `deuxEtapes` et `possible`), `INDEPENDENT.code` résout le cadenas par permutations |
+| S2 | réussi | test-verified | `bun run test problems` : rouge sans le changement (sortie 1, `ReferenceError: pbOpen is not defined`, 5 suites sur 5), vert avec (sortie 0), prouvé par `prove-red-green.sh --base origin/track/monde-dumplings`. Critères 1 à 20 sur toute la table T1 (1a et 1b livrées ensemble : le bloc « repli 1a » n'a pas lieu d'être) |
+| S3 | réussi | test-verified | `bun run test code` : rouge d'abord (sortie 1, `#code-root` absent : le jeu n'existait pas), vert ensuite (sortie 0) : 200 cadenas par palier, solution unique, chaque indice nécessaire |
+| S4 | réussi | test-verified | `bun run test companions` (sortie 0) : 2 indices distincts par moment, aucune réponse écartée, jeux gagnables après les indices ; `test/problems-indices.test.js` vérifie H0 et H1 mot pour mot, `test/code.test.js` H2 |
+| S5 | réussi | test-verified | `bun run test coffres` : rouge d'abord (32 vérifications en échec, `WORLDS.coffres` absent), vert ensuite (sortie 0) |
+| S6 | réussi | test-verified | `bun run test niveaux` puis `bun run check` (sortie 0, 62 suites) ; `new-violations.sh` : 0 violation ajoutée (aucun fichier nouveau au-delà de 300 lignes) |
+| S7 à S10 | à faire | runtime-verified | à juger par Amrou et la joueuse sur téléphone ; l'agent a seulement regardé des captures à 360 px de large (écrans figés depuis jsdom) et une planche des dessins |
 
 ## Journal de décisions
 
@@ -88,6 +83,19 @@ En ajout seul : une décision fausse reçoit une nouvelle ligne qui la remplace,
 
 | # | Décision | Décidé par | Pourquoi | Preuve | Résultat |
 |---|---|---|---|---|---|
+| 17 | Une seule PR pour toute la track (1a, 1b, 2 et 3 ensemble), un seul `bun run release track` ; le bloc de test « repli 1a » n'est pas écrit, les clés 4 et 5 sont testées directement | Amrou | consigne du 27/11/2026, qui prime sur le découpage du plan | corps de la PR | gardée |
+| 18 | Fichiers plus fins que Z1 : 10 fichiers pour `problems`, 4 pour `code`, tests en 10 suites | agent | le job CI « violations ajoutées » plafonne un nouveau fichier à 300 lignes et une fonction à 50 (checklists, section qualité) | `new-violations.sh` : 0 ajoutée | à juger |
+| 19 | `WORLDS.coffres` est dans `worlds-s3.js` (`WORLDS_S3`), pas dans `worlds.js` | agent | fichier créé par `monde-crayons` après l'écriture de la spec (`conductor/checklist-ile.md` section 2 bis) | `test/coffres-ile.test.js` | gardée |
+| 20 | Les essais ne sont pas remis à neuf à la relance : `setupLives` une fois par mission (`problems` et `code`) | agent | l'exemple du critère 10 dit « il reste 2 essais, un autre problème arrive », et le critère 12 parle d'essais qui s'épuisent ; les autres jeux rappellent `setupLives` à chaque relance (hors périmètre, signalé à Amrou) | `test/problems-paliers.test.js`, `test/code-ecran.test.js` | à juger |
+| 21 | Règle du nombre 1 : « une », « un » pour un nombre d'objets ; les opérandes d'un calcul restent en chiffres (N1 « 1 plus 4, ça fait 5 », H1 « avance encore de 1 ») | agent | « avance encore de une » n'est pas du français ; option la plus prudente | `test/problems-indices.test.js` | à juger |
+| 22 | La voix : l'énoncé et le texte du compagnon partent en une seule phrase (`speak` coupe la précédente) ; les vignettes sautent tour à tour en CSS, sans dépendre de la voix | agent | `js/shared/ui/voice.js` : `speechSynthesis.cancel()` à chaque `speak` | `test/problems-modes.test.js` | gardée |
+| 23 | Jumeau de type `possible` : le compagnon dit aussi « J'ai dessiné l'histoire. À toi de calculer ! » | agent | N1 ne donne pas d'autre phrase pour la fin du dessin | spec, N1 | à juger |
+| 24 | Symboles S2 : champ `gender` en plus de `emoji`, `name`, `of` | agent | la table S2 a une colonne Genre, et H2 accorde « il », « elle », « collés », « collées » | `test/code.test.js` | gardée |
+| 25 | Une partie posée dans l'autre case « partie » est acceptée, et la barre prend la longueur du nombre posé ; un objet sorti du coffre peut y retourner avant « C'est fait » | agent | critère 8 (parties interchangeables) ; aucune erreur « bête » | `test/problems-ecran.test.js` | à juger |
+| 26 | Étape allumée : le choix de l'opération allume « Calculer » ; « est-ce possible ? » allume « Répondre » | agent | N1 range l'opération dans le pas « Calculer » ; `possible` n'a pas de calcul | `test/problems-paliers.test.js` | à juger |
+| 27 | Pour tenir sur un écran : au palier 2, le coffre se cache quand les barres apparaissent ; dans un problème à deux étapes, l'étape 1 finie ne garde que son égalité | agent | captures à 360 px : la fenêtre devenait trop haute | captures de l'agent | à juger (S7) |
+| 28 | La mémoire du dernier type se met à jour quand le problème est montré à l'enfant : à l'ouverture pour un problème seul, à la fin de l'exemple pour un jumeau | agent | critère 2 : « mis à jour à chaque problème montré », jamais l'exemple | `test/problems.test.js` | gardée |
+| 29 | Série « Coffres » sans couleur de boîte propre (`SQ_BOX_COLORS` non touché) ; chiffres de la molette de Kadi tracés en chemins, sans balise `text` | agent | spec Q1 ; `test/smoke.test.js` interdit `<text>` dans un dessin de personnage | `test/smoke.test.js` | gardée |
 | 16 | Taille, remplace #13 (et l'emplacement des dessins de squishies de #5 et #10) : `max-lines` à 800 ; `difficulty-s3.js` (et non `rounds-saison3.js`, `tierValue` déjà exporté) ; personnages, dessins, squishies et leurs dessins, chapitre et paysage dans les fichiers `-s3` de `saison3-ouverture` (`CHARACTERS_S3`, `season3Art(ART, kit)`, `SQUISHIES_S3`, `SQ_ART_S3`, `STORY_S3`, `ISLE_SCENERY_S3`) ; citations de `rhythmRound` et `nestingRound` recalées dans `difficulty-s2.js` | spec | la v66.16 a posé le modèle `-s2` (brief de rebase 5, règle « 2 bis ») | spec, D34, Z1, K1, Q1, C1, W1 ; `conductor/checklist-ile.md` section « 2 bis » | gardée |
 | 1 | Trois phases livrables seules : `problems`, `code`, puis l'île | politique | brief de la saison 3 : chaque mini-jeu seul, puis l'île | spec, « Politiques » | gardée |
 | 11 | Les deux slices de mini-jeux entrent dans `include` de `tsconfig.strict.json` dans la PR qui les crée (1a, 2) | spec | règle des checklists | spec, Y1 | gardée |
@@ -107,4 +115,7 @@ En ajout seul : une décision fausse reçoit une nouvelle ligne qui la remplace,
 
 ## Écarts et non vérifié
 
-Rien encore. Non vérifié à l'écriture de la spec : les trois articles de recherche cités (accès refusé ou serveur injoignable).
+- Écart au plan : une seule PR au lieu de quatre, donc pas de livraison intermédiaire `release patch` ni de bloc de test « repli 1a » (décision 17).
+- Écart à Z1 : découpage en fichiers plus fins (décision 18) ; `WORLDS.coffres` dans `worlds-s3.js` (décision 19).
+- Non vérifié : S7 à S10 (téléphone, ressenti de l'enfant, noms, dessins), à juger par Amrou et la joueuse. Les trois articles de recherche cités par la spec restent non relus (accès refusé ou serveur injoignable).
+- Signalé, hors périmètre : dans les autres mini-jeux, `setupLives` est rappelé à chaque relance, donc les essais repartent à neuf après une erreur (décision 20).

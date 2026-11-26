@@ -164,6 +164,7 @@ Chaque mini-jeu a maintenant son propre niveau pour chaque enfant (`js/adaptive.
 | v67 | Ouverture de la saison 3 « La Grande Expédition » (cachée jusqu'à la première île) |
 | v68 | L'Île des Crayons (saison 3, île 1) : mini-jeux « Trace avec ton doigt » et « Mesure les crayons » |
 | v69 | L'Île des Squishy Dumplings (saison 3, île 2) : mini-jeux « Les paniers de dix » et « La commande du chef » |
+| v70 | L'Île des Coffres (saison 3, île 3) : mini-jeux « Le trésor raconté » et « Le code secret » |
 
 ---
 

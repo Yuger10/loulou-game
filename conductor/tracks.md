@@ -130,7 +130,7 @@ Registre des tracks Conductor, **dans l'ordre d'implémentation**. Feuille de ro
 
 ---
 
-- [ ] **Track: Saison 3, île 3 : 🗝️ L'Île des Coffres (idée de la joueuse), niveau 86**
+- [x] **Track: Saison 3, île 3 : 🗝️ L'Île des Coffres (idée de la joueuse), niveau 86 (v70)**
 *Link: [./tracks/monde-coffres_20261122/](./tracks/monde-coffres_20261122/)*
 
 ---
