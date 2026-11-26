@@ -45,21 +45,21 @@ Trois phases, chacune une PR livrable seule (chaque merge est en production une 
 - [x] 23. `STORY_S3.crayons` (`js/features/story/story-s3.js`), `EPISODES.crayons` (`js/features/story/episodes.js`), les 6 modèles dans `SQUISHIES_S3` (`js/entities/squishy/squishies-s3.js`), série `papeterie` dans `SQUISHY_SERIES`, `SQUISHY_SERIES_ORDER` et `SQUISHY_ISLAND_SERIES.crayons` (une ligne chacune, `js/entities/squishy/squishies.js`) ; les 6 dessins dans `SQ_ART_S3` (`js/features/squishies/squishy-art-s3.js`), sur le modèle de `'tambour-mochi'`, et la ligne `SQ_BOX_COLORS.papeterie` dans `js/features/squishies/squishy-art.js` (spec D19). Lignes 41 à 46 vertes. `wc -l` des fichiers touchés sous 800 (estimations de la spec D21).
 - [x] 23 bis. Test rouge de la ligne 48 dans `test/crayons.test.js` (clés et prénoms en double, lus dans le texte source, et tables indexées par clé de jeu qui sont des objets simples) ; il doit échouer si l'on ajoute temporairement une seconde ligne `cahier: {` dans `items.js` (essai local, jamais commité), puis passer.
 - [x] 24. Tests existants (spec D16, ligne 47) : `test/saison2.test.js:100` et `:126-129`, `test/niveaux.test.js:202-207`. `bun run test saison3` reste vert (il retire les vraies îles de la saison 3 avant ses essais).
-- [ ] 25. `bun run typecheck` vert (les données de l'île respectent `World`, `Character`, `Item`, `CraftedItem`, `Squishy`, spec D20), `bun run check` vert, puis `bun run verify`.
-- [ ] 26. Doc : `conductor/niveaux.md` (« Dans le jeu, aujourd'hui » : l'Île des Crayons existe), `conductor/tracks.md` (track faite), section du PRD (idée de la joueuse). Livraison : `bun run release track "L'Île des Crayons"`, PR avec résumé et risques, `agent-generated: true`, étiquette `agent`.
+- [x] 25. `bun run typecheck` vert (les données de l'île respectent `World`, `Character`, `Item`, `CraftedItem`, `Squishy`, spec D20), `bun run check` vert, puis `bun run verify`.
+- [x] 26. Doc : `conductor/niveaux.md` (« Dans le jeu, aujourd'hui » : l'Île des Crayons existe), `conductor/tracks.md` (track faite), section du PRD (idée de la joueuse). Livraison : `bun run release track "L'Île des Crayons"`, PR avec résumé et risques, `agent-generated: true`, étiquette `agent`.
 - [ ] 27. Ligne 👤 S10 avec la joueuse : noms, dessins, série ; un changement de nom se fait dans les données et les tests, noté au journal de décisions. **En attente d'Amrou** : tâche humaine, la vérification manuelle est décrite dans le corps de la PR.
 
 ## Preuves
 
 | Ligne du smoke test | Résultat | Niveau | Preuve |
 |---|---|---|---|
-| S1 | à faire | test-verified | `bun run test crayons` (exit 0) |
-| S2 | à faire | test-verified | `bun run test games`, `bun run test companions` (exit 0) |
-| S3 | à faire | test-verified | `bun run test crayons` (exit 0) |
-| S4 | à faire | test-verified | `bun run test crayons` (exit 0) |
-| S5 | à faire | test-verified | `bun run test saison2`, `bun run test niveaux`, `bun run test saison3` (exit 0) |
-| S6 | à faire | test-verified | `bun run check`, `bun run verify` (exit 0) |
-| S7 à S10 | à faire | runtime-verified | retour d'Amrou et de la joueuse dans la PR |
+| S1 | réussi | test-verified | `bun run test crayons` (exit 0) : `test/crayons.test.js`, `crayons-trace`, `crayons-trace-rates` ; rouge constaté avant le code (`prove-red-green.sh --base origin/track/saison3-ouverture` : sortie 1 sans le changement, 0 avec) |
+| S2 | réussi | test-verified | `bun run test games`, `bun run test companions` (exit 0) : `trace` et `length` gagnés à chaque palier, 3 tirages ; indices conformes |
+| S3 | réussi | test-verified | `bun run test crayons` (exit 0) : `crayons-length`, `crayons-length-ecran`, `crayons-length-indices` |
+| S4 | réussi | test-verified | `bun run test crayons` (exit 0) : `crayons-ile`, `crayons-histoire`, `crayons-cles` (rouge constaté avec une seconde ligne `cahier: {` posée puis retirée : « en double : cahier ») |
+| S5 | réussi | test-verified | `bun run test saison2`, `bun run test niveaux`, `bun run test saison3` (exit 0) |
+| S6 | réussi | test-verified | `bun run check`, `bun run verify` (exit 0), et `new-violations.sh` (complexité, lint, env) : 0 ajoutée |
+| S7 à S10 | en attente d'Amrou | runtime-verified | retour d'Amrou et de la joueuse dans la PR (vérification manuelle décrite dans son corps) |
 
 ## Journal de décisions
 
@@ -92,3 +92,6 @@ En ajout seul : une décision fausse reçoit une nouvelle ligne qui la remplace,
 
 - La tolérance du tracé (R, `cover`, `wander`) est réglée par calcul : seul l'essai au doigt de la joueuse (S7) dira si elle est juste.
 - Pointer Events et le repli tactile sur un vieil iPad (S8) : aucun outil du dépôt ne l'atteint.
+- S7 à S10 (👤) ne sont pas vérifiés. L'agent a seulement regardé des captures d'écran en largeur de téléphone (Chromium sans écran, hors dépôt) : les deux jeux, l'île, la carte, les 4 personnages, les 6 squishies, la fenêtre « Énigme résolue ». Aucun essai au doigt.
+- La PR est empilée sur celle de `saison3-ouverture` (#104) : tant qu'elle n'est pas mergée, le diff contient ses commits, et la CI voit sa zone protégée (`.github/CODEOWNERS`).
+- Le numéro 68 suppose que la v67 de `saison3-ouverture` arrive sur `main` avant ; si une autre livraison prend 67 ou 68 entre-temps, le numéro se reprend à la mise à jour de la branche (`bun run release` ne se relance pas : corriger `version.js`, puis `bun run sync`).
