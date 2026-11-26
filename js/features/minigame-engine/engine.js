@@ -40,7 +40,7 @@ import {
 import { markSeen, renderBadge } from '../bag/index.js';
 import { maybeTeamOpening, teamCheerBy, teamWinExtras } from '../companion-team/index.js';
 import { queueGain } from '../gains/index.js';
-import { hintNudge, hintPolicy, setHintCountable } from '../hints/index.js';
+import { explainClear, explainShow, hintNudge, hintPolicy, setHintCountable } from '../hints/index.js';
 import { checkNewIsland, currentChar, markHelped, renderLagon } from '../island/index.js';
 import { partyAfterWin, partyScore, passTurn } from '../party/index.js';
 import { questProgress } from '../quests/index.js';
@@ -103,20 +103,50 @@ function clearPendingRetry() {
     pendingRetryTimeout = null;
   }
 }
-/** @param {() => void} fn */
-function scheduleRetry(fn) {
+/**
+ * @param {() => void} fn
+ * @param {number} [delay] EXPLAIN_MS quand une explication est affichée
+ */
+function scheduleRetry(fn, delay = 900) {
   clearPendingRetry();
   pendingRetryTimeout = setTimeout(() => {
     pendingRetryTimeout = null;
     forgetSpokenHint();
     fn();
-  }, 900);
+  }, delay);
+}
+
+/* Les erreurs expliquées (track erreurs-expliquees) : quand un jeu a inscrit
+   ses explications (registerExplain, js/features/hints) et passe la mauvaise
+   réponse (`wrong`), une bulle dit pourquoi pendant EXPLAIN_MS, tous boutons
+   fermés ; la suite (autre question, écran « Raté ! », ou fin du verrou si la
+   question continue) attend ce délai. Le moteur possède ces minuteries et les
+   annule si la fenêtre se ferme ou change : rien ne réapparaît par-dessus un
+   autre écran. */
+const EXPLAIN_MS = 4000;
+/** @type {ReturnType<typeof setTimeout> | null} */
+let pendingExplainEnd = null;
+function clearExplainEnd() {
+  if (pendingExplainEnd) {
+    clearTimeout(pendingExplainEnd);
+    pendingExplainEnd = null;
+  }
+}
+// ce qui suit une explication sans relance : « Raté ! », ou la fin du verrou
+/** @param {() => void} fn */
+function afterExplain(fn) {
+  clearExplainEnd();
+  pendingExplainEnd = setTimeout(() => {
+    pendingExplainEnd = null;
+    fn();
+  }, EXPLAIN_MS);
 }
 
 /**
  * @typedef {object} LoseLifeOptions
  * @property {boolean} [disable] false : le bouton fautif reste cliquable
  * @property {() => void} [onRetry] une nouvelle question plutôt que la même (anti-devinette)
+ * @property {unknown} [wrong] la mauvaise réponse touchée
  */
 /**
  * Une erreur : le bouton fautif (ou rien, temps écoulé) et les options du jeu.
@@ -137,23 +167,27 @@ function loseLife(target, opts = {}) {
 
   playSound('wrong');
   vibrate(90);
-  speakWrongHint();
+  // une seule phrase : l'explication, sinon l'encouragement générique. Pas
+  // d'explication sans bouton touché (temps écoulé : rien de faux n'a été dit).
+  const shown = el !== null && opts.wrong !== undefined && explainShow(opts.wrong);
+  if (shown) clearActiveTimer(); // le minuteur repart avec la question suivante
+  else speakWrongHint();
   if (el) loseLifeShake(el, opts);
-  if (lives === Infinity) return loseLifeUnlimited(el, opts);
+  if (lives === Infinity) return loseLifeUnlimited(el, opts, shown);
   lives--;
   renderLives();
   flashModal('ko');
   if (lives <= 0) {
-    setTimeout(onMissionFail, 520);
+    // l'écran « Raté ! » attend la fin de l'explication, sinon elle serait coupée
+    if (shown) afterExplain(onMissionFail);
+    else setTimeout(onMissionFail, 520);
     return true;
   }
   showToast(lives === 1 ? '⚠️ Dernier essai !' : `${lives} essais restants`);
   // même logique à essais limités : une nouvelle question plutôt que
   // de réduire le choix restant jusqu'à la seule bonne réponse.
-  if (opts.onRetry) {
-    scheduleRetry(opts.onRetry);
-    return false;
-  }
+  if (opts.onRetry) scheduleRetry(opts.onRetry, shown ? EXPLAIN_MS : 900);
+  else if (shown) afterExplain(explainClear); // la question continue : le verrou se lève
   return false;
 }
 
@@ -175,9 +209,10 @@ function loseLifeShake(el, opts) {
  * Une erreur à essais illimités : jamais ratée.
  * @param {HTMLElement | null} el
  * @param {LoseLifeOptions} opts
+ * @param {boolean} shown une explication est affichée
  * @returns {false}
  */
-function loseLifeUnlimited(el, opts) {
+function loseLifeUnlimited(el, opts, shown) {
   // Avec seulement 2-3 choix et des essais illimités, laisser le
   // bouton fautif se réactiver permettrait de deviner la bonne
   // réponse PAR ÉLIMINATION, sans aucune compréhension (observé en
@@ -185,16 +220,24 @@ function loseLifeUnlimited(el, opts) {
   // le jeu le permet (`opts.onRetry`), on propose une NOUVELLE
   // question à la place, jamais la même à éliminer petit à petit.
   if (opts.onRetry) {
-    scheduleRetry(opts.onRetry);
+    scheduleRetry(opts.onRetry, shown ? EXPLAIN_MS : 900);
     return false;
   }
-  if (el && 'disabled' in el && opts.disable !== false) {
-    // île 1 : la mauvaise réponse se referme mais on peut continuer
-    setTimeout(() => {
-      el.disabled = false;
-      el.classList.remove('ko');
-    }, 700);
-  }
+  // île 1 : la mauvaise réponse se referme mais on peut continuer
+  const reopen =
+    el && 'disabled' in el && opts.disable !== false
+      ? () => {
+          el.disabled = false;
+          el.classList.remove('ko');
+        }
+      : null;
+  // avec une explication, le verrou dure EXPLAIN_MS : tout se rouvre à la fin
+  if (shown)
+    afterExplain(() => {
+      explainClear();
+      if (reopen) reopen();
+    });
+  else if (reopen) setTimeout(reopen, 700);
   return false;
 }
 
@@ -298,6 +341,25 @@ function stepOk(target) {
   spark.textContent = pickRandom(['✨', '⭐', '💫', '👍']);
   if (el.appendChild) el.appendChild(spark);
   setTimeout(() => spark.remove(), 800);
+}
+
+/* Jamais deux fois la même question d'affilée : après une erreur expliquée,
+   la bonne réponse vient d'être montrée, la revoir serait une devinette.
+   `draw` tire une question, `keyOf` donne sa clé (ce qui fixe la réponse),
+   `last` est la clé de la question précédente. Après 8 tirages identiques,
+   `fallback` change une valeur de la dernière question tirée. */
+/**
+ * @template Q
+ * @param {() => Q} draw
+ * @param {(q: Q) => string} keyOf
+ * @param {string} last
+ * @param {(q: Q) => Q} fallback
+ * @returns {Q}
+ */
+function drawOther(draw, keyOf, last, fallback) {
+  let q = draw();
+  for (let k = 0; k < 8 && keyOf(q) === last; k++) q = draw();
+  return keyOf(q) === last ? fallback(q) : q;
 }
 
 /* Pour les tests automatiques : chaque mini-jeu note ce qu'il faut toucher
@@ -602,6 +664,7 @@ function winBindButtons() {
 onModalChange(() => {
   clearActiveTimer();
   clearPendingRetry();
+  clearExplainEnd();
 });
 onModalClose(() => {
   forgetSpokenHint();
@@ -609,6 +672,8 @@ onModalClose(() => {
 
 export {
   clearActiveTimer,
+  drawOther,
+  EXPLAIN_MS,
   flashModal,
   livesBar,
   loseLife,

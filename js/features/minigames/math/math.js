@@ -7,9 +7,10 @@ import { mathBounds } from '../../../entities/difficulty/index.js';
 import { pickRandom, random, shuffle } from '../../../shared/lib/index.js';
 import { emojiWord, openModal, setHandler } from '../../../shared/ui/index.js';
 import { gameDiff } from '../../adaptive/index.js';
-import { registerHints, setHintQuestion } from '../../hints/index.js';
+import { registerExplain, registerHints, setHintQuestion } from '../../hints/index.js';
 import {
   clearActiveTimer,
+  drawOther,
   flashModal,
   livesBar,
   loseLife,
@@ -25,8 +26,15 @@ import { bindQuit, gameHeader } from '../../screen/index.js';
 
 const MATH_EMOJIS = ['⭐', '🐚', '🌸', '🦪', '🐠', '🦋', '🍎', '🎈'];
 
-function makeMathProblem() {
-  const { max, allowMinus } = mathBounds(gameDiff());
+/** @typedef {{ a: number, b: number, op: string, result: number }} MathProblem */
+/** @typedef {MathProblem & { emoji: string }} MathQuestion */
+
+/**
+ * @param {number} dd le palier de difficulté
+ * @returns {MathProblem}
+ */
+function makeMathProblem(dd) {
+  const { max, allowMinus } = mathBounds(dd);
   const isMinus = allowMinus && random() < 0.5;
   let a, b, result, op;
   if (isMinus) {
@@ -44,10 +52,49 @@ function makeMathProblem() {
   return { a, b, op, result };
 }
 
+// la question précédente : une relance en tire toujours une AUTRE (anti-devinette)
+let mathLast = '';
+const mathKey = (/** @type {MathProblem} */ p) => `${p.a} ${p.op} ${p.b}`;
+/**
+ * Après 8 tirages identiques : la même opération avec un nombre voisin, dans le palier.
+ * @param {MathProblem} p
+ * @param {number} max
+ * @returns {MathProblem}
+ */
+function mathOther(p, max) {
+  let { a, b } = p;
+  if (p.op === '+') {
+    if (a + b + 1 <= max) b++;
+    else if (b > 1) b--;
+    else a--;
+    return { a, b, op: p.op, result: a + b };
+  }
+  if (b > 1) b--;
+  else if (b + 1 < a) b++;
+  else a++;
+  return { a, b, op: p.op, result: a - b };
+}
+/**
+ * Une opération, jamais la même que la précédente (clé : « a op b »).
+ * @param {number} dd le palier de difficulté
+ * @returns {MathProblem}
+ */
+function mathQuestion(dd) {
+  const { max } = mathBounds(dd);
+  const p = drawOther(
+    () => makeMathProblem(dd),
+    mathKey,
+    mathLast,
+    (x) => mathOther(x, max),
+  );
+  mathLast = mathKey(p);
+  return p;
+}
+
 function renderMath() {
   setupLives('math');
   const emoji = pickRandom(MATH_EMOJIS);
-  const { a, b, op, result } = makeMathProblem();
+  const { a, b, op, result } = mathQuestion(gameDiff());
 
   const options = mathChoices(result);
 
@@ -89,7 +136,7 @@ function renderMath() {
         flashModal('ok');
         winSoon();
       } else {
-        loseLife(btn, { onRetry: renderMath });
+        loseLife(btn, { onRetry: renderMath, wrong: Number(btn.dataset.v) });
       }
     });
   });
@@ -118,7 +165,7 @@ const mathGroup = (n, emoji) =>
 // Indices (v52). Addition : 1. tout compter ensemble ; 2. partir du premier
 // groupe et continuer (« il y en a déjà 4… 5… »). Soustraction : 1. barrer ceux
 // qui partent ; 2. ils sont barrés, il reste à compter. Jamais le résultat.
-/** @param {{ a: number, b: number, op: string, result: number, emoji: string }} q */
+/** @param {MathQuestion} q */
 function mathHints(q) {
   const word = emojiWord(q.emoji, true) || 'images';
   const g1 = '.math-illustration .math-group:first-child',
@@ -151,6 +198,46 @@ function mathHints(q) {
   ];
 }
 
+// Explication d'une erreur (track erreurs-expliquees) : l'opération confondue
+// (ajouter au lieu d'enlever), ou un résultat trop petit ou trop grand. Le
+// résultat s'écrit dans la case, et le dessin se compte : on continue après le
+// premier groupe (addition), ou on barre ceux qui partent (soustraction).
+/**
+ * @param {MathQuestion} q
+ * @param {number} v le nombre touché
+ * @returns {import('../../hints/index.js').Explain}
+ */
+function mathExplain(q, v) {
+  const { a, b, result: r } = q;
+  const g1 = '.math-illustration .math-group:first-child',
+    g2 = '.math-illustration .math-group:last-child';
+  const fill = { sel: '.eq-q', text: String(r) },
+    glow = solSel('.num-btn', 'v', r);
+  if (q.op === '+') {
+    const say =
+      v === a - b
+        ? `On ajoute ${b}, on n'enlève pas. ${a} plus ${b}, ça fait ${r}.`
+        : `${v < r ? 'Il en manque' : "C'est trop"}. Je pars de ${a} et j'avance de ${b} : ${r}.`;
+    const marks = [{ sel: `${g1} span:last-child`, text: String(a) }].concat(
+      Array.from({ length: b }, (_, i) => ({ sel: `${g2} span:nth-child(${i + 1})`, text: String(a + i + 1) })),
+    );
+    return { say, fx: { fill, marks, glow } };
+  }
+  return {
+    say:
+      v === a + b
+        ? `On enlève ${b}, on n'ajoute pas. ${a} moins ${b}, ça fait ${r}.`
+        : `Il en reste ${v > r ? 'moins' : 'plus'}. J'enlève ${b} : il en reste ${r}.`,
+    fx: {
+      fill,
+      strike: `${g1} span:nth-last-child(-n+${b})`,
+      marks: Array.from({ length: r }, (_, i) => ({ sel: `${g1} span:nth-child(${i + 1})`, text: String(i + 1) })),
+      glow,
+    },
+  };
+}
+
 // inscription auprès du moteur de mini-jeux (js/features/minigame-engine)
 registerGame('math', renderMath);
 registerHints('math', mathHints);
+registerExplain('math', { wrong: mathExplain });

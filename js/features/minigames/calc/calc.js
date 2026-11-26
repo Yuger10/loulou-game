@@ -7,9 +7,10 @@ import { CALC_MULT_TABLES, calcBounds } from '../../../entities/difficulty/index
 import { pickRandom, random, shuffle } from '../../../shared/lib/index.js';
 import { openModal, setHandler } from '../../../shared/ui/index.js';
 import { gameDiff } from '../../adaptive/index.js';
-import { registerHints, setHintQuestion } from '../../hints/index.js';
+import { registerExplain, registerHints, setHintQuestion } from '../../hints/index.js';
 import {
   clearActiveTimer,
+  drawOther,
   flashModal,
   livesBar,
   loseLife,
@@ -23,7 +24,17 @@ import {
 } from '../../minigame-engine/index.js';
 import { bindQuit, gameHeader } from '../../screen/index.js';
 
-/** @param {number} dd le palier de difficulté */
+/** @typedef {{ sign: string, n: number }} CalcOp une étape : '+' ou '−', et le nombre */
+/**
+ * Une multiplication (`mult`), ou un nombre de départ et une ou deux étapes (`first`, `ops`).
+ * @typedef {{ text: string, result: number, mult: { a: number, b: number }, first?: undefined, ops?: undefined }
+ *   | { text: string, result: number, first: number, ops: CalcOp[], mult?: undefined }} CalcQuestion
+ */
+
+/**
+ * @param {number} dd le palier de difficulté
+ * @returns {CalcQuestion}
+ */
 function makeCalcProblem(dd) {
   const { max, terms, allowMinus, allowMulti } = calcBounds(dd);
   const useMulti = allowMulti && random() < 0.3;
@@ -60,10 +71,54 @@ function makeCalcProblem(dd) {
   return { text, result: value, first, ops };
 }
 
+// la question précédente : une relance en tire toujours une AUTRE (anti-devinette)
+let calcLast = '';
+/**
+ * Après 8 tirages identiques : le dernier nombre change d'un cran, dans le palier.
+ * @param {CalcQuestion} q
+ * @param {number} max
+ * @returns {CalcQuestion}
+ */
+function calcOther(q, max) {
+  if (q.mult) {
+    const a = q.mult.a,
+      b = (q.mult.b % 10) + 1;
+    return { text: `${a} × ${b}`, result: a * b, mult: { a, b } };
+  }
+  const ops = q.ops.map((o) => ({ ...o }));
+  const last = ops[ops.length - 1];
+  // un de plus, si le résultat reste entre 0 et max ; sinon un de moins
+  const moved = q.result + (last.sign === '+' ? 1 : -1);
+  const up = moved >= 0 && moved <= max;
+  last.n += up ? 1 : -1;
+  return {
+    text: `${q.first}${ops.map((o) => ` ${o.sign} ${o.n}`).join('')}`,
+    result: up ? moved : 2 * q.result - moved,
+    first: q.first,
+    ops,
+  };
+}
+/**
+ * Un calcul, jamais le même que le précédent (clé : son texte).
+ * @param {number} dd le palier de difficulté
+ * @returns {CalcQuestion}
+ */
+function calcQuestion(dd) {
+  const { max } = calcBounds(dd);
+  const q = drawOther(
+    () => makeCalcProblem(dd),
+    (x) => x.text,
+    calcLast,
+    (x) => calcOther(x, max),
+  );
+  calcLast = q.text;
+  return q;
+}
+
 function renderCalc() {
   setupLives('calc');
   const dd = gameDiff();
-  const problem = makeCalcProblem(dd);
+  const problem = calcQuestion(dd);
   const { text, result } = problem;
 
   const choices = new Set([result]);
@@ -102,7 +157,7 @@ function renderCalc() {
         flashModal('ok');
         winSoon();
       } else {
-        loseLife(btn, { onRetry: renderCalc });
+        loseLife(btn, { onRetry: renderCalc, wrong: Number(btn.dataset.v) });
       }
     });
   });
@@ -132,7 +187,7 @@ function calcStepHint(a, sign, n) {
   if (n >= 3) return `Pars de ${a} et ${plus ? 'avance' : 'recule'} de ${n} : ${step(1)}, ${step(2)}… Continue !`;
   return `Pars de ${a} et ${plus ? 'avance' : 'recule'} de ${n} pas.`;
 }
-/** @param {ReturnType<typeof makeCalcProblem>} q */
+/** @param {CalcQuestion} q */
 function calcHints(q) {
   if (q.mult) {
     const { a, b } = q.mult;
@@ -178,6 +233,79 @@ function calcHints(q) {
   ];
 }
 
+// Explication d'une erreur (track erreurs-expliquees) : la phrase dit l'erreur
+// reconnue (un paquet oublié, le nombre de départ compté, les dizaines…) et le
+// chemin jusqu'au résultat ; la bande l'écrit, et le résultat remplit la case.
+const calcStrip = (/** @type {Array<string | number>} */ cells) =>
+  `<span class="hint-strip">${cells.map((c) => `<i>${c}</i>`).join('')}</span>`;
+const calcWord = (/** @type {string} */ sign) => (sign === '+' ? 'plus' : 'moins');
+/**
+ * La phrase et la bande d'une multiplication.
+ * @param {{ a: number, b: number }} m
+ * @param {number} r
+ * @param {number} v
+ */
+function calcExplainMult(m, r, v) {
+  const { a, b } = m;
+  const packs = `${b} paquet${b > 1 ? 's' : ''} de ${a}`;
+  let say = `${a} fois ${b}, c'est ${packs} : ${r}.`;
+  if (v === r - a) say = `Il manque un paquet de ${a}. ${packs} : ${r}.`;
+  else if (v === r + a) say = `Un paquet de ${a} en trop. ${packs} : ${r}.`;
+  return { say, html: calcStrip(Array.from({ length: b }, (_, i) => a * (i + 1))) };
+}
+/**
+ * La phrase et la bande d'un calcul à 2 termes.
+ * @param {number} first
+ * @param {CalcOp} op
+ * @param {number} r
+ * @param {number} v
+ */
+function calcExplainStep(first, op, r, v) {
+  const { sign, n } = op;
+  const plus = sign === '+';
+  const tens = n - (n % 10),
+    units = n % 10;
+  const mid = plus ? first + tens : first - tens;
+  const byTens = [`${first} ${sign} ${tens} = ${mid}`, `${mid} ${sign} ${units} = ${r}`];
+  const steps = Array.from({ length: n + 1 }, (_, i) => (plus ? first + i : first - i));
+  const whole = [`${first} ${sign} ${n} = ${r}`];
+  const split = tens > 0 && units > 0;
+  // le nombre de départ compté comme un pas : le résultat tombe un cran avant
+  if (v === (plus ? r - 1 : r + 1))
+    return {
+      say: `On ne compte pas ${first} lui-même. ${first} ${calcWord(sign)} ${n}, ça fait ${r}.`,
+      html: calcStrip(n <= 5 ? steps : split ? byTens : whole),
+    };
+  if (split) return { say: `D'abord les dizaines : ${mid}. Puis les unités : ${r}.`, html: calcStrip(byTens) };
+  return {
+    say: `Je pars de ${first} et ${plus ? "j'avance" : 'je recule'} de ${n} : ${r}.`,
+    html: calcStrip(n <= 5 ? steps : whole),
+  };
+}
+/**
+ * @param {CalcQuestion} q
+ * @param {number} v le nombre touché
+ * @returns {import('../../hints/index.js').Explain}
+ */
+function calcExplain(q, v) {
+  const r = q.result;
+  let part;
+  if (q.mult) part = calcExplainMult(q.mult, r, v);
+  else if (q.ops.length > 1) {
+    const [op1, op2] = q.ops;
+    const mid = op1.sign === '+' ? q.first + op1.n : q.first - op1.n;
+    part = {
+      say: `D'abord ${q.first} ${calcWord(op1.sign)} ${op1.n}, ça fait ${mid}. Puis ${calcWord(op2.sign)} ${op2.n} : ${r}.`,
+      html: calcStrip([`${q.first} ${op1.sign} ${op1.n} = ${mid}`, `${mid} ${op2.sign} ${op2.n} = ${r}`]),
+    };
+  } else part = calcExplainStep(q.first, q.ops[0], r, v);
+  return {
+    say: part.say,
+    fx: { fill: { sel: '.eq-q', text: String(r) }, html: part.html, glow: solSel('.num-btn', 'v', r) },
+  };
+}
+
 // inscription auprès du moteur de mini-jeux (js/features/minigame-engine)
 registerGame('calc', renderCalc);
 registerHints('calc', calcHints);
+registerExplain('calc', { wrong: calcExplain });

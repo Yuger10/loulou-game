@@ -7,9 +7,10 @@ import { clockGranularity, clockOptions } from '../../../entities/difficulty/ind
 import { pickRandom, random, shuffle } from '../../../shared/lib/index.js';
 import { openModal, setHandler } from '../../../shared/ui/index.js';
 import { gameDiff } from '../../adaptive/index.js';
-import { registerHints, setHintQuestion } from '../../hints/index.js';
+import { registerExplain, registerHints, setHintQuestion } from '../../hints/index.js';
 import {
   clearActiveTimer,
+  drawOther,
   flashModal,
   livesBar,
   loseLife,
@@ -65,13 +66,31 @@ function timeLabel(hour, minute) {
   return `${h} h 45`;
 }
 
+/** @typedef {{ hour: number, minute: number, answer: string, options: string[] }} ClockQuestion */
+
+// la question précédente : une relance en tire toujours une AUTRE (anti-devinette)
+let clockLast = '';
+/**
+ * Une heure à lire, jamais la même que la précédente (clé : heure et minutes).
+ * @param {number} dd le palier de difficulté
+ */
+function clockQuestion(dd) {
+  const minutes = clockGranularity(dd);
+  const { hour, minute } = drawOther(
+    () => ({ hour: 1 + Math.floor(random() * 12), minute: pickRandom(minutes) }),
+    (x) => `${x.hour}-${x.minute}`,
+    clockLast,
+    (x) => ({ hour: (x.hour % 12) + 1, minute: x.minute }),
+  );
+  clockLast = `${hour}-${minute}`;
+  return { hour, minute, answer: timeLabel(hour, minute) };
+}
+
 function renderClock() {
   setupLives('clock');
   const dd = gameDiff();
   const minutes = clockGranularity(dd);
-  const hour = 1 + Math.floor(random() * 12);
-  const minute = pickRandom(minutes);
-  const answer = timeLabel(hour, minute);
+  const { hour, minute, answer } = clockQuestion(dd);
 
   const nOptions = clockOptions(dd);
   const options = new Set([answer]);
@@ -102,7 +121,7 @@ function renderClock() {
         stepOk(btn);
         flashModal('ok');
         winSoon();
-      } else loseLife(btn, { onRetry: renderClock });
+      } else loseLife(btn, { onRetry: renderClock, wrong: btn.dataset.v });
     });
   });
 }
@@ -125,7 +144,13 @@ function clockNumbersSVG() {
     return `<text x="${(50 + 37 * Math.cos(a)).toFixed(1)}" y="${(50 + 37 * Math.sin(a) + 4).toFixed(1)}" text-anchor="middle">${n}</text>`;
   }).join('')}</svg>`;
 }
-/** @param {{ hour: number, minute: number, answer: string, options: string[] }} q */
+// les nombres autour du cadran, une seule fois (indice 2 et explication d'une erreur)
+/** @param {HTMLElement} root */
+function clockShowNumbers(root) {
+  const face = root.querySelector('.clock-face');
+  if (face && !face.querySelector('.clock-nums')) face.insertAdjacentHTML('beforeend', clockNumbersSVG());
+}
+/** @param {ClockQuestion} q */
 function clockHints(q) {
   const mins = (/** @type {string} */ label) => (label.match(/h (\d+)/) || [0, '0'])[1];
   const wrong =
@@ -137,16 +162,51 @@ function clockHints(q) {
       fx: {
         glow: '.clock-hand-h',
         dim: wrong ? solSel('.clock-opt-btn', 'v', wrong) : undefined,
-        /** @param {HTMLElement} root */
-        run(root) {
-          const face = root.querySelector('.clock-face');
-          if (face && !face.querySelector('.clock-nums')) face.insertAdjacentHTML('beforeend', clockNumbersSVG());
-        },
+        run: clockShowNumbers,
       },
     },
   ];
 }
 
+// Explication d'une erreur (track erreurs-expliquees) : l'heure touchée dit
+// quelle aiguille a été mal lue. La petite d'abord (l'heure), sinon la grande
+// (les minutes) ; l'aiguille brille et les nombres s'écrivent autour du cadran.
+/** @type {Record<number, { on: number, say: string }>} */
+const CLOCK_MINUTE_WHY = {
+  0: { on: 12, say: "c'est l'heure pile" },
+  15: { on: 3, say: "c'est le quart" },
+  30: { on: 6, say: "c'est la demie" },
+  45: { on: 9, say: "c'est 45 minutes" },
+};
+/**
+ * @param {ClockQuestion} q
+ * @param {string | undefined} v l'étiquette touchée, ex. « 3 h 30 »
+ * @returns {import('../../hints/index.js').Explain | null}
+ */
+function clockExplain(q, v) {
+  const m = /^(\d+) h(?: (\d+))?$/.exec(v || '');
+  const big = CLOCK_MINUTE_WHY[q.minute];
+  if (!m || !big) return null;
+  const hv = Number(m[1]),
+    mv = Number(m[2] || 0);
+  const answerSel = solSel('.clock-opt-btn', 'v', q.answer);
+  const told = `${q.hour} heure${q.hour > 1 ? 's' : ''}${q.minute ? ' ' + q.minute : ''}`;
+  let say, hand;
+  if (hv !== q.hour) {
+    hand = 'h';
+    // l'heure touchée est le nombre que montre la grande aiguille : les deux aiguilles confondues
+    say =
+      hv === big.on
+        ? `La grande aiguille montre les minutes. Il est ${told}.`
+        : `La petite aiguille est sur le ${q.hour} : il est ${told}.`;
+  } else if (mv !== q.minute) {
+    hand = 'm';
+    say = `La grande aiguille est sur le ${big.on} : ${big.say}.`;
+  } else return null;
+  return { say, fx: { glow: `.clock-hand-${hand}, ${answerSel}`, run: clockShowNumbers } };
+}
+
 // inscription auprès du moteur de mini-jeux (js/features/minigame-engine)
 registerGame('clock', renderClock);
 registerHints('clock', clockHints);
+registerExplain('clock', { wrong: clockExplain });
