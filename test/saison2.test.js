@@ -272,7 +272,7 @@ function startGame(key, tier, age) {
     check('le chapitre de la saison 2 montre aussi Grisou', shown('.story-grisou .grisou'));
     ev('closeModal()');
     check("l'île des Boîtes est marquée comme découverte", ev('state.visited.includes("boites")'));
-    check('pas de deuxième ouverture', ev('maybeSkyOpening()') === false);
+    check('pas de deuxième ouverture', ev('maybeSeasonOpening()') === false);
   }
 
   section('Partie existante et migration');
@@ -311,7 +311,7 @@ function startGame(key, tier, age) {
     ev(`closeModal(); localStorage.setItem(currentSaveKey(), ${json(json(old))}); load(); refreshAll()`);
     check(
       "une partie déjà au niveau 37 : le Ciel s'ouvre au premier lancement",
-      ev('maybeSkyOpening()') === true && shown('.sky-open'),
+      ev('maybeSeasonOpening()') === true && shown('.sky-open'),
     );
     d.getElementById('sky-go').click();
     check('… suivi du prologue', shown('.story-grisou') && !!d.getElementById('story-next'));

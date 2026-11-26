@@ -3,13 +3,13 @@ import { charFace, charsOf } from '../../entities/character/index.js';
 import { avatarHTML } from '../../entities/companion/index.js';
 import { missionsForLevel, missionsUntil, state } from '../../entities/game-state/index.js';
 import {
-  ARCHIPELAGO_ORDER,
   ARCHIPELAGOS,
   archipelagoOf,
   archipelagoUnlocked,
   currentWorld,
   lastOpenedLevel,
   nextLockedWorld,
+  shownArchipelagos,
   WORLD_ORDER,
   WORLDS,
   worldsOf,
@@ -61,15 +61,18 @@ function mapRoutePath(ids, from, to) {
 function renderMapTabs(saison) {
   const tabs = document.getElementById('map-tabs');
   if (!tabs) return;
-  tabs.innerHTML = ARCHIPELAGO_ORDER.map((s) => {
-    const a = ARCHIPELAGOS[s],
-      open = archipelagoUnlocked(s);
-    return `<button type="button" class="map-tab ${s === saison ? 'active' : ''} ${open ? '' : 'locked'} ${a.sky ? 'sky' : ''}" data-saison="${s}"
+  // seuls les archipels qui ont une île ont un onglet (un archipel vide reste caché)
+  tabs.innerHTML = shownArchipelagos()
+    .map((s) => {
+      const a = ARCHIPELAGOS[s],
+        open = archipelagoUnlocked(s);
+      return `<button type="button" class="map-tab ${s === saison ? 'active' : ''} ${open ? '' : 'locked'} ${a.sky ? 'sky' : ''}" data-saison="${s}"
       aria-label="${a.name}${open ? '' : `, niveau ${a.level}`}">
       <span class="mt-ico" aria-hidden="true">${open ? a.emoji : '🔒'}</span>
       <span class="mt-txt"><b>${a.name}</b>${open ? '' : `<i>Niveau ${a.level}</i>`}</span>
     </button>`;
-  }).join('');
+    })
+    .join('');
   tabs.querySelectorAll('[data-saison]').forEach((b) => {
     setHandler(b, 'click', () => {
       const s = Number(b.dataset.saison),
@@ -200,8 +203,11 @@ function renderMapNext(saison) {
 /* La prochaine étape sous la carte : son nom, son niveau, les missions qui
    restent, et une barre qui part de la dernière île ouverte (elle se remplit
    à chaque île, au lieu de compter depuis le tout début). */
-/** @param {string} icon @param {string} label @param {{ name: string, level: number }} to son nom, le niveau qui l'ouvre */
-function nextStepHTML(icon, label, { name, level: lvl }) {
+/** @param {string} icon @param {string} label @param {{ name: string, level: number | null }} step son nom, le niveau qui l'ouvre */
+function nextStepHTML(icon, label, step) {
+  // un archipel annoncé ici a une île, donc un niveau (null : archipel vide, jamais annoncé)
+  const name = step.name,
+    lvl = step.level || 1;
   const from = missionsForLevel(lastOpenedLevel()),
     to = missionsForLevel(lvl);
   const pct = Math.max(0, Math.min(100, Math.round(((state.missions - from) / Math.max(1, to - from)) * 100)));
