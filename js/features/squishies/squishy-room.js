@@ -634,7 +634,7 @@ registerHints('rangement', sortingHints);
 ['squishy-btn', 'sq-room-link'].forEach((elId) => {
   const b = document.getElementById(elId);
   if (b)
-    b.addEventListener('click', () => {
+    setHandler(b, 'click', () => {
       playSound('tap');
       openSquishyRoom('collection');
     });

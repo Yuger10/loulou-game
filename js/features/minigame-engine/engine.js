@@ -147,7 +147,9 @@ function loseLife(target, opts = {}) {
     setTimeout(onMissionFail, 520);
     return true;
   }
-  showToast(lives === 1 ? '⚠️ Dernier essai !' : `${lives} essais restants`);
+  // « dernière chance » ne se dit pas : la voix rassure (pas de pression)
+  if (lives === 1) showToast('⚠️ Dernier essai !', "Plus qu'un essai. Prends ton temps.");
+  else showToast(`${lives} essais restants`);
   // même logique à essais limités : une nouvelle question plutôt que
   // de réduire le choix restant jusqu'à la seule bonne réponse.
   if (opts.onRetry) {

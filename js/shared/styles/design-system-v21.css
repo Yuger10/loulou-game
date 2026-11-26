@@ -261,7 +261,9 @@ nav.bottomnav button .badge {
   box-shadow: 0 4px 0 #c4d3d9;
 }
 .btn-small:disabled,
-.btn-craft:disabled {
+.btn-small[aria-disabled="true"],
+.btn-craft:disabled,
+.btn-craft[aria-disabled="true"] {
   background: var(--disabled);
   color: var(--ink-soft);
   box-shadow: none;

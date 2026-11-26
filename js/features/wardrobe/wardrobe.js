@@ -467,7 +467,7 @@ function lookBindAvatarAndBuy(el) {
       spendCoins(/** @type {number} */ (it.price), from);
       playSound('coin');
       confetti();
-      showToast(`✨ Nouveau look : ${it.name} !`);
+      showToast(`✨ Nouveau look : ${it.name} !`, '');
       speak(`Super ! ${it.name}, ça te va très bien !`);
       renderLook();
     });

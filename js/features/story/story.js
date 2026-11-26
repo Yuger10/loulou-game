@@ -644,7 +644,7 @@ function storyChapterRow(id, i) {
   const solved = storySolved(id);
   const eps = EPISODES[id] ? EPISODES[id] : [];
   const seen = episodesSeen(id);
-  return `<button type="button" class="story-chap ${solved ? 'done' : ''} ${!unlocked ? 'locked' : ''}" data-world="${id}" ${!unlocked ? 'disabled' : ''}>
+  return `<button type="button" class="story-chap ${solved ? 'done' : ''} ${!unlocked ? 'locked' : ''}" data-world="${id}"${!unlocked ? ` aria-disabled="true" data-say-why="Ce chapitre s'ouvre avec son île. Continue tes missions !"` : ''}>
       <span class="story-chap-n">${i + 1}</span>
       <span class="story-chap-ico">${!unlocked ? '🔒' : solved ? '✅' : '📖'}</span>
       <span class="story-chap-title">${unlocked ? ch.title : '???'}</span>
@@ -696,6 +696,7 @@ function openStoryJournal() {
   bindQuit();
   document.querySelectorAll('.story-chap[data-world]').forEach((b) => {
     setHandler(b, 'click', () => {
+      if (b.getAttribute('aria-disabled') === 'true') return; // chapitre verrouillé : l'écoute au doigt dit pourquoi
       playSound('tap');
       closeModal();
       // le sélecteur [data-world] garantit l'attribut

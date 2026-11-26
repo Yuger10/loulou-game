@@ -1,7 +1,7 @@
 /* ---------- Voix (Web Speech) ---------- */
 import { audioPrefs, setVoiceDuck } from './sound.js';
 import { emojiWord, toSpoken } from '../lib/index.js';
-import { setHandler } from './handlers.js';
+import { hasHandler, setHandler } from './handlers.js';
 
 // Choix d'une voix féminine française, la plus naturelle possible
 const VOICE_PREFS = [
@@ -202,15 +202,25 @@ function speak(text, opts = {}) {
   if (speechQueue.length > QUEUE_MAX) speechQueue.shift();
 }
 
+// Branche les boutons d'écoute : les 🔈 (`.btn-speak[data-say]`), et tout
+// `[data-say]` qui n'a pas d'action (pas actif, ou bouton sans handler comme
+// l'image d'un objet du marché). Un élément qui agit garde son handler : son
+// `data-say` lui sert de libellé (écoute au doigt). Les choix d'un mini-jeu
+// (`data-voix`) sont des réponses, jamais des boutons d'écoute.
 function bindSpeakButtons() {
   document.querySelectorAll('[data-say]').forEach((b) => {
+    if (!b.matches('.btn-speak') && (b.hasAttribute('data-voix') || hasHandler(b, 'click'))) return;
     setHandler(b, 'click', (e) => {
       e.stopPropagation();
-      speak(/** @type {string} */ (b.dataset.say), { interrupt: true, demand: true }); // le sélecteur garantit data-say
+      // le sélecteur garantit data-say
+      speak(/** @type {string} */ (b.dataset.say), {
+        interrupt: true,
+        demand: true,
+        el: b.matches('.btn-speak') ? null : b,
+      });
     });
   });
 }
-
 /**
  * @param {string} text
  * @param {string} [extraStyle]

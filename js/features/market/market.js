@@ -32,9 +32,18 @@ import {
 } from '../squishies/index.js';
 import { addCoins } from '../wallet/index.js';
 
+// un bouton inactif reste touchable pour dire pourquoi (écoute au doigt) :
+// `aria-disabled` et sa raison, jamais `disabled`
+/** @param {string} [why] la raison dite ; sans elle, le libellé du bouton */
+const inactive = (why) => ` aria-disabled="true"${why ? ` data-say-why="${why.replace(/"/g, '&quot;')}"` : ''}`;
+/** @param {Element} btn */
+const isInactive = (btn) => btn.getAttribute('aria-disabled') === 'true';
+/** @param {number} n */
+const coinsNeeded = (n) => `Il te faut ${n} pièce${n > 1 ? 's' : ''}.`;
+
 let currentTab = 'vendre';
 document.querySelectorAll('.tab-btn').forEach((btn) => {
-  btn.addEventListener('click', () => {
+  setHandler(btn, 'click', () => {
     playSound('tap');
     currentTab = /** @type {string} */ (btn.dataset.tab);
     document.querySelectorAll('.tab-btn').forEach((b) => b.classList.toggle('active', b === btn));
@@ -78,7 +87,7 @@ function renderVendre(el) {
       gainCoins(ALL_ITEMS[k].price, rowEmoji);
       questProgress('sell', null, 1);
       playSound('coin');
-      showToast(`Vendu ! +${ALL_ITEMS[k].price} 🪙`);
+      showToast(`Vendu ! +${ALL_ITEMS[k].price} 🪙`, '');
       speak(`Vendu ! Tu gagnes ${ALL_ITEMS[k].price} pièces.`);
       renderVendre(el);
     });
@@ -107,7 +116,7 @@ function squishyTradeHTML() {
   return `<section class="sq-market">${head}
     <p class="sqm-msg">${SQ_TRADE_COST} doubles = 1 squishy de ton choix.${need ? '' : ' Lequel veux-tu ?'}</p>
     <div class="sqm-grid">${missing.map((id) => `<button type="button" class="sq-cell missing ${sqWanted === id ? 'selected' : ''}" data-want="${id}" aria-label="Un squishy ${SQUISHY_SERIES[SQUISHIES[id].series].name}">${squishyArtSVG(id, { silhouette: true })}<span class="sq-name">${SQUISHY_SERIES[SQUISHIES[id].series].emoji}</span></button>`).join('')}</div>
-    <button type="button" class="btn-craft" id="sqm-trade" ${!need && sqWanted ? '' : 'disabled'}>${label}</button>
+    <button type="button" class="btn-craft" id="sqm-trade"${!need && sqWanted ? '' : inactive()}>${label}</button>
   </section>`;
 }
 /**
@@ -132,7 +141,7 @@ function bindSquishyTrade(el, rerender) {
   if (t)
     setHandler(t, 'click', () => {
       // tradeDuplicatesFor(null) répondait déjà { ok: false } : même effet, sans passer null
-      if (!sqWanted) return;
+      if (isInactive(t) || !sqWanted) return;
       const res = tradeDuplicatesFor(sqWanted);
       if (!res.ok) return;
       sqWanted = null;
@@ -140,7 +149,7 @@ function bindSquishyTrade(el, rerender) {
       playSound('win');
       confetti();
       vibrate([40, 30, 80]);
-      showToast(`🔄 ${m.name} est à toi !`);
+      showToast(`🔄 ${m.name} est à toi !`, '');
       speak(
         `Échangé ! ${m.say.charAt(0).toUpperCase() + m.say.slice(1)} rejoint ta collection !${res.seriesCompleted ? ` Et la série ${SQUISHY_SERIES[m.series].name} est complète : tu gagnes ${SQ_SERIES_BONUS} pièces !` : ''}`,
       );
@@ -160,7 +169,7 @@ function squishyShopHTML() {
     <div class="market-row">
       <button type="button" class="emoji sqm-box" data-say="${say}" aria-label="Écouter : boîte surprise">${squishyBoxSVG(null)}</button>
       <div class="info"><div class="name">Boîte surprise de squishies</div><div class="sub">${sub}</div></div>
-      <button class="btn-small" id="sqm-buy" ${shop.left && shop.canPay ? '' : 'disabled'}>Acheter</button>
+      <button class="btn-small" id="sqm-buy"${shop.left && shop.canPay ? '' : inactive(shop.left ? coinsNeeded(shop.price) : "Reviens demain pour d'autres boîtes !")}>Acheter</button>
     </div>
     ${squishyBoxCount() ? `<button type="button" class="chip-btn sqm-go" id="sqm-go">🧸 Ouvrir mes boîtes (${squishyBoxCount()})</button>` : ''}
   </section>`;
@@ -173,15 +182,19 @@ function bindSquishyShop(el, rerender) {
   const b = el.querySelector('#sqm-buy');
   if (b)
     setHandler(b, 'click', () => {
+      if (isInactive(b)) return; // l'écoute au doigt dit pourquoi
       const res = buySquishyBox();
       if (!res.ok) {
-        speak(res.reason === 'limit' ? "Reviens demain pour d'autres boîtes !" : `Il te faut ${SQ_BOX_PRICE} pièces.`);
+        speak(res.reason === 'limit' ? "Reviens demain pour d'autres boîtes !" : coinsNeeded(SQ_BOX_PRICE), {
+          interrupt: true,
+          demand: true,
+        });
         rerender();
         return;
       }
       spendCoins(SQ_BOX_PRICE, el.querySelector('.sqm-box'));
       playSound('coin');
-      showToast('🎁 Boîte surprise achetée !');
+      showToast('🎁 Boîte surprise achetée !', '');
       speak('Une boîte surprise ! Ouvre-la dans ta chambre à squishies.');
       rerender();
     });
@@ -229,7 +242,7 @@ function renderEchanger(el) {
       gainItems([ITEMS[gained].emoji], /** @type {HTMLElement} */ (btn.closest('.market-row')).querySelector('.emoji'));
       questProgress('collect', gained, 1);
       playSound('good');
-      showToast(`Échangé contre ${ITEMS[gained].emoji} ${ITEMS[gained].name} !`);
+      showToast(`Échangé contre ${ITEMS[gained].emoji} ${ITEMS[gained].name} !`, '');
       speak(`Échangé contre ${ITEMS[gained].name} !`);
       renderEchanger(el);
     });
@@ -249,7 +262,7 @@ function renderAcheter(el) {
         return `<div class="market-row">
       <button type="button" class="emoji" data-say="${say}" aria-label="Écouter : ${it.name}">${it.emoji}</button>
       <div class="info"><div class="name">${it.name}</div><div class="sub">🪙 ${cost} pièces</div></div>
-      <button class="btn-small" data-buy="${k}" ${can ? '' : 'disabled'}>Acheter</button>
+      <button class="btn-small" data-buy="${k}"${can ? '' : inactive(coinsNeeded(cost))}>Acheter</button>
     </div>`;
       })
       .join('');
@@ -259,7 +272,7 @@ function renderAcheter(el) {
     setHandler(btn, 'click', () => {
       const k = /** @type {string} */ (btn.dataset.buy);
       const cost = ITEMS[k].price * 2;
-      if (state.coins < cost) return;
+      if (isInactive(btn) || state.coins < cost) return;
       const rowEmoji = /** @type {HTMLElement} */ (btn.closest('.market-row')).querySelector('.emoji');
       addCoins(-cost);
       addItem(k, 1);
@@ -271,7 +284,7 @@ function renderAcheter(el) {
       }
       questProgress('collect', k, 1);
       playSound('coin');
-      showToast(`${ITEMS[k].emoji} ${ITEMS[k].name} acheté !`);
+      showToast(`${ITEMS[k].emoji} ${ITEMS[k].name} acheté !`, '');
       speak(`${ITEMS[k].name} acheté !`);
       renderAcheter(el);
     });
@@ -299,13 +312,14 @@ function renderFusionner(el) {
           })
           .join('')}
       </div>
-      <button class="btn-craft" data-craft="${key}" ${canCraft ? '' : 'disabled'}>${canCraft ? 'Créer ✨' : 'Il manque des objets'}</button>
+      <button class="btn-craft" data-craft="${key}"${canCraft ? '' : inactive('Il manque des objets.')}>${canCraft ? 'Créer ✨' : 'Il manque des objets'}</button>
     </div>`;
     })
     .join('');
   bindSpeakButtons();
   el.querySelectorAll('[data-craft]').forEach((btn) => {
     setHandler(btn, 'click', () => {
+      if (isInactive(btn)) return;
       const key = /** @type {string} */ (btn.dataset.craft);
       const c = CRAFTED[key];
       Object.entries(c.recipe).forEach(([ik, qty]) => removeItem(ik, qty));
@@ -315,7 +329,7 @@ function renderFusionner(el) {
       questProgress('craft', key, 1);
       playSound('win');
       confetti();
-      showToast(`${c.emoji} ${c.name} créé !`);
+      showToast(`${c.emoji} ${c.name} créé !`, '');
       speak(`${c.name} créé !`);
       renderFusionner(el);
     });

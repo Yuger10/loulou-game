@@ -76,6 +76,36 @@ const active = (el, type) => (w.activeListenerCounts.get(el) || {})[type] || 0;
   ev('setHandler')(plain, 'end', fn);
   check('sans addEventListener : la propriété onX (vieux navigateurs, objets incomplets)', plain.onend === fn);
 
+  console.log('— data-act : un élément non actif qui reçoit un handler de clic');
+  const div = d.createElement('div'),
+    inBtn = d.createElement('span');
+  d.body.appendChild(div);
+  b.appendChild(inBtn);
+  ev('setHandler')(div, 'click', () => {});
+  check('un div avec un handler de clic est marqué data-act', div.hasAttribute('data-act'));
+  ev('setHandler')(div, 'click', () => {});
+  check('rebrancher garde la marque', div.hasAttribute('data-act'));
+  ev('setHandler')(div, 'click', null);
+  check('retirer le handler retire la marque', !div.hasAttribute('data-act'));
+  ev('setHandler')(div, 'input', () => {});
+  check('un autre type que click ne marque pas', !div.hasAttribute('data-act'));
+  ev('setHandler')(b, 'click', () => {});
+  ev('setHandler')(inBtn, 'click', () => {});
+  check(
+    'un bouton, ou un élément dans un bouton, est déjà actif : pas de marque',
+    !b.hasAttribute('data-act') && !inBtn.hasAttribute('data-act'),
+  );
+  const marked = d.createElement('div');
+  marked.setAttribute('data-act', '');
+  d.body.appendChild(marked);
+  ev('setHandler')(marked, 'click', () => {});
+  ev('setHandler')(marked, 'click', null);
+  check('une marque posée par un écran (délégation) n’est pas retirée', marked.hasAttribute('data-act'));
+  check(
+    'isActive : un bouton, un data-act, pas un texte',
+    ev('isActive')(inBtn) && ev('isActive')(marked) && !ev('isActive')(div),
+  );
+
   console.log('— Fenêtre de confirmation ouverte quatre fois');
   for (let i = 0; i < 4; i++) {
     ev("askConfirm({ text: 'Sûr ?' })");

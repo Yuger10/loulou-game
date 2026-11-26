@@ -576,7 +576,7 @@ function renderLiveIsland(sc) {
     isleResizeObs.observe(sc);
   }
   sc.querySelectorAll('.isle-char').forEach((btn) => {
-    btn.addEventListener('click', () => {
+    setHandler(btn, 'click', () => {
       playSound('tap');
       emit('nav:dialogue', btn.dataset.char); // island-view.js ouvre le dialogue
     });

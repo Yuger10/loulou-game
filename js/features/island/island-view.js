@@ -51,7 +51,7 @@ function setWorld(id, silent) {
       interrupt: true,
       demand: true,
     });
-    showToast(`🔒 ${w.name} : niveau ${w.level}`);
+    showToast(`🔒 ${w.name} : niveau ${w.level}`, '');
     return false;
   }
   const changed = currentWorld !== id;
@@ -257,7 +257,7 @@ function buyDeco(btn) {
   playSound('win');
   confetti();
   speak(`Super ! ${d.name} est dans ${WORLDS[currentWorld].name} !`);
-  showToast(`${d.emoji} ${d.name} ajouté !`);
+  showToast(`${d.emoji} ${d.name} ajouté !`, '');
   renderScene();
   openDecoShop();
 }
@@ -274,7 +274,7 @@ function openDecoShop() {
           return `<div class="market-row deco-row ${owned ? 'owned' : ''}">
           <span class="emoji">${d.emoji}</span>
           <div class="info"><div class="name">${d.name}</div><div class="sub">${owned ? 'Déjà dans ton lagon ✅' : `🪙 ${d.price} pièces`}</div></div>
-          ${owned ? '' : `<button class="btn-small" data-deco="${k}" ${can ? '' : 'disabled'}>Acheter</button>`}
+          ${owned ? '' : `<button class="btn-small" data-deco="${k}"${can ? '' : ` aria-disabled="true" data-say-why="Il te faut ${d.price} pièce${d.price > 1 ? 's' : ''}."`}>Acheter</button>`}
         </div>`;
         })
         .join('')}

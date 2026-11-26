@@ -12,6 +12,7 @@ export {
   soundModeLabel,
 } from './sound.js';
 export { bindSpeakButtons, emojiWord, newVoiceScene, speak, speechBubble, stopSpeech } from './voice.js';
+export { isActive, listenText } from './listen.js';
 export { confetti, onWrongFeedback, shakeEl, showToast, vibrate, wrongFeedback } from './feedback.js';
 export { closeModal, onModalChange, onModalClose, onModalOpen, openModal, requestCloseModal } from './modal.js';
 export { askConfirm } from './confirm.js';

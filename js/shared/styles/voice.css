@@ -1,0 +1,47 @@
+/* ---------- La voix : bouton 🔈 et texte en cours de lecture ----------
+   Dernière feuille de CSS_ORDER : la taille du 🔈 se règle ici, une seule
+   fois, et l'emporte sur les feuilles plus anciennes. */
+
+/* 56 px de côté : une cible large pour un doigt de 6 ans, à 8 px au moins
+   du bouton voisin (elle écoute sans risquer de déclencher l'action d'à côté) */
+.btn-speak,
+.puzzle-hint .btn-speak {
+  width: 56px;
+  height: 56px;
+  min-width: 56px;
+  flex: none;
+  font-size: 1.4rem;
+}
+.btn-speak + button,
+button + .btn-speak {
+  margin-left: 8px;
+}
+
+/* choix d'un jeu : la carte, puis son 🔈 à droite */
+.game-choice-wrap {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.game-choice-wrap > :first-child {
+  flex: 1;
+  min-width: 0;
+}
+
+/* le texte que la voix est en train de lire */
+.voix-lu {
+  outline: 3px solid var(--sun);
+  outline-offset: 3px;
+  border-radius: 10px;
+  animation: voix-lu 1.2s ease-in-out infinite;
+}
+@keyframes voix-lu {
+  50% {
+    outline-color: transparent;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .voix-lu {
+    animation: none;
+  }
+}

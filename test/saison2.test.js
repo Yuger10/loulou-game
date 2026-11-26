@@ -638,7 +638,9 @@ function startGame(key, tier, age) {
     check(
       'le Ciel est verrouillé avant le niveau 32 (chapitre fermé)',
       /🔒/.test(secs[1].querySelector('h3').textContent) &&
-        d.querySelector('.story-season[data-saison="2"] .story-chap[data-world="boites"]').disabled,
+        d
+          .querySelector('.story-season[data-saison="2"] .story-chap[data-world="boites"]')
+          .getAttribute('aria-disabled') === 'true',
     );
     check('la saison 1 est inchangée (8 chapitres)', secs[0].querySelectorAll('.story-chap[data-world]').length === 8);
     ev(

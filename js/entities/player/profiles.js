@@ -127,7 +127,7 @@ function switchProfile(id, silent) {
     playSound('good');
     const p = currentProfile();
     speak(`À toi de jouer ${p.name || ''} !`);
-    showToast(`${avatarText(p.avatar)} ${p.name || 'Joueur'}`);
+    showToast(`${avatarText(p.avatar)} ${p.name || 'Joueur'}`, '');
   }
 }
 

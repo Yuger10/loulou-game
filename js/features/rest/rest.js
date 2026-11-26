@@ -484,7 +484,7 @@ function bindVeil(el) {
     state.pauseExtra = { date: k, min: cur + min };
     save();
     restWake();
-    showToast(min >= 24 * 60 ? "🌞 Plus de pause aujourd'hui" : `⏱️ ${min} minutes de plus`);
+    showToast(min >= 24 * 60 ? "🌞 Plus de pause aujourd'hui" : `⏱️ ${min} minutes de plus`, '');
   };
   const on10 = el.querySelector('#rest-add10');
   if (on10) setHandler(on10, 'click', () => addMin(10));
@@ -524,7 +524,7 @@ function restRecallYesterday() {
   state.restRecall = today;
   save();
   speak(line);
-  showToast(`${a.emoji} ${line}`);
+  showToast(`${a.emoji} ${line}`, '');
 }
 
 /* ---- espace parents : les pauses des 7 derniers jours ---- */

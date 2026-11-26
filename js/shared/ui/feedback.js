@@ -1,15 +1,25 @@
 import { pickRandom, random } from '../lib/index.js';
 import { playSound } from './sound.js';
+import { speak } from './voice.js';
 
 /** @type {number | undefined} */
 let toastTimer; // le message en cours disparaît 1,6 s après le dernier
-/** @param {string} msg */
-function showToast(msg) {
+// Le message est affiché et dit (lecture automatique, en file). `say` : sa
+// forme dite si elle diffère ; '' pour un message muet (l'appelant dit déjà
+// une phrase pour le même événement, ou c'est un écran d'adulte).
+/**
+ * @param {string} msg
+ * @param {string} [say]
+ * @returns {void}
+ */
+function showToast(msg, say) {
   const t = /** @type {HTMLElement} */ (document.getElementById('toast'));
   t.textContent = msg;
   t.classList.add('show');
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => t.classList.remove('show'), 1600);
+  const spoken = say ?? msg;
+  if (spoken) speak(spoken);
 }
 
 /** @param {VibratePattern} pattern */

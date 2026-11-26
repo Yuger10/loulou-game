@@ -53,7 +53,7 @@ function renderReading() {
     openModal(`
       ${gameHeader('📖 Lecture magique', 'Lis bien le mot… puis touche la bonne image !', 'Lis bien le mot, puis touche la bonne image')}
       ${livesBar()}
-      <div class="reading-word-box"><span class="reading-word">${correct.word}</span></div>
+      <div class="reading-word-box" data-voix="lire"><span class="reading-word">${correct.word}</span></div>
       <div class="reading-options">
         ${options.map((o) => `<button type="button" class="reading-opt" data-w="${o.word}" aria-label="${o.word}">${o.emoji}</button>`).join('')}
       </div>
@@ -64,7 +64,7 @@ function renderReading() {
       ${livesBar()}
       <div class="reading-image-box"><span class="reading-image">${correct.emoji}</span></div>
       <div class="reading-options reading-options-words">
-        ${options.map((o) => `<button type="button" class="reading-opt reading-word-btn" data-w="${o.word}">${o.word}</button>`).join('')}
+        ${options.map((o) => `<button type="button" class="reading-opt reading-word-btn" data-voix="lire" data-w="${o.word}">${o.word}</button>`).join('')}
       </div>
     `);
   }

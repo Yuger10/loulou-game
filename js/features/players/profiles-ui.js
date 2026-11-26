@@ -83,7 +83,7 @@ function playersPanelHTML(sel) {
 function pickedPlayers(sel, pourQuoi) {
   const ids = profiles.list.filter((p) => sel.has(p.id)).map((p) => p.id);
   if (ids.length >= 2) return ids;
-  showToast('Choisis au moins 2 joueurs ✌️');
+  showToast('Choisis au moins 2 joueurs ✌️', '');
   speak(`Choisis au moins deux joueurs pour ${pourQuoi}.`);
   return null;
 }
@@ -98,7 +98,7 @@ function playSolo(sel) {
   renderProfile();
   renderLagon();
   speak(`Mode solo. À toi de jouer ${currentProfile().name || ''} !`);
-  showToast(`👤 ${avatarText(currentProfile().avatar)} ${currentProfile().name || ''}`);
+  showToast(`👤 ${avatarText(currentProfile().avatar)} ${currentProfile().name || ''}`, '');
 }
 
 /** @param {Set<string | null>} sel */
@@ -117,7 +117,7 @@ function playRace(sel) {
   if (!ids) return;
   const sansAge = profiles.list.filter((p) => sel.has(p.id) && !p.age);
   if (sansAge.length) {
-    showToast(`Ajoute l'âge de ${sansAge[0].name || 'ce joueur'} 🎂`);
+    showToast(`Ajoute l'âge de ${sansAge[0].name || 'ce joueur'} 🎂`, '');
     speak(`Indique l'âge de ${sansAge[0].name || 'ce joueur'} pour une course équitable.`);
     openPlayerSettings(sansAge[0].id);
     return;
@@ -209,7 +209,7 @@ function backFromPlayerForm() {
 }
 
 const NAME_INPUT_ATTRS =
-  'type="text" maxlength="12" placeholder="Prénom" autocomplete="off" autocapitalize="words" autocorrect="off" spellcheck="false" enterkeyhint="done"';
+  'type="text" maxlength="12" placeholder="Prénom" aria-label="Prénom" autocomplete="off" autocapitalize="words" autocorrect="off" spellcheck="false" enterkeyhint="done"';
 const NAME_REQUIRED = "Écris d'abord un prénom, en haut.";
 /** @param {string} v */
 const escAttr = (v) => String(v || '').replace(/"/g, '&quot;');
@@ -316,7 +316,7 @@ function openNewPlayer() {
         playSound('win');
         confetti();
         speak(`Bienvenue ${n} !`);
-        showToast(`${avatarText(f.av)} ${n} ajouté !`);
+        showToast(`${avatarText(f.av)} ${n} ajouté !`, '');
         backFromPlayerForm();
       },
       onCancel: () => backFromPlayerForm(),

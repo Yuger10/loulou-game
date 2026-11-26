@@ -41,6 +41,7 @@ const SLICES = [
       'js/shared/styles/responsive-v14.css',
       'js/shared/styles/design-system-v21.css',
       'js/shared/styles/devices.css',
+      'js/shared/styles/voice.css',
     ],
   },
   {
@@ -51,6 +52,7 @@ const SLICES = [
       'js/shared/ui/icons.js',
       'js/shared/ui/sound.js',
       'js/shared/ui/voice.js',
+      'js/shared/ui/listen.js',
       'js/shared/ui/feedback.js',
       'js/shared/ui/modal.js',
       'js/shared/ui/confirm.js',
@@ -456,6 +458,8 @@ const CSS_ORDER = [
   'js/shared/ui/nav.css',
   // en dernier : le modèle de formulaire et la confirmation l'emportent sur les styles des features
   'js/shared/ui/form.css',
+  // tout à la fin : la taille du bouton 🔈 et le surlignage du texte lu (une seule règle pour tout le jeu)
+  'js/shared/styles/voice.css',
 ];
 
 module.exports = { SLICES, CSS_ORDER };

@@ -20,7 +20,15 @@ import { initSeasons, maybeSeasonGift } from '../features/seasons/index.js';
 import { renderSquishyBadge, squishySessionHello } from '../features/squishies/index.js';
 import { openStoryJournal } from '../features/story/index.js';
 import { renderCoins } from '../features/wallet/index.js';
-import { newVoiceScene, playSound, requestCloseModal, showToast, speak, switchView } from '../shared/ui/index.js';
+import {
+  newVoiceScene,
+  playSound,
+  requestCloseModal,
+  setHandler,
+  showToast,
+  speak,
+  switchView,
+} from '../shared/ui/index.js';
 
 loadProfiles();
 load();
@@ -106,34 +114,36 @@ function hideSplash() {
   }
 }
 // navigation secondaire
-/** @type {HTMLElement} */ (document.getElementById('btn-back-map')).addEventListener('click', () => {
+setHandler(document.getElementById('btn-back-map'), 'click', () => {
   playSound('tap');
   switchView('carte');
 });
 document.querySelectorAll('[data-sactab]').forEach((b) => {
-  b.addEventListener('click', () => {
+  setHandler(b, 'click', () => {
     playSound('tap');
     setSacTab(/** @type {string} */ (b.dataset.sactab));
   });
 });
-/** @type {HTMLElement} */ (document.getElementById('quests-btn')).addEventListener('click', () => {
+setHandler(document.getElementById('quests-btn'), 'click', () => {
   playSound('tap');
   openQuestsModal();
 });
-/** @type {HTMLElement} */ (document.getElementById('story-btn')).addEventListener('click', () => {
+setHandler(document.getElementById('story-btn'), 'click', () => {
   playSound('tap');
   openStoryJournal();
 });
 
 // fermeture facile des fenêtres : croix, poignée, clic à côté, touche Échap
-/** @type {HTMLElement} */ (document.getElementById('modal-close')).addEventListener('click', () => {
+setHandler(document.getElementById('modal-close'), 'click', () => {
   playSound('tap');
   requestCloseModal();
 });
-/** @type {HTMLElement} */ (document.getElementById('modal-handle')).addEventListener('click', () => {
+setHandler(document.getElementById('modal-handle'), 'click', () => {
   playSound('tap');
   requestCloseModal();
 });
+// le fond de la fenêtre garde un écouteur direct : un `data-act` (setHandler) sur
+// #overlay rendrait muet tout le contenu des fenêtres (écoute au doigt)
 /** @type {HTMLElement} */ (document.getElementById('overlay')).addEventListener('click', (e) => {
   if (/** @type {HTMLElement} */ (e.target).id === 'overlay') requestCloseModal();
 });
@@ -142,15 +152,15 @@ document.addEventListener('keydown', (e) => {
     requestCloseModal();
 });
 
-/** @type {HTMLElement} */ (document.getElementById('btn-splash-play')).addEventListener('click', hideSplash);
+setHandler(document.getElementById('btn-splash-play'), 'click', hideSplash);
 showSplash();
 // la pastille en haut ouvre le panneau des joueurs (profils, solo / chacun son tour)
 // toucher l'avatar et le prénom ouvre les Réglages (pas de 5e bouton dans la barre du bas)
-/** @type {HTMLElement} */ (document.getElementById('avatar-pill')).addEventListener('click', () => {
+setHandler(document.getElementById('avatar-pill'), 'click', () => {
   playSound('tap');
   switchView('reglages');
 });
-/** @type {HTMLElement} */ (document.getElementById('btn-start')).addEventListener('click', closeWelcome);
+setHandler(document.getElementById('btn-start'), 'click', closeWelcome);
 /** @type {HTMLElement} */ (document.getElementById('name-input')).addEventListener('keydown', (e) => {
   if (e.key === 'Enter') closeWelcome();
 });

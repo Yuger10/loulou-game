@@ -118,7 +118,7 @@ function closeWelcome() {
   playSound('win');
   const who = name ? name : 'toi';
   speak(`Bonjour ${who} ! Bienvenue dans le lagon magique.`);
-  showToast(name ? `Bonjour ${name} ! ✨` : 'Bonne aventure ! ✨');
+  showToast(name ? `Bonjour ${name} ! ✨` : 'Bonne aventure ! ✨', '');
   emit('ui:lagon');
   // premier lancement : le fil de l'histoire commence par le chapitre du
   // Lagon (jamais répété une fois résolu — voir js/features/story/story.js)
