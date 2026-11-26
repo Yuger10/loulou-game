@@ -716,7 +716,7 @@ function openStoryJournal() {
       playSound('tap');
       // le sélecteur [data-ep] garantit l'attribut
       const [w, k] = /** @type {string} */ (b.dataset.ep).split(':');
-      openEpisode(w, Number(k), 0, false);
+      openEpisode(w, Number(k), { line: 0, fresh: false });
     });
   });
 }

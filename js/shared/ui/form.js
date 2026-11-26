@@ -84,61 +84,12 @@ function bindForm({ initial, current, required, onSave, onCancel }) {
   const dirty = () => JSON.stringify(current()) !== JSON.stringify(initial);
   const leave = onCancel || (() => closeModal());
 
-  function save() {
-    const m = missing();
-    if (m) {
-      playSound('tap');
-      speak(m.say);
-      const el = m.focus && m.focus();
-      if (el) {
-        el.classList.add('form-missing');
-        el.focus();
-      }
-      return false;
-    }
-    return onSave() !== false;
-  }
-  // « Garder tes changements ? » : garder = enregistrer ; ne pas garder = partir ;
-  // ne rien choisir (Échap, toucher à côté) = rester dans le formulaire
+  const save = () => formSave(missing(), onSave);
   /** @param {() => void} after */
-  function askKeep(after) {
-    askConfirm({
-      text: 'Garder tes changements ?',
-      confirmLabel: '✅ Garder',
-      cancelLabel: '↩️ Ne pas garder',
-      danger: false,
-      primaryYes: true,
-      dismissValue: null,
-    }).then((keep) => {
-      if (keep === true) save();
-      else if (keep === false) after();
-    });
-    return false;
-  }
+  const askKeep = (after) => formAskKeep(save, after);
 
   refresh();
-  fields.forEach((el) => {
-    el.addEventListener('input', () => {
-      el.classList.remove('form-missing');
-      refresh();
-    });
-    el.addEventListener('change', refresh);
-    // le champ actif reste visible au-dessus du clavier et de la barre d'actions
-    el.addEventListener('focus', () => {
-      try {
-        el.scrollIntoView({ block: 'center' });
-      } catch {
-        // vieux navigateurs sans scrollIntoView : le champ reste accessible
-      }
-    });
-    if (el.tagName === 'INPUT')
-      el.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') {
-          e.preventDefault();
-          save();
-        }
-      });
-  });
+  fields.forEach((el) => formWatchField(el, refresh, save));
   setHandler(primary, 'click', () => {
     playSound('tap');
     save();
@@ -153,6 +104,72 @@ function bindForm({ initial, current, required, onSave, onCancel }) {
     requestCloseModal();
   });
   setModalCloseGuard(() => (dirty() ? askKeep(() => closeModal()) : true));
+}
+
+/**
+ * Enregistrer, ou dire ce qui manque et y emmener.
+ * @param {FormRequirement | undefined} m le premier champ obligatoire vide
+ * @param {() => unknown} onSave
+ */
+function formSave(m, onSave) {
+  if (m) {
+    playSound('tap');
+    speak(m.say);
+    const el = m.focus && m.focus();
+    if (el) {
+      el.classList.add('form-missing');
+      el.focus();
+    }
+    return false;
+  }
+  return onSave() !== false;
+}
+// « Garder tes changements ? » : garder = enregistrer ; ne pas garder = partir ;
+// ne rien choisir (Échap, toucher à côté) = rester dans le formulaire
+/**
+ * @param {() => unknown} save
+ * @param {() => void} after
+ */
+function formAskKeep(save, after) {
+  askConfirm({
+    text: 'Garder tes changements ?',
+    confirmLabel: '✅ Garder',
+    cancelLabel: '↩️ Ne pas garder',
+    danger: false,
+    primaryYes: true,
+    dismissValue: null,
+  }).then((keep) => {
+    if (keep === true) save();
+    else if (keep === false) after();
+  });
+  return false;
+}
+/**
+ * @param {Element} el un champ du formulaire
+ * @param {() => void} refresh
+ * @param {() => unknown} save
+ */
+function formWatchField(el, refresh, save) {
+  el.addEventListener('input', () => {
+    el.classList.remove('form-missing');
+    refresh();
+  });
+  el.addEventListener('change', refresh);
+  // le champ actif reste visible au-dessus du clavier et de la barre d'actions
+  el.addEventListener('focus', () => {
+    try {
+      el.scrollIntoView({ block: 'center' });
+    } catch {
+      // vieux navigateurs sans scrollIntoView : le champ reste accessible
+    }
+  });
+  if (el.tagName === 'INPUT')
+    el.addEventListener('keydown', (e) => {
+      if (/** @type {KeyboardEvent} */ (e).key === 'Enter') {
+        e.preventDefault();
+        save();
+      }
+    });
 }
 
 export { bindForm, formSheet };

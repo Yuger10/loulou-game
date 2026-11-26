@@ -108,13 +108,12 @@ function lookFits(av) {
 
 /* ---- dessin des accessoires (repère « tête ») ---- */
 /**
- * @param {number} cx
- * @param {number} cy
- * @param {number} r
+ * @param {number[]} at le centre et le rayon : [cx, cy, r]
  * @param {string} fill
  * @param {string} [stroke]
  */
-function lookStar(cx, cy, r, fill, stroke) {
+function lookStar(at, fill, stroke) {
+  const [cx, cy, r] = at;
   const pts = [];
   for (let i = 0; i < 10; i++) {
     const a = -Math.PI / 2 + (i * Math.PI) / 5,
@@ -165,7 +164,7 @@ const LOOK_ART = {
     () => `<path d="M14 4 L58 -66 L88 4 Z" fill="#5B3BB0" stroke="#3E2580" stroke-width="2.5" stroke-linejoin="round"/>
       <path d="M17 -2 C40 2 64 2 86 -2 L84 -9 C62 -5 40 -5 20 -9 Z" fill="#FFCB4C"/>
       <ellipse cx="50" cy="5" rx="54" ry="10" fill="#3E2580"/>
-      ${lookStar(46, -28, 7, '#FFD54A')}${lookStar(62, -46, 5, '#FFD54A')}<circle cx="38" cy="-46" r="2.4" fill="#fff"/><circle cx="66" cy="-22" r="2" fill="#fff"/>`,
+      ${lookStar([46, -28, 7], '#FFD54A')}${lookStar([62, -46, 5], '#FFD54A')}<circle cx="38" cy="-46" r="2.4" fill="#fff"/><circle cx="66" cy="-22" r="2" fill="#fff"/>`,
   tricorne:
     () => `<path d="M-10 10 C8 -4 28 -32 50 -32 C72 -32 92 -4 110 10 C92 3 70 1 50 1 C30 1 8 3 -10 10Z" fill="#2B2140"/>
       <path d="M-10 10 C8 3 30 1 50 1 C70 1 92 3 110 10" fill="none" stroke="#FFCB4C" stroke-width="3"/>
@@ -190,7 +189,7 @@ const LOOK_ART = {
       <path d="M19 -3 C40 1 62 1 81 -3 L78 -11 C60 -7 40 -7 22 -11 Z" fill="#FF8A3D"/>
       <rect x="43" y="-12" width="13" height="10" rx="2" fill="none" stroke="#FFCB4C" stroke-width="2.5"/>
       <ellipse cx="50" cy="5" rx="58" ry="10" fill="#2A1D44"/>
-      ${lookStar(66, -30, 5, '#FFD54A')}`,
+      ${lookStar([66, -30, 5], '#FFD54A')}`,
   fete: () => `<g transform="rotate(10 50 6)"><path d="M24 8 L50 -54 L76 8 Z" fill="#5AB0F2" stroke="#2F7FC0" stroke-width="2.5" stroke-linejoin="round"/>
       <path d="M33 -14 L42 -10 L46 -26 M58 -30 L62 -14 L70 -8" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
       <circle cx="40" cy="-2" r="3.2" fill="#FFCB4C"/><circle cx="58" cy="-6" r="3.2" fill="#FF6FA5"/><circle cx="50" cy="-34" r="3" fill="#FFCB4C"/>
@@ -204,7 +203,7 @@ const LOOK_ART = {
       [76, -12, 11],
       [94, 4, 9],
     ]
-      .map(([x, y, r]) => lookStar(x, y, r, '#FFD54A', '#E0A92A'))
+      .map((at) => lookStar(at, '#FFD54A', '#E0A92A'))
       .join('') +
     `<circle cx="37" cy="-30" r="2.6" fill="#fff"/><circle cx="63" cy="-30" r="2.6" fill="#fff"/><circle cx="12" cy="-14" r="2" fill="#fff"/><circle cx="88" cy="-14" r="2" fill="#fff"/>`,
 
@@ -235,8 +234,8 @@ const LOOK_ART = {
   moustache: () =>
     `<path d="M50 65 C44 58 34 58 30 64 C26 70 17 70 13 63 C14 75 29 78 38 71 C44 68 48 68 50 67 C52 68 56 68 62 71 C71 78 86 75 87 63 C83 70 74 70 70 64 C66 58 56 58 50 65Z" fill="#5A321C"/>`,
   joues: () =>
-    lookStar(13, 72, 8, '#FFD54A', '#E0A92A') +
-    lookStar(87, 72, 8, '#FFD54A', '#E0A92A') +
+    lookStar([13, 72, 8], '#FFD54A', '#E0A92A') +
+    lookStar([87, 72, 8], '#FFD54A', '#E0A92A') +
     `<circle cx="22" cy="64" r="2" fill="#fff"/><circle cx="78" cy="64" r="2" fill="#fff"/>`,
 };
 
@@ -333,44 +332,9 @@ function renderLook() {
   if (lookSlot !== 'avatar' && !slots.some((s) => s.id === lookSlot)) lookSlot = slots.length ? 'tete' : 'avatar';
   const preview = Object.assign({}, worn, lookTry ? { [lookTry.slot]: lookTry.id } : {});
   const tryItem = lookTry && WARDROBE[lookTry.id];
-  let action = '';
-  if (tryItem) {
-    // lu seulement dans les deux dernières branches : ni fête ni déblocage, l'habit
-    // s'achète et a donc un prix (WARDROBE)
-    const price = /** @type {number} */ (tryItem.price);
-    if (tryItem.season) {
-      const se = FETES[tryItem.season];
-      action = `<p class="look-msg">${se.emoji} ${tryItem.name} : un cadeau ${tryItem.season === 'anniversaire' ? 'le jour de ton anniversaire' : 'à ' + se.name}</p>`;
-    } else if (tryItem.unlock) {
-      const left = tryItem.unlock - (state.missions || 0);
-      action = `<p class="look-msg">🔒 Encore <b>${left}</b> mission${left > 1 ? 's' : ''} pour gagner : ${tryItem.name}</p>`;
-    } else if (state.coins >= price) {
-      action = `<button class="btn-primary look-buy" id="look-buy">Acheter : ${tryItem.name} · 🪙 ${price}</button>`;
-    } else {
-      const miss = price - state.coins;
-      action = `<p class="look-msg">Il te manque <b>${miss}</b> pièce${miss > 1 ? 's' : ''} pour : ${tryItem.name} 🪙 ${price}</p>`;
-    }
-  }
+  const action = tryItem ? lookActionHTML(tryItem) : '';
   const items = Object.keys(WARDROBE).filter((k) => WARDROBE[k].slot === lookSlot);
-  /** @param {string | null} id l'habit, null pour « Rien » */
-  const tile = (id) => {
-    const it = id ? WARDROBE[id] : null;
-    // lookSlot est ici une clé de Look (la grille « Personnage » n'a pas de tuiles)
-    const on =
-      (/** @type {Record<string, string | null>} */ (worn)[lookSlot] || null) === id &&
-      !(lookTry && lookTry.slot === lookSlot);
-    const trying = lookTry && lookTry.id === id;
-    const owned = !id || ownsLookItem(id);
-    const lk = Object.assign({}, worn, { [lookSlot]: id });
-    const label = it
-      ? `${it.name}${owned ? '' : it.season ? ', un cadeau de saison' : it.unlock ? `, à gagner après ${it.unlock} missions` : `, ${it.price} pièces`}`
-      : 'Rien';
-    return `<button type="button" class="look-tile ${on ? 'on' : ''} ${trying ? 'trying' : ''} ${owned ? '' : 'locked'}" data-look="${id || ''}" aria-pressed="${on}" aria-label="${label}">
-      <span class="lt-av">${avatarHTML(av, lk)}</span>
-      <span class="lt-name">${it ? it.name : 'Rien'}</span>
-      ${owned ? (on ? '<span class="lt-tag on">✓</span>' : '') : `<span class="lt-tag">${lookStatusText(id)}</span>`}
-    </button>`;
-  };
+  const tile = (/** @type {string | null} */ id) => lookTileHTML(id, av, worn);
   el.innerHTML = `
     <div class="look-stage">
       <div class="look-preview">${avatarHTML(av, preview)}</div>
@@ -392,6 +356,57 @@ function renderLook() {
         : `<div class="look-grid">${tile(null)}${items.map(tile).join('')}</div>`
     }
   `;
+  lookBindTiles(el);
+  lookBindAvatarAndBuy(el);
+}
+
+/**
+ * Ce que dit l'habit essayé : un cadeau, à gagner, ou à acheter.
+ * @param {WardrobeItem} tryItem
+ */
+function lookActionHTML(tryItem) {
+  // lu seulement dans les deux dernières branches : ni fête ni déblocage, l'habit
+  // s'achète et a donc un prix (WARDROBE)
+  const price = /** @type {number} */ (tryItem.price);
+  if (tryItem.season) {
+    const se = FETES[tryItem.season];
+    return `<p class="look-msg">${se.emoji} ${tryItem.name} : un cadeau ${tryItem.season === 'anniversaire' ? 'le jour de ton anniversaire' : 'à ' + se.name}</p>`;
+  } else if (tryItem.unlock) {
+    const left = tryItem.unlock - (state.missions || 0);
+    return `<p class="look-msg">🔒 Encore <b>${left}</b> mission${left > 1 ? 's' : ''} pour gagner : ${tryItem.name}</p>`;
+  } else if (state.coins >= price) {
+    return `<button class="btn-primary look-buy" id="look-buy">Acheter : ${tryItem.name} · 🪙 ${price}</button>`;
+  } else {
+    const miss = price - state.coins;
+    return `<p class="look-msg">Il te manque <b>${miss}</b> pièce${miss > 1 ? 's' : ''} pour : ${tryItem.name} 🪙 ${price}</p>`;
+  }
+}
+/**
+ * Une tuile de la grille : l'habit porté par l'avatar.
+ * @param {string | null} id l'habit, null pour « Rien »
+ * @param {string} av
+ * @param {ReturnType<typeof currentLook>} worn
+ */
+function lookTileHTML(id, av, worn) {
+  const it = id ? WARDROBE[id] : null;
+  // lookSlot est ici une clé de Look (la grille « Personnage » n'a pas de tuiles)
+  const on =
+    (/** @type {Record<string, string | null>} */ (worn)[lookSlot] || null) === id &&
+    !(lookTry && lookTry.slot === lookSlot);
+  const trying = lookTry && lookTry.id === id;
+  const owned = !id || ownsLookItem(id);
+  const lk = Object.assign({}, worn, { [lookSlot]: id });
+  const label = it
+    ? `${it.name}${owned ? '' : it.season ? ', un cadeau de saison' : it.unlock ? `, à gagner après ${it.unlock} missions` : `, ${it.price} pièces`}`
+    : 'Rien';
+  return `<button type="button" class="look-tile ${on ? 'on' : ''} ${trying ? 'trying' : ''} ${owned ? '' : 'locked'}" data-look="${id || ''}" aria-pressed="${on}" aria-label="${label}">
+    <span class="lt-av">${avatarHTML(av, lk)}</span>
+    <span class="lt-name">${it ? it.name : 'Rien'}</span>
+    ${owned ? (on ? '<span class="lt-tag on">✓</span>' : '') : `<span class="lt-tag">${lookStatusText(id)}</span>`}
+  </button>`;
+}
+/** @param {HTMLElement} el */
+function lookBindTiles(el) {
   el.querySelectorAll('[data-lslot]').forEach((b) =>
     setHandler(b, 'click', () => {
       playSound('tap');
@@ -425,6 +440,9 @@ function renderLook() {
       renderLook();
     }),
   );
+}
+/** @param {HTMLElement} el */
+function lookBindAvatarAndBuy(el) {
   el.querySelectorAll('[data-av]').forEach((b) =>
     setHandler(b, 'click', () => {
       playSound('tap');

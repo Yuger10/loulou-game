@@ -490,7 +490,7 @@ function maybeStoryEpisode() {
   state.storyEpisodes = Object.assign({}, state.storyEpisodes || {}, { [world]: k + 1 });
   addCoins(EPISODE_REWARD);
   save();
-  openEpisode(world, k, 0, true);
+  openEpisode(world, k, { line: 0, fresh: true });
   return true;
 }
 
@@ -498,10 +498,10 @@ function maybeStoryEpisode() {
 /**
  * @param {string} world
  * @param {number} k le numéro de l'épisode
- * @param {number} line la ligne à montrer
- * @param {boolean} fresh
+ * @param {{ line: number, fresh: boolean }} at la ligne à montrer ; fresh : pièces gagnées
  */
-function openEpisode(world, k, line, fresh) {
+function openEpisode(world, k, at) {
+  const { line, fresh } = at;
   const ep = EPISODES[world][k];
   const c = CHARACTERS[ep.by];
   const last = line >= ep.lines.length - 1;
@@ -523,7 +523,7 @@ function openEpisode(world, k, line, fresh) {
   setHandler(document.getElementById('ep-next'), 'click', () => {
     playSound('tap');
     if (!last) {
-      openEpisode(world, k, line + 1, fresh);
+      openEpisode(world, k, { line: line + 1, fresh });
       return;
     }
     closeModal();

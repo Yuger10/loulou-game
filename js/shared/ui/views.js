@@ -64,11 +64,10 @@ document.querySelectorAll('.navbtn').forEach((btn) => {
 // marque des icônes dessinées (data-ui-icon, js/shared/ui/icons.js).
 /**
  * @param {string} view
- * @param {string} icon
- * @param {string} label
- * @param {string} [iconKey]
+ * @param {{ icon: string, label: string, iconKey?: string }} nav
  */
-function setNavLabel(view, icon, label, iconKey) {
+function setNavLabel(view, nav) {
+  const { icon, label, iconKey } = nav;
   const b = document.querySelector(`.navbtn[data-view="${view}"]`);
   if (!b) return;
   const badge = b.querySelector('.badge');

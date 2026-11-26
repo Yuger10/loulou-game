@@ -141,6 +141,8 @@ const bagSVG = (fill, edge) =>
 const spoonIcon = (/** @type {string} */ fill) =>
   `<svg class="recipe-spoon" viewBox="0 0 40 40" aria-hidden="true"><ellipse cx="14" cy="14" rx="10" ry="8" fill="#E7C29A" stroke="#8A4A2B" stroke-width="2"/><ellipse cx="14" cy="13" rx="6" ry="4" fill="${fill}"/><path d="M21 20 L36 35" stroke="#8A4A2B" stroke-width="4" stroke-linecap="round"/></svg>`;
 
+/** @typedef {(el: HTMLElement, o?: { disable?: boolean }) => unknown} RecipeRetry une erreur : relance une autre recette */
+
 // la recette précédente : une relance en tire toujours une AUTRE (anti-devinette)
 let recipeLast = '';
 function renderRecipe() {
@@ -154,106 +156,22 @@ function renderRecipe() {
     flashModal('ok');
     winSoon();
   };
-  /** @type {(el: HTMLElement, o?: { disable?: boolean }) => unknown} */
+  /** @type {RecipeRetry} */
   const retry = (el, o) => loseLife(el, Object.assign({ onRetry: renderRecipe }, o || {}));
 
-  if (r.ask === 'bowls') {
-    const word = r.most ? 'le plus' : 'le moins';
-    const best = r.most ? Math.max(...r.amounts) : Math.min(...r.amounts);
-    const say = `Quel bol contient ${word} de ${r.ing.what} ?`;
-    openModal(`
-      ${gameHeader('🥣 La recette', say, `Cacao prépare sa recette. ${say}`)}
-      ${livesBar()}
-      <div class="recipe-options">${r.amounts.map((a) => `<button class="recipe-opt" data-v="${a}" aria-label="Un bol">${bowlSVG(a, r.ing.fill)}</button>`).join('')}</div>
-    `);
-    bindQuit();
-    startTimerIfNeeded('recipe');
-    setSolution([solSel('.recipe-opt', 'v', best)]);
-    setHintQuestion('recipe', { ask: 'bowls', most: r.most }, { choices: '.recipe-opt' });
-    document.querySelectorAll('.recipe-opt').forEach((b) =>
-      setHandler(b, 'click', () => {
-        if (Number(b.dataset.v) === best) {
-          stepOk(b);
-          ok();
-        } else retry(b);
-      }),
-    );
-    return;
-  }
+  if (r.ask === 'bowls') return recipeAskBowls(r, ok, retry);
+  if (r.ask === 'balance') return recipeAskBalance(r, ok, retry);
+  if (r.ask === 'spoons') return recipeAskSpoons(r, ok, retry);
+  recipeAskCup(r, ok, retry);
+}
 
-  if (r.ask === 'balance') {
-    const word = r.heaviest ? 'le plus lourd' : 'le plus léger';
-    const good = r.heaviest ? r.heavy : r.heavy === 'left' ? 'right' : 'left';
-    const say = `Quel sac est ${word} ?`;
-    openModal(`
-      ${gameHeader('⚖️ La recette', say, `Regarde la balance. ${say}`)}
-      ${livesBar()}
-      <div class="recipe-stage">${balanceSVG(r.heavy)}</div>
-      <div class="recipe-options">
-        <button class="recipe-opt" data-v="left" aria-label="Le sac rose">${bagSVG('#FF8FB8', '#A8456A')}</button>
-        <button class="recipe-opt" data-v="right" aria-label="Le sac bleu">${bagSVG('#9FDCF5', '#3F7FA8')}</button>
-      </div>
-    `);
-    bindQuit();
-    startTimerIfNeeded('recipe');
-    setSolution([solSel('.recipe-opt', 'v', good)]);
-    setHintQuestion('recipe', { ask: 'balance', heaviest: r.heaviest }, { choices: '.recipe-opt' });
-    document.querySelectorAll('.recipe-opt').forEach((b) =>
-      setHandler(b, 'click', () => {
-        if (b.dataset.v === good) {
-          stepOk(b);
-          ok();
-        } else retry(b);
-      }),
-    );
-    return;
-  }
-
-  if (r.ask === 'spoons') {
-    let count = 0;
-    const say = `Mets ${r.n} cuillères de ${r.ing.what} dans le bol, puis appuie sur « C'est prêt ! ».`;
-    openModal(`
-      ${gameHeader('🥄 La recette', `${r.n} cuillères de ${r.ing.what}`, `La recette de Cacao dit : ${r.n} cuillères de ${r.ing.what}. ${say}`)}
-      ${livesBar()}
-      <p class="recipe-ask" data-n="${r.n}">📜 ${r.n} cuillères de ${r.ing.what}</p>
-      <div class="recipe-stage recipe-spoons" id="recipe-spoons" aria-live="polite"></div>
-      <div class="recipe-actions">
-        <button class="btn-ghost recipe-undo" id="recipe-undo" aria-label="Enlever une cuillère">↩️</button>
-        <button class="recipe-add" id="recipe-add">🥄 Une cuillère</button>
-        <button class="btn-primary recipe-done" id="recipe-done">C'est prêt !</button>
-      </div>
-    `);
-    bindQuit();
-    startTimerIfNeeded('recipe');
-    setSolution([...Array(r.n).fill('#recipe-add'), '#recipe-done']);
-    setHintQuestion('recipe', { ask: 'spoons', n: r.n }, { choices: '.recipe-done' });
-    const box = /** @type {HTMLElement} */ (document.getElementById('recipe-spoons'));
-    const draw = () => {
-      box.innerHTML = Array.from({ length: count }, () => spoonIcon(r.ing.fill)).join('');
-    };
-    setHandler(document.getElementById('recipe-add'), 'click', () => {
-      if (count < 12) {
-        count++;
-        draw();
-      }
-    });
-    setHandler(document.getElementById('recipe-undo'), 'click', () => {
-      if (count > 0) {
-        count--;
-        draw();
-      }
-    });
-    setHandler(document.getElementById('recipe-done'), 'click', (e) => {
-      const done = /** @type {HTMLElement} */ (e.currentTarget);
-      if (count === r.n) {
-        stepOk(done);
-        ok();
-      } else retry(done, { disable: false });
-    });
-    return;
-  }
-
-  // le verre doseur : des traits à toucher ; seuls certains portent un nombre
+// le verre doseur : des traits à toucher ; seuls certains portent un nombre
+/**
+ * @param {Extract<RecipeRound, { ask: 'cup' }>} r
+ * @param {() => void} ok
+ * @param {RecipeRetry} retry
+ */
+function recipeAskCup(r, ok, retry) {
   const { scale, marks, target } = r;
   const say = `Verse ${unitSay(target, scale.unit)} de ${r.liquid.what} : touche le bon trait du verre doseur.`;
   const pct = (/** @type {number} */ v) => 6 + (v / scale.max) * 86;
@@ -292,6 +210,111 @@ function renderRecipe() {
         stepOk(b);
         ok();
       } else retry(b, { disable: false });
+    }),
+  );
+}
+/**
+ * @param {Extract<RecipeRound, { ask: 'spoons' }>} r
+ * @param {() => void} ok
+ * @param {RecipeRetry} retry
+ */
+function recipeAskSpoons(r, ok, retry) {
+  let count = 0;
+  const say = `Mets ${r.n} cuillères de ${r.ing.what} dans le bol, puis appuie sur « C'est prêt ! ».`;
+  openModal(`
+    ${gameHeader('🥄 La recette', `${r.n} cuillères de ${r.ing.what}`, `La recette de Cacao dit : ${r.n} cuillères de ${r.ing.what}. ${say}`)}
+    ${livesBar()}
+    <p class="recipe-ask" data-n="${r.n}">📜 ${r.n} cuillères de ${r.ing.what}</p>
+    <div class="recipe-stage recipe-spoons" id="recipe-spoons" aria-live="polite"></div>
+    <div class="recipe-actions">
+      <button class="btn-ghost recipe-undo" id="recipe-undo" aria-label="Enlever une cuillère">↩️</button>
+      <button class="recipe-add" id="recipe-add">🥄 Une cuillère</button>
+      <button class="btn-primary recipe-done" id="recipe-done">C'est prêt !</button>
+    </div>
+  `);
+  bindQuit();
+  startTimerIfNeeded('recipe');
+  setSolution([...Array(r.n).fill('#recipe-add'), '#recipe-done']);
+  setHintQuestion('recipe', { ask: 'spoons', n: r.n }, { choices: '.recipe-done' });
+  const box = /** @type {HTMLElement} */ (document.getElementById('recipe-spoons'));
+  const draw = () => {
+    box.innerHTML = Array.from({ length: count }, () => spoonIcon(r.ing.fill)).join('');
+  };
+  setHandler(document.getElementById('recipe-add'), 'click', () => {
+    if (count < 12) {
+      count++;
+      draw();
+    }
+  });
+  setHandler(document.getElementById('recipe-undo'), 'click', () => {
+    if (count > 0) {
+      count--;
+      draw();
+    }
+  });
+  setHandler(document.getElementById('recipe-done'), 'click', (e) => {
+    const done = /** @type {HTMLElement} */ (e.currentTarget);
+    if (count === r.n) {
+      stepOk(done);
+      ok();
+    } else retry(done, { disable: false });
+  });
+}
+/**
+ * @param {Extract<RecipeRound, { ask: 'balance' }>} r
+ * @param {() => void} ok
+ * @param {RecipeRetry} retry
+ */
+function recipeAskBalance(r, ok, retry) {
+  const word = r.heaviest ? 'le plus lourd' : 'le plus léger';
+  const good = r.heaviest ? r.heavy : r.heavy === 'left' ? 'right' : 'left';
+  const say = `Quel sac est ${word} ?`;
+  openModal(`
+    ${gameHeader('⚖️ La recette', say, `Regarde la balance. ${say}`)}
+    ${livesBar()}
+    <div class="recipe-stage">${balanceSVG(r.heavy)}</div>
+    <div class="recipe-options">
+      <button class="recipe-opt" data-v="left" aria-label="Le sac rose">${bagSVG('#FF8FB8', '#A8456A')}</button>
+      <button class="recipe-opt" data-v="right" aria-label="Le sac bleu">${bagSVG('#9FDCF5', '#3F7FA8')}</button>
+    </div>
+  `);
+  bindQuit();
+  startTimerIfNeeded('recipe');
+  setSolution([solSel('.recipe-opt', 'v', good)]);
+  setHintQuestion('recipe', { ask: 'balance', heaviest: r.heaviest }, { choices: '.recipe-opt' });
+  document.querySelectorAll('.recipe-opt').forEach((b) =>
+    setHandler(b, 'click', () => {
+      if (b.dataset.v === good) {
+        stepOk(b);
+        ok();
+      } else retry(b);
+    }),
+  );
+}
+/**
+ * @param {Extract<RecipeRound, { ask: 'bowls' }>} r
+ * @param {() => void} ok
+ * @param {RecipeRetry} retry
+ */
+function recipeAskBowls(r, ok, retry) {
+  const word = r.most ? 'le plus' : 'le moins';
+  const best = r.most ? Math.max(...r.amounts) : Math.min(...r.amounts);
+  const say = `Quel bol contient ${word} de ${r.ing.what} ?`;
+  openModal(`
+    ${gameHeader('🥣 La recette', say, `Cacao prépare sa recette. ${say}`)}
+    ${livesBar()}
+    <div class="recipe-options">${r.amounts.map((a) => `<button class="recipe-opt" data-v="${a}" aria-label="Un bol">${bowlSVG(a, r.ing.fill)}</button>`).join('')}</div>
+  `);
+  bindQuit();
+  startTimerIfNeeded('recipe');
+  setSolution([solSel('.recipe-opt', 'v', best)]);
+  setHintQuestion('recipe', { ask: 'bowls', most: r.most }, { choices: '.recipe-opt' });
+  document.querySelectorAll('.recipe-opt').forEach((b) =>
+    setHandler(b, 'click', () => {
+      if (Number(b.dataset.v) === best) {
+        stepOk(b);
+        ok();
+      } else retry(b);
     }),
   );
 }

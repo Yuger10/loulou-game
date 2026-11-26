@@ -544,7 +544,7 @@ function squishySortTap(/** @type {HTMLButtonElement} */ btn, /** @type {SortQue
   vibrate(80);
   hintNudge(true);
   if (run.errors >= SQ_SORT_MAX_ERRORS) {
-    recordSorting(false, run.errors, run.task.level, run.age);
+    recordSorting(false, { errors: run.errors, level: run.task.level, age: run.age });
     speak(`${sortWrongHint(id, run.task.criteria)} On essaie une autre boîte !`);
     sqLater(() => openSquishyRoom('ranger', { avoid: run.task.key }), 2200);
   } else {

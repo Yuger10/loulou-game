@@ -30,45 +30,33 @@ import { setHandler } from './handlers.js';
 /** @type {((result: ConfirmResult) => void) | null} */
 let confirmClose = null;
 
+const CONFIRM_DEFAULTS = {
+  text: '',
+  confirmLabel: 'Oui',
+  cancelLabel: 'Annuler',
+  danger: true,
+  typeWord: '',
+  dismissValue: /** @type {boolean | null} */ (false),
+  primaryYes: false,
+};
+/** @typedef {typeof CONFIRM_DEFAULTS} ConfirmSettings */
+/**
+ * La fenêtre ouverte : ses boutons, son champ (double confirmation) et le mot attendu.
+ * @typedef {{ el: HTMLElement, o: ConfirmSettings, word: string, yes: HTMLElement, no: HTMLElement,
+ *   input: HTMLInputElement, typed: () => boolean }} ConfirmUI
+ */
+
 /**
  * @param {ConfirmOptions} [opts]
  * @returns {Promise<ConfirmResult>}
  */
 function askConfirm(opts) {
-  const o = Object.assign(
-    {
-      text: '',
-      confirmLabel: 'Oui',
-      cancelLabel: 'Annuler',
-      danger: true,
-      typeWord: '',
-      dismissValue: false,
-      primaryYes: false,
-    },
-    opts || {},
-  );
+  /** @type {ConfirmSettings} */
+  const o = Object.assign({}, CONFIRM_DEFAULTS, opts || {});
   if (confirmClose) confirmClose(null);
-  let el = document.getElementById('confirm-layer');
-  if (!el) {
-    el = document.createElement('div');
-    el.id = 'confirm-layer';
-    document.body.appendChild(el);
-  }
+  const el = confirmLayer();
   const word = String(o.typeWord || '').trim();
-  el.innerHTML = `
-    <div class="confirm-box" role="alertdialog" aria-modal="true" aria-labelledby="confirm-text">
-      <p id="confirm-text" class="confirm-text">${o.text}</p>
-      ${
-        word
-          ? `<label class="confirm-type">Pour confirmer, écris <strong>${word}</strong>
-        <input id="confirm-input" type="text" autocomplete="off" autocapitalize="characters" autocorrect="off" spellcheck="false" enterkeyhint="done"></label>`
-          : ''
-      }
-      <div class="confirm-actions">
-        <button type="button" class="${o.primaryYes ? 'form-primary' : o.danger ? 'danger' : 'form-secondary'}" data-confirm="yes">${o.confirmLabel}</button>
-        <button type="button" class="${o.primaryYes ? 'form-secondary' : 'form-primary'}" data-confirm="no">${o.cancelLabel}</button>
-      </div>
-    </div>`;
+  el.innerHTML = confirmBoxHTML(o, word);
   el.hidden = false;
   speak(String(o.text).replace(/<[^>]+>/g, ''));
   // les deux boutons viennent d'être écrits juste au-dessus
@@ -90,8 +78,6 @@ function askConfirm(opts) {
         close(true);
       }
     };
-    // une fonction fléchée (et non `function close`, remontée en haut du bloc) :
-    // TypeScript sait alors que `el` n'est plus null quand elle est créée
     /** @param {ConfirmResult} result */
     const close = (result) => {
       document.removeEventListener('keydown', onKey, true);
@@ -106,18 +92,59 @@ function askConfirm(opts) {
       input.addEventListener('input', refresh);
       setTimeout(() => input.focus(), 0);
     } else setTimeout(() => no.focus(), 0);
-    setHandler(yes, 'click', () => {
-      if (!typed()) {
-        speak(`Pour confirmer, écris ${word}.`);
-        if (input) input.focus();
-        return;
+    confirmBindButtons({ el, o, word, yes, no, input, typed }, close);
+  });
+}
+
+// la couche de la fenêtre, créée au premier appel
+function confirmLayer() {
+  let el = document.getElementById('confirm-layer');
+  if (!el) {
+    el = document.createElement('div');
+    el.id = 'confirm-layer';
+    document.body.appendChild(el);
+  }
+  return el;
+}
+
+/**
+ * @param {ConfirmSettings} o
+ * @param {string} word le mot à taper (double confirmation), ou rien
+ */
+function confirmBoxHTML(o, word) {
+  return `
+    <div class="confirm-box" role="alertdialog" aria-modal="true" aria-labelledby="confirm-text">
+      <p id="confirm-text" class="confirm-text">${o.text}</p>
+      ${
+        word
+          ? `<label class="confirm-type">Pour confirmer, écris <strong>${word}</strong>
+        <input id="confirm-input" type="text" autocomplete="off" autocapitalize="characters" autocorrect="off" spellcheck="false" enterkeyhint="done"></label>`
+          : ''
       }
-      close(true);
-    });
-    setHandler(no, 'click', () => close(false));
-    setHandler(el, 'click', (e) => {
-      if (e.target === el) close(o.dismissValue);
-    });
+      <div class="confirm-actions">
+        <button type="button" class="${o.primaryYes ? 'form-primary' : o.danger ? 'danger' : 'form-secondary'}" data-confirm="yes">${o.confirmLabel}</button>
+        <button type="button" class="${o.primaryYes ? 'form-secondary' : 'form-primary'}" data-confirm="no">${o.cancelLabel}</button>
+      </div>
+    </div>`;
+}
+
+/**
+ * @param {ConfirmUI} c
+ * @param {(result: ConfirmResult) => void} close
+ */
+function confirmBindButtons(c, close) {
+  const { el, o, word, yes, no, input, typed } = c;
+  setHandler(yes, 'click', () => {
+    if (!typed()) {
+      speak(`Pour confirmer, écris ${word}.`);
+      if (input) input.focus();
+      return;
+    }
+    close(true);
+  });
+  setHandler(no, 'click', () => close(false));
+  setHandler(el, 'click', (e) => {
+    if (e.target === el) close(o.dismissValue);
   });
 }
 
