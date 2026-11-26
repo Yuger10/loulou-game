@@ -132,7 +132,7 @@ function checkNewIsland() {
 /**
  * L'écran d'ouverture d'une saison : `seen` = le drapeau de la sauvegarde,
  * `say` = la phrase dite (après le prénom, s'il y en a un), `go` = l'id du bouton.
- * @typedef {{ seen: 'skyIntroSeen', cls: string, go: string, art: string, title: string, text: string, say: string, button: string }} SeasonOpening
+ * @typedef {{ seen: 'skyIntroSeen' | 'expeditionIntroSeen', cls: string, go: string, art: string, title: string, text: string, say: string, button: string }} SeasonOpening
  */
 /** @type {Record<number, SeasonOpening>} */
 const SEASON_OPENINGS = {
@@ -147,6 +147,16 @@ const SEASON_OPENINGS = {
     text: "une deuxième carte, avec ses îles et son histoire. Tu passes d'un monde à l'autre avec les onglets de la carte.",
     say: "un nouveau monde s'ouvre dans le ciel !",
     button: 'Découvrir le Ciel ☁️',
+  },
+  3: {
+    seen: 'expeditionIntroSeen',
+    cls: 'expedition-open',
+    go: 'expedition-go',
+    art: `<div class="expedition-open-art" aria-hidden="true"><span class="eo-map">🗺️</span><span class="eo-plane">✈️</span><span class="eo-compass">🧭</span></div>`,
+    title: 'Une nouvelle expédition commence ! ✈️',
+    text: "une troisième carte, avec ses îles et son histoire. Tu passes d'une carte à l'autre avec les onglets.",
+    say: 'une nouvelle expédition commence !',
+    button: 'Partir en expédition ✈️',
   },
 };
 /** @param {number} s la saison @param {() => void} onDone la suite (le prologue de la saison) */

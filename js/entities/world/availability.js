@@ -15,21 +15,26 @@ import { WORLD_ORDER, WORLDS } from './worlds.js';
    (test/niveaux.test.js vérifie qu'il dit la même chose que WORLDS).
    Les îles du Ciel gardent la difficulté la plus haute (palier 6, toujours
    plafonnée par l'âge et le niveau de chaque jeu).
+   La Grande Expédition (saison 3) est déclarée avant ses îles : un archipel
+   sans île n'a pas de niveau et ne se montre nulle part.
    Ajouter une île à un archipel : une entrée dans WORLDS avec `saison` et
    son niveau ; le niveau de l'archipel en découle. */
 /**
  * Un archipel (une saison) ; `level` est calculé par refreshArchipelagos(), d'après
  * ses îles : `null` tant qu'il n'a aucune île (il reste alors caché partout).
- * @typedef {{ name: string, short: string, emoji: string, vehicle: string, sky: boolean, level: number | null }} Archipelago
+ * @typedef {{ name: string, short: string, emoji: string, vehicle: string, sky: boolean, paper: boolean, level: number | null }} Archipelago
  */
 // écrit sans `level` (posé par refreshArchipelagos) : d'où la conversion en deux temps
 const ARCHIPELAGOS = /** @type {Record<number, Archipelago>} */ (
   /** @type {Record<number, Omit<Archipelago, 'level'>>} */ ({
-    1: { name: 'Le Lagon Magique', short: 'Le Lagon', emoji: '🌊', vehicle: '⛵', sky: false },
-    2: { name: 'Le Ciel des Rêves', short: 'Le Ciel', emoji: '☁️', vehicle: '🎈', sky: true },
+    1: { name: 'Le Lagon Magique', short: 'Le Lagon', emoji: '🌊', vehicle: '⛵', sky: false, paper: false },
+    2: { name: 'Le Ciel des Rêves', short: 'Le Ciel', emoji: '☁️', vehicle: '🎈', sky: true, paper: false },
+    // la saison 3 : une carte d'explorateur en vieux papier (`paper`), en avion en papier.
+    // Sans île, elle reste cachée partout ; elle apparaît avec sa première île.
+    3: { name: 'La Grande Expédition', short: "L'Expédition", emoji: '🧭', vehicle: '✈️', sky: false, paper: true },
   })
 );
-const ARCHIPELAGO_ORDER = [1, 2];
+const ARCHIPELAGO_ORDER = [1, 2, 3];
 /* Un archipel s'ouvre avec sa première île : un seul chiffre à tenir à jour.
    Recalcule sur place l'ordre des îles et le niveau de chaque archipel ; sans
    île, pas de niveau (`Math.min()` vaudrait Infinity, qui s'afficherait).

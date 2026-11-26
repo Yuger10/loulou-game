@@ -157,6 +157,7 @@ const SLICES = [
       'js/features/story/grisou.js',
       'js/features/story/finale.js',
       'js/features/story/story-s3.js',
+      'js/features/story/zap-map.js',
       'js/features/story/story.js',
       'js/features/story/episodes.js',
     ],

@@ -51,6 +51,7 @@ import { EPISODES, episodesSeen, openEpisode } from './episodes.js';
 import { openSeasonFinale } from './finale.js';
 import { grisouSVG } from './grisou.js';
 import { STORY_S3 } from './story-s3.js';
+import { zapMapFound, zapMapPieces, zapMapRowHTML, zapMapSay, zapMapSVG } from './zap-map.js';
 
 /** @typedef {{ e: string, ok?: boolean }} RiddleOption un choix (emoji) ; `ok` sur la bonne réponse */
 /** @typedef {{ q: string, tip: string, opts: RiddleOption[] }} Riddle une énigme et son indice */
@@ -436,6 +437,16 @@ const STORY_PROLOGUES = {
     ],
     go: 'En route ! ☁️',
   },
+  3: {
+    companion: 'zap',
+    title: 'La carte déchirée',
+    intro: [
+      "Zap le super-héros, à ton service ! En rangeant mon grenier, j'ai trouvé une vieille carte d'explorateur 🗺️",
+      'Mais elle est déchirée en cinq morceaux, et le vent les a emportés sur cinq îles !',
+      'Au bout de la carte, il y a un trésor. Aide-moi à retrouver les morceaux, île après île !',
+    ],
+    go: 'En route ! ✈️',
+  },
 };
 
 // Grisou reprend des couleurs à chaque île du Ciel libérée
@@ -449,10 +460,16 @@ function storySolved(world) {
 }
 
 // Le dessin qui accompagne l'histoire d'une saison (prologue, chapitre, victoire) :
-// Grisou pour la saison 2. `fresh` : l'île dont l'énigme vient d'être résolue.
-/** @type {Record<number, { cls: string, svg: (fresh?: string) => string }>} */
+// Grisou pour la saison 2, la carte de Zap pour la saison 3. `fresh` : l'île dont
+// l'énigme vient d'être résolue ; `say` : ce que la voix ajoute à la victoire.
+/** @type {Record<number, { cls: string, svg: (fresh?: string) => string, say?: () => string }>} */
 const SEASON_STORY_ART = {
   2: { cls: 'story-grisou', svg: () => grisouSVG(skyIslandsFreed()) },
+  3: {
+    cls: 'story-zapmap',
+    svg: (fresh) => zapMapSVG(zapMapFound(), { fresh }),
+    say: () => zapMapSay(zapMapPieces()),
+  },
 };
 /** @param {number} saison @param {{ happy?: boolean, fresh?: string }} [o] */
 function seasonArtHTML(saison, o = {}) {
@@ -541,7 +558,7 @@ function renderStoryIntro(world, idx, onDone) {
     });
 }
 
-// Le prologue d'une saison (v55) : récit lu ligne à ligne, avec Grisou.
+// Le prologue d'une saison (v55) : récit lu ligne à ligne, avec le dessin de la saison.
 /** @param {number} saison @param {(() => void) | null} [onDone] @param {number} [idxArg] la ligne du récit */
 function openSeasonPrologue(saison, onDone, idxArg) {
   const pr = STORY_PROLOGUES[saison];
@@ -621,7 +638,10 @@ function storyWin(world, onDone) {
   addCoins(ch.reward);
   // v53 : une boîte surprise de la série de l'île (une seule fois par île)
   const box = addStorySquishyBox(world);
-  speak(`${ch.success} Tu gagnes ${ch.reward} pièces${box ? ' et une boîte surprise de squishies' : ''}.`);
+  // la saison 3 ajoute où en est la carte de Zap, dans la même phrase (un second speak la couperait)
+  const art = SEASON_STORY_ART[archipelagoOf(world)];
+  const more = art && art.say ? ' ' + art.say() : '';
+  speak(`${ch.success} Tu gagnes ${ch.reward} pièces${box ? ' et une boîte surprise de squishies' : ''}.${more}`);
   openModal(`
     <div class="reward-box win-box">
       <span class="win-rays" aria-hidden="true"></span>
@@ -698,6 +718,7 @@ function storySeasonHTML(saison) {
             <span class="story-chap-n">${a.emoji}</span><span class="story-chap-ico">📜</span><span class="story-chap-title">${pr.title}</span></button>`
               : ''
           }
+          ${saison === 3 && open ? zapMapRowHTML() : ''}
           ${worldsOf(saison)
             .map((id, i) => storyChapterRow(id, i))
             .join('')}

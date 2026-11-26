@@ -28,8 +28,9 @@ import {
 import { renderSamGuide, teamHeadsHTML } from '../companion-team/index.js';
 import { renderIslandCard, renderLevelPill, setWorld } from '../island/index.js';
 
-/* Deux archipels (v55) : le Lagon Magique et le Ciel des Rêves, chacun sa
-   carte, choisie par deux onglets en haut. Le Ciel est verrouillé (cadenas et
+/* Les archipels (v55) : le Lagon Magique, le Ciel des Rêves, puis La Grande
+   Expédition (carte en vieux papier, avion en papier), chacun sa carte,
+   choisie par les onglets en haut. Le Ciel est verrouillé (cadenas et
    son niveau) tant qu'il n'est pas ouvert ; il a son fond pastel et ses
    nuages, et le bateau y devient une montgolfière. On voyage d'île en île à
    l'intérieur d'un archipel ; on passe de l'un à l'autre par l'onglet. */
@@ -66,7 +67,7 @@ function renderMapTabs(saison) {
     .map((s) => {
       const a = ARCHIPELAGOS[s],
         open = archipelagoUnlocked(s);
-      return `<button type="button" class="map-tab ${s === saison ? 'active' : ''} ${open ? '' : 'locked'} ${a.sky ? 'sky' : ''}" data-saison="${s}"
+      return `<button type="button" class="map-tab ${s === saison ? 'active' : ''} ${open ? '' : 'locked'} ${a.sky ? 'sky' : ''} ${a.paper ? 'paper' : ''}" data-saison="${s}"
       aria-label="${a.name}${open ? '' : `, niveau ${a.level}`}">
       <span class="mt-ico" aria-hidden="true">${open ? a.emoji : '🔒'}</span>
       <span class="mt-txt"><b>${a.name}</b>${open ? '' : `<i>Niveau ${a.level}</i>`}</span>
@@ -104,6 +105,7 @@ function renderMap() {
   const reached = ids.reduce((m, id, i) => (worldUnlocked(id) ? i : m), 0);
   const hasNext = reached < ids.length - 1;
   el.classList.toggle('sky', !!arch.sky);
+  el.classList.toggle('paper', !!arch.paper);
   el.dataset.saison = String(saison); // dataset ne garde que du texte (même valeur qu'avant)
   el.innerHTML = `
     <div class="sea" aria-hidden="true">
@@ -112,7 +114,11 @@ function renderMap() {
           ? `
       <span class="cloud c1">☁️</span><span class="cloud c2">☁️</span><span class="cloud c3">☁️</span>
       <span class="sparkle s1">✨</span><span class="sparkle s2">⭐</span><span class="sparkle s3">✨</span>`
-          : `
+          : arch.paper
+            ? `
+      <span class="compass">🧭</span><span class="cloud c1">☁️</span><span class="cloud c2">☁️</span>
+      <span class="sparkle s1">✨</span><span class="sparkle s2">✨</span>`
+            : `
       <span class="wave w1"></span><span class="wave w2"></span><span class="wave w3"></span>
       <span class="cloud c1">☁️</span><span class="cloud c2">☁️</span>
       <span class="sparkle s1">✨</span><span class="sparkle s2">✨</span>
@@ -127,7 +133,7 @@ function renderMap() {
       ${hasNext ? `<path d="${mapRoutePath(ids, reached, reached + 1)}" class="route-next"/>` : ''}
     </svg>
     ${ids.map(mapIslandHTML).join('')}
-    <span class="boat ${arch.sky ? 'balloon' : ''}" id="map-boat"><span class="boat-av">${avatarHTML(state.avatar, state.look)}</span><span class="boat-ride">${arch.vehicle}</span><span class="boat-team" data-team-heads>${teamHeadsHTML()}</span></span>
+    <span class="boat ${arch.sky ? 'balloon' : arch.paper ? 'plane' : ''}" id="map-boat"><span class="boat-av">${avatarHTML(state.avatar, state.look)}</span><span class="boat-ride">${arch.vehicle}</span><span class="boat-team" data-team-heads>${teamHeadsHTML()}</span></span>
   `;
   // le véhicule est à l'île courante ; dans l'autre archipel, il attend à la première île
   const here = ids.includes(currentWorld);
