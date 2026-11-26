@@ -22,124 +22,126 @@ import { bindQuit, gameHeader } from '../../screen/index.js';
 
 /** @typedef {{ k: string, emoji: string, freq: number, name: string }} SimonPad une pastille et sa note */
 
+/** @type {SimonPad[]} */
+const SIMON_PADS = [
+  { k: 'a', emoji: '🟡', freq: 392, name: 'jaune' },
+  { k: 'b', emoji: '🔵', freq: 523, name: 'bleu' },
+  { k: 'c', emoji: '🟢', freq: 659, name: 'vert' },
+  { k: 'd', emoji: '🔴', freq: 784, name: 'rouge' },
+];
+/** @typedef {{ seq: SimonPad[], pos: number, playing: boolean }} SimonPlay une partie : la suite, où en est l'enfant */
+
 function renderSimon() {
   setupLives('simon');
-  const PADS = [
-    { k: 'a', emoji: '🟡', freq: 392, name: 'jaune' },
-    { k: 'b', emoji: '🔵', freq: 523, name: 'bleu' },
-    { k: 'c', emoji: '🟢', freq: 659, name: 'vert' },
-    { k: 'd', emoji: '🔴', freq: 784, name: 'rouge' },
-  ];
   const len = simonLength(gameDiff());
-  const seq = Array.from({ length: len }, () => pickRandom(PADS));
-  let pos = 0,
-    playing = true;
+  /** @type {SimonPlay} */
+  const g = { seq: Array.from({ length: len }, () => pickRandom(SIMON_PADS)), pos: 0, playing: true };
+  const { seq } = g;
 
   openModal(`
     ${gameHeader('🎵 Répète après moi', 'Regarde bien les couleurs, puis touche-les dans le même ordre')}
     ${livesBar()}
     ${progressDots(0, len)}
     <div class="simon-grid" id="simon-grid">
-      ${PADS.map((p) => `<button class="simon-pad" data-k="${p.k}">${p.emoji}</button>`).join('')}
+      ${SIMON_PADS.map((p) => `<button class="simon-pad" data-k="${p.k}">${p.emoji}</button>`).join('')}
     </div>
     <p class="puzzle-hint" id="simon-state">👀 Regarde…</p>
   `);
   bindQuit();
 
-  const padEl = (/** @type {string} */ k) => document.querySelector(`.simon-pad[data-k="${k}"]`);
-  // chaque pastille a sa propre note : elle peut reconnaître la couleur à
-  // l'oreille. Note de marimba exacte (sans variation), pour être mémorisée.
-  /**
-   * @param {SimonPad} p
-   * @param {number} [dur]
-   * @param {number} [vol]
-   */
-  function padTone(p, dur = 0.3, vol = 0.16) {
-    playNote(p.freq, dur, vol);
-  }
-  /**
-   * @param {SimonPad} p
-   * @param {number} i son rang (des fractions pour rejouer plus lentement)
-   */
-  function flash(p, i) {
-    setTimeout(
-      () => {
-        const el = padEl(p.k);
-        if (!el) return;
-        el.classList.add('lit');
-        padTone(p);
-        setTimeout(() => el.classList.remove('lit'), 380);
-      },
-      600 + i * 650,
-    );
-  }
-  seq.forEach(flash);
+  seq.forEach(simonFlash);
   setSolution(seq.map((p) => solSel('.simon-pad', 'k', p.k))); // après « À toi ! »
   // indices (v52) : revoir la suite, plus lentement, depuis le début
   const q = {
     len,
     replay() {
-      if (playing) return;
-      playing = true;
-      pos = 0;
+      if (g.playing) return;
+      g.playing = true;
+      g.pos = 0;
       document.querySelectorAll('.game-progress i').forEach((dd) => dd.classList.remove('on'));
       const s = document.getElementById('simon-state');
       if (s) s.textContent = '👀 Regarde encore…';
-      seq.forEach((p, i) => flash(p, i * 1.6)); // 1,6 fois plus lent
-      setTimeout(
-        () => {
-          playing = false;
-          const s2 = document.getElementById('simon-state');
-          if (s2) s2.textContent = '👆 À toi !';
-        },
-        600 + seq.length * 1040,
-      );
+      seq.forEach((p, i) => simonFlash(p, i * 1.6)); // 1,6 fois plus lent
+      simonYourTurn(g, 600 + seq.length * 1040);
     },
   };
   setHintQuestion('simon', q);
-  setTimeout(
-    () => {
-      playing = false;
-      const s = document.getElementById('simon-state');
-      if (s) s.textContent = '👆 À toi !';
-    },
-    600 + seq.length * 650,
-  );
+  simonYourTurn(g, 600 + seq.length * 650);
 
   document.querySelectorAll('.simon-pad').forEach((btn) => {
-    setHandler(btn, 'click', () => {
-      if (playing) return;
-      const k = btn.dataset.k;
-      const p = /** @type {SimonPad} */ (PADS.find((x) => x.k === k)); // chaque bouton porte la clé d'une pastille
-      btn.classList.add('lit');
-      setTimeout(() => btn.classList.remove('lit'), 200);
-      padTone(p, 0.22, 0.15); // le son de la pastille joue toujours, même si c'est la mauvaise
-      if (seq[pos].k === k) {
-        pos++;
-        document.querySelectorAll('.game-progress i').forEach((dd, i) => dd.classList.toggle('on', i < pos));
-        if (pos === seq.length) {
-          flashModal('ok');
-          winSoon();
-        }
-      } else {
-        if (loseLife(btn, { disable: false })) return;
-        pos = 0;
-        document.querySelectorAll('.game-progress i').forEach((dd) => dd.classList.remove('on'));
-        const s = document.getElementById('simon-state');
-        if (s) s.textContent = '🔁 On recommence…';
-        playing = true;
-        seq.forEach(flash);
-        setTimeout(
-          () => {
-            playing = false;
-            const s2 = document.getElementById('simon-state');
-            if (s2) s2.textContent = '👆 À toi !';
-          },
-          600 + seq.length * 650,
-        );
-      }
-    });
+    setHandler(btn, 'click', () => simonPress(g, btn));
   });
+}
+
+const simonPadEl = (/** @type {string} */ k) => document.querySelector(`.simon-pad[data-k="${k}"]`);
+// chaque pastille a sa propre note : elle peut reconnaître la couleur à
+// l'oreille. Note de marimba exacte (sans variation), pour être mémorisée.
+/**
+ * @param {SimonPad} p
+ * @param {number} [dur]
+ * @param {number} [vol]
+ */
+function simonPadTone(p, dur = 0.3, vol = 0.16) {
+  playNote(p.freq, dur, vol);
+}
+/**
+ * @param {SimonPad} p
+ * @param {number} i son rang (des fractions pour rejouer plus lentement)
+ */
+function simonFlash(p, i) {
+  setTimeout(
+    () => {
+      const el = simonPadEl(p.k);
+      if (!el) return;
+      el.classList.add('lit');
+      simonPadTone(p);
+      setTimeout(() => el.classList.remove('lit'), 380);
+    },
+    600 + i * 650,
+  );
+}
+/**
+ * Après la suite montrée : « À toi ! ».
+ * @param {SimonPlay} g
+ * @param {number} delay
+ */
+function simonYourTurn(g, delay) {
+  setTimeout(() => {
+    g.playing = false;
+    const s = document.getElementById('simon-state');
+    if (s) s.textContent = '👆 À toi !';
+  }, delay);
+}
+/**
+ * Une pastille touchée par l'enfant.
+ * @param {SimonPlay} g
+ * @param {HTMLElement} btn
+ */
+function simonPress(g, btn) {
+  const { seq } = g;
+  if (g.playing) return;
+  const k = btn.dataset.k;
+  const p = /** @type {SimonPad} */ (SIMON_PADS.find((x) => x.k === k)); // chaque bouton porte la clé d'une pastille
+  btn.classList.add('lit');
+  setTimeout(() => btn.classList.remove('lit'), 200);
+  simonPadTone(p, 0.22, 0.15); // le son de la pastille joue toujours, même si c'est la mauvaise
+  if (seq[g.pos].k === k) {
+    g.pos++;
+    document.querySelectorAll('.game-progress i').forEach((dd, i) => dd.classList.toggle('on', i < g.pos));
+    if (g.pos === seq.length) {
+      flashModal('ok');
+      winSoon();
+    }
+    return;
+  }
+  if (loseLife(btn, { disable: false })) return;
+  g.pos = 0;
+  document.querySelectorAll('.game-progress i').forEach((dd) => dd.classList.remove('on'));
+  const s = document.getElementById('simon-state');
+  if (s) s.textContent = '🔁 On recommence…';
+  g.playing = true;
+  seq.forEach(simonFlash);
+  simonYourTurn(g, 600 + seq.length * 650);
 }
 
 // Indices (v52) : 1. dire le nom des couleurs dans sa tête pendant qu'elles

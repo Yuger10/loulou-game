@@ -138,35 +138,8 @@ function loseLife(target, opts = {}) {
   playSound('wrong');
   vibrate(90);
   speakWrongHint();
-  if (el) {
-    shakeEl(el);
-    el.classList.add('ko-flash');
-    if (opts.disable !== false && 'disabled' in el) {
-      el.disabled = true;
-      el.classList.add('ko');
-    }
-    setTimeout(() => el.classList.remove('ko-flash'), 450);
-  }
-  if (lives === Infinity) {
-    // Avec seulement 2-3 choix et des essais illimités, laisser le
-    // bouton fautif se réactiver permettrait de deviner la bonne
-    // réponse PAR ÉLIMINATION, sans aucune compréhension (observé en
-    // situation réelle sur « Volumes » et « Quelle saison ? »). Quand
-    // le jeu le permet (`opts.onRetry`), on propose une NOUVELLE
-    // question à la place — jamais la même à éliminer petit à petit.
-    if (opts.onRetry) {
-      scheduleRetry(opts.onRetry);
-      return false;
-    }
-    if (el && 'disabled' in el && opts.disable !== false) {
-      // île 1 : la mauvaise réponse se referme mais on peut continuer
-      setTimeout(() => {
-        el.disabled = false;
-        el.classList.remove('ko');
-      }, 700);
-    }
-    return false;
-  }
+  if (el) loseLifeShake(el, opts);
+  if (lives === Infinity) return loseLifeUnlimited(el, opts);
   lives--;
   renderLives();
   flashModal('ko');
@@ -180,6 +153,47 @@ function loseLife(target, opts = {}) {
   if (opts.onRetry) {
     scheduleRetry(opts.onRetry);
     return false;
+  }
+  return false;
+}
+
+/**
+ * Le bouton fautif tremble et se referme (sauf `disable: false`).
+ * @param {HTMLElement} el
+ * @param {LoseLifeOptions} opts
+ */
+function loseLifeShake(el, opts) {
+  shakeEl(el);
+  el.classList.add('ko-flash');
+  if (opts.disable !== false && 'disabled' in el) {
+    el.disabled = true;
+    el.classList.add('ko');
+  }
+  setTimeout(() => el.classList.remove('ko-flash'), 450);
+}
+/**
+ * Une erreur à essais illimités : jamais ratée.
+ * @param {HTMLElement | null} el
+ * @param {LoseLifeOptions} opts
+ * @returns {false}
+ */
+function loseLifeUnlimited(el, opts) {
+  // Avec seulement 2-3 choix et des essais illimités, laisser le
+  // bouton fautif se réactiver permettrait de deviner la bonne
+  // réponse PAR ÉLIMINATION, sans aucune compréhension (observé en
+  // situation réelle sur « Volumes » et « Quelle saison ? »). Quand
+  // le jeu le permet (`opts.onRetry`), on propose une NOUVELLE
+  // question à la place — jamais la même à éliminer petit à petit.
+  if (opts.onRetry) {
+    scheduleRetry(opts.onRetry);
+    return false;
+  }
+  if (el && 'disabled' in el && opts.disable !== false) {
+    // île 1 : la mauvaise réponse se referme mais on peut continuer
+    setTimeout(() => {
+      el.disabled = false;
+      el.classList.remove('ko');
+    }, 700);
   }
   return false;
 }
@@ -445,6 +459,45 @@ function onMissionWin() {
   state.missions += 1;
   const solo = !party.active;
   if (solo) noteStoryMission(currentWorld); // l'histoire avance (js/features/story/episodes.js)
+  const { key, bonus, boost } = winGiveLoot(c);
+  const levelUp = level() > prevLevel;
+
+  playSound('win');
+  vibrate([60, 40, 120]);
+  confetti();
+  const praise = winPraise();
+  const fact = missionFact;
+  missionFact = null;
+  // garde-robe : un objet se gagne à certains nombres de missions (js/features/wardrobe/wardrobe.js)
+  const lookWon = newlyUnlockedLookItems().map((k) => WARDROBE[k].name);
+  const cheer = progressCheer(missionProgress);
+  // l'équipe des compagnons (js/features/companion-team) : Léo dit la phrase de
+  // progrès ; Zap fête le défi bonus ; Tom rapporte le trésor du jour
+  const cheerBy = cheer ? teamCheerBy() : null;
+  const extras = teamWinExtras();
+  endBonusChallenge();
+  /** @type {MissionWin} */
+  const w = { c, it: ITEMS[key], bonus, boost, levelUp, praise, fact, lookWon, cheer, cheerBy, extras, solo };
+  setTimeout(() => speak(winSpeech(w)), 300);
+
+  openModal(winMarkup(w));
+  // l'objet gagné s'envolera jusqu'au sac quand la fenêtre se fermera
+  queueGain({ items: [w.it.emoji, bonus ? ITEMS[bonus].emoji : null] });
+  winBindButtons();
+}
+
+/**
+ * Ce que l'écran de victoire montre et dit.
+ * @typedef {{ c: typeof CHARACTERS[string], it: typeof ITEMS[string], bonus: string | null, boost: number,
+ *   levelUp: boolean, praise: string, fact: string | null, lookWon: string[], cheer: string | null,
+ *   cheerBy: string | null, extras: ReturnType<typeof teamWinExtras>, solo: boolean }} MissionWin
+ */
+
+/**
+ * Le cadeau du personnage aidé, parfois un objet rare en plus, doublé au défi bonus.
+ * @param {typeof CHARACTERS[string]} c
+ */
+function winGiveLoot(c) {
   const key = pickRandom(c.loot);
   // bonus : de temps en temps un objet rare en plus
   const bonus = random() < 0.2 ? pickRandom(availableItems()) : null;
@@ -464,40 +517,31 @@ function onMissionWin() {
   questProgress('char', currentChar, 1);
   questProgress('collect', key, 1);
   if (bonus) questProgress('collect', bonus, 1);
-  const it = ITEMS[key];
-  const levelUp = level() > prevLevel;
+  return { key, bonus, boost };
+}
 
-  playSound('win');
-  vibrate([60, 40, 120]);
-  confetti();
+function winPraise() {
   const who = hello();
-  const praise = pickRandom([
+  return pickRandom([
     `Bravo${who ? ' ' + who : ''}, bien joué !`,
     `Super${who ? ' ' + who : ''}, tu es trop ${ac('fort')} !`,
     `Génial, c'est réussi !`,
     `Waouh${who ? ' ' + who : ''}, quel${ac('', 'le')} ${ac('champion', 'championne')} !`,
     `Incroyable, tu as tout trouvé !`,
     `Trop ${ac('malin', 'maligne')} ! 💪`,
-  ]).replace(/ ([!?])/g, '\u00a0$1'); // espace insécable : le « ! » ne part pas seul à la ligne
-  const fact = missionFact;
-  missionFact = null;
-  // garde-robe : un objet se gagne à certains nombres de missions (js/features/wardrobe/wardrobe.js)
-  const lookWon = newlyUnlockedLookItems().map((k) => WARDROBE[k].name);
-  const cheer = progressCheer(missionProgress);
-  // l'équipe des compagnons (js/features/companion-team) : Léo dit la phrase de
-  // progrès ; Zap fête le défi bonus ; Tom rapporte le trésor du jour
-  const cheerBy = cheer ? teamCheerBy() : null;
-  const extras = teamWinExtras();
-  endBonusChallenge();
-  setTimeout(
-    () =>
-      speak(
-        `${levelUp ? `Niveau ${level()} ! ` : ''}${praise} ${cheer ? (cheerBy ? COMPANIONS[cheerBy].name + ' : ' : '') + cheer + ' ' : ''}${extras.map((x) => `${COMPANIONS[x.by].name} : ${x.text} `).join('')}${lookWon.length ? `Tu gagnes ${lookWon.join(' et ')} pour ton avatar ! ` : ''}${fact ? fact + ' ' : ''}${c.name} t'offre ${it.name}${bonus ? `, et une surprise : ${ITEMS[bonus].name}` : ''}.`,
-      ),
-    300,
-  );
+  ]).replace(/ ([!?])/g, ' $1'); // espace insécable : le « ! » ne part pas seul à la ligne
+}
 
-  openModal(`
+/** @param {MissionWin} w */
+function winSpeech(w) {
+  const { levelUp, praise, cheer, cheerBy, extras, lookWon, fact, c, it, bonus } = w;
+  return `${levelUp ? `Niveau ${level()} ! ` : ''}${praise} ${cheer ? (cheerBy ? COMPANIONS[cheerBy].name + ' : ' : '') + cheer + ' ' : ''}${extras.map((x) => `${COMPANIONS[x.by].name} : ${x.text} `).join('')}${lookWon.length ? `Tu gagnes ${lookWon.join(' et ')} pour ton avatar ! ` : ''}${fact ? fact + ' ' : ''}${c.name} t'offre ${it.name}${bonus ? `, et une surprise : ${ITEMS[bonus].name}` : ''}.`;
+}
+
+/** @param {MissionWin} w */
+function winMarkup(w) {
+  const { levelUp, praise, cheer, cheerBy, extras, lookWon, fact, c, it, bonus, boost, solo } = w;
+  return `
     <div class="reward-box win-box">
       <span class="win-rays" aria-hidden="true"></span>
       ${buddySlot('cheer', 'buddy-big win-emoji')}
@@ -523,9 +567,10 @@ function onMissionWin() {
     </div>
     <button class="btn-primary" id="btn-yay">${party.active ? 'Au joueur suivant 👉' : 'Super !'}</button>
     ${party.active ? '' : '<button class="btn-ghost" id="btn-again">Encore une mission 🎮</button>'}
-  `);
-  // l'objet gagné s'envolera jusqu'au sac quand la fenêtre se fermera
-  queueGain({ items: [it.emoji, bonus ? ITEMS[bonus].emoji : null] });
+  `;
+}
+
+function winBindButtons() {
   setHandler(document.getElementById('btn-yay'), 'click', () => {
     playSound('tap');
     closeModal();
