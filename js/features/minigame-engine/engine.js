@@ -183,7 +183,7 @@ function loseLifeUnlimited(el, opts) {
   // réponse PAR ÉLIMINATION, sans aucune compréhension (observé en
   // situation réelle sur « Volumes » et « Quelle saison ? »). Quand
   // le jeu le permet (`opts.onRetry`), on propose une NOUVELLE
-  // question à la place — jamais la même à éliminer petit à petit.
+  // question à la place, jamais la même à éliminer petit à petit.
   if (opts.onRetry) {
     scheduleRetry(opts.onRetry);
     return false;
