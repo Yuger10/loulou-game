@@ -445,8 +445,8 @@ function renderPlanets() {
   const opts = shuffle(q.options.slice());
   const body =
     q.type === 'pic'
-      ? `<div class="pl-options">${opts.map((id) => `<button type="button" class="pl-opt ${q.sameSize ? 'same-size' : ''}" data-v="${id}" aria-label="${bodyName(id)}">${bodySVG(id)}<span class="pl-name">${bodyLabel(id)}</span></button>`).join('')}</div>`
-      : `<div class="pl-options txt">${opts.map((t) => `<button type="button" class="pl-opt pl-txt" data-v="${t}">${t}</button>`).join('')}</div>`;
+      ? `<div class="pl-options">${opts.map((id) => `<button type="button" class="pl-opt ${q.sameSize ? 'same-size' : ''}" data-voix="choix" data-say="${bodyLabel(id).replace(/"/g, '&quot;')}" data-v="${id}" aria-label="${bodyName(id)}">${bodySVG(id)}<span class="pl-name">${bodyLabel(id)}</span></button>`).join('')}</div>`
+      : `<div class="pl-options txt">${opts.map((t) => `<button type="button" class="pl-opt pl-txt" data-voix="choix" data-say="${String(t).replace(/"/g, '&quot;')}" data-v="${t}">${t}</button>`).join('')}</div>`;
   openModal(`
     ${gameHeader('🪐 Les planètes', q.say, q.say)}
     ${livesBar()}
@@ -481,7 +481,7 @@ function renderPlanetOrder(q) {
       <div class="pl-options">${shuffle(seq.slice())
         .map(
           (id) =>
-            `<button type="button" class="pl-opt same-size" data-v="${id}" aria-label="${bodyName(id)}">${bodySVG(id)}<span class="pl-name">${bodyLabel(id)}</span></button>`,
+            `<button type="button" class="pl-opt same-size" data-voix="choix" data-say="${bodyLabel(id).replace(/"/g, '&quot;')}" data-v="${id}" aria-label="${bodyName(id)}">${bodySVG(id)}<span class="pl-name">${bodyLabel(id)}</span></button>`,
         )
         .join('')}</div>
     </div>

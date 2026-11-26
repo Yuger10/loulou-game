@@ -45,7 +45,7 @@ import { hintNudge, hintPolicy, setHintCountable } from '../hints/index.js';
 import { checkNewIsland, currentChar, markHelped, renderLagon } from '../island/index.js';
 import { partyAfterWin, partyScore, passTurn } from '../party/index.js';
 import { questProgress } from '../quests/index.js';
-import { forgetSpokenHint, speakWrongHint } from '../screen/index.js';
+import { forgetSpokenHint, resetChoicesRead, speakWrongHint } from '../screen/index.js';
 import { maybeStoryEpisode, noteStoryMission, storyProgressHTML } from '../story/index.js';
 import { newlyUnlockedLookItems, WARDROBE } from '../wardrobe/index.js';
 
@@ -365,6 +365,7 @@ function playGame(key) {
   // pause douce réglée par les parents : plus de nouveau défi aujourd'hui
   // (l'espace parents répond true et montre l'écran de pause)
   if (emit('game:before', key).some(Boolean)) return;
+  resetChoicesRead(); // nouvelle mission : les choix écrits seront lus après la consigne
   bonusOnNewGame();
   if (hintPolicy.onMission) hintPolicy.onMission(key);
   resetMissionErrors();
@@ -399,6 +400,7 @@ function onMissionFail() {
   endBonusChallenge();
   missionFact = null;
   forgetSpokenHint();
+  resetChoicesRead();
   lives = 0;
   const c = (currentChar && CHARACTERS[currentChar]) || CHARACTERS.sirene;
   const who = hello();
@@ -454,6 +456,7 @@ function onMissionWin() {
   recordMission(true); // avant le mode course, qui s'arrête plus bas
   emit('game:after', { win: true }); // fin naturelle : la pause peut venir ensuite (js/features/rest)
   forgetSpokenHint();
+  resetChoicesRead();
   partyScore();
   // course : on avance d'une case ; si la ligne d'arrivée est franchie, l'écran de victoire s'affiche
   if (partyAfterWin()) return;
@@ -616,6 +619,7 @@ onModalChange(() => {
 });
 onModalClose(() => {
   forgetSpokenHint();
+  resetChoicesRead();
 });
 
 export {

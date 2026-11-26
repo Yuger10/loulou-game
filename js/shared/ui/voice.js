@@ -223,7 +223,11 @@ function speak(text, opts = {}) {
   // une lecture automatique déjà en cours ou en attente ne se répète pas
   if (!item.demand && (speaking.item.key === key || speechQueue.some((e) => e.item.key === key))) return;
   speechQueue.push(entry);
-  if (speechQueue.length > QUEUE_MAX) speechQueue.shift();
+  // la file ne grossit pas : au-delà de 3 phrases en attente, la plus ancienne
+  // part. Les choix écrits d'une question (surlignés : `el`) sont une liste
+  // finie, lue en entier : ils ne comptent pas et ne sont jamais retirés.
+  const loose = speechQueue.filter((e) => !e.item.el);
+  if (loose.length > QUEUE_MAX) speechQueue.splice(speechQueue.indexOf(loose[0]), 1);
 }
 
 // Branche les boutons d'écoute : les 🔈 (`.btn-speak[data-say]`), et tout

@@ -39,8 +39,8 @@ Spec : [spec.md](spec.md). Quatre PR, chacune complète et en production une min
 
 ### Phase 4 : les mini-jeux (PR 4, livrée par `bun run release track "une voix partout"`)
 
-- [ ] 4.1 Test d'abord : pour chaque jeu de la table J, au palier 1 et au palier 5, les choix sont dits après la consigne à la première question avec `voix-lu`, pas aux suivantes, et le 🔈 de la consigne relit consigne puis choix (ligne 20) ; états de `rhythm` et `simon` dits à chaque changement.
-- [ ] 4.2 `data-voix="choix"` et `data-say` sur les choix (dont les saisons de `calendar`, dont le `speak` de `calendar.js:70` est retiré) (formes dites de la table J) ; `bindQuit` met les choix en file après la consigne à la première question et rebranche le 🔈 de la consigne (mécanisme unique de la ligne 20). `resetChoicesRead()` dans `screen.js`, appelé par `engine.js:347` (`playGame`), `385` (`onMissionFail`), `439` (`onMissionWin`), `563` (`onModalClose`), pas par `scheduleRetry` (ligne 20).
+- [x] 4.1 Test d'abord : pour chaque jeu de la table J, au palier 1 et au palier 5, les choix sont dits après la consigne à la première question avec `voix-lu`, pas aux suivantes, et le 🔈 de la consigne relit consigne puis choix (ligne 20) ; états de `rhythm` et `simon` dits à chaque changement.
+- [x] 4.2 `data-voix="choix"` et `data-say` sur les choix (dont les saisons de `calendar`, dont le `speak` de `calendar.js:70` est retiré) (formes dites de la table J) ; `bindQuit` met les choix en file après la consigne à la première question et rebranche le 🔈 de la consigne (mécanisme unique de la ligne 20). `resetChoicesRead()` dans `screen.js`, appelé par `engine.js:347` (`playGame`), `385` (`onMissionFail`), `439` (`onMissionWin`), `563` (`onModalClose`), pas par `scheduleRetry` (ligne 20).
 - [ ] 4.3 Docs : `conductor/product-guidelines.md` (« Toute phrase importante est lue » devient la règle D1), section du PRD.
 - [ ] 4.4 `bun run check` et `bun run verify` verts ; PR 4.
 - [ ] 4.5 👤 S5 à S9 sur les appareils de la famille, après le merge ordonné par Amrou.

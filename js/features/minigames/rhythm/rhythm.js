@@ -9,7 +9,7 @@
    Anti-devinette : une erreur relance un AUTRE rythme. */
 import { rhythmRound } from '../../../entities/difficulty/index.js';
 import { random, shuffle } from '../../../shared/lib/index.js';
-import { openModal, playNote, setHandler } from '../../../shared/ui/index.js';
+import { openModal, playNote, setHandler, speak } from '../../../shared/ui/index.js';
 import { gameDiff } from '../../adaptive/index.js';
 import { registerHints, setHintQuestion } from '../../hints/index.js';
 import {
@@ -132,7 +132,7 @@ function rhythmMarkup(cfg, seq, kinds) {
     <div class="rh-answer" id="rh-answer" aria-live="polite"></div>
     <div id="rh-progress">${progressDots(0, seq.length)}</div>
     <div class="rh-pads">
-      ${kinds.map((k) => `<button class="rh-btn rh-${k}" data-k="${k}" aria-label="${RHYTHM_BEATS[k].aria}"><b>${RHYTHM_BEATS[k].sym}</b><span>${RHYTHM_BEATS[k].label}</span></button>`).join('')}
+      ${kinds.map((k) => `<button class="rh-btn rh-${k}" data-voix="choix" data-say="${RHYTHM_BEATS[k].label}" data-k="${k}" aria-label="${RHYTHM_BEATS[k].aria}"><b>${RHYTHM_BEATS[k].sym}</b><span>${RHYTHM_BEATS[k].label}</span></button>`).join('')}
     </div>
   `;
 }
@@ -144,6 +144,7 @@ const rhythmBeatSound = (/** @type {RhythmBeat} */ k) => {
 const rhythmSetState = (/** @type {string} */ t) => {
   const s = document.getElementById('rh-state');
   if (s) s.textContent = t;
+  speak(t); // un signal de tour : dit à chaque changement
 };
 // le rythme joué : chaque symbole s'allume avec son son ; `slow` : plus lentement (indice)
 /**

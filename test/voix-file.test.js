@@ -174,6 +174,23 @@ const said = () => synth.log.join(' | ');
   for (let i = 0; i < 6; i++) synth.end();
   check('la plus ancienne en attente est retirée', said() === 'Un | Trois | Quatre | Cinq', said());
 
+  // les choix écrits d'une question (surlignés) sont lus en entier, après la consigne
+  reset();
+  speak('Consigne');
+  const els = ['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi'].map((t) => {
+    const b = d.createElement('button');
+    d.body.appendChild(b);
+    speak(t, { el: b });
+    return b;
+  });
+  for (let i = 0; i < 7; i++) synth.end();
+  check(
+    'les choix surlignés ne comptent pas dans la limite de 3',
+    said() === 'Consigne | lundi | mardi | mercredi | jeudi | vendredi',
+    said(),
+  );
+  els.forEach((b) => b.remove());
+
   console.log('— Ligne 6 : rien ne parle (ou fin perdue) : dit tout de suite');
   reset();
   speak('Un');

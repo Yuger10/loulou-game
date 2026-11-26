@@ -4,7 +4,7 @@
    du moteur. */
 import { buddySlot } from '../../entities/companion/index.js';
 import { pickRandom, random } from '../../shared/lib/index.js';
-import { bindSpeakButtons, speak } from '../../shared/ui/index.js';
+import { bindSpeakButtons, setHandler, speak } from '../../shared/ui/index.js';
 
 // Une erreur : la proposition fautive est neutralisée et un essai est perdu.
 // Petits encouragements parlés à chaque erreur : avant ce correctif,
@@ -54,16 +54,51 @@ function rememberSpokenHint(say) {
   lastSpokenHint = say;
 }
 
+// Les choix écrits d'un mini-jeu (`data-voix="choix"`, table J de la spec
+// voix-partout) sont lus après la consigne à la première question d'une
+// mission seulement : le moteur remet ce drapeau à faux au début et à la fin
+// d'une mission et à la fermeture de la fenêtre, pas après une erreur.
+let choicesRead = false;
+function resetChoicesRead() {
+  choicesRead = false;
+}
+/**
+ * Met en file chaque choix, dans l'ordre d'affichage, surligné pendant sa lecture.
+ * @param {HTMLElement[]} choices
+ * @param {boolean} demand à la demande de l'enfant (🔈 de la consigne)
+ */
+function speakChoices(choices, demand) {
+  // le sélecteur [data-say] garantit l'attribut
+  choices.forEach((c) => speak(/** @type {string} */ (c.dataset.say), { demand, el: c }));
+}
+
 function bindQuit() {
   bindSpeakButtons();
   // lit la consigne une seule fois par mini-jeu (le mémo se re-rend à chaque clic)
-  const hint = document.querySelector('.puzzle-hint [data-say]');
-  if (hint && hint.dataset.say !== lastSpokenHint) {
-    // le sélecteur [data-say] garantit l'attribut
-    const say = /** @type {string} */ (hint.dataset.say);
+  const hint = /** @type {HTMLElement | null} */ (document.querySelector('.puzzle-hint [data-say]'));
+  if (!hint) return;
+  // le sélecteur [data-say] garantit l'attribut
+  const say = /** @type {string} */ (hint.dataset.say);
+  /** @type {HTMLElement[]} */
+  const choices = [...document.querySelectorAll('[data-voix="choix"][data-say]')];
+  if (say !== lastSpokenHint) {
     lastSpokenHint = say;
     speak(say);
+    if (!choicesRead) {
+      choicesRead = true;
+      speakChoices(choices, false);
+    }
   }
+  // le 🔈 de la consigne d'un jeu à choix écrits : la consigne, puis les choix
+  if (choices.length)
+    setHandler(hint, 'click', (e) => {
+      e.stopPropagation();
+      speak(say, { interrupt: true, demand: true });
+      speakChoices(
+        /** @type {HTMLElement[]} */ ([...document.querySelectorAll('[data-voix="choix"][data-say]')]),
+        true,
+      );
+    });
 }
 
-export { bindQuit, forgetSpokenHint, gameHeader, rememberSpokenHint, speakWrongHint };
+export { bindQuit, forgetSpokenHint, gameHeader, rememberSpokenHint, resetChoicesRead, speakWrongHint };

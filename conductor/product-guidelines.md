@@ -1,7 +1,7 @@
 # Product Guidelines
 
 ## Pour l'enfant
-- **Très peu de texte.** Toute phrase importante est lue à voix haute (`speak`). Les choix de réponse sont des emojis ou des dessins, jamais un mot à lire, sauf dans les mini-jeux de lecture.
+- **Très peu de texte, et une voix partout.** Toucher un texte le lit ; toucher un bouton l'actionne et dit son libellé ; un 🔈 accolé fait écouter sans agir là où il faut entendre avant de choisir ; un bouton inactif dit pourquoi. Ni appui long, ni mode « écoute », ni double toucher. Chaque écran se présente par une ou deux phrases (titre ou consigne), le reste s'écoute à la demande : on ne noie pas l'enfant sous la voix. Les choix de réponse sont des emojis ou des dessins ; un choix écrit (une heure, un jour, une forme) est lu après la consigne ; seuls les mini-jeux de lecture gardent des mots à lire, que la voix ne dit jamais avant la réponse. Détail et garde : track `voix-partout`, `test/voix-partout.test.js`.
 - **Phrases courtes,** au présent, en tutoyant, sur un ton chaleureux. Le prénom de l'enfant est utilisé quand on le connaît (`hello()`).
 - **Pas de game over, pas de punition.** Un échec mène à réessayer, avec un indice parlé. On ne perd jamais ce qu'on a gagné.
 - **Anti-devinette.** Quand il y a peu de choix et pas de limite d'essais, une mauvaise réponse relance une autre question au lieu de laisser deviner par élimination.

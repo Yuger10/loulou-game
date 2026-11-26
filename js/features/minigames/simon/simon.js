@@ -4,7 +4,7 @@
    js/entities/difficulty/difficulty.js § « MINUTEUR ». Longueur dans § simonLength. */
 import { simonLength } from '../../../entities/difficulty/index.js';
 import { pickRandom } from '../../../shared/lib/index.js';
-import { openModal, playNote, setHandler } from '../../../shared/ui/index.js';
+import { openModal, playNote, setHandler, speak } from '../../../shared/ui/index.js';
 import { gameDiff } from '../../adaptive/index.js';
 import { registerHints, setHintQuestion } from '../../hints/index.js';
 import {
@@ -59,8 +59,7 @@ function renderSimon() {
       g.playing = true;
       g.pos = 0;
       document.querySelectorAll('.game-progress i').forEach((dd) => dd.classList.remove('on'));
-      const s = document.getElementById('simon-state');
-      if (s) s.textContent = '👀 Regarde encore…';
+      simonSetState('👀 Regarde encore…');
       seq.forEach((p, i) => simonFlash(p, i * 1.6)); // 1,6 fois plus lent
       simonYourTurn(g, 600 + seq.length * 1040);
     },
@@ -100,6 +99,13 @@ function simonFlash(p, i) {
     600 + i * 650,
   );
 }
+// l'état du tour (« Regarde… », « À toi ! ») : affiché, et dit à chaque changement
+/** @param {string} t */
+function simonSetState(t) {
+  const s = document.getElementById('simon-state');
+  if (s) s.textContent = t;
+  speak(t);
+}
 /**
  * Après la suite montrée : « À toi ! ».
  * @param {SimonPlay} g
@@ -108,8 +114,7 @@ function simonFlash(p, i) {
 function simonYourTurn(g, delay) {
   setTimeout(() => {
     g.playing = false;
-    const s = document.getElementById('simon-state');
-    if (s) s.textContent = '👆 À toi !';
+    simonSetState('👆 À toi !');
   }, delay);
 }
 /**
@@ -137,8 +142,7 @@ function simonPress(g, btn) {
   if (loseLife(btn, { disable: false })) return;
   g.pos = 0;
   document.querySelectorAll('.game-progress i').forEach((dd) => dd.classList.remove('on'));
-  const s = document.getElementById('simon-state');
-  if (s) s.textContent = '🔁 On recommence…';
+  simonSetState('🔁 On recommence…');
   g.playing = true;
   seq.forEach(simonFlash);
   simonYourTurn(g, 600 + seq.length * 650);
