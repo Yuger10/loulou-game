@@ -427,4 +427,4 @@ on('lagon:rendered', renderTeamHelpers);
 // Rose : dans le Sac, l'Album et « Mon look » (événement du Sac)
 on('bag:tab', roseTip);
 
-export { pauseAnnouncer, renderSamGuide, renderTeamHelpers, teamCheerBy, teamOnGamePicker, teamWinExtras };
+export { pauseAnnouncer, renderSamGuide, teamCheerBy, teamOnGamePicker, teamWinExtras };

@@ -13,15 +13,7 @@ export {
 } from './sound.js';
 export { bindSpeakButtons, emojiWord, speak, speechBubble } from './voice.js';
 export { confetti, onWrongFeedback, shakeEl, showToast, vibrate, wrongFeedback } from './feedback.js';
-export {
-  closeModal,
-  onModalChange,
-  onModalClose,
-  onModalOpen,
-  openModal,
-  requestCloseModal,
-  setModalCloseGuard,
-} from './modal.js';
+export { closeModal, onModalChange, onModalClose, onModalOpen, openModal, requestCloseModal } from './modal.js';
 export { askConfirm } from './confirm.js';
 export { bindForm, formSheet } from './form.js';
 export { onViewChange, registerView, setNavLabel, switchView } from './views.js';

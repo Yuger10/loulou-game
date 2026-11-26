@@ -726,4 +726,4 @@ function openStoryJournal() {
 // mini-jeux)
 onModalChange(storyClearPendingRetry);
 
-export { openSeasonPrologue, openStoryChapter, openStoryJournal, skyIslandsFreed, STORY, STORY_PROLOGUES, storySolved };
+export { openSeasonPrologue, openStoryChapter, openStoryJournal, STORY, storySolved };

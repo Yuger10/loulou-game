@@ -7,7 +7,6 @@ export {
   flashModal,
   livesBar,
   loseLife,
-  onMissionWin,
   playGame,
   progressDots,
   registerGame,
