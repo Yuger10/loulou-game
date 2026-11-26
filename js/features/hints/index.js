@@ -19,4 +19,5 @@ export {
   setHintCountable,
   setHintPolicy,
   setHintQuestion,
+  strategyLine,
 } from './hints.js';

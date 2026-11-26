@@ -308,4 +308,13 @@ function calcExplain(q, v) {
 // inscription auprès du moteur de mini-jeux (js/features/minigame-engine)
 registerGame('calc', renderCalc);
 registerHints('calc', calcHints);
-registerExplain('calc', { wrong: calcExplain });
+// la stratégie d'une réussite, dite sur l'écran de victoire
+/** @param {CalcQuestion} q */
+function calcStrategy(q) {
+  if (q.mult) return `Tu as compté de ${q.mult.a} en ${q.mult.a}.`;
+  if (q.ops.length > 1) return 'Tu as fait les calculs un par un.';
+  const { sign, n } = q.ops[0];
+  if (n >= 10 && n % 10) return 'Tu as fait les dizaines, puis les unités.';
+  return sign === '+' ? 'Tu as avancé depuis le premier nombre.' : 'Tu as reculé depuis le premier nombre.';
+}
+registerExplain('calc', { wrong: calcExplain, right: calcStrategy });

@@ -209,4 +209,4 @@ function clockExplain(q, v) {
 // inscription auprès du moteur de mini-jeux (js/features/minigame-engine)
 registerGame('clock', renderClock);
 registerHints('clock', clockHints);
-registerExplain('clock', { wrong: clockExplain });
+registerExplain('clock', { wrong: clockExplain, right: () => 'Tu as lu la petite aiguille, puis la grande.' });

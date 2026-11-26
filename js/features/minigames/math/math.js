@@ -240,4 +240,7 @@ function mathExplain(q, v) {
 // inscription auprès du moteur de mini-jeux (js/features/minigame-engine)
 registerGame('math', renderMath);
 registerHints('math', mathHints);
-registerExplain('math', { wrong: mathExplain });
+// la stratégie d'une réussite, dite sur l'écran de victoire
+const mathStrategy = (/** @type {MathQuestion} */ q) =>
+  q.op === '+' ? 'Tu as compté les deux groupes ensemble.' : 'Tu as enlevé, puis compté ceux qui restent.';
+registerExplain('math', { wrong: mathExplain, right: mathStrategy });

@@ -34,6 +34,8 @@
    dit pourquoi la réponse ne va pas, avec les mêmes effets que les indices
    (sauf fx.dim), plus fx.fill { sel, text } qui écrit la bonne réponse dans la
    case « ? ». Tous les boutons sont fermés pendant l'explication (sauf 🔈).
+   `right: question => phrase` (facultatif) nomme la stratégie d'une réussite,
+   montrée et dite sur l'écran de victoire (strategyLine).
    Les minuteries appartiennent au moteur : ici, aucune. */
 import { buddyReact, COMPANIONS, companionSVG, currentCompanion } from '../../entities/companion/index.js';
 import { save, state } from '../../entities/game-state/index.js';
@@ -519,6 +521,14 @@ function explainClear() {
   explainLocked = [];
 }
 
+// La phrase de stratégie de la question en cours (`right` du jeu), pour
+// l'écran de victoire : ce que l'enfant a fait, ou null si le jeu n'en dit rien.
+/** @returns {string | null} */
+function strategyLine() {
+  const p = hint.kind ? EXPLAIN_PROVIDERS[hint.kind] : null;
+  return (p && p.right && p.right(hint.q)) || null;
+}
+
 // compté pour l'espace parents, jamais comme une erreur (niveau adaptatif inchangé)
 // Quels indices compter : ceux des mini-jeux inscrits au moteur (qui le dit
 // avec setHintCountable, v54 : les indices sont une couche sous le moteur)
@@ -565,4 +575,5 @@ export {
   setHintCountable,
   setHintPolicy,
   setHintQuestion,
+  strategyLine,
 };

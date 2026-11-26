@@ -146,4 +146,10 @@ function puzzleExplain(q, v) {
 // inscription auprès du moteur de mini-jeux (js/features/minigame-engine)
 registerGame('puzzle', renderPuzzle);
 registerHints('puzzle', puzzleHints);
-registerExplain('puzzle', { wrong: puzzleExplain });
+// la stratégie d'une réussite, dite sur l'écran de victoire
+/** @param {PuzzleQuestion} q */
+function puzzleStrategy(q) {
+  if (q.variant === 'desc') return "Tu as compté à l'envers.";
+  return q.variant === 'step2' ? 'Tu as compté de 2 en 2.' : "Tu as suivi l'ordre des nombres.";
+}
+registerExplain('puzzle', { wrong: puzzleExplain, right: puzzleStrategy });

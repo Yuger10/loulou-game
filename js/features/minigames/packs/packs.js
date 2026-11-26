@@ -200,4 +200,8 @@ function packsExplain(q, v) {
 
 registerGame('packs', renderPacks);
 registerHints('packs', packsHints);
-registerExplain('packs', { wrong: packsExplain });
+registerExplain('packs', {
+  wrong: packsExplain,
+  // la stratégie d'une réussite, dite sur l'écran de victoire
+  right: (q) => `Tu as compté de ${q.size} en ${q.size}.`,
+});

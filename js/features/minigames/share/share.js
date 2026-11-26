@@ -387,4 +387,12 @@ function shareExplain(q, w) {
 
 registerGame('share', renderShare);
 registerHints('share', shareHints);
-registerExplain('share', { wrong: shareExplain });
+// la stratégie d'une réussite, dite sur l'écran de victoire
+/** @type {Record<ShareQuestion['ask'], string>} */
+const SHARE_STRATEGY = {
+  fair: 'Tu as vérifié que les parts sont pareilles.',
+  show: 'Tu as compté les parts égales.',
+  write: 'Tu as compté les parts du gâteau.',
+  whole: 'Tu as assemblé les parts dans ta tête.',
+};
+registerExplain('share', { wrong: shareExplain, right: (q) => SHARE_STRATEGY[q.ask] });

@@ -161,4 +161,12 @@ function compareExplain(q, v) {
 // inscription auprès du moteur de mini-jeux (js/features/minigame-engine)
 registerGame('compare', renderCompare);
 registerHints('compare', compareHints);
-registerExplain('compare', { wrong: compareExplain });
+// la stratégie d'une réussite, dite sur l'écran de victoire
+/** @param {CompareQuestion} q */
+function compareStrategy(q) {
+  if (q.a === q.b) return "Tu as vu qu'ils sont pareils.";
+  if (q.a >= 10 && q.b >= 10 && Math.floor(q.a / 10) !== Math.floor(q.b / 10))
+    return 'Tu as bien regardé les dizaines.';
+  return 'Tu as trouvé le plus grand nombre.';
+}
+registerExplain('compare', { wrong: compareExplain, right: compareStrategy });

@@ -288,4 +288,12 @@ function ladybugsExplain(q, v) {
 
 registerGame('ladybugs', renderLadybugs);
 registerHints('ladybugs', ladybugsHints);
-registerExplain('ladybugs', { wrong: ladybugsExplain });
+// la stratégie d'une réussite, dite sur l'écran de victoire
+/** @type {Record<string, string>} */
+const LADYBUGS_STRATEGY = {
+  count: 'Tu as compté les deux ailes.',
+  double: 'Tu as trouvé le double.',
+  complete: 'Tu as rendu les deux ailes pareilles.',
+  half: 'Tu as partagé en deux parts égales.',
+};
+registerExplain('ladybugs', { wrong: ladybugsExplain, right: (q) => LADYBUGS_STRATEGY[q.mode] || null });

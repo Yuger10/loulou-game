@@ -28,8 +28,8 @@ Trois phases, trois PR livrables seules (défaut de Claude, à juger à la revue
 
 ### Phase 3 : les phrases de stratégie et l'éloge du processus
 
-- [ ] 13. Tests : ligne 15 (chacun des 10 jeux, chaque cas de la table `right`), ligne 16 (`winPraises`), jeu exempté sans `.win-how`. Ils échouent.
-- [ ] 14. `hints.js` : `strategyLine()`. `engine.js` : `winPraises(who)`, ligne `.win-how` (🧠 et la phrase) sous le titre, phrase dite après l'éloge, en solo seulement. `right` dans les 10 jeux.
+- [x] 13. Tests : ligne 15 (chacun des 10 jeux, chaque cas de la table `right`), ligne 16 (`winPraises`), jeu exempté sans `.win-how`. Ils échouent.
+- [x] 14. `hints.js` : `strategyLine()`. `engine.js` : `winPraises(who)`, ligne `.win-how` (🧠 et la phrase) sous le titre, phrase dite après l'éloge, en solo seulement. `right` dans les 10 jeux.
 - [ ] 15. `bun run check` vert ; `bun run release track "erreurs expliquées : 10 jeux de nombres, phrases de stratégie"`, puis compléter la section ajoutée à la fin de `PRD-lagon-magique.md` avant la PR.
 
 ## Preuves

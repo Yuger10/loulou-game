@@ -131,4 +131,7 @@ function countExplain(q, v) {
 // inscription auprès du moteur de mini-jeux (js/features/minigame-engine)
 registerGame('count', renderCount);
 registerHints('count', countHints);
-registerExplain('count', { wrong: countExplain });
+// la stratégie d'une réussite, dite sur l'écran de victoire
+const countStrategy = (/** @type {CountQuestion} */ q) =>
+  `Tu as compté chaque ${emojiWord(q.emoji) || 'image'} une seule fois.`;
+registerExplain('count', { wrong: countExplain, right: countStrategy });

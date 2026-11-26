@@ -195,4 +195,4 @@ function moneyExplain(q, v) {
 // inscription auprès du moteur de mini-jeux (js/features/minigame-engine)
 registerGame('money', renderMoney);
 registerHints('money', moneyHints);
-registerExplain('money', { wrong: moneyExplain });
+registerExplain('money', { wrong: moneyExplain, right: () => 'Tu as additionné les pièces de chaque pile.' });
