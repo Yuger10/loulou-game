@@ -102,52 +102,17 @@ function renderLadybugs() {
   /** @type {LadybugsQuestion} */
   const q = { mode: r.mode, n: r.n, total: r.total };
 
-  if (r.mode === 'complete') {
-    let added = 0;
-    const max = Math.min(LB_SPOTS.length, r.cfg.max + 2);
-    const say =
-      "L'aile droite a perdu ses points ! Ajoute autant de points que sur l'aile gauche, puis appuie sur « Pareil ! ».";
-    openModal(`
-      ${gameHeader('🐞 Les coccinelles', 'Rends les deux ailes pareilles', say)}
-      ${livesBar()}
-      <div class="lb-stage" id="lb-stage" data-mode="complete">${ladybugSVG(r.n, null)}</div>
-      <div class="recipe-actions lb-actions">
-        <button class="btn-ghost" id="lb-undo" aria-label="Enlever un point">↩️</button>
-        <button class="lb-add" id="lb-add">⚫ Un point</button>
-        <button class="btn-primary" id="lb-done">Pareil !</button>
-      </div>
-    `);
-    bindQuit();
-    startTimerIfNeeded('ladybugs');
-    setSolution([...Array(r.n).fill('#lb-add'), '#lb-done']);
-    setHintQuestion('ladybugs', q, { choices: '#lb-done' });
-    const draw = () => {
-      const g = document.getElementById('lb-right');
-      if (g)
-        g.innerHTML = LB_SPOTS.slice(0, added)
-          .map(([x, y]) => `<circle class="lb-dot" data-w="r" cx="${120 - x}" cy="${y}" r="6.5"/>`)
-          .join('');
-    };
-    setHandler(document.getElementById('lb-add'), 'click', () => {
-      if (added < max) {
-        added++;
-        draw();
-      }
-    });
-    setHandler(document.getElementById('lb-undo'), 'click', () => {
-      if (added > 0) {
-        added--;
-        draw();
-      }
-    });
-    setHandler(document.getElementById('lb-done'), 'click', (e) => {
-      const done = /** @type {HTMLElement} */ (e.currentTarget);
-      if (added === r.n) ok(done);
-      else loseLife(done, { onRetry: renderLadybugs, disable: false });
-    });
-    return;
-  }
+  if (r.mode === 'complete') return ladybugsAskComplete(r, q, ok);
+  ladybugsAskCount(r, q, ok);
+}
 
+/**
+ * Compter tous les points, ou ceux d'une aile.
+ * @param {LadybugsRound} r
+ * @param {LadybugsQuestion} q
+ * @param {(b: HTMLElement) => void} ok
+ */
+function ladybugsAskCount(r, q, ok) {
   const half = r.mode === 'half';
   const answer = half ? r.n : r.total;
   const title = half ? `${r.total} points en tout : combien sur chaque aile ?` : 'Combien de points en tout ?';
@@ -172,6 +137,55 @@ function renderLadybugs() {
       else loseLife(b, { onRetry: renderLadybugs });
     }),
   );
+}
+/**
+ * @param {LadybugsRound} r
+ * @param {LadybugsQuestion} q
+ * @param {(b: HTMLElement) => void} ok
+ */
+function ladybugsAskComplete(r, q, ok) {
+  let added = 0;
+  const max = Math.min(LB_SPOTS.length, r.cfg.max + 2);
+  const say =
+    "L'aile droite a perdu ses points ! Ajoute autant de points que sur l'aile gauche, puis appuie sur « Pareil ! ».";
+  openModal(`
+    ${gameHeader('🐞 Les coccinelles', 'Rends les deux ailes pareilles', say)}
+    ${livesBar()}
+    <div class="lb-stage" id="lb-stage" data-mode="complete">${ladybugSVG(r.n, null)}</div>
+    <div class="recipe-actions lb-actions">
+      <button class="btn-ghost" id="lb-undo" aria-label="Enlever un point">↩️</button>
+      <button class="lb-add" id="lb-add">⚫ Un point</button>
+      <button class="btn-primary" id="lb-done">Pareil !</button>
+    </div>
+  `);
+  bindQuit();
+  startTimerIfNeeded('ladybugs');
+  setSolution([...Array(r.n).fill('#lb-add'), '#lb-done']);
+  setHintQuestion('ladybugs', q, { choices: '#lb-done' });
+  const draw = () => {
+    const g = document.getElementById('lb-right');
+    if (g)
+      g.innerHTML = LB_SPOTS.slice(0, added)
+        .map(([x, y]) => `<circle class="lb-dot" data-w="r" cx="${120 - x}" cy="${y}" r="6.5"/>`)
+        .join('');
+  };
+  setHandler(document.getElementById('lb-add'), 'click', () => {
+    if (added < max) {
+      added++;
+      draw();
+    }
+  });
+  setHandler(document.getElementById('lb-undo'), 'click', () => {
+    if (added > 0) {
+      added--;
+      draw();
+    }
+  });
+  setHandler(document.getElementById('lb-done'), 'click', (e) => {
+    const done = /** @type {HTMLElement} */ (e.currentTarget);
+    if (added === r.n) ok(done);
+    else loseLife(done, { onRetry: renderLadybugs, disable: false });
+  });
 }
 
 // Indices (v52) : 1. les deux ailes sont pareilles ; 2. une aile, puis le

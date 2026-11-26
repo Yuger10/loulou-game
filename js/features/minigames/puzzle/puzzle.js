@@ -29,25 +29,7 @@ function renderPuzzle() {
   const variants = puzzleVariants(dd);
   const variant = pickRandom(variants);
 
-  let seq, hint;
-  if (variant === 'from1') {
-    seq = Array.from({ length: count }, (_, i) => i + 1);
-    hint = `Touche les nombres dans l'ordre : 1 → ${count}`;
-  } else if (variant === 'start') {
-    const maxStart = puzzleStartMax(dd);
-    const start = 2 + Math.floor(random() * (maxStart - 1));
-    seq = Array.from({ length: count }, (_, i) => start + i);
-    hint = `Touche les nombres dans l'ordre : ${seq[0]} → ${seq[seq.length - 1]}`;
-  } else if (variant === 'desc') {
-    const start = count + 1 + Math.floor(random() * 6);
-    seq = Array.from({ length: count }, (_, i) => start - i);
-    hint = `À l'envers ! Du plus grand au plus petit : ${seq[0]} → ${seq[seq.length - 1]}`;
-  } else {
-    // step2
-    const start = pickRandom([2, 3, 4, 5, 10]);
-    seq = Array.from({ length: count }, (_, i) => start + i * 2);
-    hint = `De 2 en 2 : ${seq[0]}, ${seq[1]}, ${seq[2]}…`;
-  }
+  const { seq, hint } = puzzleSeq(dd, count, variant);
 
   const nums = shuffle(seq.slice());
   const q = { seq, idx: 0, variant }; // q.idx : où en est l'enfant (pour les indices)
@@ -80,6 +62,35 @@ function renderPuzzle() {
       }
     });
   });
+}
+
+/**
+ * La suite de nombres à toucher, et la consigne.
+ * @param {number} dd le palier de difficulté
+ * @param {number} count
+ * @param {string} variant
+ */
+function puzzleSeq(dd, count, variant) {
+  let seq, hint;
+  if (variant === 'from1') {
+    seq = Array.from({ length: count }, (_, i) => i + 1);
+    hint = `Touche les nombres dans l'ordre : 1 → ${count}`;
+  } else if (variant === 'start') {
+    const maxStart = puzzleStartMax(dd);
+    const start = 2 + Math.floor(random() * (maxStart - 1));
+    seq = Array.from({ length: count }, (_, i) => start + i);
+    hint = `Touche les nombres dans l'ordre : ${seq[0]} → ${seq[seq.length - 1]}`;
+  } else if (variant === 'desc') {
+    const start = count + 1 + Math.floor(random() * 6);
+    seq = Array.from({ length: count }, (_, i) => start - i);
+    hint = `À l'envers ! Du plus grand au plus petit : ${seq[0]} → ${seq[seq.length - 1]}`;
+  } else {
+    // step2
+    const start = pickRandom([2, 3, 4, 5, 10]);
+    seq = Array.from({ length: count }, (_, i) => start + i * 2);
+    hint = `De 2 en 2 : ${seq[0]}, ${seq[1]}, ${seq[2]}…`;
+  }
+  return { seq, hint };
 }
 
 // Indices (v52) : voir hintOrderStep (js/features/hints/hints.js).

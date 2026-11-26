@@ -142,6 +142,8 @@ function lifecycleBuildRound(dd, rng = random) {
 const lcKey = (/** @type {LifecycleRound} */ r) =>
   `${r.mode}-${r.cycle}-${(r.cards || r.options || []).join()}-${r.gap}-${r.at}`;
 
+/** @template {LifecycleRound['mode']} M @typedef {(r: Extract<LifecycleRound, { mode: M }>, cyc: { name: string }, ok: () => void) => void} LcAsk */
+const LC_ARROW = '<span class="lc-arrow" aria-hidden="true">➜</span>';
 let lifecycleLast = '';
 function renderLifecycle() {
   setupLives('lifecycle');
@@ -150,63 +152,19 @@ function renderLifecycle() {
   for (let k = 0; k < 8 && lcKey(r) === lifecycleLast; k++) r = lifecycleBuildRound(dd);
   lifecycleLast = lcKey(r);
   const cyc = LC_CYCLES[r.cycle];
-  const arrow = '<span class="lc-arrow" aria-hidden="true">➜</span>';
   const ok = () => {
     clearActiveTimer();
     flashModal('ok');
     winSoon();
   };
 
-  if (r.mode === 'missing' || r.mode === 'next') {
-    const missing = r.mode === 'missing';
-    const title = missing ? 'Quelle étape manque ?' : 'Que se passe-t-il ensuite ?';
-    // r.mode plutôt que `missing` là où r.gap ou r.at sont lus : TypeScript en déduit leur type
-    const say =
-      r.mode === 'missing'
-        ? `Voici la vie de ${cyc.name}, mais une étape manque. Laquelle ?`
-        : `Voici ${LC_STAGES[r.order[r.at]].name}. Que se passe-t-il ensuite ?`;
-    const strip =
-      r.mode === 'missing'
-        ? r.order
-            .map((s, i) =>
-              i === r.gap
-                ? '<span class="lc-slot" aria-label="une étape manque">?</span>'
-                : `<span class="lc-step" data-s="${s}">${stageArt(s)}</span>`,
-            )
-            .join(arrow)
-        : `<span class="lc-step" data-s="${r.order[r.at]}">${stageArt(r.order[r.at])}</span>${arrow}<span class="lc-slot">?</span>`;
-    const good = r.mode === 'missing' ? r.order[r.gap] : r.order[r.at + 1];
-    openModal(`
-      ${gameHeader('🌱 De la graine à la fleur', title, say)}
-      ${livesBar()}
-      <div class="lc-strip" id="lc-strip" data-mode="${r.mode}" data-cycle="${r.cycle}">${strip}</div>
-      <div class="lc-options">${r.options.map((s) => stageCard(s)).join('')}</div>
-    `);
-    bindQuit();
-    startTimerIfNeeded('lifecycle');
-    setSolution([solSel('.lc-card', 's', good)]);
-    /** @type {LifecycleQuestion} */
-    const q =
-      r.mode === 'missing'
-        ? { mode: 'missing', prev: r.order[r.gap - 1], next: r.order[r.gap + 1] }
-        : { mode: 'next', cur: r.order[r.at] };
-    setHintQuestion('lifecycle', q, { choices: '.lc-card' });
-    document.querySelectorAll('.lc-card').forEach((b) =>
-      setHandler(b, 'click', () => {
-        if (b.dataset.s === good) {
-          stepOk(b);
-          const slot = document.querySelector('.lc-slot');
-          if (slot) {
-            slot.outerHTML = `<span class="lc-step found" data-s="${good}">${stageArt(good)}</span>`;
-          }
-          ok();
-        } else loseLife(b, { onRetry: renderLifecycle });
-      }),
-    );
-    return;
-  }
+  if (r.mode === 'missing' || r.mode === 'next') return lifecycleAskStep(r, cyc, ok);
+  lifecycleAskOrder(r, cyc, ok);
+}
 
-  // order / mixed : toucher les étapes dans l'ordre ; elles se rangent sur le chemin
+// order / mixed : toucher les étapes dans l'ordre ; elles se rangent sur le chemin
+/** @type {LcAsk<'order' | 'mixed'>} */
+function lifecycleAskOrder(r, cyc, ok) {
   const mixed = r.mode === 'mixed';
   const title = mixed ? 'Range seulement les étapes de la plante' : `Remets dans l'ordre la vie de ${cyc.name}`;
   const say = mixed
@@ -215,7 +173,7 @@ function renderLifecycle() {
   openModal(`
     ${gameHeader('🌱 De la graine à la fleur', title, say)}
     ${livesBar()}
-    <div class="lc-strip lc-path" id="lc-strip" data-mode="${r.mode}" data-cycle="${r.cycle}">${r.order.map(() => '<span class="lc-slot">?</span>').join(arrow)}</div>
+    <div class="lc-strip lc-path" id="lc-strip" data-mode="${r.mode}" data-cycle="${r.cycle}">${r.order.map(() => '<span class="lc-slot">?</span>').join(LC_ARROW)}</div>
     <div class="lc-options">${r.cards.map((s) => stageCard(s)).join('')}</div>
     <div id="lc-progress">${progressDots(0, r.order.length)}</div>
   `);
@@ -240,6 +198,54 @@ function renderLifecycle() {
       const p = document.getElementById('lc-progress');
       if (p) p.innerHTML = progressDots(pos, r.order.length);
       if (pos === r.order.length) ok();
+    }),
+  );
+}
+/** @type {LcAsk<'missing' | 'next'>} */
+function lifecycleAskStep(r, cyc, ok) {
+  const missing = r.mode === 'missing';
+  const title = missing ? 'Quelle étape manque ?' : 'Que se passe-t-il ensuite ?';
+  // r.mode plutôt que `missing` là où r.gap ou r.at sont lus : TypeScript en déduit leur type
+  const say =
+    r.mode === 'missing'
+      ? `Voici la vie de ${cyc.name}, mais une étape manque. Laquelle ?`
+      : `Voici ${LC_STAGES[r.order[r.at]].name}. Que se passe-t-il ensuite ?`;
+  const strip =
+    r.mode === 'missing'
+      ? r.order
+          .map((s, i) =>
+            i === r.gap
+              ? '<span class="lc-slot" aria-label="une étape manque">?</span>'
+              : `<span class="lc-step" data-s="${s}">${stageArt(s)}</span>`,
+          )
+          .join(LC_ARROW)
+      : `<span class="lc-step" data-s="${r.order[r.at]}">${stageArt(r.order[r.at])}</span>${LC_ARROW}<span class="lc-slot">?</span>`;
+  const good = r.mode === 'missing' ? r.order[r.gap] : r.order[r.at + 1];
+  openModal(`
+    ${gameHeader('🌱 De la graine à la fleur', title, say)}
+    ${livesBar()}
+    <div class="lc-strip" id="lc-strip" data-mode="${r.mode}" data-cycle="${r.cycle}">${strip}</div>
+    <div class="lc-options">${r.options.map((s) => stageCard(s)).join('')}</div>
+  `);
+  bindQuit();
+  startTimerIfNeeded('lifecycle');
+  setSolution([solSel('.lc-card', 's', good)]);
+  /** @type {LifecycleQuestion} */
+  const q =
+    r.mode === 'missing'
+      ? { mode: 'missing', prev: r.order[r.gap - 1], next: r.order[r.gap + 1] }
+      : { mode: 'next', cur: r.order[r.at] };
+  setHintQuestion('lifecycle', q, { choices: '.lc-card' });
+  document.querySelectorAll('.lc-card').forEach((b) =>
+    setHandler(b, 'click', () => {
+      if (b.dataset.s === good) {
+        stepOk(b);
+        const slot = document.querySelector('.lc-slot');
+        if (slot) {
+          slot.outerHTML = `<span class="lc-step found" data-s="${good}">${stageArt(good)}</span>`;
+        }
+        ok();
+      } else loseLife(b, { onRetry: renderLifecycle });
     }),
   );
 }

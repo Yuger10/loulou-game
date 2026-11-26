@@ -128,51 +128,16 @@ function renderPotions() {
     winSoon();
   };
 
-  if (r.mode === 'rainbow') {
-    const say = `L'arc-en-ciel de Biscotte a perdu ${r.holes.length} couleurs ! Touche les couleurs qui manquent, dans l'ordre, du haut vers le bas.`;
-    const bands = RAINBOW.map((c, i) =>
-      r.holes.includes(i)
-        ? `<span class="po-band hole" data-i="${i}">?</span>`
-        : `<span class="po-band" data-i="${i}" data-c="${c}" style="background:${POTION_COLORS[c].fill}"><b style="color:${POTION_COLORS[c].ink}">${POTION_COLORS[c].mark}</b> ${c}</span>`,
-    ).join('');
-    openModal(`
-      ${gameHeader('🌈 Les potions de couleurs', "Répare l'arc-en-ciel", say)}
-      ${livesBar()}
-      <div class="po-rainbow" id="po-stage" data-mode="rainbow">${bands}</div>
-      <div class="po-options">${r.options.map((c) => potionBtn(c)).join('')}</div>
-      <div id="po-progress">${progressDots(0, r.missing.length)}</div>
-    `);
-    bindQuit();
-    startTimerIfNeeded('potions');
-    setSolution(r.missing.map((c) => solSel('.po-opt', 'c', c)));
-    setHintQuestion('potions', { mode: 'rainbow' }, { choices: '.po-opt' });
-    let pos = 0;
-    document.querySelectorAll('.po-opt').forEach((b) =>
-      setHandler(b, 'click', () => {
-        if (b.classList.contains('done')) return;
-        if (b.dataset.c !== r.missing[pos]) {
-          loseLife(b, { onRetry: renderPotions, disable: false });
-          return;
-        }
-        stepOk(b);
-        b.classList.add('done');
-        const band = document.querySelector(`.po-band[data-i="${r.holes[pos]}"]`);
-        const c = r.missing[pos];
-        if (band) {
-          band.classList.remove('hole');
-          band.dataset.c = c;
-          band.style.background = POTION_COLORS[c].fill;
-          band.innerHTML = `<b style="color:${POTION_COLORS[c].ink}">${POTION_COLORS[c].mark}</b> ${c}`;
-        }
-        pos++;
-        const p = document.getElementById('po-progress');
-        if (p) p.innerHTML = progressDots(pos, r.missing.length);
-        if (pos === r.missing.length) ok();
-      }),
-    );
-    return;
-  }
+  if (r.mode === 'rainbow') return potionsAskRainbow(r, ok);
+  potionsAskColor(r, ok);
+}
 
+/**
+ * Une couleur à nommer, à mélanger, ou à retrouver dans un mélange.
+ * @param {Exclude<PotionsRound, { mode: 'rainbow' }>} r
+ * @param {() => void} ok
+ */
+function potionsAskColor(r, ok) {
   let title, say, stage, good;
   if (r.mode === 'name') {
     title = `Touche la potion ${r.target}`;
@@ -208,6 +173,53 @@ function renderPotions() {
         if (q) q.outerHTML = potionShow(good);
         ok();
       } else loseLife(b, { onRetry: renderPotions });
+    }),
+  );
+}
+/**
+ * @param {Extract<PotionsRound, { mode: 'rainbow' }>} r
+ * @param {() => void} ok
+ */
+function potionsAskRainbow(r, ok) {
+  const say = `L'arc-en-ciel de Biscotte a perdu ${r.holes.length} couleurs ! Touche les couleurs qui manquent, dans l'ordre, du haut vers le bas.`;
+  const bands = RAINBOW.map((c, i) =>
+    r.holes.includes(i)
+      ? `<span class="po-band hole" data-i="${i}">?</span>`
+      : `<span class="po-band" data-i="${i}" data-c="${c}" style="background:${POTION_COLORS[c].fill}"><b style="color:${POTION_COLORS[c].ink}">${POTION_COLORS[c].mark}</b> ${c}</span>`,
+  ).join('');
+  openModal(`
+    ${gameHeader('🌈 Les potions de couleurs', "Répare l'arc-en-ciel", say)}
+    ${livesBar()}
+    <div class="po-rainbow" id="po-stage" data-mode="rainbow">${bands}</div>
+    <div class="po-options">${r.options.map((c) => potionBtn(c)).join('')}</div>
+    <div id="po-progress">${progressDots(0, r.missing.length)}</div>
+  `);
+  bindQuit();
+  startTimerIfNeeded('potions');
+  setSolution(r.missing.map((c) => solSel('.po-opt', 'c', c)));
+  setHintQuestion('potions', { mode: 'rainbow' }, { choices: '.po-opt' });
+  let pos = 0;
+  document.querySelectorAll('.po-opt').forEach((b) =>
+    setHandler(b, 'click', () => {
+      if (b.classList.contains('done')) return;
+      if (b.dataset.c !== r.missing[pos]) {
+        loseLife(b, { onRetry: renderPotions, disable: false });
+        return;
+      }
+      stepOk(b);
+      b.classList.add('done');
+      const band = document.querySelector(`.po-band[data-i="${r.holes[pos]}"]`);
+      const c = r.missing[pos];
+      if (band) {
+        band.classList.remove('hole');
+        band.dataset.c = c;
+        band.style.background = POTION_COLORS[c].fill;
+        band.innerHTML = `<b style="color:${POTION_COLORS[c].ink}">${POTION_COLORS[c].mark}</b> ${c}`;
+      }
+      pos++;
+      const p = document.getElementById('po-progress');
+      if (p) p.innerHTML = progressDots(pos, r.missing.length);
+      if (pos === r.missing.length) ok();
     }),
   );
 }

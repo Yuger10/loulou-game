@@ -95,36 +95,44 @@ function renderNesting() {
   setSolution(r.order.map((b) => solSel('.nest-btn', 'i', b.i)));
   setHintQuestion('nesting', q, { choices: '.nest-btn' });
   /** @type {NodeListOf<HTMLButtonElement>} */ (document.querySelectorAll('.nest-btn')).forEach((btn) => {
-    setHandler(btn, 'click', () => {
-      if (btn.disabled) return;
-      const want = r.order[q.idx];
-      if (Number(btn.dataset.i) === want.i) {
-        btn.disabled = true;
-        btn.classList.add('placed');
-        q.idx++;
-        stepOk(btn);
-        nestingDrawStack(r, q.idx);
-        document.querySelectorAll('.game-progress i').forEach((d, i) => d.classList.toggle('on', i < q.idx));
-        if (q.idx === r.order.length) {
-          flashModal('ok');
-          winSoon();
-        }
-        return;
-      }
-      // anti-devinette : un indice parlé, puis une autre série à la 2ᵉ erreur
-      q.errors++;
-      const bigger = Number(btn.dataset.size) > want.size;
-      const tip = r.reverse
-        ? bigger
-          ? 'Celle-ci est trop grande : regarde bien les tailles.'
-          : 'Pas encore celle-là : il en reste une plus grande.'
-        : bigger
-          ? 'Pas encore celle-là : il en reste une plus petite.'
-          : 'Celle-ci est trop petite : regarde bien les tailles.';
-      if (q.errors >= 2) loseLife(btn, { disable: false, onRetry: renderNesting });
-      else if (!loseLife(btn, { disable: false })) speak(tip); // (sauf si la mission est perdue)
-    });
+    setHandler(btn, 'click', () => nestingPick(r, q, btn));
   });
+}
+
+/**
+ * Une boîte touchée : la bonne se range, sinon un indice parlé.
+ * @param {NestRound} r
+ * @param {NestQuestion} q
+ * @param {HTMLButtonElement} btn
+ */
+function nestingPick(r, q, btn) {
+  if (btn.disabled) return;
+  const want = r.order[q.idx];
+  if (Number(btn.dataset.i) === want.i) {
+    btn.disabled = true;
+    btn.classList.add('placed');
+    q.idx++;
+    stepOk(btn);
+    nestingDrawStack(r, q.idx);
+    document.querySelectorAll('.game-progress i').forEach((d, i) => d.classList.toggle('on', i < q.idx));
+    if (q.idx === r.order.length) {
+      flashModal('ok');
+      winSoon();
+    }
+    return;
+  }
+  // anti-devinette : un indice parlé, puis une autre série à la 2ᵉ erreur
+  q.errors++;
+  const bigger = Number(btn.dataset.size) > want.size;
+  const tip = r.reverse
+    ? bigger
+      ? 'Celle-ci est trop grande : regarde bien les tailles.'
+      : 'Pas encore celle-là : il en reste une plus grande.'
+    : bigger
+      ? 'Pas encore celle-là : il en reste une plus petite.'
+      : 'Celle-ci est trop petite : regarde bien les tailles.';
+  if (q.errors >= 2) loseLife(btn, { disable: false, onRetry: renderNesting });
+  else if (!loseLife(btn, { disable: false })) speak(tip); // (sauf si la mission est perdue)
 }
 
 // Les boîtes rangées : chacune dans la suivante (dessinées l'une dans l'autre)

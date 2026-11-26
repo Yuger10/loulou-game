@@ -23,31 +23,8 @@ import { bindQuit, gameHeader } from '../../screen/index.js';
 function renderSequence() {
   setupLives('sequence');
   const symbols = shuffle(['🐚', '⭐', '🌸', '🎀', '💎', '🦋', '🐠']).slice(0, 3);
-  const [A, B, C] = symbols;
   const dd = gameDiff();
-  // le motif qui se répète grandit avec le palier : 2 éléments (le plus
-  // simple) → jusqu'à 4 éléments combinés (palier 5)
-  const patterns =
-    dd <= 1
-      ? [[A, B]]
-      : dd === 2
-        ? [
-            [A, B],
-            [A, A, B],
-            [A, B, C],
-          ]
-        : dd === 3
-          ? [
-              [A, B, B],
-              [A, A, B],
-              [A, B, C],
-            ]
-          : [
-              [A, B, C],
-              [A, B, A, C],
-              [A, A, B, C],
-              [A, B, B, C],
-            ];
+  const patterns = sequencePatterns(dd, symbols);
   const pattern = pickRandom(patterns);
   const shown = sequencePatternLength(dd);
   const seq = Array.from({ length: shown }, (_, i) => pattern[i % pattern.length]);
@@ -86,6 +63,37 @@ function renderSequence() {
       } else loseLife(btn, { onRetry: renderSequence });
     });
   });
+}
+
+/**
+ * Les motifs possibles, avec trois images.
+ * @param {number} dd le palier de difficulté
+ * @param {string[]} abc
+ */
+function sequencePatterns(dd, abc) {
+  const [A, B, C] = abc;
+  // le motif qui se répète grandit avec le palier : 2 éléments (le plus
+  // simple) → jusqu'à 4 éléments combinés (palier 5)
+  return dd <= 1
+    ? [[A, B]]
+    : dd === 2
+      ? [
+          [A, B],
+          [A, A, B],
+          [A, B, C],
+        ]
+      : dd === 3
+        ? [
+            [A, B, B],
+            [A, A, B],
+            [A, B, C],
+          ]
+        : [
+            [A, B, C],
+            [A, B, A, C],
+            [A, A, B, C],
+            [A, B, B, C],
+          ];
 }
 
 // Indices (v52) : 1. trouver le petit groupe qui se répète ; 2. chaque image

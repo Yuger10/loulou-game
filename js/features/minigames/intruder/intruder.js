@@ -19,49 +19,33 @@ import {
 } from '../../minigame-engine/index.js';
 import { bindQuit, gameHeader } from '../../screen/index.js';
 
+// emojis qui se voient bien à l'envers (pas symétriques)
+const DIFF_MIRRORABLE = ['🐠', '🦋', '🐌', '🦄', '🐬', '🦊', '🐿️', '🦉', '🦌', '🦔', '🐟', '🎩'];
+// l'intrus et les autres : proches (niveaux élevés) ou bien différents
+const DIFF_SETS_CLOSE = [
+  ['🐚', '🐌'],
+  ['🌸', '🌺'],
+  ['⭐', '🌟'],
+  ['🦋', '🐝'],
+  ['🎀', '🎁'],
+  ['🐠', '🐟'],
+  ['🍄', '🌰'],
+  ['🍀', '🌿'],
+];
+const DIFF_SETS_FAR = [
+  ['🐚', '🦄'],
+  ['🦋', '💎'],
+  ['🌸', '🍓'],
+  ['⭐', '🌙'],
+  ['🎀', '🧜‍♀️'],
+  ['🍄', '🦊'],
+];
+
 function renderDiff() {
   setupLives('diff');
   const dd = gameDiff();
   const total = diffTotal(dd);
-  // emojis qui se voient bien à l'envers (pas symétriques)
-  const MIRRORABLE = ['🐠', '🦋', '🐌', '🦄', '🐬', '🦊', '🐿️', '🦉', '🦌', '🦔', '🐟', '🎩'];
-  // niveaux élevés : l'intrus ressemble un peu plus aux autres
-  const sets =
-    dd >= 2
-      ? [
-          ['🐚', '🐌'],
-          ['🌸', '🌺'],
-          ['⭐', '🌟'],
-          ['🦋', '🐝'],
-          ['🎀', '🎁'],
-          ['🐠', '🐟'],
-          ['🍄', '🌰'],
-          ['🍀', '🌿'],
-        ]
-      : [
-          ['🐚', '🦄'],
-          ['🦋', '💎'],
-          ['🌸', '🍓'],
-          ['⭐', '🌙'],
-          ['🎀', '🧜‍♀️'],
-          ['🍄', '🦊'],
-        ];
-
-  // au-delà du palier 1 : chance croissante que ce soit la variante miroir
-  const mirrorMode = random() < diffMirrorChance(dd);
-  let base, odd, items, hint;
-  if (mirrorMode) {
-    base = pickRandom(MIRRORABLE);
-    odd = base;
-    hint = 'Une image est retournée comme dans un miroir. Laquelle ?';
-    items = Array(total).fill(base);
-  } else {
-    [base, odd] = pickRandom(sets);
-    hint = "Touche celui qui n'est pas comme les autres";
-    items = Array(total - 1).fill(base);
-  }
-  const oddPos = Math.floor(random() * total);
-  if (!mirrorMode) items.splice(oddPos, 0, odd);
+  const { mirrorMode, odd, items, hint, oddPos } = diffDraw(dd, total);
 
   openModal(`
     ${gameHeader("🔍 Trouve l'intrus", hint)}
@@ -93,6 +77,33 @@ function renderDiff() {
       } else loseLife(el, { onRetry: renderDiff });
     });
   });
+}
+
+/**
+ * Les images de la rangée et l'intrus parmi elles.
+ * @param {number} dd le palier de difficulté
+ * @param {number} total le nombre d'images
+ */
+function diffDraw(dd, total) {
+  // niveaux élevés : l'intrus ressemble un peu plus aux autres
+  const sets = dd >= 2 ? DIFF_SETS_CLOSE : DIFF_SETS_FAR;
+
+  // au-delà du palier 1 : chance croissante que ce soit la variante miroir
+  const mirrorMode = random() < diffMirrorChance(dd);
+  let base, odd, items, hint;
+  if (mirrorMode) {
+    base = pickRandom(DIFF_MIRRORABLE);
+    odd = base;
+    hint = 'Une image est retournée comme dans un miroir. Laquelle ?';
+    items = Array(total).fill(base);
+  } else {
+    [base, odd] = pickRandom(sets);
+    hint = "Touche celui qui n'est pas comme les autres";
+    items = Array(total - 1).fill(base);
+  }
+  const oddPos = Math.floor(random() * total);
+  if (!mirrorMode) items.splice(oddPos, 0, odd);
+  return { mirrorMode, odd, items, hint, oddPos };
 }
 
 // Indices (v52) : 1. regarder chaque image, une par une (ou dans quel sens
