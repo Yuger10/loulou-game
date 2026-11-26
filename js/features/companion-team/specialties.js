@@ -184,6 +184,7 @@ function perleDecorate() {
   if (!specialtyOn('perle')) return;
   document.querySelectorAll('#modal-body .btn-speak[data-say]').forEach((b) => {
     if (b.nextElementSibling && b.nextElementSibling.classList.contains('btn-reread')) return;
+    if (b.closest('.game-choice-wrap')) return; // le nom d'un jeu : un mot, rien à relire lentement
     const r = document.createElement('button');
     r.type = 'button';
     r.className = 'btn-reread';
@@ -317,6 +318,10 @@ function zapGameFor() {
 function zapOfferDue() {
   return soloSpecialtyOn('zap') && !teamDay().zap[currentWorld];
 }
+// les îles où l'offre de Zap a déjà été dite depuis le lancement
+/** @type {Set<string>} */
+const zapOfferSaid = new Set();
+const ZAP_OFFER = 'Un défi bonus ? Un cran plus difficile, et la récompense est doublée !';
 function renderZapOffer() {
   const el = document.querySelector('[data-zap-offer]');
   if (!el) return;
@@ -327,8 +332,14 @@ function renderZapOffer() {
   }
   el.hidden = false;
   el.innerHTML = `<div class="zap-offer"><span class="sg-face" aria-hidden="true">${companionSVG('zap', 'cheer')}</span>
-    <span class="sg-txt"><b>Zap</b> Un défi bonus ? Un cran plus difficile, et la récompense est doublée !</span>
+    <span class="sg-txt"><b>Zap</b> ${ZAP_OFFER}</span>
     <span class="zo-btns"><button type="button" class="btn-small" data-zap="yes">⚡ Oui !</button><button type="button" class="btn-small ghost" data-zap="no">Non merci</button></span></div>`;
+  // l'offre se dit quand l'enfant arrive sur l'île, une fois par île et par session
+  const view = document.getElementById('view-ile');
+  if (view && view.classList.contains('active') && !zapOfferSaid.has(currentWorld)) {
+    zapOfferSaid.add(currentWorld);
+    speak(ZAP_OFFER);
+  }
   setHandler(el.querySelector('[data-zap="yes"]'), 'click', () => {
     playSound('tap');
     zapStart();

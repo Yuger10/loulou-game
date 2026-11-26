@@ -281,8 +281,10 @@ function showVeil() {
   veilEl().hidden = false;
   veilEl().classList.remove('rest-behind');
   setAppInert(true);
-  if (log.activity || log.skipped) renderVeil('asleep');
-  else {
+  if (log.activity || log.skipped) {
+    renderVeil('asleep');
+    speak("L'île dort. On revient demain.");
+  } else {
     const line = restIntroLine();
     renderVeil('choose', line);
     speak(line);

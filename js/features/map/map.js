@@ -269,10 +269,11 @@ function sailTo(id) {
   })();
 }
 
-registerView('carte', () => {
+registerView('carte', ({ silent }) => {
   renderMap();
   renderIslandCard();
   renderLevelPill();
+  if (!silent) speak('La carte');
 });
 
 // la garde-robe redemande la carte (le bateau porte la tenue)

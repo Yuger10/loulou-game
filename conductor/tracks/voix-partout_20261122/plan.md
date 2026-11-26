@@ -32,10 +32,10 @@ Spec : [spec.md](spec.md). Quatre PR, chacune complète et en production une min
 
 ### Phase 3 : lire à l'ouverture, hors mini-jeux (PR 3, « chaque écran se présente »)
 
-- [ ] 3.1 Test d'abord : colonne `auto` des scénarios selon la table O (ligne 19), 🔈 de la victoire, de l'échec et de l'indice (ligne 21), 🔈 des cartes du choix d'un jeu (ligne 22).
-- [ ] 3.2 Phrases d'ouverture de la table O : accueil, vues, intro de l'île une fois par île et par session, offre de Zap, « À demain ! » rouvert endormi. Écran titre : `showSplash()` pose le `data-say` du `h1` (table O).
-- [ ] 3.3 🔈 de la victoire et de l'échec (relisent la phrase dite, `engine.js:395`, `495`), de la bulle d'indice, des cartes du choix d'un jeu. Le choix d'un jeu enveloppe chaque carte dans `div.game-choice-wrap` (ligne 22).
-- [ ] 3.4 `bun run check` vert ; PR 3 (zone sensible : pause).
+- [x] 3.1 Test d'abord : colonne `auto` des scénarios selon la table O (ligne 19), 🔈 de la victoire, de l'échec et de l'indice (ligne 21), 🔈 des cartes du choix d'un jeu (ligne 22).
+- [x] 3.2 Phrases d'ouverture de la table O : accueil, vues, intro de l'île une fois par île et par session, offre de Zap, « À demain ! » rouvert endormi. Écran titre : `showSplash()` pose le `data-say` du `h1` (table O).
+- [x] 3.3 🔈 de la victoire et de l'échec (relisent la phrase dite, `engine.js:395`, `495`), de la bulle d'indice, des cartes du choix d'un jeu. Le choix d'un jeu enveloppe chaque carte dans `div.game-choice-wrap` (ligne 22).
+- [x] 3.4 `bun run check` vert ; PR 3 (zone sensible : pause).
 
 ### Phase 4 : les mini-jeux (PR 4, livrée par `bun run release track "une voix partout"`)
 

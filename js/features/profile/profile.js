@@ -89,6 +89,7 @@ function openWelcome() {
   renderWelcomeExtra();
   newVoiceScene();
   /** @type {HTMLElement} */ (document.getElementById('welcome')).classList.add('show');
+  speak('Bienvenue dans le lagon ! Écris ton prénom, puis choisis ton avatar et ton compagnon.');
 }
 function closeWelcome() {
   const input = /** @type {HTMLInputElement} */ (document.getElementById('name-input'));

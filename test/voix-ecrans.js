@@ -98,27 +98,27 @@ const SCENARIOS = [
     covers: [],
     open: (ev) => ev('openWelcome()'),
     close: (ev, d) => d.getElementById('welcome').classList.remove('show'),
-    auto: [],
+    auto: [/^Bienvenue dans le lagon! Écris ton prénom, puis choisis ton avatar et ton compagnon\.$/],
   },
 
   /* ---- les vues ---- */
   {
     name: 'vue Carte',
     covers: ['view:carte'],
-    open: (ev) => ev("switchView('reglages'); switchView('carte')"),
-    auto: [],
+    open: (ev) => ev("switchView('carte')"),
+    auto: [/^La carte$/],
   },
   {
     name: 'vue Île',
     covers: ['view:ile'],
-    open: (ev) => ev("switchView('ile')"),
-    auto: [],
+    open: (ev) => ev("islandIntroSaid.clear(); switchView('ile')"),
+    auto: [/^Touche un personnage pour l'aider$/],
   },
   {
     name: 'vue Île, arrivée sur une autre île',
     covers: ['view:ile'],
-    open: (ev) => ev("setWorld('foret'); switchView('ile')"),
-    auto: [/^La Forêt! Les bois enchantés\.$/],
+    open: (ev) => ev("islandIntroSaid.clear(); setWorld('foret'); switchView('ile')"),
+    auto: [/^La Forêt! Les bois enchantés\.$/, /^La forêt enchantée t'attend$/],
   },
   {
     name: 'vue Sac vide',
@@ -130,9 +130,9 @@ const SCENARIOS = [
     name: 'vue Sac',
     covers: ['view:sac'],
     open: (ev) => ev("addItem(Object.keys(ITEMS)[0], 2); switchView('sac')"),
-    auto: [],
+    auto: [/^Mon sac$/],
   },
-  { name: 'vue Sac, album', covers: ['view:sac'], open: (ev) => ev("switchView('album')"), auto: [] },
+  { name: 'vue Sac, album', covers: ['view:sac'], open: (ev) => ev("switchView('album')"), auto: [/^Mon sac$/] },
   {
     name: 'album complet',
     covers: ['js/features/bag/bag.js#checkAlbumComplete'],
@@ -146,27 +146,27 @@ const SCENARIOS = [
     name: 'vue Marché, vendre',
     covers: ['view:marche'],
     open: (ev) => ev("addItem(Object.keys(ITEMS)[0], 2); currentTab = 'vendre'; switchView('marche')"),
-    auto: [],
+    auto: [/^Le marché$/],
   },
   {
     name: 'vue Marché, échanger (doubles de squishies)',
     covers: ['view:marche'],
     open: (ev) => ev("addItem(Object.keys(ITEMS)[0], 2); currentTab = 'echanger'; switchView('marche')"),
-    auto: [],
+    auto: [/^Le marché$/],
   },
   {
     name: 'vue Marché, fusionner (il manque des objets)',
     covers: ['view:marche'],
     open: (ev) => ev("state.inventory = {}; currentTab = 'fusionner'; switchView('marche')"),
-    auto: [],
+    auto: [/^Le marché$/],
   },
   {
     name: 'vue Marché, acheter (sans pièces, boîte de squishies)',
     covers: ['view:marche'],
     open: (ev) => ev("state.coins = 0; currentTab = 'acheter'; switchView('marche')"),
-    auto: [],
+    auto: [/^Le marché$/],
   },
-  { name: 'vue Réglages', covers: ['view:reglages'], open: (ev) => ev("switchView('reglages')"), auto: [] },
+  { name: 'vue Réglages', covers: ['view:reglages'], open: (ev) => ev("switchView('reglages')"), auto: [/^Réglages$/] },
 
   /* ---- l'île ---- */
   {
@@ -180,9 +180,9 @@ const SCENARIOS = [
     covers: [],
     open: (ev) =>
       ev(
-        "teamState().open = true; teamState().met = Object.assign(teamState().met || {}, { zap: true }); teamState().mates = ['zap']; teamDay().zap = {}; switchView('ile')",
+        "teamState().open = true; teamState().met = Object.assign(teamState().met || {}, { zap: true }); teamState().mates = ['zap']; teamDay().zap = {}; islandIntroSaid.add('lagon'); zapOfferSaid.clear(); switchView('ile')",
       ),
-    auto: [],
+    auto: [/^Un défi bonus\? Un cran plus difficile, et la récompense est doublée!$/],
   },
   {
     name: 'magasin de décos (sans pièces)',
@@ -432,7 +432,7 @@ const SCENARIOS = [
       ),
     close: (ev) =>
       ev('currentProfile().pauseMin = 0; saveProfiles(); state.playTime = {}; state.restLog = {}; save(); restWake()'),
-    auto: [],
+    auto: [/^L'île dort\. On revient demain\.$/],
   },
 
   /* ---- les adultes et les joueurs ---- */

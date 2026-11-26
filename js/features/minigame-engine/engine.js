@@ -11,6 +11,7 @@ import {
   closeModal,
   confetti,
   onModalChange,
+  bindSpeakButtons,
   onModalClose,
   openModal,
   playSound,
@@ -414,7 +415,7 @@ function onMissionFail() {
     <div class="reward-box fail-box">
       ${buddySlot('oops', 'buddy-big fail-emoji')}
       <h2>Raté !</h2>
-      <div class="speech">${msg}</div>
+      <div class="speech with-voice"><span class="txt">${msg}</span>${replayButton(msg)}</div>
       <div class="speech" style="background:#FFF1EC;">
         ${charFace(currentChar || '')} <strong>${c.name}</strong> t'attend pour un nouvel essai !
       </div>
@@ -422,6 +423,7 @@ function onMissionFail() {
     <button class="btn-primary" id="btn-retry">🔁 Réessayer</button>
     <button class="btn-ghost" id="btn-later">Plus tard</button>
   `);
+  bindSpeakButtons();
   const m = document.getElementById('modal');
   if (m) {
     m.classList.add('shake-hard');
@@ -534,6 +536,11 @@ function winPraise() {
   ]).replace(/ ([!?])/g, ' $1'); // espace insécable : le « ! » ne part pas seul à la ligne
 }
 
+// le bouton 🔈 qui relit la phrase dite à l'ouverture d'une fenêtre de fin de mission
+/** @param {string} say */
+const replayButton = (say) =>
+  `<button type="button" class="btn-speak" data-say="${say.replace(/<[^>]+>/g, '').replace(/"/g, '&quot;')}" aria-label="Écouter">🔈</button>`;
+
 /** @param {MissionWin} w */
 function winSpeech(w) {
   const { levelUp, praise, cheer, cheerBy, extras, lookWon, fact, c, it, bonus } = w;
@@ -549,6 +556,7 @@ function winMarkup(w) {
       ${buddySlot('cheer', 'buddy-big win-emoji')}
       <span class="win-stamp">${levelUp ? '🌟' : '✅'}</span>
       <h2>${levelUp ? `Niveau ${level()} !` : praise}</h2>
+      ${replayButton(winSpeech(w))}
       ${lookWon.length ? `<div class="speech look-won"><span aria-hidden="true">🎁</span> Nouveau pour ton avatar : <strong>${lookWon.join(', ')}</strong> (sac → Mon look)</div>` : ''}
       ${cheer ? `<div class="speech progress-cheer">${cheerBy ? `<span class="cheer-face" aria-hidden="true">${companionSVG(cheerBy, 'cheer')}</span><b>${COMPANIONS[cheerBy].name}</b>` : '<span aria-hidden="true">📈</span>'} ${cheer}</div>` : ''}
       ${extras.map((x) => `<div class="speech team-extra" data-by="${x.by}"><span class="cheer-face" aria-hidden="true">${companionSVG(x.by, 'cheer')}</span><span><b>${COMPANIONS[x.by].name}</b> ${x.text}</span></div>`).join('')}
@@ -573,6 +581,7 @@ function winMarkup(w) {
 }
 
 function winBindButtons() {
+  bindSpeakButtons();
   setHandler(document.getElementById('btn-yay'), 'click', () => {
     playSound('tap');
     closeModal();

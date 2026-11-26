@@ -17,15 +17,29 @@ button + .btn-speak {
   margin-left: 8px;
 }
 
-/* choix d'un jeu : la carte, puis son 🔈 à droite */
+/* choix d'un jeu : une carte par ligne, puis son 🔈 à droite (entendre le nom
+   du jeu sans le lancer) */
+.game-picker {
+  grid-template-columns: 1fr;
+}
 .game-choice-wrap {
   display: flex;
   gap: 8px;
   align-items: center;
 }
-.game-choice-wrap > :first-child {
+.game-choice-wrap > .game-choice {
   flex: 1;
   min-width: 0;
+}
+/* les teintes alternaient par carte (:nth-child) : elles suivent maintenant la ligne */
+.game-choice-wrap:nth-child(4n + 2) > .game-choice:not(.surprise) {
+  background: var(--tint-lilac);
+}
+.game-choice-wrap:nth-child(4n + 3) > .game-choice:not(.surprise) {
+  background: var(--tint-sun);
+}
+.game-choice-wrap:nth-child(4n + 4) > .game-choice:not(.surprise) {
+  background: var(--tint-mint);
 }
 
 /* le texte que la voix est en train de lire */

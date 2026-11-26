@@ -18,6 +18,7 @@ import {
   bindSpeakButtons,
   closeModal,
   confetti,
+  keepSpeech,
   openModal,
   playSound,
   registerView,
@@ -41,6 +42,22 @@ import { openSeasonPrologue, openStoryChapter, STORY, storySolved } from '../sto
 import { addCoins } from '../wallet/index.js';
 import { renderLiveIsland } from './island.js';
 
+// ce que dit l'arrivée sur une île
+/** @param {typeof WORLDS[string]} w */
+const arrivalLine = (w) => `${w.name} ! ${w.subtitle}.`;
+// les îles dont l'intro a déjà été dite depuis le lancement (en mémoire : rien dans la sauvegarde)
+/** @type {Set<string>} */
+const islandIntroSaid = new Set();
+// La vue Île s'ouvre : l'arrivée dite au départ du bateau n'est pas coupée,
+// puis l'intro de l'île est dite, une seule fois par île et par session.
+function sayIslandOpening() {
+  const w = WORLDS[currentWorld];
+  keepSpeech(arrivalLine(w));
+  if (islandIntroSaid.has(currentWorld)) return;
+  islandIntroSaid.add(currentWorld);
+  speak(w.intro);
+}
+
 /** @param {string} id l'île @param {boolean} [silent] sans son ni annonce */
 function setWorld(id, silent) {
   const w = WORLDS[id];
@@ -60,7 +77,7 @@ function setWorld(id, silent) {
   renderLagon();
   if (changed && !silent) {
     playSound('good');
-    speak(`${w.name} ! ${w.subtitle}.`);
+    speak(arrivalLine(w));
     emit('world:changed', id); // un compagnon à rencontrer sur cette île ? (js/features/companion-team)
   }
   return true;
@@ -393,7 +410,11 @@ function openDialogue(charId) {
   });
 }
 
-registerView('ile', () => renderLagon());
+registerView('ile', ({ silent }) => {
+  // avant le dessin de l'île : l'offre de Zap (js/features/companion-team) se dit après l'intro
+  if (!silent && worldUnlocked(currentWorld)) sayIslandOpening();
+  renderLagon();
+});
 
 // changement de joueur : son île (en dernier : elle s'appuie sur le reste)
 onProfileRefresh(() => renderLagon());

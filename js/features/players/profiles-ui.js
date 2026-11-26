@@ -467,6 +467,11 @@ function pickPickerChoices(n) {
   return choices;
 }
 
+// le 🔈 à droite d'une carte : entendre le nom du jeu sans le lancer
+/** @param {string} name */
+const listenButton = (name) =>
+  `<button type="button" class="btn-speak" data-say="${escAttr(name)}" aria-label="Écouter : ${escAttr(name)}">🔈</button>`;
+
 /** @param {string} [charId] */
 function openGamePicker(charId) {
   if (charId) setCurrentChar(charId);
@@ -477,14 +482,14 @@ function openGamePicker(charId) {
     <div class="game-picker">
       ${choices
         .map(
-          (g) => `<button class="game-choice" data-game="${g.key}">
+          (g) => `<div class="game-choice-wrap"><button class="game-choice" data-game="${g.key}">
         <span class="emoji">${g.emoji}</span><span class="nm">${g.name}</span>
-      </button>`,
+      </button>${listenButton(g.name)}</div>`,
         )
         .join('')}
-      <button class="game-choice surprise" data-game="random">
+      <div class="game-choice-wrap"><button class="game-choice surprise" data-game="random">
         <span class="emoji">🎲</span><span class="nm">Surprise</span>
-      </button>
+      </button>${listenButton('Surprise')}</div>
     </div>
   `);
   bindQuit();

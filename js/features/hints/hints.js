@@ -31,7 +31,7 @@ import { buddyReact, COMPANIONS, companionSVG, currentCompanion } from '../../en
 import { save, state } from '../../entities/game-state/index.js';
 import { party, race } from '../../entities/player/index.js';
 import { pickRandom } from '../../shared/lib/index.js';
-import { onModalChange, playSound, setHandler, speak } from '../../shared/ui/index.js';
+import { bindSpeakButtons, onModalChange, playSound, setHandler, speak } from '../../shared/ui/index.js';
 
 const HINT_IDLE_MS = 10000; // sans toucher l'écran, le bouton se propose
 const HINT_LEVELS = 2;
@@ -337,7 +337,9 @@ function showHint(h, level, giverOverride, demand) {
   // espaces insécables avant « : ! ? » (typographie française, pas de « : » seul en début de ligne)
   const text = h.say.replace(/ ([:;!?»])/g, '\u00a0$1').replace(/« /g, '«\u00a0');
   bub.innerHTML = `<span class="hint-bface" aria-hidden="true">${companionSVG(who, 'think')}</span>
-    <span class="hint-btext"><b class="hint-n">💡 ${level}</b> ${text}${h.fx.html ? `<span class="hint-extra">${h.fx.html}</span>` : ''}</span>`;
+    <span class="hint-btext"><b class="hint-n">💡 ${level}</b> ${text}${h.fx.html ? `<span class="hint-extra">${h.fx.html}</span>` : ''}</span>
+    <button type="button" class="btn-speak" data-say="${h.say.replace(/<[^>]+>/g, '').replace(/"/g, '&quot;')}" aria-label="Écouter l'indice">🔈</button>`;
+  bindSpeakButtons();
   bub.classList.remove('pop');
   void bub.offsetWidth;
   bub.classList.add('pop');

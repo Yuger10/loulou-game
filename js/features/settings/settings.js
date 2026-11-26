@@ -197,7 +197,10 @@ function bindSettings(el) {
   });
 }
 
-registerView('reglages', () => renderSettings());
+registerView('reglages', ({ silent }) => {
+  renderSettings();
+  if (!silent) speak('Réglages');
+});
 // changement de joueur pendant qu'on est sur les Réglages : on les redessine
 onProfileRefresh(() => {
   const v = document.getElementById('view-reglages');

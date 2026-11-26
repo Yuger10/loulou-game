@@ -54,7 +54,7 @@ renderLagon();
 renderMap();
 renderIslandCard();
 renderLevelPill();
-switchView('carte');
+switchView('carte', { silent: true }); // au lancement, avant le premier geste : rien n'est dit
 
 /* Écran titre : sert aussi à débloquer le son et la voix (geste utilisateur requis sur iOS) */
 function showSplash() {
@@ -66,6 +66,14 @@ function showSplash() {
     : state.name
       ? `Coucou ${state.name} ${avatarText(state.avatar)} !`
       : "En route pour l'aventure ?";
+  // rien n'est dit avant le premier geste : le titre se lit au toucher, avec l'accueil du jour
+  const hello = season
+    ? FETES[season].greet(state.name)
+    : state.name
+      ? `Coucou ${state.name} !`
+      : "En route pour l'aventure ?";
+  const title = sp.querySelector('h1');
+  if (title) title.setAttribute('data-say', `Le Lagon Magique. ${hello}`);
   // joueur connu : son compagnon l'accueille ; sinon la troupe des personnages
   const bud = document.getElementById('splash-buddy');
   const cast = sp.querySelector('.cast');
@@ -102,7 +110,7 @@ function hideSplash() {
         ? `${FETES[season].greet(state.name)} L'aventure t'attend.`
         : `Coucou ${state.name} ! L'aventure t'attend.`,
     );
-    switchView('carte');
+    switchView('carte', { silent: true }); // le bonjour suffit : la carte ne se présente pas par-dessus
     // une fois par saison : un cadeau (chapeau pour l'avatar + pièces) ;
     // sinon l'équipe des compagnons : son ouverture (niveau 10) ou une rencontre
     // le Ciel des Rêves (v55) : son ouverture, pour une partie qui a déjà son niveau

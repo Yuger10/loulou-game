@@ -165,6 +165,30 @@ function newVoiceScene() {
   voiceScene++;
 }
 
+// Une phrase dite juste avant un changement d'écran appartient au nouvel écran
+// (l'arrivée sur une île, dite au départ du bateau) : elle n'est pas coupée
+// par la première phrase de cet écran, qui attend son tour.
+/** @param {string} text */
+function keepSpeech(text) {
+  const key = toSpoken(text);
+  if (speaking && speaking.item.key === key) {
+    speaking.scene = voiceScene;
+    return;
+  }
+  const kept = speechQueue.filter((e) => e.item.key === key);
+  if (!kept.length) return;
+  // elle attendait derrière une phrase de l'écran quitté : celle-ci s'arrête, elle passe
+  kept.forEach((e) => (e.scene = voiceScene));
+  speechQueue = speechQueue.filter((e) => e.scene === voiceScene);
+  if (speaking && speaking.scene !== voiceScene) {
+    const cur = speaking;
+    speaking = null;
+    cur.stop();
+    const next = speechQueue.shift();
+    if (next) playNow(next);
+  }
+}
+
 // opts.rate : plus lent pour relire (Perle la conteuse, v52)
 /**
  * @param {string} text
@@ -237,4 +261,4 @@ if ('speechSynthesis' in window) {
   setHandler(window.speechSynthesis, 'voiceschanged', pickVoice);
 }
 
-export { bindSpeakButtons, emojiWord, newVoiceScene, speak, speakCallCount, speechBubble, stopSpeech };
+export { bindSpeakButtons, emojiWord, keepSpeech, newVoiceScene, speak, speakCallCount, speechBubble, stopSpeech };

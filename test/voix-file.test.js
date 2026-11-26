@@ -106,7 +106,7 @@ const said = () => synth.log.join(' | ');
   check("la file de l'ancienne scène est vidée", said() === 'Ancienne scène | Nouvelle scène', said());
   for (const [nom, code] of [
     ['openModal', "openModal('<p>x</p>')"],
-    ['switchView', "switchView('carte')"],
+    ['switchView', "switchView('carte', { silent: true })"],
     ['closeModal', 'closeModal()'],
     ['renderVeil (pause)', "renderVeil('asleep')"],
   ]) {
@@ -117,6 +117,31 @@ const said = () => synth.log.join(' | ');
     check(`${nom} ouvre une nouvelle scène`, said() === 'Avant | Après', said());
   }
   ev("document.getElementById('rest-veil') && (document.getElementById('rest-veil').hidden = true); closeModal()");
+
+  // une phrase dite juste avant un changement d'écran est gardée (l'arrivée sur une île)
+  reset();
+  speak('Arrivée');
+  ev('newVoiceScene(); keepSpeech("Arrivée")');
+  speak('Intro');
+  check(
+    'keepSpeech : la phrase en cours passe dans la nouvelle scène',
+    said() === 'Arrivée' && synth.cancels === 0,
+    said(),
+  );
+  synth.end();
+  check('la phrase suivante attend son tour', said() === 'Arrivée | Intro', said());
+  reset();
+  speak('La carte');
+  speak('Arrivée');
+  ev('newVoiceScene(); keepSpeech("Arrivée")');
+  check(
+    'keepSpeech : une phrase en attente passe devant celle de la scène quittée',
+    said() === 'La carte | Arrivée' && synth.cancels === 1,
+    `${said()} (${synth.cancels} coupure(s))`,
+  );
+  speak('Intro');
+  synth.end();
+  check('puis la suite, sans coupure de plus', said() === 'La carte | Arrivée | Intro' && synth.cancels === 1, said());
 
   console.log('— Ligne 3 : interrupt coupe et parle tout de suite');
   reset();

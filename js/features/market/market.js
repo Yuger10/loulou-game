@@ -336,4 +336,7 @@ function renderFusionner(el) {
   });
 }
 
-registerView('marche', () => renderMarche());
+registerView('marche', ({ silent }) => {
+  renderMarche();
+  if (!silent) speak('Le marché');
+});
