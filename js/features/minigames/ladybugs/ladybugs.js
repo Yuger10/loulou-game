@@ -101,16 +101,14 @@ const ladybugsKey = (/** @type {LadybugsRound} */ x) => `${x.mode}${x.n}`;
  * @returns {LadybugsRound}
  */
 function ladybugsQuestion(dd) {
-  const r = drawOther(
-    () => ladybugsBuildRound(dd),
-    ladybugsKey,
-    ladybugsLast,
-    (x) => {
+  const r = drawOther(() => ladybugsBuildRound(dd), ladybugsKey, {
+    last: ladybugsLast,
+    fallback: (x) => {
       // après 8 tirages identiques : un point de plus par aile, ou de moins au maximum du palier
       const n = x.n + 1 <= x.cfg.max ? x.n + 1 : x.n - 1;
       return { ...x, n, total: 2 * n };
     },
-  );
+  });
   ladybugsLast = ladybugsKey(r);
   return r;
 }

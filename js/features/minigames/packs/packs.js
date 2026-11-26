@@ -100,16 +100,14 @@ const packsKey = (/** @type {PacksRound} */ x) => `${x.size}-${x.n}-${x.extra}`;
  * @returns {PacksRound}
  */
 function packsQuestion(dd) {
-  const r = drawOther(
-    () => packsBuildRound(dd),
-    packsKey,
-    packsLast,
-    (x) => {
+  const r = drawOther(() => packsBuildRound(dd), packsKey, {
+    last: packsLast,
+    fallback: (x) => {
       // après 8 tirages identiques : un paquet de plus, ou de moins au maximum du palier
       const n = x.n + 1 <= x.cfg.max ? x.n + 1 : x.n - 1;
       return { ...x, n, total: x.size * n + x.extra };
     },
-  );
+  });
   packsLast = packsKey(r);
   return r;
 }

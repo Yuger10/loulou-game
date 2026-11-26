@@ -346,17 +346,17 @@ function stepOk(target) {
 /* Jamais deux fois la même question d'affilée : après une erreur expliquée,
    la bonne réponse vient d'être montrée, la revoir serait une devinette.
    `draw` tire une question, `keyOf` donne sa clé (ce qui fixe la réponse),
-   `last` est la clé de la question précédente. Après 8 tirages identiques,
-   `fallback` change une valeur de la dernière question tirée. */
+   `rule.last` est la clé de la question précédente. Après 8 tirages identiques,
+   `rule.fallback` change une valeur de la dernière question tirée. */
 /**
  * @template Q
  * @param {() => Q} draw
  * @param {(q: Q) => string} keyOf
- * @param {string} last
- * @param {(q: Q) => Q} fallback
+ * @param {{ last: string, fallback: (q: Q) => Q }} rule
  * @returns {Q}
  */
-function drawOther(draw, keyOf, last, fallback) {
+function drawOther(draw, keyOf, rule) {
+  const { last, fallback } = rule;
   let q = draw();
   for (let k = 0; k < 8 && keyOf(q) === last; k++) q = draw();
   return keyOf(q) === last ? fallback(q) : q;
@@ -587,7 +587,7 @@ function winGiveLoot(c) {
 /* Les éloges de l'écran de victoire nomment ce que l'enfant a FAIT (chercher,
    réfléchir, travailler), jamais ce qu'elle EST (forte, championne, maligne) :
    après un échec, l'éloge de la personne décourage plus que celui de l'effort
-   (track erreurs-expliquees, D12). test/explications.test.js garde la liste. */
+   (track erreurs-expliquees, D12). test/explications-strategies.test.js garde la liste. */
 /**
  * @param {string} who « ␣prénom » si le prénom est connu, sinon une chaîne vide
  * @returns {string[]}

@@ -81,12 +81,7 @@ function mathOther(p, max) {
  */
 function mathQuestion(dd) {
   const { max } = mathBounds(dd);
-  const p = drawOther(
-    () => makeMathProblem(dd),
-    mathKey,
-    mathLast,
-    (x) => mathOther(x, max),
-  );
+  const p = drawOther(() => makeMathProblem(dd), mathKey, { last: mathLast, fallback: (x) => mathOther(x, max) });
   mathLast = mathKey(p);
   return p;
 }

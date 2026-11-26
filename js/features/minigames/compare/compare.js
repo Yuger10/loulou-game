@@ -41,8 +41,7 @@ function compareQuestion(dd) {
   const { a, b } = drawOther(
     () => comparePair(dd),
     (x) => `${x.a}-${x.b}`,
-    compareLast,
-    (x) => ({ a: x.a, b: x.b + 1 <= max ? x.b + 1 : x.b - 1 }),
+    { last: compareLast, fallback: (x) => ({ a: x.a, b: x.b + 1 <= max ? x.b + 1 : x.b - 1 }) },
   );
   compareLast = `${a}-${b}`;
   return { a, b, answer: a < b ? '<' : a > b ? '>' : '=' };

@@ -7,7 +7,7 @@ Remplacer `<cle>` par la clé du jeu (ex. `nesting`) et `<Jeu>` par son nom de f
 - [ ] `test/smoke.test.js` : le jeu s'ouvre, une bonne réponse avance, une mauvaise relance une **autre** question (anti-devinette), la difficulté suit le palier et l'âge.
 - [ ] `test/games.test.js` : le jeu est joué jusqu'à la victoire à chaque palier (ajouter son « solveur » s'il en faut un).
 - [ ] `test/companions.test.js` : ses indices sont vérifiés automatiquement (2 niveaux, anti-devinette, jeu gagnable après les indices).
-- [ ] `test/explications.test.js` : ses explications d'erreur sont vérifiées (ajouter le jeu à `EXPLAINED`, ses lignes à `ROWS`, et ce que le test sait de lui à `GAMES`).
+- [ ] `bun run test explications` : ses explications d'erreur sont vérifiées. Ajouter le jeu à `EXPLAINED` (`test/explications/listes.js`), ses lignes à une table (`test/explications/tables-phase*.js`, ou un nouveau fichier de table lu par `test/explications.test.js`), ce que le test sait de lui à `GAMES` (`test/explications/parcours.js`), sa phrase à `STRATEGIES` (`test/explications/phrases.js`) et son tirage à `FALLBACKS` (`test/explications-strategies.test.js`).
 - [ ] `test/smoke.test.js`, test « variété : les 2 jeux jamais essayés remontent en priorité » : ajouter `state.gameCounts["<cle>"]=1` à la liste. Un jeu absent de cette liste compte 0 partie, comme les deux jeux que le test attend en tête, et le fait échouer au hasard. C'est un ajout, aucune vérification n'est affaiblie.
 - [ ] `bun run check` échoue pour la bonne raison.
 
@@ -45,9 +45,9 @@ Remplacer `<cle>` par la clé du jeu (ex. `nesting`) et `<Jeu>` par son nom de f
 - [ ] **Ses explications d'erreur** (contrat `registerExplain` de `js/features/hints/hints.js`) :
   - à la fin du fichier, `registerExplain('<cle>', { wrong: (q, v) => ({ say, fx }) })` : `say` de 3 à 12 mots, qui dit pourquoi la réponse ne va pas, puis la bonne réponse si la question est remplacée, jamais si elle continue ; `fx` comme un indice, sans `fx.dim`, plus `fx.fill` ;
   - au moment de l'erreur, `loseLife(el, { onRetry, wrong })` : `wrong` est la mauvaise réponse touchée ;
-  - la question suivante n'est jamais la même : `drawOther(tirage, clé, précédente, repli)` du moteur ;
+  - la question suivante n'est jamais la même : `drawOther(tirage, clé, { last, fallback })` du moteur ;
   - `right(q)` facultatif : la phrase de stratégie de l'écran de victoire (3 à 10 mots, au passé composé) ;
-  - un nouveau jeu n'est jamais exempté (`EXPLAIN_EXEMPT` de `test/explications.test.js` ne peut que diminuer).
+  - un nouveau jeu n'est jamais exempté (`EXPLAIN_EXEMPT` de `test/explications/listes.js` ne peut que diminuer).
 
 ## 4. Brancher et vérifier
 - [ ] `js/app/main.js` : l'import de la slice du jeu (`import '../features/minigames/<cle>/index.js';`), avec les autres mini-jeux. Sans lui, le jeu n'est jamais chargé.

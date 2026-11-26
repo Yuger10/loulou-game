@@ -58,7 +58,7 @@ function moneyOther(denoms, size, r) {
   pile.sort((a, b) => b - a);
   const correct = { pile, total: pile.reduce((sum, v) => sum + v, 0) };
   const kept = r.options.slice(1).filter((o) => o.total !== correct.total);
-  return { correct, options: moneyOptions(denoms, size, correct, kept) };
+  return { correct, options: moneyOptions({ denoms, size }, correct, kept) };
 }
 /**
  * Un prix et ses trois piles, jamais le même prix que la question précédente (clé : le prix).
@@ -71,11 +71,10 @@ function moneyQuestion(dd) {
   const r = drawOther(
     () => {
       const correct = randomPile(denoms, size.min + Math.floor(random() * (size.max - size.min + 1)));
-      return { correct, options: moneyOptions(denoms, size, correct) };
+      return { correct, options: moneyOptions({ denoms, size }, correct) };
     },
     (x) => String(x.correct.total),
-    moneyLast,
-    (x) => moneyOther(denoms, size, x),
+    { last: moneyLast, fallback: (x) => moneyOther(denoms, size, x) },
   );
   moneyLast = String(r.correct.total);
   return r;
@@ -121,13 +120,13 @@ function renderMoney() {
 
 /**
  * La bonne pile et deux piles d'un autre total.
- * @param {number[]} denoms
- * @param {{ min: number, max: number }} size le nombre de pièces d'une pile
+ * @param {{ denoms: number[], size: { min: number, max: number } }} coins les pièces du palier, et le nombre de pièces d'une pile
  * @param {MoneyPile} correct
  * @param {MoneyPile[]} [kept] des piles d'un autre total, déjà tirées (repli)
  */
-function moneyOptions(denoms, size, correct, kept = []) {
-  const { min, max } = size;
+function moneyOptions(coins, correct, kept = []) {
+  const { denoms } = coins;
+  const { min, max } = coins.size;
   const target = correct.total;
   const options = [correct, ...kept];
   let tries = 0;

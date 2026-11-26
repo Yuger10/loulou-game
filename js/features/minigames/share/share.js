@@ -246,13 +246,11 @@ let shareLast = '';
  * @returns {ShareRound}
  */
 function shareQuestion(dd) {
-  const r = drawOther(
-    () => shareBuildRound(dd),
-    shareKey,
-    shareLast,
+  const r = drawOther(() => shareBuildRound(dd), shareKey, {
+    last: shareLast,
     // après 8 tirages identiques : le même partage sur l'autre forme de gâteau
-    (x) => ({ ...x, shape: /** @type {ShareRound['shape']} */ (x.shape === 'rond' ? 'carre' : 'rond') }),
-  );
+    fallback: (x) => ({ ...x, shape: /** @type {ShareRound['shape']} */ (x.shape === 'rond' ? 'carre' : 'rond') }),
+  });
   shareLast = shareKey(r);
   return r;
 }

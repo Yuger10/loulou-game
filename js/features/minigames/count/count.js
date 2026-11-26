@@ -37,8 +37,7 @@ function countQuestion(dd) {
       n: min + Math.floor(random() * (max - min + 1)),
     }),
     (x) => String(x.n),
-    countLast,
-    (x) => ({ ...x, n: x.n + 1 <= max ? x.n + 1 : x.n - 1 }),
+    { last: countLast, fallback: (x) => ({ ...x, n: x.n + 1 <= max ? x.n + 1 : x.n - 1 }) },
   );
   countLast = String(q.n);
   return q;

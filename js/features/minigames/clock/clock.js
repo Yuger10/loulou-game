@@ -79,8 +79,7 @@ function clockQuestion(dd) {
   const { hour, minute } = drawOther(
     () => ({ hour: 1 + Math.floor(random() * 12), minute: pickRandom(minutes) }),
     (x) => `${x.hour}-${x.minute}`,
-    clockLast,
-    (x) => ({ hour: (x.hour % 12) + 1, minute: x.minute }),
+    { last: clockLast, fallback: (x) => ({ hour: (x.hour % 12) + 1, minute: x.minute }) },
   );
   clockLast = `${hour}-${minute}`;
   return { hour, minute, answer: timeLabel(hour, minute) };

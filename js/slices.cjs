@@ -266,7 +266,7 @@ const SLICES = [
   {
     id: 'minigame-calc',
     layer: 'features',
-    files: ['js/features/minigames/calc/calc.js'],
+    files: ['js/features/minigames/calc/explain.js', 'js/features/minigames/calc/calc.js'],
     css: ['js/features/minigames/calc/calc.css'],
   },
   {
