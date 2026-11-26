@@ -51,8 +51,9 @@ export {
   shareRound,
   shelfRound,
 } from './difficulty-s2.js';
-export { lengthRound, traceRound } from './difficulty-s3.js';
+export { lengthRound, tensRound, traceRound } from './difficulty-s3.js';
 /** @typedef {import('./difficulty-s3.js').LengthRules} LengthRules */
+/** @typedef {import('./difficulty-s3.js').TensRound} TensRound */
 /** @typedef {import('./difficulty-s3.js').TraceRules} TraceRules */
 export { GAME_LIST, gameTypesForAge } from './game-types.js';
 export { ageLabel, ageToDiff } from './age.js';

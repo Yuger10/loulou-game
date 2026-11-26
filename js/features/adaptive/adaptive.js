@@ -71,6 +71,7 @@ const PROGRESS_CHEERS = {
   mirror: 'Tu dessines les reflets du miroir de mieux en mieux !',
   trace: 'Tes lettres sont de plus en plus belles !',
   length: 'Tu mesures de mieux en mieux !',
+  tens: 'Tu ranges les nombres en dizaines de mieux en mieux !',
 };
 
 /** @typedef {import('./skill-status.js').SkillRecord} SkillRecord */
