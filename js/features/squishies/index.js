@@ -17,4 +17,3 @@ export {
 } from './squishies.js';
 export { openSquishyRoom, renderSquishyBadge, squishySessionHello } from './squishy-room.js';
 export { squishyArtSVG, squishyBoxRewardHTML, squishyBoxSVG } from './squishy-art.js';
-export { squishyCrates } from './squishy-crate-rules.js';

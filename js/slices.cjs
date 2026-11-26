@@ -139,6 +139,7 @@ const SLICES = [
       'js/features/squishies/squishies.js',
       'js/features/squishies/squishy-crate-rules.js',
       'js/features/squishies/squishy-art.js',
+      'js/features/squishies/squishy-crates.js',
       'js/features/squishies/squishy-room.js',
     ],
     css: ['js/features/squishies/squishies.css'],

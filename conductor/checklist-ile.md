@@ -25,8 +25,8 @@ Tailles au 22/11/2026, après la v66.16 :
 | `story.js` | 729 |
 | `difficulty.js` | 670 |
 | `island.js` | 663 |
-| `squishies.js` | 630 |
-| `squishy-art.js` (dessins des squishies) | 640 |
+| `squishies.js` | 670 |
+| `squishy-art.js` (dessins des squishies) | 673 |
 | `episodes.js` | 534 |
 
 Ce qu'une île de la saison 2 a coûté, en lignes :

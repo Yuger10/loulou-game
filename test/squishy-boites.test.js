@@ -3,6 +3,8 @@
 // (readSave), logique des boîtes (crateAdd…), étiquettes, doubles rangés, puis
 // l'onglet « 🗃️ Mes boîtes ». Même harnais que test/squishies.test.js : le
 // temps du jeu est accéléré ×10, la voix est notée au lieu d'être dite.
+const fs = require('fs');
+const path = require('path');
 const { JSDOM } = require('jsdom');
 const html = require('./tools/page.js').buildHtml();
 
@@ -40,6 +42,14 @@ function boot(saved) {
 const { w, d, ev, errs } = boot();
 w.confirm = () => true;
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+async function waitFor(cond, ms = 3000) {
+  const t0 = Date.now();
+  while (Date.now() - t0 < ms) {
+    if (cond()) return true;
+    await wait(10);
+  }
+  return !!cond();
+}
 let failed = 0,
   passed = 0;
 function check(name, cond, detail) {
@@ -58,6 +68,7 @@ function check(name, cond, detail) {
 function section(name) {
   console.log('— ' + name);
 }
+const shown = (sel) => d.getElementById('overlay').classList.contains('show') && !!d.querySelector(sel);
 const json = (x) => JSON.stringify(x);
 const same = (a, b) => json(a) === json(b);
 
@@ -781,7 +792,808 @@ const NO = (reason) => ({ ok: false, reason });
   }
 
   /* ================= Phase 2 : l'onglet « 🗃️ Mes boîtes » ================= */
-  // @@PHASE2@@
+  const $ = (sel) => d.querySelector(sel);
+  const $$ = (sel) => [...d.querySelectorAll(sel)];
+  // ouvrir un onglet de la chambre comme une première fois (la consigne est relue)
+  const openTab = (tab) => ev(`forgetSpokenHint(); openSquishyRoom("${tab}")`);
+  const card = (i) => $(`.cb-card[data-crate="${i}"]`);
+  const opt = (key) => $(`.cb-opts[data-row="1"] .cb-opt[data-key="${key}"]`);
+  const add = (key) => $(`.cb-opts[data-row="2"] .cb-opt[data-key="${key}"]`);
+  const item = (id) => $(`.cb-item[data-id="${id}"]`);
+  const slot = (pos) => $(`.cb-slot[data-pos="${pos}"]`);
+  const keysOf = (row) => $$(`.cb-opts[data-row="${row}"] .cb-opt`).map((b) => b.dataset.key);
+  const selected = (row) => $$(`.cb-opts[data-row="${row}"] .cb-opt.selected`).map((b) => b.dataset.key);
+  // ce que la voix dit pendant un geste : un seul texte par événement
+  const said = (fn) => {
+    const n = spoken.length;
+    fn();
+    return spoken.slice(n);
+  };
+  // la voix note le texte tel qu'il est prononcé (toSpoken : espaces avant « ! », élisions) :
+  // la phrase attendue passe par la même mise en forme, et se compare en entier
+  const voiced = (text) => ev(`toSpoken(${json(text)})`);
+  const saidOnly = (fn, text) => {
+    const got = said(fn);
+    return got.length === 1 && got[0] === voiced(text) ? true : (console.log('     dit : ' + json(got)), false);
+  };
+  const silent = (fn) => said(fn).length === 0;
+  const tap = (el) => el.click();
+  const place = (id, pos = 0) => {
+    tap(item(id));
+    tap(slot(pos));
+  };
+  // choisir un squishy puis toucher la boîte : ce que la voix dit au second toucher seulement
+  const dropSays = (id, text, pos = 0) => {
+    tap(item(id));
+    return saidOnly(() => tap(slot(pos)), text);
+  };
+  // les sons joués, notés au passage (le jeu les joue toujours)
+  const sounds = [];
+  w.cbNoteSound = (k) => sounds.push(k);
+  ev('const cbRealSound = playSound; playSound = (k) => { window.cbNoteSound(k); return cbRealSound(k); }');
+  const heard = (fn) => {
+    const n = sounds.length;
+    fn();
+    return sounds.slice(n);
+  };
+  const nameOf = (id) => ev(`SQUISHIES["${id}"].name`);
+  const HEAD = 'Range tes squishies dans tes boîtes !';
+  const PICK1 = "Choisis l'étiquette de ta boîte : une couleur, une famille, ou tes préférés !";
+  const PICK2 = "Choisis l'étiquette de ta boîte : une couleur, une forme, une taille, une famille, ou tes préférés !";
+  const MORE = ' Tu peux ajouter une deuxième règle, ou toucher Choisir.';
+
+  section('L’onglet, la collection vide, les cartes (spec 32 à 34)');
+  {
+    ev('currentProfile().age = 0; state.missions = 0; save()');
+    setSq({});
+    openTab('collection');
+    check(
+      '32 : 4 onglets dans l’ordre : Collection, Étagère, Mes boîtes, Ranger',
+      same(
+        $$('[data-sqtab]').map((b) => b.textContent.trim()),
+        ['📚 Collection', '🗄️ Étagère', '🗃️ Mes boîtes', '📦 Ranger'],
+      ),
+      $$('[data-sqtab]').map((b) => b.textContent.trim()),
+    );
+    const EMPTY = "Tes boîtes t'attendent ! Ouvre une boîte surprise pour trouver ton premier squishy.";
+    check(
+      '33 : collection vide : la voix le dit, en un seul appel',
+      saidOnly(() => tap($('[data-sqtab="boites"]')), EMPTY),
+    );
+    check(
+      '33 : et l’onglet le montre',
+      shown('#sq-room[data-tab="boites"] .empty-state') &&
+        ["Tes boîtes t'attendent !", 'Ouvre une boîte surprise pour trouver ton premier squishy.'].every((x) =>
+          $('#sq-room .empty-state').textContent.includes(x),
+        ),
+      $('#sq-room .empty-state') && $('#sq-room .empty-state').textContent,
+    );
+    check('33 : aucune carte de boîte', $$('.cb-card').length === 0);
+    setSq({
+      owned: { donut: 9, lapin: 2, cupcake: 1 },
+      crates: [crate('color:rose', ['donut', 'lapin']), crate('fav', rep('donut', 6)), E],
+    });
+    check(
+      '34 : la voix dit la consigne et ce que rapporte une boîte pleine',
+      saidOnly(() => openTab('boites'), HEAD + " Une boîte pleine t'en fait gagner une autre."),
+    );
+    check('34 : la consigne de l’en-tête', $('.puzzle-hint .hint-txt').textContent === HEAD);
+    check(
+      '34 : une carte par boîte, l’onglet actif',
+      $$('.cb-card').length === 3 && $('[data-sqtab="boites"]').classList.contains('active'),
+    );
+    check(
+      '34 : étiquette en image, squishies en petit, « N / 6 »',
+      !!card(0).querySelector('.cb-label .sq-dot') &&
+        card(0).querySelectorAll('.cb-minis .sq-art').length === 2 &&
+        card(0).querySelector('.cb-count').textContent === '2 / 6',
+      card(0).innerHTML.slice(0, 200),
+    );
+    check(
+      'une boîte pleine montre « 6 / 6 » et la classe full ; sans étiquette : « 🏷️ ? »',
+      card(1).classList.contains('full') &&
+        card(1).querySelector('.cb-count').textContent === '6 / 6' &&
+        /❤️/.test(card(1).querySelector('.cb-label').textContent) &&
+        card(2).querySelector('.cb-label').textContent.trim() === '🏷️ ?' &&
+        !card(0).classList.contains('full'),
+    );
+    setSq({ owned: { donut: 1 }, crates: Array(8).fill(E) });
+    check(
+      '34 : à 8 boîtes, la voix ne dit que la consigne',
+      saidOnly(() => openTab('boites'), HEAD) && $$('.cb-card').length === 8,
+    );
+  }
+
+  section('Choisir l’étiquette (spec 35 à 38)');
+  {
+    setSq({ owned: { donut: 3, lapin: 1, cupcake: 1 } });
+    openTab('boites');
+    check(
+      '35 : toucher une boîte sans étiquette ouvre le choix, la voix dit le texte du cran 1',
+      saidOnly(() => tap(card(0)), PICK1) && shown('.cb-picker'),
+    );
+    check('35 : les options du cran 1, dans l’ordre', same(keysOf(1), ev('crateLabelsFor(0)')), keysOf(1));
+    check(
+      'D8 : chaque option est une image (pastille, emoji de la série, cœur)',
+      !!opt('color:rose').querySelector('.sq-dot') &&
+        /🦫/.test(opt('series:capy').textContent) &&
+        /❤️/.test(opt('fav').textContent),
+    );
+    check(
+      '« ✓ Choisir » attend une option',
+      $('#cb-choose').disabled === true && /Choisir/.test($('#cb-choose').textContent),
+    );
+    check(
+      '36 : toucher une option la met en avant, la voix dit son nom, rien de plus',
+      saidOnly(() => tap(opt('color:rose')), 'Les roses') && same(selected(1), ['color:rose']),
+    );
+    check(
+      '36 : une seule option en avant ; les préférés disent leur phrase',
+      saidOnly(() => tap(opt('fav')), 'Tes préférés : tu mets ceux que tu veux !') && same(selected(1), ['fav']),
+    );
+    check('36 : pas de second rang au cran 1', !$('.cb-opts[data-row="2"]') && $('#cb-choose').disabled === false);
+    tap(opt('color:rose'));
+    check(
+      '38 : « ✓ Choisir » pose l’étiquette, ouvre la boîte et le dit',
+      saidOnly(() => tap($('#cb-choose')), 'Voilà ta boîte des squishies roses ! Fais glisser tes squishies dedans.') &&
+        crates()[0].label === 'color:rose' &&
+        shown('.cb-crate[data-crate="0"]') &&
+        stored().squishies.crates[0].label === 'color:rose',
+    );
+    // cran 2
+    ev('currentProfile().age = 6; save()');
+    openTab('boites');
+    check(
+      '35 : crans 2 et 3 : la voix cite aussi la forme et la taille',
+      saidOnly(() => tap(card(1)), PICK2),
+    );
+    check(
+      '35 : les options du cran 2',
+      same(keysOf(1), ev('crateLabelsFor(6)')) &&
+        !!opt('shape:rond').querySelector('.sr-shape-rond') &&
+        !!opt('size:petit').querySelector('.sr-size-petit'),
+    );
+    check(
+      '36 : au cran 2, une forme ne montre pas de second rang',
+      saidOnly(() => tap(opt('shape:rond')), 'Les ronds') && !$('.cb-opts[data-row="2"]'),
+    );
+    // cran 3
+    ev('currentProfile().age = 8; save()');
+    openTab('boites');
+    check(
+      '35 : cran 3 : même phrase que le cran 2',
+      saidOnly(() => tap(card(1)), PICK2),
+    );
+    check(
+      '37 : une couleur fait apparaître le second rang, la voix le dit en un seul appel',
+      saidOnly(() => tap(opt('color:rose')), 'Les roses.' + MORE),
+    );
+    check(
+      '37 : une couleur appelle une forme ou une taille',
+      same(keysOf(2), ['shape:rond', 'shape:ovale', 'shape:carre', 'size:petit', 'size:grand']) &&
+        selected(2).length === 0,
+      keysOf(2),
+    );
+    check(
+      '37 : toucher un complément le met en avant, la voix dit l’étiquette à deux règles',
+      saidOnly(() => tap(add('size:petit')), 'Les petits squishies roses') && same(selected(2), ['size:petit']),
+    );
+    check(
+      '37 : un seul complément à la fois',
+      saidOnly(() => tap(add('shape:rond')), 'Les squishies roses et ronds') && same(selected(2), ['shape:rond']),
+    );
+    tap(add('shape:rond'));
+    check('37 : le retoucher l’enlève', selected(2).length === 0 && same(selected(1), ['color:rose']));
+    tap(add('shape:rond'));
+    check(
+      '37 : une autre option du premier rang vide le second et le refait',
+      saidOnly(() => tap(opt('shape:carre')), 'Les carrés.' + MORE) && selected(2).length === 0,
+    );
+    check(
+      '37 : une forme appelle une couleur ou une taille',
+      same(keysOf(2), [
+        ...['rose', 'bleu', 'jaune', 'vert', 'violet', 'orange'].map((c) => 'color:' + c),
+        'size:petit',
+        'size:grand',
+      ]),
+      keysOf(2),
+    );
+    check(
+      '37 : une taille appelle une couleur ou une forme',
+      saidOnly(() => tap(opt('size:grand')), 'Les grands.' + MORE) &&
+        same(keysOf(2).slice(-3), ['shape:rond', 'shape:ovale', 'shape:carre']) &&
+        keysOf(2).length === 9,
+    );
+    check(
+      '37 : une famille ne montre pas de second rang et ne dit que son nom',
+      saidOnly(() => tap(opt('series:capy')), 'Les Capybaras') && !$('.cb-opts[data-row="2"]'),
+    );
+    check(
+      '37 : les préférés non plus',
+      saidOnly(() => tap(opt('fav')), 'Tes préférés : tu mets ceux que tu veux !') && !$('.cb-opts[data-row="2"]'),
+    );
+    tap(opt('color:rose'));
+    tap(add('size:petit'));
+    check(
+      '37, 38 : « Les roses » puis « Les petits » pose la clé canonique size:petit+color:rose',
+      saidOnly(
+        () => tap($('#cb-choose')),
+        'Voilà ta boîte des petits squishies roses ! Fais glisser tes squishies dedans.',
+      ) && crates()[1].label === 'size:petit+color:rose',
+      crates()[1].label,
+    );
+    openTab('boites');
+    check(
+      'la carte d’une étiquette à deux règles montre la taille et la couleur',
+      !!card(1).querySelector('.cb-label .sr-size-petit') && !!card(1).querySelector('.cb-label .sq-dot'),
+    );
+    tap(card(2));
+    tap(opt('shape:rond'));
+    tap(add('color:bleu'));
+    tap($('#cb-choose'));
+    check(
+      '37 : forme puis couleur : color:bleu+shape:rond',
+      crates()[2].label === 'color:bleu+shape:rond',
+      crates()[2].label,
+    );
+    ev('currentProfile().age = 0; save()');
+  }
+
+  section('La boîte ouverte : toucher puis toucher (spec 39 à 47, 50)');
+  {
+    setSq({
+      owned: { donut: 3, lapin: 1, cupcake: 1, 'capy-fraise': 1 },
+      crates: [crate('color:rose'), crate('fav'), E],
+    });
+    openTab('boites');
+    check(
+      '39 : toucher une boîte étiquetée l’ouvre, la voix dit son nom et la consigne',
+      saidOnly(() => tap(card(0)), 'Ta boîte des squishies roses. Fais glisser tes squishies dedans !'),
+    );
+    check(
+      '39 : la boîte en grand, 6 cases',
+      shown('.cb-crate[data-crate="0"]') && $$('.cb-crate .cb-slot').length === 6,
+    );
+    check(
+      '39 : le tapis : un bouton par modèle libre, dans l’ordre du catalogue, « ×N » s’il y en a plusieurs',
+      same(
+        $$('.cb-tray .cb-item').map((b) => b.dataset.id),
+        ['capy-fraise', 'donut', 'cupcake', 'lapin'],
+      ) &&
+        item('donut').querySelector('.sq-n').textContent === '×3' &&
+        !item('lapin').querySelector('.sq-n'),
+      $$('.cb-tray .cb-item').map((b) => b.dataset.id),
+    );
+    check(
+      '42 : sans squishy choisi, une case vide le demande',
+      saidOnly(() => tap(slot(0)), "Choisis d'abord un squishy, en dessous."),
+    );
+    check(
+      '41 : toucher un squishy du tapis le choisit, la voix le dit',
+      saidOnly(() => tap(item('donut')), `${nameOf('donut')}. Touche la boîte pour le ranger !`) &&
+        item('donut').classList.contains('selected'),
+    );
+    check(
+      '41 : le retoucher le repose',
+      silent(() => tap(item('donut'))) && !item('donut').classList.contains('selected'),
+    );
+    tap(item('donut'));
+    let snd = [];
+    check(
+      '41, 40 : toucher la boîte le range, sans voix',
+      silent(() => (snd = heard(() => tap(slot(3))))) && same(crates()[0].items, ['donut']),
+    );
+    check('40 : le son good', same(snd, ['good']), snd);
+    check(
+      '40 : il apparaît dans la case suivante, le tapis perd un exemplaire',
+      !!slot(0).querySelector('.sq-art') &&
+        !slot(1).querySelector('.sq-art') &&
+        item('donut').querySelector('.sq-n').textContent === '×2' &&
+        !$('.cb-item.selected'),
+    );
+    place('lapin');
+    check(
+      '40 : un modèle dont le dernier exemplaire est rangé quitte le tapis',
+      !item('lapin') && same(crates()[0].items, ['donut', 'lapin']),
+    );
+    // 43 : un mauvais squishy
+    tap(item('cupcake'));
+    let bad = [];
+    check(
+      '43 : un bleu dans la boîte des roses : l’indice parlé',
+      saidOnly(() => (bad = heard(() => tap(slot(2)))), 'Lui, il est bleu. On cherche des roses !'),
+    );
+    check(
+      '43 : il rebondit et revient sur le tapis ; rien n’est retiré, rien n’est compté',
+      item('cupcake').classList.contains('sr-bounce') &&
+        same(bad, ['wrong']) &&
+        same(crates()[0].items, ['donut', 'lapin']) &&
+        !$('.cb-item.selected') &&
+        ev('state.skills.rangement') === undefined,
+      bad,
+    );
+    // 44 : 3 erreurs d'affilée
+    check(
+      '44 : 2ᵉ erreur : l’indice seul, rien ne brille',
+      dropSays('cupcake', 'Lui, il est bleu. On cherche des roses !') && $$('.cb-glow').length === 0,
+    );
+    check(
+      '44 : 3ᵉ erreur : l’indice puis « Regarde ceux qui brillent ! », en un seul appel',
+      dropSays('cupcake', 'Lui, il est bleu. On cherche des roses ! Regarde ceux qui brillent !'),
+    );
+    check(
+      '44 : les squishies du tapis qui vont dans la boîte brillent',
+      same(
+        $$('.cb-item.cb-glow').map((b) => b.dataset.id),
+        ['capy-fraise', 'donut'],
+      ),
+      $$('.cb-item.cb-glow').map((b) => b.dataset.id),
+    );
+    check('44 : ils brillent 3 secondes', await waitFor(() => $$('.cb-glow').length === 0, 1500));
+    place('cupcake');
+    check('44 : le compteur est reparti à zéro après la 3ᵉ', $$('.cb-glow').length === 0);
+    place('cupcake');
+    place('donut');
+    place('cupcake');
+    check(
+      '44 : une réussite remet le compteur à zéro',
+      $$('.cb-glow').length === 0 && same(crates()[0].items, ['donut', 'lapin', 'donut']),
+    );
+    place('cupcake');
+    check(
+      '50 : « ⬅️ Mes boîtes » revient aux cartes, sans voix',
+      silent(() => tap($('#cb-back'))) && $$('.cb-card').length === 3 && !$('.cb-crate'),
+    );
+    tap(card(0));
+    check(
+      '44 : fermer puis rouvrir la boîte remet le compteur à zéro',
+      dropSays('cupcake', 'Lui, il est bleu. On cherche des roses !') && $$('.cb-glow').length === 0,
+    );
+    // aucun squishy libre qui convienne : l'indice seul
+    setSq({ owned: { lapin: 1, cupcake: 1 }, crates: [crate('color:rose', ['lapin']), E, E] });
+    openTab('boites');
+    tap(card(0));
+    place('cupcake', 1);
+    place('cupcake', 1);
+    check(
+      '44 : rien à faire briller : l’indice seul',
+      dropSays('cupcake', 'Lui, il est bleu. On cherche des roses !', 1) && $$('.cb-glow').length === 0,
+    );
+    // une famille : l'indice de D10
+    setSq({ owned: { donut: 1, 'capy-fraise': 1 }, crates: [crate('series:capy'), E, E] });
+    openTab('boites');
+    tap(card(0));
+    check(
+      '43 : dans une boîte de famille, l’indice nomme le squishy et la famille',
+      dropSays('donut', "Lui, c'est un donut. On cherche des Capybaras !"),
+    );
+    // 45 : boîte pleine
+    setSq({ owned: { donut: 9, cupcake: 1 }, crates: [crate('color:rose', rep('donut', 6), true), E, E] });
+    openTab('boites');
+    tap(card(0));
+    tap(item('cupcake'));
+    let full = [];
+    check(
+      '45 : boîte pleine : il rebondit et la voix le dit',
+      saidOnly(() => (full = heard(() => tap(slot(0)))), 'Cette boîte est pleine ! Range-le dans une autre boîte.') &&
+        item('cupcake').classList.contains('sr-bounce') &&
+        same(full, ['wrong']),
+    );
+    place('cupcake');
+    place('cupcake');
+    check(
+      '45 : ce rebond ne compte pas dans les erreurs',
+      $$('.cb-glow').length === 0 && crates()[0].items.length === 6,
+    );
+    // 46 : sortir un squishy
+    let out = [];
+    check(
+      '46 : toucher un squishy de la boîte le sort, sans voix',
+      silent(() => (out = heard(() => tap(slot(5))))) && crates()[0].items.length === 5 && same(out, ['pop']),
+      out,
+    );
+    check(
+      '46 : il revient sur le tapis',
+      item('donut').querySelector('.sq-n').textContent === '×4' && !slot(5).querySelector('.sq-art'),
+    );
+    // 47
+    check(
+      '47 : « 🏷️ Changer l’étiquette » ne se montre que si la boîte est vide',
+      !$('#cb-relabel') && !!$('#cb-empty'),
+    );
+    check(
+      '47 : « ↩️ Tout sortir » vide la boîte et le dit',
+      saidOnly(() => tap($('#cb-empty')), 'Tes squishies sont sortis de la boîte.') &&
+        same(crates()[0].items, []) &&
+        crates()[0].done === true,
+    );
+    check(
+      '47 : la boîte vide propose de changer l’étiquette, plus de tout sortir',
+      !!$('#cb-relabel') && !$('#cb-empty'),
+    );
+    check(
+      '47 : changer l’étiquette ouvre le choix',
+      saidOnly(() => tap($('#cb-relabel')), PICK1) && shown('.cb-picker'),
+    );
+    tap(opt('color:bleu'));
+    tap($('#cb-choose'));
+    check('47 : la nouvelle étiquette est posée', crates()[0].label === 'color:bleu' && shown('.cb-crate'));
+    // 39 : aucun exemplaire libre
+    setSq({ owned: { donut: 1 }, crates: [crate('color:rose', ['donut']), crate('fav'), E] });
+    openTab('boites');
+    check(
+      '39 : aucun exemplaire libre : la voix le dit',
+      saidOnly(() => tap(card(1)), 'Ta boîte de préférés. Tous tes squishies sont déjà rangés !'),
+    );
+    check(
+      '39 : le tapis est remplacé par le message',
+      !$('.cb-tray') && $('.cb-none').textContent.trim() === 'Tous tes squishies sont déjà rangés !',
+    );
+    check(
+      '15 : la boîte des préférés accepte tout, au doigt aussi',
+      (setSq({ owned: { cupcake: 1, donut: 1 }, crates: [crate('fav'), E, E] }),
+      openTab('boites'),
+      tap(card(0)),
+      place('cupcake'),
+      place('donut'),
+      same(crates()[0].items, ['cupcake', 'donut'])),
+    );
+  }
+
+  section('Boîte pleine : la fête (spec 48, 49)');
+  {
+    const five = rep('donut', 5);
+    const fill = (age, list) => {
+      ev(`currentProfile().age = ${age}; state.coins = 0; save()`);
+      setSq({ owned: { donut: 9 }, crates: list });
+      openTab('boites');
+      tap(card(0));
+      ev('document.getElementById("confetti").innerHTML = ""');
+      tap(item('donut'));
+      let snd = [];
+      const voice = said(() => (snd = heard(() => tap(slot(5)))));
+      return { voice, snd, confetti: $$('#confetti .confetti-piece').length };
+    };
+    let r = fill(0, [crate('color:rose', five), E, E]);
+    check(
+      '48 : première boîte de tri pleine : bravo, pièces et nouvelle boîte, en un seul appel',
+      same(r.voice, [voiced('Bravo, ta boîte est pleine ! Tu gagnes 5 pièces et une nouvelle boîte !')]),
+      r.voice,
+    );
+    check(
+      '48 : confettis, et win seul (pas de good)',
+      r.confetti > 0 && r.snd[0] === 'win' && !r.snd.includes('good'),
+      r.snd,
+    );
+    check(
+      '48 : 5 pièces, une boîte de plus',
+      ev('state.coins') === 5 && crates().length === 4 && crates()[0].done === true,
+    );
+    check(
+      '48 : la boîte pleine reste ouverte, « 6 / 6 »',
+      shown('.cb-crate.full') && $$('.cb-slot .sq-art').length === 6,
+    );
+    r = fill(0, [crate('color:rose', five), ...Array(7).fill(E)]);
+    check(
+      '48 : à 8 boîtes : bravo et pièces seulement',
+      same(r.voice, [voiced('Bravo, ta boîte est pleine ! Tu gagnes 5 pièces !')]) && crates().length === 8,
+      r.voice,
+    );
+    r = fill(6, [crate('color:rose', five), crate('fav', [], true), E]);
+    check(
+      '48 : le déblocage des deux règles termine la même phrase',
+      same(r.voice, [
+        voiced(
+          'Bravo, ta boîte est pleine ! Tu gagnes 5 pièces et une nouvelle boîte ! Maintenant, une étiquette peut avoir deux règles !',
+        ),
+      ]),
+      r.voice,
+    );
+    tap($('#cb-back'));
+    tap(card(2));
+    tap(opt('color:bleu'));
+    check('S13 : après le déblocage, le second rang apparaît à 6 ans', keysOf(2).length === 5);
+    r = fill(0, [crate('color:rose', five, true), E, E]);
+    check(
+      '49 : boîte déjà payée : win, sans pièces ni confettis',
+      same(r.voice, [voiced('Ta boîte est pleine, bravo !')]) &&
+        same(r.snd, ['win']) &&
+        ev('state.coins') === 0 &&
+        r.confetti === 0 &&
+        crates().length === 3,
+      r,
+    );
+    r = fill(0, [crate('fav', five), E, E]);
+    check(
+      '49 : boîte de préférés pleine',
+      same(r.voice, [voiced('Ta boîte de préférés est pleine !')]) && same(r.snd, ['win']) && ev('state.coins') === 0,
+      r,
+    );
+  }
+
+  section('Glisser un squishy dans la boîte (spec 40, 55, S5)');
+  {
+    ev('currentProfile().age = 0; save()');
+    setSq({ owned: { donut: 3, cupcake: 1 }, crates: [crate('color:rose'), E, E] });
+    // jsdom n'a pas PointerEvent : on le définit avant d'ouvrir la boîte (la garde est lue au rendu)
+    const FakePointerEvent = class extends w.MouseEvent {
+      constructor(t, o = {}) {
+        super(t, o);
+        this.pointerId = o.pointerId ?? 1;
+      }
+    };
+    w.PointerEvent = FakePointerEvent;
+    const realFromPoint = d.elementFromPoint;
+    d.elementFromPoint = () => d.querySelector('.cb-crate');
+    const pe = (el, type, x, y) =>
+      el.dispatchEvent(new FakePointerEvent(type, { bubbles: true, clientX: x, clientY: y, pointerId: 1 }));
+    const drag = (id) => {
+      const b = item(id);
+      pe(b, 'pointerdown', 100, 400);
+      pe(b, 'pointermove', 103, 398);
+      const early = $$('.cb-drag').length;
+      pe(b, 'pointermove', 110, 300);
+      const ghost = $$('.cb-drag').length;
+      pe(b, 'pointerup', 110, 200);
+      return { early, ghost };
+    };
+    openTab('boites');
+    tap(card(0));
+    let g = {};
+    let snd = [];
+    check(
+      '40 : glisser un squishy du tapis sur la boîte le range, sans voix',
+      silent(() => (snd = heard(() => (g = drag('donut'))))) && same(crates()[0].items, ['donut']),
+    );
+    check(
+      'D11 : un fantôme suit le doigt après 8 px, pas avant, et disparaît',
+      g.early === 0 && g.ghost === 1 && $$('.cb-drag').length === 0,
+      g,
+    );
+    check(
+      '40 : son good, case remplie, le tapis perd un exemplaire',
+      same(snd, ['good']) &&
+        !!slot(0).querySelector('.sq-art') &&
+        item('donut').querySelector('.sq-n').textContent === '×2',
+      snd,
+    );
+    check(
+      '43 : lâcher un mauvais squishy : rebond et indice',
+      saidOnly(() => drag('cupcake'), 'Lui, il est bleu. On cherche des roses !') &&
+        item('cupcake').classList.contains('sr-bounce') &&
+        crates()[0].items.length === 1,
+    );
+    // lâché ailleurs que sur la boîte : rien
+    d.elementFromPoint = () => d.querySelector('.cb-tray');
+    check('lâché hors de la boîte : rien ne bouge', silent(() => drag('donut')) && crates()[0].items.length === 1);
+    d.elementFromPoint = () => d.querySelector('.cb-crate');
+    // pointercancel annule
+    const b = item('donut');
+    pe(b, 'pointerdown', 100, 400);
+    pe(b, 'pointermove', 110, 300);
+    pe(b, 'pointercancel', 110, 200);
+    check('D11 : pointercancel annule le glisser', crates()[0].items.length === 1 && $$('.cb-drag').length === 0);
+    await wait(60); // le drapeau « vient d'être glissé » (350 ms, ×0,1)
+    // 55 : sans PointerEvent
+    delete w.PointerEvent;
+    openTab('boites');
+    tap(card(0));
+    const none = drag('donut');
+    check(
+      '55 : sans PointerEvent, aucun écouteur de glisser : pas de fantôme, rien n’est rangé',
+      none.ghost === 0 && crates()[0].items.length === 1,
+      none,
+    );
+    place('donut', 1);
+    check('55 : le toucher puis toucher marche', same(crates()[0].items, ['donut', 'donut']));
+    d.elementFromPoint = realFromPoint;
+  }
+
+  section('Persistance (spec 51)');
+  {
+    setSq({ owned: { donut: 3, lapin: 1, 'capy-fraise': 1, cupcake: 2 }, crates: [E, crate('fav'), E] });
+    openTab('boites');
+    tap(card(0));
+    tap(opt('color:rose'));
+    tap($('#cb-choose'));
+    ['lapin', 'donut', 'capy-fraise', 'donut'].forEach((id) => place(id));
+    tap($('#cb-back'));
+    tap(card(1));
+    ['cupcake', 'donut', 'cupcake'].forEach((id) => place(id));
+    const want = [
+      crate('color:rose', ['lapin', 'donut', 'capy-fraise', 'donut']),
+      crate('fav', ['cupcake', 'donut', 'cupcake']),
+      E,
+    ];
+    ev('closeModal(); state.squishies = squishyFreshState(); load()');
+    check(
+      '51 : après fermeture et rechargement, mêmes étiquettes, mêmes squishies, même ordre',
+      same(crates(), want),
+      crates(),
+    );
+    openTab('boites');
+    tap(card(0));
+    check(
+      '51 : l’onglet les montre à nouveau',
+      same(
+        $$('.cb-slot .sq-art').map((s) => s.dataset.sq),
+        ['lapin', 'donut', 'capy-fraise', 'donut'],
+      ),
+      $$('.cb-slot .sq-art').map((s) => s.dataset.sq),
+    );
+  }
+
+  section('Collection, Étagère, marché (spec 52 à 54)');
+  {
+    const shelf = Array(12).fill(null);
+    shelf[0] = 'chat';
+    setSq({
+      owned: { donut: 3, lapin: 1, chat: 1, mochi: 2 },
+      shelf,
+      crates: [crate('fav', ['donut', 'lapin']), E, E],
+    });
+    openTab('collection');
+    const cell = (id) => $(`.sq-cell[data-sq="${id}"]`);
+    check(
+      '52 : un squishy rangé porte la marque 🗃️, « ×N » reste le nombre possédé',
+      cell('donut').querySelector('.sq-in-crate').textContent === '🗃️' &&
+        cell('donut').querySelector('.sq-n').textContent === '×3' &&
+        !!cell('lapin').querySelector('.sq-in-crate') &&
+        !cell('chat').querySelector('.sq-in-crate') &&
+        !cell('mochi').querySelector('.sq-in-crate'),
+    );
+    check(
+      '52 : un seul exemplaire, rangé',
+      saidOnly(() => tap(cell('lapin')), `${nameOf('lapin')} ! Il est rangé dans une boîte.`),
+    );
+    check(
+      '52 : plusieurs exemplaires, dont K dans les boîtes',
+      saidOnly(() => tap(cell('donut')), `${nameOf('donut')}. Tu en as 3, dont 1 dans tes boîtes.`),
+    );
+    check(
+      '52 : sans exemplaire rangé, les phrases d’avant',
+      saidOnly(() => tap(cell('mochi')), `${nameOf('mochi')}. Tu en as 2.`) &&
+        saidOnly(() => tap(cell('chat')), `${nameOf('chat')} !`),
+    );
+    openTab('etagere');
+    const pick = (id) => $(`[data-pick="${id}"]`);
+    check(
+      '53, D4 : l’étagère compte les exemplaires libres (« ×N » si 2 ou plus, used si 0)',
+      pick('donut').querySelector('.sq-n').textContent === '×2' &&
+        !pick('donut').classList.contains('used') &&
+        pick('lapin').classList.contains('used') &&
+        pick('chat').classList.contains('used') &&
+        pick('mochi').querySelector('.sq-n').textContent === '×2',
+    );
+    check(
+      '53 : aucun libre, un dans une boîte',
+      saidOnly(() => tap(pick('lapin')), 'Il est déjà rangé dans une boîte !'),
+    );
+    check(
+      '53 : aucun libre, tous sur l’étagère : le texte d’avant',
+      saidOnly(() => tap(pick('chat')), "Il est déjà sur l'étagère !"),
+    );
+    ev('closeModal()');
+    // 54 : le marché
+    const PLACE = 'Tes squishies rangés restent à leur place.';
+    const market = () => ev('state.missions = 0; switchView("marche"); currentTab = "echanger"; renderMarche()');
+    const msg = () => $('.sq-market .sqm-msg').textContent;
+    setSq({
+      owned: { donut: 3, chat: 1 },
+      shelf: Array(12).fill(null).fill('donut', 0, 1),
+      crates: [crate('fav', ['donut']), E, E],
+    });
+    market();
+    check(
+      '54 : un double rangé : le message se termine par la phrase',
+      msg() === `3 doubles = 1 squishy de ton choix. ${PLACE}`,
+      msg(),
+    );
+    check(
+      '28, 54 : « 1 double », « Encore 2 doubles »',
+      $('.sqm-n').textContent.trim() === '1 double' && /Encore 2 doubles/.test($('#sqm-trade').textContent),
+    );
+    check(
+      '54 : la voix l’ajoute à « Il te faut encore… »',
+      saidOnly(() => tap($('[data-want="grenouille"]')), `Il te faut encore 2 doubles pour l'échanger. ${PLACE}`),
+    );
+    setSq({ owned: { donut: 4, chat: 1 }, crates: [crate('fav', ['donut', 'donut']), E, E] });
+    market();
+    check(
+      '54 : « 1 double » au singulier',
+      saidOnly(() => tap($('[data-want="grenouille"]')), `Il te faut encore 1 double pour l'échanger. ${PLACE}`),
+    );
+    setSq({ owned: { donut: 5, chat: 1 }, crates: [crate('fav', ['donut', 'donut']), E, E] });
+    market();
+    check(
+      '54 : assez de doubles libres : après « Lequel veux-tu ? »',
+      msg() === `3 doubles = 1 squishy de ton choix. Lequel veux-tu ? ${PLACE}`,
+      msg(),
+    );
+    check(
+      '54 : « Celui-là ? Touche Échanger ! » ne change pas',
+      saidOnly(() => tap($('[data-want="grenouille"]')), 'Celui-là ? Touche Échanger !'),
+    );
+    tap($('#sqm-trade'));
+    check(
+      '29, 54 : l’échange ne touche pas aux squishies rangés',
+      ev('squishyCount("grenouille")') === 1 &&
+        ev('squishyCount("donut")') === 2 &&
+        same(crates()[0].items, ['donut', 'donut']),
+    );
+    setSq({ owned: { donut: 2, chat: 1 } });
+    market();
+    check(
+      '54 : sans double rangé, rien ne change',
+      msg() === '3 doubles = 1 squishy de ton choix.' &&
+        saidOnly(() => tap($('[data-want="grenouille"]')), "Il te faut encore 2 doubles pour l'échanger."),
+      msg(),
+    );
+    const all = Object.fromEntries(ev('Object.keys(SQUISHIES)').map((id) => [id, 1]));
+    setSq({ owned: Object.assign(all, { donut: 3 }), crates: [crate('fav', ['donut', 'donut']), E, E] });
+    ev('state.missions = 9999');
+    market();
+    ev('state.missions = 9999; renderMarche()');
+    check(
+      '54 : la branche « collection complète » ne change pas',
+      /complète, bravo/.test(msg()) && !msg().includes(PLACE),
+      msg(),
+    );
+    ev('state.missions = 0; save(); switchView("carte")');
+  }
+
+  section('360 px : rien ne déborde, des boutons de 64 px (spec 56)');
+  {
+    const css = fs.readFileSync(path.join(__dirname, '..', 'js', 'features', 'squishies', 'squishies.css'), 'utf8');
+    // le bloc d'une règle écrite seule sur sa ligne : « .cb-card { … } »
+    const rule = (sel) => {
+      const m = css.match(new RegExp('(?:^|\\n)' + sel.replace('.', '\\.') + ' \\{([^}]*)\\}'));
+      return m ? m[1] : '';
+    };
+    const px = (sel, prop) => Number((rule(sel).match(new RegExp(prop + ':\\s*(\\d+)px')) || [])[1] || 0);
+    const BUTTONS = ['.cb-card', '.cb-opt', '.cb-btn', '.cb-item', '.cb-slot'];
+    const small = BUTTONS.filter((sel) => px(sel, 'min-width') < 64 || px(sel, 'min-height') < 64);
+    check('56 : chaque bouton .cb-… fait au moins 64 px de côté', small.length === 0, small);
+    check(
+      '56 : seul le tapis défile de côté',
+      /overflow-x:\s*auto/.test(rule('.cb-tray')) && /flex-wrap:\s*nowrap/.test(rule('.cb-tray')),
+      rule('.cb-tray'),
+    );
+    check(
+      'D12 : un geste de côté fait défiler le tapis (touch-action: pan-x)',
+      /touch-action:\s*pan-x/.test(rule('.cb-item')),
+    );
+    check(
+      '34 : 2 cartes par rangée, 39 : 3 cases par rangée',
+      /grid-template-columns:\s*repeat\(2,/.test(rule('.cb-grid')) &&
+        /grid-template-columns:\s*repeat\(3,/.test(rule('.cb-crate')),
+    );
+    check(
+      '43 : le rebond de l’exercice est repris pour le tapis',
+      /\.cb-item\.sr-bounce/.test(css) && /\.cb-glow/.test(css) && /\.cb-drag\s*\{[^}]*position:\s*fixed/.test(css),
+    );
+    // tous les boutons des trois écrans portent une de ces classes
+    const strays = [];
+    const scan = () =>
+      $$('#sq-room button').forEach((b) => {
+        if (!BUTTONS.some((sel) => b.classList.contains(sel.slice(1)))) strays.push(b.outerHTML.slice(0, 80));
+      });
+    setSq({ owned: { donut: 3, lapin: 1 }, crates: [crate('color:rose', ['donut']), crate('fav'), E] });
+    ev('currentProfile().age = 8; save()');
+    openTab('boites');
+    scan();
+    tap(card(0));
+    scan();
+    tap($('#cb-back'));
+    tap(card(1));
+    scan();
+    tap($('#cb-back'));
+    tap(card(2));
+    tap(opt('color:rose'));
+    scan();
+    check('56 : aucun bouton de l’onglet n’échappe à la règle', strays.length === 0, strays);
+    ev('currentProfile().age = 0; save(); closeModal()');
+  }
 
   await wait(200);
   check('aucune erreur JS', errs.length === 0, errs.join(' | '));
