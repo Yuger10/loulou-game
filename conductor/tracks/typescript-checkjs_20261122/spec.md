@@ -1,5 +1,5 @@
 ---
-status: validée         # posé par Amrou : « ok » à l'option 1 de l'ADR 0003
+status: faite           # livrée en 66.11 ; critères revérifiés le 26/11/2026 (strict: true, 0 erreur, 0,15 s, aucun any, check vert)
 issue: 0
 size: M
 migration: false

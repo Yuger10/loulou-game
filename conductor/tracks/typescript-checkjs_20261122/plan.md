@@ -15,4 +15,4 @@ Spec : [spec.md](./spec.md). Une PR par couche. Mesure de départ du mode strict
 
 ## Phase 3 : livraison
 - [x] Task: `AGENTS.md` (types obligatoires), `tech-stack.md`, `docs/factory/SPEED.md`, ADR 0003
-- [ ] Task: Conductor - User Manual Verification 'Livraison' (Protocol in workflow.md)
+- [x] Task: vérification de la livraison, refaite le 26/11/2026 à la demande d'Amrou : `strict: true` (preset cothon) sur tout `js/`, `bun run typecheck` sans erreur en 0,15 s, aucun `any` ni `@ts-ignore`, `bun run check` vert (32 suites)

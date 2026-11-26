@@ -1,5 +1,5 @@
 ---
-status: brouillon        # brouillon | validée | faite ; « validée » est posé par l'humain
+status: validée         # brouillon | validée | faite ; posé à la demande d'Amrou le 26/11/2026 (« tu passes tout en validé »)
 issue: 0
 size: M                  # la track se livre en 3 phases, chacune une PR de taille M
 migration: false
