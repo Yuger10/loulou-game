@@ -40,7 +40,7 @@ import {
 import { markSeen, renderBadge } from '../bag/index.js';
 import { maybeTeamOpening, teamCheerBy, teamWinExtras } from '../companion-team/index.js';
 import { queueGain } from '../gains/index.js';
-import { hintNudge, hintPolicy, setHintCountable } from '../hints/index.js';
+import { currentHintQuestion, hintNudge, hintPolicy, setHintCountable } from '../hints/index.js';
 import { checkNewIsland, currentChar, markHelped, renderLagon } from '../island/index.js';
 import { partyAfterWin, partyScore, passTurn } from '../party/index.js';
 import { questProgress } from '../quests/index.js';
@@ -134,6 +134,12 @@ function loseLife(target, opts = {}) {
     return false;
   }
   noteAnswerError(); // pour l'espace parents
+  // une réponse fausse a été touchée (pas un temps écoulé), hors défi bonus : la
+  // révision espacée (js/features/review, plus haut : d'où l'événement) la garde
+  if (el && !inBonusChallenge()) {
+    const { kind, q } = currentHintQuestion();
+    if (kind) emit('answer:wrong', { kind, q });
+  }
 
   playSound('wrong');
   vibrate(90);

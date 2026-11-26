@@ -197,6 +197,14 @@ function setHintQuestion(kind, q, opts = {}) {
   armHintIdle();
   if (hint.on && hintPolicy.onShow) hintPolicy.onShow(kind);
 }
+/**
+ * La question affichée, telle que le jeu l'a donnée : le moteur la lit au
+ * moment d'une erreur (révision espacée, js/features/review).
+ * @returns {{ kind: string | null, q: unknown }}
+ */
+function currentHintQuestion() {
+  return { kind: hint.kind, q: hint.q };
+}
 function hintSyllablesFirst() {
   return !!hintPolicy.syllablesFirst();
 }
@@ -429,6 +437,7 @@ onModalChange(() => {
 });
 
 export {
+  currentHintQuestion,
   hintLevel,
   hintNudge,
   hintOrderStep,

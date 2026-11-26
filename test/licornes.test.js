@@ -496,7 +496,7 @@ function startGame(key, tier, age) {
     );
     check(
       'la sauvegarde passe en version 9',
-      ev('SAVE_VERSION') === 9 &&
+      ev('SAVE_VERSION') === 10 &&
         ev('freshState().season2Done') === false &&
         json(ev('squishyFreshState().treasures')) === '[]',
     );
@@ -523,7 +523,7 @@ function startGame(key, tier, age) {
     const m = ev(`migrate(${json(old)})`);
     check(
       "migration v8 → v9 : rien n'est perdu, le final reste à jouer",
-      m.v === 9 &&
+      m.v === 10 &&
         !!m.restLog['2026-11-10'] &&
         m.coins === 30 &&
         m.missions === 300 &&
