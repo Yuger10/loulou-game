@@ -474,6 +474,36 @@ const EPISODES = {
       ],
     },
   ],
+  // saison 3, l'Île des Squishy Dumplings : la tour de cent, la commande de Zap, et la clé de l'île suivante
+  dumplings: [
+    {
+      by: 'bambou',
+      title: 'La tour de paniers',
+      find: '🧺',
+      lines: [
+        "J'ai empilé dix paniers, l'un sur l'autre. Une vraie tour !",
+        "Dix paniers de dix dumplings… ça fait cent ! Le chef Bao n'en revient pas.",
+      ],
+    },
+    {
+      by: 'sesame',
+      title: 'La commande de Zap',
+      find: '🥡',
+      lines: [
+        'Zap est passé au comptoir. Il a commandé trois dumplings roses pour le voyage.',
+        "Je les ai mis dans une boîte à emporter. Il a dit : « C'est pour l'avion en papier ! »",
+      ],
+    },
+    {
+      by: 'theo',
+      title: 'Le cliquetis dans la vapeur',
+      find: '🗝️',
+      lines: [
+        "Fiou ! En sifflant très fort, j'ai entendu un cliquetis dans la vapeur, comme une petite clé.",
+        'Il vient de plus loin sur la carte. Une autre île nous attend !',
+      ],
+    },
+  ],
 };
 
 /** @param {string} world */

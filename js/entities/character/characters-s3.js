@@ -58,6 +58,60 @@ const CHARACTERS_S3 = {
       "J'ai peint une carte au trésor pour Zap. Tu crois qu'elle ressemble à la vraie ?",
     ],
   },
+  // ---- L'Île des Squishy Dumplings (saison 3, île 2) : Bao est le guide ;
+  // Bambou parle des paniers de dix, Sésame des commandes (leurs répliques seulement).
+  bao: {
+    emoji: '🥟',
+    name: 'Bao',
+    title: 'le chef dumpling',
+    world: 'dumplings',
+    gender: 'm',
+    loot: ['pate', 'feuillechou'],
+    texts: [
+      'Bienvenue dans ma cuisine ! Ici, tout cuit à la vapeur, tout doucement.',
+      "Un bon dumpling, c'est tout mou, tout chaud, et ça sourit !",
+      "Tu m'aides en cuisine ? J'ai plein de commandes !",
+    ],
+  },
+  bambou: {
+    emoji: '🎋',
+    name: 'Bambou',
+    title: 'la pousse de bambou qui empile les paniers',
+    world: 'dumplings',
+    gender: 'f',
+    loot: ['feuillechou', 'brocoli'],
+    texts: [
+      "Un panier, c'est dix places. Quand il est plein, hop, on en prend un autre !",
+      'Je range les dumplings par dix. Comme ça, on compte bien plus vite !',
+      'Tu viens empiler les paniers avec moi ?',
+    ],
+  },
+  sesame: {
+    emoji: '🛎️',
+    name: 'Sésame',
+    title: 'la petite serveuse dumpling',
+    world: 'dumplings',
+    gender: 'f',
+    loot: ['tassethe', 'boiteemporter'],
+    texts: [
+      'Ding ding ! Une nouvelle commande ! Tu la retiens avec moi ?',
+      "Je dis la commande tout bas, pour ne pas l'oublier.",
+      'Un client attend son plateau. On le prépare ensemble ?',
+    ],
+  },
+  theo: {
+    emoji: '🫖',
+    name: 'Théo',
+    title: 'la théière qui fait la vapeur',
+    world: 'dumplings',
+    gender: 'm',
+    loot: ['tassethe', 'pate'],
+    texts: [
+      'Fiou ! Je fais la vapeur pour toute la cuisine.',
+      "Attention, c'est chaud ! On souffle un peu avant de croquer.",
+      'Une petite tasse de thé, et on joue ?',
+    ],
+  },
 };
 
 export { CHARACTERS_S3 };

@@ -31,6 +31,34 @@ const STORY_S3 = {
     success: 'Bravo ! Le dessin réapparaît : voici le premier morceau de la carte de Zap 🗺️',
     reward: 16,
   },
+  dumplings: {
+    guide: 'bao',
+    title: 'Le deuxième morceau de la carte',
+    intro: [
+      'Bienvenue dans ma cuisine à vapeur 🥟 Je suis Bao, le chef des Squishy Dumplings !',
+      "Ce matin, j'ai mis un vieux papier au fond d'un panier. C'était le deuxième morceau de la carte de Zap ! Mais j'ai empilé tous mes paniers, et je ne sais plus où il est.",
+      'Résous mes devinettes de cuisine : chaque bonne réponse soulève un couvercle !',
+    ],
+    riddles: [
+      {
+        q: 'Je suis tout mou et tout blanc, je cuis dans la vapeur, et dedans il y a une bonne farce. Qui suis-je ?',
+        tip: 'Je ressemble à un petit chausson, et on me mange avec des baguettes.',
+        opts: [{ e: '🥟', ok: true }, { e: '🍕' }, { e: '🍩' }],
+      },
+      {
+        q: "Je siffle quand l'eau est chaude, et je verse le thé par mon bec. Qui suis-je ?",
+        tip: "J'ai une anse, un couvercle et un bec.",
+        opts: [{ e: '🫖', ok: true }, { e: '🥄' }, { e: '🍳' }],
+      },
+      {
+        q: 'Je suis une grande plante verte, toute droite, et on fait des paniers avec moi. Qui suis-je ?',
+        tip: 'Ma tige a des nœuds, comme des petits anneaux.',
+        opts: [{ e: '🎋', ok: true }, { e: '🌻' }, { e: '🌵' }],
+      },
+    ],
+    success: 'Bravo ! Sous le dernier couvercle, le deuxième morceau de la carte est là, tout chaud et tout sec 🗺️',
+    reward: 16,
+  },
 };
 
 export { STORY_S3 };

@@ -5,6 +5,16 @@
 // la pointe d'un crayon (bois et mine), posée au-dessus d'un corps ovale
 const SQ_PENCIL_TIP = `<path d="M34 30 L50 0 L66 30Z" fill="#F1D3A2" stroke="#7A4524" stroke-width="3.5" stroke-linejoin="round"/><path d="M44 11 L50 0 L56 11Z" fill="#4A4A4A"/>`;
 
+/**
+ * Les plis d'un dumpling, en éventail sur le dessus d'un corps rond.
+ * @param {string} color la couleur du trait
+ * @param {number} [dy] plus bas de `dy` (sous une toque)
+ */
+function sqDumplingFolds(color, dy = 0) {
+  const y = (/** @type {number} */ v) => v + dy;
+  return `<path class="sq-deco" d="M34 ${y(34)} Q40 ${y(24)} 46 ${y(33)} M44 ${y(30)} Q50 ${y(20)} 56 ${y(30)} M54 ${y(33)} Q60 ${y(24)} 66 ${y(34)}" fill="none" stroke="${color}" stroke-width="3.5" stroke-linecap="round"/>`;
+}
+
 /** @type {Record<string, import('./squishy-art.js').SqArt>} */
 const SQ_ART_S3 = {
   // ✏️ Papeterie (l'Île des Crayons)
@@ -59,6 +69,52 @@ const SQ_ART_S3 = {
     back: () => SQ_PENCIL_TIP,
     front: () =>
       `<g class="sq-deco" fill="none" stroke-width="4.5" stroke-linecap="round" opacity=".9"><path d="M23 72 Q50 88 77 72" stroke="#FF8FB8"/><path d="M24 79 Q50 95 76 79" stroke="#FFD95A"/><path d="M27 86 Q50 100 73 86" stroke="#6FB8F5"/></g>`,
+  },
+  // 🥟 Dumplings (l'Île des Squishy Dumplings)
+  'dumpling-rose': {
+    body: 'rond',
+    face: {},
+    faceY: 64,
+    front: (c) => sqDumplingFolds(c.edge),
+  },
+  'demi-lune': {
+    body: 'ovale-h',
+    face: { sleep: true },
+    faceY: 70,
+    front: (c) =>
+      `<path class="sq-deco" d="M12 58 Q18 46 26 50 Q32 40 42 44 Q50 36 58 44 Q68 40 74 50 Q82 46 88 58" fill="none" stroke="${c.edge}" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>`,
+  },
+  'bao-violet': {
+    body: 'rond',
+    face: {},
+    faceY: 64,
+    front: (c) =>
+      `${sqDumplingFolds(c.edge)}<circle class="sq-deco" cx="50" cy="24" r="5" fill="#FF6F91" stroke="#C9497F" stroke-width="1.5"/>`,
+  },
+  'panier-vapeur': {
+    body: 'carre',
+    face: {},
+    faceY: 64,
+    back: () =>
+      `<path d="M78 20 Q72 14 78 9 Q84 4 79 0" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" opacity=".9"/><path d="M18 30 Q50 2 82 30Z" fill="#EBCB98" stroke="#8A5A2B" stroke-width="3.5" stroke-linejoin="round"/>`,
+    front: () =>
+      `<path class="sq-deco" d="M15 42 H85 M15 86 H85" stroke="#fff" stroke-width="3.5" stroke-linecap="round" opacity=".65"/>`,
+  },
+  'chef-bao': {
+    body: 'rond',
+    face: { wide: true },
+    faceY: 66,
+    back: () =>
+      `<path d="M30 30 Q18 6 38 8 Q44 -1 56 3 Q70 0 70 11 Q86 11 72 30Z" fill="#fff" stroke="#9AA7B4" stroke-width="3" stroke-linejoin="round"/>`,
+    front: (c) =>
+      `<rect class="sq-deco" x="31" y="22" width="40" height="9" rx="3.5" fill="#fff" stroke="#9AA7B4" stroke-width="2"/>${sqDumplingFolds(c.edge, 12)}`,
+  },
+  'dumpling-dore': {
+    body: 'rond',
+    face: {},
+    faceY: 64,
+    front: () =>
+      `${sqDumplingFolds('#fff')}<path class="sq-deco" d="M18 36 l2 5 l5 2 l-5 2 l-2 5 l-2 -5 l-5 -2 l5 -2z M82 30 l1.6 4 l4 1.6 l-4 1.6 l-1.6 4 l-1.6 -4 l-4 -1.6 l4 -1.6z" fill="#FFF3A6"/>`,
   },
 };
 
