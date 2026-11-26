@@ -26,19 +26,19 @@ Tous les tests de la track vont dans `test/revision.test.js` (`bun run test revi
 
 - [x] 9. Tests (S6, S7) : déroulé daté de la ligne 15 (horloge du harnais ×0,1 : 1500 ms deviennent 150 ms) ; transitions complètes de la table « Transitions d'un item » ; proposition (ligne 9), refus (10), choix et ordre (11), pas de minuteur ni de cœurs (12), avancement (13), erreur avec et sans explication (14), arrêt après 2 erreurs (15), fin sans rien gagner (16 : `coins`, `inventory`, `missions`, `skills`, `quests` identiques avant et après), fermeture en cours (17), à plusieurs (18), pause due. Ils échouent.
 - [x] 10. `engine.js` : `setRoundHandlers` et le mode manche (D18), `setRoundHandlers(null)` au début de `playGame` (test S7 : un jeu normal après une mission abandonnée a ses cœurs et son minuteur), dont le verrou des boutons après une erreur, et `pendingRoundTimer` annulé par `onModalChange` (table « Minuteries de la mission ») ; code vérifié en strict (D22), `bun run typecheck` vert.
-- [ ] 10 bis. Cas 2 seulement (`erreurs-expliquees` déjà livrée) : test de la ligne 14 bis (il échoue), puis branche `explainShow` dans le mode manche de `loseLife`.
+- [x] 10 bis. (sans objet : cas 1, `EXPLAIN_MS` n'est pas exporté par le moteur sur `main` au 26/11/2026, voir le journal de décisions) Cas 2 seulement (`erreurs-expliquees` déjà livrée) : test de la ligne 14 bis (il échoue), puis branche `explainShow` dans le mode manche de `loseLife`.
 - [x] 11. Feature `review` : `maybeOfferReview()` (un seul `emit('game:before', 'souvenirs')` avant la proposition, un seul `emit('game:after')` à la fin normale ; par question, seulement `setLastGame` puis `render(p)` : table « Ce que fait le démarrage »), fenêtre `#review-offer`, déroulé de la mission, badge, écran de fin, textes de la table, `review.css` (badge). `onModalClose` arrête la mission.
 - [x] 12. `js/app/init.js` : `if (!maybeSeasonGift() && !maybeSkyOpening() && !teamOnSessionStart()) maybeOfferReview();` (en dernier, dans le `setTimeout(…, 700)` de `init.js:100-102`) ; pour l'ouverture de saison, le nom en vigueur sur `main` : `maybeSkyOpening`, ou `maybeSeasonOpening` si `saison3-ouverture` est déjà livrée. La track qui renomme met à jour cet appel. `bun run sync`.
-- [ ] 13. `bun run check` vert, `bun run verify` vert ; `bun run release track "les souvenirs : révision espacée des questions ratées"` ; section du PRD (dire que l'idée vient de la recherche, pas de la joueuse).
+- [x] 13. `bun run check` vert, `bun run verify` vert ; `bun run release track "les souvenirs : révision espacée des questions ratées"` ; section du PRD (dire que l'idée vient de la recherche, pas de la joueuse).
 
 ## Preuves
 
 | Ligne du smoke test | Résultat | Niveau | Preuve |
 |---|---|---|---|
-| S1 à S4 | à faire | test-verified | `bun run test revision` (exit 0) |
-| S5 | à faire | test-verified | `bun run verify` (exit 0) |
-| S6 à S8 | à faire | test-verified | `bun run test revision`, `bun run check` (exit 0) |
-| S9, S10 | à faire | runtime-verified | Amrou et sa fille, sur 3 jours |
+| S1 à S4 | réussi | test-verified | `bun run test revision` (exit 0, 382 vérifications) ; rouge constaté avant le code : 135 échecs sur 136 (`sanitizeReview is not defined`…), puis 22 échecs (`state.review` absent), puis les captures (`{"items":[],"offered":null}`, `REVIEW_REPLAYS is not defined`) |
+| S5 | réussi | test-verified | `bun run verify` (exit 0) : le holdout des sauvegardes passe sans modification |
+| S6 à S8 | réussi | test-verified | `bun run test revision`, `bun run check` (exit 0) ; rouge constaté avant le code : la proposition ne s'ouvre pas (`#review-offer` absent) |
+| S9, S10 | à faire par Amrou | runtime-verified | Amrou et sa fille, sur 3 jours (vérification manuelle proposée dans la PR) |
 
 ## Journal de décisions
 
@@ -47,6 +47,15 @@ En ajout seul : une décision fausse reçoit une nouvelle ligne qui la remplace,
 | # | Décision | Décidé par | Pourquoi | Preuve | Résultat |
 |---|---|---|---|---|---|
 | 1 | La phase 1 garde des items sans les montrer | spec | Migration et capture relues seules (zone sensible), avant tout écran | spec, « Zones sensibles touchées » | gardée |
+| 2 | Une seule PR pour toute la track, livrée une fois par `bun run release track` (pas de `release patch` pour la phase 1) : remplace la ligne 1 | Amrou (consigne du 26/11/2026, relayée par le workflow) | Consigne qui prime sur le découpage du plan | un commit par phase sur `track/revision-espacee` | appliquée |
+| 3 | Cas 1 de « Ordre de livraison » : seule la branche de repli est codée, tâche 10 bis sans objet | agent | `EXPLAIN_MS` n'est pas exporté par `js/features/minigame-engine/index.js` sur `origin/main` au 26/11/2026 | `git grep EXPLAIN_MS origin/main` : aucun résultat | à reprendre par la track livrée en second |
+| 4 | `test/licornes.test.js` : deux valeurs passent de 9 à 10, celle que la spec nomme (`ev('SAVE_VERSION')`) et, six lignes plus bas, `m.v` de la migration v8 | agent | Même cause (`SAVE_VERSION` 10), même force ; la seconde n'est pas nommée par la spec | `bun run test licornes` rouge avec `m.v === 9`, vert avec 10 | à juger à la revue |
+| 5 | En mode manche, une seconde réponse (bonne ou mauvaise) pendant `WIN_DELAY` ou `REVIEW_SHOW_MS` est ignorée | agent | « Seule la première réponse compte » (ligne 14) vaut aussi après une bonne réponse : sinon un double toucher avancerait deux questions | test « la bonne réponse touchée ensuite ne compte pas » | à juger à la revue |
+| 6 | Pause due : `offered` n'est pas posé, la proposition peut venir à la séance suivante | agent | La spec dit « pas de proposition » sans dire si le jour est consommé ; le plus prudent est de ne pas le consommer | test « la pause gagne toujours » | à juger à la revue |
+| 7 | `sanitizeReview` recopie chaque item champ par champ (`cleanParams`), et lit `mult` seul si un `calc` porte aussi `first` | agent | « Champs inconnus retirés » ; une seule forme par item | tests S1 et S3 | à juger à la revue |
+| 8 | Un calcul dont un résultat dépasse 100 (possible au palier 5 ou 6 : 100 + 1) n'est pas gardé | agent | Hors des bornes de la spec ; `item()` rend `null` | test d'aller-retour (exception notée) | à juger à la revue |
+| 9 | Identifiants et classes non écrits dans la spec : `#review-yes`, `#review-later`, `#review-end`, `#review-done`, `.review-badge`, `.has-review` ; la proposition reprend `.team-meet`, l'écran de fin `.reward-box` | agent | Détails non écrits : l'option la plus simple | `js/features/review/review.js` | à juger à la revue |
+| 10 | `js/entities/review/` n'est pas ajouté aux zones sensibles de `test/tools/sensitive.js` (le garde est lui-même une zone sensible) | agent | La validation d'une entrée non fiable y vit pourtant : proposition pour Amrou | PR, « ce qui attend une décision » | à décider par Amrou |
 
 ## Écarts et non vérifié
 

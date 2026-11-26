@@ -1,5 +1,5 @@
 ---
-status: validée         # brouillon | validée | faite ; posé à la demande d'Amrou le 26/11/2026 (« tu passes tout en validé »)
+status: faite            # livrée en v67 le 26/11/2026 ; brouillon | validée | faite ; posé à la demande d'Amrou le 26/11/2026 (« tu passes tout en validé »)
 issue: 0
 size: M                  # S | M ; L se découpe (ici en deux phases, une PR chacune)
 migration: true

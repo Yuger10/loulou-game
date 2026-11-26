@@ -41,6 +41,11 @@ Remplacer `<cle>` par la clé du jeu (ex. `nesting`) et `<Jeu>` par son nom de f
   - après chaque `openModal`, `setHintQuestion('<cle>', question, { choices:'.sélecteur-des-réponses' })` ; une relance passe une **nouvelle** question (indices remis à zéro) ;
   - indice 1 = la méthode, indice 2 = le début du raisonnement ; **jamais la réponse** ; une seule réponse écartée au plus, au niveau 2 et avec 4 choix ou plus (le moteur le vérifie) ;
   - `test/companions.test.js` parcourt chaque jeu inscrit : il échoue si le jeu n'a pas d'indices.
+- [ ] **Facultatif : les souvenirs** (révision espacée, v67). Un jeu dont la question tient en quelques nombres ou un mot peut la faire garder quand elle est ratée :
+  - `js/entities/review/review.js` : le type de ses paramètres (`{ g: '<cle>', … }`), ses bornes dans `cleanParams` (une sauvegarde importée n'est pas fiable) et sa clé dans `reviewKey` ;
+  - dans le jeu : `<Jeu>(p)` affiche la question de `p` quand `p && p.g === '<cle>'` (sinon elle est tirée comme d'habitude), et `registerReplay('<cle>', { item, render })` (`js/features/review`) ; `item(q)` reçoit la question donnée à `setHintQuestion`, vérifie sa forme et rend `p` ou `null` ;
+  - `test/revision.test.js` : le jeu dans les tables `EXPECTED_PARAMS`, `SHOWN`, `ANSWER` et `CHOICES` (capture, rejeu, aller-retour à chaque palier).
+  Sans ce contrat, les erreurs du jeu ne sont simplement pas gardées.
 
 ## 4. Brancher et vérifier
 - [ ] `js/app/main.js` : l'import de la slice du jeu (`import '../features/minigames/<cle>/index.js';`), avec les autres mini-jeux. Sans lui, le jeu n'est jamais chargé.
