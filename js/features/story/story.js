@@ -661,15 +661,13 @@ function storyChapterRow(id, i) {
         : ''
     }`;
 }
-function openStoryJournal() {
-  openModal(`
-    ${gameHeader('📖 Mon histoire', 'Le grand voyage du Lagon Magique', 'Le grand voyage du Lagon Magique')}
-    <div class="story-journal">
-      ${ARCHIPELAGO_ORDER.map((saison) => {
-        const a = ARCHIPELAGOS[saison],
-          open = archipelagoUnlocked(saison),
-          pr = STORY_PROLOGUES[saison];
-        return `<section class="story-season ${a.sky ? 'sky' : ''}" data-saison="${saison}">
+// une saison du journal : son prologue, ses chapitres, et le grand final une fois vu
+/** @param {number} saison */
+function storySeasonHTML(saison) {
+  const a = ARCHIPELAGOS[saison],
+    open = archipelagoUnlocked(saison),
+    pr = STORY_PROLOGUES[saison];
+  return `<section class="story-season ${a.sky ? 'sky' : ''}" data-saison="${saison}">
           <h3>${open ? a.emoji : '🔒'} ${saison === 1 ? 'Saison 1 : ' : ''}${a.name}${open ? '' : ` <small>(niveau ${a.level})</small>`}${saison === 2 && state.season2Done ? ' <span class="done">✅</span>' : ''}</h3>
           ${
             pr && open
@@ -687,7 +685,12 @@ function openStoryJournal() {
               : ''
           }
         </section>`;
-      }).join('')}
+}
+function openStoryJournal() {
+  openModal(`
+    ${gameHeader('📖 Mon histoire', 'Le grand voyage du Lagon Magique', 'Le grand voyage du Lagon Magique')}
+    <div class="story-journal">
+      ${ARCHIPELAGO_ORDER.map((saison) => storySeasonHTML(saison)).join('')}
     </div>
   `);
   bindQuit();

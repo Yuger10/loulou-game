@@ -329,7 +329,21 @@ function squishyReveal(/** @type {import('./squishies.js').OpenedBox} */ res) {
   speak(
     `${say} !${res.isNew ? ' Il est nouveau !' : ` Tu en as ${res.count}.`}${res.seriesCompleted ? ` Bravo, la série ${SQUISHY_SERIES[res.series].name} est complète ! Tu gagnes ${SQ_SERIES_BONUS} pièces.` : ''}`,
   );
-  // la fête dépend de la rareté
+  squishyCelebrate(m, res);
+  const big = box.querySelector('.sq-cell[data-sq]');
+  if (big) setHandler(big, 'click', () => squishyPress(big));
+  setHandler(document.getElementById('sq-next'), 'click', () => {
+    playSound('tap');
+    openSquishyRoom('collection');
+  });
+}
+
+// la fête dépend de la rareté ; une série complète rapporte ses pièces
+/**
+ * @param {(typeof SQUISHIES)[string]} m
+ * @param {import('./squishies.js').OpenedBox} res
+ */
+function squishyCelebrate(m, res) {
   if (m.rarity === 'brille') {
     playSound('sparkle');
     confetti();
@@ -350,12 +364,6 @@ function squishyReveal(/** @type {import('./squishies.js').OpenedBox} */ res) {
       gainCoins(SQ_SERIES_BONUS, document.getElementById('sq-complete'));
     }, 700);
   }
-  const big = box.querySelector('.sq-cell[data-sq]');
-  if (big) setHandler(big, 'click', () => squishyPress(big));
-  setHandler(document.getElementById('sq-next'), 'click', () => {
-    playSound('tap');
-    openSquishyRoom('collection');
-  });
 }
 
 /* ---- 🗄️ Étagère ---- */
@@ -391,6 +399,22 @@ function renderSquishyShelf() {
         })
         .join('')}
     </div>`;
+  bindSquishyPicks(el);
+  el.querySelectorAll('[data-slot]').forEach((b) => {
+    setHandler(b, 'click', () => squishyShelfTap(Number(b.dataset.slot), b));
+  });
+  const rm = document.getElementById('sq-shelf-remove');
+  if (rm)
+    setHandler(rm, 'click', () => {
+      playSound('tap');
+      if (sqShelfSel && sqShelfSel.slot != null) shelfRemove(sqShelfSel.slot);
+      sqShelfSel = null;
+      renderSquishyShelf();
+    });
+}
+// toucher un squishy de la collection : le choisir pour l'étagère (ou le reposer)
+/** @param {HTMLElement} el */
+function bindSquishyPicks(el) {
   el.querySelectorAll('[data-pick]').forEach((b) => {
     setHandler(b, 'click', () => {
       // le sélecteur [data-pick] garantit l'attribut
@@ -405,17 +429,6 @@ function renderSquishyShelf() {
       renderSquishyShelf();
     });
   });
-  el.querySelectorAll('[data-slot]').forEach((b) => {
-    setHandler(b, 'click', () => squishyShelfTap(Number(b.dataset.slot), b));
-  });
-  const rm = document.getElementById('sq-shelf-remove');
-  if (rm)
-    setHandler(rm, 'click', () => {
-      playSound('tap');
-      if (sqShelfSel && sqShelfSel.slot != null) shelfRemove(sqShelfSel.slot);
-      sqShelfSel = null;
-      renderSquishyShelf();
-    });
 }
 function squishyShelfTap(/** @type {number} */ slot, /** @type {HTMLElement} */ btn) {
   const sq = sqState(),
@@ -452,7 +465,7 @@ function squishyShelfTap(/** @type {number} */ slot, /** @type {HTMLElement} */ 
 let sqSort = /** @type {SortRun | null} */ (null); // { task, filled, errors, age }
 function sqSortTask(/** @type {{ avoid?: string }} */ opts = {}) {
   const age = currentPlayerAge();
-  return makeSortingTask(sqState().owned, age, random, { avoid: opts.avoid });
+  return makeSortingTask(sqState().owned, age, { avoid: opts.avoid });
 }
 // La consigne en image, pour qui ne lit pas encore : la forme (remplie de la
 // couleur s'il y en a une), sinon une pastille de couleur ; la taille par une

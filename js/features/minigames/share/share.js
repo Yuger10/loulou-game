@@ -184,15 +184,19 @@ function shareBuildRound(dd, rng = random) {
 const shareKey = (/** @type {ShareRound} */ r) =>
   `${r.ask}-${r.n}-${r.shape}-${r.whole ? r.whole.key : ''}-${(r.opts || []).map((o) => o.parts.join(',')).join('|')}`;
 
-let shareLast = '';
-function renderShare() {
-  setupLives('share');
-  const dd = gameDiff();
-  let r = shareBuildRound(dd);
-  for (let k = 0; k < 8 && shareKey(r) === shareLast; k++) r = shareBuildRound(dd);
-  shareLast = shareKey(r);
-  /** @type {ShareQuestion} */
-  const q = { ask: r.ask, n: r.n, whole: r.whole ? r.whole.key : null, trap: !!r.cfg.trap };
+// les gâteaux à choisir ; `shaded` : la part rose est montrée (sinon aucune)
+/** @param {ShareRound['shape']} shape @param {ShareOpt[]} opts @param {boolean} shaded */
+function shareCakeButtons(shape, opts, shaded) {
+  return opts
+    .map(
+      (o) =>
+        `<button class="share-opt" data-k="${o.k}" data-equal="${o.equal ? 1 : 0}" data-n="${o.parts.length}" aria-label="Gâteau ${o.k + 1}">${shareCakeSVG(shape, o.parts, shaded ? o.shaded : -1)}</button>`,
+    )
+    .join('');
+}
+// la question affichée : son titre, sa phrase dite, le gâteau montré et les réponses
+/** @param {ShareRound} r */
+function shareView(r) {
   let title,
     say,
     stage = '',
@@ -201,23 +205,13 @@ function renderShare() {
   if (r.ask === 'fair') {
     title = `Quel gâteau est coupé en ${r.n} parts égales ?`;
     say = `Chouquette veut partager son gâteau entre ${r.n} amis. Quel gâteau est coupé en ${r.n} parts égales ?`;
-    options = r.opts
-      .map(
-        (o) =>
-          `<button class="share-opt" data-k="${o.k}" data-equal="${o.equal ? 1 : 0}" data-n="${o.parts.length}" aria-label="Gâteau ${o.k + 1}">${shareCakeSVG(r.shape, o.parts, -1)}</button>`,
-      )
-      .join('');
+    options = shareCakeButtons(r.shape, r.opts, false);
     good = /** @type {ShareOpt} */ (r.opts.find((o) => o.equal)).k; // un gâteau est toujours juste
   } else if (r.ask === 'show') {
     const fr = SHARE_FRACS[r.n];
     title = `Sur quel gâteau la part rose est-elle ${fr.word} ?`;
     say = `Sur quel gâteau la part rose est-elle ${fr.word} du gâteau ?`;
-    options = r.opts
-      .map(
-        (o) =>
-          `<button class="share-opt" data-k="${o.k}" data-equal="${o.equal ? 1 : 0}" data-n="${o.parts.length}" aria-label="Gâteau ${o.k + 1}">${shareCakeSVG(r.shape, o.parts, o.shaded)}</button>`,
-      )
-      .join('');
+    options = shareCakeButtons(r.shape, r.opts, true);
     good = /** @type {ShareOpt} */ (r.opts.find((o) => o.equal && o.n === r.n)).k;
   } else if (r.ask === 'write') {
     title = 'Quelle écriture montre la part rose ?';
@@ -241,6 +235,19 @@ function renderShare() {
       .join('');
     good = r.whole.ans;
   }
+  return { title, say, stage, options, good };
+}
+
+let shareLast = '';
+function renderShare() {
+  setupLives('share');
+  const dd = gameDiff();
+  let r = shareBuildRound(dd);
+  for (let k = 0; k < 8 && shareKey(r) === shareLast; k++) r = shareBuildRound(dd);
+  shareLast = shareKey(r);
+  /** @type {ShareQuestion} */
+  const q = { ask: r.ask, n: r.n, whole: r.whole ? r.whole.key : null, trap: !!r.cfg.trap };
+  const { title, say, stage, options, good } = shareView(r);
   openModal(`
     ${gameHeader('🎂 Le gâteau partagé', title, say)}
     ${livesBar()}

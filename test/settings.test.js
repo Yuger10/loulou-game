@@ -203,7 +203,9 @@ const sw = (k) => $(`[role="switch"][data-sound="${k}"]`);
 
   section('👥 Joueurs');
   {
-    ev('addProfile("Tom", "🦁", 7, "m", null); switchProfile(profiles.list[0].id, true); switchView("reglages")');
+    ev(
+      'addProfile("Tom", "🦁", { age: 7, gender: "m" }); switchProfile(profiles.list[0].id, true); switchView("reglages")',
+    );
     await wait(20);
     const rows = [...d.querySelectorAll('.rg-player')];
     check('un bouton par joueur', rows.length === ev('profiles.list.length'));

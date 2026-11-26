@@ -160,30 +160,41 @@ const MOUTH = '#8C2F3F';
  * @param {string} mood
  */
 function buddyFace(c, mood) {
-  const brow = c.hairDark;
-  /**
-   * @param {number} x
-   * @param {boolean} [big]
-   */
-  const eye = (x, big) => `<ellipse cx="${x}" cy="61" rx="${big ? 6.4 : 5.4}" ry="${big ? 8.2 : 7}" fill="${INK}"/>
+  const { eyes, brows, mouth } = buddyFaceParts(mood, c.hairDark);
+  return `<g class="b-brows">${brows}</g><g class="b-eyes">${eyes}</g>
+    <ellipse cx="38.5" cy="71" rx="6" ry="3.6" fill="#FF8FA3" opacity=".55"/>
+    <ellipse cx="81.5" cy="71" rx="6" ry="3.6" fill="#FF8FA3" opacity=".55"/>
+    <g class="b-mouth">${mouth}</g>`;
+}
+/**
+ * @param {number} x
+ * @param {boolean} [big]
+ */
+const buddyEye = (x, big) => `<ellipse cx="${x}" cy="61" rx="${big ? 6.4 : 5.4}" ry="${big ? 8.2 : 7}" fill="${INK}"/>
       <circle cx="${x + 2}" cy="${big ? 57 : 57.5}" r="${big ? 2.6 : 2.2}" fill="#fff"/><circle cx="${x - 2}" cy="64.5" r="1.1" fill="#fff"/>`;
-  /** @param {number} x */
-  const shut = (x) =>
-    `<path d="M${x - 6} 62 Q${x} 55 ${x + 6} 62" fill="none" stroke="${INK}" stroke-width="3" stroke-linecap="round"/>`;
-  /** @param {number} x */
-  const asleep = (x) =>
-    `<path d="M${x - 6} 60 Q${x} 65 ${x + 6} 60" fill="none" stroke="${INK}" stroke-width="3" stroke-linecap="round"/>`;
+/** @param {number} x */
+const buddyShut = (x) =>
+  `<path d="M${x - 6} 62 Q${x} 55 ${x + 6} 62" fill="none" stroke="${INK}" stroke-width="3" stroke-linecap="round"/>`;
+/** @param {number} x */
+const buddyAsleep = (x) =>
+  `<path d="M${x - 6} 60 Q${x} 65 ${x + 6} 60" fill="none" stroke="${INK}" stroke-width="3" stroke-linecap="round"/>`;
+// les yeux, les sourcils (couleur `brow`) et la bouche d'une humeur
+/**
+ * @param {string} mood
+ * @param {string | undefined} brow la couleur des cheveux foncés
+ */
+function buddyFaceParts(mood, brow) {
   /** @param {string} d */
   const browPath = (d) => `<path d="${d}" fill="none" stroke="${brow}" stroke-width="3" stroke-linecap="round"/>`;
   let eyes, brows, mouth;
   switch (mood) {
     case 'wow':
-      eyes = eye(47, true) + eye(73, true);
+      eyes = buddyEye(47, true) + buddyEye(73, true);
       brows = browPath('M40 45 Q46 41 52 44') + browPath('M68 44 Q74 41 80 45');
       mouth = `<ellipse cx="60" cy="77" rx="4.6" ry="5.6" fill="${MOUTH}"/><ellipse cx="60" cy="80" rx="2.6" ry="1.8" fill="#FF7A8A"/>`;
       break;
     case 'cheer':
-      eyes = shut(47) + shut(73);
+      eyes = buddyShut(47) + buddyShut(73);
       brows = browPath('M40 47 Q46 43 52 46') + browPath('M68 46 Q74 43 80 47');
       mouth = `<path d="M49 71 Q60 89 71 71 Z" fill="${MOUTH}"/><path d="M54 79 Q60 85 66 79 Q60 77 54 79 Z" fill="#FF7A8A"/>`;
       break;
@@ -194,26 +205,23 @@ function buddyFace(c, mood) {
       mouth = `<path d="M55 76 Q61 78 66 74" fill="none" stroke="${MOUTH}" stroke-width="3" stroke-linecap="round"/>`;
       break;
     case 'oops':
-      eyes = eye(47) + eye(73);
+      eyes = buddyEye(47) + buddyEye(73);
       brows = browPath('M41 50 Q46 46 52 45') + browPath('M68 45 Q74 46 79 50');
       mouth = `<path d="M53 76 Q56.5 73.5 60 76 Q63.5 78.5 67 75.5" fill="none" stroke="${MOUTH}" stroke-width="3" stroke-linecap="round"/>`;
       break;
     case 'sleepy':
-      eyes = asleep(47) + asleep(73);
+      eyes = buddyAsleep(47) + buddyAsleep(73);
       brows = browPath('M41 51 Q46 49 52 51') + browPath('M68 51 Q74 49 79 51');
       mouth = `<ellipse cx="60" cy="76" rx="2.6" ry="3" fill="${MOUTH}"/>
                <text x="88" y="34" font-family="Baloo 2, sans-serif" font-weight="800" font-size="13" fill="#fff" stroke="${INK}" stroke-width=".8">z</text>
                <text x="97" y="24" font-family="Baloo 2, sans-serif" font-weight="800" font-size="10" fill="#fff" stroke="${INK}" stroke-width=".7">z</text>`;
       break;
     default: // happy
-      eyes = eye(47) + eye(73);
+      eyes = buddyEye(47) + buddyEye(73);
       brows = browPath('M41 49 Q46 46 52 48') + browPath('M68 48 Q74 46 79 49');
       mouth = `<path d="M51 72 Q60 84 69 72 Q60 76 51 72 Z" fill="${MOUTH}"/>`;
   }
-  return `<g class="b-brows">${brows}</g><g class="b-eyes">${eyes}</g>
-    <ellipse cx="38.5" cy="71" rx="6" ry="3.6" fill="#FF8FA3" opacity=".55"/>
-    <ellipse cx="81.5" cy="71" rx="6" ry="3.6" fill="#FF8FA3" opacity=".55"/>
-    <g class="b-mouth">${mouth}</g>`;
+  return { eyes, brows, mouth };
 }
 
 /* ---- cheveux longs (derrière la tête) et frange ---- */
@@ -224,6 +232,137 @@ const HAIR_LONG_FRONT =
 const HAIR_SHORT_FRONT =
   'M27 56 C25 31 41 20 60 20 C79 20 95 31 93 56 C90 45 84 38 76 37 C72 42 64 43 58 39 C52 43 44 43 40 38 C33 41 29 47 27 56 Z';
 
+// le dessin propre à chaque style : cheveux derrière la tête (back), corps, cheveux
+// devant (front), couvre-chef (hat) et masque ; le corps par défaut est une simple tenue
+/** @typedef {{ back?: string[], body?: string, front?: string[], hat?: string[], mask?: string[] }} BuddyStyle */
+/** @param {Companion} c */
+const buddyBody = (c) => `<path d="M22 130 C22 104 38 94 60 94 C82 94 98 104 98 130 Z" fill="${c.outfit}"/>`;
+/** @type {Record<string, (c: Companion, o: { noHat?: boolean }) => BuddyStyle>} */
+const BUDDY_STYLES = {
+  mermaid: (c) => ({
+    back: [
+      `<path d="${HAIR_LONG_BACK}" fill="${c.hair}"/>`,
+      `<path d="M22 104 C18 96 24 90 28 96 M98 104 C102 96 96 90 92 96" fill="none" stroke="${c.hair}" stroke-width="7" stroke-linecap="round"/>`,
+    ],
+    body: `<path d="M22 130 C22 104 38 94 60 94 C82 94 98 104 98 130 Z" fill="${c.outfit}"/>
+        <path d="M30 130 C34 118 40 112 46 116 M90 130 C86 118 80 112 74 116" fill="none" stroke="${c.outfitDark}" stroke-width="3" stroke-linecap="round" opacity=".6"/>
+        <path d="M44 104 C44 96 56 96 56 104 Z M64 104 C64 96 76 96 76 104 Z" fill="#C9A7F5"/>
+        <path d="M50 97 L50 104 M70 97 L70 104" stroke="#A784E6" stroke-width="1.6"/>`,
+    front: [
+      `<path d="${HAIR_LONG_FRONT}" fill="${c.hair}"/>`,
+      `<circle cx="34" cy="38" r="3" fill="#fff" opacity=".9"/><circle cx="40" cy="32" r="2" fill="#fff" opacity=".9"/>`,
+    ],
+    hat: [
+      // étoile de mer dans les cheveux
+      `<path d="M83 27 L85.6 33 L92 33.4 L87 37.4 L88.8 43.6 L83 40 L77.2 43.6 L79 37.4 L74 33.4 L80.4 33 Z" fill="#FFCB4C" stroke="#E0A92A" stroke-width="1.2" stroke-linejoin="round"/>`,
+    ],
+  }),
+  princess: (c) => ({
+    back: [`<path d="${HAIR_LONG_BACK}" fill="${c.hair}"/>`],
+    body: `<path d="M22 130 C22 104 38 94 60 94 C82 94 98 104 98 130 Z" fill="${c.outfit}"/>
+        <circle cx="30" cy="106" r="11" fill="${c.outfit}"/><circle cx="90" cy="106" r="11" fill="${c.outfit}"/>
+        <circle cx="30" cy="106" r="11" fill="none" stroke="${c.outfitDark}" stroke-width="2" opacity=".5"/>
+        <circle cx="90" cy="106" r="11" fill="none" stroke="${c.outfitDark}" stroke-width="2" opacity=".5"/>
+        <path d="M46 96 Q60 108 74 96" fill="#fff" stroke="#fff" stroke-width="2"/>
+        <circle cx="60" cy="108" r="3.4" fill="#5AB0F2" stroke="#fff" stroke-width="1.5"/>`,
+    front: [`<path d="${HAIR_LONG_FRONT}" fill="${c.hair}"/>`],
+    hat: [
+      // couronne
+      `<path d="M43 26 L46 12 L53 21 L60 8 L67 21 L74 12 L77 26 Z" fill="#FFCB4C" stroke="#D99A22" stroke-width="1.8" stroke-linejoin="round"/>`,
+      `<circle cx="60" cy="20" r="2.8" fill="#F46B5D"/><circle cx="48.5" cy="22.5" r="2" fill="#5AB0F2"/><circle cx="71.5" cy="22.5" r="2" fill="#5AB0F2"/>`,
+    ],
+  }),
+  fairy: (c) => ({
+    back: [
+      `<ellipse cx="22" cy="92" rx="18" ry="24" transform="rotate(-28 22 92)" fill="#BDEBFF" stroke="#8FD3F2" stroke-width="2" opacity=".9"/>`,
+      `<ellipse cx="98" cy="92" rx="18" ry="24" transform="rotate(28 98 92)" fill="#BDEBFF" stroke="#8FD3F2" stroke-width="2" opacity=".9"/>`,
+      `<path d="M24 60 C20 33 39 19 60 19 C81 19 100 33 96 60 C98 70 96 80 90 84 C86 78 84 72 84 66 L36 66 C36 72 34 78 30 84 C24 80 22 70 24 60 Z" fill="${c.hair}"/>`,
+    ],
+    body: `<path d="M22 130 C22 104 38 94 60 94 C82 94 98 104 98 130 Z" fill="${c.outfit}"/>
+        <path d="M42 96 L50 108 L56 97 L60 110 L64 97 L70 108 L78 96 Z" fill="${c.outfitDark}"/>`,
+    front: [`<path d="${HAIR_SHORT_FRONT}" fill="${c.hair}"/>`],
+    hat: [
+      // couronne de fleurs
+      `<g stroke="#fff" stroke-width="1"><circle cx="38" cy="30" r="5" fill="#FF8FB8"/><circle cx="49" cy="23" r="5" fill="#FFD54A"/><circle cx="60" cy="21" r="5.4" fill="#C9A7F5"/><circle cx="71" cy="23" r="5" fill="#FF8FB8"/><circle cx="82" cy="30" r="5" fill="#FFD54A"/></g>`,
+      `<circle cx="38" cy="30" r="1.8" fill="#fff"/><circle cx="49" cy="23" r="1.8" fill="#fff"/><circle cx="60" cy="21" r="2" fill="#fff"/><circle cx="71" cy="23" r="1.8" fill="#fff"/><circle cx="82" cy="30" r="1.8" fill="#fff"/>`,
+    ],
+  }),
+  pirate: (c) => ({
+    // marinière : rayures qui suivent l'arrondi des épaules (sans clipPath, pour
+    // pouvoir afficher plusieurs compagnons sur la même page)
+    body: `<path d="M22 130 C22 104 38 94 60 94 C82 94 98 104 98 130 Z" fill="#fff" stroke="#CFDDEA" stroke-width="2"/>
+        <path d="M29.5 102 L90.5 102 L93 108 L27 108 Z" fill="${c.outfitDark}"/>
+        <path d="M24.2 114 L95.8 114 L96.8 120 L23.2 120 Z" fill="${c.outfitDark}"/>
+        <path d="M22.3 126 L97.7 126 L98 130 L22 130 Z" fill="${c.outfitDark}"/>
+        <path d="M48 95 L60 106 L72 95" fill="none" stroke="#F46B5D" stroke-width="5" stroke-linejoin="round"/>`,
+    front: [
+      `<path d="${HAIR_SHORT_FRONT}" fill="${c.hair}"/>`,
+      // anneau d'oreille
+      `<circle cx="28" cy="72" r="3.2" fill="none" stroke="#FFCB4C" stroke-width="2"/>`,
+    ],
+    hat: [
+      // bandana rouge
+      `<path d="M27 46 C30 30 44 22 60 22 C76 22 90 30 93 46 C84 40 72 37 60 37 C48 37 36 40 27 46 Z" fill="#F46B5D"/>`,
+      `<circle cx="44" cy="31" r="1.6" fill="#fff"/><circle cx="56" cy="27" r="1.6" fill="#fff"/><circle cx="70" cy="28" r="1.6" fill="#fff"/><circle cx="82" cy="34" r="1.6" fill="#fff"/>`,
+      `<path d="M92 44 L104 40 L100 50 Z M92 44 L106 52 L96 55 Z" fill="#E0503F"/>`,
+    ],
+  }),
+  knight: (c) => ({
+    body: `<path d="M22 130 C22 104 38 94 60 94 C82 94 98 104 98 130 Z" fill="${c.outfit}"/>
+        <path d="M22 130 C22 112 28 102 36 98 L40 130 Z M98 130 C98 112 92 102 84 98 L80 130 Z" fill="${c.outfitDark}"/>
+        <path d="M50 102 L70 102 L70 114 C70 121 60 126 60 126 C60 126 50 121 50 114 Z" fill="#F46B5D" stroke="#FFCB4C" stroke-width="2"/>
+        <path d="M60 106 L61.8 110.4 L66.5 110.6 L62.8 113.5 L64 118 L60 115.4 L56 118 L57.2 113.5 L53.5 110.6 L58.2 110.4 Z" fill="#FFCB4C"/>`,
+    front: [`<path d="${HAIR_SHORT_FRONT}" fill="${c.hair}"/>`],
+    hat: [
+      // casque à visière relevée + plumet
+      `<path d="M24 60 C22 30 40 15 60 15 C80 15 98 30 96 60 L90 60 C90 44 82 36 60 36 C38 36 30 44 30 60 Z" fill="${c.outfit}" stroke="${c.outfitDark}" stroke-width="2"/>`,
+      `<path d="M32 40 C38 30 48 27 60 27 C72 27 82 30 88 40" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity=".7"/>`,
+      `<path d="M60 15 C58 6 64 0 72 2 C68 6 70 10 66 14 Z" fill="#F46B5D"/>`,
+      `<rect x="56" y="13" width="8" height="5" rx="2" fill="${c.outfitDark}"/>`,
+    ],
+  }),
+  hero: (c) => ({
+    // Zap : cape orange derrière, combinaison bleue, éclair doré, masque troué (les yeux restent visibles)
+    back: [
+      `<path d="M30 102 C18 110 10 122 6 130 L114 130 C110 122 102 110 90 102Z" fill="${c.cape || '#FF8A3D'}"/>`,
+      `<path d="M30 102 C22 110 16 120 13 130 M90 102 C98 110 104 120 107 130" fill="none" stroke="${c.capeDark || '#E0692A'}" stroke-width="2.5"/>`,
+    ],
+    body: `<path d="M22 130 C22 104 38 94 60 94 C82 94 98 104 98 130 Z" fill="${c.outfit}"/>
+        <path d="M34 100 L49 95 L44 109Z M86 100 L71 95 L76 109Z" fill="${c.cape || '#FF8A3D'}"/>
+        <path d="M63 101 L51 116 L59 116 L55 128 L70 110 L62 110 L66 101Z" fill="#FFD54A" stroke="#B8901A" stroke-width="1.6" stroke-linejoin="round"/>
+        <path d="M30 112 Q36 106 40 108" fill="none" stroke="#6FA3EA" stroke-width="3" stroke-linecap="round"/>`,
+    front: [
+      `<path d="M27 52 C25 30 40 19 60 19 C80 19 95 30 93 52 C88 44 82 40 76 39 L73 29 L66 37 L60 25 L54 37 L47 29 L44 39 C38 40 32 44 27 52Z" fill="${c.hair}"/>`,
+    ],
+    mask: [
+      `<path fill-rule="evenodd" fill="${c.outfitDark}" d="M26 55 C32 47 50 48 60 53 C70 48 88 47 94 55 C95 63 91 71 83 73 C74 75 66 71 60 67 C54 71 46 75 37 73 C29 71 25 63 26 55Z M37.5 61 a9.5 10 0 1 0 19 0 a9.5 10 0 1 0 -19 0Z M63.5 61 a9.5 10 0 1 0 19 0 a9.5 10 0 1 0 -19 0Z"/>`,
+      `<path d="M29 56 C34 51 44 50 52 52" fill="none" stroke="#5B86C9" stroke-width="2" stroke-linecap="round"/>`,
+      `<path d="M93 57 L104 52 L102 60 Z" fill="${c.outfitDark}"/>`,
+    ],
+  }),
+  explorer: (c, o) => {
+    const body = `<path d="M22 130 C22 104 38 94 60 94 C82 94 98 104 98 130 Z" fill="${c.outfit}"/>
+        <path d="M44 95 L60 110 L76 95" fill="#5FCB7E"/><path d="M60 110 L56 122 L64 122 Z" fill="#4AB067"/>
+        <rect x="32" y="112" width="12" height="10" rx="2" fill="${c.outfitDark}"/><rect x="76" y="112" width="12" height="10" rx="2" fill="${c.outfitDark}"/>`;
+    if (o.noHat) return { body, front: [`<path d="${HAIR_SHORT_FRONT}" fill="${c.hair}"/>`] };
+    return {
+      body,
+      front: [
+        // cheveux courts bouclés qui dépassent du chapeau
+        `<path d="M27 57 C25 44 31 37 40 37 L80 37 C89 37 95 44 93 57 C90 49 84 45 77 46 C72 43 66 45 60 43 C54 45 48 43 43 46 C36 45 30 49 27 57 Z" fill="${c.hair}"/>`,
+        `<g fill="${c.hair}"><circle cx="30.5" cy="48" r="4.6"/><circle cx="89.5" cy="48" r="4.6"/></g>`,
+      ],
+      hat: [
+        // chapeau d'explorateur
+        `<ellipse cx="60" cy="38" rx="44" ry="9" fill="${c.outfitDark}"/>`,
+        `<path d="M34 38 C34 18 46 10 60 10 C74 10 86 18 86 38 Z" fill="${c.outfit}"/>`,
+        `<path d="M34 34 C44 30 76 30 86 34 L86 38 L34 38 Z" fill="#7A4A2E"/>`,
+        `<path d="M44 20 C48 15 54 13 60 13" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity=".5"/>`,
+      ],
+    };
+  },
+};
+
 // o.noHat : un chapeau de la garde-robe remplace le couvre-chef d'origine ;
 // o.noMask : des lunettes ou un masque de la garde-robe remplacent celui de Zap.
 /**
@@ -231,139 +370,13 @@ const HAIR_SHORT_FRONT =
  * @param {{ noHat?: boolean, noMask?: boolean }} [o]
  */
 function buddyParts(c, o = {}) {
-  const back = [],
-    front = [],
-    hat = [],
-    mask = [];
-  let body = `<path d="M22 130 C22 104 38 94 60 94 C82 94 98 104 98 130 Z" fill="${c.outfit}"/>`;
-  switch (c.style) {
-    case 'mermaid':
-      back.push(
-        `<path d="${HAIR_LONG_BACK}" fill="${c.hair}"/>`,
-        `<path d="M22 104 C18 96 24 90 28 96 M98 104 C102 96 96 90 92 96" fill="none" stroke="${c.hair}" stroke-width="7" stroke-linecap="round"/>`,
-      );
-      body = `<path d="M22 130 C22 104 38 94 60 94 C82 94 98 104 98 130 Z" fill="${c.outfit}"/>
-        <path d="M30 130 C34 118 40 112 46 116 M90 130 C86 118 80 112 74 116" fill="none" stroke="${c.outfitDark}" stroke-width="3" stroke-linecap="round" opacity=".6"/>
-        <path d="M44 104 C44 96 56 96 56 104 Z M64 104 C64 96 76 96 76 104 Z" fill="#C9A7F5"/>
-        <path d="M50 97 L50 104 M70 97 L70 104" stroke="#A784E6" stroke-width="1.6"/>`;
-      front.push(
-        `<path d="${HAIR_LONG_FRONT}" fill="${c.hair}"/>`,
-        `<circle cx="34" cy="38" r="3" fill="#fff" opacity=".9"/><circle cx="40" cy="32" r="2" fill="#fff" opacity=".9"/>`,
-      );
-      hat.push(
-        // étoile de mer dans les cheveux
-        `<path d="M83 27 L85.6 33 L92 33.4 L87 37.4 L88.8 43.6 L83 40 L77.2 43.6 L79 37.4 L74 33.4 L80.4 33 Z" fill="#FFCB4C" stroke="#E0A92A" stroke-width="1.2" stroke-linejoin="round"/>`,
-      );
-      break;
-    case 'princess':
-      back.push(`<path d="${HAIR_LONG_BACK}" fill="${c.hair}"/>`);
-      body = `<path d="M22 130 C22 104 38 94 60 94 C82 94 98 104 98 130 Z" fill="${c.outfit}"/>
-        <circle cx="30" cy="106" r="11" fill="${c.outfit}"/><circle cx="90" cy="106" r="11" fill="${c.outfit}"/>
-        <circle cx="30" cy="106" r="11" fill="none" stroke="${c.outfitDark}" stroke-width="2" opacity=".5"/>
-        <circle cx="90" cy="106" r="11" fill="none" stroke="${c.outfitDark}" stroke-width="2" opacity=".5"/>
-        <path d="M46 96 Q60 108 74 96" fill="#fff" stroke="#fff" stroke-width="2"/>
-        <circle cx="60" cy="108" r="3.4" fill="#5AB0F2" stroke="#fff" stroke-width="1.5"/>`;
-      front.push(`<path d="${HAIR_LONG_FRONT}" fill="${c.hair}"/>`);
-      hat.push(
-        // couronne
-        `<path d="M43 26 L46 12 L53 21 L60 8 L67 21 L74 12 L77 26 Z" fill="#FFCB4C" stroke="#D99A22" stroke-width="1.8" stroke-linejoin="round"/>`,
-        `<circle cx="60" cy="20" r="2.8" fill="#F46B5D"/><circle cx="48.5" cy="22.5" r="2" fill="#5AB0F2"/><circle cx="71.5" cy="22.5" r="2" fill="#5AB0F2"/>`,
-      );
-      break;
-    case 'fairy':
-      back.push(
-        `<ellipse cx="22" cy="92" rx="18" ry="24" transform="rotate(-28 22 92)" fill="#BDEBFF" stroke="#8FD3F2" stroke-width="2" opacity=".9"/>`,
-        `<ellipse cx="98" cy="92" rx="18" ry="24" transform="rotate(28 98 92)" fill="#BDEBFF" stroke="#8FD3F2" stroke-width="2" opacity=".9"/>`,
-        `<path d="M24 60 C20 33 39 19 60 19 C81 19 100 33 96 60 C98 70 96 80 90 84 C86 78 84 72 84 66 L36 66 C36 72 34 78 30 84 C24 80 22 70 24 60 Z" fill="${c.hair}"/>`,
-      );
-      body = `<path d="M22 130 C22 104 38 94 60 94 C82 94 98 104 98 130 Z" fill="${c.outfit}"/>
-        <path d="M42 96 L50 108 L56 97 L60 110 L64 97 L70 108 L78 96 Z" fill="${c.outfitDark}"/>`;
-      front.push(`<path d="${HAIR_SHORT_FRONT}" fill="${c.hair}"/>`);
-      hat.push(
-        // couronne de fleurs
-        `<g stroke="#fff" stroke-width="1"><circle cx="38" cy="30" r="5" fill="#FF8FB8"/><circle cx="49" cy="23" r="5" fill="#FFD54A"/><circle cx="60" cy="21" r="5.4" fill="#C9A7F5"/><circle cx="71" cy="23" r="5" fill="#FF8FB8"/><circle cx="82" cy="30" r="5" fill="#FFD54A"/></g>`,
-        `<circle cx="38" cy="30" r="1.8" fill="#fff"/><circle cx="49" cy="23" r="1.8" fill="#fff"/><circle cx="60" cy="21" r="2" fill="#fff"/><circle cx="71" cy="23" r="1.8" fill="#fff"/><circle cx="82" cy="30" r="1.8" fill="#fff"/>`,
-      );
-      break;
-    case 'pirate':
-      // marinière : rayures qui suivent l'arrondi des épaules (sans clipPath, pour
-      // pouvoir afficher plusieurs compagnons sur la même page)
-      body = `<path d="M22 130 C22 104 38 94 60 94 C82 94 98 104 98 130 Z" fill="#fff" stroke="#CFDDEA" stroke-width="2"/>
-        <path d="M29.5 102 L90.5 102 L93 108 L27 108 Z" fill="${c.outfitDark}"/>
-        <path d="M24.2 114 L95.8 114 L96.8 120 L23.2 120 Z" fill="${c.outfitDark}"/>
-        <path d="M22.3 126 L97.7 126 L98 130 L22 130 Z" fill="${c.outfitDark}"/>
-        <path d="M48 95 L60 106 L72 95" fill="none" stroke="#F46B5D" stroke-width="5" stroke-linejoin="round"/>`;
-      front.push(
-        `<path d="${HAIR_SHORT_FRONT}" fill="${c.hair}"/>`,
-        // anneau d'oreille
-        `<circle cx="28" cy="72" r="3.2" fill="none" stroke="#FFCB4C" stroke-width="2"/>`,
-      );
-      hat.push(
-        // bandana rouge
-        `<path d="M27 46 C30 30 44 22 60 22 C76 22 90 30 93 46 C84 40 72 37 60 37 C48 37 36 40 27 46 Z" fill="#F46B5D"/>`,
-        `<circle cx="44" cy="31" r="1.6" fill="#fff"/><circle cx="56" cy="27" r="1.6" fill="#fff"/><circle cx="70" cy="28" r="1.6" fill="#fff"/><circle cx="82" cy="34" r="1.6" fill="#fff"/>`,
-        `<path d="M92 44 L104 40 L100 50 Z M92 44 L106 52 L96 55 Z" fill="#E0503F"/>`,
-      );
-      break;
-    case 'knight':
-      body = `<path d="M22 130 C22 104 38 94 60 94 C82 94 98 104 98 130 Z" fill="${c.outfit}"/>
-        <path d="M22 130 C22 112 28 102 36 98 L40 130 Z M98 130 C98 112 92 102 84 98 L80 130 Z" fill="${c.outfitDark}"/>
-        <path d="M50 102 L70 102 L70 114 C70 121 60 126 60 126 C60 126 50 121 50 114 Z" fill="#F46B5D" stroke="#FFCB4C" stroke-width="2"/>
-        <path d="M60 106 L61.8 110.4 L66.5 110.6 L62.8 113.5 L64 118 L60 115.4 L56 118 L57.2 113.5 L53.5 110.6 L58.2 110.4 Z" fill="#FFCB4C"/>`;
-      front.push(`<path d="${HAIR_SHORT_FRONT}" fill="${c.hair}"/>`);
-      hat.push(
-        // casque à visière relevée + plumet
-        `<path d="M24 60 C22 30 40 15 60 15 C80 15 98 30 96 60 L90 60 C90 44 82 36 60 36 C38 36 30 44 30 60 Z" fill="${c.outfit}" stroke="${c.outfitDark}" stroke-width="2"/>`,
-        `<path d="M32 40 C38 30 48 27 60 27 C72 27 82 30 88 40" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity=".7"/>`,
-        `<path d="M60 15 C58 6 64 0 72 2 C68 6 70 10 66 14 Z" fill="#F46B5D"/>`,
-        `<rect x="56" y="13" width="8" height="5" rx="2" fill="${c.outfitDark}"/>`,
-      );
-      break;
-    case 'hero':
-      // Zap : cape orange derrière, combinaison bleue, éclair doré, masque troué (les yeux restent visibles)
-      back.push(
-        `<path d="M30 102 C18 110 10 122 6 130 L114 130 C110 122 102 110 90 102Z" fill="${c.cape || '#FF8A3D'}"/>`,
-        `<path d="M30 102 C22 110 16 120 13 130 M90 102 C98 110 104 120 107 130" fill="none" stroke="${c.capeDark || '#E0692A'}" stroke-width="2.5"/>`,
-      );
-      body = `<path d="M22 130 C22 104 38 94 60 94 C82 94 98 104 98 130 Z" fill="${c.outfit}"/>
-        <path d="M34 100 L49 95 L44 109Z M86 100 L71 95 L76 109Z" fill="${c.cape || '#FF8A3D'}"/>
-        <path d="M63 101 L51 116 L59 116 L55 128 L70 110 L62 110 L66 101Z" fill="#FFD54A" stroke="#B8901A" stroke-width="1.6" stroke-linejoin="round"/>
-        <path d="M30 112 Q36 106 40 108" fill="none" stroke="#6FA3EA" stroke-width="3" stroke-linecap="round"/>`;
-      front.push(
-        `<path d="M27 52 C25 30 40 19 60 19 C80 19 95 30 93 52 C88 44 82 40 76 39 L73 29 L66 37 L60 25 L54 37 L47 29 L44 39 C38 40 32 44 27 52Z" fill="${c.hair}"/>`,
-      );
-      mask.push(
-        `<path fill-rule="evenodd" fill="${c.outfitDark}" d="M26 55 C32 47 50 48 60 53 C70 48 88 47 94 55 C95 63 91 71 83 73 C74 75 66 71 60 67 C54 71 46 75 37 73 C29 71 25 63 26 55Z M37.5 61 a9.5 10 0 1 0 19 0 a9.5 10 0 1 0 -19 0Z M63.5 61 a9.5 10 0 1 0 19 0 a9.5 10 0 1 0 -19 0Z"/>`,
-        `<path d="M29 56 C34 51 44 50 52 52" fill="none" stroke="#5B86C9" stroke-width="2" stroke-linecap="round"/>`,
-        `<path d="M93 57 L104 52 L102 60 Z" fill="${c.outfitDark}"/>`,
-      );
-      break;
-    case 'explorer':
-      body = `<path d="M22 130 C22 104 38 94 60 94 C82 94 98 104 98 130 Z" fill="${c.outfit}"/>
-        <path d="M44 95 L60 110 L76 95" fill="#5FCB7E"/><path d="M60 110 L56 122 L64 122 Z" fill="#4AB067"/>
-        <rect x="32" y="112" width="12" height="10" rx="2" fill="${c.outfitDark}"/><rect x="76" y="112" width="12" height="10" rx="2" fill="${c.outfitDark}"/>`;
-      if (o.noHat) {
-        front.push(`<path d="${HAIR_SHORT_FRONT}" fill="${c.hair}"/>`);
-        break;
-      }
-      front.push(
-        // cheveux courts bouclés qui dépassent du chapeau
-        `<path d="M27 57 C25 44 31 37 40 37 L80 37 C89 37 95 44 93 57 C90 49 84 45 77 46 C72 43 66 45 60 43 C54 45 48 43 43 46 C36 45 30 49 27 57 Z" fill="${c.hair}"/>`,
-        `<g fill="${c.hair}"><circle cx="30.5" cy="48" r="4.6"/><circle cx="89.5" cy="48" r="4.6"/></g>`,
-      );
-      hat.push(
-        // chapeau d'explorateur
-        `<ellipse cx="60" cy="38" rx="44" ry="9" fill="${c.outfitDark}"/>`,
-        `<path d="M34 38 C34 18 46 10 60 10 C74 10 86 18 86 38 Z" fill="${c.outfit}"/>`,
-        `<path d="M34 34 C44 30 76 30 86 34 L86 38 L34 38 Z" fill="#7A4A2E"/>`,
-        `<path d="M44 20 C48 15 54 13 60 13" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity=".5"/>`,
-      );
-      break;
-  }
+  const draw = BUDDY_STYLES[c.style];
+  const st = draw ? draw(c, o) : {};
+  const join = (/** @type {string[] | undefined} */ l) => (l || []).join('');
   return {
-    back: back.join(''),
-    body,
-    front: front.join('') + (o.noHat ? '' : hat.join('')) + (o.noMask ? '' : mask.join('')),
+    back: join(st.back),
+    body: st.body || buddyBody(c),
+    front: join(st.front) + (o.noHat ? '' : join(st.hat)) + (o.noMask ? '' : join(st.mask)),
   };
 }
 
@@ -373,6 +386,15 @@ function buddyParts(c, o = {}) {
 /**
  * @typedef {{ look?: LookLike | null, label?: string }} BuddyOptions
  */
+// la tenue dessinée : celle de la garde-robe, avec le chapeau de la saison s'il n'y en a pas
+/** @param {BuddyOptions | null} [opts] */
+function buddyLook(opts) {
+  let look = (opts && opts.look) || null;
+  // saison (js/features/seasons/seasons.js) : bonnet de Noël, chapeau de sorcière ou de fête
+  const sHat = (!look || !look.tete) && companionDressing.seasonHat ? companionDressing.seasonHat() : null;
+  if (sHat) look = Object.assign({}, look || {}, { tete: sHat });
+  return look;
+}
 /**
  * @param {string} id
  * @param {string} mood
@@ -380,10 +402,7 @@ function buddyParts(c, o = {}) {
  */
 function companionSVG(id, mood, opts) {
   if (id === 'grisou') return grisouBuddySVG(BUDDY_MOODS.includes(mood) ? mood : 'happy', opts);
-  let look = (opts && opts.look) || null;
-  // saison (js/features/seasons/seasons.js) : bonnet de Noël, chapeau de sorcière ou de fête
-  const sHat = (!look || !look.tete) && companionDressing.seasonHat ? companionDressing.seasonHat() : null;
-  if (sHat) look = Object.assign({}, look || {}, { tete: sHat });
+  const look = buddyLook(opts);
   const base = COMPANIONS[id] || COMPANIONS.perle;
   const c = look && companionDressing.lookColors ? Object.assign({}, base, companionDressing.lookColors(look)) : base;
   const m = BUDDY_MOODS.includes(mood) ? mood : 'happy';

@@ -227,31 +227,34 @@ function teamCheerBy() {
 }
 
 /* ---- Sam : la prochaine chose utile ---- */
+// la mission du jour qui reste à faire : jouer avec un personnage, ou la liste des missions
+/** @param {NonNullable<ReturnType<typeof ensureQuests>>['list'][number]} quest */
+function samQuestStep(quest) {
+  // lu seulement pour une mission « char », qui a toujours un personnage pour cible (quests.js)
+  const target = /** @type {string} */ (quest.target);
+  if (quest.type === 'char' && CHARACTERS[target]) {
+    const c = CHARACTERS[target],
+      w = c.world || 'lagon';
+    return {
+      icon: '📜',
+      text: `Ta mission du jour : joue avec ${c.name} !`,
+      go: () => {
+        if (currentWorld !== w) setWorld(w);
+        switchView('ile');
+        openDialogue(target);
+      },
+    };
+  }
+  return {
+    icon: '📜',
+    text: `Ta mission du jour : ${quest.label.replace(/\s*\p{Extended_Pictographic}+$/u, '')}.`,
+    go: () => openQuestsModal(),
+  };
+}
 function samNextStep() {
   const q = ensureQuests();
   const quest = q && q.list.find((i) => i.n < i.goal);
-  if (quest) {
-    // lu seulement pour une mission « char », qui a toujours un personnage pour cible (quests.js)
-    const target = /** @type {string} */ (quest.target);
-    if (quest.type === 'char' && CHARACTERS[target]) {
-      const c = CHARACTERS[target],
-        w = c.world || 'lagon';
-      return {
-        icon: '📜',
-        text: `Ta mission du jour : joue avec ${c.name} !`,
-        go: () => {
-          if (currentWorld !== w) setWorld(w);
-          switchView('ile');
-          openDialogue(target);
-        },
-      };
-    }
-    return {
-      icon: '📜',
-      text: `Ta mission du jour : ${quest.label.replace(/\s*\p{Extended_Pictographic}+$/u, '')}.`,
-      go: () => openQuestsModal(),
-    };
-  }
+  if (quest) return samQuestStep(quest);
   const fresh = WORLD_ORDER.find(
     (id) => worldUnlocked(id) && id !== currentWorld && !(state.storyMissions || {})[id] && id !== 'lagon',
   );

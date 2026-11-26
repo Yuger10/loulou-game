@@ -523,6 +523,25 @@ function layoutIsle(sc) {
 /** @type {ResizeObserver | null} */
 let isleResizeObs = null;
 
+// les personnages de l'île, chacun à sa place avec son humeur
+/** @param {ReturnType<typeof charsOfForPlayer>} chars */
+function isleCharsHTML(chars) {
+  return chars
+    .map(([id, c], i) => {
+      const slots = isleCharSlots(chars.length),
+        p = slots[i % slots.length];
+      const mood = charMood(id);
+      return `<button class="island isle-char" data-char="${id}" data-vx="${p.x}" data-vy="${p.y}" aria-label="${c.name} ${c.title}, ${mood.label}"
+        style="z-index:${isleZ(p.y)}; --d:${i * 0.6}s">
+        <span class="ic-bubble">${mood.icon}</span>
+        <span class="emoji">${charFace(id)}</span>
+        <span class="ic-shadow"></span>
+        <span class="name">${c.name}</span>
+      </button>`;
+    })
+    .join('');
+}
+
 /* ---- rendu ---- */
 /** @param {HTMLElement | null} sc la scène de la vue Île */
 function renderLiveIsland(sc) {
@@ -545,20 +564,7 @@ function renderLiveIsland(sc) {
         style="z-index:${isleZ(p.y)}; --d:${(i * 0.7) % 3}s">${DECOS[k].emoji}</span>`;
       })
       .join('')}
-    ${chars
-      .map(([id, c], i) => {
-        const slots = isleCharSlots(chars.length),
-          p = slots[i % slots.length];
-        const mood = charMood(id);
-        return `<button class="island isle-char" data-char="${id}" data-vx="${p.x}" data-vy="${p.y}" aria-label="${c.name} ${c.title}, ${mood.label}"
-        style="z-index:${isleZ(p.y)}; --d:${i * 0.6}s">
-        <span class="ic-bubble">${mood.icon}</span>
-        <span class="emoji">${charFace(id)}</span>
-        <span class="ic-shadow"></span>
-        <span class="name">${c.name}</span>
-      </button>`;
-      })
-      .join('')}
+    ${isleCharsHTML(chars)}
     ${owned.length ? '' : `<span class="empty isle-empty">${w.sceneEmpty}</span>`}
     ${owned.length && !state.tipDragDeco ? `<span class="isle-tip">✋ Fais glisser tes décorations !</span>` : ''}
     <button class="btn-deco" id="btn-deco">🎨 Décorer</button>
@@ -584,6 +590,48 @@ function renderLiveIsland(sc) {
     });
 }
 
+// la décoration suit le doigt (coordonnées du dessin, pas de l'écran)
+/** @param {HTMLElement} sc @param {HTMLElement} el @param {PointerEvent} e */
+function decoDragMove(sc, el, e) {
+  const r = sc.getBoundingClientRect();
+  if (!r.width) return;
+  const f = isleFrame(sc);
+  const v = isleFromScreen(f, e.clientX - r.left, e.clientY - r.top);
+  const p = isleToScreen(f, v.x, v.y);
+  el.style.left = p.left + '%';
+  el.style.top = p.top + '%';
+  // style et dataset ne gardent que du texte : String donne la même valeur qu'avant
+  el.style.zIndex = '200';
+  el.dataset.vx = String(v.x);
+  el.dataset.vy = String(v.y);
+}
+// la décoration posée : sa place est gardée, et le conseil « fais glisser » disparaît
+/** @param {HTMLElement} sc @param {HTMLElement} el */
+function decoDropped(sc, el) {
+  const x = Number(el.dataset.vx),
+    y = Number(el.dataset.vy);
+  // le sélecteur .deco[data-deco-key] garantit l'attribut
+  moveDeco(/** @type {string} */ (el.dataset.decoKey), x, y);
+  el.style.zIndex = String(isleZ(y));
+  el.classList.remove('dragging');
+  playSound('pop');
+  if (!state.tipDragDeco) {
+    state.tipDragDeco = true;
+    save();
+    const t = sc.querySelector('.isle-tip');
+    if (t) t.remove();
+  }
+}
+/** @param {HTMLElement} el */
+function decoTapped(el) {
+  el.classList.remove('wiggle');
+  void el.offsetWidth;
+  el.classList.add('wiggle');
+  playSound('tap');
+  const d = DECOS[/** @type {string} */ (el.dataset.decoKey)];
+  if (d) speak(d.name);
+}
+
 /* ---- glisser une décoration ---- */
 /** @param {HTMLElement} sc @param {HTMLElement} el une décoration (.deco[data-deco-key]) */
 function bindDecoDrag(sc, el) {
@@ -606,44 +654,14 @@ function bindDecoDrag(sc, el) {
         // capture du pointeur refusée par certains navigateurs : le glisser marche quand même
       }
     }
-    const r = sc.getBoundingClientRect();
-    if (!r.width) return;
-    const f = isleFrame(sc);
-    const v = isleFromScreen(f, e.clientX - r.left, e.clientY - r.top);
-    const p = isleToScreen(f, v.x, v.y);
-    el.style.left = p.left + '%';
-    el.style.top = p.top + '%';
-    // style et dataset ne gardent que du texte : String donne la même valeur qu'avant
-    el.style.zIndex = '200';
-    el.dataset.vx = String(v.x);
-    el.dataset.vy = String(v.y);
+    decoDragMove(sc, el, e);
   });
   /** @param {PointerEvent} e */
   const end = (e) => {
     if (!start) return;
-    if (dragging) {
-      const x = Number(el.dataset.vx),
-        y = Number(el.dataset.vy);
-      // le sélecteur .deco[data-deco-key] garantit l'attribut
-      moveDeco(/** @type {string} */ (el.dataset.decoKey), x, y);
-      el.style.zIndex = String(isleZ(y));
-      el.classList.remove('dragging');
-      playSound('pop');
-      if (!state.tipDragDeco) {
-        state.tipDragDeco = true;
-        save();
-        const t = sc.querySelector('.isle-tip');
-        if (t) t.remove();
-      }
-    } else if (e.type === 'pointerup') {
-      // simple toucher : la décoration se trémousse et dit son nom
-      el.classList.remove('wiggle');
-      void el.offsetWidth;
-      el.classList.add('wiggle');
-      playSound('tap');
-      const d = DECOS[/** @type {string} */ (el.dataset.decoKey)];
-      if (d) speak(d.name);
-    }
+    if (dragging) decoDropped(sc, el);
+    // simple toucher : la décoration se trémousse et dit son nom
+    else if (e.type === 'pointerup') decoTapped(el);
     start = null;
     dragging = false;
   };

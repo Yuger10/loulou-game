@@ -100,52 +100,36 @@ function musicWanted() {
 }
 
 /* ---- les instruments ---- */
+// chaque instrument : forme d'onde, attaque et durée de la note (sinus, 0,01 s et durée demandée par défaut)
+/** @type {Record<string, { type?: OscillatorType, attack?: number, dur?: (d: number) => number }>} */
+const MUSIC_INSTRUMENTS = {
+  marimba: { dur: (d) => Math.min(d, 0.45) },
+  flute: { attack: 0.07 },
+  bell: { dur: (d) => Math.max(d, 1.1) },
+  celesta: { dur: (d) => Math.min(Math.max(d, 0.6), 0.9) },
+  harp: { type: 'triangle', dur: (d) => Math.max(d, 0.8) },
+  pluck: { type: 'triangle', dur: (d) => Math.min(d, 0.28) },
+  bubble: { dur: (d) => Math.min(d, 0.2) },
+  pad: { type: 'triangle', attack: 0.6 },
+  bass: { attack: 0.02 },
+};
+/** @typedef {{ dur: number, kind: string, vol: number }} MusicNote kind : l'instrument */
 /**
  * @param {number} freq
  * @param {number} t
- * @param {number} durArg
- * @param {string} kind l'instrument
- * @param {number} vol
+ * @param {MusicNote} note
  */
-function mNote(freq, t, durArg, kind, vol) {
-  let dur = durArg;
+function mNote(freq, t, { dur: durArg, kind, vol }) {
+  const inst = MUSIC_INSTRUMENTS[kind] || {};
+  const dur = inst.dur ? inst.dur(durArg) : durArg;
+  const attack = inst.attack || 0.01;
   // joué par musicTick, qui a vérifié le contexte audio ; master et filter existent (music.on)
   const ctx = /** @type {AudioContext} */ (audioCtx),
     master = /** @type {GainNode} */ (music.master),
     filter = /** @type {BiquadFilterNode} */ (music.filter),
     o = ctx.createOscillator(),
     g = ctx.createGain();
-  let attack = 0.01,
-    type = /** @type {OscillatorType} */ ('sine');
-  if (kind === 'marimba') {
-    type = 'sine';
-    dur = Math.min(dur, 0.45);
-  } else if (kind === 'flute') {
-    type = 'sine';
-    attack = 0.07;
-  } else if (kind === 'bell') {
-    type = 'sine';
-    dur = Math.max(dur, 1.1);
-  } else if (kind === 'celesta') {
-    type = 'sine';
-    dur = Math.min(Math.max(dur, 0.6), 0.9);
-  } else if (kind === 'harp') {
-    type = 'triangle';
-    dur = Math.max(dur, 0.8);
-  } else if (kind === 'pluck') {
-    type = 'triangle';
-    dur = Math.min(dur, 0.28);
-  } else if (kind === 'bubble') {
-    type = 'sine';
-    dur = Math.min(dur, 0.2);
-  } else if (kind === 'pad') {
-    type = 'triangle';
-    attack = 0.6;
-  } else if (kind === 'bass') {
-    type = 'sine';
-    attack = 0.02;
-  }
-  o.type = type;
+  o.type = inst.type || 'sine';
   o.frequency.setValueAtTime(freq, t);
   if (kind === 'bubble') o.frequency.exponentialRampToValueAtTime(freq * 1.5, t + dur);
   g.gain.setValueAtTime(0, t);
@@ -155,18 +139,26 @@ function mNote(freq, t, durArg, kind, vol) {
   o.start(t);
   o.stop(t + dur + 0.05);
   // clochette : un second partiel, plus aigu, qui s'éteint plus vite
-  if (kind === 'bell' || kind === 'marimba' || kind === 'celesta') {
-    const o2 = ctx.createOscillator(),
-      g2 = ctx.createGain();
-    o2.type = 'sine';
-    o2.frequency.setValueAtTime(freq * (kind === 'bell' ? 2.76 : kind === 'celesta' ? 3 : 4), t);
-    g2.gain.setValueAtTime(0, t);
-    g2.gain.linearRampToValueAtTime(vol * 0.35, t + 0.005);
-    g2.gain.exponentialRampToValueAtTime(0.0008, t + dur * 0.4);
-    o2.connect(g2).connect(master);
-    o2.start(t);
-    o2.stop(t + dur * 0.4 + 0.05);
-  }
+  if (kind === 'bell' || kind === 'marimba' || kind === 'celesta') musicPartial(freq, t, { dur, kind, vol });
+}
+/**
+ * @param {number} freq
+ * @param {number} t
+ * @param {MusicNote} note
+ */
+function musicPartial(freq, t, { dur, kind, vol }) {
+  const ctx = /** @type {AudioContext} */ (audioCtx),
+    master = /** @type {GainNode} */ (music.master),
+    o2 = ctx.createOscillator(),
+    g2 = ctx.createGain();
+  o2.type = 'sine';
+  o2.frequency.setValueAtTime(freq * (kind === 'bell' ? 2.76 : kind === 'celesta' ? 3 : 4), t);
+  g2.gain.setValueAtTime(0, t);
+  g2.gain.linearRampToValueAtTime(vol * 0.35, t + 0.005);
+  g2.gain.exponentialRampToValueAtTime(0.0008, t + dur * 0.4);
+  o2.connect(g2).connect(master);
+  o2.start(t);
+  o2.stop(t + dur * 0.4 + 0.05);
 }
 
 /* ---- une croche ---- */
@@ -181,10 +173,12 @@ function musicStep(t) {
   const third = th.minor ? 3 : 4;
   if (s === 0) {
     // accord tenu très doucement (filtré), et la basse
-    [0, third, 7].forEach((iv) => mNote(midiHz(chordRoot - 12 + iv), t, eighth * 8.2, 'pad', 0.022));
-    mNote(midiHz(chordRoot - 24), t, eighth * 3, 'bass', 0.05);
+    [0, third, 7].forEach((iv) =>
+      mNote(midiHz(chordRoot - 12 + iv), t, { dur: eighth * 8.2, kind: 'pad', vol: 0.022 }),
+    );
+    mNote(midiHz(chordRoot - 24), t, { dur: eighth * 3, kind: 'bass', vol: 0.05 });
   }
-  if (s === 4) mNote(midiHz(chordRoot - 24 + 7), t, eighth * 3, 'bass', 0.035);
+  if (s === 4) mNote(midiHz(chordRoot - 24 + 7), t, { dur: eighth * 3, kind: 'bass', vol: 0.035 });
   // mélodie : marche au hasard dans la gamme, avec des silences
   const play = s === 0 ? 0.9 : s % 2 === 0 ? 0.6 : 0.32;
   if (random() < play) {
@@ -195,10 +189,10 @@ function musicStep(t) {
     i = Math.max(0, Math.min(degrees.length - 1, i));
     music.last = i;
     const len = s % 2 === 0 && random() < 0.3 ? eighth * 2 : eighth;
-    mNote(midiHz(th.root + degrees[i]), t, len * 1.6, th.lead, th.lead === 'pluck' ? 0.07 : 0.06);
+    mNote(midiHz(th.root + degrees[i]), t, { dur: len * 1.6, kind: th.lead, vol: th.lead === 'pluck' ? 0.07 : 0.06 });
   }
-  if (th.shaker && s % 2 === 1) mNote(4200 + random() * 600, t, 0.03, 'pluck', 0.006);
-  if (th.tick && s % 2 === 0) mNote(2093, t, 0.04, 'pluck', 0.008);
+  if (th.shaker && s % 2 === 1) mNote(4200 + random() * 600, t, { dur: 0.03, kind: 'pluck', vol: 0.006 });
+  if (th.tick && s % 2 === 0) mNote(2093, t, { dur: 0.04, kind: 'pluck', vol: 0.008 });
   music.step++;
   return eighth;
 }
