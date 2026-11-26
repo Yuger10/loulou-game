@@ -37,7 +37,7 @@ import {
   speak,
   switchView,
 } from '../../shared/ui/index.js';
-import { pickPracticeGame } from '../adaptive/index.js';
+import { pickPracticeGame, starOf } from '../adaptive/index.js';
 import { teamOnGamePicker } from '../companion-team/index.js';
 import { renderLagon, setCurrentChar } from '../island/index.js';
 import { playGame, startMinigame } from '../minigame-engine/index.js';
@@ -489,7 +489,7 @@ function openGamePicker(charId) {
       ${choices
         .map(
           (g) => `<button class="game-choice" data-game="${g.key}">
-        <span class="emoji">${g.emoji}</span><span class="nm">${g.name}</span>
+        <span class="emoji">${g.emoji}</span><span class="nm">${g.name}</span>${starOf(g.key).won >= 1 ? '<span class="star-mark" aria-hidden="true">⭐</span>' : ''}
       </button>`,
         )
         .join('')}

@@ -16,7 +16,8 @@
      state.playTime[jour] = secondes de jeu ACTIF ce jour-là (60 jours gardés)
      state.pauseExtra   = { date, min }  minutes ajoutées par un adulte aujourd'hui
    Réglages dans le profil : profile.pauseMin (0 = pas de pause), profile.grade
-   ('' = selon l'âge, sinon 'GS', 'CP', 'CE1' ou 'CE2'). */
+   ('' = selon l'âge, sinon 'GS', 'CP', 'CE1' ou 'CE2'), profile.starChallenges
+   (false = défis étoile coupés). Défis étoile : state.stars[jeu] (js/features/adaptive/stars.js). */
 import { avatarHTML } from '../../entities/companion/index.js';
 import { GAME_LIST, gameTypesForAge, GRADES, gradeToDiff, playerCap } from '../../entities/difficulty/index.js';
 import { readSave, resetState, save, state } from '../../entities/game-state/index.js';
@@ -32,7 +33,7 @@ import { setCurrentWorld } from '../../entities/world/index.js';
 import { currentSeason, FETES, seasonPreview } from '../../entities/season/index.js';
 import { emit, on, random, storageRemove, storageWrite } from '../../shared/lib/index.js';
 import { askConfirm, closeModal, openModal, playSound, setHandler, showToast, speak } from '../../shared/ui/index.js';
-import { SKILL_STATUS, skillStatus, todayKey } from '../adaptive/index.js';
+import { closeAllStarDoors, SKILL_STATUS, skillStatus, starsResetFor, todayKey } from '../adaptive/index.js';
 import { openBackup } from '../backup/index.js';
 import { openPlayers, openPlayerSettings } from '../players/index.js';
 import { renderSoundBtn } from '../profile/index.js';
@@ -228,6 +229,11 @@ function playTimeHTML(st) {
       ${days.map((d, i) => `<div class="pt-col"><div class="pt-track"><span class="pt-val">${mins[i] ? mins[i] : ''}</span><i style="height:${Math.round((mins[i] / max) * 82)}%" class="${i === 6 ? 'today' : ''}"></i></div><span class="pt-day">${dayName(d, i)}</span></div>`).join('')}
     </div>`;
 }
+// le défi étoile réussi, à la fin de la ligne de détail d'un jeu
+/** @param {import('../../entities/game-state/index.js').StarRecord | undefined} star */
+function starWonText(star) {
+  return star && star.won >= 1 ? ` · ⭐ défi étoile réussi ${star.won} fois` : '';
+}
 /**
  * @param {PlayerState} st
  * @param {number | null} [age]
@@ -256,7 +262,7 @@ function skillsHTML(st, age) {
         const hints =
           s && s.hints ? ` · ${s.hints} indice${s.hints > 1 ? 's' : ''} demandé${s.hints > 1 ? 's' : ''}` : '';
         const detail = s
-          ? `${s.wins} réussie${s.wins > 1 ? 's' : ''}${s.fails ? ` · ${s.fails} ratée${s.fails > 1 ? 's' : ''}` : ''} · ${s.wins + s.fails ? (s.errors / (s.wins + s.fails)).toFixed(1).replace('.', ',') : '0'} erreur par mission${hints}${lastTier ? ` · niveau ${'⭐'.repeat(Math.min(lastTier, 6))}` : ''}${s.support ? " (redescendu d'un cran pour s'entraîner)" : ''}`
+          ? `${s.wins} réussie${s.wins > 1 ? 's' : ''}${s.fails ? ` · ${s.fails} ratée${s.fails > 1 ? 's' : ''}` : ''} · ${s.wins + s.fails ? (s.errors / (s.wins + s.fails)).toFixed(1).replace('.', ',') : '0'} erreur par mission${hints}${lastTier ? ` · niveau ${'⭐'.repeat(Math.min(lastTier, 6))}` : ''}${s.support ? " (redescendu d'un cran pour s'entraîner)" : ''}${starWonText((st.stars || {})[k])}`
           : '';
         return `<li class="sk-row"><span class="sk-name">${gameName(k)}</span><span class="sk-pill ${info.cls}">${info.label}</span>${detail ? `<span class="sk-detail">${detail}</span>` : ''}</li>`;
       })
@@ -269,9 +275,10 @@ function skillsHTML(st, age) {
     </div>`;
   return sum + groups;
 }
-/* ---- la classe de l'enfant (track aller-plus-loin) ----
-   Réglage d'adulte, derrière la porte : la classe remplace l'âge comme plafond
-   de palier (playerCap, js/entities/difficulty/age.js). « Selon l'âge » = ''. */
+/* ---- la classe de l'enfant et les défis étoile (track aller-plus-loin) ----
+   Réglages d'adulte, derrière la porte : la classe remplace l'âge comme plafond
+   de palier (playerCap, js/entities/difficulty/age.js), « Selon l'âge » = '' ;
+   l'interrupteur coupe les défis étoile (js/features/adaptive/stars.js). */
 // jusqu'où vont les jeux de cet enfant, en une phrase
 /** @param {Profile} p */
 function gradeHelp(p) {
@@ -283,6 +290,7 @@ function gradeHelp(p) {
 /** @param {Profile} p */
 function gradeCardHTML(p) {
   const grade = p.grade || '';
+  const starsOn = p.starChallenges !== false;
   /** @param {string} id @param {string} label */
   const chip = (id, label) =>
     `<button type="button" class="ps-chip ${grade === id ? 'on' : ''}" data-grade="${id}">${label}</button>`;
@@ -291,21 +299,51 @@ function gradeCardHTML(p) {
         ${chip('', "Selon l'âge")}${GRADES.map((g) => chip(g.id, g.label)).join('')}
       </div>
       <p class="bk-help" id="ps-grade-help">${gradeHelp(p)}</p>
+      <div class="ps-chips" role="group" aria-label="Défis étoile">
+        <button type="button" class="ps-chip ${starsOn ? 'on' : ''}" data-stars="1">⭐ Défis étoile</button>
+        <button type="button" class="ps-chip ${starsOn ? '' : 'on'}" data-stars="0">Pas de défi étoile</button>
+      </div>
+      <p class="bk-help">Quand un jeu est maîtrisé à son niveau, l'enfant peut accepter un défi un cran au-dessus. Après 2 erreurs d'affilée, le jeu revient à son niveau, sans rien perdre.</p>
     </section>`;
 }
-/** @param {Profile} p */
-function bindGradeCard(p) {
+// Enregistre la partie d'un enfant après un changement fait par un adulte : la
+// partie en cours pour le joueur courant, sinon celle lue dans son stockage
+// (comme le réglage de la musique d'un autre joueur).
+/** @param {Profile} p @param {PlayerState} st */
+function saveStateOf(p, st) {
+  if (p.id === profiles.current) save();
+  else storageWrite(profileSaveKey(p.id), JSON.stringify(st));
+}
+/** @param {Profile} p @param {PlayerState} st la partie de cet enfant */
+function bindGradeCard(p, st) {
   document.querySelectorAll('[data-grade]').forEach((b) =>
     setHandler(b, 'click', () => {
       playSound('tap');
       // la puce vient de GRADES (ou '') : la liste blanche est gardée
-      const grade = b.dataset.grade || '';
-      p.grade = gradeToDiff(grade) ? grade : '';
+      const picked = b.dataset.grade || '';
+      const grade = gradeToDiff(picked) ? picked : '';
+      const changed = grade !== (p.grade || '');
+      p.grade = grade;
       saveProfiles();
+      // le plafond change : les portes des défis étoile se ferment et la maîtrise
+      // se prouve de nouveau à ce plafond (les étoiles gagnées restent)
+      if (changed && starsResetFor(st)) saveStateOf(p, st);
       document.querySelectorAll('[data-grade]').forEach((x) => x.classList.toggle('on', x === b));
       const help = document.getElementById('ps-grade-help');
       if (help) help.textContent = gradeHelp(p);
       showToast(p.grade ? `🎒 Classe : ${p.grade}` : "🎒 Classe selon l'âge");
+    }),
+  );
+  document.querySelectorAll('[data-stars]').forEach((b) =>
+    setHandler(b, 'click', () => {
+      playSound('tap');
+      const active = b.dataset.stars === '1';
+      p.starChallenges = active;
+      saveProfiles();
+      // défis coupés : toutes les portes ouvertes se ferment
+      if (!active && closeAllStarDoors(st)) saveStateOf(p, st);
+      document.querySelectorAll('[data-stars]').forEach((x) => x.classList.toggle('on', x === b));
+      showToast(active ? '⭐ Défis étoile' : 'Pas de défi étoile');
     }),
   );
 }
@@ -332,7 +370,7 @@ function openParentSpace(selectedId) {
     <section class="bk-card"><h3>📈 Progrès par compétence</h3>${skillsHTML(st, p.age)}
       <p class="bk-help">« À l'aise » : réussi sans erreur ou presque ces dernières fois. « À travailler » : souvent raté ou beaucoup d'erreurs.</p>
       <p class="bk-help">Les indices du compagnon (💡) sont comptés pour information : ils ne changent ni les récompenses ni le niveau du jeu.</p>
-      <p class="bk-help">Chaque jeu a son propre niveau : il monte d'un cran après 2 réussites d'affilée presque sans erreur, redescend d'un cran après 2 missions ratées, et ne dépasse jamais celui de l'île ni la classe de l'enfant (ou son âge, sans classe choisie). Les jeux à travailler reviennent plus souvent.</p></section>
+      <p class="bk-help">Chaque jeu a son propre niveau : il monte d'un cran après 2 réussites d'affilée presque sans erreur, redescend d'un cran après 2 missions ratées, et ne dépasse jamais celui de l'île ni la classe de l'enfant (ou son âge, sans classe choisie), sauf pendant un défi étoile accepté par l'enfant. Les jeux à travailler reviennent plus souvent.</p></section>
     <section class="bk-card"><h3>🎉 Fêtes et saisons</h3>
       <p>Le jeu se décore tout seul : Halloween (20 oct. – 2 nov.), Noël (1er déc. – 6 janv.) et le jour de l'anniversaire de l'enfant (à régler dans ses réglages). Chaque fois, un petit cadeau : un chapeau pour son avatar et quelques pièces.</p>
       <p class="bk-help">Aperçu (sans cadeau, jusqu'à la fermeture du jeu) :</p>
@@ -389,7 +427,7 @@ function openParentSpace(selectedId) {
       showToast(p.pauseMin ? `😴 Pause après ${p.pauseMin} min` : 'Pas de pause');
     }),
   );
-  bindGradeCard(p);
+  bindGradeCard(p, st);
   document.querySelectorAll('[data-season-preview]').forEach((b) =>
     setHandler(b, 'click', () => {
       playSound('tap');

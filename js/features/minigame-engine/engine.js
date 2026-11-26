@@ -12,6 +12,7 @@ import {
   confetti,
   onModalChange,
   onModalClose,
+  onModalOpen,
   openModal,
   playSound,
   setHandler,
@@ -23,19 +24,29 @@ import {
 } from '../../shared/ui/index.js';
 import {
   beginBonusChallenge,
+  beginStarMission,
   bonusChallenge,
   bonusOnNewGame,
   endBonusChallenge,
-  gameDiff,
+  endStarMission,
   inBonusChallenge,
+  inStarMission,
   lastGame,
   missionProgress,
+  normalDiff,
   noteAnswerError,
+  noteStarError,
+  noteStarGood,
+  noteStarOffered,
+  openStarDoor,
   pickPracticeGame,
   progressCheer,
   recordMission,
   resetMissionErrors,
   setLastGame,
+  starActive,
+  starOf,
+  starOfferDue,
 } from '../adaptive/index.js';
 import { markSeen, renderBadge } from '../bag/index.js';
 import { maybeTeamOpening, teamCheerBy, teamWinExtras } from '../companion-team/index.js';
@@ -59,7 +70,9 @@ let lives = Infinity,
 
 /** @param {string} kind le type de mini-jeu */
 function triesFor(kind) {
-  return livesFor(kind, gameDiff());
+  // le palier habituel, même pendant un défi étoile : le défi change la
+  // question, jamais le nombre d'essais (pas de punition)
+  return livesFor(kind, normalDiff());
 }
 
 /** @param {string} kind le type de mini-jeu */
@@ -134,6 +147,8 @@ function loseLife(target, opts = {}) {
     return false;
   }
   noteAnswerError(); // pour l'espace parents
+  // défi étoile : 2 erreurs d'affilée referment la porte, la mission continue sans badge
+  if (noteStarError()) starBadgeRemove();
 
   playSound('wrong');
   vibrate(90);
@@ -231,7 +246,8 @@ function startTimerIfNeeded(kind) {
   // simple : pas de minuteur qui se superpose au passage de main.
   if (party.active) return;
   if (race.active) return;
-  const dd = gameDiff();
+  // le palier habituel : un défi étoile n'ajoute jamais de minuteur
+  const dd = normalDiff();
   // jamais de pression temporelle avant le CP (programme de maternelle)
   const age = currentPlayerAge();
   if (age && age < 6) return;
@@ -288,6 +304,7 @@ function flashModal(kind) {
 function stepOk(target) {
   const el = /** @type {HTMLElement | null | undefined} */ (target);
   playSound('good');
+  noteStarGood(); // défi étoile : les erreurs ne sont plus « d'affilée »
   if (hintPolicy.onGood) hintPolicy.onGood();
   buddyReact('wow', 900);
   if (!el) return;
@@ -363,6 +380,7 @@ function playGame(key) {
   // (l'espace parents répond true et montre l'écran de pause)
   if (emit('game:before', key).some(Boolean)) return;
   bonusOnNewGame();
+  beginStarMission(key); // porte ouverte : cette partie est une mission étoile
   if (hintPolicy.onMission) hintPolicy.onMission(key);
   resetMissionErrors();
   trackGamePlayed(key);
@@ -389,11 +407,99 @@ function progressDots(done, total) {
   return `<div class="game-progress">${Array.from({ length: total }, (_, i) => `<i class="${i < done ? 'on' : ''}"></i>`).join('')}</div>`;
 }
 
+/* ---------- Le défi étoile dans le moteur (track aller-plus-loin) ----------
+   Les règles sont dans js/features/adaptive/stars.js ; ici, ce que l'enfant
+   voit et entend : le badge ⭐ dans l'en-tête du jeu, l'offre sur l'écran de
+   victoire, la phrase de réussite, et le retour au jeu habituel. Textes sans
+   accord de genre, tous dits à voix haute. */
+const STAR_OFFER_TEXT =
+  "Ce jeu, tu le connais par cœur ! Tu veux essayer un défi étoile ? C'est un cran plus difficile.";
+const STAR_REFUSED_TEXT = "D'accord ! Le défi étoile t'attendra.";
+const STAR_FAIL_TEXT = "Le défi étoile était très difficile. C'était courageux d'essayer !";
+
+// le badge ⭐, à la fin de l'en-tête du jeu, tant que la mission étoile a sa porte ouverte
+function starBadgeDecorate() {
+  if (!starActive()) return;
+  const head = document.querySelector('#modal-body .game-head');
+  if (!head || head.querySelector('.star-badge')) return;
+  head.insertAdjacentHTML('beforeend', '<span class="star-badge" role="img" aria-label="Défi étoile">⭐</span>');
+}
+function starBadgeRemove() {
+  document.querySelectorAll('#modal-body .star-badge').forEach((el) => el.remove());
+}
+// après chaque nouvelle question (comme le bouton « Relire » de Perle)
+onModalOpen(() => setTimeout(starBadgeDecorate, 0));
+
+/**
+ * Où en est la mission étoile au moment où la mission se termine : à lire
+ * AVANT recordMission, qui referme la porte d'un défi raté.
+ * @returns {{ on: boolean, open: boolean }} `on` : la mission a commencé comme
+ *   une mission étoile ; `open` : sa porte est encore ouverte
+ */
+function starMissionState() {
+  return { on: inStarMission(), open: starActive() };
+}
+/**
+ * Le retour au jeu habituel : rien de ce que l'enfant avait n'est retiré.
+ * @param {string | null} key le jeu
+ * @returns {string}
+ */
+function starBackText(key) {
+  return key && starOf(key).won >= 1
+    ? 'On revient à ton jeu habituel. Ton étoile reste à toi !'
+    : "On revient à ton jeu habituel. Bravo d'avoir essayé !";
+}
+/**
+ * La phrase étoile de l'écran de victoire : la réussite du défi, ou le retour
+ * au jeu habituel si la porte s'est fermée pendant la mission (pas d'étoile).
+ * @param {{ on: boolean, open: boolean }} star
+ * @param {string | null} key le jeu
+ * @returns {string | null}
+ */
+function winStarLine(star, key) {
+  if (!star.on || !key) return null;
+  if (!star.open) return starBackText(key);
+  return starOf(key).won === 1 ? 'Défi étoile réussi ! Ce jeu gagne son étoile ⭐' : 'Défi étoile réussi ⭐';
+}
+// le bloc de l'offre, sur l'écran de victoire (comme l'offre de Zap sur l'île)
+function starOfferHTML() {
+  return `<div class="speech team-extra star-offer">
+        <span class="so-txt">${STAR_OFFER_TEXT}</span>
+        <span class="so-btns"><button type="button" class="btn-small" id="btn-star-yes">⭐ Oui !</button><button type="button" class="btn-small ghost" id="btn-star-no">Pas maintenant</button></span>
+      </div>`;
+}
+/**
+ * Les deux boutons de l'offre. Quitter l'écran autrement (« Super ! », « Encore
+ * une mission », la croix) est un refus silencieux : rien à faire, l'offre est
+ * déjà notée pour aujourd'hui.
+ * @param {string | null} key le jeu dont le défi est proposé
+ */
+function winBindStarOffer(key) {
+  const yes = document.getElementById('btn-star-yes');
+  const no = document.getElementById('btn-star-no');
+  if (!key || !yes || !no) return;
+  setHandler(yes, 'click', () => {
+    playSound('tap');
+    openStarDoor(key);
+    closeModal();
+    renderLagon();
+    playGame(key); // la porte est ouverte : la partie démarre au palier du défi
+  });
+  setHandler(no, 'click', () => {
+    playSound('tap');
+    const box = document.querySelector('#modal-body .star-offer');
+    if (box) box.textContent = STAR_REFUSED_TEXT;
+    speak(STAR_REFUSED_TEXT);
+  });
+}
+
 /* Mission ratée : on encourage, on ne punit pas — mais pas de récompense. */
 function onMissionFail() {
+  const star = starMissionState();
   recordMission(false);
   emit('game:after', { win: false }); // fin naturelle : la pause peut venir ensuite (js/features/rest)
   endBonusChallenge();
+  endStarMission();
   missionFact = null;
   forgetSpokenHint();
   lives = 0;
@@ -401,18 +507,24 @@ function onMissionFail() {
   const who = hello();
   playSound('wrong');
   vibrate([120, 60, 120]);
-  const msg = pickRandom([
-    `Ce n'est pas grave${who ? ' ' + who : ''} ! On réessaie ?`,
-    `Presque ! Tu vas y arriver la prochaine fois.`,
-    `Oups ! Regarde bien et réessaie 👀`,
-  ]);
-  speak(`${msg}`);
+  // défi étoile raté, porte encore ouverte : on salue le courage ; dans tous les
+  // cas d'une mission étoile, on dit le retour au jeu habituel
+  const msg = star.open
+    ? STAR_FAIL_TEXT
+    : pickRandom([
+        `Ce n'est pas grave${who ? ' ' + who : ''} ! On réessaie ?`,
+        `Presque ! Tu vas y arriver la prochaine fois.`,
+        `Oups ! Regarde bien et réessaie 👀`,
+      ]);
+  const back = star.on ? starBackText(lastGame) : '';
+  speak(`${msg}${back ? ' ' + back : ''}`);
 
   openModal(`
     <div class="reward-box fail-box">
       ${buddySlot('oops', 'buddy-big fail-emoji')}
-      <h2>Raté !</h2>
+      <h2>${star.open ? 'Bien essayé !' : 'Raté !'}</h2>
       <div class="speech">${msg}</div>
+      ${back ? `<div class="speech star-line">${back}</div>` : ''}
       <div class="speech" style="background:#FFF1EC;">
         ${charFace(currentChar || '')} <strong>${c.name}</strong> t'attend pour un nouvel essai !
       </div>
@@ -447,6 +559,7 @@ function winSoon(delay = WIN_DELAY) {
 }
 
 function onMissionWin() {
+  const star = starMissionState(); // avant recordMission, qui compte le défi étoile réussi
   recordMission(true); // avant le mode course, qui s'arrête plus bas
   emit('game:after', { win: true }); // fin naturelle : la pause peut venir ensuite (js/features/rest)
   forgetSpokenHint();
@@ -475,22 +588,46 @@ function onMissionWin() {
   // progrès ; Zap fête le défi bonus ; Tom rapporte le trésor du jour
   const cheerBy = cheer ? teamCheerBy() : null;
   const extras = teamWinExtras();
+  // défi étoile : la phrase de la mission étoile qui se termine, ou l'offre si le
+  // jeu vient d'être maîtrisé (règle « Offre due », lue avant la fin du défi de Zap)
+  const starKey = lastGame;
+  const starLine = winStarLine(star, starKey);
+  const starOffer = !star.on && !!starKey && starOfferDue(starKey);
+  if (starOffer && starKey) noteStarOffered(starKey);
   endBonusChallenge();
+  endStarMission();
   /** @type {MissionWin} */
-  const w = { c, it: ITEMS[key], bonus, boost, levelUp, praise, fact, lookWon, cheer, cheerBy, extras, solo };
+  const w = {
+    c,
+    it: ITEMS[key],
+    bonus,
+    boost,
+    levelUp,
+    praise,
+    fact,
+    lookWon,
+    cheer,
+    cheerBy,
+    extras,
+    solo,
+    starLine,
+    starOffer,
+  };
   setTimeout(() => speak(winSpeech(w)), 300);
 
   openModal(winMarkup(w));
   // l'objet gagné s'envolera jusqu'au sac quand la fenêtre se fermera
   queueGain({ items: [w.it.emoji, bonus ? ITEMS[bonus].emoji : null] });
   winBindButtons();
+  winBindStarOffer(starKey);
 }
 
 /**
  * Ce que l'écran de victoire montre et dit.
  * @typedef {{ c: typeof CHARACTERS[string], it: typeof ITEMS[string], bonus: string | null, boost: number,
  *   levelUp: boolean, praise: string, fact: string | null, lookWon: string[], cheer: string | null,
- *   cheerBy: string | null, extras: ReturnType<typeof teamWinExtras>, solo: boolean }} MissionWin
+ *   cheerBy: string | null, extras: ReturnType<typeof teamWinExtras>, solo: boolean,
+ *   starLine: string | null, starOffer: boolean }} MissionWin
  */
 
 /**
@@ -535,7 +672,10 @@ function winPraise() {
 /** @param {MissionWin} w */
 function winSpeech(w) {
   const { levelUp, praise, cheer, cheerBy, extras, lookWon, fact, c, it, bonus } = w;
-  return `${levelUp ? `Niveau ${level()} ! ` : ''}${praise} ${cheer ? (cheerBy ? COMPANIONS[cheerBy].name + ' : ' : '') + cheer + ' ' : ''}${extras.map((x) => `${COMPANIONS[x.by].name} : ${x.text} `).join('')}${lookWon.length ? `Tu gagnes ${lookWon.join(' et ')} pour ton avatar ! ` : ''}${fact ? fact + ' ' : ''}${c.name} t'offre ${it.name}${bonus ? `, et une surprise : ${ITEMS[bonus].name}` : ''}.`;
+  // le défi étoile se dit en dernier : la phrase de la mission, ou l'offre
+  // (sans le ⭐ final, que la voix lirait « étoile » une fois de trop)
+  const starEnd = `${w.starLine ? ' ' + w.starLine.replace(/ ⭐$/, '') : ''}${w.starOffer ? ' ' + STAR_OFFER_TEXT : ''}`;
+  return `${levelUp ? `Niveau ${level()} ! ` : ''}${praise} ${cheer ? (cheerBy ? COMPANIONS[cheerBy].name + ' : ' : '') + cheer + ' ' : ''}${extras.map((x) => `${COMPANIONS[x.by].name} : ${x.text} `).join('')}${lookWon.length ? `Tu gagnes ${lookWon.join(' et ')} pour ton avatar ! ` : ''}${fact ? fact + ' ' : ''}${c.name} t'offre ${it.name}${bonus ? `, et une surprise : ${ITEMS[bonus].name}` : ''}.${starEnd}`;
 }
 
 /** @param {MissionWin} w */
@@ -551,6 +691,7 @@ function winMarkup(w) {
       ${cheer ? `<div class="speech progress-cheer">${cheerBy ? `<span class="cheer-face" aria-hidden="true">${companionSVG(cheerBy, 'cheer')}</span><b>${COMPANIONS[cheerBy].name}</b>` : '<span aria-hidden="true">📈</span>'} ${cheer}</div>` : ''}
       ${extras.map((x) => `<div class="speech team-extra" data-by="${x.by}"><span class="cheer-face" aria-hidden="true">${companionSVG(x.by, 'cheer')}</span><span><b>${COMPANIONS[x.by].name}</b> ${x.text}</span></div>`).join('')}
       ${fact ? `<div class="speech fun-fact"><span aria-hidden="true">💡</span> ${fact}</div>` : ''}
+      ${w.starLine ? `<div class="speech star-line">${w.starLine}</div>` : ''}
       <div class="speech reward-item" style="display:flex; align-items:center; justify-content:center; gap:10px;">
         <span class="reward-emoji" data-gain-item style="font-size:2rem;">${it.emoji}</span>
         <span>${c.name} t'offre : <strong>${it.name}</strong>${boost > 1 ? ` <b class="boost">× ${boost}</b>` : ''}</span>
@@ -564,6 +705,7 @@ function winMarkup(w) {
       </div>`
           : ''
       }
+      ${w.starOffer ? starOfferHTML() : ''}
     </div>
     <button class="btn-primary" id="btn-yay">${party.active ? 'Au joueur suivant 👉' : 'Super !'}</button>
     ${party.active ? '' : '<button class="btn-ghost" id="btn-again">Encore une mission 🎮</button>'}

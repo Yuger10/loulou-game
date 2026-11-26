@@ -119,6 +119,8 @@ const SLICES = [
     files: [
       'js/features/adaptive/session.js',
       'js/features/adaptive/skill-status.js',
+      'js/features/adaptive/day.js',
+      'js/features/adaptive/stars.js',
       'js/features/adaptive/skills.js',
       'js/features/adaptive/game-diff.js',
       'js/features/adaptive/adaptive.js',

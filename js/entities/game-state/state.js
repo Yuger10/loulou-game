@@ -8,7 +8,7 @@ const MISSIONS_PER_LEVEL = 5;
 const SAVE_KEY = 'lagon-magique-save';
 
 /* ---------- État ---------- */
-const SAVE_VERSION = 9;
+const SAVE_VERSION = 10;
 
 /* Les types de la partie : ils décrivent DEFAULT_STATE, champ par champ.
    Les tables (inventaire, amitiés…) sont indexées par un id d'objet, de
@@ -34,6 +34,13 @@ const SAVE_VERSION = 9;
  *   atLvl?: Array<{ ok: boolean, e: number }>,
  *   support?: boolean,
  * }} SkillRecord
+ */
+/**
+ * Le défi étoile d'un mini-jeu (js/features/adaptive/stars.js) : `streak` =
+ * missions maîtrisées d'affilée au plafond du jeu, `open` = la porte du défi est
+ * ouverte, `miss` = erreurs d'affilée pendant le défi, `won` = défis réussis,
+ * `offered` = le dernier jour (AAAA-MM-JJ) où le défi a été proposé.
+ * @typedef {{ streak: number, open: boolean, miss: number, won: number, offered: string | null }} StarRecord
  */
 /** @typedef {{ date: string, min: number }} PauseExtra */
 /** Ce que porte l'avatar (js/features/wardrobe) : un id d'habit par emplacement, ou null.
@@ -99,6 +106,7 @@ const SAVE_VERSION = 9;
  *   decoPos: Record<string, { x: number, y: number }>,
  *   helped: { date: string, ids: Record<string, number> } | null,
  *   tipDragDeco: boolean,
+ *   stars: Record<string, StarRecord>,
  * }} GameState
  */
 /**
@@ -149,6 +157,7 @@ const DEFAULT_STATE = {
   decoPos: {}, // place des décorations que l'enfant a fait glisser : { clé: { x, y } }
   helped: null, // personnages déjà aidés aujourd'hui (bulle ❤️) : { date, ids }
   tipDragDeco: false, // l'astuce « fais glisser tes décorations » déjà vue
+  stars: {}, // le défi étoile de chaque mini-jeu : { streak, open, miss, won, offered } (js/features/adaptive/stars.js)
 };
 
 /* La collection de squishies (v53) : état neuf.
@@ -277,6 +286,11 @@ function migrate(saved) {
     saved.season2Done = false;
     if (saved.squishies && !Array.isArray(saved.squishies.treasures)) saved.squishies.treasures = [];
   }
+  if (v < 10) {
+    // aller plus loin : le défi étoile. Pas de rattrapage du compteur depuis le
+    // suivi des jeux : le plafond de l'enfant vit dans son profil, pas ici.
+    if (!saved.stars || typeof saved.stars !== 'object') saved.stars = {};
+  }
   saved.v = SAVE_VERSION;
   return saved;
 }
@@ -345,9 +359,33 @@ function cleanRestLog(raw) {
   return out;
 }
 /**
+ * Le défi étoile de chaque mini-jeu, remis en forme : des compteurs, une porte
+ * ouverte seulement si elle vaut `true`, une date AAAA-MM-JJ ou rien. Une entrée
+ * qui n'est pas un objet est retirée ; aucun jeu absent n'est créé.
+ * @param {unknown} raw
+ * @returns {GameState['stars']}
+ */
+function cleanStars(raw) {
+  /** @type {GameState['stars']} */
+  const out = {};
+  if (!raw || typeof raw !== 'object') return out;
+  for (const [k, v] of Object.entries(raw)) {
+    if (!v || typeof v !== 'object') continue;
+    const x = /** @type {Record<string, unknown>} */ (v);
+    out[k] = {
+      streak: savedCount(x.streak),
+      open: x.open === true,
+      miss: savedCount(x.miss),
+      won: savedCount(x.won),
+      offered: typeof x.offered === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(x.offered) ? x.offered : null,
+    };
+  }
+  return out;
+}
+/**
  * Une partie enregistrée (texte JSON) devenue une partie jouable : migrée vers
- * la forme actuelle, réduite aux champs connus, prénom, avatar, suivi des jeux
- * et journal des pauses vérifiés. Lève une erreur si le JSON est illisible.
+ * la forme actuelle, réduite aux champs connus, prénom, avatar, suivi des jeux,
+ * journal des pauses et défis étoile vérifiés. Lève une erreur si le JSON est illisible.
  * @param {string} raw
  * @returns {GameState}
  */
@@ -365,6 +403,7 @@ function readSave(raw) {
   st.name = cleanName(st.name); // porte d'entrée : partie enregistrée ou importée
   st.skills = cleanSkills(st.skills);
   st.restLog = cleanRestLog(st.restLog);
+  st.stars = cleanStars(st.stars);
   saveSlot.afterLoad(st);
   return st;
 }

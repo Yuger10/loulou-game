@@ -6,15 +6,11 @@
 import { save, state } from '../../entities/game-state/index.js';
 import { party } from '../../entities/player/index.js';
 import { adaptAfterMission } from './adaptive.js';
+import { todayKey } from './day.js';
 import { gameDiff } from './game-diff.js';
 import { skillStatus } from './skill-status.js';
 import { inBonusChallenge, lastGame } from './session.js';
-
-/** @param {Date} [dArg] le jour, par défaut aujourd'hui */
-function todayKey(dArg) {
-  const d = dArg || new Date();
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-}
+import { inStarMission, starAfterMission } from './stars.js';
 
 /* ---- enregistrer ce qui se passe en jeu ---- */
 let missionErrors = 0;
@@ -55,11 +51,15 @@ function recordMission(ok) {
   s.last = todayKey();
   // défi bonus de Zap (v52) : joué un cran au-dessus, il ne fait ni monter ni
   // descendre le niveau du jeu, ni changer son état « à l'aise / à travailler »
-  if (inBonusChallenge()) {
+  // défi étoile (track aller-plus-loin) : joué un cran au-dessus du plafond, il
+  // compte de la même façon ; sa porte et son étoile sont tenues par stars.js
+  if (inBonusChallenge() || inStarMission()) {
+    if (inStarMission()) starAfterMission(!!ok, e, t);
     missionErrors = 0;
     save();
     return null;
   }
+  starAfterMission(!!ok, e, t); // une mission maîtrisée au plafond du jeu rapproche du défi étoile
   s.recent.push({ t, e, ok: !!ok });
   if (s.recent.length > 10) s.recent = s.recent.slice(-10);
   missionErrors = 0;
@@ -73,4 +73,4 @@ function recordMission(ok) {
   return step;
 }
 
-export { missionProgress, noteAnswerError, recordMission, resetMissionErrors, todayKey };
+export { missionProgress, noteAnswerError, recordMission, resetMissionErrors };

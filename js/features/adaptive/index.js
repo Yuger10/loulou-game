@@ -9,7 +9,25 @@ export {
   lastGame,
   setLastGame,
 } from './session.js';
-export { missionProgress, noteAnswerError, recordMission, resetMissionErrors, todayKey } from './skills.js';
+export { todayKey } from './day.js';
+export { missionProgress, noteAnswerError, recordMission, resetMissionErrors } from './skills.js';
+export {
+  beginStarMission,
+  closeAllStarDoors,
+  closeStarDoor,
+  endStarMission,
+  inStarMission,
+  noteStarError,
+  noteStarGood,
+  noteStarOffered,
+  openStarDoor,
+  starActive,
+  starAfterMission,
+  starOf,
+  starOfferDue,
+  starsResetFor,
+  starTier,
+} from './stars.js';
 export { SKILL_STATUS, skillStatus } from './skill-status.js';
-export { gameDiff, gameDiffIsland } from './game-diff.js';
+export { gameDiff, gameDiffIsland, normalDiff } from './game-diff.js';
 export { needsPractice, pickPracticeGame, progressCheer } from './adaptive.js';

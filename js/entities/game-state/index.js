@@ -3,6 +3,7 @@
 // ses types aussi : les autres slices les lisent ici, par import('…/game-state/index.js')
 /** @typedef {import('./state.js').GameState} GameState */
 /** @typedef {import('./state.js').Look} Look */
+/** @typedef {import('./state.js').StarRecord} StarRecord */
 export {
   freshState,
   gameCount,

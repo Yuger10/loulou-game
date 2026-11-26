@@ -4,6 +4,7 @@ import { currentProfile, party, partyCurrent } from '../../entities/player/index
 import { currentWorld, WORLDS } from '../../entities/world/index.js';
 import { adaptTier, gameMaxTier } from './adaptive.js';
 import { inBonusChallenge, lastGame } from './session.js';
+import { starActive, starTier } from './stars.js';
 
 function gameDiffIsland() {
   return WORLDS[currentWorld] ? WORLDS[currentWorld].diff : 1;
@@ -17,7 +18,19 @@ function gameDiffIsland() {
 // (`gameTypesForAge`), jamais ses PARAMÈTRES numériques. Résultat : des
 // exercices trop abstraits pour son âge (ex. la variante miroir de
 // « Trouve l'intrus »), que l'enfant ne peut résoudre qu'au hasard.
+// Le palier joué. Pendant une mission étoile dont la porte est ouverte (règle
+// « Palier étoile », js/features/adaptive/stars.js), c'est le palier du défi :
+// un cran au-dessus du plafond de l'enfant, sans regarder l'île.
+/** @returns {number} */
 function gameDiff() {
+  if (lastGame && starActive()) return starTier(lastGame);
+  return normalDiff();
+}
+
+// Le palier habituel, sans la porte étoile : c'est lui qui règle les essais et
+// le minuteur, même pendant un défi étoile (le défi change la question, pas la pression).
+/** @returns {number} */
+function normalDiff() {
   const island = gameDiffIsland();
   // multijoueur (chacun son tour / course) : la classe (ou l'âge) prime totalement,
   // sans plafond lié à l'île — c'est le mécanisme d'équité déjà en
@@ -52,4 +65,4 @@ function adaptedDiff(base) {
   return Math.max(t, Math.min(t + 1, cap, gameMaxTier(/** @type {string} */ (lastGame))));
 }
 
-export { gameDiff, gameDiffIsland };
+export { gameDiff, gameDiffIsland, normalDiff };

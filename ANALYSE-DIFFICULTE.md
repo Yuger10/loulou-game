@@ -220,3 +220,41 @@ Ordre de priorité :
 
 Ce que la classe ne change pas : les jeux proposés (`gameTypesForAge`) et la
 règle « jamais de minuteur avant 6 ans » restent liés à l'âge.
+
+## 8. Le défi étoile (track aller-plus-loin)
+
+Le seul chemin au-dessus du plafond de l'enfant (`js/features/adaptive/stars.js`).
+
+- **Maîtrise.** `state.stars[jeu].streak` compte les missions d'affilée jouées
+  au plafond du jeu (`min(plafond de l'enfant, palier maximal du jeu)`),
+  réussies avec au plus 1 erreur (3 au mémo). Une mission ratée ou avec trop
+  d'erreurs remet le compteur à 0 ; une mission jouée plus bas (île plus
+  facile, niveau du jeu) ne compte pas. Mêmes critères que la montée de
+  niveau, avec une mission de plus : l'offre arrive à 3.
+- **Offre.** Sur l'écran de victoire, dite à voix haute, avec deux boutons
+  (« ⭐ Oui ! », « Pas maintenant »). Une seule offre par ouverture du jeu, une
+  par jour et par jeu au plus ; quitter l'écran vaut un refus, sans phrase.
+  Pas d'offre à plusieurs, pendant un défi de Zap, sans âge ni classe, ou si
+  le plafond de l'enfant atteint déjà le palier maximal du jeu.
+- **Palier.** `starTier(jeu) = min(plafond + 1, palier maximal du jeu)` : un
+  seul cran, sans regarder l'île. CP vers 3 (fin CP), CE1 vers 5 (fin CE1) ;
+  en CE2, seuls le calcul mental, les formes et les planètes ont un palier 6.
+- **Pression inchangée.** Les essais et le minuteur restent ceux du palier
+  habituel (`normalDiff()`) : le défi change la question, pas la pression. Un
+  enfant au plafond 2 n'a donc jamais de minuteur pendant un défi.
+- **Porte.** Acceptée, l'offre ouvre la porte du jeu : ses parties suivantes
+  sont des missions étoile (badge ⭐ dans l'en-tête). Après 2 erreurs d'affilée
+  (6 au mémo), la porte se referme : la mission continue au palier habituel,
+  sans étoile, et rien de ce que l'enfant avait n'est retiré. Une mission
+  étoile ratée referme aussi la porte. Il faut de nouveau 3 missions
+  maîtrisées pour une nouvelle offre.
+- **Ce qu'on gagne.** Une étoile sur le jeu dans le choix des jeux et la
+  phrase de réussite ; la récompense reste celle d'une mission normale.
+- **Niveau du jeu.** Une mission étoile compte comme le défi de Zap : réussites,
+  ratés et erreurs sont comptés, le niveau du jeu ne monte ni ne descend.
+- **Zap.** Le défi bonus de Zap reste séparé : un cran au-dessus du niveau du
+  jeu, jamais au-dessus du plafond de l'enfant, jamais sur un jeu dont la
+  porte est ouverte.
+- **Parents.** Un interrupteur dans la carte « 🎒 Classe » coupe les défis
+  (les portes ouvertes se ferment). Changer la classe ferme les portes et
+  remet les compteurs de maîtrise à 0 ; les étoiles gagnées restent.

@@ -6,6 +6,7 @@
 - **Pas de game over, pas de punition.** Un échec mène à réessayer, avec un indice parlé. On ne perd jamais ce qu'on a gagné.
 - **Anti-devinette.** Quand il y a peu de choix et pas de limite d'essais, une mauvaise réponse relance une autre question au lieu de laisser deviner par élimination.
 - **Adapté à l'âge.** La difficulté dépend de l'île (paliers 1 à 6) et de la classe du profil, ou de son âge. Pas de minuteur avant le CP.
+- **Aller plus loin sans pression :** défi étoile refusable, retiré sans rien perdre. Jamais de minuteur ni d'essai en moins à cause d'un défi, aucune récompense en plus qu'une étoile sur le jeu.
 - **Surprise et collection, sans manipulation.** Les récompenses se gagnent en jouant, jamais avec de l'argent réel. Pas de compte à rebours anxiogène, pas de « dernière chance », pas de boucle sans fin de tirages : les mécaniques de hasard restent bornées et bienveillantes.
 - **Égalité filles et garçons.** Les personnages et compagnons sont présentés en mettant en avant le même genre que le joueur, sans rien exclure.
 

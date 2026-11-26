@@ -17,7 +17,8 @@ const LEGACY_SAVE_KEY = 'lagon-magique-save';
  * `companion` (id), `pauseMin` (durée de pause choisie par un adulte),
  * `birthday` ('MM-JJ' ou ''), `look` (copie de state.look, pour dessiner l'avatar),
  * `grade` (la classe choisie par un adulte : 'GS', 'CP', 'CE1', 'CE2', ou '' =
- * « selon l'âge » ; toujours l'une de ces valeurs après loadProfiles).
+ * « selon l'âge » ; toujours l'une de ces valeurs après loadProfiles),
+ * `starChallenges` (false = un adulte a coupé les défis étoile ; absent ou true = actifs).
  * @typedef {{
  *   id: string,
  *   name: string,
@@ -28,6 +29,7 @@ const LEGACY_SAVE_KEY = 'lagon-magique-save';
  *   pauseMin?: number,
  *   birthday?: string,
  *   grade?: string,
+ *   starChallenges?: boolean,
  *   look?: import('../game-state/index.js').Look | null,
  * }} Profile
  */
@@ -69,6 +71,8 @@ function loadProfiles() {
     p.avatar = fixAvatar(p.avatar);
     // la classe : liste blanche (profil ancien, importé ou abîmé : « selon l'âge »)
     p.grade = typeof p.grade === 'string' && gradeToDiff(p.grade) ? p.grade : '';
+    // l'interrupteur des défis étoile : un booléen, sinon absent (actif)
+    if (typeof p.starChallenges !== 'boolean') delete p.starChallenges;
   });
 
   // migration : une ancienne partie unique devient le premier joueur
