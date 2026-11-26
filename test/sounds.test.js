@@ -207,7 +207,7 @@ const fundamentals = (list) =>
       all.length > 0 && all.every((o) => o.type === 'sine' || o.type === 'triangle'),
     );
     const perNote = ev(
-      '(()=>{ const n0 = window.__audio.oscs.length; marimbaNote(523, 0, .2, .4); return window.__audio.oscs.length - n0; })()',
+      '(()=>{ const n0 = window.__audio.oscs.length; marimbaNote(523, 0, { vol: .2, decay: .4 }); return window.__audio.oscs.length - n0; })()',
     );
     check('une note de marimba : 3 oscillateurs au maximum', perNote <= 3);
     check(

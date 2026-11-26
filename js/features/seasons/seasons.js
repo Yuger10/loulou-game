@@ -99,10 +99,8 @@ function applySeason(force) {
 }
 
 /* ---- décor de l'île (repère du paysage : 480 × 360) ---- */
-/** @param {string | null} [id] la saison du moment */
-function seasonSceneSVG(id) {
-  if (id === 'noel')
-    return `<g class="ss ss-noel">
+function noelSceneSVG() {
+  return `<g class="ss ss-noel">
       <g fill="#fff" opacity=".9"><ellipse cx="40" cy="358" rx="96" ry="14"/><ellipse cx="250" cy="362" rx="150" ry="14"/><ellipse cx="452" cy="356" rx="90" ry="14"/></g>
       <g transform="translate(300 216) scale(.72) translate(-400 -262)">
       <rect x="393" y="244" width="14" height="18" rx="3" fill="#8A5A2B"/>
@@ -123,46 +121,49 @@ function seasonSceneSVG(id) {
         <rect x="58" y="246" width="24" height="9" rx="2" fill="#123B4F"/><rect x="62" y="232" width="16" height="16" rx="2" fill="#123B4F"/>
       </g>
     </g>`;
-  if (id === 'halloween') {
-    /** @param {number} x @param {number} y @param {number} s l'échelle */
-    const pumpkin = (x, y, s) => `<g transform="translate(${x} ${y}) scale(${s})">
+}
+
+function halloweenSceneSVG() {
+  /** @param {number} x @param {number} y @param {number} s l'échelle */
+  const pumpkin = (x, y, s) => `<g transform="translate(${x} ${y}) scale(${s})">
         <path d="M0 -20 C0 -27 4 -31 9 -31" stroke="#3F8F4E" stroke-width="4" fill="none" stroke-linecap="round"/>
         <ellipse rx="27" ry="21" fill="#FF8A3D" stroke="#C25E1E" stroke-width="2.5"/>
         <path d="M-10 -20 C-14 -7 -14 7 -10 20 M10 -20 C14 -7 14 7 10 20" stroke="#C25E1E" stroke-width="2" fill="none"/>
         <path d="M-14 -5 L-8 -12 L-3 -5 Z M3 -5 L8 -12 L14 -5 Z" fill="#6B3410"/>
         <path d="M-13 4 Q0 15 13 4 Q0 9 -13 4 Z" fill="#6B3410"/></g>`;
-    /** @param {number} x @param {number} y @param {number} s l'échelle @param {string} cls */
-    const bat = (x, y, s, cls) => `<g class="ss-bat ${cls}" transform="translate(${x} ${y}) scale(${s})">
+  /** @param {[number, number, number, string]} b x, y, échelle, classe */
+  const bat = ([x, y, s, cls]) => `<g class="ss-bat ${cls}" transform="translate(${x} ${y}) scale(${s})">
         <path d="M0 0 C-6 -8 -16 -10 -26 -4 C-20 -2 -18 2 -18 6 C-12 2 -6 4 0 8 C6 4 12 2 18 6 C18 2 20 -2 26 -4 C16 -10 6 -8 0 0 Z" fill="#4B3570"/>
         <circle cx="0" cy="1" r="6" fill="#4B3570"/><path d="M-4 -4 L-3 -9 L-1 -5 M4 -4 L3 -9 L1 -5" fill="#4B3570" stroke="#4B3570" stroke-width="1.5"/>
         <circle cx="-2.2" cy="0" r="1.4" fill="#fff"/><circle cx="2.2" cy="0" r="1.4" fill="#fff"/></g>`;
-    return `<g class="ss ss-halloween">
+  return `<g class="ss ss-halloween">
       ${pumpkin(192, 222, 0.62)}${pumpkin(302, 214, 0.5)}${pumpkin(244, 292, 0.55)}
-      ${bat(130, 66, 1.1, 'b1')}${bat(372, 46, 0.9, 'b2')}${bat(250, 104, 0.7, 'b3')}
+      ${bat([130, 66, 1.1, 'b1'])}${bat([372, 46, 0.9, 'b2'])}${bat([250, 104, 0.7, 'b3'])}
     </g>`;
+}
+
+function annivSceneSVG() {
+  const flags = [];
+  for (let i = 0; i < 12; i++) {
+    const x = 12 + i * 40,
+      y = 18 + Math.sin((i / 11) * Math.PI) * 22;
+    const c = ['#FF6FA5', '#FFCB4C', '#5AB0F2', '#5FCB7E'][i % 4];
+    flags.push(
+      `<path d="M${x} ${y.toFixed(1)} L${x + 30} ${(y + 2).toFixed(1)} L${x + 15} ${(y + 26).toFixed(1)} Z" fill="${c}"/>`,
+    );
   }
-  if (id === 'anniversaire') {
-    const flags = [];
-    for (let i = 0; i < 12; i++) {
-      const x = 12 + i * 40,
-        y = 18 + Math.sin((i / 11) * Math.PI) * 22;
-      const c = ['#FF6FA5', '#FFCB4C', '#5AB0F2', '#5FCB7E'][i % 4];
-      flags.push(
-        `<path d="M${x} ${y.toFixed(1)} L${x + 30} ${(y + 2).toFixed(1)} L${x + 15} ${(y + 26).toFixed(1)} Z" fill="${c}"/>`,
-      );
-    }
-    /** @param {number} x @param {number} y @param {string} c la couleur @param {number} d le décalage de l'animation */
-    const balloon = (
-      x,
-      y,
-      c,
-      d,
-    ) => `<g class="ss-balloon" style="--d:${d}s"><path d="M${x} ${y + 27} C${x - 4} ${y + 50} ${x + 6} ${y + 66} 334 214" fill="none" stroke="#7A8A94" stroke-width="1.5"/>
+  /** @param {[number, number, string, number]} b x, y, couleur, décalage de l'animation */
+  const balloon = ([
+    x,
+    y,
+    c,
+    d,
+  ]) => `<g class="ss-balloon" style="--d:${d}s"><path d="M${x} ${y + 27} C${x - 4} ${y + 50} ${x + 6} ${y + 66} 334 214" fill="none" stroke="#7A8A94" stroke-width="1.5"/>
         <ellipse cx="${x}" cy="${y}" rx="18" ry="22" fill="${c}"/><path d="M${x - 3} ${y + 21} L${x + 3} ${y + 21} L${x} ${y + 27} Z" fill="${c}"/>
         <ellipse cx="${x - 6}" cy="${y - 8}" rx="4" ry="7" fill="#fff" opacity=".45"/></g>`;
-    return `<g class="ss ss-anniv">
+  return `<g class="ss ss-anniv">
       <path d="M0 16 Q240 64 480 16" fill="none" stroke="#7A8A94" stroke-width="2"/>${flags.join('')}
-      ${balloon(312, 128, '#FF6FA5', 0)}${balloon(340, 108, '#5AB0F2', 0.6)}${balloon(366, 134, '#FFCB4C', 1.2)}
+      ${balloon([312, 128, '#FF6FA5', 0])}${balloon([340, 108, '#5AB0F2', 0.6])}${balloon([366, 134, '#FFCB4C', 1.2])}
       <g transform="translate(192 206) scale(.8)">
         <rect x="-30" y="-6" width="60" height="26" rx="6" fill="#FFB6CF" stroke="#E2679A" stroke-width="2"/>
         <rect x="-22" y="-26" width="44" height="22" rx="6" fill="#FFF3DE" stroke="#E0C08A" stroke-width="2"/>
@@ -171,8 +172,14 @@ function seasonSceneSVG(id) {
         <g class="ss-flame" fill="#FFCB4C"><ellipse cx="-10.5" cy="-42" rx="2.6" ry="4"/><ellipse cx="0" cy="-44" rx="2.6" ry="4"/><ellipse cx="10.5" cy="-42" rx="2.6" ry="4"/></g>
       </g>
     </g>`;
-  }
-  return '';
+}
+
+/** @type {Record<string, () => string>} */
+const SEASON_SCENES = { noel: noelSceneSVG, halloween: halloweenSceneSVG, anniversaire: annivSceneSVG };
+/** @param {string | null} [id] la saison du moment */
+function seasonSceneSVG(id) {
+  const scene = id && Object.prototype.hasOwnProperty.call(SEASON_SCENES, id) ? SEASON_SCENES[id] : null;
+  return scene ? scene() : '';
 }
 
 /* ---- le cadeau de la saison (une fois par saison et par enfant) ---- */

@@ -158,12 +158,9 @@ const liveBus = () => /** @type {SoundBus} */ (soundBus);
 /**
  * @param {number} freq
  * @param {number} t
- * @param {number} vol
- * @param {number} decay
- * @param {OscillatorType} [type]
- * @param {boolean} [wet]
+ * @param {{ vol: number, decay: number, type?: OscillatorType, wet?: boolean }} sound `wet: false` : hors de l'écho
  */
-function marimbaPartial(freq, t, vol, decay, type, wet) {
+function marimbaPartial(freq, t, { vol, decay, type, wet }) {
   const o = liveCtx().createOscillator(),
     g = liveCtx().createGain();
   o.type = type || 'sine';
@@ -182,28 +179,30 @@ function marimbaPartial(freq, t, vol, decay, type, wet) {
 /**
  * @param {number} freq
  * @param {number} delay
- * @param {number} vol
- * @param {number} [decay]
- * @param {boolean} [exact]
+ * @param {object} note
+ * @param {number} note.vol
+ * @param {number} [note.decay] 0,45 s par défaut
+ * @param {boolean} [note.exact] sans variation de hauteur ni de volume (Simon)
  */
-function marimbaNote(freq, delay, vol, decay, exact) {
+function marimbaNote(freq, delay, { vol, decay, exact }) {
   const t = liveCtx().currentTime + (delay || 0);
   const f = soundVary(freq, SOUND_PITCH_VARIATION, exact),
     v = soundVary(vol, SOUND_GAIN_VARIATION, exact);
   const d = decay || 0.45;
-  marimbaPartial(f, t, v, d);
-  marimbaPartial(f * 3.99, t, v * 0.28, d * 0.25);
-  marimbaPartial(f * 10, t, v * 0.05, 0.03, 'triangle', false);
+  marimbaPartial(f, t, { vol: v, decay: d });
+  marimbaPartial(f * 3.99, t, { vol: v * 0.28, decay: d * 0.25 });
+  marimbaPartial(f * 10, t, { vol: v * 0.05, decay: 0.03, type: 'triangle', wet: false });
 }
 
 // un glissé doux (pouic, ouverture de boîte)
 /**
  * @param {Array<[number, number]>} points [instant en s, fréquence en Hz]
- * @param {number} delay
- * @param {number} vol
- * @param {OscillatorType} [type]
+ * @param {object} glide
+ * @param {number} glide.delay en s
+ * @param {number} glide.vol
+ * @param {OscillatorType} [glide.type] sinus par défaut
  */
-function soundGlide(points, delay, vol, type) {
+function soundGlide(points, { delay, vol, type }) {
   const t = liveCtx().currentTime + (delay || 0),
     o = liveCtx().createOscillator(),
     g = liveCtx().createGain();
@@ -258,25 +257,27 @@ const SN = SOUND_NOTES,
   sfam = (/** @type {keyof typeof SOUND_FAMILY} */ k) => SOUND_FAMILY[k];
 /** @type {Record<string, () => void>} */
 const SOUND_PALETTE = {
-  tap: () => marimbaNote(SN.G5, 0, 0.16 * sfam('tap'), 0.18),
+  tap: () => marimbaNote(SN.G5, 0, { vol: 0.16 * sfam('tap'), decay: 0.18 }),
   good: () => {
-    marimbaNote(SN.E5, 0, 0.2 * sfam('good'));
-    marimbaNote(SN.C6, 0.1, 0.22 * sfam('good'), 0.6);
+    marimbaNote(SN.E5, 0, { vol: 0.2 * sfam('good') });
+    marimbaNote(SN.C6, 0.1, { vol: 0.22 * sfam('good'), decay: 0.6 });
   },
   wrong: () => {
-    marimbaNote(SN.D5, 0, 0.17 * sfam('wrong'), 0.35);
-    marimbaNote(SN.A4, 0.16, 0.17 * sfam('wrong'), 0.5);
+    marimbaNote(SN.D5, 0, { vol: 0.17 * sfam('wrong'), decay: 0.35 });
+    marimbaNote(SN.A4, 0.16, { vol: 0.17 * sfam('wrong'), decay: 0.5 });
   },
   win: () => {
-    [SN.C5, SN.E5, SN.G5, SN.C6, SN.E6].forEach((f, i) => marimbaNote(f, i * 0.1, 0.2 * sfam('win'), 0.7));
-    [SN.C6, SN.E6, SN.G6].forEach((f) => marimbaNote(f, 0.62, 0.14 * sfam('win'), 1.2));
+    [SN.C5, SN.E5, SN.G5, SN.C6, SN.E6].forEach((f, i) =>
+      marimbaNote(f, i * 0.1, { vol: 0.2 * sfam('win'), decay: 0.7 }),
+    );
+    [SN.C6, SN.E6, SN.G6].forEach((f) => marimbaNote(f, 0.62, { vol: 0.14 * sfam('win'), decay: 1.2 }));
   },
   coin: () => {
-    marimbaNote(SN.G6, 0, 0.14 * sfam('coin'), 0.25);
-    marimbaNote(SN.C7, 0.06, 0.14 * sfam('coin'), 0.4);
+    marimbaNote(SN.G6, 0, { vol: 0.14 * sfam('coin'), decay: 0.25 });
+    marimbaNote(SN.C7, 0.06, { vol: 0.14 * sfam('coin'), decay: 0.4 });
   },
-  pop: () => marimbaNote(SN.A5, 0, 0.16 * sfam('pop'), 0.15),
-  tick: () => marimbaNote(SN.A6, 0, 0.07 * sfam('tick'), 0.07),
+  pop: () => marimbaNote(SN.A5, 0, { vol: 0.16 * sfam('pop'), decay: 0.15 }),
+  tick: () => marimbaNote(SN.A6, 0, { vol: 0.07 * sfam('tick'), decay: 0.07 }),
   pouic: () =>
     soundGlide(
       [
@@ -284,20 +285,21 @@ const SOUND_PALETTE = {
         [0.12, 1300],
         [0.24, 950],
       ],
-      0,
-      0.14 * sfam('pouic'),
+      { delay: 0, vol: 0.14 * sfam('pouic') },
     ),
   sparkle: () =>
-    [SN.E6, SN.G6, SN.A6, SN.C7, SN.A6, SN.E7].forEach((f, i) => marimbaNote(f, i * 0.07, 0.1 * sfam('sparkle'), 0.5)),
+    [SN.E6, SN.G6, SN.A6, SN.C7, SN.A6, SN.E7].forEach((f, i) =>
+      marimbaNote(f, i * 0.07, { vol: 0.1 * sfam('sparkle'), decay: 0.5 }),
+    ),
   hint: () => {
-    marimbaNote(SN.E5, 0, 0.15 * sfam('hint'), 0.6);
-    marimbaNote(SN.A5, 0.18, 0.15 * sfam('hint'), 0.9);
+    marimbaNote(SN.E5, 0, { vol: 0.15 * sfam('hint'), decay: 0.6 });
+    marimbaNote(SN.A5, 0.18, { vol: 0.15 * sfam('hint'), decay: 0.9 });
   },
   island: () => {
     [SN.C5, SN.D5, SN.E5, SN.G5, SN.A5, SN.C6, SN.D6, SN.E6].forEach((f, i) =>
-      marimbaNote(f, i * 0.08, 0.17 * sfam('island'), 0.7),
+      marimbaNote(f, i * 0.08, { vol: 0.17 * sfam('island'), decay: 0.7 }),
     );
-    [SN.C6, SN.G6].forEach((f) => marimbaNote(f, 0.75, 0.14 * sfam('island'), 1.5));
+    [SN.C6, SN.G6].forEach((f) => marimbaNote(f, 0.75, { vol: 0.14 * sfam('island'), decay: 1.5 }));
   },
   box: () => {
     soundGlide(
@@ -305,11 +307,9 @@ const SOUND_PALETTE = {
         [0, 300],
         [0.35, 900],
       ],
-      0,
-      0.07 * sfam('box'),
-      'triangle',
+      { delay: 0, vol: 0.07 * sfam('box'), type: 'triangle' },
     );
-    [SN.G5, SN.C6, SN.E6].forEach((f, i) => marimbaNote(f, 0.4 + i * 0.07, 0.18 * sfam('box'), 0.8));
+    [SN.G5, SN.C6, SN.E6].forEach((f, i) => marimbaNote(f, 0.4 + i * 0.07, { vol: 0.18 * sfam('box'), decay: 0.8 }));
   },
 };
 
@@ -346,7 +346,7 @@ function playNote(freq, dur, vol) {
   try {
     if (!ensureAudioCtx()) return false;
     liveBus().master.gain.value = soundVolumeLevel();
-    marimbaNote(freq, 0, vol || 0.18, Math.max(0.3, dur || 0.45), true);
+    marimbaNote(freq, 0, { vol: vol || 0.18, decay: Math.max(0.3, dur || 0.45), exact: true });
     return true;
   } catch {
     return false;
