@@ -71,11 +71,10 @@ function gainLayer() {
 // un emoji qui vole en arc de `from` à `to` ; onLand est appelé à l'arrivée
 /**
  * @param {string} emoji
- * @param {Point} from
- * @param {Point} to
+ * @param {{ from: Point, to: Point }} path
  * @param {FlyOptions} [opts]
  */
-function flyEmoji(emoji, from, to, opts = {}) {
+function flyEmoji(emoji, { from, to }, opts = {}) {
   const onLand = opts.onLand || (() => {});
   if (!gainsCanAnimate()) {
     onLand();
@@ -183,19 +182,23 @@ function gainItems(emojis, fromEl, baseDelay) {
   const from = pt && pt.x != null ? pt : gainCenter(/** @type {Element | null | undefined} */ (fromEl));
   const to = gainCenter(bag);
   list.forEach((e, i) => {
-    flyEmoji(e, from, to, {
-      delay: (baseDelay || 0) + i * 220,
-      size: '2.4rem',
-      onLand: () => {
-        playSound('pop');
-        gainLand(bag, true);
-        if (badge && !badge.hidden) {
-          badge.classList.remove('pop');
-          void badge.offsetWidth;
-          badge.classList.add('pop');
-        }
+    flyEmoji(
+      e,
+      { from, to },
+      {
+        delay: (baseDelay || 0) + i * 220,
+        size: '2.4rem',
+        onLand: () => {
+          playSound('pop');
+          gainLand(bag, true);
+          if (badge && !badge.hidden) {
+            badge.classList.remove('pop');
+            void badge.offsetWidth;
+            badge.classList.add('pop');
+          }
+        },
       },
-    });
+    );
   });
 }
 
@@ -240,16 +243,20 @@ function gainCoins(amount, fromEl) {
   const from = gainCenter(fromEl),
     to = gainCenter(coinTarget());
   shares.forEach((s, i) =>
-    flyEmoji('🪙', from, to, {
-      coin: true,
-      delay: i * 90,
-      size: '1.7rem',
-      jitter: 60,
-      lift: 90,
-      endScale: 0.7,
-      duration: 620,
-      onLand: () => land(s),
-    }),
+    flyEmoji(
+      '🪙',
+      { from, to },
+      {
+        coin: true,
+        delay: i * 90,
+        size: '1.7rem',
+        jitter: 60,
+        lift: 90,
+        endScale: 0.7,
+        duration: 620,
+        onLand: () => land(s),
+      },
+    ),
   );
   setTimeout(
     () => {
@@ -290,21 +297,25 @@ function spendCoins(amount, toEl) {
   gainLabel(`−${amount}`, pill, true);
   shares.forEach((s, i) => {
     setTimeout(() => leave(s), i * 80);
-    flyEmoji('🪙', from, to, {
-      coin: true,
-      delay: i * 80,
-      size: '1.5rem',
-      jitter: 40,
-      lift: 70,
-      endScale: 0.5,
-      duration: 560,
-      onLand: () => {
-        if (i === n - 1) {
-          playSound('coin');
-          gainLand(toEl, true);
-        }
+    flyEmoji(
+      '🪙',
+      { from, to },
+      {
+        coin: true,
+        delay: i * 80,
+        size: '1.5rem',
+        jitter: 40,
+        lift: 70,
+        endScale: 0.5,
+        duration: 560,
+        onLand: () => {
+          if (i === n - 1) {
+            playSound('coin');
+            gainLand(toEl, true);
+          }
+        },
       },
-    });
+    );
   });
   setTimeout(() => leave(left), n * 80 + 1000);
 }

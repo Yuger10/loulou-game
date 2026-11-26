@@ -375,16 +375,7 @@ function teamCard(id, kind) {
 function openTeamWindow(note) {
   const p = teamPrincipal(),
     c = COMPANIONS[p];
-  if (!teamIsOpen()) {
-    const left = Math.max(0, TEAM_LEVEL - level());
-    openModal(`
-      ${gameHeader('🤝 Mon équipe', `${c.name} te donne des indices 💡 dans tous les jeux`)}
-      <div class="tw-list">${teamCard(p, 'main')}</div>
-      <div class="speech tw-soon">🗺️ Au niveau ${TEAM_LEVEL}, ton équipe s'agrandit : d'autres amis t'attendent sur les îles !${left ? ` Encore ${left} niveau${left > 1 ? 'x' : ''}.` : ''}</div>
-    `);
-    bindQuit();
-    return;
-  }
+  if (!teamIsOpen()) return teamWindowSoon(p, c);
   const mates = teamMates();
   const rest = teamKnownIds().filter((id) => id !== p && teamHasMet(id) && !mates.includes(id));
   const unmet = teamKnownIds().filter((id) => !teamHasMet(id));
@@ -407,6 +398,11 @@ function openTeamWindow(note) {
     }
   `);
   bindQuit();
+  teamWindowBind();
+}
+
+// les boutons de la fenêtre : rejoindre l'équipe, se reposer, devenir principal
+function teamWindowBind() {
   /** @param {string} [msg] */
   const redraw = (msg) => {
     save();
@@ -445,6 +441,19 @@ function openTeamWindow(note) {
       }
     }),
   );
+}
+/**
+ * @param {string} p le compagnon principal
+ * @param {typeof COMPANIONS[string]} c
+ */
+function teamWindowSoon(p, c) {
+  const left = Math.max(0, TEAM_LEVEL - level());
+  openModal(`
+    ${gameHeader('🤝 Mon équipe', `${c.name} te donne des indices 💡 dans tous les jeux`)}
+    <div class="tw-list">${teamCard(p, 'main')}</div>
+    <div class="speech tw-soon">🗺️ Au niveau ${TEAM_LEVEL}, ton équipe s'agrandit : d'autres amis t'attendent sur les îles !${left ? ` Encore ${left} niveau${left > 1 ? 'x' : ''}.` : ''}</div>
+  `);
+  bindQuit();
 }
 
 /* ---- branchements ---- */

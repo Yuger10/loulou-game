@@ -22,6 +22,11 @@ import { bindQuit, gameHeader } from '../../screen/index.js';
 /** @typedef {{ id: number, emoji: string, flipped: boolean, matched: boolean }} MemoryCard */
 /** @typedef {{ cards: MemoryCard[] }} MemoryQuestion la question, pour les indices */
 
+/**
+ * Une partie : les cartes, la première carte retournée, le verrou pendant qu'une paire se montre.
+ * @typedef {{ cards: MemoryCard[], pairs: number, first: MemoryCard | null, lock: boolean, q: MemoryQuestion }} MemoryPlay
+ */
+
 function renderMemory() {
   setupLives('memory');
   const dd = gameDiff();
@@ -29,12 +34,8 @@ function renderMemory() {
   const pool = shuffle(Object.values(ALL_ITEMS).map((i) => i.emoji)).slice(0, pairs);
   /** @type {MemoryCard[]} */
   const cards = shuffle([...pool, ...pool]).map((e, i) => ({ id: i, emoji: e, flipped: false, matched: false }));
-  /** @type {MemoryCard | null} */
-  let first = null,
-    lock = false;
-  const cols3 = pairs === 3;
-  /** @type {MemoryQuestion} */
-  const q = { cards }; // la question, pour les indices
+  /** @type {MemoryPlay} */
+  const g = { cards, pairs, first: null, lock: false, q: { cards } }; // q : la question, pour les indices
   // tests : les paires, deux cartes à la fois
   {
     /** @type {Record<string, number[]>} */
@@ -46,67 +47,78 @@ function renderMemory() {
         .map((id) => solSel('.mcard', 'id', id)),
     );
   }
+  memoryDraw(g);
+}
 
-  function render() {
-    openModal(`
-      ${gameHeader('🧠 Jeu de mémoire', 'Retrouve les paires identiques')}
-      ${livesBar()}
-      ${progressDots(cards.filter((c) => c.matched).length / 2, pairs)}
-      <div class="memory-grid ${cols3 ? 'cols3' : ''}">
-        ${cards.map((c) => `<button type="button" class="mcard ${c.matched ? 'matched' : c.flipped ? 'flipped' : ''}" data-id="${c.id}" ${c.matched ? 'disabled' : ''} aria-label="Carte ${c.id + 1}">${c.flipped || c.matched ? c.emoji : ''}</button>`).join('')}
-      </div>
-    `);
-    bindQuit();
-    setHintQuestion('memory', q); // même question à chaque nouveau dessin : les indices restent
-    document.querySelectorAll('.mcard').forEach((el) => {
-      setHandler(el, 'click', () => {
-        const id = Number(el.dataset.id);
-        const card = /** @type {MemoryCard} */ (cards.find((c) => c.id === id)); // la carte touchée existe toujours
-        if (lock || card.flipped || card.matched) return;
-        playSound('tap');
-        card.flipped = true;
-        render();
-        if (!first) {
-          first = card;
-          return;
-        }
-        lock = true;
-        const second = card;
-        const isMatch = first.emoji === second.emoji;
-        setTimeout(
-          () => {
-            const wasMatch = isMatch;
-            // verrouillé (lock) : la première carte est encore posée
-            if (isMatch) {
-              /** @type {MemoryCard} */ (first).matched = true;
-              second.matched = true;
-            } else {
-              /** @type {MemoryCard} */ (first).flipped = false;
-              second.flipped = false;
-            }
-            first = null;
-            lock = false;
-            render();
-            if (wasMatch) {
-              playSound('good');
-              document.querySelectorAll('.mcard.matched').forEach((m) => {
-                m.classList.add('ok-flash');
-                setTimeout(() => m.classList.remove('ok-flash'), 600);
-              });
-            } else {
-              if (loseLife(null)) return; // plus d'essais : mission ratée
-            }
-            if (cards.every((c) => c.matched)) {
-              flashModal('ok');
-              winSoon();
-            }
-          },
-          isMatch ? 350 : 700,
-        );
-      });
-    });
+/** @param {MemoryPlay} g */
+function memoryDraw(g) {
+  const { cards, pairs } = g;
+  openModal(`
+    ${gameHeader('🧠 Jeu de mémoire', 'Retrouve les paires identiques')}
+    ${livesBar()}
+    ${progressDots(cards.filter((c) => c.matched).length / 2, pairs)}
+    <div class="memory-grid ${pairs === 3 ? 'cols3' : ''}">
+      ${cards.map((c) => `<button type="button" class="mcard ${c.matched ? 'matched' : c.flipped ? 'flipped' : ''}" data-id="${c.id}" ${c.matched ? 'disabled' : ''} aria-label="Carte ${c.id + 1}">${c.flipped || c.matched ? c.emoji : ''}</button>`).join('')}
+    </div>
+  `);
+  bindQuit();
+  setHintQuestion('memory', g.q); // même question à chaque nouveau dessin : les indices restent
+  document.querySelectorAll('.mcard').forEach((el) => {
+    setHandler(el, 'click', () => memoryFlip(g, Number(el.dataset.id)));
+  });
+}
+
+/**
+ * Une carte touchée : la première de la paire, ou la seconde.
+ * @param {MemoryPlay} g
+ * @param {number} id
+ */
+function memoryFlip(g, id) {
+  const card = /** @type {MemoryCard} */ (g.cards.find((c) => c.id === id)); // la carte touchée existe toujours
+  if (g.lock || card.flipped || card.matched) return;
+  playSound('tap');
+  card.flipped = true;
+  memoryDraw(g);
+  if (!g.first) {
+    g.first = card;
+    return;
   }
-  render();
+  g.lock = true;
+  const isMatch = g.first.emoji === card.emoji;
+  setTimeout(() => memoryPairShown(g, card, isMatch), isMatch ? 350 : 700);
+}
+
+/**
+ * Après un instant : la paire reste trouvée, ou les deux cartes se retournent.
+ * @param {MemoryPlay} g
+ * @param {MemoryCard} second
+ * @param {boolean} isMatch
+ */
+function memoryPairShown(g, second, isMatch) {
+  // verrouillé (lock) : la première carte est encore posée
+  if (isMatch) {
+    /** @type {MemoryCard} */ (g.first).matched = true;
+    second.matched = true;
+  } else {
+    /** @type {MemoryCard} */ (g.first).flipped = false;
+    second.flipped = false;
+  }
+  g.first = null;
+  g.lock = false;
+  memoryDraw(g);
+  if (isMatch) {
+    playSound('good');
+    document.querySelectorAll('.mcard.matched').forEach((m) => {
+      m.classList.add('ok-flash');
+      setTimeout(() => m.classList.remove('ok-flash'), 600);
+    });
+  } else {
+    if (loseLife(null)) return; // plus d'essais : mission ratée
+  }
+  if (g.cards.every((c) => c.matched)) {
+    flashModal('ok');
+    winSoon();
+  }
 }
 
 /* Indices (v52) : 1. retourner une carte et chercher sa jumelle, en

@@ -312,7 +312,7 @@ function openNewPlayer() {
       ],
       onSave: () => {
         const n = cleanName(f.name);
-        addProfile(n, f.av, f.age, f.gen, f.comp || defaultCompanionFor(f.gen));
+        addProfile(n, f.av, { age: f.age, gender: f.gen, companion: f.comp || defaultCompanionFor(f.gen) });
         playSound('win');
         confetti();
         speak(`Bienvenue ${n} !`);

@@ -151,43 +151,12 @@ function renderShelf() {
   setupLives('shelf');
   const dd = gameDiff();
   const r = shelfBuildRound(dd);
-  if (r.mode === 'find') {
-    const t = r.target;
-    /** @type {ShelfQuestion} */
-    const q = { mode: 'find', color: t.color, shape: t.shape };
-    const say =
-      "Une ligne pour chaque couleur, une colonne pour chaque forme. Quel jouet va dans la case avec le point d'interrogation ?";
-    openModal(`
-      ${gameHeader("🗄️ L'étagère magique", 'Quel jouet va dans la case « ? » ?', say)}
-      ${livesBar()}
-      <div class="shelf-stage">${shelfGridHTML(r)}</div>
-      <div class="num-options shelf-options">
-        ${r.options.map((o) => `<button class="num-btn shelf-opt" data-k="${o.color}-${o.shape}" data-color="${o.color}" data-shape="${o.shape}" aria-label="${toyName(o)}">${shelfToySVG(o.shape, o.color)}</button>`).join('')}
-      </div>
-    `);
-    bindQuit();
-    startTimerIfNeeded('shelf');
-    setSolution([solSel('.shelf-opt', 'k', `${t.color}-${t.shape}`)]);
-    setHintQuestion('shelf', q, { choices: '.shelf-opt' });
-    document.querySelectorAll('.shelf-opt').forEach((btn) => {
-      setHandler(btn, 'click', () => {
-        if (btn.dataset.k === `${t.color}-${t.shape}`) {
-          clearActiveTimer();
-          stepOk(btn);
-          flashModal('ok');
-          const cell = document.querySelector('.shelf-cell.target');
-          if (cell) {
-            cell.innerHTML = shelfToySVG(t.shape, t.color);
-            cell.classList.add('filled');
-          }
-          winSoon();
-        } else loseLife(btn, { onRetry: renderShelf });
-      });
-    });
-    return;
-  }
-  // place / coords : les jouets (ou cadeaux) attendent dans le panier, un par un
-  let i = 0;
+  if (r.mode === 'find') return shelfAskFind(r);
+  shelfAskPlace(r);
+}
+// place / coords : les jouets (ou cadeaux) attendent dans le panier, un par un
+/** @param {ShelfRound} r */
+function shelfAskPlace(r) {
   /** @type {(t: ShelfToy, k: number) => string} */
   const todo = (t, k) =>
     `<span class="shelf-todo${k === 0 ? ' now' : ''}" data-i="${k}" data-color="${t.color}" data-shape="${t.shape}">${r.mode === 'coords' ? GIFT : shelfToySVG(t.shape, t.color)}</span>`;
@@ -206,43 +175,86 @@ function renderShelf() {
   bindQuit();
   startTimerIfNeeded('shelf');
   setSolution(r.steps.map((t) => solSel('.shelf-cell', 'cell', `${t.color}-${t.shape}`)));
-  const ask = () =>
-    setHintQuestion(
-      'shelf',
-      { mode: r.mode, color: r.steps[i].color, shape: r.steps[i].shape },
-      { choices: '.shelf-cell' },
-    );
-  ask();
+  const g = { i: 0 };
+  shelfHintAsk(r, 0);
   document.querySelectorAll('.shelf-cell:not([disabled])').forEach((cell) => {
-    setHandler(cell, 'click', () => {
-      const t = r.steps[i];
-      if (!t || cell.classList.contains('filled')) return;
-      if (cell.dataset.cell !== `${t.color}-${t.shape}`) {
-        loseLife(cell, { onRetry: renderShelf });
-        return;
-      }
-      stepOk(cell);
-      cell.innerHTML = r.mode === 'coords' ? GIFT : shelfToySVG(t.shape, t.color);
-      cell.classList.add('filled');
-      const tray = document.querySelector(`.shelf-todo[data-i="${i}"]`);
-      if (tray) {
-        tray.classList.remove('now');
-        tray.classList.add('done');
-      }
-      i++;
-      const prog = document.getElementById('shelf-progress');
-      if (prog) prog.innerHTML = progressDots(i, r.steps.length);
-      if (i >= r.steps.length) {
+    setHandler(cell, 'click', () => shelfPlaceIn(r, g, cell));
+  });
+}
+const shelfHintAsk = (/** @type {ShelfRound} */ r, /** @type {number} */ i) =>
+  setHintQuestion(
+    'shelf',
+    { mode: r.mode, color: r.steps[i].color, shape: r.steps[i].shape },
+    { choices: '.shelf-cell' },
+  );
+/**
+ * Un jouet posé dans une case ; `g.i` : le jouet attendu.
+ * @param {ShelfRound} r
+ * @param {{ i: number }} g
+ * @param {HTMLElement} cell
+ */
+function shelfPlaceIn(r, g, cell) {
+  const t = r.steps[g.i];
+  if (!t || cell.classList.contains('filled')) return;
+  if (cell.dataset.cell !== `${t.color}-${t.shape}`) {
+    loseLife(cell, { onRetry: renderShelf });
+    return;
+  }
+  stepOk(cell);
+  cell.innerHTML = r.mode === 'coords' ? GIFT : shelfToySVG(t.shape, t.color);
+  cell.classList.add('filled');
+  const tray = document.querySelector(`.shelf-todo[data-i="${g.i}"]`);
+  if (tray) {
+    tray.classList.remove('now');
+    tray.classList.add('done');
+  }
+  const i = ++g.i;
+  const prog = document.getElementById('shelf-progress');
+  if (prog) prog.innerHTML = progressDots(i, r.steps.length);
+  if (i >= r.steps.length) {
+    clearActiveTimer();
+    flashModal('ok');
+    winSoon();
+    return;
+  }
+  const next = document.querySelector(`.shelf-todo[data-i="${i}"]`);
+  if (next) next.classList.add('now');
+  /** @type {HTMLElement} */ (document.getElementById('shelf-ask')).textContent = stepAsk(r, i);
+  speak(stepAsk(r, i));
+  shelfHintAsk(r, i);
+}
+/** @param {Extract<ShelfRound, { mode: 'find' }>} r */
+function shelfAskFind(r) {
+  const t = r.target;
+  /** @type {ShelfQuestion} */
+  const q = { mode: 'find', color: t.color, shape: t.shape };
+  const say =
+    "Une ligne pour chaque couleur, une colonne pour chaque forme. Quel jouet va dans la case avec le point d'interrogation ?";
+  openModal(`
+    ${gameHeader("🗄️ L'étagère magique", 'Quel jouet va dans la case « ? » ?', say)}
+    ${livesBar()}
+    <div class="shelf-stage">${shelfGridHTML(r)}</div>
+    <div class="num-options shelf-options">
+      ${r.options.map((o) => `<button class="num-btn shelf-opt" data-k="${o.color}-${o.shape}" data-color="${o.color}" data-shape="${o.shape}" aria-label="${toyName(o)}">${shelfToySVG(o.shape, o.color)}</button>`).join('')}
+    </div>
+  `);
+  bindQuit();
+  startTimerIfNeeded('shelf');
+  setSolution([solSel('.shelf-opt', 'k', `${t.color}-${t.shape}`)]);
+  setHintQuestion('shelf', q, { choices: '.shelf-opt' });
+  document.querySelectorAll('.shelf-opt').forEach((btn) => {
+    setHandler(btn, 'click', () => {
+      if (btn.dataset.k === `${t.color}-${t.shape}`) {
         clearActiveTimer();
+        stepOk(btn);
         flashModal('ok');
+        const cell = document.querySelector('.shelf-cell.target');
+        if (cell) {
+          cell.innerHTML = shelfToySVG(t.shape, t.color);
+          cell.classList.add('filled');
+        }
         winSoon();
-        return;
-      }
-      const next = document.querySelector(`.shelf-todo[data-i="${i}"]`);
-      if (next) next.classList.add('now');
-      /** @type {HTMLElement} */ (document.getElementById('shelf-ask')).textContent = stepAsk(r, i);
-      speak(stepAsk(r, i));
-      ask();
+      } else loseLife(btn, { onRetry: renderShelf });
     });
   });
 }

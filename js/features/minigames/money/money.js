@@ -47,18 +47,7 @@ function renderMoney() {
   const target = correct.total;
   const item = pickRandom(['🍭', '🧸', '🎈', '🍦', '⚽', '🎁', '🪁', '🍪']);
 
-  const options = [correct];
-  let tries = 0;
-  while (options.length < 3 && tries < 30) {
-    tries++;
-    const p = randomPile(denoms, min + Math.floor(random() * (max - min + 1)));
-    if (p.total !== target) options.push(p);
-  }
-  // au cas où (petites valeurs) on n'a pas trouvé 2 distracteurs différents
-  while (options.length < 3) {
-    options.push({ pile: [pickRandom(denoms)], total: target + options.length });
-  }
-  const shuffled = shuffle(options);
+  const shuffled = shuffle(moneyOptions(denoms, { min, max }, correct));
 
   openModal(`
     ${gameHeader('💰 La monnaie magique', `Quelle pile de pièces vaut ${target} ?`, `Quelle pile de pièces vaut ${target} ?`)}
@@ -88,6 +77,29 @@ function renderMoney() {
       } else loseLife(btn, { onRetry: renderMoney });
     });
   });
+}
+
+/**
+ * La bonne pile et deux piles d'un autre total.
+ * @param {number[]} denoms
+ * @param {{ min: number, max: number }} size le nombre de pièces d'une pile
+ * @param {ReturnType<typeof randomPile>} correct
+ */
+function moneyOptions(denoms, size, correct) {
+  const { min, max } = size;
+  const target = correct.total;
+  const options = [correct];
+  let tries = 0;
+  while (options.length < 3 && tries < 30) {
+    tries++;
+    const p = randomPile(denoms, min + Math.floor(random() * (max - min + 1)));
+    if (p.total !== target) options.push(p);
+  }
+  // au cas où (petites valeurs) on n'a pas trouvé 2 distracteurs différents
+  while (options.length < 3) {
+    options.push({ pile: [pickRandom(denoms)], total: target + options.length });
+  }
+  return options;
 }
 
 // Indices (v52) : 1. additionner les pièces de chaque pile ; 2. le début de

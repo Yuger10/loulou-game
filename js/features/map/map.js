@@ -102,7 +102,6 @@ function renderMap() {
   const hasNext = reached < ids.length - 1;
   el.classList.toggle('sky', !!arch.sky);
   el.dataset.saison = String(saison); // dataset ne garde que du texte (même valeur qu'avant)
-
   el.innerHTML = `
     <div class="sea" aria-hidden="true">
       ${
@@ -124,12 +123,25 @@ function renderMap() {
       <path d="${mapRoutePath(ids, 0, reached)}" class="route-done"/>
       ${hasNext ? `<path d="${mapRoutePath(ids, reached, reached + 1)}" class="route-next"/>` : ''}
     </svg>
-    ${ids
-      .map((id, i) => {
-        const w = WORLDS[id];
-        const locked = !worldUnlocked(id);
-        const here = currentWorld === id;
-        return `<button class="map-island shape-${w.shape} ${here ? 'here' : ''} ${locked ? 'locked' : ''}"
+    ${ids.map(mapIslandHTML).join('')}
+    <span class="boat ${arch.sky ? 'balloon' : ''}" id="map-boat"><span class="boat-av">${avatarHTML(state.avatar, state.look)}</span><span class="boat-ride">${arch.vehicle}</span><span class="boat-team" data-team-heads>${teamHeadsHTML()}</span></span>
+  `;
+  // le véhicule est à l'île courante ; dans l'autre archipel, il attend à la première île
+  const here = ids.includes(currentWorld);
+  placeBoat(here ? currentWorld : ids[0], false);
+  // le bateau vient d'être dessiné dans la carte, juste au-dessus
+  /** @type {HTMLElement} */ (document.getElementById('map-boat')).classList.toggle('parked', !here);
+  renderSamGuide(); // Sam le guide (js/features/companion-team)
+  bindMapIslands(el, ids);
+  renderMapNext(saison);
+}
+
+/** @param {string} id @param {number} i son rang sur la carte */
+function mapIslandHTML(id, i) {
+  const w = WORLDS[id];
+  const locked = !worldUnlocked(id);
+  const here = currentWorld === id;
+  return `<button class="map-island shape-${w.shape} ${here ? 'here' : ''} ${locked ? 'locked' : ''}"
                 data-world="${id}"
                 style="left:${w.map.x}%; top:${w.map.y}%; --d:${i * 0.4}s; --sand:${w.sand}; --land:${w.land};"
                 aria-label="${w.name}${locked ? ', verrouillée' : ''}">
@@ -147,63 +159,49 @@ function renderMap() {
         </span>
         <span class="isle-label"><b>${i + 1}. ${w.short}</b><i>${locked ? `niv. ${w.level}` : '⭐'.repeat(w.diff)}</i></span>
       </button>`;
-      })
-      .join('')}
-    <span class="boat ${arch.sky ? 'balloon' : ''}" id="map-boat"><span class="boat-av">${avatarHTML(state.avatar, state.look)}</span><span class="boat-ride">${arch.vehicle}</span><span class="boat-team" data-team-heads>${teamHeadsHTML()}</span></span>
-  `;
+}
 
-  // le véhicule est à l'île courante ; dans l'autre archipel, il attend à la première île
-  const here = ids.includes(currentWorld);
-  placeBoat(here ? currentWorld : ids[0], false);
-  // le bateau vient d'être dessiné dans la carte, juste au-dessus
-  /** @type {HTMLElement} */ (document.getElementById('map-boat')).classList.toggle('parked', !here);
-  renderSamGuide(); // Sam le guide (js/features/companion-team)
-
+// toucher une île : y aller (en bateau, ou tout de suite depuis l'autre archipel)
+/** @param {HTMLElement} el la carte @param {string[]} ids les îles de l'archipel affiché */
+function bindMapIslands(el, ids) {
   el.querySelectorAll('.map-island').forEach((b) => {
     setHandler(b, 'click', () => {
       playSound('tap');
       // chaque .map-island porte data-world (juste au-dessus)
       const id = /** @type {string} */ (b.dataset.world);
-      if (!worldUnlocked(id)) {
-        setWorld(id);
-        return;
-      }
-      if (id === currentWorld) {
-        switchView('ile');
-        return;
-      }
+      if (!worldUnlocked(id)) setWorld(id);
+      else if (id === currentWorld) switchView('ile');
       // d'un archipel à l'autre : pas de trajet, on y est tout de suite
-      if (!ids.includes(currentWorld)) {
-        landOn(id);
-        return;
-      }
-      sailTo(id);
+      else if (!ids.includes(currentWorld)) landOn(id);
+      else sailTo(id);
     });
   });
+}
 
+/** @param {number} saison */
+function renderMapNext(saison) {
   const info = document.getElementById('map-next');
-  if (info) {
-    // la prochaine étape : une île de cette carte, sinon la prochaine île du
-    // voyage (un autre monde, verrouillé ou déjà ouvert), sinon rien
-    const nxt = nextLockedWorld(saison) || WORLD_ORDER.find((id) => !worldUnlocked(id));
-    if (!nxt) {
-      info.innerHTML = `🏆 Tu as ouvert toutes les îles ! D'autres arriveront bientôt.`;
-    } else if (!archipelagoUnlocked(archipelagoOf(nxt))) {
-      const a = ARCHIPELAGOS[archipelagoOf(nxt)];
-      info.innerHTML = nextStepHTML(a.emoji, 'Prochain monde', a.name, a.level);
-    } else {
-      info.innerHTML = nextStepHTML('🗺️', 'Prochaine île', WORLDS[nxt].name, WORLDS[nxt].level);
-    }
-    info.hidden = false;
-    bindSpeakButtons();
+  if (!info) return;
+  // la prochaine étape : une île de cette carte, sinon la prochaine île du
+  // voyage (un autre monde, verrouillé ou déjà ouvert), sinon rien
+  const nxt = nextLockedWorld(saison) || WORLD_ORDER.find((id) => !worldUnlocked(id));
+  if (!nxt) {
+    info.innerHTML = `🏆 Tu as ouvert toutes les îles ! D'autres arriveront bientôt.`;
+  } else if (!archipelagoUnlocked(archipelagoOf(nxt))) {
+    const a = ARCHIPELAGOS[archipelagoOf(nxt)];
+    info.innerHTML = nextStepHTML(a.emoji, 'Prochain monde', a);
+  } else {
+    info.innerHTML = nextStepHTML('🗺️', 'Prochaine île', WORLDS[nxt]);
   }
+  info.hidden = false;
+  bindSpeakButtons();
 }
 
 /* La prochaine étape sous la carte : son nom, son niveau, les missions qui
    restent, et une barre qui part de la dernière île ouverte (elle se remplit
    à chaque île, au lieu de compter depuis le tout début). */
-/** @param {string} icon @param {string} label @param {string} name @param {number} lvl le niveau qui l'ouvre */
-function nextStepHTML(icon, label, name, lvl) {
+/** @param {string} icon @param {string} label @param {{ name: string, level: number }} to son nom, le niveau qui l'ouvre */
+function nextStepHTML(icon, label, { name, level: lvl }) {
   const from = missionsForLevel(lastOpenedLevel()),
     to = missionsForLevel(lvl);
   const pct = Math.max(0, Math.min(100, Math.round(((state.missions - from) / Math.max(1, to - from)) * 100)));
@@ -240,9 +238,7 @@ function landOn(id) {
 let sailing = false;
 /** @param {string} id */
 function sailTo(id) {
-  if (sailing) {
-    return;
-  }
+  if (sailing) return;
   const ids = worldsOf(archipelagoOf(id));
   const from = ids.indexOf(currentWorld),
     to = ids.indexOf(id);

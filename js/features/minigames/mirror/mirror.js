@@ -72,28 +72,10 @@ function renderMirror() {
   const key = (/** @type {MirrorRound} */ x) => JSON.stringify([x.axis, x.pattern]);
   for (let k = 0; k < 8 && key(r) === mirrorLast; k++) r = mirrorBuildRound(dd);
   mirrorLast = key(r);
-  const { size, axis } = r,
-    half = size / 2;
-  /** @type {Record<string, number>} */
-  const src = {};
-  r.pattern.forEach((x) => (src[`${x.r}-${x.c}`] = x.v));
-  /** @type {Record<string, number>} */
-  const want = {};
-  r.target.forEach((x) => (want[`${x.r}-${x.c}`] = x.v));
-  /** @type {Record<string, number>} */
-  const state = {};
-  let errors = 0;
-  /** @type {(rr: number, cc: number) => boolean} */
-  const isSource = (rr, cc) => (axis === 'v' ? cc < half : rr < half);
-  /** @type {(rr: number, cc: number) => string} */
-  const cellHTML = (rr, cc) => {
-    const k = `${rr}-${cc}`;
-    if (isSource(rr, cc)) {
-      const v = src[k];
-      return `<span class="mr-cell src${v ? ' on' : ''}" data-k="${k}" ${v ? `data-src="${v}" style="background:${MIRROR_INKS[v].fill}"` : ''}>${v ? MIRROR_INKS[v].sym : ''}</span>`;
-    }
-    return `<button class="mr-cell tap" data-k="${k}" aria-label="case ${rr + 1}, ${cc + 1}"></button>`;
-  };
+  const { size, axis } = r;
+  /** @type {MirrorPlay} */
+  const g = { want: {}, state: {}, errors: 0 };
+  r.target.forEach((x) => (g.want[`${x.r}-${x.c}`] = x.v));
   const say = r.two
     ? "Mira a colorié un côté du miroir, en rose et en bleu. Dessine le reflet de l'autre côté : touche une fois pour le rose, deux fois pour le bleu. Puis appuie sur Fini."
     : "Mira a colorié un côté du miroir. Dessine le reflet de l'autre côté de la ligne de paillettes, puis appuie sur Fini.";
@@ -102,7 +84,7 @@ function renderMirror() {
     ${livesBar()}
     <div class="mr-wrap">
       <div class="mr-grid axis-${axis}" id="mr-grid" data-axis="${axis}" data-size="${size}" style="--n:${size}">
-        ${Array.from({ length: size }, (_, rr) => Array.from({ length: size }, (_cell, cc) => cellHTML(rr, cc)).join('')).join('')}
+        ${mirrorCellsHTML(r)}
         <span class="mr-axis" aria-hidden="true"></span>
       </div>
     </div>
@@ -114,44 +96,89 @@ function renderMirror() {
   // la solution : chaque case du reflet, touchée 1 fois (♥) ou 2 fois (★), puis « Fini »
   setSolution([...r.target.flatMap((x) => Array(x.v).fill(`.mr-cell[data-k="${x.r}-${x.c}"]`)), '#mirror-done']);
   setHintQuestion('mirror', { axis, two: r.two }, { choices: '#mirror-done' });
-  const paint = (/** @type {HTMLElement} */ b) => {
-    const v = state[/** @type {string} */ (b.dataset.k)] || 0;
-    b.classList.toggle('on', !!v);
-    b.style.background = v ? MIRROR_INKS[v].fill : '';
-    b.textContent = v ? MIRROR_INKS[v].sym : '';
-  };
   document.querySelectorAll('.mr-cell.tap').forEach((b) =>
     setHandler(b, 'click', () => {
       const k = /** @type {string} */ (b.dataset.k); // chaque case à toucher a son data-k
-      state[k] = ((state[k] || 0) + 1) % (r.two ? 3 : 2);
+      g.state[k] = ((g.state[k] || 0) + 1) % (r.two ? 3 : 2);
       b.classList.remove('wrong');
-      paint(b);
+      mirrorPaint(g, b);
     }),
   );
-  setHandler(document.getElementById('mirror-done'), 'click', (e) => {
-    const keys = new Set([...Object.keys(want), ...Object.keys(state).filter((k) => state[k])]);
-    const wrong = [...keys].filter((k) => (state[k] || 0) !== (want[k] || 0));
-    const done = /** @type {HTMLElement} */ (e.currentTarget);
-    if (!wrong.length) {
-      clearActiveTimer();
-      stepOk(done);
-      flashModal('ok');
-      winSoon();
-      return;
+  setHandler(document.getElementById('mirror-done'), 'click', (e) =>
+    mirrorCheck(g, /** @type {HTMLElement} */ (e.currentTarget)),
+  );
+}
+
+/**
+ * Une partie : le reflet attendu, les cases coloriées par l'enfant, ses erreurs.
+ * @typedef {{ want: Record<string, number>, state: Record<string, number>, errors: number }} MirrorPlay
+ */
+
+/**
+ * Les cases de la grille : le côté colorié par Mira, et les cases à toucher.
+ * @param {MirrorRound} r
+ */
+function mirrorCellsHTML(r) {
+  const { size, axis } = r,
+    half = size / 2;
+  /** @type {Record<string, number>} */
+  const src = {};
+  r.pattern.forEach((x) => (src[`${x.r}-${x.c}`] = x.v));
+  /** @type {(rr: number, cc: number) => boolean} */
+  const isSource = (rr, cc) => (axis === 'v' ? cc < half : rr < half);
+  /** @type {(rr: number, cc: number) => string} */
+  const cellHTML = (rr, cc) => {
+    const k = `${rr}-${cc}`;
+    if (isSource(rr, cc)) {
+      const v = src[k];
+      return `<span class="mr-cell src${v ? ' on' : ''}" data-k="${k}" ${v ? `data-src="${v}" style="background:${MIRROR_INKS[v].fill}"` : ''}>${v ? MIRROR_INKS[v].sym : ''}</span>`;
     }
-    errors++;
-    wrong.forEach((k) => {
-      const c = document.querySelector(`.mr-cell.tap[data-k="${k}"]`);
-      if (c) {
-        c.classList.remove('wrong');
-        void c.offsetWidth;
-        c.classList.add('wrong');
-      }
-    });
-    speak(`Les cases qui clignotent ne sont pas encore le reflet. Regarde leur jumelle, de l'autre côté de la ligne.`);
-    // la 2ᵉ erreur : un nouveau motif ; la 1ʳᵉ : on corrige les cases qui clignotent
-    loseLife(done, errors >= 2 ? { onRetry: renderMirror, disable: false } : { disable: false });
+    return `<button class="mr-cell tap" data-k="${k}" aria-label="case ${rr + 1}, ${cc + 1}"></button>`;
+  };
+  return Array.from({ length: size }, (_, rr) =>
+    Array.from({ length: size }, (_cell, cc) => cellHTML(rr, cc)).join(''),
+  ).join('');
+}
+
+/**
+ * @param {MirrorPlay} g
+ * @param {HTMLElement} b
+ */
+function mirrorPaint(g, b) {
+  const v = g.state[/** @type {string} */ (b.dataset.k)] || 0;
+  b.classList.toggle('on', !!v);
+  b.style.background = v ? MIRROR_INKS[v].fill : '';
+  b.textContent = v ? MIRROR_INKS[v].sym : '';
+}
+
+/**
+ * « Fini ! » : le reflet est-il juste ?
+ * @param {MirrorPlay} g
+ * @param {HTMLElement} done
+ */
+function mirrorCheck(g, done) {
+  const { want, state } = g;
+  const keys = new Set([...Object.keys(want), ...Object.keys(state).filter((k) => state[k])]);
+  const wrong = [...keys].filter((k) => (state[k] || 0) !== (want[k] || 0));
+  if (!wrong.length) {
+    clearActiveTimer();
+    stepOk(done);
+    flashModal('ok');
+    winSoon();
+    return;
+  }
+  g.errors++;
+  wrong.forEach((k) => {
+    const c = document.querySelector(`.mr-cell.tap[data-k="${k}"]`);
+    if (c) {
+      c.classList.remove('wrong');
+      void c.offsetWidth;
+      c.classList.add('wrong');
+    }
   });
+  speak(`Les cases qui clignotent ne sont pas encore le reflet. Regarde leur jumelle, de l'autre côté de la ligne.`);
+  // la 2ᵉ erreur : un nouveau motif ; la 1ʳᵉ : on corrige les cases qui clignotent
+  loseLife(done, g.errors >= 2 ? { onRetry: renderMirror, disable: false } : { disable: false });
 }
 
 // Indices (v52) : 1. ce qu'est un reflet ; 2. par quelle case commencer. Jamais une case.

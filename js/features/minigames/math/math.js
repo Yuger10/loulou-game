@@ -49,13 +49,7 @@ function renderMath() {
   const emoji = pickRandom(MATH_EMOJIS);
   const { a, b, op, result } = makeMathProblem();
 
-  const choices = new Set([result]);
-  while (choices.size < 3) {
-    const delta = Math.floor(random() * 5) - 2;
-    const cand = Math.max(0, result + (delta === 0 ? 1 : delta));
-    choices.add(cand);
-  }
-  const options = shuffle([...choices]);
+  const options = mathChoices(result);
 
   const spoken = op === '+' ? `Combien ça fait, ${a} plus ${b} ?` : `Combien ça fait, ${a} moins ${b} ?`;
 
@@ -63,15 +57,9 @@ function renderMath() {
     ${gameHeader('➕ Opérations magiques', `${a} ${op} ${b} = ?`, spoken)}
     ${livesBar()}
     <div class="math-illustration">
-      <div class="math-group">${Array(a)
-        .fill(emoji)
-        .map((e) => `<span>${e}</span>`)
-        .join('')}</div>
+      <div class="math-group">${mathGroup(a, emoji)}</div>
       <span class="math-op">${op}</span>
-      <div class="math-group">${Array(b)
-        .fill(emoji)
-        .map((e) => `<span>${e}</span>`)
-        .join('')}</div>
+      <div class="math-group">${mathGroup(b, emoji)}</div>
     </div>
     <div class="math-equation">
       <span class="eq-num">${a}</span>
@@ -106,6 +94,26 @@ function renderMath() {
     });
   });
 }
+
+/**
+ * Trois réponses proposées, dont la bonne, toutes proches.
+ * @param {number} result
+ */
+function mathChoices(result) {
+  const choices = new Set([result]);
+  while (choices.size < 3) {
+    const delta = Math.floor(random() * 5) - 2;
+    const cand = Math.max(0, result + (delta === 0 ? 1 : delta));
+    choices.add(cand);
+  }
+  return shuffle([...choices]);
+}
+/** @type {(n: number, emoji: string) => string} */
+const mathGroup = (n, emoji) =>
+  Array(n)
+    .fill(emoji)
+    .map((e) => `<span>${e}</span>`)
+    .join('');
 
 // Indices (v52). Addition : 1. tout compter ensemble ; 2. partir du premier
 // groupe et continuer (« il y en a déjà 4… 5… »). Soustraction : 1. barrer ceux
