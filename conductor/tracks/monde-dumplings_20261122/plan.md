@@ -15,8 +15,8 @@ Trois phases, **une PR chacune**, livrables seules (chaque merge est en producti
 - [x] 4. `js/features/minigames/tens/tens.js`, vérifié en strict par `bun run typecheck` (D27) : `renderTens` (modes `build`, `read`, `make`, `write`), `setSolution`, `setHintQuestion('tens', q, { choices: '.tens-opt' })`, indices T3 par `registerHints`, `registerGame('tens', renderTens)` ; `index.js` ; `tens.css` (panier 2 × 5, boutons de 64 px au moins, 360 px de large sans défilement : jsdom ne fait pas de mise en page, ces mesures se jugent à l'œil sur téléphone, ligne 👤 S11).
 - [x] 5. Branchements : slice `minigame-tens` dans `js/slices.cjs` (CSS dans `css` et `CSS_ORDER`, avant `island.css`) ; `GAME_TYPES`, `GAME_LIST` (🧺 « Les paniers de dix ») et tranche `max: 5` de `AGE_GAME_TYPES` ; import `../features/minigames/tens/index.js` dans `js/app/main.js` (à côté de `nesting`, `main.js:55`) ; ré-export de `tensRound` dans le bloc `difficulty-s3.js` de `js/entities/difficulty/index.js` (comme `nestingRound` dans le bloc `difficulty-s2.js`) ; `PROGRESS_CHEERS.tens` ; `SKILL_GROUPS` groupe `nombres` ; `bun run sync`.
 - [x] 6. `bun run typecheck` vert (strict sur `js/entities`) et `bun run check` vert ; `bun run test companions` vert (indices).
-- [ ] 7. Docs : `README.md` (structure) si besoin ; vérification manuelle de fin de phase (workflow.md) : `bun run start`, vue téléphone, « choisir un jeu », jouer aux paliers 1 et 2 (S11).
-- [ ] 8. Livraison : rebase sur `main`, `bun run release patch "Les paniers de dix (île des Squishy Dumplings, phase 1)"`, section du PRD (idée de la joueuse : ranger dans des boîtes), PR avec `agent-generated: true` et l'étiquette `agent`.
+- [x] 7. (README sans objet : il ne liste pas les mini-jeux ; la vérification manuelle est proposée dans le corps de la PR, Amrou n'étant pas joignable.) Docs : `README.md` (structure) si besoin ; vérification manuelle de fin de phase (workflow.md) : `bun run start`, vue téléphone, « choisir un jeu », jouer aux paliers 1 et 2 (S11).
+- [x] 8. (Pas de livraison à part : une seule PR pour toute la track, journal de décisions n° 3.) Livraison : rebase sur `main`, `bun run release patch "Les paniers de dix (île des Squishy Dumplings, phase 1)"`, section du PRD (idée de la joueuse : ranger dans des boîtes), PR avec `agent-generated: true` et l'étiquette `agent`.
 
 ### Phase 2 : le mini-jeu `order` « La commande du chef » (PR 2)
 
@@ -26,7 +26,7 @@ Trois phases, **une PR chacune**, livrables seules (chaque merge est en producti
 - [x] 12. `js/features/minigames/order/order.js`, vérifié en strict par `bun run typecheck` (D27) : `renderOrder`, dessin SVG d'un dumpling (couleur `SQ_COLORS`, forme `rond` ou `lune`, visage `sourit` ou `dort`), ticket, palette, plateau, indices T5 (`q.phase`), `registerGame('order', renderOrder)` ; `index.js` ; `order.css`.
 - [x] 13. Branchements : slice `minigame-order`, `GAME_TYPES`, `GAME_LIST` (🥟 « La commande du chef »), tranche `max: 5`, import `../features/minigames/order/index.js` dans `js/app/main.js`, ré-export de `orderRound` dans le bloc `difficulty-s3.js` de `js/entities/difficulty/index.js`, `PROGRESS_CHEERS.order`, `SKILL_GROUPS` groupe `logique` ; `bun run sync`.
 - [x] 14. `bun run typecheck` et `bun run check` verts ; vérification manuelle (S12), avec et sans le son.
-- [ ] 15. Livraison comme la tâche 8, par `bun run release patch "La commande du chef (île des Squishy Dumplings, phase 2)"`. Le PRD dit que c'est un jeu de mémoire pour le plaisir, sans promesse d'entraînement du cerveau (D8).
+- [x] 15. (Pas de livraison à part, journal n° 3 ; le PRD dit bien « pour le plaisir », sans promesse.) Livraison comme la tâche 8, par `bun run release patch "La commande du chef (île des Squishy Dumplings, phase 2)"`. Le PRD dit que c'est un jeu de mémoire pour le plaisir, sans promesse d'entraînement du cerveau (D8).
 
 ### Phase 3 : l'île, ses personnages, son histoire et son jeu favori (PR 3)
 
@@ -38,7 +38,7 @@ Prérequis : `saison3-ouverture` livrée (`ARCHIPELAGOS[3]`, `refreshArchipelago
 - [x] 18. Features : thème dans `design-system-v21.css`, paysage dans `ISLE_SCENERY_S3` de `island-s3.js`, musique dans `music.js` ; série dans `squishies.js` (lignes courtes : `SQUISHY_SERIES`, `SQUISHY_SERIES_ORDER`, `SQUISHY_ISLAND_SERIES`) et 6 modèles dans `SQUISHIES_S3` de `squishies-s3.js` ; 6 dessins dans `SQ_ART_S3` de `js/features/squishies/squishy-art-s3.js` sur le modèle de `'tambour-mochi'` (`squishy-art.js:395`), et `SQ_BOX_COLORS.dumplings` dans `squishy-art.js` (`:604`).
 - [x] 19. Histoire : `STORY.dumplings` dans `STORY_S3` de `story-s3.js`, `EPISODES.dumplings` dans `episodes.js` (vérifié en strict par `bun run typecheck`, comme tout `js/`).
 - [x] 20. `bun run typecheck` vert (les entrées de l'île tiennent dans `World`, `Character`, `Item`, `CraftedItem`, `SquishySeries`, `Squishy`, sans typedef étendu) et `bun run check` vert (dont `niveaux`, carte dans le cadre et sans chevauchement) ; vérification manuelle à 360 px : ouverture de l'île, 4 personnages, les 2 jeux, chapitre, un épisode (S13, S14).
-- [ ] 21. Livraison de la dernière PR : rebase sur `main`, `bun run release track "Île des Squishy Dumplings (phase 3)"`, PRD, PR comme la tâche 8 ; `conductor/niveaux.md` (« Dans le jeu, aujourd'hui ») et `conductor/tracks.md` mis à jour.
+- [x] 21. (Fait en v69 : `bun run release track`, une seule PR, en brouillon, empilée sur la PR #110.) Livraison de la dernière PR : rebase sur `main`, `bun run release track "Île des Squishy Dumplings (phase 3)"`, PRD, PR comme la tâche 8 ; `conductor/niveaux.md` (« Dans le jeu, aujourd'hui ») et `conductor/tracks.md` mis à jour.
 
 ## Preuves
 
@@ -46,13 +46,13 @@ Chaque affirmation pointe vers une preuve : commande exacte, code de sortie, che
 
 | Ligne du smoke test | Résultat | Niveau | Preuve |
 |---|---|---|---|
-| S1 | à faire | test-verified | `bun run test dumplings` (exit 0) |
-| S2 | à faire | test-verified | `bun run test games` (exit 0) |
-| S3 | à faire | test-verified | `bun run test smoke` (exit 0) |
-| S4 | à faire | test-verified | `bun run test companions` (exit 0) |
-| S5 à S9 | à faire | test-verified | `bun run test dumplings` (exit 0) |
-| S10 | à faire | test-verified | `bun run test niveaux`, `bun run check` (exit 0) |
-| S11 à S14 | à faire | e2e-verified | compte rendu d'Amrou et de la joueuse dans la PR |
+| S1 | réussi | test-verified | `bun run test dumplings` (exit 0) : `test/dumplings.test.js` (T1), `dumplings-order-ecran` (T4) ; rouge constaté avant le code (« tensRound is not defined », « orderRound is not defined »), puis `prove-red-green.sh --base origin/track/monde-crayons -- bun run test dumplings` : sortie 1 sans le changement, 0 avec |
+| S2 | réussi | test-verified | `bun run test games` (exit 0) : `tens` et `order` gagnés à chaque palier, 3 tirages, contrôles `INDEPENDENT.tens` et `INDEPENDENT.order` |
+| S3 | réussi | test-verified | `bun run test dumplings` (exit 0) : `dumplings-tens-ecran` et `dumplings-order-ecran` (ouverture, bonne réponse, mauvaise réponse puis autre question) ; `bun run test smoke` (exit 0) pour la liste de variété et les 65 personnages (journal n° 5) |
+| S4 | réussi | test-verified | `bun run test companions` (exit 0), et `dumplings-tens-indices`, `dumplings-order-ecran` pour les textes exacts de T3 et T5 |
+| S5 à S9 | réussi | test-verified | `bun run test dumplings` (exit 0) : `dumplings-tens-ecran` (S5), `dumplings` et `dumplings-order-ecran` (S6), `dumplings-ile` (S7), `dumplings-histoire` (S8, S9) |
+| S10 | réussi | test-verified | `bun run test niveaux`, `bun run check`, `bun run verify` (exit 0), et `new-violations.sh` (complexité) : 0 ajoutée |
+| S11 à S14 | en attente d'Amrou | e2e-verified | compte rendu d'Amrou et de la joueuse dans la PR (vérification manuelle décrite dans son corps) |
 
 ## Journal de décisions
 
@@ -62,7 +62,16 @@ En ajout seul : une décision fausse reçoit une nouvelle ligne qui la remplace,
 |---|---|---|---|---|---|
 | 1 | Livrer en 3 PR : `tens`, `order`, puis l'île | politique | brief d'Amrou du 22/11/2026 : chaque mini-jeu seul, puis l'île | spec, en-tête | gardée |
 | 2 | Taille des fichiers : `difficulty-s3.js` et les fichiers `-s3` (personnages, dessins, squishies et leurs dessins, chapitre, paysage) remplacent `rounds-saison3.js` et `characters-art-saison3.js` ; plus d'export de `tierValue` à ajouter (spec D29, qui remplace D28) | politique | la v66.16 a posé le modèle `-s2` et abaissé `max-lines` à 800 ; `tierValue` est déjà exporté par `difficulty.js` | `conductor/checklist-ile.md` (section 2 bis), `.oxlintrc.json:40` | gardée |
+| 3 | Une seule PR pour toute la track, livrée une fois par `bun run release track` (v69) ; aucun `release patch` par phase. Remplace la ligne 1 | Amrou | consigne du lancement du 26/11/2026 : une PR par track | corps de la PR | gardée |
+| 4 | Fichiers courts : `tens` en 4 fichiers (`tens-build`, `tens-draw`, `tens-hints`, `tens`), `order` en 3, et 8 suites `test/dumplings*.test.js` avec le harnais `test/tools/dumplings.js`, au lieu d'un `tens.js` de 450 lignes et d'un seul `test/dumplings.test.js` | politique | le job CI « violations ajoutées » plafonne un nouveau fichier à 300 lignes et une fonction à 50 (checklist mini-jeu) | `new-violations.sh` : 0 ajoutée | gardée |
+| 5 | Les essais propres aux deux jeux (ouverture, bonne et mauvaise réponse) sont dans `dumplings-tens-ecran` et `dumplings-order-ecran`, pas dans `test/smoke.test.js`, qui ne reçoit que la liste de variété et le compteur de personnages | agent | même choix que `monde-crayons` ; `smoke.test.js` est déjà très long | `bun run test dumplings` | à juger par Amrou |
+| 6 | `js/features/hints/index.js` réexporte les types `HintFx` et `HintProvider` (deux `@typedef`, aucun code) | agent | D27 demande ces types, et une slice n'importe que l'`index.js` d'une autre | `bun run typecheck` | gardée |
+| 7 | T3 suivie à la lettre même quand la comptine de l'indice 2 arrive au total : « 10, 20… Continue ! » pour 20 dumplings lus en 2 paniers, « onze, douze… » pour 12 rangés | agent | tous les textes viennent de la spec ; l'écart avec « jamais le total » ne touche que ces deux nombres | `test/dumplings-tens-indices.test.js` | à juger par Amrou |
+| 8 | Repli du tirage de `tens` au palier 1 : le mode `build` (le mode `read` n'existe pas à ce palier) ; en `write` au palier 5, un ordre « mélangé » diffère toujours de l'ordre des centaines aux unités | agent | option la plus simple, jamais atteinte en pratique pour le repli | `test/dumplings-tens.test.js` | gardée |
+| 9 | Dessins (4 personnages, 6 squishies, paysage, dumplings des deux jeux) et mise en page des deux jeux : défauts de l'agent d'après les descriptions de la spec, sans essai sur téléphone | agent | lignes 👤 S11 à S14 | corps de la PR | à juger par Amrou et la joueuse |
 
 ## Écarts et non vérifié
 
-- Lignes 👤 : S11 à S14.
+- Lignes 👤 : S11 à S14. Aucun essai au doigt ni capture d'écran : jsdom ne fait pas de mise en page. Tailles des boutons, tenue à 360 px, lisibilité des dessins et des paniers sont à juger sur téléphone.
+- La PR est empilée sur celle de `monde-crayons` (#110) : tant qu'elle n'est pas mergée, le diff contient ses commits.
+- Le numéro 69 suppose que la v68 de `monde-crayons` arrive sur `main` avant ; si une autre livraison prend 68 ou 69 entre-temps, le numéro se reprend à la mise à jour de la branche (`bun run release` ne se relance pas : corriger `version.js`, puis `bun run sync`).
