@@ -24,14 +24,14 @@ Trois phases, chacune une PR livrable seule (chaque merge est en production une 
 
 ### Phase 2 : le mini-jeu « Mesure les crayons » (`length`) (PR 2)
 
-- [ ] 11. Tests rouges dans `test/crayons.test.js` : lignes 25 à 30 (paliers et tirages).
-- [ ] 12. `lengthRound(dd)` et `LengthRules` dans `difficulty-s3.js` (créé à la phase 1 s'il n'existait pas ; ré-exportés par `js/entities/difficulty/index.js`), `length` dans `NO_TIMER_KINDS` et dans `GENEROUS_KINDS` de `livesFor` ; `lengthBuildRound` dans `js/features/minigames/length/length.js`. Lignes 25 à 30 vertes.
-- [ ] 13. Tests rouges : lignes 31 à 34 (bonne réponse, autre question après une erreur, piège du zéro, indices, tables).
-- [ ] 14. Écran (`renderLength`, crayons et règle en SVG), phrases d'erreur dites après `loseLife` (`if (!loseLife(btn, { disable: false, onRetry: renderLength })) speak(phrase)`, comme `nesting.js:125`), indices (`fx.run` pour les guides, `fx.marks` pour la gomme 1, `fx.glow` et `fx.dim` pour la règle) ; `length.css` ; `index.js` ; import dans `js/app/main.js` ; slice `minigame-length` ; `bun run sync`.
-- [ ] 15. Branchements : `GAME_TYPES`, `GAME_LIST`, `AGE_GAME_TYPES` (`max: 5`), `PROGRESS_CHEERS.length`, groupe `mesures`. Vérifier que `length` ne se confond avec la propriété d'aucun tableau (spec D10). `wc -l` de `length.js` sous 800.
-- [ ] 16. `test/games.test.js` : `INDEPENDENT.length`. Ligne 35 verte.
-- [ ] 17. `bun run typecheck` vert (`LengthRules`, spec D20), `bun run check` vert. Doc : section du PRD. Livraison : `bun run release patch "Mini-jeu Mesure les crayons"`, PR `agent-generated: true`, étiquette `agent`.
-- [ ] 18. Ligne 👤 S9 avec Amrou.
+- [x] 11. Tests rouges dans `test/crayons.test.js` : lignes 25 à 30 (paliers et tirages).
+- [x] 12. `lengthRound(dd)` et `LengthRules` dans `difficulty-s3.js` (créé à la phase 1 s'il n'existait pas ; ré-exportés par `js/entities/difficulty/index.js`), `length` dans `NO_TIMER_KINDS` et dans `GENEROUS_KINDS` de `livesFor` ; `lengthBuildRound` dans `js/features/minigames/length/length.js`. Lignes 25 à 30 vertes.
+- [x] 13. Tests rouges : lignes 31 à 34 (bonne réponse, autre question après une erreur, piège du zéro, indices, tables).
+- [x] 14. Écran (`renderLength`, crayons et règle en SVG), phrases d'erreur dites après `loseLife` (`if (!loseLife(btn, { disable: false, onRetry: renderLength })) speak(phrase)`, comme `nesting.js:125`), indices (`fx.run` pour les guides, `fx.marks` pour la gomme 1, `fx.glow` et `fx.dim` pour la règle) ; `length.css` ; `index.js` ; import dans `js/app/main.js` ; slice `minigame-length` ; `bun run sync`.
+- [x] 15. Branchements : `GAME_TYPES`, `GAME_LIST`, `AGE_GAME_TYPES` (`max: 5`), `PROGRESS_CHEERS.length`, groupe `mesures`. Vérifier que `length` ne se confond avec la propriété d'aucun tableau (spec D10). `wc -l` de `length.js` sous 800.
+- [x] 16. `test/games.test.js` : `INDEPENDENT.length`. Ligne 35 verte.
+- [x] 17. `bun run typecheck` vert (`LengthRules`, spec D20), `bun run check` vert. Doc : section du PRD. Livraison : `bun run release patch "Mini-jeu Mesure les crayons"`, PR `agent-generated: true`, étiquette `agent`. *(Fait, sauf la livraison à part : journal n° 4.)*
+- [ ] 18. Ligne 👤 S9 avec Amrou. **En attente d'Amrou** : tâche humaine, la vérification manuelle est décrite dans le corps de la PR.
 
 ### Phase 3 : l'île (PR 3, après `saison3-ouverture`)
 
@@ -76,6 +76,10 @@ En ajout seul : une décision fausse reçoit une nouvelle ligne qui la remplace,
 | 7 | Le carré `#tr-pad` est redessiné en entier à chaque trait (son conteneur `#tr-board` reçoit le HTML), il n'est pas retouché | agent | `innerHTML` sur un élément SVG manque aux vieux navigateurs (AGENTS.md, compatibilité) ; le contrat DOM de la spec est inchangé | `js/features/minigames/trace/trace.js` (`traceDraw`) | gardée |
 | 8 | Détails non écrits de l'en-tête de `trace` : `.tr-big` (le glyphe), `.tr-word` (mot et emoji), `.tr-count i` (un point par unité du chiffre) ; l'état du jeu lu par les tests s'appelle `traceGame` (`glyphs`, `g`, `s`, `misses`) | agent | la spec décrit l'en-tête sans nommer ses classes ; défaut le plus simple | `test/crayons-trace.test.js` | gardée |
 | 9 | Au dernier trait de la mission, la voix ne dit pas « Bravo, c'est très bien tracé ! » : l'écran de victoire parle tout de suite après | agent | la ligne 16 ne vise qu'un glyphe « qui n'est pas le dernier » ; une phrase de plus serait coupée par la victoire | `js/features/minigames/trace/trace.js` (`traceStrokeDone`) | gardée |
+| 10 | `length` tient en trois fichiers (`length-build.js` les tirages, `length-draw.js` le dessin, `length.js` le jeu) ; la question des indices est `{ b, dim, won }` (`b` = le `LengthBuild` affiché, lu par les tests avec `hint.q.b`) | agent | même raison que la ligne 5 (300 lignes par fichier) ; les critères 31 à 33 lisent la question affichée | `test/crayons-length-ecran.test.js` | gardée |
+| 11 | Le nombre écarté par l'indice 2 de la règle est tiré une fois par question (`q.dim`), pas à chaque lecture des indices | agent | la spec demande « une seule valeur x » ; un tirage à chaque lecture pourrait en désigner deux | `test/crayons-length-indices.test.js` (« le même à chaque lecture ») | gardée |
+| 12 | L'indice 2 des gommes garde `fx.marks` (spec, ligne 33) et écrit aussi le « 1 » dans le dessin (`fx.run`, `text.ln-unit-num`) | agent | l'étiquette `.hint-mark` du moteur est un `span` : dans un `rect` SVG, elle ne se voit pas | capture d'écran de l'agent, `js/features/minigames/length/length.js` | gardée |
+| 13 | Une relance de `length` tire toujours une question différente de la précédente (`lengthLast`, comme `cubesLast`) | agent | ligne 31 : « une **autre** question s'affiche » ; deux tirages de suite peuvent tomber pareil au palier 3 (5 valeurs) | `js/features/minigames/length/length.js` (`lengthNewRound`) | gardée |
 
 ## Écarts et non vérifié
 

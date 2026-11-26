@@ -302,6 +302,21 @@ const INDEPENDENT = {
       )
     );
   },
+  // length : la réponse recalculée à partir de l'écran seul. Comparer : le crayon le plus
+  // long (ou le plus court, selon la question) ; mesurer : la longueur portée par la scène.
+  length(sol) {
+    const st = d.getElementById('ln-stage');
+    const el = d.querySelector(sol[0]);
+    if (sol.length !== 1 || !st || !el) return false;
+    if (st.dataset.mode !== 'compare') return el.matches('button.ln-opt') && el.dataset.v === st.dataset.len;
+    const lens = [...d.querySelectorAll('button.ln-crayon')].map((b) => Number(b.dataset.len));
+    const want = st.dataset.ask === 'long' ? Math.max(...lens) : Math.min(...lens);
+    return (
+      lens.filter((x) => x === want).length === 1 &&
+      el.matches('button.ln-crayon') &&
+      Number(el.dataset.i) === lens.indexOf(want)
+    );
+  },
   // trace : chaque élément porte les points de son trait, et la solution couvre
   // tous les traits de tous les glyphes de la bande, dans l'ordre
   trace(sol) {

@@ -37,4 +37,35 @@ function traceRound(dd) {
   return tierValue(TRACE_TIERS, dd);
 }
 
-export { traceRound };
+/* ---------------------------------------------------------------------
+   MESURE LES CRAYONS (Île des Crayons, saison 3) : grandeurs et mesures
+   (cycle 2 : comparer des longueurs, mesurer avec un étalon, puis avec la
+   règle graduée en centimètres au CE1).
+     palier 1   le plus long (ou le plus court) de 2 crayons alignés
+     palier 2   de 3 crayons décalés : celui qui va le plus loin n'est pas
+                toujours le plus long
+     palier 3   mesurer en gommes (2 à 6), trois réponses voisines
+     palier 4   mesurer en centimètres, le crayon posé au zéro de la règle
+     palier 5   le crayon ne part plus du zéro : il faut compter l'écart
+   `minRatio` : rapport minimal entre deux longueurs voisines ; `trap` : chance
+   du piège du décalage ; `unit` et `cm` : largeur d'une gomme et d'un
+   centimètre dans le dessin (largeur 100). Pas de minuteur.
+   --------------------------------------------------------------------- */
+/** @typedef {{ mode: 'compare' | 'units' | 'ruler', n?: number, aligned?: boolean, minRatio?: number, trap?: number, min?: number, max?: number, choices?: number, unit?: number, cm?: number, offset?: boolean }} LengthRules */
+/** @type {Record<number, LengthRules>} */
+const LENGTH_TIERS = {
+  1: { mode: 'compare', n: 2, aligned: true, minRatio: 1.3 },
+  2: { mode: 'compare', n: 3, aligned: false, minRatio: 1.15, trap: 0.5 },
+  3: { mode: 'units', min: 2, max: 6, choices: 3, unit: 12 },
+  4: { mode: 'ruler', min: 3, max: 12, offset: false, choices: 4, cm: 6 },
+  5: { mode: 'ruler', min: 3, max: 10, offset: true, choices: 4, cm: 6 },
+};
+/**
+ * @param {number} dd le palier de difficulté
+ * @returns {LengthRules}
+ */
+function lengthRound(dd) {
+  return tierValue(LENGTH_TIERS, dd);
+}
+
+export { lengthRound, traceRound };
