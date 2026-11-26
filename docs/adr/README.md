@@ -11,3 +11,4 @@ Format : contexte, décision, options envisagées, conséquences, validation.
 | [0004](./0004-outillage-factory.md) | Outillage de la factory : bun, oxlint, oxfmt, lanceur de tests maison en parallèle | Acceptée (v66 à v66.2) |
 | [0005](./0005-versions-66x.md) | Versions 66.1, 66.2… pour les livraisons sans track (`APP_PATCH`) | Acceptée (v66.1) |
 | [0006](./0006-ecarts-playbook-cothon.md) | Ce que ce projet garde et écarte du playbook cothon | Acceptée |
+| [0007](./0007-voix-enregistree.md) | Voix enregistrée : clips MP3 générés à l'avance par une voix neuronale, cache `lagon-voix`, Web Speech en repli | Proposée (outil et lecteur en place, clips à générer) |
