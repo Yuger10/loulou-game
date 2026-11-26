@@ -6,7 +6,8 @@
 # Branche : la commande tourne dans l'arbre de travail courant, tel quel. Base : dans un worktree git temporaire
 # détaché sur la merge-base de HEAD et <ref> (défaut origin/HEAD, sinon origin/main, sinon main), où les fichiers
 # ignorés par git et les symlinks non suivis de l'arbre courant sont liés par symlink. Les deux depuis la racine.
-# Diagnostics (docs/reference/diagnostics.md) comptés par clé <fichier> TAB <message>, sans numéro de ligne ;
+# Diagnostics (docs/reference/diagnostics.md) comptés par clé <fichier> TAB <message>, sans numéro de ligne ni,
+# en format unix, les nombres isolés du message (mesures) ;
 # les renommages (git diff -M) reportent les clés de la base sur le nouveau nom.
 # Sortie : 0 aucun ajout, 1 au moins un ajout, 2 bloqué. Dépendances : bash, git. Pas de réseau (aucun fetch).
 set -uo pipefail
@@ -27,7 +28,25 @@ records() {
     file="${BASH_REMATCH[1]}" msg="${BASH_REMATCH[4]}"
     for p in "$@"; do file="${file#"$p"/}"; done
     printf '%s\t%s%s%s\n' "$file" "$msg" "$SEP" "$line"
-  done < "$log"
+  done < "$log" | if [[ "$fmt" == unix ]]; then normalize_key; else cat; fi
+}
+
+# Format unix : dans la clé, chaque nombre isolé du message devient « # » (mesures comme « too many lines (385) »
+# ou « complexity of 29 ») ; une violation existante dont la mesure change n'est pas un ajout. La ligne affichée garde
+# le nombre. Les nombres collés à un mot (TS2307, foo2) restent.
+normalize_key() {
+  awk -v S="$SEP" '{
+    i = index($0, S); k = substr($0, 1, i - 1); t = index(k, "\t")
+    m = substr(k, t + 1); out = ""
+    while (match(m, /[0-9]+/)) {
+      pre = substr(m, 1, RSTART - 1); post = substr(m, RSTART + RLENGTH)
+      b = substr(pre, length(pre), 1); a = substr(post, 1, 1)
+      if (b ~ /[A-Za-z_.]/ || a ~ /[A-Za-z_]/) out = out pre substr(m, RSTART, RLENGTH)
+      else out = out pre "#"
+      m = post
+    }
+    print substr(k, 1, t) out m S substr($0, i + 1)
+  }'
 }
 
 compare() {
@@ -172,6 +191,14 @@ EOF
   bash "$self" --base inconnue -- true >/dev/null 2>&1; rc=$?
   (( rc == 2 )) || { echo "selftest : référence introuvable non bloquée (sortie $rc)"; ok=1; }
 
+  # Mesure dans le message (max-lines « (385) ») : raccourcir un fichier déjà trop long n'est pas un ajout.
+  printf 'n=$(wc -l < src/c.js | tr -d " "); echo "src/c.js:1:1: File has too many lines ($n). Maximum allowed is 2. [Error/eslint(max-lines)]"; exit 1\n' > "$dir/size.sh"
+  printf 'const z = 3;\n' >> src/c.js && git commit -qam allonge
+  git checkout -q main && git merge -q --ff-only travail && git checkout -q -b raccourci
+  sed -i.bak '$d' src/c.js && rm -f src/c.js.bak
+  out=$(bash "$self" --base main -- bash "$dir/size.sh" 2>&1); rc=$?
+  (( rc == 0 )) || { echo "selftest : fichier raccourci vu comme un ajout (sortie $rc)"; echo "$out"; ok=1; }
+  git checkout -q -- src/c.js
   printf 'src/z.ts(1,1): error TS2307: Cannot find module '"'"'w'"'"'.\n' >> tsc.out
   out=$(bash "$self" --format tsc -- cat tsc.out 2>&1); rc=$?
   (( rc == 1 )) || { echo "selftest : format tsc, ajout non détecté (sortie $rc)"; echo "$out"; ok=1; }
