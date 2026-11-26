@@ -508,11 +508,10 @@ function sortWrongHint(id, criteria) {
    2 réussites d'affilée avec au plus 1 erreur, jusqu'au plafond de l'âge. */
 /**
  * @param {boolean} ok
- * @param {number} errors
- * @param {number} level
- * @param {unknown} age
+ * @param {{ errors: number, level: number, age: unknown }} box les erreurs, le niveau de la boîte, l'âge
  */
-function recordSorting(ok, errors, level, age) {
+function recordSorting(ok, box) {
+  const { errors, level, age } = box;
   if (!state.skills) state.skills = {};
   const s =
     state.skills.rangement ||
@@ -552,7 +551,7 @@ function sortingDone(errors, level, age) {
   sq.sorted++;
   const paid = day.sorted < SQ_SORT_PAID_MAX;
   day.sorted++;
-  recordSorting(true, errors, level, age);
+  recordSorting(true, { errors, level, age });
   if (paid) addCoins(SQ_SORT_REWARD);
   save();
   return paid ? SQ_SORT_REWARD : 0;

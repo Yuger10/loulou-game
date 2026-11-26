@@ -190,9 +190,9 @@ function renderMap() {
       info.innerHTML = `🏆 Tu as ouvert toutes les îles ! D'autres arriveront bientôt.`;
     } else if (!archipelagoUnlocked(archipelagoOf(nxt))) {
       const a = ARCHIPELAGOS[archipelagoOf(nxt)];
-      info.innerHTML = nextStepHTML(a.emoji, 'Prochain monde', a.name, a.level);
+      info.innerHTML = nextStepHTML(a.emoji, 'Prochain monde', a);
     } else {
-      info.innerHTML = nextStepHTML('🗺️', 'Prochaine île', WORLDS[nxt].name, WORLDS[nxt].level);
+      info.innerHTML = nextStepHTML('🗺️', 'Prochaine île', WORLDS[nxt]);
     }
     info.hidden = false;
     bindSpeakButtons();
@@ -202,8 +202,8 @@ function renderMap() {
 /* La prochaine étape sous la carte : son nom, son niveau, les missions qui
    restent, et une barre qui part de la dernière île ouverte (elle se remplit
    à chaque île, au lieu de compter depuis le tout début). */
-/** @param {string} icon @param {string} label @param {string} name @param {number} lvl le niveau qui l'ouvre */
-function nextStepHTML(icon, label, name, lvl) {
+/** @param {string} icon @param {string} label @param {{ name: string, level: number }} to son nom, le niveau qui l'ouvre */
+function nextStepHTML(icon, label, { name, level: lvl }) {
   const from = missionsForLevel(lastOpenedLevel()),
     to = missionsForLevel(lvl);
   const pct = Math.max(0, Math.min(100, Math.round(((state.missions - from) / Math.max(1, to - from)) * 100)));

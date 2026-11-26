@@ -164,7 +164,7 @@ function renderLevelPill() {
 // la v44 (identique sur tous les appareils, contrairement aux emoji).
 function refreshIslandNav() {
   const w = WORLDS[currentWorld] || WORLDS.lagon;
-  setNavLabel('ile', uiIcon('ile'), w.short || w.name, 'ile');
+  setNavLabel('ile', { icon: uiIcon('ile'), label: w.short || w.name, iconKey: 'ile' });
 }
 
 function renderIslandCard() {
