@@ -1,32 +1,22 @@
 /* ---------- Carte des îles (mer animée, route, bateau) ---------- */
 import { charFace, charsOf } from '../../entities/character/index.js';
 import { avatarHTML } from '../../entities/companion/index.js';
-import { missionsForLevel, missionsUntil, state } from '../../entities/game-state/index.js';
+import { state } from '../../entities/game-state/index.js';
 import {
   ARCHIPELAGOS,
   archipelagoOf,
   archipelagoUnlocked,
   currentWorld,
-  lastOpenedLevel,
-  nextLockedWorld,
   shownArchipelagos,
-  WORLD_ORDER,
   WORLDS,
   worldsOf,
   worldUnlocked,
 } from '../../entities/world/index.js';
 import { on } from '../../shared/lib/index.js';
-import {
-  bindSpeakButtons,
-  playSound,
-  registerView,
-  setHandler,
-  showToast,
-  speak,
-  switchView,
-} from '../../shared/ui/index.js';
+import { playSound, registerView, setHandler, showToast, speak, switchView } from '../../shared/ui/index.js';
 import { renderSamGuide, teamHeadsHTML } from '../companion-team/index.js';
 import { renderIslandCard, renderLevelPill, setWorld } from '../island/index.js';
+import { renderMapNext } from './next-step.js';
 
 /* Les archipels (v55) : le Lagon Magique, le Ciel des Rêves, puis La Grande
    Expédition (carte en vieux papier, avion en papier), chacun sa carte,
@@ -93,6 +83,24 @@ function renderMapTabs(saison) {
   });
 }
 
+// le décor derrière les îles : ciel pastel, vieux papier ou mer
+/** @param {{ sky: boolean, paper: boolean }} arch l'archipel affiché */
+function seaHTML(arch) {
+  if (arch.sky)
+    return `
+      <span class="cloud c1">☁️</span><span class="cloud c2">☁️</span><span class="cloud c3">☁️</span>
+      <span class="sparkle s1">✨</span><span class="sparkle s2">⭐</span><span class="sparkle s3">✨</span>`;
+  if (arch.paper)
+    return `
+      <span class="compass">🧭</span><span class="cloud c1">☁️</span><span class="cloud c2">☁️</span>
+      <span class="sparkle s1">✨</span><span class="sparkle s2">✨</span>`;
+  return `
+      <span class="wave w1"></span><span class="wave w2"></span><span class="wave w3"></span>
+      <span class="cloud c1">☁️</span><span class="cloud c2">☁️</span>
+      <span class="sparkle s1">✨</span><span class="sparkle s2">✨</span>
+      <span class="mapfish f1">🐟</span><span class="mapfish f2">🐠</span>`;
+}
+
 function renderMap() {
   const el = document.getElementById('island-map');
   if (!el) return;
@@ -109,21 +117,7 @@ function renderMap() {
   el.dataset.saison = String(saison); // dataset ne garde que du texte (même valeur qu'avant)
   el.innerHTML = `
     <div class="sea" aria-hidden="true">
-      ${
-        arch.sky
-          ? `
-      <span class="cloud c1">☁️</span><span class="cloud c2">☁️</span><span class="cloud c3">☁️</span>
-      <span class="sparkle s1">✨</span><span class="sparkle s2">⭐</span><span class="sparkle s3">✨</span>`
-          : arch.paper
-            ? `
-      <span class="compass">🧭</span><span class="cloud c1">☁️</span><span class="cloud c2">☁️</span>
-      <span class="sparkle s1">✨</span><span class="sparkle s2">✨</span>`
-            : `
-      <span class="wave w1"></span><span class="wave w2"></span><span class="wave w3"></span>
-      <span class="cloud c1">☁️</span><span class="cloud c2">☁️</span>
-      <span class="sparkle s1">✨</span><span class="sparkle s2">✨</span>
-      <span class="mapfish f1">🐟</span><span class="mapfish f2">🐠</span>`
-      }
+      ${seaHTML(arch)}
     </div>
     <svg class="route" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
       <path d="${route}" class="route-band"/>
@@ -185,44 +179,6 @@ function bindMapIslands(el, ids) {
       else sailTo(id);
     });
   });
-}
-
-/** @param {number} saison */
-function renderMapNext(saison) {
-  const info = document.getElementById('map-next');
-  if (!info) return;
-  // la prochaine étape : une île de cette carte, sinon la prochaine île du
-  // voyage (un autre monde, verrouillé ou déjà ouvert), sinon rien
-  const nxt = nextLockedWorld(saison) || WORLD_ORDER.find((id) => !worldUnlocked(id));
-  if (!nxt) {
-    info.innerHTML = `🏆 Tu as ouvert toutes les îles ! D'autres arriveront bientôt.`;
-  } else if (!archipelagoUnlocked(archipelagoOf(nxt))) {
-    const a = ARCHIPELAGOS[archipelagoOf(nxt)];
-    info.innerHTML = nextStepHTML(a.emoji, 'Prochain monde', a);
-  } else {
-    info.innerHTML = nextStepHTML('🗺️', 'Prochaine île', WORLDS[nxt]);
-  }
-  info.hidden = false;
-  bindSpeakButtons();
-}
-
-/* La prochaine étape sous la carte : son nom, son niveau, les missions qui
-   restent, et une barre qui part de la dernière île ouverte (elle se remplit
-   à chaque île, au lieu de compter depuis le tout début). */
-/** @param {string} icon @param {string} label @param {{ name: string, level: number | null }} step son nom, le niveau qui l'ouvre */
-function nextStepHTML(icon, label, step) {
-  // un archipel annoncé ici a une île, donc un niveau (null : archipel vide, jamais annoncé)
-  const name = step.name,
-    lvl = step.level || 1;
-  const from = missionsForLevel(lastOpenedLevel()),
-    to = missionsForLevel(lvl);
-  const pct = Math.max(0, Math.min(100, Math.round(((state.missions - from) / Math.max(1, to - from)) * 100)));
-  const left = missionsUntil(lvl);
-  const rest = `encore ${left} mission${left > 1 ? 's' : ''}`;
-  const say = `${label} : ${name}, au niveau ${lvl}. ${rest[0].toUpperCase() + rest.slice(1)}.`.replace(/"/g, '&quot;');
-  return `${icon} ${label} : <strong>${name}</strong> au niveau ${lvl} · ${rest}
-        <button type="button" class="btn-speak map-next-speak" data-say="${say}" aria-label="Écouter">🔈</button>
-        <div class="quest-bar" role="progressbar" aria-label="Vers ${name.replace(/"/g, '&quot;')}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${pct}"><i style="width:${pct}%"></i></div>`;
 }
 
 /** @param {string} id l'île @param {boolean} animated */

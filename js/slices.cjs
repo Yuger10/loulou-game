@@ -196,7 +196,12 @@ const SLICES = [
     files: ['js/features/companion-team/team.js', 'js/features/companion-team/specialties.js'],
     css: ['js/features/companion-team/team.css'],
   },
-  { id: 'map', layer: 'features', files: ['js/features/map/map.js'], css: ['js/features/map/map.css'] },
+  {
+    id: 'map',
+    layer: 'features',
+    files: ['js/features/map/next-step.js', 'js/features/map/map.js'],
+    css: ['js/features/map/map.css'],
+  },
   {
     id: 'minigame-engine',
     layer: 'features',
