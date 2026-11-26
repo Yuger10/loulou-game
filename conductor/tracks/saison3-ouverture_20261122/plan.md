@@ -49,21 +49,22 @@ Zone sensible (sauvegarde) : relecture humaine obligatoire.
 - [x] 14. `js/features/map/map.js` : classe `paper` sur `#island-map`, décor vieux papier, `.boat.plane` ; `js/features/map/map.css` : `.island-map.paper`, `.boat.plane`, `.map-tab.paper.active`, sans animation avec `prefers-reduced-motion`.
 - [x] 15. Tests rouges : lignes 22 à 29, dont 24b (carte de Zap, Coffres résolu avant Dumplings).
 - [x] 16. `js/features/story/zap-map.js` : `ZAP_MAP_PIECES`, `zapMapFound()`, `zapMapPieces()`, `zapMapSVG(found, opts)`, `zapMapSay(n)` ; déclaré dans la slice `story` de `js/slices.cjs` ; exports dans `js/features/story/index.js` ; `SEASON_STORY_ART[3]` ; carte de Zap dans le journal ; phrase `zapMapSay` à la victoire d'une énigme de saison 3 ; `js/features/story/story.css` : `.story-zapmap`, `.story-zapmap-row`, `.zm-new`. Puis `bun run sync`.
-- [ ] 17. `bun run typecheck` vert (strict sur `js/entities`, spec D17), `bun run check` vert, puis `bun run verify` (holdout des sauvegardes vert).
-- [ ] 18. Doc : `conductor/niveaux.md` (la saison 3 a son onglet dès sa première île), section du PRD. Livraison : `bun run release track "Ouverture de la saison 3 (cachée jusqu'à la première île)"`, PR avec résumé et risques (migration), `agent-generated: true`, étiquette `agent`.
-- [ ] 19. Lignes 👤 S7 à S10 avec Amrou (S7 à S9 sur une île d'essai locale jamais commitée).
+- [x] 17. `bun run typecheck` vert (strict sur `js/entities`, spec D17), `bun run check` vert, puis `bun run verify` (holdout des sauvegardes vert).
+- [x] 18. Doc : `conductor/niveaux.md` (la saison 3 a son onglet dès sa première île), section du PRD. Livraison : `bun run release track "Ouverture de la saison 3 (cachée jusqu'à la première île)"`, PR avec résumé et risques (migration), `agent-generated: true`, étiquette `agent`.
+- [ ] 19. Lignes 👤 S7 à S10 avec Amrou (S7 à S9 sur une île d'essai locale jamais commitée). **En attente d'Amrou** : tâche humaine, la vérification manuelle est décrite dans le corps de la PR.
 
 ## Preuves
 
 | Ligne du smoke test | Résultat | Niveau | Preuve |
 |---|---|---|---|
-| S1 | à faire | test-verified | `bun run test saison3` (exit 0) |
-| S2 | à faire | test-verified | `bun run test saison3` (exit 0) |
-| S3 | à faire | test-verified | `bun run test saison3` (exit 0) |
-| S4 | à faire | test-verified | `bun run test saison3` (exit 0) |
-| S5 | à faire | test-verified | `bun run test saison2`, `bun run test niveaux` (exit 0) |
-| S6 | à faire | test-verified | `bun run verify` (exit 0) |
-| S7 à S10 | à faire | runtime-verified | retour d'Amrou dans la PR |
+| S1 | fait | test-verified | `bun run test saison3` (exit 0, 71 vérifications) ; rouge sans le changement (sortie 1), vert avec (`prove-red-green.sh --base origin/conductor/specs-validees`) |
+| S2 | fait | test-verified | `bun run test saison3` (exit 0, 71 vérifications) ; rouge sans le changement (sortie 1), vert avec (`prove-red-green.sh --base origin/conductor/specs-validees`) |
+| S3 | fait | test-verified | `bun run test saison3` (exit 0, 71 vérifications) ; rouge sans le changement (sortie 1), vert avec (`prove-red-green.sh --base origin/conductor/specs-validees`) |
+| S4 | fait | test-verified | `bun run test saison3` (exit 0, 71 vérifications) ; rouge sans le changement (sortie 1), vert avec (`prove-red-green.sh --base origin/conductor/specs-validees`) |
+| S5 | fait | test-verified | `bun run test saison2`, `bun run test niveaux` (exit 0) |
+| S5b | fait | test-verified | juste après le commit 7 bis (`38391bb`) : `git show --numstat HEAD` donne `2 0` pour les six fichiers lecteurs ; `wc -l` : 800, 761, 632, 757, 683, 642 ; `git grep characters-art-s3` trouve les quatre fichiers ; `git grep -o -- '-s3\.js' sw.js \| wc -l` vaut 6 ; `node test/tools/sensitive.js --selftest` (exit 0, 10 cas) |
+| S6 | fait | test-verified | `bun run verify` (exit 0 : 33 suites, holdout des sauvegardes vert) |
+| S7 à S10 | en attente d'Amrou | runtime-verified | retour d'Amrou dans la PR |
 
 ## Journal de décisions
 
@@ -75,7 +76,16 @@ En ajout seul : une décision fausse reçoit une nouvelle ligne qui la remplace,
 | 2 | La tâche 7 bis prépare les six fichiers `-s3` vides (modèle `-s2`) au lieu d'extraire les aides de dessin dans `characters-art-kit.js` avec une capture des dessins : remplace l'ancienne tâche 7 bis (spec D18, remplacée par D19) | défaut (Claude), à juger à la revue par Amrou | la v66.16 a posé le modèle `-s2` (`season2Art(ART, kit)`) et `max-lines` à 800 ; aucun dessin ne bouge, la capture et l'entrée `scripts.selftest` de `package.json` ne servent plus | spec D19, `conductor/checklist-ile.md` section 2 bis | gardée |
 | 3 | Toucher `characters-art.js` (deux lignes : import et appel de `season3Art`) et créer `characters-art-s3.js` est autorisé : AGENTS.md demande une « demande explicite », c'est celle d'Amrou du 22/11/2026 (refonte de la saison 3 avec ses îles et leurs personnages, cette refonte de specs) | Amrou (demande du 22/11/2026, confirmée par sa revue de la PR #80 qui porte ces specs) | les deux lignes ne changent aucun dessin ; la PR de la phase 1 est de toute façon relue par Amrou (CODEOWNERS, étiquette `human:approved` pour `.github/`) | spec D19, spec « Zones sensibles touchées » | gardée |
 | 4 | Le prologue garde le `@typedef` existant `StoryPrologue` (`story.js:59`), étendu sur place, au lieu d'un nouveau `SeasonPrologue` | défaut (Claude), à juger à la revue | change le moins de code : une ligne, ses deux références restent | spec D17 (6) | gardée |
+| 5 | Une seule PR pour toute la track, livrée par un seul `bun run release track` (v67) : pas de PR 1 ni de `release patch` intermédiaire. Remplace la ligne 1 | Amrou (consigne du 26/11/2026, relayée par le workflow) | sa consigne prime sur le découpage écrit dans la spec et le plan | corps de la PR | appliquée |
+| 6 | `refreshArchipelagos()`, `shownArchipelagos()`, `ARCHIPELAGOS` et le `@typedef` `Archipelago` vivent dans `js/entities/world/availability.js`, pas dans `worlds.js` comme l'écrit la spec | défaut (Claude) | c'est là que le code des archipels vit sur `main` (les numéros de ligne de la spec datent d'avant ce découpage) ; même slice, mêmes exports par `index.js` | `js/entities/world/availability.js` | à juger à la revue |
+| 7 | `test/licornes.test.js:526` (`m.v === 9` dans « migration v8 → v9 ») passe à `m.v === 10`, en plus de la ligne 499 que la spec liste (D16) | défaut (Claude), à juger par Amrou | `migrate()` pose toujours `v = SAVE_VERSION` : avec la version 10, cette assertion ne peut plus être vraie ; même vérification, même force. La spec dit « aucun autre » : c'est un oubli de la spec | `bun run test licornes` rouge avant, vert après | à juger à la revue |
+| 8 | `story.js` reste sous le plafond (778 lignes) : la ligne « carte de Zap » du journal (`zapMapRowHTML`) vit dans `zap-map.js` ; `STORY_PROLOGUES[3]` reste dans `story.js` | défaut (Claude) | règle de la ligne 34 de la spec ; `island-view.js` 463, `map.js` 305, `availability.js` 136, `state.js` 480, `characters.js` 800 | `wc -l`, `bun run lint` | gardée |
+| 9 | Sans île nouvelle mais avec une ouverture due, si l'île nouvellement ouverte n'est pas de la saison due, `checkNewIsland` la montre d'abord et l'ouverture de saison reste due au lancement suivant | défaut (Claude) | cas hors spec (ne peut arriver qu'avec une sauvegarde bricolée) ; une seule séquence à la fois pour l'enfant | `js/features/island/island-view.js` (`maybeSeasonOpening`) | à juger à la revue |
+| 10 | Dessin de la carte de Zap : cadre de 180 sur 88 dans le `viewBox`, bords intérieurs en zigzag, contour des morceaux trouvés redessiné par-dessus (`.zm-edge`) pour que les tirets d'un voisin manquant ne le recouvrent pas ; `.zm-new` fait pulser le remplissage | défaut (Claude) | détails non écrits : option la plus simple | `js/features/story/zap-map.js`, `js/features/story/story.css` | à juger par Amrou (S9) |
+| 11 | La version 67 et `SAVE_VERSION` 10 sont « les suivants sur `main` » au 26/11/2026 ; la PR #103 (`bilan-parents`) prend aussi v67 | défaut | le numéro s'attribue à la livraison : la seconde PR mergée se renumérote après mise à jour sur `main` | `git fetch origin`, `gh pr list` | à trancher au merge |
 
 ## Écarts et non vérifié
 
 - Le rendu réel (écran d'ouverture, carte vieux papier, carte de Zap) ne se voit pas en production avant la première île : il se juge sur une île d'essai locale (S7 à S9).
+- La PR part de `origin/conductor/specs-validees` (PR #102, pas encore mergée) : tant que #102 n'est pas dans `main`, le diff de la PR contient aussi son commit.
+- S7 à S10 (👤) ne sont pas vérifiés : rendu réel de l'écran d'ouverture, de la carte vieux papier et de la carte de Zap. Seule la carte de Zap a été regardée une fois par l'agent, rendue en image hors du jeu.
