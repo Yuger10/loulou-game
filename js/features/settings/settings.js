@@ -23,26 +23,21 @@ import { renderProfile, renderSoundBtn } from '../profile/index.js';
 /**
  * @param {SoundKey} key
  * @param {string} label
- * @param {boolean} on
- * @param {boolean} [disabled]
+ * @param {{ on: boolean, disabled?: boolean }} st
  */
-function rgSwitch(key, label, on, disabled) {
+function rgSwitch(key, label, { on, disabled }) {
   return `<button type="button" class="rg-switch" role="switch" data-sound="${key}" aria-checked="${on}"${disabled ? ' aria-disabled="true"' : ''}>
     <span class="rg-switch-label">${label}</span><span class="rg-switch-track" aria-hidden="true"><span class="rg-switch-knob"></span></span>
   </button>`;
 }
 
-function renderSettings() {
-  const el = document.getElementById('reglages-content');
-  if (!el) return;
+// la carte « Moi » : avatar, prénom, âge, compagnon, équipe
+function meCardHTML() {
   /** @type {Partial<import('../../entities/player/index.js').Profile>} */
   const p = currentProfile() || {};
   /** @type {Partial<import('../../entities/companion/index.js').Companion>} */
   const comp = COMPANIONS[companionOf(p)] || {};
-  const vol = typeof state.soundVolume === 'number' ? state.soundVolume : 80;
-  el.innerHTML = `
-    ${backupDue() ? `<p class="rg-reminder">💾 Pense à faire une sauvegarde de la partie (section Parents).</p>` : ''}
-    <section class="rg-card rg-me" aria-labelledby="rg-me-title">
+  return `<section class="rg-card rg-me" aria-labelledby="rg-me-title">
       <h3 id="rg-me-title">🙂 Moi</h3>
       <div class="rg-me-row">
         <span class="rg-me-av">${avatarHTML(state.avatar, state.look)}</span>
@@ -50,19 +45,26 @@ function renderSettings() {
         <button type="button" class="btn-small" id="rg-edit">✏️ Modifier</button>
       </div>
       <div class="rg-team"><span>Mon compagnon, mon équipe</span><button type="button" class="icon-btn team-btn" data-team-slot></button></div>
-    </section>
-    <section class="rg-card" aria-labelledby="rg-sound-title">
+    </section>`;
+}
+
+function soundCardHTML() {
+  const vol = typeof state.soundVolume === 'number' ? state.soundVolume : 80;
+  return `<section class="rg-card" aria-labelledby="rg-sound-title">
       <h3 id="rg-sound-title">🔊 Son</h3>
-      ${rgSwitch('sound', 'Bruitages', !!state.sound)}
-      ${rgSwitch('voice', 'Voix', !!(state.sound && state.voice), !state.sound)}
-      ${rgSwitch('music', 'Musique', !!(state.sound && state.music), !state.sound)}
+      ${rgSwitch('sound', 'Bruitages', { on: !!state.sound })}
+      ${rgSwitch('voice', 'Voix', { on: !!(state.sound && state.voice), disabled: !state.sound })}
+      ${rgSwitch('music', 'Musique', { on: !!(state.sound && state.music), disabled: !state.sound })}
       <div class="ps-volume">
         <label for="rg-volume">Volume</label>
         <input type="range" id="rg-volume" min="0" max="100" step="5" value="${vol}">
         <output id="rg-volume-v" for="rg-volume">${vol} %</output>
       </div>
-    </section>
-    <section class="rg-card" aria-labelledby="rg-players-title">
+    </section>`;
+}
+
+function playersCardHTML() {
+  return `<section class="rg-card" aria-labelledby="rg-players-title">
       <h3 id="rg-players-title">👥 Joueurs</h3>
       <button type="button" class="btn-small ghost" id="rg-switch">🔁 Changer de joueur</button>
       <div class="rg-players" id="rg-players">
@@ -79,7 +81,17 @@ function renderSettings() {
         <button type="button" class="btn-small" id="rg-add">➕ Ajouter un joueur</button>
         <button type="button" class="btn-small ghost" id="rg-modes">🎲 Jouer à plusieurs</button>
       </div>
-    </section>
+    </section>`;
+}
+
+function renderSettings() {
+  const el = document.getElementById('reglages-content');
+  if (!el) return;
+  el.innerHTML = `
+    ${backupDue() ? `<p class="rg-reminder">💾 Pense à faire une sauvegarde de la partie (section Parents).</p>` : ''}
+    ${meCardHTML()}
+    ${soundCardHTML()}
+    ${playersCardHTML()}
     <section class="rg-card rg-parents" aria-labelledby="rg-parents-title">
       <h3 id="rg-parents-title">🔒 Parents</h3>
       <p class="bk-help">Réservé aux adultes : une petite multiplication à résoudre.</p>
@@ -112,8 +124,9 @@ function setSound(key) {
   showToast(soundModeLabel());
 }
 
+// les interrupteurs et le volume
 /** @param {HTMLElement} el */
-function bindSettings(el) {
+function bindSoundCard(el) {
   el.querySelectorAll('[data-sound]').forEach((b) =>
     setHandler(b, 'click', () => {
       if (b.getAttribute('aria-disabled') === 'true') {
@@ -131,6 +144,11 @@ function bindSettings(el) {
     /** @type {HTMLElement} */ (el.querySelector('#rg-volume-v')).textContent = vol.value + ' %';
     playSound('pop'); // une note pour entendre le nouveau volume
   });
+}
+
+/** @param {HTMLElement} el */
+function bindSettings(el) {
+  bindSoundCard(el);
   setHandler(el.querySelector('#rg-edit'), 'click', () => {
     playSound('tap');
     openPlayerSettings(/** @type {string} */ (profiles.current)); // un joueur courant existe toujours (loadProfiles)

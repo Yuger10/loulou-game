@@ -76,25 +76,153 @@ const JIGSAW_DETAILS = `
     <path d="M-20 2 C-20 -16 20 -16 20 2 Z" fill="#E5484D"/><circle cx="-8" cy="-6" r="3" fill="#fff"/><circle cx="6" cy="-9" r="2.6" fill="#fff"/><circle cx="12" cy="-2" r="2.2" fill="#fff"/></g>`;
 
 // Un morceau (ou l'image entière) : une fenêtre sur le symbole #jg-art
-/**
- * @param {number} x
- * @param {number} y
- * @param {number} w
- * @param {number} h
- * @param {string} [cls]
- */
-function jigsawViewSVG(x, y, w, h, cls) {
+/** @param {{ x: number, y: number, w: number, h: number }} b @param {string} [cls] */
+function jigsawViewSVG({ x, y, w, h }, cls) {
   return `<svg class="${cls || 'jg-svg'}" viewBox="${x} ${y} ${w} ${h}" preserveAspectRatio="none" aria-hidden="true"><use href="#jg-art" width="${JIGSAW_W}" height="${JIGSAW_H}"/></svg>`;
 }
+const JIGSAW_FULL = { x: 0, y: 0, w: JIGSAW_W, h: JIGSAW_H };
 
 /** @type {{ cols: number, rows: number, order: number[] } | null} */
 // oxlint-disable-next-line no-unused-vars -- lu par les tests, par son nom : { cols, rows, order }
 let jigsawState = null;
 
+/**
+ * Une partie en cours : morceaux posés, morceau choisi, glisser qui vient de finir.
+ * @typedef {{ n: number, piece: (i: number) => string, placed: number, selected: HTMLButtonElement | null, justDragged: boolean }} JigsawGame
+ */
+
+/**
+ * @param {ReturnType<typeof jigsawRound>} r
+ * @param {{ order: number[], piece: (i: number) => string, art: string }} v ordre de la réserve, dessin d'un morceau, image
+ */
+function jigsawHTML(r, { order, piece, art }) {
+  const n = r.cols * r.rows;
+  const hint = r.ghost ? 'Remets les morceaux à leur place' : "Refais l'image du modèle";
+  // réserve compacte : tous les morceaux tiennent sur 1 ou 2 rangées sous le cadre
+  const tcols = n <= 4 ? n : Math.ceil(n / 2);
+  return `
+    ${gameHeader('🖼️ Le puzzle', hint, r.ghost ? "Remets chaque morceau à sa place pour reconstruire l'image" : "Refais l'image du modèle")}
+    ${livesBar()}
+    <svg class="jg-defs" width="0" height="0" aria-hidden="true" focusable="false"><defs><symbol id="jg-art" viewBox="0 0 ${JIGSAW_W} ${JIGSAW_H}">${art}</symbol></defs></svg>
+    <div class="jg-wrap" style="--cols:${r.cols}; --rows:${r.rows}; --tcols:${tcols};">
+      <div class="jg-top">
+        ${r.ghost ? '' : `<div class="jg-model" aria-label="Le modèle">${jigsawViewSVG(JIGSAW_FULL, 'jg-svg')}<span>Modèle</span></div>`}
+        <div class="jg-progress">${progressDots(0, n)}</div>
+      </div>
+      <div class="jg-board">
+        ${r.ghost ? `<div class="jg-ghost" style="opacity:${r.ghost}">${jigsawViewSVG(JIGSAW_FULL, 'jg-svg')}</div>` : ''}
+        ${Array.from({ length: n }, (_, i) => `<button type="button" class="jg-slot" data-s="${i}" aria-label="Case, ligne ${Math.floor(i / r.cols) + 1}, colonne ${(i % r.cols) + 1}"></button>`).join('')}
+      </div>
+      <p class="jg-tip">👆 Glisse un morceau, ou touche-le puis touche sa case</p>
+      <div class="jg-tray">
+        ${order.map((p) => `<button type="button" class="jg-piece" data-p="${p}" aria-label="Morceau de l'image">${piece(p)}</button>`).join('')}
+      </div>
+    </div>
+  `;
+}
+
+/** @param {JigsawGame} g */
+function jigsawClearSel(g) {
+  if (g.selected) g.selected.classList.remove('sel');
+  g.selected = null;
+}
+
+/** @param {JigsawGame} g @param {HTMLButtonElement} pieceEl @param {HTMLElement | null} slotEl */
+function jigsawTryPlace(g, pieceEl, slotEl) {
+  if (!pieceEl || !slotEl || slotEl.classList.contains('filled') || pieceEl.classList.contains('used')) return;
+  const p = Number(pieceEl.dataset.p),
+    s = Number(slotEl.dataset.s);
+  jigsawClearSel(g);
+  if (p !== s) {
+    pieceEl.classList.remove('lifted');
+    loseLife(slotEl, { disable: false });
+    return;
+  }
+  slotEl.innerHTML = g.piece(p);
+  slotEl.classList.add('filled');
+  slotEl.setAttribute('aria-label', 'Morceau bien placé');
+  pieceEl.classList.add('used');
+  pieceEl.disabled = true;
+  pieceEl.innerHTML = '';
+  g.placed++;
+  const prog = document.querySelector('.jg-progress');
+  if (prog) prog.innerHTML = progressDots(g.placed, g.n);
+  stepOk(slotEl);
+  if (g.placed < g.n) return;
+  /** @type {HTMLElement} */ (document.querySelector('.jg-board')).classList.add('done');
+  flashModal('ok');
+  winSoon(WIN_DELAY_LONG);
+}
+
+// glisser du doigt (ou à la souris) un morceau jusqu'à une case
+/** @param {JigsawGame} g @param {HTMLButtonElement} pc @param {PointerEvent} e */
+function jigsawDrag(g, pc, e) {
+  if (pc.classList.contains('used') || (e.pointerType === 'mouse' && e.button !== 0)) return;
+  const sx = e.clientX,
+    sy = e.clientY;
+  let ghost = /** @type {HTMLElement | null} */ (null),
+    box = /** @type {DOMRect | null} */ (null);
+  try {
+    pc.setPointerCapture(e.pointerId);
+  } catch {
+    // capture du pointeur refusée par certains navigateurs : le glisser marche quand même
+  }
+  /** @param {PointerEvent} ev */
+  const move = (ev) => {
+    if (!ghost && Math.hypot(ev.clientX - sx, ev.clientY - sy) > 8) {
+      box = pc.getBoundingClientRect();
+      ghost = /** @type {HTMLElement} */ (pc.cloneNode(true));
+      ghost.classList.add('jg-drag');
+      ghost.classList.remove('sel');
+      ghost.style.width = box.width + 'px';
+      ghost.style.height = box.height + 'px';
+      document.body.appendChild(ghost);
+      pc.classList.add('lifted');
+      jigsawClearSel(g);
+    }
+    if (!ghost) return;
+    // box est mesurée en même temps que le fantôme
+    ghost.style.left = ev.clientX - /** @type {DOMRect} */ (box).width / 2 + 'px';
+    ghost.style.top = ev.clientY - /** @type {DOMRect} */ (box).height / 2 + 'px';
+  };
+  /** @param {PointerEvent} ev */
+  const end = (ev) => {
+    pc.removeEventListener('pointermove', move);
+    pc.removeEventListener('pointerup', end);
+    pc.removeEventListener('pointercancel', end);
+    if (!ghost) return;
+    ghost.remove();
+    g.justDragged = true;
+    setTimeout(() => (g.justDragged = false), 350);
+    pc.classList.remove('lifted');
+    if (ev.type === 'pointercancel') return;
+    const target = document.elementFromPoint(ev.clientX, ev.clientY);
+    const slot = target && target.closest && target.closest('.jg-slot');
+    if (slot) jigsawTryPlace(g, pc, slot);
+  };
+  pc.addEventListener('pointermove', move);
+  pc.addEventListener('pointerup', end);
+  pc.addEventListener('pointercancel', end);
+}
+
+/** @param {JigsawGame} g @param {HTMLButtonElement} pc */
+function jigsawPickPiece(g, pc) {
+  if (g.justDragged) {
+    g.justDragged = false;
+    return;
+  }
+  if (pc.classList.contains('used')) return;
+  playSound('tap');
+  const again = g.selected === pc;
+  jigsawClearSel(g);
+  if (again) return;
+  g.selected = pc;
+  pc.classList.add('sel');
+}
+
 function renderJigsaw() {
   setupLives('jigsaw');
-  const dd = gameDiff();
-  const r = jigsawRound(dd);
+  const r = jigsawRound(gameDiff());
   const n = r.cols * r.rows;
   const pw = JIGSAW_W / r.cols,
     ph = JIGSAW_H / r.rows;
@@ -106,149 +234,26 @@ function renderJigsaw() {
   let order = shuffle(Array.from({ length: n }, (_, i) => i));
   if (order.every((p, i) => p === i)) order = order.slice(1).concat(order[0]);
   jigsawState = { cols: r.cols, rows: r.rows, order };
-  const piece = (/** @type {number} */ i) => jigsawViewSVG((i % r.cols) * pw, Math.floor(i / r.cols) * ph, pw, ph);
-  const hint = r.ghost ? 'Remets les morceaux à leur place' : "Refais l'image du modèle";
-  // réserve compacte : tous les morceaux tiennent sur 1 ou 2 rangées sous le cadre
-  const tcols = n <= 4 ? n : Math.ceil(n / 2);
-  openModal(`
-    ${gameHeader('🖼️ Le puzzle', hint, r.ghost ? "Remets chaque morceau à sa place pour reconstruire l'image" : "Refais l'image du modèle")}
-    ${livesBar()}
-    <svg class="jg-defs" width="0" height="0" aria-hidden="true" focusable="false"><defs><symbol id="jg-art" viewBox="0 0 ${JIGSAW_W} ${JIGSAW_H}">${jigsawPicture(worldId, compId)}</symbol></defs></svg>
-    <div class="jg-wrap" style="--cols:${r.cols}; --rows:${r.rows}; --tcols:${tcols};">
-      <div class="jg-top">
-        ${r.ghost ? '' : `<div class="jg-model" aria-label="Le modèle">${jigsawViewSVG(0, 0, JIGSAW_W, JIGSAW_H, 'jg-svg')}<span>Modèle</span></div>`}
-        <div class="jg-progress">${progressDots(0, n)}</div>
-      </div>
-      <div class="jg-board">
-        ${r.ghost ? `<div class="jg-ghost" style="opacity:${r.ghost}">${jigsawViewSVG(0, 0, JIGSAW_W, JIGSAW_H, 'jg-svg')}</div>` : ''}
-        ${Array.from({ length: n }, (_, i) => `<button type="button" class="jg-slot" data-s="${i}" aria-label="Case, ligne ${Math.floor(i / r.cols) + 1}, colonne ${(i % r.cols) + 1}"></button>`).join('')}
-      </div>
-      <p class="jg-tip">👆 Glisse un morceau, ou touche-le puis touche sa case</p>
-      <div class="jg-tray">
-        ${order.map((p) => `<button type="button" class="jg-piece" data-p="${p}" aria-label="Morceau de l'image">${piece(p)}</button>`).join('')}
-      </div>
-    </div>
-  `);
+  const piece = (/** @type {number} */ i) =>
+    jigsawViewSVG({ x: (i % r.cols) * pw, y: Math.floor(i / r.cols) * ph, w: pw, h: ph });
+  openModal(jigsawHTML(r, { order, piece, art: jigsawPicture(worldId, compId) }));
   bindQuit();
   // tests : toucher chaque morceau, puis sa case
   setSolution(Array.from({ length: n }, (_, i) => [solSel('.jg-piece', 'p', i), solSel('.jg-slot', 's', i)]).flat());
   setHintQuestion('jigsaw', { cols: r.cols, rows: r.rows, ghost: !!r.ghost });
-
-  let placed = 0,
-    selected = /** @type {HTMLButtonElement | null} */ (null),
-    justDragged = false;
-  const clearSel = () => {
-    if (selected) selected.classList.remove('sel');
-    selected = null;
-  };
-  /**
-   * @param {HTMLButtonElement} pieceEl
-   * @param {HTMLElement | null} slotEl
-   */
-  const tryPlace = (pieceEl, slotEl) => {
-    if (!pieceEl || !slotEl || slotEl.classList.contains('filled') || pieceEl.classList.contains('used')) return;
-    const p = Number(pieceEl.dataset.p),
-      s = Number(slotEl.dataset.s);
-    clearSel();
-    if (p === s) {
-      slotEl.innerHTML = piece(p);
-      slotEl.classList.add('filled');
-      slotEl.setAttribute('aria-label', 'Morceau bien placé');
-      pieceEl.classList.add('used');
-      pieceEl.disabled = true;
-      pieceEl.innerHTML = '';
-      placed++;
-      const prog = document.querySelector('.jg-progress');
-      if (prog) prog.innerHTML = progressDots(placed, n);
-      stepOk(slotEl);
-      if (placed >= n) {
-        /** @type {HTMLElement} */ (document.querySelector('.jg-board')).classList.add('done');
-        flashModal('ok');
-        winSoon(WIN_DELAY_LONG);
-      }
-    } else {
-      pieceEl.classList.remove('lifted');
-      loseLife(slotEl, { disable: false });
-    }
-  };
+  /** @type {JigsawGame} */
+  const g = { n, piece, placed: 0, selected: null, justDragged: false };
   document.querySelectorAll('.jg-slot').forEach((slot) => {
     setHandler(slot, 'click', () => {
       if (slot.classList.contains('filled')) return;
-      if (selected) tryPlace(selected, slot);
-      else {
-        playSound('tap');
-        showToast("👆 Choisis d'abord un morceau en bas");
-      }
+      if (g.selected) return jigsawTryPlace(g, g.selected, slot);
+      playSound('tap');
+      showToast("👆 Choisis d'abord un morceau en bas");
     });
   });
   /** @type {NodeListOf<HTMLButtonElement>} */ (document.querySelectorAll('.jg-piece')).forEach((pc) => {
-    setHandler(pc, 'click', () => {
-      if (justDragged) {
-        justDragged = false;
-        return;
-      }
-      if (pc.classList.contains('used')) return;
-      playSound('tap');
-      if (selected === pc) {
-        clearSel();
-        return;
-      }
-      clearSel();
-      selected = pc;
-      pc.classList.add('sel');
-    });
-    // glisser du doigt (ou à la souris) jusqu'à une case
-    pc.addEventListener('pointerdown', (e) => {
-      if (pc.classList.contains('used') || (e.pointerType === 'mouse' && e.button !== 0)) return;
-      const sx = e.clientX,
-        sy = e.clientY;
-      let ghost = /** @type {HTMLElement | null} */ (null),
-        box = /** @type {DOMRect | null} */ (null);
-      try {
-        pc.setPointerCapture(e.pointerId);
-      } catch {
-        // capture du pointeur refusée par certains navigateurs : le glisser marche quand même
-      }
-      /** @param {PointerEvent} ev */
-      const move = (ev) => {
-        if (!ghost && Math.hypot(ev.clientX - sx, ev.clientY - sy) > 8) {
-          box = pc.getBoundingClientRect();
-          ghost = /** @type {HTMLElement} */ (pc.cloneNode(true));
-          ghost.classList.add('jg-drag');
-          ghost.classList.remove('sel');
-          ghost.style.width = box.width + 'px';
-          ghost.style.height = box.height + 'px';
-          document.body.appendChild(ghost);
-          pc.classList.add('lifted');
-          clearSel();
-        }
-        if (ghost) {
-          // box est mesurée en même temps que le fantôme
-          ghost.style.left = ev.clientX - /** @type {DOMRect} */ (box).width / 2 + 'px';
-          ghost.style.top = ev.clientY - /** @type {DOMRect} */ (box).height / 2 + 'px';
-        }
-      };
-      /** @param {PointerEvent} ev */
-      const end = (ev) => {
-        pc.removeEventListener('pointermove', move);
-        pc.removeEventListener('pointerup', end);
-        pc.removeEventListener('pointercancel', end);
-        if (!ghost) return;
-        ghost.remove();
-        justDragged = true;
-        setTimeout(() => {
-          justDragged = false;
-        }, 350);
-        pc.classList.remove('lifted');
-        if (ev.type === 'pointercancel') return;
-        const target = document.elementFromPoint(ev.clientX, ev.clientY);
-        const slot = target && target.closest && target.closest('.jg-slot');
-        if (slot) tryPlace(pc, slot);
-      };
-      pc.addEventListener('pointermove', move);
-      pc.addEventListener('pointerup', end);
-      pc.addEventListener('pointercancel', end);
-    });
+    setHandler(pc, 'click', () => jigsawPickPiece(g, pc));
+    pc.addEventListener('pointerdown', (e) => jigsawDrag(g, pc, e));
   });
 }
 
