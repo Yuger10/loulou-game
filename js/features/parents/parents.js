@@ -37,6 +37,7 @@ import { renderSoundBtn } from '../profile/index.js';
 import { bindQuit, gameHeader } from '../screen/index.js';
 import { setSeasonPreview } from '../seasons/index.js';
 import { bindUpdateCard, updateCardHTML } from '../update/index.js';
+import './bilan.js'; // la carte « Cette semaine », avant les autres cartes de parents:cards
 import './storage-alert.js'; // message et carte quand l'enregistrement échoue
 
 /** @typedef {import('../../entities/game-state/index.js').GameState} GameState */

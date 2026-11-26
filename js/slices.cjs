@@ -366,7 +366,7 @@ const SLICES = [
   {
     id: 'parents',
     layer: 'features',
-    files: ['js/features/parents/parents.js', 'js/features/parents/storage-alert.js'],
+    files: ['js/features/parents/bilan.js', 'js/features/parents/parents.js', 'js/features/parents/storage-alert.js'],
     css: ['js/features/parents/parents.css'],
   },
   { id: 'rest', layer: 'features', files: ['js/features/rest/rest.js'], css: ['js/features/rest/rest.css'] },
