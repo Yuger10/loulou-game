@@ -100,7 +100,7 @@ Registre des tracks Conductor, **dans l'ordre d'implémentation**. Feuille de ro
 
 ---
 
-- [ ] **Track: Les erreurs expliquées : après une erreur, le jeu montre pourquoi (idée de Claude, d'après la recherche)**
+- [x] **Track: Les erreurs expliquées : après une erreur, le jeu montre pourquoi (idée de Claude, d'après la recherche) : 10 jeux de nombres et phrases de stratégie livrés (v67), 18 jeux en attente (suites)**
 *Link: [./tracks/erreurs-expliquees_20261122/](./tracks/erreurs-expliquees_20261122/)*
 
 ---

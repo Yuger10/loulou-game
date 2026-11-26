@@ -18,26 +18,34 @@ Trois phases, trois PR livrables seules (défaut de Claude, à juger à la revue
 - [x] 6 bis. (sans objet : cas 1, le moteur n'exporte pas `setRoundHandlers` sur `main` le 26/11/2026) Cas 2 seulement (`setRoundHandlers` déjà exporté par le moteur sur `main`) : test puis câblage de `explainShow` dans le mode manche, selon « Ordre de livraison avec `revision-espacee` » de la spec.
 - [x] 7. `conductor/checklist-mini-jeu.md` : en section 1, « `test/explications.test.js` : ses explications d'erreur sont vérifiées » ; en section 3, une puce « Ses explications d'erreur (contrat `registerExplain` de `js/features/hints/hints.js`) : `wrong(q, v)` → `{ say, fx }`, 3 à 12 mots, pourquoi la réponse ne va pas, puis la bonne réponse si la question est remplacée, jamais si elle continue ; `loseLife(el, { wrong })` ; `right(q)` facultatif ; un nouveau jeu n'est jamais exempté ».
 - [x] 8. (sans objet : aucun jeu de la saison 3 sur `main` le 26/11/2026, `GAME_TYPES` compte les 30 jeux de `LEGACY_GAMES`) Si un jeu de la saison 3 est déjà sur `main` : ses explications selon les règles de la spec (table au journal de décisions).
-- [ ] 9. `bun run check` vert ; `bun run verify` vert ; `bun run release patch "erreurs expliquées : contrat et 5 jeux"`, puis compléter la section ajoutée à la fin de `PRD-lagon-magique.md` avant la PR. AGENTS.md : rien à changer (la checklist porte la règle).
+- [x] 9. (une seule livraison, journal ligne 3 : `bun run release track`, v67) `bun run check` vert ; `bun run verify` vert ; `bun run release patch "erreurs expliquées : contrat et 5 jeux"`, puis compléter la section ajoutée à la fin de `PRD-lagon-magique.md` avant la PR. AGENTS.md : rien à changer (la checklist porte la règle).
 
 ### Phase 2 : `puzzle`, `money`, `packs`, `share`, `ladybugs`
 
 - [x] 10. Tests : lignes des tables de ces 5 jeux, parcours par palier, `puzzle` (ligne 7, S3). Ils échouent.
 - [x] 11. Les 5 jeux : `wrong`, `registerExplain`, clé `moneyLast`, clé de `packs` ramenée à `size-n-extra`, replis de la table « Clés de question », table « Où est la bonne réponse » (dont `ladybugs` `complete`). Retrait des 5 de `EXPLAIN_EXEMPT`, `EXPLAIN_EXEMPT_MAX = 18`.
-- [ ] 12. `bun run check` vert ; `bun run release patch "erreurs expliquées : 5 jeux de plus"`, puis compléter la section ajoutée à la fin de `PRD-lagon-magique.md` avant la PR.
+- [x] 12. (une seule livraison, journal ligne 3 : `bun run release track`, v67) `bun run check` vert ; `bun run release patch "erreurs expliquées : 5 jeux de plus"`, puis compléter la section ajoutée à la fin de `PRD-lagon-magique.md` avant la PR.
 
 ### Phase 3 : les phrases de stratégie et l'éloge du processus
 
 - [x] 13. Tests : ligne 15 (chacun des 10 jeux, chaque cas de la table `right`), ligne 16 (`winPraises`), jeu exempté sans `.win-how`. Ils échouent.
 - [x] 14. `hints.js` : `strategyLine()`. `engine.js` : `winPraises(who)`, ligne `.win-how` (🧠 et la phrase) sous le titre, phrase dite après l'éloge, en solo seulement. `right` dans les 10 jeux.
-- [ ] 15. `bun run check` vert ; `bun run release track "erreurs expliquées : 10 jeux de nombres, phrases de stratégie"`, puis compléter la section ajoutée à la fin de `PRD-lagon-magique.md` avant la PR.
+- [x] 15. (une seule livraison, journal ligne 3 : `bun run release track`, v67) `bun run check` vert ; `bun run release track "erreurs expliquées : 10 jeux de nombres, phrases de stratégie"`, puis compléter la section ajoutée à la fin de `PRD-lagon-magique.md` avant la PR.
 
 ## Preuves
 
 | Ligne du smoke test | Résultat | Niveau | Preuve |
 |---|---|---|---|
-| S1 à S9 | à faire | test-verified | `bun run test explications` (exit 0), `bun run check` (exit 0) |
-| S10 à S12 | à faire | runtime-verified | Amrou, téléphone |
+| S1 | fait | test-verified | `bun run test explications` : « chaque ligne des tables : say exact, fx conforme (72 lignes) » ; rouge avant le code (« pas d'explication », `explainFor` absent) |
+| S2 | fait | test-verified | même test : « bulle, voix, verrou, bonne réponse montrée, relance à 4 s, autre question, jeu gagnable » (153 parties sur les 8 morceaux) |
+| S3 | fait | test-verified | même test : « puzzle : 3 rangs, la réponse n'est jamais dite ni montrée, le verrou se lève » |
+| S4 | fait | test-verified | même test : « count au palier 5 », « puzzle, dernier essai : explication, puis « Raté ! » après EXPLAIN_MS » |
+| S5 | fait | test-verified | même test : « à plusieurs : aucune explication », « temps écoulé : aucune explication » |
+| S6 | fait | test-verified | même test : « reading : relance à 900 ms », « diff : « Raté ! » à 520 ms » |
+| S7 | fait | test-verified | même test : section « Garde des jeux exemptés » (4 cas refusés par leur nom, les vraies listes passent) |
+| S8 | fait | test-verified | même test : « chaque cas de la table : la phrase exacte (31 cas) », « victoire : la ligne 🧠 sous le titre, dite une fois, juste après l'éloge » (51 victoires) |
+| S9 | fait | test-verified | `bun run check` (exit 0), `bun run verify` (exit 0) |
+| S10 à S12 | à faire | runtime-verified | Amrou, téléphone (vérification manuelle proposée dans la PR) |
 
 ## Journal de décisions
 
@@ -51,8 +59,10 @@ En ajout seul : une décision fausse reçoit une nouvelle ligne qui la remplace,
 | 4 | Le tirage « jamais la même question » est une fonction du moteur, `drawOther(tirage, clé, précédente, repli)`, et chaque jeu a sa fonction `<jeu>Question(dd)` qui tire la question avant les réponses | agent | Une seule écriture de la boucle des 8 tirages pour 10 jeux ; le test du repli force `Math.random` sur le tirage de la question seule (un `Math.random` constant ferait tourner sans fin la boucle des réponses proposées) | `test/explications.test.js`, section « le repli » | gardée |
 | 5 | Une étiquette déjà posée (`.hint-mark`) n'est jamais la cible d'un effet (`applyHintFx`) | agent | Les sélecteurs de la spec (`span:nth-child(k)`, `span:nth-last-child(-n+b)`) désignent aussi les étiquettes posées juste avant : elles seraient étiquetées ou barrées à leur tour | `js/features/hints/hints.js`, `applyHintFx` | gardée |
 | 6 | `explainClear()` ne rouvre pas un bouton que le moteur a refermé entre-temps (classe `ko`) ; à essais illimités sans relance, le moteur le rouvre lui-même à la fin des 4 s | agent | À essais limités sans relance, la mauvaise réponse reste fermée comme avant ; la spec ne dit pas qui la rouvre | `engine.js`, `loseLifeUnlimited` | gardée |
-| 8 | `money` : pas d'explication (comportement d'avant) quand la pile touchée est la pile de secours de `moneyOptions`, dont le total affiché n'est pas la somme de ses pièces | agent | La phrase « Cette pile fait {v} » serait fausse ; cas rare (30 tirages sans trouver deux autres totaux), qui existait avant la track | `money.js`, `moneyExplain` | gardée |
 | 7 | `test/smoke.test.js`, « 2e erreur : il reste 1 essai » : la 2e erreur se joue sur `diff` (exempté, même île, mêmes 3 essais) au lieu de `count` | agent, **à valider par Amrou** | La spec affirmait que les tests de fumée restaient justes : c'est faux pour cette assertion, qui touche une 2e mauvaise réponse tout de suite après la 1re ; sur `count`, le verrou (ligne 3, D7) ferme les réponses pendant 4 s, puis la question suivante repart avec 3 essais. Réécriture de même force (même scénario sur un cas équivalent, règle de `conductor/workflow.md`), plus une assertion ajoutée | `bun run test smoke` rouge avant la réécriture (« 2e erreur : il reste 1 essai »), vert après | à juger à la revue |
+| 8 | `money` : pas d'explication (comportement d'avant) quand la pile touchée est la pile de secours de `moneyOptions`, dont le total affiché n'est pas la somme de ses pièces | agent | La phrase « Cette pile fait {v} » serait fausse ; cas rare (30 tirages sans trouver deux autres totaux), qui existait avant la track | `money.js`, `moneyExplain` | gardée |
+| 9 | `test/explications.test.js` note les délais demandés à `setTimeout` (4000, 900, 520, 700) en plus du temps réel écoulé | agent | Un délai se vérifie alors sans dépendre de la charge de la machine (d'autres agents lancent les tests en même temps) ; le temps réel ne sert que de borne basse | `test/explications.test.js`, `timeouts` | gardée |
+| 10 | Cas 1 de « Ordre de livraison avec `revision-espacee` » : rien à câbler | spec | Le moteur n'exporte pas `setRoundHandlers` sur `main` le 26/11/2026 ; `revision-espacee` câblera `explainShow` dans son mode manche | `grep -rn setRoundHandlers js` : aucun résultat | gardée |
 
 ## Écarts et non vérifié
 

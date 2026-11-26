@@ -1746,3 +1746,23 @@ Les deux sont proposés dès 5 ans, sans minuteur. Le jeu de l'île est les poti
 - **Ce que voit l'enfant :** rien ne change (les 57 dessins de personnages sont identiques, vérifié).
 - **Pour le code :** les deux derniers fichiers trop longs sont découpés, en déplaçant le code tel quel. `characters-art.js` (1 055 lignes) : les 25 mascottes de la saison 2 passent dans `characters-art-s2.js`, qui reçoit les outils de dessin en paramètre (type `ArtKit`). `difficulty.js` (1 014) : les paliers des 13 mini-jeux de la saison 2 et de l'image à assembler passent dans `difficulty-s2.js`. Le cliquet `max-lines` descend à **800**, la cible de la track `lint-regles-completes`.
 - Cache `lagon-v66.16`.
+
+# v67 : erreurs expliquées : 10 jeux de nombres, phrases de stratégie
+
+Track `erreurs-expliquees_20261122`, livrée en une seule PR (consigne d'Amrou du 26/11/2026, au lieu des trois PR prévues par la spec).
+
+- **Ce que voit l'enfant :**
+  - Dans 10 jeux de nombres (compter, comparer, opérations, calcul mental, l'heure, puzzle des nombres, monnaie, paquets de jouets, gâteau partagé, coccinelles), quand elle se trompe en jouant seule, son compagnon dit **pourquoi** en une phrase courte (« Il en manque. Je pars de 4 et j'avance de 3 : 7. »), dans une bulle sous la consigne, et montre le geste sur ce qui est déjà à l'écran : objets numérotés, bonne réponse qui brille, résultat écrit dans la case « ? ».
+  - L'explication dure 4 secondes. Pendant ce temps, aucune réponse ne se touche (sauf 🔈) ; puis une **autre** question arrive, jamais la même. Si c'était le dernier essai, l'écran « Raté ! » attend la fin de l'explication.
+  - Au puzzle des nombres, la question continue : l'explication donne la règle (« Quel nombre vient juste après 4 ? »), jamais le nombre à trouver.
+  - Quand elle gagne, une ligne 🧠 sous le titre nomme ce qu'elle a fait (« Tu as compté chaque étoile une seule fois. »), dite juste après l'éloge. Les éloges parlent de ce qu'elle a fait (« tu as bien cherché », « tu as bien réfléchi »), plus de ce qu'elle est (« trop forte », « championne », « maligne »).
+  - Rien ne change à plusieurs, quand le temps est écoulé, ni dans les 20 autres jeux (phrase d'encouragement et relance rapide, comme avant).
+- **Pour le code :**
+  - Contrat `registerExplain(clé, { wrong: (question, mauvaise réponse) => ({ say, fx }), right: question => phrase })` dans la slice `hints` (`explainFor`, `explainShow`, `explainClear`, `strategyLine`, `hintPolicy.onExplain`). Mêmes effets que les indices, sans `fx.dim`, plus `fx.fill`.
+  - Moteur : `loseLife(el, { onRetry, wrong })`, `EXPLAIN_MS = 4000`, `scheduleRetry(fn, delay)` ; le moteur possède les minuteries de l'explication et les annule si la fenêtre se ferme ou change. `drawOther(tirage, clé, précédente, repli)` : jamais deux fois la même question, avec un repli après 8 tirages identiques. `winPraises(who)`.
+  - L'équipe des compagnons se tait pendant une explication (`onExplain` vide sa file de paroles) : la consolation de Grisou après 2 erreurs ne se dit plus dans ces 10 jeux.
+  - `test/explications.test.js` (8 morceaux) : garde des jeux exemptés (`EXPLAIN_EXEMPT`, 18 jeux, ne peut que diminuer ; un nouveau jeu n'est jamais exempté), 72 lignes des tables, une erreur à chaque palier de chaque jeu (153 parties), 31 phrases de stratégie. `conductor/checklist-mini-jeu.md` porte la règle.
+  - Tests existants réécrits avec la même force : deux assertions de `test/companions.test.js` (listées par la spec) et une de `test/smoke.test.js` (« 2e erreur : il reste 1 essai », non listée : à valider par Amrou).
+  - Aucune zone sensible, aucune dépendance, sauvegarde inchangée.
+- **Reste à vérifier par un humain :** S10 (la voix de l'appareil dit la phrase en entier), S11 (l'enfant comprend, sans le vivre comme une punition), S12 (4 secondes sans bouton « passer »).
+- Cache `lagon-v67`.
