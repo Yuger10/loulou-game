@@ -458,6 +458,23 @@ const INDEPENDENT = {
       bank.some((e) => e.t === built || e.ok.includes(built))
     );
   },
+  // notes : la réponse recalculée depuis le dessin (le ♪, le nom écrit, la place de la note
+  // sur la portée, D9 : n = (104 - cy) / 8), jamais depuis la cible que le jeu annonce
+  notes(sol) {
+    const NAMES = ['do', 'ré', 'mi', 'fa', 'sol', 'la', 'si', 'do'];
+    const ask = d.getElementById('notes-stage').dataset.ask;
+    const el = d.querySelector(sol[0]);
+    const nOf = (root) => (104 - Number(root.querySelector('.note-head').getAttribute('cy'))) / 8;
+    const name = (d.querySelector('.notes-name') || {}).textContent;
+    if (ask === 'hear') return el.matches('.xylo-lame') && el.dataset.n === d.querySelector('.notes-heard').dataset.n;
+    if (ask === 'read') {
+      const n = nOf(d.getElementById('notes-staff'));
+      return el.matches('.xylo-lame') && Number(el.dataset.n) === n && el.textContent.trim() === NAMES[n];
+    }
+    const pool = [...d.querySelectorAll(ask === 'name' ? '.xylo-lame' : '.notes-find')];
+    const good = pool.filter((b) => (ask === 'name' ? b.textContent.trim() : NAMES[nOf(b)]) === name);
+    return sol.length === 1 && good.length === 1 && good[0] === el;
+  },
   // trace : chaque élément porte les points de son trait, et la solution couvre
   // tous les traits de tous les glyphes de la bande, dans l'ordre
   trace(sol) {

@@ -1,0 +1,52 @@
+/* ---------- Mini-jeu : Do, ré, mi (notes) ----------
+   La scène : ce qu'on regarde (un ♪, un nom de note, une portée) au-dessus du
+   xylophone. Au palier 5, cinq petites portées côte à côte, sans espace :
+   chacune fait 64 px de large à 360 px d'écran. */
+.notes-stage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  margin: 0 auto 6px;
+  padding: 10px 0 4px;
+  border-radius: var(--radius-lg, 24px);
+  background: linear-gradient(180deg, #fff8f0, #ffe7a8);
+  border: 3px solid #fff;
+}
+.notes-heard {
+  font-size: 4rem;
+  line-height: 1;
+  font-weight: 900;
+  /* un contour sombre : le jaune du mi reste lisible sur le fond clair */
+  text-shadow:
+    -2px 0 #2b2f6b,
+    2px 0 #2b2f6b,
+    0 -2px #2b2f6b,
+    0 2px #2b2f6b;
+}
+.notes-name {
+  font-size: 2.6rem;
+  line-height: 1.1;
+  color: #2b2f6b;
+}
+.notes-find-row {
+  display: flex;
+  gap: 0;
+  width: 100%;
+}
+.notes-find {
+  flex: 1 1 0;
+  min-width: 0;
+  padding: 2px 0;
+  border: 3px solid #2b2f6b;
+  border-radius: 12px;
+  background: #fff;
+  cursor: pointer;
+}
+.notes-find + .notes-find {
+  margin-left: -3px;
+}
+.notes-find-staff {
+  width: 100%;
+  height: auto;
+}

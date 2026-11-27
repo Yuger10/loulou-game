@@ -287,8 +287,8 @@ function startGame(key, tier, age) {
         !d.getElementById('rh-score').classList.contains('covered'),
     );
     check(
-      'pas de minuteur ; compétence « Mémoire et logique »',
-      ev('timerFor("rhythm", 5)') === null && ev('SKILL_GROUPS.find(g=> g.id==="logique").games').includes('rhythm'),
+      'pas de minuteur ; compétence « Musique »',
+      ev('timerFor("rhythm", 5)') === null && ev('SKILL_GROUPS.find(g=> g.id==="musique").games').includes('rhythm'),
     );
   }
 
@@ -349,8 +349,8 @@ function startGame(key, tier, age) {
     d.querySelector(sol[0]).click();
     check('le bon sens : mission réussie', await waitFor(() => !!d.querySelector('.win-box'), 1500));
     check(
-      'pas de minuteur ; compétence « Mémoire et logique »',
-      ev('timerFor("pitch", 5)') === null && ev('SKILL_GROUPS.find(g=> g.id==="logique").games').includes('pitch'),
+      'pas de minuteur ; compétence « Musique »',
+      ev('timerFor("pitch", 5)') === null && ev('SKILL_GROUPS.find(g=> g.id==="musique").games').includes('pitch'),
     );
   }
 
