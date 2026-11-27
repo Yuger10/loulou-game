@@ -11,6 +11,7 @@ import {
   closeModal,
   confetti,
   onModalChange,
+  bindSpeakButtons,
   onModalClose,
   openModal,
   playSound,
@@ -44,7 +45,7 @@ import { hintNudge, hintPolicy, setHintCountable } from '../hints/index.js';
 import { checkNewIsland, currentChar, markHelped, renderLagon } from '../island/index.js';
 import { partyAfterWin, partyScore, passTurn } from '../party/index.js';
 import { questProgress } from '../quests/index.js';
-import { forgetSpokenHint, speakWrongHint } from '../screen/index.js';
+import { forgetSpokenHint, resetChoicesRead, speakWrongHint } from '../screen/index.js';
 import { maybeStoryEpisode, noteStoryMission, storyProgressHTML } from '../story/index.js';
 import { newlyUnlockedLookItems, WARDROBE } from '../wardrobe/index.js';
 
@@ -147,7 +148,9 @@ function loseLife(target, opts = {}) {
     setTimeout(onMissionFail, 520);
     return true;
   }
-  showToast(lives === 1 ? '⚠️ Dernier essai !' : `${lives} essais restants`);
+  // « dernière chance » ne se dit pas : la voix rassure (pas de pression)
+  if (lives === 1) showToast('⚠️ Dernier essai !', "Plus qu'un essai. Prends ton temps.");
+  else showToast(`${lives} essais restants`);
   // même logique à essais limités : une nouvelle question plutôt que
   // de réduire le choix restant jusqu'à la seule bonne réponse.
   if (opts.onRetry) {
@@ -362,6 +365,7 @@ function playGame(key) {
   // pause douce réglée par les parents : plus de nouveau défi aujourd'hui
   // (l'espace parents répond true et montre l'écran de pause)
   if (emit('game:before', key).some(Boolean)) return;
+  resetChoicesRead(); // nouvelle mission : les choix écrits seront lus après la consigne
   bonusOnNewGame();
   if (hintPolicy.onMission) hintPolicy.onMission(key);
   resetMissionErrors();
@@ -396,6 +400,7 @@ function onMissionFail() {
   endBonusChallenge();
   missionFact = null;
   forgetSpokenHint();
+  resetChoicesRead();
   lives = 0;
   const c = (currentChar && CHARACTERS[currentChar]) || CHARACTERS.sirene;
   const who = hello();
@@ -412,7 +417,7 @@ function onMissionFail() {
     <div class="reward-box fail-box">
       ${buddySlot('oops', 'buddy-big fail-emoji')}
       <h2>Raté !</h2>
-      <div class="speech">${msg}</div>
+      <div class="speech with-voice"><span class="txt">${msg}</span>${replayButton(msg)}</div>
       <div class="speech" style="background:#FFF1EC;">
         ${charFace(currentChar || '')} <strong>${c.name}</strong> t'attend pour un nouvel essai !
       </div>
@@ -420,6 +425,7 @@ function onMissionFail() {
     <button class="btn-primary" id="btn-retry">🔁 Réessayer</button>
     <button class="btn-ghost" id="btn-later">Plus tard</button>
   `);
+  bindSpeakButtons();
   const m = document.getElementById('modal');
   if (m) {
     m.classList.add('shake-hard');
@@ -450,6 +456,7 @@ function onMissionWin() {
   recordMission(true); // avant le mode course, qui s'arrête plus bas
   emit('game:after', { win: true }); // fin naturelle : la pause peut venir ensuite (js/features/rest)
   forgetSpokenHint();
+  resetChoicesRead();
   partyScore();
   // course : on avance d'une case ; si la ligne d'arrivée est franchie, l'écran de victoire s'affiche
   if (partyAfterWin()) return;
@@ -532,6 +539,11 @@ function winPraise() {
   ]).replace(/ ([!?])/g, ' $1'); // espace insécable : le « ! » ne part pas seul à la ligne
 }
 
+// le bouton 🔈 qui relit la phrase dite à l'ouverture d'une fenêtre de fin de mission
+/** @param {string} say */
+const replayButton = (say) =>
+  `<button type="button" class="btn-speak" data-say="${say.replace(/<[^>]+>/g, '').replace(/"/g, '&quot;')}" aria-label="Écouter">🔈</button>`;
+
 /** @param {MissionWin} w */
 function winSpeech(w) {
   const { levelUp, praise, cheer, cheerBy, extras, lookWon, fact, c, it, bonus } = w;
@@ -547,6 +559,7 @@ function winMarkup(w) {
       ${buddySlot('cheer', 'buddy-big win-emoji')}
       <span class="win-stamp">${levelUp ? '🌟' : '✅'}</span>
       <h2>${levelUp ? `Niveau ${level()} !` : praise}</h2>
+      ${replayButton(winSpeech(w))}
       ${lookWon.length ? `<div class="speech look-won"><span aria-hidden="true">🎁</span> Nouveau pour ton avatar : <strong>${lookWon.join(', ')}</strong> (sac → Mon look)</div>` : ''}
       ${cheer ? `<div class="speech progress-cheer">${cheerBy ? `<span class="cheer-face" aria-hidden="true">${companionSVG(cheerBy, 'cheer')}</span><b>${COMPANIONS[cheerBy].name}</b>` : '<span aria-hidden="true">📈</span>'} ${cheer}</div>` : ''}
       ${extras.map((x) => `<div class="speech team-extra" data-by="${x.by}"><span class="cheer-face" aria-hidden="true">${companionSVG(x.by, 'cheer')}</span><span><b>${COMPANIONS[x.by].name}</b> ${x.text}</span></div>`).join('')}
@@ -571,6 +584,7 @@ function winMarkup(w) {
 }
 
 function winBindButtons() {
+  bindSpeakButtons();
   setHandler(document.getElementById('btn-yay'), 'click', () => {
     playSound('tap');
     closeModal();
@@ -605,6 +619,7 @@ onModalChange(() => {
 });
 onModalClose(() => {
   forgetSpokenHint();
+  resetChoicesRead();
 });
 
 export {

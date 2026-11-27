@@ -19,12 +19,14 @@ import { onProfileRefresh, party, profiles } from '../../entities/player/index.j
 import { on, pickRandom } from '../../shared/lib/index.js';
 import {
   closeModal,
+  newVoiceScene,
   onModalClose,
   onViewChange,
   playSound,
   setHandler,
   showToast,
   speak,
+  stopSpeech,
   switchView,
 } from '../../shared/ui/index.js';
 import { todayKey } from '../adaptive/index.js';
@@ -207,6 +209,7 @@ function restAdultBtn() {
  */
 function renderVeil(stageName, extra) {
   const el = veilEl();
+  newVoiceScene(); // chaque écran de la pause est une scène
   el.dataset.stage = stageName;
   if (stageName === 'choose') {
     el.innerHTML = `${restNightHTML()}
@@ -278,8 +281,10 @@ function showVeil() {
   veilEl().hidden = false;
   veilEl().classList.remove('rest-behind');
   setAppInert(true);
-  if (log.activity || log.skipped) renderVeil('asleep');
-  else {
+  if (log.activity || log.skipped) {
+    renderVeil('asleep');
+    speak("L'île dort. On revient demain.");
+  } else {
     const line = restIntroLine();
     renderVeil('choose', line);
     speak(line);
@@ -448,7 +453,8 @@ function bindVeil(el) {
       const log = restLogToday();
       log.skipped = true;
       save();
-      speak("D'accord. Bonne nuit, à demain !");
+      stopSpeech();
+      speak("D'accord. Bonne nuit, à demain !", { interrupt: true });
       renderVeil('asleep');
     });
   const adult = el.querySelector('#rest-adult');
@@ -480,7 +486,7 @@ function bindVeil(el) {
     state.pauseExtra = { date: k, min: cur + min };
     save();
     restWake();
-    showToast(min >= 24 * 60 ? "🌞 Plus de pause aujourd'hui" : `⏱️ ${min} minutes de plus`);
+    showToast(min >= 24 * 60 ? "🌞 Plus de pause aujourd'hui" : `⏱️ ${min} minutes de plus`, '');
   };
   const on10 = el.querySelector('#rest-add10');
   if (on10) setHandler(on10, 'click', () => addMin(10));
@@ -520,7 +526,7 @@ function restRecallYesterday() {
   state.restRecall = today;
   save();
   speak(line);
-  showToast(`${a.emoji} ${line}`);
+  showToast(`${a.emoji} ${line}`, '');
 }
 
 /* ---- espace parents : les pauses des 7 derniers jours ---- */

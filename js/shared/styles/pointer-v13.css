@@ -29,6 +29,7 @@ button,
     background 0.12s ease;
 }
 button:disabled,
+button[aria-disabled="true"],
 .mcard:disabled,
 .btn-craft:disabled,
 .btn-small:disabled {
@@ -37,7 +38,7 @@ button:disabled,
 }
 
 /* Retour visuel à l'appui, partout */
-button:not(:disabled):active,
+button:not(:disabled):not([aria-disabled="true"]):active,
 .island:active,
 .map-island:active,
 .mcard:not(:disabled):active,
@@ -48,7 +49,7 @@ button:not(:disabled):active,
 
 /* Survol à la souris (jamais au doigt) */
 @media (hover: hover) and (pointer: fine) {
-  button:not(:disabled):hover,
+  button:not(:disabled):not([aria-disabled="true"]):hover,
   .island:hover,
   .game-choice:hover,
   .avatar-opt:hover,

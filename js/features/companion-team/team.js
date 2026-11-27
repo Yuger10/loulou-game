@@ -315,7 +315,7 @@ function teamWelcome(id) {
     playSound('win');
     confetti();
     speak(`${c.name} rejoint ton équipe !`);
-    showToast(`🤝 ${c.name} rejoint ton équipe !`);
+    showToast(`🤝 ${c.name} rejoint ton équipe !`, '');
   } else {
     openTeamWindow(`${c.name} attend dans ton équipe. Tu as déjà 2 équipiers : choisis qui t'accompagne !`);
   }
@@ -364,7 +364,7 @@ function teamCard(id, kind) {
       ? ''
       : kind === 'mate'
         ? `<button type="button" class="btn-small ghost" data-team-rest="${id}">😴 Repos</button><button type="button" class="btn-small ghost" data-team-main="${id}">⭐ Principal</button>`
-        : `<button type="button" class="btn-small" data-team-add="${id}" ${full ? 'disabled' : ''}>➕ Équipe</button><button type="button" class="btn-small ghost" data-team-main="${id}">⭐ Principal</button>`;
+        : `<button type="button" class="btn-small" data-team-add="${id}"${full ? ' aria-disabled="true" data-say-why="Ton équipe est déjà complète."' : ''}>➕ Équipe</button><button type="button" class="btn-small ghost" data-team-main="${id}">⭐ Principal</button>`;
   return `<div class="tw-card ${kind}">
     <span class="tw-face">${companionSVG(id, kind === 'rest' ? 'sleepy' : 'happy')}</span>
     <span class="tw-txt"><b>${c.name}</b><i>${kind === 'main' ? '💡 Indices' + (teamIsOpen() ? ` · ${r.icon} ${r.role}` : '') : `${r.icon} ${r.role}`}</i></span>
@@ -409,7 +409,7 @@ function teamWindowBind() {
     renderTeamHeads();
     openTeamWindow();
     if (msg) {
-      showToast(msg);
+      showToast(msg, '');
       speak(msg);
     }
   };
@@ -418,6 +418,7 @@ function teamWindowBind() {
       playSound('tap');
       // le sélecteur [data-team-add] garantit l'attribut
       const id = /** @type {string} */ (b.dataset.teamAdd);
+      if (b.getAttribute('aria-disabled') === 'true') return; // l'écoute au doigt dit pourquoi
       if (teamAddMate(id)) redraw(`${COMPANIONS[id].name} rejoint ton équipe !`);
     }),
   );

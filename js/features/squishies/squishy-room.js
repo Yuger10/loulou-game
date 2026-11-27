@@ -249,19 +249,28 @@ function sqBindPress(/** @type {HTMLElement} */ el) {
       const id = /** @type {string} */ (b.dataset.sq),
         n = squishyCount(id);
       squishyPress(b);
-      speak(`${(SQUISHIES[id] || SQUISHY_TREASURES[id]).name}${n > 1 ? `. Tu en as ${n}.` : ' !'}`);
+      speak(`${(SQUISHIES[id] || SQUISHY_TREASURES[id]).name}${n > 1 ? `. Tu en as ${n}.` : ' !'}`, {
+        interrupt: true,
+        demand: true,
+      });
     });
   });
   el.querySelectorAll('.sq-cell[data-treasure]').forEach((b) => {
     setHandler(b, 'click', () => {
       playSound('tap');
-      speak(`Un trésor unique ! ${SQUISHY_TREASURES[/** @type {string} */ (b.dataset.treasure)].how}.`);
+      speak(`Un trésor unique ! ${SQUISHY_TREASURES[/** @type {string} */ (b.dataset.treasure)].how}.`, {
+        interrupt: true,
+        demand: true,
+      });
     });
   });
   el.querySelectorAll('.sq-cell[data-miss]').forEach((b) => {
     setHandler(b, 'click', () => {
       playSound('tap');
-      speak("Celui-là, tu ne l'as pas encore. Ouvre des boîtes surprises pour le trouver !");
+      speak("Celui-là, tu ne l'as pas encore. Ouvre des boîtes surprises pour le trouver !", {
+        interrupt: true,
+        demand: true,
+      });
     });
   });
 }
@@ -625,7 +634,7 @@ registerHints('rangement', sortingHints);
 ['squishy-btn', 'sq-room-link'].forEach((elId) => {
   const b = document.getElementById(elId);
   if (b)
-    b.addEventListener('click', () => {
+    setHandler(b, 'click', () => {
       playSound('tap');
       openSquishyRoom('collection');
     });

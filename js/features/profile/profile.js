@@ -11,7 +11,7 @@ import {
 import { save, state } from '../../entities/game-state/index.js';
 import { AVATARS, currentProfile, onProfileRefresh, saveProfiles } from '../../entities/player/index.js';
 import { cleanName, emit, on } from '../../shared/lib/index.js';
-import { playSound, setHandler, showToast, speak } from '../../shared/ui/index.js';
+import { newVoiceScene, playSound, setHandler, showToast, speak } from '../../shared/ui/index.js';
 import { applySeason } from '../seasons/index.js';
 import { openStoryChapter, storySolved } from '../story/index.js';
 
@@ -87,7 +87,9 @@ function openWelcome() {
   pendingCompanion = (p0 && p0.companion) || null;
   welcomeAllBuddies = false;
   renderWelcomeExtra();
+  newVoiceScene();
   /** @type {HTMLElement} */ (document.getElementById('welcome')).classList.add('show');
+  speak('Bienvenue dans le lagon ! Écris ton prénom, puis choisis ton avatar et ton compagnon.');
 }
 function closeWelcome() {
   const input = /** @type {HTMLInputElement} */ (document.getElementById('name-input'));
@@ -117,7 +119,7 @@ function closeWelcome() {
   playSound('win');
   const who = name ? name : 'toi';
   speak(`Bonjour ${who} ! Bienvenue dans le lagon magique.`);
-  showToast(name ? `Bonjour ${name} ! ✨` : 'Bonne aventure ! ✨');
+  showToast(name ? `Bonjour ${name} ! ✨` : 'Bonne aventure ! ✨', '');
   emit('ui:lagon');
   // premier lancement : le fil de l'histoire commence par le chapitre du
   // Lagon (jamais répété une fois résolu — voir js/features/story/story.js)

@@ -47,7 +47,7 @@ function startRace(ids) {
   // le premier joueur vient d'être choisi dans la liste : il existe
   const p = /** @type {Profile} */ (raceCurrent());
   speak(`La course commence ! Premier arrivé à ${RACE_STEPS} cases gagne. ${p.name || ''} commence.`);
-  showToast(`🏁 La course commence !`);
+  showToast(`🏁 La course commence !`, '');
   return true;
 }
 
@@ -59,7 +59,7 @@ function stopRace(silent) {
   renderTurnBar();
   renderRaceTrack();
   if (!silent) {
-    showToast('👤 Mode solo');
+    showToast('👤 Mode solo', '');
     speak('Course terminée.');
   }
 }

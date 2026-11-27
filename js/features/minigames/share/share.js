@@ -220,7 +220,7 @@ function shareView(r) {
     options = shuffle([2, 3, 4])
       .map(
         (n) =>
-          `<button class="num-btn share-opt share-frac" data-k="${n}" data-v="1/${n}" aria-label="un ${n === 2 ? 'demi' : n === 3 ? 'tiers' : 'quart'}">${SHARE_FRACS[n].sym}</button>`,
+          `<button class="num-btn share-opt share-frac" data-voix="choix" data-say="un ${n === 2 ? 'demi' : n === 3 ? 'tiers' : 'quart'}" data-k="${n}" data-v="1/${n}" aria-label="un ${n === 2 ? 'demi' : n === 3 ? 'tiers' : 'quart'}">${SHARE_FRACS[n].sym}</button>`,
       )
       .join('');
     good = r.n;

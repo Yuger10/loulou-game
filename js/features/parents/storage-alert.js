@@ -18,7 +18,7 @@ on('storage:error', (/** @type {StorageError} */ err) => {
   if (warned) return;
   warned = true;
   const msg = err && err.op === 'lecture' ? UNREADABLE_MESSAGE : CHILD_MESSAGE;
-  showToast('⚠️ ' + msg);
+  showToast('⚠️ ' + msg, '');
   speak(msg);
 });
 

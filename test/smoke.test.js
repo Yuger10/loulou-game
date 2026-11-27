@@ -300,7 +300,7 @@ setTimeout(() => {
     ev("addItem('coquillage',2); addItem('ruban',1)");
     ev("currentTab='fusionner'; renderMarche()");
     const craft = d.querySelector('[data-craft="collier"]');
-    check('fusion possible', craft && !craft.disabled);
+    check('fusion possible', craft && craft.getAttribute('aria-disabled') !== 'true');
     craft.click();
     check('collier créé', ev("countItem('collier')") === 1);
     ev("currentTab='vendre'; renderMarche()");

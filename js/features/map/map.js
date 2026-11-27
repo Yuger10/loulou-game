@@ -76,8 +76,8 @@ function renderMapTabs(saison) {
         a = ARCHIPELAGOS[s];
       if (!archipelagoUnlocked(s)) {
         playSound('wrong');
-        speak(`${a.name} s'ouvrira au niveau ${a.level}. Continue tes missions !`);
-        showToast(`🔒 ${a.name} : niveau ${a.level}`);
+        speak(`${a.name} s'ouvrira au niveau ${a.level}. Continue tes missions !`, { interrupt: true, demand: true });
+        showToast(`🔒 ${a.name} : niveau ${a.level}`, '');
         return;
       }
       playSound('tap');
@@ -269,10 +269,11 @@ function sailTo(id) {
   })();
 }
 
-registerView('carte', () => {
+registerView('carte', ({ silent }) => {
   renderMap();
   renderIslandCard();
   renderLevelPill();
+  if (!silent) speak('La carte');
 });
 
 // la garde-robe redemande la carte (le bateau porte la tenue)

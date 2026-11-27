@@ -65,6 +65,13 @@ function timeLabel(hour, minute) {
   return `${h} h 45`;
 }
 
+// « 3 h 30 » se dit « 3 heures 30 », « 1 h » « 1 heure »
+/** @param {string} label l'heure affichée */
+function timeSay(label) {
+  const [h, , m] = label.split(' ');
+  return `${h} heure${h === '1' ? '' : 's'}${m ? ' ' + m : ''}`;
+}
+
 function renderClock() {
   setupLives('clock');
   const dd = gameDiff();
@@ -87,7 +94,10 @@ function renderClock() {
     ${clockFaceHtml(hour, minute)}
     <div class="clock-options">
       ${shuffle([...options])
-        .map((o) => `<button type="button" class="clock-opt-btn" data-v="${o}">${o}</button>`)
+        .map(
+          (o) =>
+            `<button type="button" class="clock-opt-btn" data-voix="choix" data-say="${timeSay(o)}" data-v="${o}">${o}</button>`,
+        )
         .join('')}
     </div>
   `);

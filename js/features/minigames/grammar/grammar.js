@@ -69,7 +69,7 @@ function renderDeterminants() {
       <span class="det-noun">${shown}</span>
     </div>
     <div class="det-options">
-      ${options.map((o) => `<button type="button" class="det-btn" data-v="${o}">${o}</button>`).join('')}
+      ${options.map((o) => `<button type="button" class="det-btn" data-voix="lire" data-v="${o}">${o}</button>`).join('')}
     </div>
   `);
   bindQuit();

@@ -7,7 +7,7 @@
    Pas de minuteur sur ce jeu (voir NO_TIMER_KINDS dans difficulty.js). */
 import { calendarUsesWeekdayOrder, calendarWeekdayCount } from '../../../entities/difficulty/index.js';
 import { pickRandom, random, shuffle } from '../../../shared/lib/index.js';
-import { openModal, setHandler, speak } from '../../../shared/ui/index.js';
+import { openModal, setHandler } from '../../../shared/ui/index.js';
 import { gameDiff } from '../../adaptive/index.js';
 import { hintOrderStep, registerHints, setHintQuestion } from '../../hints/index.js';
 import {
@@ -62,12 +62,10 @@ function renderSeasonGuess() {
     ${livesBar()}
     <div class="season-scene">${correct.scene}</div>
     <div class="season-options">
-      ${shown.map((o) => `<button type="button" class="season-btn" data-v="${o.name}">${o.name}</button>`).join('')}
+      ${shown.map((o) => `<button type="button" class="season-btn" data-voix="choix" data-say="${o.name}" data-v="${o.name}">${o.name}</button>`).join('')}
     </div>
   `);
-  bindQuit();
-  // annonce les 3 mots proposés (vocabulaire), un peu après la consigne
-  setTimeout(() => speak(shown.map((o) => o.name).join(', ')), 1600);
+  bindQuit(); // lit la consigne, puis les saisons proposées (data-voix="choix")
   setSolution([solSel('.season-btn', 'v', correct.name)]);
   setHintQuestion('calendar', { kind: 'season', correct }, { choices: '.season-btn' });
   document.querySelectorAll('.season-btn').forEach((btn) => {
@@ -93,11 +91,11 @@ function renderWeekdayOrder(dd) {
   const q = { kind: 'week', seq, idx: 0 }; // q.idx : où en est l'enfant (pour les indices)
 
   openModal(`
-    ${gameHeader('📅 Les jours de la semaine', `Touche les jours dans l'ordre : ${seq[0]} → ${seq[seq.length - 1]}`)}
+    ${gameHeader('📅 Les jours de la semaine', `Touche les jours dans l'ordre : ${seq[0]} → ${seq[seq.length - 1]}`, `Touche les jours dans l'ordre, de ${seq[0]} à ${seq[seq.length - 1]}`)}
     ${livesBar()}
     ${progressDots(0, seq.length)}
     <div class="weekday-row">
-      ${nums.map((w) => `<button type="button" class="weekday-btn" data-w="${w}">${w}</button>`).join('')}
+      ${nums.map((w) => `<button type="button" class="weekday-btn" data-voix="choix" data-say="${w}" data-w="${w}">${w}</button>`).join('')}
     </div>
   `);
   bindQuit();

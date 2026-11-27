@@ -31,7 +31,7 @@ import { buddyReact, COMPANIONS, companionSVG, currentCompanion } from '../../en
 import { save, state } from '../../entities/game-state/index.js';
 import { party, race } from '../../entities/player/index.js';
 import { pickRandom } from '../../shared/lib/index.js';
-import { onModalChange, playSound, setHandler, speak } from '../../shared/ui/index.js';
+import { bindSpeakButtons, onModalChange, playSound, setHandler, speak } from '../../shared/ui/index.js';
 
 const HINT_IDLE_MS = 10000; // sans toucher l'écran, le bouton se propose
 const HINT_LEVELS = 2;
@@ -275,7 +275,7 @@ function useHint() {
   if (!hint.on) return null;
   playSound('hint');
   if (hint.level >= HINT_LEVELS) {
-    speak(pickRandom(HINT_CHEERS));
+    speak(pickRandom(HINT_CHEERS), { interrupt: true, demand: true });
     buddyReact('cheer', 1200);
     return null;
   }
@@ -287,7 +287,7 @@ function useHint() {
   hint.level++;
   hint.nudged = false;
   clearTimeout(hint.idle);
-  showHint(h, hint.level);
+  showHint(h, hint.level, { demand: true });
   countHint(kind);
   buddyReact(hint.level >= HINT_LEVELS ? 'cheer' : 'think', 1400);
   renderHintButton();
@@ -305,7 +305,7 @@ function hintShowFirst(giver) {
   if (!h) return false;
   hint.level = 1;
   hint.nudged = false;
-  showHint(h, 1, giver);
+  showHint(h, 1, { giver });
   renderHintButton();
   armHintIdle();
   if (hintPolicy.onUse) hintPolicy.onUse(kind, 1);
@@ -316,9 +316,10 @@ function hintShowFirst(giver) {
 /**
  * @param {Hint} h
  * @param {number} level
- * @param {string} [giverOverride]
+ * @param {{ giver?: string, demand?: boolean }} [opts] `giver` : le compagnon qui montre l'indice à la place
+ *   de celui du jour ; `demand` : l'enfant a demandé l'indice (bouton 💡), dit même voix coupée
  */
-function showHint(h, level, giverOverride) {
+function showHint(h, level, opts = {}) {
   const body = document.getElementById('modal-body');
   if (!body) return;
   let bub = body.querySelector('.hint-bubble');
@@ -331,17 +332,19 @@ function showHint(h, level, giverOverride) {
     if (anchor) anchor.insertAdjacentElement('afterend', bub);
     else body.prepend(bub);
   }
-  const who = giverOverride || hintPolicy.giver(hint.kind, level);
+  const who = opts.giver || hintPolicy.giver(hint.kind, level);
   bub.dataset.level = String(level);
   // espaces insécables avant « : ! ? » (typographie française, pas de « : » seul en début de ligne)
   const text = h.say.replace(/ ([:;!?»])/g, '\u00a0$1').replace(/« /g, '«\u00a0');
   bub.innerHTML = `<span class="hint-bface" aria-hidden="true">${companionSVG(who, 'think')}</span>
-    <span class="hint-btext"><b class="hint-n">💡 ${level}</b> ${text}${h.fx.html ? `<span class="hint-extra">${h.fx.html}</span>` : ''}</span>`;
+    <span class="hint-btext"><b class="hint-n">💡 ${level}</b> ${text}${h.fx.html ? `<span class="hint-extra">${h.fx.html}</span>` : ''}</span>
+    <button type="button" class="btn-speak" data-say="${h.say.replace(/<[^>]+>/g, '').replace(/"/g, '&quot;')}" aria-label="Écouter l'indice">🔈</button>`;
+  bindSpeakButtons();
   bub.classList.remove('pop');
   void bub.offsetWidth;
   bub.classList.add('pop');
   applyHintFx(h.fx, level);
-  speak(h.say);
+  speak(h.say, { interrupt: true, demand: !!opts.demand });
 }
 
 function hintChoicesLeft() {

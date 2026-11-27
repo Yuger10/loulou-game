@@ -418,7 +418,7 @@ function openBackup() {
     playSound('tap');
     const r = await exportBackupFile();
     if (r !== 'cancelled') {
-      showToast('💾 Sauvegarde enregistrée');
+      showToast('💾 Sauvegarde enregistrée', '');
       const l = $('bk-last');
       if (l) l.textContent = lastBackupText();
       renderBackupReminder();
@@ -432,13 +432,13 @@ function openBackup() {
     out.hidden = false;
     try {
       await navigator.clipboard.writeText(code);
-      showToast('📋 Code copié');
+      showToast('📋 Code copié', '');
       setBackupMeta({ lastBackupAt: new Date().toISOString() });
       renderBackupReminder();
     } catch {
       out.focus();
       out.select();
-      showToast('Sélectionnez le code puis copiez-le');
+      showToast('Sélectionnez le code puis copiez-le', '');
     }
   });
   /** @param {BackupCheck} result */
@@ -463,6 +463,7 @@ function openBackup() {
         failed
           ? `⚠️ Restauration incomplète : ${failed} partie${failed > 1 ? 's' : ''} non enregistrée${failed > 1 ? 's' : ''} (mémoire pleine ?)`
           : '✅ Partie restaurée',
+        '', // écran d'adulte : message muet
       );
     });
   };

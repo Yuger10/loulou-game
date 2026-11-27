@@ -181,7 +181,7 @@
     .vol-container-btn,
     .vol-opt-btn,
     .money-pile-btn
-  ):not(:disabled):active {
+  ):not(:disabled):not([aria-disabled="true"]):active {
   transform: translateY(6px);
   box-shadow:
     0 0 0 var(--edge, #c4d7dc),

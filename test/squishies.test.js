@@ -688,7 +688,8 @@ const ALL = () => ev('Object.keys(SQUISHIES)');
     );
     check(
       'il manque des doubles : « Encore 2 doubles », bouton inactif',
-      d.getElementById('sqm-trade').disabled && /Encore 2 doubles/.test(d.getElementById('sqm-trade').textContent),
+      d.getElementById('sqm-trade').getAttribute('aria-disabled') === 'true' &&
+        /Encore 2 doubles/.test(d.getElementById('sqm-trade').textContent),
     );
     check('les silhouettes des manquants', d.querySelectorAll('.sqm-grid .sq-cell.missing').length === 16);
     setOwned({ donut: 3, chat: 2 });
@@ -696,7 +697,8 @@ const ALL = () => ev('Object.keys(SQUISHIES)');
     d.querySelector('[data-want="grenouille"]').click();
     check(
       "assez de doubles : on choisit, le bouton s'active",
-      !d.getElementById('sqm-trade').disabled && !!d.querySelector('[data-want="grenouille"].selected'),
+      d.getElementById('sqm-trade').getAttribute('aria-disabled') !== 'true' &&
+        !!d.querySelector('[data-want="grenouille"].selected'),
     );
     d.getElementById('sqm-trade').click();
     check(
@@ -723,7 +725,8 @@ const ALL = () => ev('Object.keys(SQUISHIES)');
     d.getElementById('sqm-buy').click();
     check(
       'après 3 achats : « Reviens demain » et le bouton inactif',
-      d.getElementById('sqm-buy').disabled && /Reviens demain/.test(d.querySelector('.sqm-shop').textContent),
+      d.getElementById('sqm-buy').getAttribute('aria-disabled') === 'true' &&
+        /Reviens demain/.test(d.querySelector('.sqm-shop').textContent),
     );
     d.getElementById('sqm-go').click();
     check('« Ouvrir mes boîtes » mène à la chambre', shown('#sq-room[data-tab="collection"]'));
