@@ -243,10 +243,13 @@ function speak(text, opts = {}) {
 // `[data-say]` qui n'a pas d'action (pas actif, ou bouton sans handler comme
 // l'image d'un objet du marché). Un élément qui agit garde son handler : son
 // `data-say` lui sert de libellé (écoute au doigt). Les choix d'un mini-jeu
-// (`data-voix`) sont des réponses, jamais des boutons d'écoute.
+// (`data-voix`) sont des réponses, jamais des boutons d'écoute. Un 🔈 déjà
+// branché garde aussi son handler (il lit son `data-say` au moment du toucher) :
+// un indice ou un conseil affiché en cours de jeu rappelle cette fonction, et
+// ne doit pas défaire le 🔈 de la consigne qui relit aussi les choix (`bindQuit`).
 function bindSpeakButtons() {
   document.querySelectorAll('[data-say]').forEach((b) => {
-    if (!b.matches('.btn-speak') && (b.hasAttribute('data-voix') || hasHandler(b, 'click'))) return;
+    if (hasHandler(b, 'click') || (!b.matches('.btn-speak') && b.hasAttribute('data-voix'))) return;
     setHandler(b, 'click', (e) => {
       e.stopPropagation();
       // le sélecteur garantit data-say
