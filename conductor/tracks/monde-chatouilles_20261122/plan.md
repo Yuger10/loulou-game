@@ -27,8 +27,8 @@ Les numéros entre parenthèses renvoient aux lignes de « Comportement attendu 
 - [x] 1.7 `js/features/minigames/coding/coding.js`, `coding.css`, `index.js` : génération (G1 à G6), rendu, trajet pas à pas, erreurs, textes C1 à C11, indices H1, `setSolution`, `registerGame('coding', renderCoding)`, `registerHints('coding', codingHints)`.
 - [x] 1.8 `js/slices.cjs` : slice `minigame-coding` (couche `features`, après le moteur), sa feuille dans `css` et dans `CSS_ORDER` avant `island.css` ; `import '../features/minigames/coding/index.js';` dans `js/app/main.js` (avec les autres mini-jeux, comme `nesting` ligne 55) ; puis `bun run sync`.
 - [x] 1.9 `bun run typecheck` et `bun run check` verts ; `bun run verify` avant la PR.
-- [ ] 1.10 Doc : ligne « 🪶 Le chemin de la plume » dans le PRD (section de la version), `conductor/tracks.md` (phase 1 livrée).
-- [ ] 1.11 Conductor : vérification manuelle (S17) par Amrou sur téléphone.
+- [x] 1.10 Doc : ligne « 🪶 Le chemin de la plume » dans le PRD (section de la version), `conductor/tracks.md` (phase 1 livrée). Fait à la livraison (v71) : section du PRD, registre.
+- [x] 1.11 Conductor : vérification manuelle (S17) par Amrou sur téléphone. Non faite par l'agent (Amrou n'est pas joignable) : proposée dans le corps de la PR.
 
 ### Phase 2 : « La phrase rigolote » (`sentence`), après la phase 1
 - [x] 2.1 Tests d'abord dans `test/chatouilles.test.js`, section « La phrase rigolote » :
@@ -42,8 +42,8 @@ Les numéros entre parenthèses renvoient aux lignes de « Comportement attendu 
 - [x] 2.3 `difficulty-s3.js` (`sentenceRound` typé strictement avec `@typedef SentenceRound`) et son ajout au bloc `export { … } from './difficulty-s3.js'` de `js/entities/difficulty/index.js`, `difficulty.js` (lignes `sentence` de `NO_TIMER_KINDS` et `GENEROUS_KINDS`), `game-types.js` (📝 « La phrase rigolote », 6 ans et plus), `adaptive.js`, `parents.js` (`lire`) (28 à 30).
 - [x] 2.4 `js/features/minigames/sentence/sentence.js`, `sentence.css`, `index.js` : banque T4, rendu, textes S1 à S5, indices H2, `setSolution`, inscription.
 - [x] 2.5 `js/slices.cjs` : slice `minigame-sentence` ; `import '../features/minigames/sentence/index.js';` dans `js/app/main.js` ; `bun run sync` ; `bun run typecheck`, `bun run check` et `bun run verify` verts.
-- [ ] 2.6 Doc : PRD, `conductor/tracks.md`.
-- [ ] 2.7 Conductor : vérification manuelle (S18) avec la joueuse.
+- [x] 2.6 Doc : PRD, `conductor/tracks.md`. Fait à la livraison (v71).
+- [x] 2.7 Conductor : vérification manuelle (S18) avec la joueuse. Non faite par l'agent : proposée dans le corps de la PR.
 
 ### Phase 3 : l'île (après les phases 1 et 2, `saison3-ouverture` et l'île `coffres`)
 - [x] 3.1 Tests d'abord dans `test/chatouilles.test.js`, sections « L'île », « Ouverture au niveau 94 », « Série de squishies Guilis », « Les chatouilles », « Le jeu de l'île », « Histoire » :
@@ -59,8 +59,8 @@ Les numéros entre parenthèses renvoient aux lignes de « Comportement attendu 
 - [x] 3.3 Features : `island-s3.js` (`ISLE_SCENERY_S3.chatouilles`), `island.js` (toucher K5), `tickle.js` (nouveau, K1 à K4, lit `CHARACTER_TICKLES`, typé strictement comme tout le code de la track ; exporté par l'`index.js` de la slice `island` si une autre slice en a besoin), `island-view.js` (bouton du dialogue), `island.css` (règle `.emoji.giggle-wiggle` de la scène et son repli `prefers-reduced-motion`), dessins des 6 modèles dans `SQ_ART_S3` de `js/features/squishies/squishy-art-s3.js` (préparé par `saison3-ouverture`, type `SqArt`, spec D24) et, dans `squishy-art.js`, la seule ligne `guilis: ['#FFF1B8', '#8A3D6B'],` à la fin de `SQ_BOX_COLORS`, `story-s3.js` (I8 dans `STORY_S3`), `episodes.js` (I9), `music.js` (I6), thème I7 dans `design-system-v21.css`.
 - [x] 3.4 Morceau n° 4 de la carte de Zap : tests 46 et 46b (`zapMapPieces() === 4`, phrase dite exacte de 46b, `.story-zapmap.happy svg.zap-map[data-found="4"]`, `zapMapSay(4)` dit après le `success`) ; aucun code de carte à écrire.
 - [x] 3.5 `js/slices.cjs` : `js/features/island/tickle.js` dans les fichiers de la slice `island` ; `bun run sync` ; `bun run typecheck`, `bun run check` et `bun run verify` verts.
-- [ ] 3.6 Doc : PRD (idée de la joueuse visible), `conductor/tracks.md` (track faite), `conductor/niveaux.md` (la phrase « Dans le jeu, aujourd'hui » cite le Monde des Chatouilles).
-- [ ] 3.7 Conductor : vérification manuelle (S19 à S21) avec Amrou et la joueuse.
+- [x] 3.6 Doc : PRD (idée de la joueuse visible), `conductor/tracks.md` (track faite), `conductor/niveaux.md` (la phrase « Dans le jeu, aujourd'hui » cite le Monde des Chatouilles). Fait (v71).
+- [x] 3.7 Conductor : vérification manuelle (S19 à S21) avec Amrou et la joueuse. Non faite par l'agent : proposée dans le corps de la PR.
 
 ## Preuves
 
@@ -68,15 +68,17 @@ Chaque affirmation pointe vers une preuve : commande exacte, code de sortie, che
 
 | Ligne du smoke test | Résultat | Niveau | Preuve |
 |---|---|---|---|
-| S1 à S3 | à faire | test-verified | `bun run test chatouilles` (exit 0) |
-| S4, S5 | à faire | runtime-verified | `bun run test chatouilles` (exit 0) |
-| S6, S10 | à faire | test-verified | `bun run test games` (exit 0) |
-| S7 | à faire | test-verified | `bun run test companions` (exit 0) |
-| S8, S9 | à faire | test-verified · runtime-verified | `bun run test chatouilles` (exit 0) |
-| S11 | à faire | test-verified | `bun run test chatouilles` et `bun run test smoke` (exit 0) |
-| S12 | à faire | test-verified | `bun run test sounds` (exit 0) |
-| S13 à S16 | à faire | runtime-verified | `bun run test chatouilles` (exit 0) |
+| S1 à S3 | réussi | test-verified | `bun run test chatouilles-coding` (exit 0) ; rouge constaté avant le code : « codingRound is not defined », « codingBuildRound is not defined » |
+| S4, S5 | réussi | runtime-verified (jsdom) | `bun run test chatouilles-coding-ecran` (exit 0) ; rouge avant le code : « codingShow is not defined » |
+| S6, S10 | réussi | test-verified | `bun run test games` (exit 0), contrôles indépendants `coding` et `sentence` |
+| S7 | réussi | test-verified | `bun run test companions` (exit 0) ; `bun run test chatouilles-coding-parties chatouilles-sentence-ecran` (tables H1 et H2) |
+| S8, S9 | réussi | test-verified · runtime-verified | `bun run test chatouilles-sentence` (exit 0) ; rouge avant le code : « SENTENCES is not defined », « sentenceShow is not defined » |
+| S11 | réussi | test-verified | `bun run test chatouilles-coding chatouilles-sentence` et `bun run test smoke` (exit 0) |
+| S12 | réussi | test-verified | `bun run test sounds` (exit 0) : trois glissés sinus, famille 0,9 |
+| S13 à S16 | réussi | runtime-verified (jsdom) | `bun run test chatouilles-ile chatouilles-objets chatouilles-histoire chatouilles-guilis` (exit 0) ; rouge avant le code : « CHARACTER_TICKLES is not defined », « ISLE_SCENERY.chatouilles is not a function » |
 | S17 à S21 | à faire | 👤 | compte rendu d'Amrou dans la PR |
+
+Vérification complète : `bun run check` et `bun run verify`, sortie 0 (27/11/2026).
 
 ## Journal de décisions
 
@@ -94,7 +96,20 @@ En ajout seul : une décision fausse reçoit une nouvelle ligne qui la remplace,
 | 8 | Les dessins des 6 squishies (`SQ_ART`) vont dans `SQ_ART_S3` de `squishy-art-s3.js`, préparé vide par `saison3-ouverture`, pas dans `squishy-art.js` | règle commune (`checklist-ile.md` section 2 bis, complétée le 22/11/2026) | `squishy-art.js` fait 640 lignes et une île y coûte environ 54 : avec cinq îles il dépasserait 800 | `conductor/checklist-ile.md` (section 2 bis) ; `wc -l js/features/squishies/squishy-art.js` (640) | nouvelle |
 | 9 | Boîte `guilis` : `SQ_BOX_COLORS.guilis = ['#FFF1B8', '#8A3D6B']` (jaune plume et prune du thème I7) | défaut de Claude, à juger à la revue par Amrou | comme les autres îles de la saison 3, la série a sa couleur de boîte ; le rose du thème se confondrait avec la boîte des `desserts` (`#FFB8D6`) | `js/features/squishies/squishy-art.js:604-614` ; spec I7 | nouvelle |
 
+| 10 | Une seule PR pour toute la track, livrée par `bun run release track` (v71), empilée sur la PR de `monde-coffres` | Amrou (consigne du workflow du 26/11/2026) | prime sur le découpage en trois PR écrit plus haut | corps de la PR | remplace la livraison par phases de la ligne 1 |
+| 11 | Les tests tiennent en neuf suites `test/chatouilles-*.test.js` et un harnais `test/tools/chatouilles.js`, pas dans un seul `test/chatouilles.test.js` | agent | plafond de 300 lignes par fichier et 50 lignes par fonction du job « violations ajoutées » (`checklist-ile.md`, section 2 bis) ; `bun run test chatouilles` les lance toutes | `.cothon/presets/oxlint/qualite.json` | nouvelle |
+| 12 | `coding.js` découpé d'emblée en quatre fichiers (`coding-grid.js`, `coding-draw.js`, `coding-hints.js`, `coding.js`), et la banque de phrases à part (`sentence-bank.js`) | agent | même plafond de 300 lignes ; la spec prévoyait `coding-grid.js` seulement au-delà de 800 lignes | `wc -l js/features/minigames/coding/*.js` | nouvelle |
+| 13 | `sentenceRound` calcule `{ n: palier + 2, pic: palier <= 2 }` au lieu d'un tableau lu par `tierValue` | agent | `difficulty-s3.js` devait rester à 300 lignes au plus ; les valeurs sont celles de T3, comparées une à une par le test | `test/chatouilles-sentence.test.js` (T3) | nouvelle |
+| 14 | Une fonction partagée `giggle(el)` dans `js/shared/ui/feedback.js` (classe `giggle-wiggle` relancée et son `giggle`) | agent | trois appelants (`coding`, `sentence`, l'île) ; la spec décrit le geste sans nommer de fonction | `js/shared/ui/feedback.js` | nouvelle |
+| 15 | Le premier pas du trajet part 450 ms après « Go », comme les suivants | agent, défaut le plus simple | la spec dit « une instruction toutes les 450 ms » sans préciser le premier ; ce temps laisse voir la plume revenir au départ | `coding.js` (`codingGo`) | à juger par Amrou (S17) |
+| 16 | Quand l'étiquette posée finit la phrase, le mot seul n'est pas dit : la phrase entière l'est tout de suite | agent | « une phrase dite = un seul `speak` » : le mot serait coupé par la phrase | `sentence.js` (`sentenceTap`) | à juger par Amrou (S18) |
+| 17 | La deuxième erreur sur une phrase garde les essais déjà perdus (la relance n'appelle pas `setupLives`) | agent, option prudente | anti-devinette : une relance ne doit pas rendre des essais | `test/chatouilles-sentence-ecran.test.js` (critère 24) | nouvelle |
+| 18 | Indice 2 de `coding` : si le premier segment va jusqu'à l'ami, une seule case est montrée, même après un virage | agent | « jamais tout le chemin » | `coding-hints.js` (`codingFirstCells`) | nouvelle |
+| 19 | Un second toucher pendant le rire de bonjour n'ouvre pas un second dialogue ; si la scène a été redessinée entre-temps, le dialogue ne s'ouvre pas | agent | éviter deux fenêtres à 600 ms d'écart | `tickle.js` (`tickleHelloThen`) | nouvelle |
+
 ## Écarts et non vérifié
 
 - Les tests d'onglets de la carte (3 onglets) sont dans la track Crayons, pas ici.
 - L'écoute du son `giggle`, le rendu des dessins et le ressenti des chatouilles sont des lignes 👤.
+- Le jeu n'a pas été lancé dans un navigateur par l'agent : les écrans sont vérifiés dans jsdom (structure, états, voix), pas leur rendu à 360 px (S17, S21). Les dessins des 4 personnages, des 6 squishies et du paysage ont été regardés en image par l'agent.
+- `test/rythme-lecture.test.js` (suite existante, sensible au temps) a échoué une fois pendant un `bun run check` lancé sur une machine très chargée, puis est repassée ; elle ne touche pas à cette track.

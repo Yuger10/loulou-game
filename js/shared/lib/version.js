@@ -6,7 +6,7 @@
    `bun run sync` écrit APP_LABEL dans le cache du service worker
    (sw.js : `lagon-v66.1`), et l'espace parents l'affiche.
    test/update.test.js vérifie que sw.js et ce fichier disent la même chose. */
-const APP_VERSION = 70;
+const APP_VERSION = 71;
 const APP_PATCH = 0;
 const APP_LABEL = APP_PATCH ? `${APP_VERSION}.${APP_PATCH}` : String(APP_VERSION);
 
