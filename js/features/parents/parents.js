@@ -538,4 +538,4 @@ function openParents() {
 // est gérée par js/features/rest
 on('nav:parents', openParents);
 
-export { openParentGate, openParents, PAUSE_CHOICES, pauseDue, pauseMinutesLeft, startPlayTimeTracker };
+export { openParentGate, openParents, pauseDue, pauseMinutesLeft, startPlayTimeTracker };
