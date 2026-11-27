@@ -61,7 +61,7 @@ const SKILL_GROUPS = [
     games: ['memory', 'simon', 'diff', 'sequence', 'rangement', 'order', 'code'],
   },
   // la musique pour elle-même (saison 3) : le rythme et grave ou aigu y rejoignent les notes
-  { id: 'musique', emoji: '🎵', name: 'Musique', games: ['rhythm', 'pitch', 'notes'] },
+  { id: 'musique', emoji: '🎵', name: 'Musique', games: ['rhythm', 'pitch', 'notes', 'melody'] },
 ];
 // activités suivies qui ne sont pas des mini-jeux du choix des jeux
 // (les boîtes de rangement de la chambre à squishies, v53 : un tri)

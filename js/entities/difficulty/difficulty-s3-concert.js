@@ -35,4 +35,30 @@ function notesRound(dd) {
   return tierValue(NOTES_TIERS, dd);
 }
 
-export { notesRound };
+/* ---------------------------------------------------------------------
+   LA MÉLODIE (Île du Grand Concert, saison 3) : rejouer une petite mélodie
+   sur le xylophone, d'abord à l'oreille et aux points, puis en la lisant.
+     palier 1   3 notes sur 3 lames, les points restent visibles
+     palier 2   4 notes sur 5 lames, les points restent visibles
+     palier 3   5 notes, les points se cachent après l'écoute
+     palier 4   5 notes sur 8 lames, lues sur la portée (notes colorées)
+     palier 5   6 notes lues sur la portée, sans couleurs
+   `n` : notes de la mélodie ; `show` : points ou portée ; `hide` : cachés
+   après l'écoute ; `read` : on lit avant d'entendre (la mélodie n'est jouée
+   qu'après la réussite). Pas de minuteur ; essais comme Simon.
+   --------------------------------------------------------------------- */
+/** @typedef {{ n: number, lames: number[], show: 'dots' | 'staff', hide: boolean, read: boolean, colors: boolean }} MelodyRound */
+/** @type {Record<number, MelodyRound>} */
+const MELODY_TIERS = {
+  1: { n: 3, lames: [0, 2, 4], show: 'dots', hide: false, read: false, colors: true },
+  2: { n: 4, lames: CONCERT_LOW, show: 'dots', hide: false, read: false, colors: true },
+  3: { n: 5, lames: CONCERT_LOW, show: 'dots', hide: true, read: false, colors: true },
+  4: { n: 5, lames: CONCERT_ALL, show: 'staff', hide: false, read: true, colors: true },
+  5: { n: 6, lames: CONCERT_ALL, show: 'staff', hide: false, read: true, colors: false },
+};
+/** @param {number} dd le palier de difficulté @returns {MelodyRound} */
+function melodyRound(dd) {
+  return tierValue(MELODY_TIERS, dd);
+}
+
+export { melodyRound, notesRound };

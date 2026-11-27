@@ -363,6 +363,7 @@ const LIVES_TABLE = {
   simon: { 2: 3, 3: 3, 4: 2, 5: 2 },
   rhythm: { 2: 3, 3: 3, 4: 2, 5: 2 }, // comme Simon : une suite à rejouer
   order: { 2: 3, 3: 3, 4: 2, 5: 2 }, // comme Simon : une commande à retenir
+  melody: { 2: 3, 3: 3, 4: 2, 5: 2 }, // comme Simon : une suite de notes à rejouer
   trace: { 2: 4, 3: 4, 4: 3, 5: 3 }, // tracer : plusieurs traits par mission, un essai ne part qu'au 3ᵉ raté
   problems: { 2: 4, 3: 4, 4: 3, 5: 3 }, // problèmes : plusieurs étapes notées par mission, un essai de plus
   default: { 2: 3, 3: 2, 4: 2, 5: 1 }, // jeux « une seule bonne réponse »
@@ -481,6 +482,7 @@ const NO_TIMER_KINDS = [
   'coding',
   'sentence',
   'notes',
+  'melody',
 ];
 /**
  * @param {string} kind le type de mini-jeu

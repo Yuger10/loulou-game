@@ -2,7 +2,7 @@
 // (notes) et « La mélodie » (melody), et le groupe « 🎵 Musique » de l'espace
 // parents : critères 12 à 14 et 24 de la spec. Harnais : test/tools/concert.js.
 const t = require('./tools/concert.js');
-const { d, ev, json, check, section, all, TIERS } = t;
+const { d, ev, json, check, section, all, MELODY_T, TIERS } = t;
 
 const group = (id) => ev(`SKILL_GROUPS.find((x) => x.id === ${json(id)})`);
 const idx = (id) => ev(`SKILL_GROUPS.findIndex((x) => x.id === ${json(id)})`);
@@ -33,6 +33,18 @@ function notes() {
   ]);
 }
 
+function melody() {
+  inscrit({ key: 'melody', emoji: '🎶', name: 'La mélodie', cheer: 'Tu rejoues les mélodies de mieux en mieux !' });
+  check('critère 24 : « La mélodie » a les essais de Simon (illimités, 3, 3, 2, 2)', () => [
+    json(ev('LIVES_TABLE.melody')) === json({ 2: 3, 3: 3, 4: 2, 5: 2 }),
+    ev('livesFor("melody", 1)') === Infinity,
+    json([2, 3, 4, 5].map((p) => ev(`livesFor("melody", ${p})`))) === json([3, 3, 2, 2]),
+  ]);
+  check('table `melodyRound` : les 5 objets de la spec', () =>
+    TIERS.map((p) => json(ev(`melodyRound(${p})`)) === json(MELODY_T[p])),
+  );
+}
+
 // critère 13 : le groupe « Musique », après « Mémoire et logique »
 function groupe() {
   check('critère 13 : un groupe 🎵 « Musique », après le groupe « logique »', () => [
@@ -40,8 +52,8 @@ function groupe() {
     idx('musique') > idx('logique'),
     ev('SKILL_GROUPS.filter((x) => x.id === "musique").length') === 1,
   ]);
-  check('critère 13 : il contient le rythme, grave ou aigu et les notes', () => [
-    json(group('musique').games) === json(['rhythm', 'pitch', 'notes']),
+  check('critère 13 : il contient le rythme, grave ou aigu, les notes et la mélodie', () => [
+    json(group('musique').games) === json(['rhythm', 'pitch', 'notes', 'melody']),
   ]);
   check('critère 13 : « Mémoire et logique » n’a plus le rythme ni grave ou aigu, et garde Simon', () => [
     !group('logique').games.includes('rhythm'),
@@ -49,7 +61,7 @@ function groupe() {
     ['memory', 'simon', 'diff', 'sequence', 'rangement'].every((k) => group('logique').games.includes(k)),
   ]);
   check('chaque jeu de musique est dans un seul groupe', () =>
-    ['rhythm', 'pitch', 'notes', 'simon'].map(
+    ['rhythm', 'pitch', 'notes', 'melody', 'simon'].map(
       (k) => ev(`SKILL_GROUPS.filter((x) => x.games.includes(${json(k)})).length`) === 1,
     ),
   );
@@ -72,7 +84,7 @@ function parents() {
     box.querySelector('h4').textContent === '🎵 Musique',
     row('Le rythme magique').querySelector('.sk-detail').textContent.startsWith('7 réussies · 1 ratée'),
     row('Grave ou aigu ?').querySelector('.sk-detail').textContent.startsWith('3 réussies'),
-    !!row('Do, ré, mi'),
+    !!row('Do, ré, mi') && !!row('La mélodie'),
   ]);
   check('critère 14 : « Mémoire et logique » garde Simon, sans le rythme', () => [
     logic.textContent.includes('Les couleurs'),
@@ -90,6 +102,8 @@ function parents() {
   await t.start();
   section('Do, ré, mi : inscription (critère 12)');
   notes();
+  section('La mélodie : inscription (critère 24)');
+  melody();
   section('Espace parents : le groupe « Musique » (critères 13 et 14)');
   groupe();
   parents();

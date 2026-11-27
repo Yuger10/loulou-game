@@ -475,6 +475,21 @@ const INDEPENDENT = {
     const good = pool.filter((b) => (ask === 'name' ? b.textContent.trim() : NAMES[nOf(b)]) === name);
     return sol.length === 1 && good.length === 1 && good[0] === el;
   },
+  // melody : la mélodie relue sur la partition (les points, ou la place des têtes sur la
+  // portée, D9 : n = (104 - cy) / 8) est la suite des lames de la solution, octave comprise
+  melody(sol) {
+    const marks = [...d.querySelectorAll('#melody-score .ml-note')];
+    const seq = marks.map((el) => Number(el.dataset.n));
+    const heads = [...d.querySelectorAll('#melody-staff .note-head')];
+    const read = heads.map((h) => (104 - Number(h.getAttribute('cy'))) / 8);
+    const lames = sol.map((s) => d.querySelector(s));
+    return (
+      seq.length >= 3 &&
+      lames.every((el) => el.matches('.xylo-lame')) &&
+      JSON.stringify(lames.map((el) => Number(el.dataset.n))) === JSON.stringify(seq) &&
+      (!d.getElementById('melody-staff') || JSON.stringify(read) === JSON.stringify(seq))
+    );
+  },
   // trace : chaque élément porte les points de son trait, et la solution couvre
   // tous les traits de tous les glyphes de la bande, dans l'ordre
   trace(sol) {
@@ -511,6 +526,8 @@ async function playToWin(key, tier) {
   if (INDEPENDENT[key] && !INDEPENDENT[key](sol)) return "la solution ne correspond pas à l'écran";
   if (key === 'simon' && !(await waitFor(() => (d.getElementById('simon-state') || {}).textContent === '👆 À toi !')))
     return 'Simon ne rend pas la main';
+  if (key === 'melody' && !(await waitFor(() => !!d.querySelector('#melody-state[data-turn="you"]'))))
+    return 'La mélodie ne rend pas la main';
   for (const s of sol) {
     const el = d.querySelector(s);
     if (!el) return 'élément disparu : ' + s;

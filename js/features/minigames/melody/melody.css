@@ -1,0 +1,53 @@
+/* ---------- Mini-jeu : La mélodie (melody) ----------
+   La partition : des points qui montent et descendent comme la mélodie
+   (paliers 1 à 3, comme les points de « Grave ou aigu ? »), ou la portée
+   (paliers 4 et 5). La hauteur d'un point vient de son style en ligne. */
+.ml-score {
+  position: relative;
+  margin: 0 auto 6px;
+  max-width: 320px;
+  border-radius: var(--radius-lg, 24px);
+  background: linear-gradient(180deg, #fff8f0, #ffe7a8);
+  border: 3px solid #fff;
+}
+.ml-score-dots {
+  display: flex;
+  justify-content: space-around;
+  align-items: flex-end;
+  height: 150px;
+  padding: 0 10px;
+}
+span.ml-note {
+  position: relative;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 3px solid #2b2f6b;
+  transition:
+    transform 0.15s,
+    bottom 0.2s;
+}
+span.ml-note.lit {
+  transform: scale(1.3);
+}
+span.ml-note.done {
+  box-shadow: 0 0 0 4px #6ed38c;
+}
+.ml-staff {
+  width: 100%;
+  max-width: 260px;
+  height: auto;
+}
+/* une tête de note jouée juste : entourée de vert */
+ellipse.ml-note.done {
+  stroke: #2f9551;
+  stroke-width: 4;
+}
+ellipse.ml-note.lit {
+  stroke: #ffd95a;
+  stroke-width: 4;
+}
+.ml-listen {
+  display: block;
+  margin: 0 auto 8px;
+}

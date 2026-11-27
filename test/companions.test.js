@@ -278,6 +278,7 @@ const wrongOf = (sel) => {
           // le jeu reste gagnable après les indices
           if (key === 'simon')
             await waitFor(() => (d.getElementById('simon-state') || {}).textContent === '👆 À toi !', 3000);
+          if (key === 'melody') await waitFor(() => !!d.querySelector('#melody-state[data-turn="you"]'), 3000);
           for (const x of sol) {
             const el = d.querySelector(x);
             if (el) playStep(w, el); // au doigt si l'élément porte data-pts (trace), sinon d'un clic

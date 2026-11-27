@@ -78,6 +78,7 @@ const PROGRESS_CHEERS = {
   coding: 'Tu programmes de mieux en mieux !',
   sentence: 'Tes phrases veulent dire de plus en plus de choses !',
   notes: 'Tu reconnais les notes de mieux en mieux !',
+  melody: 'Tu rejoues les mélodies de mieux en mieux !',
 };
 
 /** @typedef {import('./skill-status.js').SkillRecord} SkillRecord */

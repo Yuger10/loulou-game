@@ -71,6 +71,18 @@ function spyEvents() {
 }
 const themes = () => ev('window.__th').slice();
 
+// les lames qui s'allument (classe `lit`), notées dès qu'elles changent : `lit` ne dure que 200 ms
+function watchLit() {
+  const seen = new Set();
+  const obs = new t.w.MutationObserver((list) =>
+    list.forEach(({ target }) => {
+      if (target.matches('.xylo-lame.lit')) seen.add(Number(target.dataset.n));
+    }),
+  );
+  obs.observe(d.body, { attributes: true, attributeFilter: ['class'], subtree: true });
+  return seen;
+}
+
 // « notes » : la cible et les états lus dans la page
 const stage = () => one('#notes-stage');
 const target = () => Number(stage().dataset.n);
@@ -110,6 +122,7 @@ module.exports = {
   played,
   spyEvents,
   themes,
+  watchLit,
   stage,
   target,
   startNotesUntil,
