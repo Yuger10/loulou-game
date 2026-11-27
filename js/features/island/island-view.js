@@ -40,6 +40,7 @@ import { bindQuit, gameHeader } from '../screen/index.js';
 import { openSeasonPrologue, openStoryChapter, STORY, storySolved } from '../story/index.js';
 import { addCoins } from '../wallet/index.js';
 import { renderLiveIsland } from './island.js';
+import { tickleBind, tickleButtonHTML } from './tickle.js';
 
 /** @param {string} id l'île @param {boolean} [silent] sans son ni annonce */
 function setWorld(id, silent) {
@@ -410,12 +411,14 @@ function openDialogue(charId) {
     </div>
     ${speechBubble(text)}
     ${c.noGames ? '' : '<button class="btn-primary" id="btn-play">Choisir un jeu 🎮</button>'}
+    ${tickleButtonHTML(charId)}
     ${'<button class="btn-craft gift-open" id="btn-gift">🎁 Offrir un objet</button>'}
     ${c.noGames ? '' : '<button class="btn-ghost" id="btn-random">🎲 Surprise</button>'}
     <button class="btn-ghost" id="btn-close">Pas maintenant</button>
   `);
   bindSpeakButtons();
   speak(`${c.name} ${c.title} : ${text}`);
+  tickleBind(charId);
   const playBtn = document.getElementById('btn-play');
   if (playBtn)
     setHandler(playBtn, 'click', () => {

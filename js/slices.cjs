@@ -188,7 +188,12 @@ const SLICES = [
   {
     id: 'island',
     layer: 'features',
-    files: ['js/features/island/island-view.js', 'js/features/island/island-s3.js', 'js/features/island/island.js'],
+    files: [
+      'js/features/island/tickle.js',
+      'js/features/island/island-view.js',
+      'js/features/island/island-s3.js',
+      'js/features/island/island.js',
+    ],
     css: ['js/features/island/island.css', 'js/features/island/island-view.css'],
   },
   {

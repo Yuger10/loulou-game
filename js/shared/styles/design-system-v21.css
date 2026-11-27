@@ -134,6 +134,13 @@ body[data-world="coffres"] {
   --world-scene-top: #fffaf0;
   --world-scene-floor: #f2d29b;
 }
+body[data-world="chatouilles"] {
+  --world-sky: #fff0f6;
+  --world-sea: #ffb3d1;
+  --world-deep: #8a3d6b;
+  --world-scene-top: #fff7fb;
+  --world-scene-floor: #fff1b8;
+}
 body[data-world="jardin"] {
   --world-sky: #f1eafb;
   --world-sea: #a8dda0;

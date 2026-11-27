@@ -58,6 +58,26 @@ const WORLDS_S3 = {
     intro: "Bienvenue sur l'Île des Coffres, où chaque coffre garde un secret 🗝️",
     sceneEmpty: 'Ton île attend ses décorations pleines de secrets !',
   },
+  // idée de la joueuse : le monde des chatouilles
+  chatouilles: {
+    name: 'Le Monde des Chatouilles',
+    emoji: '🪶',
+    level: 94,
+    diff: 6,
+    saison: 3,
+    short: 'Chatouilles',
+    subtitle: 'Le monde des plumes et des rires',
+    // son mini-jeu, selon l'âge : guider la plume avant 7 ans (sans lecture), la phrase ensuite
+    game: (age) => (age && age < 7 ? 'coding' : 'sentence'),
+    map: { x: 82, y: 26 },
+    shape: 'chatouilles',
+    icon: '🪶',
+    sand: '#FFF1DA',
+    land: '#FFC2DA',
+    giggly: true, // les personnages font un rire de bonjour quand on les touche
+    intro: 'Bienvenue au Monde des Chatouilles, où tout le monde rit pour un rien 🪶',
+    sceneEmpty: 'Ton monde attend ses décorations rigolotes !',
+  },
 };
 
 export { WORLDS_S3 };

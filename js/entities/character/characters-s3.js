@@ -166,6 +166,96 @@ const CHARACTERS_S3 = {
       'Le sable est plein de trésors. On cherche ensemble ?',
     ],
   },
+  // Le Monde des Chatouilles (idée de la joueuse)
+  plumette: {
+    emoji: '🦚',
+    name: 'Plumette',
+    title: 'la paonne aux plumes chatouilleuses',
+    world: 'chatouilles',
+    gender: 'f',
+    loot: ['plumeguili', 'chaussettes'],
+    texts: [
+      'Bienvenue au Monde des Chatouilles ! Ici, on rit pour un rien… hi hi !',
+      'Mes plumes chatouillent seulement ceux qui en ont envie. Tu veux jouer avec moi ?',
+      'Un fou rire, ça se partage ! On fait une mission ensemble ?',
+    ],
+  },
+  guili: {
+    emoji: '🐧',
+    name: 'Guili',
+    title: 'le petit manchot chatouilleux',
+    world: 'chatouilles',
+    gender: 'm',
+    loot: ['plumeguili', 'yoyofarceur'],
+    texts: [
+      "Ma plume va où je lui dis ! Tu m'aides à la guider ?",
+      'Avance, tourne, avance… et guili guili !',
+      'Je suis chatouilleux des ailes. Chut, ne le dis à personne !',
+    ],
+  },
+  lulu: {
+    emoji: '🦦',
+    name: 'Lulu',
+    title: 'la loutre qui adore les blagues',
+    world: 'chatouilles',
+    gender: 'f',
+    loot: ['nezclown', 'boiterires'],
+    texts: [
+      "Mes mots se sont tout mélangés ! Tu m'aides à refaire ma phrase ?",
+      "Une phrase en désordre, c'est rigolo. Une phrase en ordre, ça veut dire quelque chose !",
+      'On invente une phrase rigolote ensemble ?',
+    ],
+  },
+  pic: {
+    emoji: '🦔',
+    name: 'Pic',
+    title: 'le petit hérisson timide',
+    world: 'chatouilles',
+    gender: 'm',
+    loot: ['chaussettes', 'nezclown'],
+    texts: [
+      "Bonjour… Moi, je n'aime pas toujours les chatouilles. Mais j'adore jouer !",
+      "Quand je dis stop, mes amis s'arrêtent. Alors je joue tranquille.",
+      "Mes piquants sont tout doux aujourd'hui. On fait un jeu ?",
+    ],
+  },
 };
 
-export { CHARACTERS_S3 };
+/* Les chatouilles (Monde des Chatouilles) : on chatouille seulement qui en a
+   envie, et on s'arrête au « stop ». `want` : chance d'avoir envie ; `max` :
+   au `max`-ième toucher, le personnage dit `stop` ; `laughs` : ses rires, à
+   tour de rôle ; `no` : son refus. Une table à part : characters.js est plein. */
+/** @typedef {{ want: number, max: number, laughs: string[], stop: string, no: string }} CharacterTickle */
+/** @type {Record<string, CharacterTickle>} */
+const CHARACTER_TICKLES = {
+  plumette: {
+    want: 0.8,
+    max: 4,
+    laughs: ['Hi hi hi ! Mes plumes !', 'Ha ha ha, ça chatouille !', 'Hou hou hou, mes plumes frissonnent !'],
+    stop: "Stop ! J'ai assez ri pour l'instant. Merci d'avoir arrêté !",
+    no: 'Pas maintenant, merci. On se fait un coucou à la place ? 👋',
+  },
+  guili: {
+    want: 0.9,
+    max: 5,
+    laughs: ['Guili guili ! Hi hi hi !', 'Ha ha ha, je suis tout chatouilleux !', 'Hi hi, ma plume rigole aussi !'],
+    stop: "Stop, stop ! J'ai trop ri, je n'ai plus de souffle. Merci d'avoir arrêté !",
+    no: 'Pas maintenant, je suis tout essoufflé. On joue plutôt ?',
+  },
+  lulu: {
+    want: 0.8,
+    max: 3,
+    laughs: ['Ha ha ha ! Ça chatouille mes moustaches !', 'Hi hi hi, ma queue rigole !'],
+    stop: "Stop ! Mon ventre a trop ri. Merci d'avoir arrêté !",
+    no: 'Pas maintenant, merci. Je te raconte une blague à la place ?',
+  },
+  pic: {
+    want: 0.4,
+    max: 2,
+    laughs: ['Hi… hi hi ! Tout doucement, alors.'],
+    stop: "Stop, ça suffit pour moi. Merci d'avoir arrêté tout de suite !",
+    no: "Non merci, pas de chatouilles aujourd'hui. Mais je veux bien un sourire !",
+  },
+};
+
+export { CHARACTER_TICKLES, CHARACTERS_S3 };
