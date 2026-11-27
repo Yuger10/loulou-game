@@ -442,6 +442,22 @@ const INDEPENDENT = {
       ops.length <= d.querySelectorAll('#cd-prog .cd-slot').length
     );
   },
+  // sentence : la phrase que construit la solution, relue sur les étiquettes de la page, est un
+  // ordre accepté (règle R1 : une phrase de la banque ou l'un de ses `ok`) ; chaque étiquette sert
+  // une fois, la première porte la majuscule, la dernière le point
+  sentence(sol) {
+    const tiles = sol.map((s) => d.querySelector(s));
+    const built = tiles.map((el) => el.textContent).join(' ');
+    const bank = Object.values(ev('SENTENCES')).flat();
+    return (
+      tiles.every((el) => el && el.matches('.st-tile')) &&
+      new Set(tiles).size === d.querySelectorAll('.st-tile').length &&
+      tiles.length === d.querySelectorAll('#st-line .st-slot').length &&
+      /^[A-Z]/.test(built) &&
+      built.indexOf('.') === built.length - 1 &&
+      bank.some((e) => e.t === built || e.ok.includes(built))
+    );
+  },
   // trace : chaque élément porte les points de son trait, et la solution couvre
   // tous les traits de tous les glyphes de la bande, dans l'ordre
   trace(sol) {

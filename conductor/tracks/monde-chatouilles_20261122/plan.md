@@ -31,17 +31,17 @@ Les numéros entre parenthèses renvoient aux lignes de « Comportement attendu 
 - [ ] 1.11 Conductor : vérification manuelle (S17) par Amrou sur téléphone.
 
 ### Phase 2 : « La phrase rigolote » (`sentence`), après la phase 1
-- [ ] 2.1 Tests d'abord dans `test/chatouilles.test.js`, section « La phrase rigolote » :
+- [x] 2.1 Tests d'abord dans `test/chatouilles.test.js`, section « La phrase rigolote » :
   - `sentenceRound(1..5)` égale T3 (18) ;
   - aucune clé de jeu en double (`GAME_TYPES` et `GAME_LIST` sans doublon, `sentence` et `coding` une seule fois) ;
   - la banque : tailles, permutations de `ok`, `pic` aux tailles 3 et 4, lettres du palier 1 (R2) (26) ;
   - `sentenceAccepts` suit R1, y compris les quatre `ok` de T4, et chaque `ok` est une permutation exacte des étiquettes ;
   - ordre de départ jamais accepté (19) ; toucher, retirer, mot dit sans point (20, 21) ; « Lis ma phrase » (22, S5) ;
   - erreur 1 : étiquettes en place, S4 dit après la phrase ; erreur 2 : autre phrase (24) ; victoire (23).
-- [ ] 2.2 Ajouter `state.gameCounts["sentence"]=1` à la ligne du test « variété » de `test/smoke.test.js` (`checklist-mini-jeu.md`, étape 10) ; vérificateur `sentence` dans `test/games.test.js` (la phrase construite par la solution est acceptée par R1, recalculée par le test à partir des `.st-tile`) ; entrée `sentence` dans `test/smoke.test.js`.
-- [ ] 2.3 `difficulty-s3.js` (`sentenceRound` typé strictement avec `@typedef SentenceRound`) et son ajout au bloc `export { … } from './difficulty-s3.js'` de `js/entities/difficulty/index.js`, `difficulty.js` (lignes `sentence` de `NO_TIMER_KINDS` et `GENEROUS_KINDS`), `game-types.js` (📝 « La phrase rigolote », 6 ans et plus), `adaptive.js`, `parents.js` (`lire`) (28 à 30).
-- [ ] 2.4 `js/features/minigames/sentence/sentence.js`, `sentence.css`, `index.js` : banque T4, rendu, textes S1 à S5, indices H2, `setSolution`, inscription.
-- [ ] 2.5 `js/slices.cjs` : slice `minigame-sentence` ; `import '../features/minigames/sentence/index.js';` dans `js/app/main.js` ; `bun run sync` ; `bun run typecheck`, `bun run check` et `bun run verify` verts.
+- [x] 2.2 Ajouter `state.gameCounts["sentence"]=1` à la ligne du test « variété » de `test/smoke.test.js` (`checklist-mini-jeu.md`, étape 10) ; vérificateur `sentence` dans `test/games.test.js` (la phrase construite par la solution est acceptée par R1, recalculée par le test à partir des `.st-tile`) ; entrée `sentence` dans `test/smoke.test.js`.
+- [x] 2.3 `difficulty-s3.js` (`sentenceRound` typé strictement avec `@typedef SentenceRound`) et son ajout au bloc `export { … } from './difficulty-s3.js'` de `js/entities/difficulty/index.js`, `difficulty.js` (lignes `sentence` de `NO_TIMER_KINDS` et `GENEROUS_KINDS`), `game-types.js` (📝 « La phrase rigolote », 6 ans et plus), `adaptive.js`, `parents.js` (`lire`) (28 à 30).
+- [x] 2.4 `js/features/minigames/sentence/sentence.js`, `sentence.css`, `index.js` : banque T4, rendu, textes S1 à S5, indices H2, `setSolution`, inscription.
+- [x] 2.5 `js/slices.cjs` : slice `minigame-sentence` ; `import '../features/minigames/sentence/index.js';` dans `js/app/main.js` ; `bun run sync` ; `bun run typecheck`, `bun run check` et `bun run verify` verts.
 - [ ] 2.6 Doc : PRD, `conductor/tracks.md`.
 - [ ] 2.7 Conductor : vérification manuelle (S18) avec la joueuse.
 

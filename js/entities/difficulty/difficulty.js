@@ -411,6 +411,7 @@ function livesFor(kind, dd) {
     'tens',
     'code',
     'coding',
+    'sentence',
   ];
   const table = LIVES_TABLE[kind] || (GENEROUS_KINDS.includes(kind) ? LIVES_TABLE.generous : LIVES_TABLE.default);
   // le calcul mental (palier 6, Volcan) emprunte le barème d'essais du
@@ -477,6 +478,7 @@ const NO_TIMER_KINDS = [
   'problems',
   'code',
   'coding',
+  'sentence',
 ];
 /**
  * @param {string} kind le type de mini-jeu

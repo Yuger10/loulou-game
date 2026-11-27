@@ -288,4 +288,12 @@ function codingRound(dd) {
   return tierValue(CODING_TIERS, dd);
 }
 
-export { codeRound, codingRound, lengthRound, orderRound, problemsRound, tensRound, traceRound };
+/** LA PHRASE RIGOLOTE (Monde des Chatouilles) : `n` étiquettes à remettre en ordre ; `pic` : l'image, aux paliers 1 et 2.
+ * @typedef {{ n: number, pic: boolean }} SentenceRound */
+/** @param {number} dd le palier de difficulté @returns {SentenceRound} */
+function sentenceRound(dd) {
+  const p = Math.max(1, Math.min(5, Math.round(Number(dd)) || 1));
+  return { n: p + 2, pic: p <= 2 };
+}
+
+export { codeRound, codingRound, lengthRound, orderRound, problemsRound, sentenceRound, tensRound, traceRound };

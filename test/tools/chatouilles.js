@@ -210,6 +210,7 @@ const reserveWords = () => all('#st-reserve .st-tile').map((x) => x.textContent)
 // ouvre « sentence » au palier p sur une phrase choisie par le test (même fonction que le jeu)
 function openSentence(p, entry) {
   t.startGame('sentence', p);
+  ev('forgetSpokenHint()'); // la consigne de la phrase du test est dite
   ev('sentenceShow')(entry);
 }
 
