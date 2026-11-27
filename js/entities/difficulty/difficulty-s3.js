@@ -68,4 +68,124 @@ function lengthRound(dd) {
   return tierValue(LENGTH_TIERS, dd);
 }
 
-export { lengthRound, traceRound };
+/* ---------------------------------------------------------------------
+   LES PANIERS DE DIX (Île des Squishy Dumplings, saison 3) : la valeur de
+   position (cycle 2 : dizaines et unités jusqu'à 100 en fin de CP, centaines
+   jusqu'à 1000 en fin de CE1).
+     palier 1   GS, début CP   ranger 11 à 19 dumplings dans un panier de dix
+     palier 2   CP             lire et construire, de 20 à 69, sans dizaine ronde
+     palier 3   fin CP, CE1    jusqu'à 99, dizaines rondes, écriture 30 + 5
+     palier 4   CE1            10 à 19 tout seuls à regrouper, écriture 5 + 30
+     palier 5   fin CE1, CE2   les centaines : piles de cent, 300 + 40 + 5
+   `modes` : chance de chaque mode ; `min`/`max` : bornes du nombre ;
+   `choices` : nombre de réponses ; `zero` : un chiffre 0 est-il permis ;
+   `looseBig` : chance, en lecture, d'avoir 10 à 19 tout seuls ; `unitsFirst` :
+   chance d'écrire les unités d'abord ; `shuffled` : chance d'un ordre mélangé ;
+   `hundreds` : piles de cent et bouton +100. Pas de minuteur.
+   --------------------------------------------------------------------- */
+/** @typedef {{ modes: { build?: number, read?: number, make?: number, write?: number }, min: number, max: number, choices: number, zero: boolean, looseBig: number, unitsFirst: number, shuffled: number, hundreds: boolean }} TensRound */
+/** @type {Record<number, TensRound>} */
+const TENS_TIERS = {
+  1: {
+    modes: { build: 1 },
+    min: 11,
+    max: 19,
+    choices: 3,
+    zero: false,
+    looseBig: 0,
+    unitsFirst: 0,
+    shuffled: 0,
+    hundreds: false,
+  },
+  2: {
+    modes: { read: 0.5, make: 0.5 },
+    min: 20,
+    max: 69,
+    choices: 3,
+    zero: false,
+    looseBig: 0,
+    unitsFirst: 0,
+    shuffled: 0,
+    hundreds: false,
+  },
+  3: {
+    modes: { read: 0.35, make: 0.35, write: 0.3 },
+    min: 20,
+    max: 99,
+    choices: 4,
+    zero: true,
+    looseBig: 0,
+    unitsFirst: 0,
+    shuffled: 0,
+    hundreds: false,
+  },
+  4: {
+    modes: { read: 0.35, make: 0.3, write: 0.35 },
+    min: 20,
+    max: 99,
+    choices: 4,
+    zero: true,
+    looseBig: 0.5,
+    unitsFirst: 0.5,
+    shuffled: 0,
+    hundreds: false,
+  },
+  5: {
+    modes: { read: 0.35, make: 0.3, write: 0.35 },
+    min: 100,
+    max: 999,
+    choices: 4,
+    zero: true,
+    looseBig: 0,
+    unitsFirst: 0,
+    shuffled: 0.3,
+    hundreds: true,
+  },
+};
+/**
+ * @param {number} dd le palier de difficulté
+ * @returns {TensRound}
+ */
+function tensRound(dd) {
+  return tierValue(TENS_TIERS, dd);
+}
+
+/* ---------------------------------------------------------------------
+   LA COMMANDE DU CHEF (Île des Squishy Dumplings, saison 3) : retenir un
+   ensemble (des sortes de dumplings et leur quantité), pour le plaisir et
+   l'attention. L'empan d'un enfant de 6 à 7 ans est d'environ 4 à 5
+   éléments : le palier de cet âge reste en dessous.
+     palier 1   1 sorte, 1 à 3 dumplings, la couleur seule
+     palier 2   2 sortes, 3 ou 4 dumplings, 4 couleurs
+     palier 3   2 sortes, 3 à 5 dumplings, couleur et forme
+     palier 4   3 sortes, 4 à 6 dumplings, couleur et forme
+     palier 5   3 sortes, 5 ou 6 dumplings, couleur, forme et visage
+   `kinds` : sortes commandées ; `min`/`max` : total de dumplings ; `attrs` :
+   attributs actifs ; `colors` : couleurs possibles ; `palette` : sortes
+   proposées. Pas de minuteur : l'enfant cache la commande lui-même.
+   --------------------------------------------------------------------- */
+/** @typedef {{ kinds: number, min: number, max: number, attrs: Array<'color' | 'shape' | 'face'>, colors: string[], palette: number }} OrderRound */
+/** @type {Record<number, OrderRound>} */
+const ORDER_TIERS = {
+  1: { kinds: 1, min: 1, max: 3, attrs: ['color'], colors: ['rose', 'vert', 'jaune'], palette: 3 },
+  2: { kinds: 2, min: 3, max: 4, attrs: ['color'], colors: ['rose', 'vert', 'jaune', 'violet'], palette: 4 },
+  3: { kinds: 2, min: 3, max: 5, attrs: ['color', 'shape'], colors: ['rose', 'vert', 'jaune'], palette: 6 },
+  4: { kinds: 3, min: 4, max: 6, attrs: ['color', 'shape'], colors: ['rose', 'vert', 'jaune'], palette: 6 },
+  5: {
+    kinds: 3,
+    min: 5,
+    max: 6,
+    attrs: ['color', 'shape', 'face'],
+    colors: ['rose', 'vert', 'jaune', 'violet'],
+    palette: 8,
+  },
+};
+/**
+ * @param {number} dd le palier de difficulté
+ * @returns {OrderRound}
+ */
+function orderRound(dd) {
+  return tierValue(ORDER_TIERS, dd);
+}
+
+export { lengthRound, orderRound, tensRound, traceRound };

@@ -48,6 +48,7 @@ const SQUISHY_SERIES = {
   petitesbetes: { name: 'Petites bêtes', emoji: '🐞', world: 'jardin' }, // le Jardin des Fées
   licornes: { name: 'Licornes', emoji: '🦄', world: 'licornes' }, // le Royaume Arc-en-ciel
   papeterie: { name: 'Papeterie', emoji: '✏️', world: 'crayons' }, // l'Île des Crayons (saison 3)
+  dumplings: { name: 'Dumplings', emoji: '🥟', world: 'dumplings' }, // l'Île des Squishy Dumplings (saison 3)
 };
 const SQUISHY_SERIES_ORDER = [
   'capy',
@@ -60,6 +61,7 @@ const SQUISHY_SERIES_ORDER = [
   'petitesbetes',
   'licornes',
   'papeterie',
+  'dumplings',
 ];
 
 // les trois raretés, et leur chance au tirage (voir openSquishyBox)
@@ -605,6 +607,7 @@ const SQUISHY_ISLAND_SERIES = {
   jardin: 'petitesbetes',
   licornes: 'licornes',
   crayons: 'papeterie',
+  dumplings: 'dumplings',
 };
 
 /** @param {string} series */

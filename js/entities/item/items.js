@@ -136,6 +136,15 @@ const ITEMS = {
   regle: { emoji: '📏', name: 'Règle magique', price: 7, world: 'crayons' },
   feutre: { emoji: '🖊️', name: 'Feutre pailleté', price: 7, world: 'crayons' },
   equerre: { emoji: '📐', name: 'Équerre', price: 6, world: 'crayons' },
+  // Île des Squishy Dumplings (saison 3)
+  pate: { emoji: '🫓', name: 'Galette de pâte', price: 6, world: 'dumplings' },
+  feuillechou: { emoji: '🥬', name: 'Feuille de chou', price: 5, world: 'dumplings' },
+  brocoli: { emoji: '🥦', name: 'Petit brocoli', price: 5, world: 'dumplings' },
+  tassethe: { emoji: '🍵', name: 'Tasse de thé', price: 6, world: 'dumplings' },
+  boiteemporter: { emoji: '🥡', name: 'Boîte à emporter', price: 7, world: 'dumplings' },
+  bolriz: { emoji: '🍚', name: 'Bol de riz', price: 6, world: 'dumplings' },
+  potsauce: { emoji: '🥫', name: 'Pot de sauce', price: 7, world: 'dumplings' },
+  eventail: { emoji: '🌬️', name: 'Éventail', price: 8, world: 'dumplings' },
 };
 
 /** @type {Record<string, CraftedItem>} */
@@ -430,6 +439,21 @@ const CRAFTED = {
     world: 'crayons',
     recipe: { palette: 1, feutre: 1, cahier: 1 },
   },
+  // Île des Squishy Dumplings (saison 3)
+  plateauchef: {
+    emoji: '🍱',
+    name: 'Plateau du chef',
+    price: 22,
+    world: 'dumplings',
+    recipe: { pate: 2, feuillechou: 1 },
+  },
+  soupe: {
+    emoji: '🍜',
+    name: 'Soupe aux dumplings',
+    price: 20,
+    world: 'dumplings',
+    recipe: { bolriz: 1, potsauce: 1 },
+  },
 };
 
 /** @type {Record<string, Item>} */
@@ -570,6 +594,12 @@ const DECOS = {
   fanionsD: { emoji: '🚩', name: 'Fanions dessinés', price: 18, world: 'crayons' },
   lampeD: { emoji: '💡', name: 'Lampe de bureau', price: 14, world: 'crayons' },
   marquepageD: { emoji: '🔖', name: 'Marque-page géant', price: 12, world: 'crayons' },
+  // Île des Squishy Dumplings (saison 3)
+  marmiteD: { emoji: '🫕', name: 'Grande marmite à vapeur', price: 40, world: 'dumplings' },
+  bambouD: { emoji: '🎋', name: 'Bosquet de bambous', price: 30, world: 'dumplings' },
+  vapeurD: { emoji: '♨️', name: 'Source de vapeur', price: 18, world: 'dumplings' },
+  lotusD: { emoji: '💮', name: 'Bassin de lotus', price: 14, world: 'dumplings' },
+  tabouretsD: { emoji: '🪑', name: 'Tabourets du comptoir', price: 12, world: 'dumplings' },
 };
 
 const ALBUM_REWARD = 100;

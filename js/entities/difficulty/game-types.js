@@ -32,6 +32,8 @@ const GAME_TYPES = [
   'mirror',
   'trace',
   'length',
+  'tens',
+  'order',
 ];
 
 /* Quels types de défis proposer selon l'âge (programme de l'école
@@ -73,6 +75,8 @@ const AGE_GAME_TYPES = [
   // « Le miroir magique » (mirror) : en GS, 2 cases à refléter dans une grille 4 × 4.
   // « Trace avec ton doigt » (trace) : en GS, les capitales bâton et les chiffres, tolérance large.
   // « Mesure les crayons » (length) : en GS, le plus long de 2 crayons alignés.
+  // « Les paniers de dix » (tens) : en GS, ranger 11 à 19 dumplings dans un panier de dix.
+  // « La commande du chef » (order) : en GS, retenir 1 à 3 dumplings d'une seule couleur.
   {
     max: 5,
     types: [
@@ -101,6 +105,8 @@ const AGE_GAME_TYPES = [
       'mirror',
       'trace',
       'length',
+      'tens',
+      'order',
     ],
   },
   // 6 ans et plus (ou âge non précisé) : tous les jeux, dont le calcul
@@ -148,6 +154,8 @@ const GAME_LIST = [
   { key: 'mirror', emoji: '🪞', name: 'Le miroir magique' },
   { key: 'trace', emoji: '✍️', name: 'Trace avec ton doigt' },
   { key: 'length', emoji: '📏', name: 'Mesure les crayons' },
+  { key: 'tens', emoji: '🧺', name: 'Les paniers de dix' },
+  { key: 'order', emoji: '🥟', name: 'La commande du chef' },
 ];
 
 export { GAME_LIST, gameTypesForAge };

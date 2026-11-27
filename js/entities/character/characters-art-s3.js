@@ -72,6 +72,74 @@ function crayonsArtTools(ART, kit) {
 }
 
 /**
+ * L'Île des Squishy Dumplings (saison 3, île 2) : le style « tout rond, le
+ * visage sur le corps » du Pays Squishy. Bao le chef et Bambou la pousse.
+ * @param {Record<string, string>} ART
+ * @param {ArtKit} kit
+ */
+function dumplingsArt(ART, kit) {
+  const { O, eyes, cheeks, smile, svg } = kit;
+  // Bao le chef dumpling : un gros dumpling crème, plis sur le dessus, toque blanche, tablier bleu
+  ART.bao = svg(
+    `<path d="M14 86 Q14 38 60 38 Q106 38 106 86 Q106 124 60 124 Q14 124 14 86Z" fill="#FFF3DC" ${O()}/>` +
+      `<path d="M40 52 Q46 44 52 52 M54 50 Q60 42 66 50 M68 52 Q74 44 80 52" fill="none" stroke="#C9A36A" stroke-width="3" stroke-linecap="round"/>` +
+      `<path d="M40 30 Q28 10 46 10 Q52 0 64 4 Q78 0 80 12 Q96 12 82 30Z" fill="#fff" ${O()}/>` +
+      `<rect x="38" y="28" width="46" height="12" rx="4" fill="#fff" ${O(2)}/>` +
+      `<path d="M32 100 Q60 112 88 100 L84 120 Q60 128 36 120Z" fill="#6FB8F5" ${O(2)}/>` +
+      `<path d="M54 108 H66" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity=".7"/>` +
+      eyes(48, 72, 72, 4.8, 6) +
+      cheeks(36, 84, 84) +
+      smile(52, 68, 84, 7),
+  );
+
+  // Bambou la pousse de bambou : une tige verte ronde à nœuds, deux feuilles en couettes, un petit panier sur la tête
+  ART.bambou = svg(
+    `<path d="M32 58 Q4 46 10 22 Q30 30 38 50Z M88 58 Q116 46 110 22 Q90 30 82 50Z" fill="#8FD694" ${O(2)}/>` +
+      `<rect x="28" y="34" width="64" height="90" rx="30" fill="#6FBF73" ${O()}/>` +
+      `<path d="M30 60 Q60 67 90 60 M30 100 Q60 107 90 100" fill="none" stroke="#3F7A4A" stroke-width="3" stroke-linecap="round" opacity=".6"/>` +
+      `<path d="M38 50 Q40 42 48 40" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" opacity=".5"/>` +
+      `<path d="M44 22 Q60 6 76 22Z" fill="#EBCB98" stroke="#8A5A2B" stroke-width="3" stroke-linejoin="round"/>` +
+      `<rect x="42" y="20" width="36" height="16" rx="5" fill="#D9B27A" stroke="#8A5A2B" stroke-width="3"/><path d="M42 28 H78" stroke="#8A5A2B" stroke-width="2"/>` +
+      eyes(48, 72, 78, 4.8, 6) +
+      cheeks(38, 82, 88) +
+      smile(52, 68, 88, 7),
+  );
+}
+
+/**
+ * L'Île des Squishy Dumplings, la suite : Sésame la serveuse et Théo la théière.
+ * @param {Record<string, string>} ART
+ * @param {ArtKit} kit
+ */
+function dumplingsArtService(ART, kit) {
+  const { AI, O, eyes, cheeks, smile, svg } = kit;
+  // Sésame la petite serveuse : un dumpling rose en demi-lune, graines de sésame sur la tête, un plateau à la main
+  ART.sesame = svg(
+    `<path d="M96 92 Q108 88 106 74" fill="none" stroke="${AI}" stroke-width="4.5" stroke-linecap="round"/>` +
+      `<ellipse cx="104" cy="70" rx="12" ry="4" fill="#DDE6EE" ${O(2)}/><path d="M97 68 Q104 56 111 68Z" fill="#FFF3DC" ${O(2)}/>` +
+      `<path d="M10 96 Q10 44 56 44 Q102 44 102 96 Q56 122 10 96Z" fill="#FF9CC8" ${O()}/>` +
+      `<path d="M20 70 Q26 58 34 61 M38 55 Q46 47 54 52 M60 52 Q68 47 76 55 M80 61 Q88 58 94 70" fill="none" stroke="#C9497F" stroke-width="3" stroke-linecap="round"/>` +
+      `<g fill="#FFF3DC" stroke="#C9A36A" stroke-width="1"><ellipse cx="44" cy="62" rx="2.4" ry="3.6" transform="rotate(-20 44 62)"/><ellipse cx="56" cy="59" rx="2.4" ry="3.6"/><ellipse cx="68" cy="62" rx="2.4" ry="3.6" transform="rotate(20 68 62)"/></g>` +
+      eyes(44, 68, 82, 4.8, 6) +
+      cheeks(32, 80, 92) +
+      smile(48, 64, 92, 7),
+  );
+
+  // Théo la théière : une théière ronde vert jade, le visage sur le ventre, un bec, un petit nuage de vapeur
+  ART.theo = svg(
+    `<path d="M94 30 Q84 20 94 13 Q90 3 101 3 Q113 5 107 15 Q116 24 104 31Z" fill="#fff" ${O(2)}/>` +
+      `<path d="M90 78 Q112 72 108 44 L97 46 Q100 60 86 66Z" fill="#7FCFA6" ${O()}/>` +
+      `<path d="M24 62 Q4 64 8 86 Q12 102 28 100" fill="none" stroke="#4FA47C" stroke-width="7" stroke-linecap="round"/>` +
+      `<ellipse cx="58" cy="86" rx="40" ry="37" fill="#7FCFA6" ${O()}/>` +
+      `<path d="M30 70 Q36 58 48 56" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" opacity=".5"/>` +
+      `<path d="M34 54 Q58 38 82 54Z" fill="#A5E0C2" ${O(2)}/><circle cx="58" cy="41" r="5.5" fill="#4FA47C" ${O(2)}/>` +
+      eyes(46, 70, 84, 4.8, 6) +
+      cheeks(34, 82, 94) +
+      smile(50, 66, 94, 7),
+  );
+}
+
+/**
  * Ajoute les dessins de la saison 3 à `ART`.
  * @param {Record<string, string>} ART
  * @param {ArtKit} kit
@@ -79,6 +147,8 @@ function crayonsArtTools(ART, kit) {
 function season3Art(ART, kit) {
   crayonsArt(ART, kit);
   crayonsArtTools(ART, kit);
+  dumplingsArt(ART, kit);
+  dumplingsArtService(ART, kit);
 }
 
 export { season3Art };

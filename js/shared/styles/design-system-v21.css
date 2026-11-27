@@ -120,6 +120,13 @@ body[data-world="crayons"] {
   --world-scene-top: #fffbef;
   --world-scene-floor: #fbe3a1;
 }
+body[data-world="dumplings"] {
+  --world-sky: #eef7ea;
+  --world-sea: #a8d5a2;
+  --world-deep: #3f7a4a;
+  --world-scene-top: #f7fbf2;
+  --world-scene-floor: #f3e3c3;
+}
 body[data-world="jardin"] {
   --world-sky: #f1eafb;
   --world-sea: #a8dda0;

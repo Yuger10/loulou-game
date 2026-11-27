@@ -317,6 +317,49 @@ const INDEPENDENT = {
       Number(el.dataset.i) === lens.indexOf(want)
     );
   },
+  // tens : la réponse recalculée à partir de l'écran seul (contrat C1). Ranger et lire :
+  // 100 × les piles + les dumplings de la scène ; écrire : la somme des termes ;
+  // construire : la suite de boutons égale aux chiffres de la cible.
+  tens(sol) {
+    const st = d.getElementById('tens-stage');
+    const count = (sel) => sol.filter((s) => s === sel).length;
+    const shown = 100 * st.querySelectorAll('.tens-pile').length + st.querySelectorAll('.tens-dumpling').length;
+    const answer = Number(d.querySelector(sol[sol.length - 1]).dataset.v);
+    if (st.dataset.mode === 'build')
+      return answer === shown && sol.length === shown + 1 && new Set(sol).size === sol.length;
+    if (st.dataset.mode === 'read') return sol.length === 1 && answer === shown;
+    if (st.dataset.mode === 'write') {
+      const terms = d.getElementById('tens-expr').dataset.terms.split(',').map(Number);
+      return sol.length === 1 && shown === 0 && answer === terms.reduce((a, b) => a + b, 0);
+    }
+    const target = Number(d.getElementById('tens-target').dataset.target);
+    const built = 100 * count('#tens-add100') + 10 * count('#tens-add10') + count('#tens-add1');
+    return (
+      shown === 0 &&
+      built === target &&
+      count('#tens-add10') <= 9 &&
+      count('#tens-add1') <= 9 &&
+      sol[sol.length - 1] === '#tens-ready' &&
+      sol.length === count('#tens-add100') + count('#tens-add10') + count('#tens-add1') + 1
+    );
+  },
+  // order : la solution retient, pose exactement le ticket (mêmes sortes, mêmes nombres), puis sert (contrat C2)
+  order(sol) {
+    const counts = (els) => {
+      const n = {};
+      els.forEach((el) => (n[el.dataset.k] = (n[el.dataset.k] || 0) + 1));
+      return JSON.stringify(Object.entries(n).sort());
+    };
+    const picks = sol.slice(1, -1).map((s) => d.querySelector(s));
+    const ticket = [...d.querySelectorAll('#order-ticket .order-item')];
+    return (
+      sol[0] === '#order-ready' &&
+      sol[sol.length - 1] === '#order-serve' &&
+      ticket.length > 0 &&
+      picks.every((el) => el.matches('#order-palette .order-pick')) &&
+      counts(picks) === counts(ticket)
+    );
+  },
   // trace : chaque élément porte les points de son trait, et la solution couvre
   // tous les traits de tous les glyphes de la bande, dans l'ordre
   trace(sol) {

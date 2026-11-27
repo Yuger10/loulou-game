@@ -22,6 +22,24 @@ const WORLDS_S3 = {
     intro: "Bienvenue sur l'Île des Crayons, où tout se dessine ✏️",
     sceneEmpty: 'Ton île attend ses décorations en couleurs !',
   },
+  dumplings: {
+    name: "L'Île des Squishy Dumplings",
+    emoji: '🥟',
+    level: 78,
+    diff: 6,
+    saison: 3,
+    short: 'Dumplings',
+    subtitle: 'La cuisine à vapeur',
+    // son mini-jeu, à tout âge : ranger par paniers de dix (le souhait de la joueuse)
+    game: 'tens',
+    map: { x: 50, y: 74 },
+    shape: 'dumplings',
+    icon: '🥟',
+    sand: '#FFF6E6',
+    land: '#A8D5A2',
+    intro: "Bienvenue sur l'Île des Squishy Dumplings, où ça sent bon la vapeur 🥟",
+    sceneEmpty: 'Ta cuisine attend ses décorations toutes chaudes !',
+  },
 };
 
 export { WORLDS_S3 };

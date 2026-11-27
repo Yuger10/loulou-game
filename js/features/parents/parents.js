@@ -44,7 +44,7 @@ import './storage-alert.js'; // message et carte quand l'enregistrement échoue
 
 const SKILL_GROUPS = [
   { id: 'lire', emoji: '📖', name: 'Lecture et langage', games: ['reading', 'determinants', 'trace'] },
-  { id: 'nombres', emoji: '🔢', name: 'Nombres', games: ['count', 'puzzle', 'compare', 'packs'] },
+  { id: 'nombres', emoji: '🔢', name: 'Nombres', games: ['count', 'puzzle', 'compare', 'packs', 'tens'] },
   { id: 'calcul', emoji: '➕', name: 'Calcul', games: ['math', 'calc', 'money', 'share', 'ladybugs'] },
   { id: 'mesures', emoji: '🕐', name: 'Temps et mesures', games: ['clock', 'calendar', 'volume', 'recipe', 'length'] },
   {
@@ -58,7 +58,7 @@ const SKILL_GROUPS = [
     id: 'logique',
     emoji: '🧠',
     name: 'Mémoire et logique',
-    games: ['memory', 'simon', 'diff', 'sequence', 'rangement', 'rhythm', 'pitch'],
+    games: ['memory', 'simon', 'diff', 'sequence', 'rangement', 'rhythm', 'pitch', 'order'],
   },
 ];
 // activités suivies qui ne sont pas des mini-jeux du choix des jeux

@@ -125,7 +125,7 @@ Registre des tracks Conductor, **dans l'ordre d'implémentation**. Feuille de ro
 
 ---
 
-- [ ] **Track: Saison 3, île 2 : 🥟 L'Île des Squishy Dumplings (idée de la joueuse), niveau 78**
+- [x] **Track: Saison 3, île 2 : 🥟 L'Île des Squishy Dumplings (idée de la joueuse), niveau 78 (v69)**
 *Link: [./tracks/monde-dumplings_20261122/](./tracks/monde-dumplings_20261122/)*
 
 ---
