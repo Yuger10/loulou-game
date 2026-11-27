@@ -52,6 +52,8 @@ const MUSIC_THEMES = {
   // la harpe et les clochettes du Royaume ; la fête du grand final, plus joyeuse
   licornes: { root: 65, scale: [0, 2, 4, 7, 9], bpm: 84, lead: 'harp', prog: [0, 9, 5, 7], tick: true },
   'licornes-fete': { root: 67, scale: [0, 2, 4, 7, 9], bpm: 112, lead: 'bell', prog: [0, 5, 7, 0], shaker: true },
+  // saison 3, l'Île des Crayons : un pizzicato léger, et un crayon qui tapote
+  crayons: { root: 64, scale: [0, 2, 4, 7, 9], bpm: 96, lead: 'pluck', prog: [0, 5, 9, 7], tick: true },
 };
 const MUSIC_VOLUME = 1.0; // crête ≈ 0,11, bien sous les bruitages ; passe ensuite par le volume général du bus
 

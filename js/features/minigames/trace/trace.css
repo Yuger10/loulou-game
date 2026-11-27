@@ -1,0 +1,203 @@
+/* =====================================================================
+     Trace avec ton doigt — Île des Crayons (saison 3)
+     ===================================================================== */
+/* l'en-tête : le glyphe en grand, son mot, ou autant de points que le chiffre */
+.puzzle-hint .hint-txt:has(> .tr-big) {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  align-items: center;
+  gap: 10px;
+  text-align: left;
+}
+.tr-big {
+  font-family: "Baloo 2", system-ui, sans-serif;
+  font-size: 2rem;
+  font-weight: 800;
+  line-height: 1;
+  color: var(--ink);
+}
+.tr-word {
+  font-weight: 800;
+}
+.tr-count {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  max-width: 76px;
+}
+.tr-count i {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #e8344e;
+}
+/* la bande : tous les glyphes de la mission */
+.tr-strip {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin: 4px 0 8px;
+}
+.tr-mini {
+  width: 46px;
+  height: 46px;
+  border-radius: 12px;
+  background: #fff;
+  border: 2.5px solid #e6e0d6;
+  opacity: 0.7;
+}
+.tr-mini.current {
+  border-color: var(--tr-color);
+  opacity: 1;
+}
+.tr-mini.done {
+  border-color: #2f9551;
+  background: #effaf1;
+  opacity: 1;
+}
+.tr-mini svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.tr-ms {
+  fill: none;
+  stroke: #d9d4cc;
+  stroke-width: 9;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+circle.tr-ms {
+  fill: #d9d4cc;
+  stroke: none;
+}
+.tr-ms.done {
+  stroke: var(--tr-color);
+}
+circle.tr-ms.done {
+  fill: var(--tr-color);
+}
+/* le carré à tracer : le doigt ne fait jamais défiler la page */
+.tr-board {
+  width: min(78vw, 320px);
+  margin: 0 auto;
+}
+#tr-pad {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1;
+  background: #fffdf6;
+  border: 3px solid #e6e0d6;
+  border-radius: 18px;
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+  cursor: crosshair;
+}
+/* sans aspect-ratio (vieux navigateurs) : le carré garde sa hauteur */
+@supports not (aspect-ratio: 1) {
+  #tr-pad {
+    height: min(78vw, 320px);
+  }
+}
+.tr-line {
+  stroke: #bfddf5;
+  stroke-width: 1;
+}
+.tr-line.dash {
+  stroke-dasharray: 3 3;
+}
+.tr-model {
+  fill: none;
+  stroke: #d9d4cc;
+  stroke-width: 9;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0.55;
+}
+.tr-model.current {
+  opacity: 1;
+}
+circle.tr-model {
+  fill: #d9d4cc;
+  stroke: #d9d4cc;
+  stroke-width: 5;
+}
+.tr-model.done {
+  stroke: var(--tr-color);
+  opacity: 1;
+}
+circle.tr-model.done {
+  fill: var(--tr-color);
+}
+.tr-arrow {
+  fill: none;
+  stroke: #8a8378;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  pointer-events: none;
+}
+.tr-start {
+  fill: #2f9551;
+  stroke: #fff;
+  stroke-width: 1.5;
+  pointer-events: none;
+}
+.tr-start.hint-glow {
+  animation: trPulse 1.1s ease-in-out 3;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+@keyframes trPulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.7);
+  }
+}
+.tr-num {
+  font-family: "Baloo 2", system-ui, sans-serif;
+  font-size: 9px;
+  font-weight: 800;
+  fill: #2f9551;
+  text-anchor: middle;
+  dominant-baseline: central;
+  pointer-events: none;
+}
+.tr-ink {
+  fill: none;
+  stroke: var(--tr-color);
+  stroke-width: 6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  pointer-events: none;
+}
+/* le crayon de la démonstration : sa pointe (en bas à gauche) sur le chemin */
+.tr-demo {
+  font-size: 16px;
+  pointer-events: none;
+}
+.tr-flash {
+  animation: trFlash 0.9s ease-in-out 1;
+}
+@keyframes trFlash {
+  0%,
+  100% {
+    stroke: #d9d4cc;
+  }
+  50% {
+    stroke: var(--tr-color);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tr-start.hint-glow {
+    animation: none;
+    stroke: #ffc028;
+    stroke-width: 3;
+  }
+}

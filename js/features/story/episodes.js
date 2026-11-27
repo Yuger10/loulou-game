@@ -444,6 +444,36 @@ const EPISODES = {
       ],
     },
   ],
+  // saison 3, l'Île des Crayons : on recommence sans effacer, et le vent annonce l'île suivante
+  crayons: [
+    {
+      by: 'gommette',
+      title: 'Pas grave si ça dépasse',
+      find: '⭐',
+      lines: [
+        'Ce matin, Gribouille a dessiné une étoile, et le trait a dépassé.',
+        "Je n'ai rien effacé : on a fait une deuxième étoile à côté. Deux étoiles, c'est encore mieux !",
+      ],
+    },
+    {
+      by: 'taillou',
+      title: 'Le crayon tout petit',
+      find: '📏',
+      lines: [
+        "J'ai taillé, taillé… et mon crayon est devenu tout petit !",
+        "Je l'ai mesuré avec la règle : il fait trois centimètres. Il dessine encore très bien !",
+      ],
+    },
+    {
+      by: 'aquarelle',
+      title: 'Le dessin du vent',
+      find: '🥟',
+      lines: [
+        'Le vent a soufflé sur ma peinture, et il a dessiné… des petits paniers qui fument !',
+        "Zap dit que le prochain morceau de la carte est sur une île où l'on cuisine des dumplings tout doux.",
+      ],
+    },
+  ],
 };
 
 /** @param {string} world */

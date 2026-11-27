@@ -89,7 +89,7 @@ const SLICES = [
   {
     id: 'world',
     layer: 'entities',
-    files: ['js/entities/world/worlds.js', 'js/entities/world/availability.js'],
+    files: ['js/entities/world/worlds-s3.js', 'js/entities/world/worlds.js', 'js/entities/world/availability.js'],
     css: ['js/entities/world/world-themes.css'],
   },
   {
@@ -98,6 +98,7 @@ const SLICES = [
     files: [
       'js/entities/difficulty/difficulty.js',
       'js/entities/difficulty/difficulty-s2.js',
+      'js/entities/difficulty/difficulty-s3.js',
       'js/entities/difficulty/game-types.js',
       'js/entities/difficulty/age.js',
     ],
@@ -374,6 +375,28 @@ const SLICES = [
     files: ['js/features/minigames/mirror/mirror.js'],
     css: ['js/features/minigames/mirror/mirror.css'],
   },
+  {
+    id: 'minigame-trace',
+    layer: 'features',
+    files: [
+      'js/features/minigames/trace/trace-glyphs.js',
+      'js/features/minigames/trace/trace-judge.js',
+      'js/features/minigames/trace/trace-draw.js',
+      'js/features/minigames/trace/trace-input.js',
+      'js/features/minigames/trace/trace.js',
+    ],
+    css: ['js/features/minigames/trace/trace.css'],
+  },
+  {
+    id: 'minigame-length',
+    layer: 'features',
+    files: [
+      'js/features/minigames/length/length-build.js',
+      'js/features/minigames/length/length-draw.js',
+      'js/features/minigames/length/length.js',
+    ],
+    css: ['js/features/minigames/length/length.css'],
+  },
   { id: 'market', layer: 'features', files: ['js/features/market/market.js'], css: ['js/features/market/market.css'] },
   { id: 'backup', layer: 'features', files: ['js/features/backup/backup.js'], css: ['js/features/backup/backup.css'] },
   { id: 'players', layer: 'features', files: ['js/features/players/profiles-ui.js'], css: [] },
@@ -462,6 +485,8 @@ const CSS_ORDER = [
   'js/features/minigames/ladybugs/ladybugs.css',
   'js/features/minigames/potions/potions.css',
   'js/features/minigames/mirror/mirror.css',
+  'js/features/minigames/trace/trace.css',
+  'js/features/minigames/length/length.css',
   'js/features/island/island.css',
   'js/entities/character/characters.css',
   'js/features/settings/settings.css',

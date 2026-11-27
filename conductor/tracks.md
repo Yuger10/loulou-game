@@ -120,7 +120,7 @@ Registre des tracks Conductor, **dans l'ordre d'implémentation**. Feuille de ro
 
 ---
 
-- [ ] **Track: Saison 3, île 1 : ✏️ L'Île des Crayons (idée de la joueuse), niveau 70**
+- [x] **Track: Saison 3, île 1 : ✏️ L'Île des Crayons (idée de la joueuse), niveau 70 (v68)**
 *Link: [./tracks/monde-crayons_20261122/](./tracks/monde-crayons_20261122/)*
 
 ---

@@ -184,17 +184,7 @@ function carteVieuxPapier() {
 
 /* ================= Les fichiers -s3 (spec D19) ================= */
 function fichiersS3() {
-  // ligne 32 : retirée par la première île de la saison 3 (monde-crayons), qui remplit les tables
-  check(
-    'les cinq tables de la saison 3 existent et sont vides',
-    ['CHARACTERS_S3', 'SQUISHIES_S3', 'STORY_S3', 'ISLE_SCENERY_S3', 'SQ_ART_S3'].every(
-      (name) => ev(`typeof ${name}`) === 'object' && ev(`Object.keys(${name}).length`) === 0,
-    ),
-  );
-  check('season3Art existe et ne dessine encore rien', () => [
-    ev('typeof season3Art') === 'function',
-    ev('(() => { const a = {}; season3Art(a, {}); return Object.keys(a).length; })()') === 0,
-  ]);
+  // (ligne 32, « tables vides » : retirée par la première île, monde-crayons, qui remplit les tables)
   // ligne 32b : gardée après les îles
   const PAIRS = [
     ['CHARACTERS', 'CHARACTERS_S3'],

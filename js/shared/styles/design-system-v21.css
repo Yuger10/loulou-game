@@ -113,6 +113,13 @@ body[data-world="musique"] {
   --world-scene-top: #eef0ff;
   --world-scene-floor: #ffe7a8;
 }
+body[data-world="crayons"] {
+  --world-sky: #fff6dc;
+  --world-sea: #8fd3f4;
+  --world-deep: #3a4a8c;
+  --world-scene-top: #fffbef;
+  --world-scene-floor: #fbe3a1;
+}
 body[data-world="jardin"] {
   --world-sky: #f1eafb;
   --world-sea: #a8dda0;

@@ -132,17 +132,26 @@ const ESSAI3 = {
   intro: 'Une île pour les tests',
   sceneEmpty: 'Rien ici',
 };
-// Chaque section met de côté les vraies îles de la saison 3 (aucune à la
-// livraison de cette track), pose ou non l'île d'essai, puis remet tout en place.
+// Chaque section met de côté les vraies îles de la saison 3, pose ou non l'île
+// d'essai, puis remet tout en place. Ce qui se lit par son île part avec elle
+// (objets, recettes, décorations, personnages, série de squishies) : sans son
+// île, `availableItems()` et les autres chercheraient un monde qui n'existe plus.
+const WITH_ISLAND = ['ITEMS', 'CRAFTED', 'DECOS', 'CHARACTERS', 'SQUISHY_SERIES'];
 function setIslands(withEssai) {
-  ev(`window.__s3 = window.__s3 || {};
+  ev(`window.__s3 = window.__s3 || {}; window.__s3deps = window.__s3deps || {};
       worldsOf(3).filter((id) => id !== 'essai3').forEach((id) => { __s3[id] = WORLDS[id]; delete WORLDS[id]; });
+      ${json(WITH_ISLAND)}.forEach((name) => {
+        const table = eval(name), kept = (__s3deps[name] = __s3deps[name] || {});
+        Object.keys(table).filter((k) => __s3[table[k].world]).forEach((k) => { kept[k] = table[k]; delete table[k]; });
+      });
       delete WORLDS.essai3;
       ${withEssai ? `WORLDS.essai3 = ${json(ESSAI3)};` : ''}
       refreshArchipelagos()`);
 }
 function restoreIslands() {
-  ev('delete WORLDS.essai3; Object.assign(WORLDS, window.__s3 || {}); window.__s3 = {}; refreshArchipelagos()');
+  ev(`delete WORLDS.essai3; Object.assign(WORLDS, window.__s3 || {}); window.__s3 = {};
+      Object.keys(window.__s3deps || {}).forEach((name) => Object.assign(eval(name), __s3deps[name]));
+      window.__s3deps = {}; refreshArchipelagos()`);
 }
 
 // une partie neuve au nom de Lou, l'énigme du Lagon résolue
