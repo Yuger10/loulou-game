@@ -70,6 +70,35 @@ async function bonjour() {
   );
   ev('closeModal(); tickleRestUntil.pic = 0');
 }
+// critère 38, suite : le dialogue attendu ne s'impose pas si l'enfant est déjà ailleurs
+async function ailleurs() {
+  // elle part sur la carte pendant le rire : la scène reste dans la page, mais elle n'est plus affichée
+  ev('closeModal(); switchView("ile")');
+  sceneChar('guili').click();
+  ev('switchView("carte")');
+  await t.wait(900);
+  check('critère 38 : si l’enfant change de vue pendant le rire de bonjour, le dialogue ne s’ouvre pas', () => [
+    one('#view-carte').classList.contains('active'),
+    t.modalOpen() === false,
+    !sceneChar('guili').dataset.hello, // le personnage peut de nouveau être touché
+  ]);
+  // elle ouvre une autre fenêtre pendant le rire : le dialogue ne la remplace pas
+  ev('closeModal(); switchView("ile")');
+  sceneChar('guili').click();
+  ev('openModal(\'<p id="autre-fenetre">une autre fenêtre</p>\')');
+  await t.wait(900);
+  check('critère 38 : si une autre fenêtre s’ouvre pendant le rire de bonjour, le dialogue ne la remplace pas', () => [
+    t.modalOpen() && !!one('#modal-body #autre-fenetre'),
+    !one('#modal-body .char-header'),
+    !sceneChar('guili').dataset.hello,
+  ]);
+  // et sans rien de tout cela, le dialogue s'ouvre toujours
+  ev('closeModal(); switchView("ile")');
+  sceneChar('guili').click();
+  const opened = await t.waitFor(() => dialogOf('Guili'), 1500);
+  check('critère 38 : sur l’île, sans autre fenêtre, le dialogue s’ouvre toujours après le rire', [opened]);
+  ev('closeModal()');
+}
 function autreIle() {
   ev('closeModal(); setWorld("lagon", true); switchView("ile")');
   forget();
@@ -191,6 +220,7 @@ async function repos() {
   surIle();
   section('Les chatouilles : le rire de bonjour sur la scène');
   await bonjour();
+  await ailleurs();
   autreIle();
   section('Les chatouilles : le bouton du dialogue, le « non », les rires, le « stop »');
   refus();
