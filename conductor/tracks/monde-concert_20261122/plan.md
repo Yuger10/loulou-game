@@ -49,8 +49,8 @@ Prérequis : `saison3-ouverture` mergée (dont les fichiers frères vides `chara
 - [x] 24. `openGoldenXylophone` dans la slice `xylophone` (export ajouté à son `index.js`).
 - [x] 25. `js/features/story/finale3.js` (déclaré dans la slice `story` après `finale.js`), son déclenchement dans `storyWin`, ses styles dans `story.css` ; journal (`data-finale="2"` et `"3"`, `data-xylo`, ✅) ; bouton `#btn-xylo` du dialogue de Stella.
 - [x] 26. `bun run sync`, `bun run typecheck` puis `bun run verify` verts (S1 à S7).
-- [ ] 27. Doc : `conductor/niveaux.md` (« Dans le jeu, aujourd'hui » : la cinquième île de la saison 3 existe), `conductor/tracks.md`, `README.md` si la structure change ; section du PRD avec le paragraphe « Pour le parent » de la spec.
-- [ ] 28. Lignes 👤 S9 à S14 proposées à Amrou et à la joueuse ; leurs choix (noms gardés ou changés) vont dans le journal de décisions.
+- [x] 27. Doc : `conductor/niveaux.md` (« Dans le jeu, aujourd'hui » : la cinquième île de la saison 3 existe), `conductor/tracks.md`, `README.md` si la structure change ; section du PRD avec le paragraphe « Pour le parent » de la spec.
+- [x] 28. Lignes 👤 S9 à S14 proposées à Amrou et à la joueuse ; leurs choix (noms gardés ou changés) vont dans le journal de décisions.
 
 ## Preuves
 
@@ -58,16 +58,16 @@ Chaque affirmation pointe vers une preuve : commande exacte, code de sortie, che
 
 | Ligne du smoke test | Résultat | Niveau | Preuve |
 |---|---|---|---|
-| S1 | à faire | test-verified | `bun run test concert` (exit 0) |
-| S2 | à faire | test-verified | `bun run test games` (exit 0) |
-| S3 | à faire | test-verified | `bun run test companions` (exit 0) |
-| S4 | à faire | test-verified | `bun run test musique` (exit 0) |
-| S5 | à faire | test-verified | `bun run test smoke`, `bun run test niveaux` (exit 0) |
-| S6 | à faire | test-verified | `bun run test licornes` (exit 0) |
-| S7 | à faire | test-verified | `bun run verify` (exit 0) |
-| S8 | à faire | test-verified | `bun run test concert` (exit 0) |
-| S8b | à faire | humain | réponse d'Amrou dans la PR |
-| S9 à S14 | à faire | humain | réponse d'Amrou dans la PR |
+| S1 | réussi | test-verified | `bun run test concert` (exit 0, 12 suites) ; rouge constaté avant le code par `prove-red-green.sh` (exit 1 sans le changement, exit 0 avec), phase par phase |
+| S2 | réussi | test-verified | `bun run test games` (exit 0) : `notes` et `melody`, paliers 1 à 5, 3 tirages chacun |
+| S3 | réussi | test-verified | `bun run test companions` (exit 0) |
+| S4 | réussi | test-verified | `bun run test musique` (exit 0) |
+| S5 | réussi | test-verified | `bun run test smoke`, `bun run test niveaux` (exit 0) |
+| S6 | réussi | test-verified | `bun run test licornes` (exit 0) ; seul le numéro de version y change (journal, ligne 15) |
+| S7 | réussi | test-verified | `bun run verify` (exit 0 : 84 suites, puis le holdout `sauvegardes`) |
+| S8 | réussi | test-verified | `bun run test concert-xylophone` (exit 0), section « la feuille de style (S8) » |
+| S8b | à faire par Amrou | humain | réponse d'Amrou dans la PR (l'agent n'a vu que des images à 320 px, journal ligne 20) |
+| S9 à S14 | à faire par Amrou et la joueuse | humain | réponse d'Amrou dans la PR |
 
 ## Journal de décisions
 
@@ -98,4 +98,13 @@ En ajout seul : une décision fausse reçoit une nouvelle ligne qui la remplace,
 
 ## Écarts et non vérifié
 
-Rien pour l'instant.
+Livrée en v72 le 27/11/2026, en une seule PR (journal, ligne 4), empilée sur celle de `monde-chatouilles`.
+
+Écarts à la spec, tous au journal de décisions :
+- fichiers frères imposés par la limite de 300 lignes : `difficulty-s3-concert.js` (ligne 5), `melody-tunes.js` (ligne 10), `characters-concert.js` et `characters-art-s3-concert.js` (ligne 13), `xylo-gold.js` (ligne 19) ; suites de test en plusieurs fichiers (ligne 6) ;
+- trois assertions existantes réécrites hors de la liste de la spec, avec la même force (ligne 15) ;
+- le garde des zones sensibles étendu au nouveau fichier de dessins (ligne 14) ; `AGENTS.md` et `.github/CODEOWNERS` restent à mettre à jour par Amrou ;
+- corps des dessins de trois squishies : `ovale-v` au lieu de `ovale` (ligne 16) ;
+- place des slices des deux jeux dans le manifeste (ligne 7).
+
+Non vérifié par l'agent (lignes 👤 du smoke test) : S8b (téléphone réel), S9 (justesse et douceur des 8 notes à l'oreille), S10 (jouer le son coupé), S11 (la joueuse comprend seule), S12 (émotion du final, réactivité du xylophone d'or), S13 (espace parents à l'œil), S14 (noms et dessins des 4 personnages et de la série « Concert », à garder ou à renommer avec la joueuse).

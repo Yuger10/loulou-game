@@ -166,6 +166,7 @@ Chaque mini-jeu a maintenant son propre niveau pour chaque enfant (`js/adaptive.
 | v69 | L'Île des Squishy Dumplings (saison 3, île 2) : mini-jeux « Les paniers de dix » et « La commande du chef » |
 | v70 | L'Île des Coffres (saison 3, île 3) : mini-jeux « Le trésor raconté » et « Le code secret » |
 | v71 | Le Monde des Chatouilles (saison 3, île 4) : mini-jeux « Le chemin de la plume » et « La phrase rigolote » |
+| v72 | L'Île du Grand Concert (saison 3, île 5, grand final) : mini-jeux « Do, ré, mi » et « La mélodie », le xylophone d'or |
 
 ---
 
