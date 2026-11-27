@@ -12,6 +12,7 @@ const {
   ev,
   $,
   said,
+  tap,
   norm,
   resetScreen,
   start,
@@ -44,6 +45,7 @@ const TURN = /^(Écoute…|Écoute encore…|Regarde encore…|À toi!|Lis le ry
   section('Les choix écrits des mini-jeux (ligne 20, table J)');
   for (const key of CHOICE_GAMES) await gameChoiceTests(key);
   await voiceOffHintTest();
+  await afterHintTest();
   await calendarHintTest();
   await turnSignalTests();
   await resetScreen();
@@ -159,6 +161,38 @@ async function voiceOffHintTest() {
     said(),
   );
   ev('state.voice = true');
+}
+
+// après un indice (qui rebranche les 🔈 pour sa bulle), le 🔈 de la consigne relit toujours les choix
+async function afterHintTest() {
+  await resetScreen();
+  startGame(ev, 'clock', 1); // l'horloge a toujours des choix écrits
+  const expected = () =>
+    [$('.puzzle-hint [data-say]').dataset.say, ...choicesOf().map((c) => c.dataset.say)]
+      .map((t) => ev('toSpoken')(t))
+      .join(' | ');
+  spoken.length = 0;
+  $('.puzzle-hint .btn-speak').click();
+  check('clock : avant un indice, le 🔈 de la consigne dit la consigne puis les choix', said() === expected(), said());
+  const hintBtn = $('#modal-body .hint-btn');
+  check('clock : le bouton d’indice est là', !!hintBtn);
+  if (!hintBtn) return;
+  await tap(hintBtn);
+  check('clock : l’indice est affiché avec son 🔈', !!$('.hint-bubble .btn-speak'));
+  spoken.length = 0;
+  $('.puzzle-hint .btn-speak').click();
+  check(
+    'clock : après un indice, le 🔈 de la consigne dit encore la consigne puis les choix',
+    said() === expected(),
+    said(),
+  );
+  spoken.length = 0;
+  $('.hint-bubble .btn-speak').click();
+  check(
+    'clock : le 🔈 de l’indice ne dit que l’indice',
+    said() === ev('toSpoken')($('.hint-bubble .btn-speak').dataset.say),
+    said(),
+  );
 }
 
 // calendar : « lundi → jeudi » se dit « de lundi à jeudi »
