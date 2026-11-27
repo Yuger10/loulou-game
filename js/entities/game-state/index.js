@@ -17,7 +17,6 @@ export {
   levelProgress,
   load,
   missionsForLevel,
-  MISSIONS_PER_LEVEL,
   missionsUntil,
   readSave,
   replaceState,
