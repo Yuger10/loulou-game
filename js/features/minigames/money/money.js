@@ -166,24 +166,31 @@ function moneyHints(q) {
 
 // Explication d'une erreur (track erreurs-expliquees) : la pile touchée vaut
 // moins, ou plus, que le prix ; son addition et celle de la bonne pile
-// s'écrivent en entier sur les deux piles.
+// s'écrivent en entier sur les piles.
 /**
  * @param {MoneyQuestion} q
  * @param {number} v le total de la pile touchée
  * @returns {import('../../hints/index.js').Explain | null}
  */
 function moneyExplain(q, v) {
-  const touched = q.piles.find((o) => o.total === v),
+  const touched = q.piles.filter((o) => o.total === v),
     good = q.piles.find((o) => o.total === q.target);
   // la pile de secours (moneyOptions) n'a pas la somme de ses pièces : rien de vrai à en dire
-  if (!touched || !good || touched.pile.reduce((sum, c) => sum + c, 0) !== v) return null;
+  if (!touched.length || !good || touched.some((o) => o.pile.reduce((sum, c) => sum + c, 0) !== v)) return null;
   const line = (/** @type {MoneyPile} */ o) => `${o.pile.join(' + ')} = ${o.total}`;
   const goodSel = solSel('.money-pile-btn', 'v', q.target);
+  // deux piles fausses peuvent avoir le même total avec d'autres pièces : le total
+  // ne dit plus laquelle a été touchée, alors chacune reçoit sa propre addition,
+  // désignée par sa place (q.piles est dans l'ordre de l'écran)
+  const place = (/** @type {MoneyPile} */ o) => `.money-options .money-pile-btn:nth-child(${q.piles.indexOf(o) + 1})`;
   return {
     say: `Cette pile fait ${v} : c'est ${v < q.target ? 'moins' : 'plus'} que ${q.target}.`,
     fx: {
       marks: [
-        { sel: solSel('.money-pile-btn', 'v', v), text: line(touched) },
+        ...touched.map((o) => ({
+          sel: touched.length > 1 ? place(o) : solSel('.money-pile-btn', 'v', v),
+          text: line(o),
+        })),
         { sel: goodSel, text: line(good) },
       ],
       glow: goodSel,

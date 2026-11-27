@@ -176,6 +176,46 @@ async function windowCloses() {
   ev('closeModal()');
 }
 
+// Deux piles fausses peuvent avoir le même total avec des pièces différentes
+// (1 à 3 % des questions) : chacune reçoit SA propre addition, jamais celle de l'autre.
+function moneyTwins() {
+  startGame('money', 3);
+  const target = ev('hint.q.target');
+  // même total, autres pièces
+  const twins =
+    target === 6
+      ? [
+          [2, 2],
+          [2, 1, 1],
+        ]
+      : [
+          [5, 1],
+          [2, 2, 2],
+        ];
+  const total = twins[0].reduce((a, b) => a + b, 0);
+  const wrongs = [...d.querySelectorAll('.money-pile-btn')].filter((b) => Number(b.dataset.v) !== target);
+  wrongs.forEach((btn, i) => {
+    btn.dataset.v = String(total);
+    btn.innerHTML = twins[i].map((c) => `<span class="coin-chip">${c}</span>`).join('');
+  });
+  ev(`window.__tw = ${JSON.stringify(twins)};
+      hint.q.piles = hint.q.piles.map((o) => o.total === hint.q.target ? o : { pile: window.__tw.shift(), total: ${total} })`);
+  wrongs[1].click();
+  check('monnaie, deux piles du même total : une explication vient', !!d.querySelector('.explain-bubble'));
+  const sums = [...d.querySelectorAll('.money-pile-btn')].map((btn) => {
+    const coins = [...btn.querySelectorAll('.coin-chip')].map((c) => c.textContent);
+    const mark = btn.querySelector('.explain-mark');
+    return { want: `${coins.join(' + ')} = ${btn.dataset.v}`, got: mark ? mark.textContent : '(rien)' };
+  });
+  const bad = sums.filter((x) => x.got !== x.want);
+  check(
+    'monnaie, deux piles du même total : chaque pile porte sa propre addition',
+    bad.length === 0,
+    bad.map((x) => `« ${x.got} » au lieu de « ${x.want} »`).join(' ; '),
+  );
+  ev('closeModal()');
+}
+
 (async () => {
   await h.boot();
   section('Garde des jeux exemptés (ligne 17, S7)');
@@ -183,6 +223,7 @@ async function windowCloses() {
   guardCases();
   section('Tables des explications (ligne 14, S1)');
   tables();
+  moneyTwins();
   section('Jeu exempté : comme avant (ligne 9, S6)');
   await exempted();
   section('À plusieurs, temps écoulé (lignes 10 et 11, S5)');
