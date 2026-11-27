@@ -146,8 +146,8 @@ function pitchMarkup(r) {
     ${
       r.ask === 'melody'
         ? `<div class="num-options pitch-dirs">
-      <button class="num-btn pitch-dir" data-v="up" aria-label="Elle monte"><b>⬆️</b><span>Elle monte</span></button>
-      <button class="num-btn pitch-dir" data-v="down" aria-label="Elle descend"><b>⬇️</b><span>Elle descend</span></button></div>`
+      <button class="num-btn pitch-dir" data-voix="choix" data-say="Elle monte" data-v="up" aria-label="Elle monte"><b>⬆️</b><span>Elle monte</span></button>
+      <button class="num-btn pitch-dir" data-voix="choix" data-say="Elle descend" data-v="down" aria-label="Elle descend"><b>⬇️</b><span>Elle descend</span></button></div>`
         : ''
     }
   `;

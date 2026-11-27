@@ -2,6 +2,8 @@
    `shared` ne connaît pas les features : celles qui doivent réagir à
    l'ouverture ou à la fermeture d'une fenêtre (minuteur, relances
    anti-devinette, gains en attente…) s'inscrivent ici. */
+import { newVoiceScene, stopSpeech } from './voice.js';
+
 /** @type {Array<() => void>} */
 const modalOpenHooks = [],
   /** @type {Array<() => void>} */
@@ -42,6 +44,7 @@ function requestCloseModal() {
 /** @param {string} html */
 function openModal(html) {
   modalCloseGuard = null;
+  newVoiceScene(); // la première phrase de la fenêtre coupera celle de l'écran d'avant
   const m0 = document.getElementById('modal');
   if (m0) m0.classList.remove('has-form');
   // tout nouveau contenu invalide ce qui dépendait de l'ancien : minuteur de
@@ -63,7 +66,8 @@ function closeModal() {
   modalCloseHooks.forEach((fn) => fn());
   /** @type {HTMLElement} */ (document.getElementById('overlay')).classList.remove('show');
   document.body.classList.remove('modal-open');
-  if (window.speechSynthesis) speechSynthesis.cancel();
+  stopSpeech();
+  newVoiceScene();
 }
 
 export { closeModal, onModalChange, onModalClose, onModalOpen, openModal, requestCloseModal, setModalCloseGuard };

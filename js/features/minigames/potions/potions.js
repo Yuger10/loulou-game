@@ -110,7 +110,7 @@ function potionSVG(c) {
 }
 /** @type {(c: string, k?: number) => string} */
 const potionBtn = (c, k) =>
-  `<button class="po-opt" data-c="${c}"${k != null ? ` data-k="${k}"` : ''} aria-label="${c}">${potionSVG(c)}<span class="po-name">${c}</span></button>`;
+  `<button class="po-opt" data-voix="choix" data-say="${c}" data-c="${c}"${k != null ? ` data-k="${k}"` : ''} aria-label="${c}">${potionSVG(c)}<span class="po-name">${c}</span></button>`;
 const potionShow = (/** @type {string} */ c) =>
   `<span class="po-show" data-c="${c}">${potionSVG(c)}<span class="po-name">${c}</span></span>`;
 

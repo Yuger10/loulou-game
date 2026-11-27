@@ -453,7 +453,8 @@ const wrongOf = (sel) => {
   );
   check(
     '2 équipiers au maximum : pas de 3ᵉ',
-    ev('teamAddMate("zap")') === false && d.querySelector('[data-team-add="zap"]').disabled,
+    ev('teamAddMate("zap")') === false &&
+      d.querySelector('[data-team-add="zap"]').getAttribute('aria-disabled') === 'true',
   );
   d.querySelector('[data-team-rest="sam"]').click();
   check('un équipier peut se reposer', ev('teamMates().join()') === 'leo');

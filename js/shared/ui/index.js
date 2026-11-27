@@ -11,7 +11,18 @@ export {
   setAudioPrefsSource,
   soundModeLabel,
 } from './sound.js';
-export { bindSpeakButtons, emojiWord, speak, speechBubble } from './voice.js';
+export { VOICE_SERVICE } from './voice-clips.js';
+export {
+  bindSpeakButtons,
+  emojiWord,
+  keepSpeech,
+  newVoiceScene,
+  speak,
+  speechBubble,
+  stopSpeech,
+  voiceOfflineState,
+} from './voice.js';
+export { isActive, listenText } from './listen.js';
 export { confetti, onWrongFeedback, shakeEl, showToast, vibrate, wrongFeedback } from './feedback.js';
 export { closeModal, onModalChange, onModalClose, onModalOpen, openModal, requestCloseModal } from './modal.js';
 export { askConfirm } from './confirm.js';

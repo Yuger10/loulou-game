@@ -18,6 +18,7 @@ import {
   bindSpeakButtons,
   closeModal,
   confetti,
+  keepSpeech,
   openModal,
   playSound,
   registerView,
@@ -26,6 +27,7 @@ import {
   showToast,
   speak,
   speechBubble,
+  stopSpeech,
   switchView,
   uiIcon,
   vibrate,
@@ -40,14 +42,33 @@ import { openSeasonPrologue, openStoryChapter, STORY, storySolved } from '../sto
 import { addCoins } from '../wallet/index.js';
 import { renderLiveIsland } from './island.js';
 
+// ce que dit l'arrivée sur une île
+/** @param {typeof WORLDS[string]} w */
+const arrivalLine = (w) => `${w.name} ! ${w.subtitle}.`;
+// les îles dont l'intro a déjà été dite depuis le lancement (en mémoire : rien dans la sauvegarde)
+/** @type {Set<string>} */
+const islandIntroSaid = new Set();
+// La vue Île s'ouvre : l'arrivée dite au départ du bateau n'est pas coupée,
+// puis l'intro de l'île est dite, une seule fois par île et par session.
+function sayIslandOpening() {
+  const w = WORLDS[currentWorld];
+  keepSpeech(arrivalLine(w));
+  if (islandIntroSaid.has(currentWorld)) return;
+  islandIntroSaid.add(currentWorld);
+  speak(w.intro);
+}
+
 /** @param {string} id l'île @param {boolean} [silent] sans son ni annonce */
 function setWorld(id, silent) {
   const w = WORLDS[id];
   if (!worldUnlocked(id)) {
     playSound('wrong');
     const miss = missionsUntil(w.level);
-    speak(`${w.name} s'ouvrira au niveau ${w.level}. Encore ${miss} mission${miss > 1 ? 's' : ''} !`);
-    showToast(`🔒 ${w.name} : niveau ${w.level}`);
+    speak(`${w.name} s'ouvrira au niveau ${w.level}. Encore ${miss} mission${miss > 1 ? 's' : ''} !`, {
+      interrupt: true,
+      demand: true,
+    });
+    showToast(`🔒 ${w.name} : niveau ${w.level}`, '');
     return false;
   }
   const changed = currentWorld !== id;
@@ -56,7 +77,7 @@ function setWorld(id, silent) {
   renderLagon();
   if (changed && !silent) {
     playSound('good');
-    speak(`${w.name} ! ${w.subtitle}.`);
+    speak(arrivalLine(w));
     emit('world:changed', id); // un compagnon à rencontrer sur cette île ? (js/features/companion-team)
   }
   return true;
@@ -253,7 +274,7 @@ function buyDeco(btn) {
   playSound('win');
   confetti();
   speak(`Super ! ${d.name} est dans ${WORLDS[currentWorld].name} !`);
-  showToast(`${d.emoji} ${d.name} ajouté !`);
+  showToast(`${d.emoji} ${d.name} ajouté !`, '');
   renderScene();
   openDecoShop();
 }
@@ -270,7 +291,7 @@ function openDecoShop() {
           return `<div class="market-row deco-row ${owned ? 'owned' : ''}">
           <span class="emoji">${d.emoji}</span>
           <div class="info"><div class="name">${d.name}</div><div class="sub">${owned ? 'Déjà dans ton lagon ✅' : `🪙 ${d.price} pièces`}</div></div>
-          ${owned ? '' : `<button class="btn-small" data-deco="${k}" ${can ? '' : 'disabled'}>Acheter</button>`}
+          ${owned ? '' : `<button class="btn-small" data-deco="${k}"${can ? '' : ` aria-disabled="true" data-say-why="Il te faut ${d.price} pièce${d.price > 1 ? 's' : ''}."`}>Acheter</button>`}
         </div>`;
         })
         .join('')}
@@ -384,12 +405,16 @@ function openDialogue(charId) {
       openGiftPicker(charId);
     });
   setHandler(document.getElementById('btn-close'), 'click', () => {
-    if (window.speechSynthesis) speechSynthesis.cancel();
+    stopSpeech();
     closeModal();
   });
 }
 
-registerView('ile', () => renderLagon());
+registerView('ile', ({ silent }) => {
+  // avant le dessin de l'île : l'offre de Zap (js/features/companion-team) se dit après l'intro
+  if (!silent && worldUnlocked(currentWorld)) sayIslandOpening();
+  renderLagon();
+});
 
 // changement de joueur : son île (en dernier : elle s'appuie sur le reste)
 onProfileRefresh(() => renderLagon());

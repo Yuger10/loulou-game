@@ -173,11 +173,14 @@ function renderAlbum() {
     </div>`;
 }
 
-registerView('sac', ({ sacTab }) => {
+registerView('sac', ({ sacTab, silent }) => {
   state.newItems = 0;
   save();
   renderBadge();
   setSacTab(sacTab || currentSacTab);
+  // un sac vide a déjà dit sa phrase (renderSac) : une seule voix à l'ouverture
+  const emptyBag = currentSacTab === 'sac' && !Object.keys(ALL_ITEMS).some((k) => countItem(k) > 0);
+  if (!silent && !emptyBag) speak('Mon sac');
 });
 
 // changement de joueur : pastille des nouveaux objets

@@ -68,6 +68,10 @@ check(
 );
 check('sans réseau, il répond toujours avec le cache', /\.catch\(\(\)=>caches\.match\(e\.request\)\)/.test(SW));
 
+/* ---------- les clips de la voix (track voix-naturelle, lignes 23 et 24) ---------- */
+// la règle de voix/*.mp3 dans sw.js, son texte puis son comportement : test/tools/sw-voice-checks.js
+const { voiceCacheChecks } = require('./tools/sw-voice-checks.js');
+
 /* ---------- le jeu ---------- */
 const html = page.buildHtml();
 function openGame(flag) {
@@ -91,6 +95,7 @@ function openGame(flag) {
 }
 
 (async () => {
+  await voiceCacheChecks({ check, section, SW, V });
   const { w, d, jsdomErrors } = openGame();
   const ev = (code) => w.eval(code);
   await wait(150);

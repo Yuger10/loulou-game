@@ -88,8 +88,10 @@ const stageArt = (/** @type {string} */ s) =>
     ? `<svg class="lc-svg" viewBox="0 0 60 60" aria-hidden="true">${LC_STAGES[s].svg}</svg>`
     : `<span class="lc-emoji" aria-hidden="true">${LC_STAGES[s].emoji}</span>`;
 /** @type {(s: string, extra?: string) => string} */
-const stageCard = (s, extra) =>
-  `<button class="lc-card" data-s="${s}" aria-label="${LC_STAGES[s].name}"${extra || ''}>${stageArt(s)}<span class="lc-name">${LC_STAGES[s].name.replace(/^(la |le |l')/, '')}</span></button>`;
+const stageCard = (s, extra) => {
+  const shown = LC_STAGES[s].name.replace(/^(la |le |l')/, '');
+  return `<button class="lc-card" data-voix="choix" data-say="${shown}" data-s="${s}" aria-label="${LC_STAGES[s].name}"${extra || ''}>${stageArt(s)}<span class="lc-name">${shown}</span></button>`;
+};
 
 /**
  * @param {number} dd le palier de difficulté

@@ -25,6 +25,7 @@ const SLICES = [
       'js/shared/lib/events.js',
       'js/shared/lib/version.js',
       'js/shared/lib/text.js',
+      'js/shared/lib/spoken.js',
       'js/shared/lib/storage.js',
     ],
     css: [],
@@ -40,6 +41,7 @@ const SLICES = [
       'js/shared/styles/responsive-v14.css',
       'js/shared/styles/design-system-v21.css',
       'js/shared/styles/devices.css',
+      'js/shared/styles/voice.css',
     ],
   },
   {
@@ -49,7 +51,12 @@ const SLICES = [
       'js/shared/ui/handlers.js',
       'js/shared/ui/icons.js',
       'js/shared/ui/sound.js',
+      'js/shared/ui/voice-clips.js',
+      'js/shared/ui/voice-choice.js',
+      'js/shared/ui/voice-cache.js',
+      'js/shared/ui/voice-player.js',
       'js/shared/ui/voice.js',
+      'js/shared/ui/listen.js',
       'js/shared/ui/feedback.js',
       'js/shared/ui/modal.js',
       'js/shared/ui/confirm.js',
@@ -366,7 +373,11 @@ const SLICES = [
   {
     id: 'parents',
     layer: 'features',
-    files: ['js/features/parents/parents.js', 'js/features/parents/storage-alert.js'],
+    files: [
+      'js/features/parents/parents.js',
+      'js/features/parents/storage-alert.js',
+      'js/features/parents/voice-card.js',
+    ],
     css: ['js/features/parents/parents.css'],
   },
   { id: 'rest', layer: 'features', files: ['js/features/rest/rest.js'], css: ['js/features/rest/rest.css'] },
@@ -455,6 +466,8 @@ const CSS_ORDER = [
   'js/shared/ui/nav.css',
   // en dernier : le modèle de formulaire et la confirmation l'emportent sur les styles des features
   'js/shared/ui/form.css',
+  // tout à la fin : la taille du bouton 🔈 et le surlignage du texte lu (une seule règle pour tout le jeu)
+  'js/shared/styles/voice.css',
 ];
 
 module.exports = { SLICES, CSS_ORDER };

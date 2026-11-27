@@ -146,6 +146,9 @@ function confirmBindButtons(c, close) {
   setHandler(el, 'click', (e) => {
     if (e.target === el) close(o.dismissValue);
   });
+  // le fond n'agit que si on le touche lui-même (comme #overlay) : sans `data-act`,
+  // le texte de la confirmation reste écoutable au doigt
+  el.removeAttribute('data-act');
 }
 
 export { askConfirm };

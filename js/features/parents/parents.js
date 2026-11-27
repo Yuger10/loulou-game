@@ -29,7 +29,16 @@ import {
 import { setCurrentWorld } from '../../entities/world/index.js';
 import { currentSeason, FETES, seasonPreview } from '../../entities/season/index.js';
 import { emit, on, random, storageRemove, storageWrite } from '../../shared/lib/index.js';
-import { askConfirm, closeModal, openModal, playSound, setHandler, showToast, speak } from '../../shared/ui/index.js';
+import {
+  askConfirm,
+  bindSpeakButtons,
+  closeModal,
+  openModal,
+  playSound,
+  setHandler,
+  showToast,
+  speak,
+} from '../../shared/ui/index.js';
 import { SKILL_STATUS, skillStatus, todayKey } from '../adaptive/index.js';
 import { openBackup } from '../backup/index.js';
 import { openPlayers, openPlayerSettings } from '../players/index.js';
@@ -38,6 +47,7 @@ import { bindQuit, gameHeader } from '../screen/index.js';
 import { setSeasonPreview } from '../seasons/index.js';
 import { bindUpdateCard, updateCardHTML } from '../update/index.js';
 import './storage-alert.js'; // message et carte quand l'enregistrement échoue
+import './voice-card.js'; // carte « Voix » : voix de synthèse, clips disponibles sans Internet
 
 /** @typedef {import('../../entities/game-state/index.js').GameState} GameState */
 /** @typedef {Partial<GameState>} PlayerState la partie d'un joueur : l'état courant, ou une partie lue dans le stockage */
@@ -126,6 +136,24 @@ function pauseDue() {
 }
 /* ---- accès réservé aux adultes ---- */
 let parentUnlockedUntil = 0;
+// La question de calcul porte `data-voix="muet"` : la voix ne la dit jamais,
+// elle ouvrirait la porte à une enfant de 6 ans.
+/**
+ * @param {number} a
+ * @param {number} b
+ */
+function parentGateHTML(a, b) {
+  return `
+    ${gameHeader('🔒 Pour les adultes', 'Répondez à cette question pour continuer')}
+    <div class="gate-box">
+      <label for="gate-in" class="gate-q" data-voix="muet">Combien font ${a} × ${b} ?</label>
+      <input id="gate-in" class="name-input-modal gate-in" type="number" inputmode="numeric" autocomplete="off" aria-describedby="gate-err">
+      <p class="gate-err" id="gate-err" aria-live="polite"></p>
+    </div>
+    <button class="btn-primary" id="gate-ok">Valider</button>
+    <button class="btn-ghost" id="gate-cancel">Retour</button>
+  `;
+}
 // onWrong : appelée à chaque mauvaise réponse (tentatives notées pendant la pause)
 /**
  * @param {() => void} onOk
@@ -139,16 +167,10 @@ function openParentGate(onOk, onCancel, onWrong) {
   }
   const a = 6 + Math.floor(random() * 4),
     b = 6 + Math.floor(random() * 4);
-  openModal(`
-    ${gameHeader('🔒 Pour les adultes', 'Répondez à cette question pour continuer')}
-    <div class="gate-box">
-      <label for="gate-in" class="gate-q">Combien font ${a} × ${b} ?</label>
-      <input id="gate-in" class="name-input-modal gate-in" type="number" inputmode="numeric" autocomplete="off" aria-describedby="gate-err">
-      <p class="gate-err" id="gate-err" aria-live="polite"></p>
-    </div>
-    <button class="btn-primary" id="gate-ok">Valider</button>
-    <button class="btn-ghost" id="gate-cancel">Retour</button>
-  `);
+  openModal(parentGateHTML(a, b));
+  // la voix dit seulement que c'est pour les adultes, jamais la question de calcul
+  bindSpeakButtons();
+  speak("C'est pour les adultes.");
   const input = /** @type {HTMLInputElement} */ (document.getElementById('gate-in'));
   const ok = () => {
     if (Number(input.value) === a * b) {
@@ -341,7 +363,7 @@ function openParentSpace(selectedId) {
       profiles.familyPause = p.pauseMin; // les nouveaux joueurs recevront ce réglage
       saveProfiles();
       document.querySelectorAll('[data-pause]').forEach((x) => x.classList.toggle('on', x === b));
-      showToast(p.pauseMin ? `😴 Pause après ${p.pauseMin} min` : 'Pas de pause');
+      showToast(p.pauseMin ? `😴 Pause après ${p.pauseMin} min` : 'Pas de pause', '');
     }),
   );
   document.querySelectorAll('[data-season-preview]').forEach((b) =>
@@ -350,7 +372,7 @@ function openParentSpace(selectedId) {
       setSeasonPreview(b.dataset.seasonPreview || null);
       document.querySelectorAll('[data-season-preview]').forEach((x) => x.classList.toggle('on', x === b));
       const s = currentSeason();
-      showToast(s ? `${FETES[s].emoji} Aperçu : ${FETES[s].name}` : "Pas de fête aujourd'hui");
+      showToast(s ? `${FETES[s].emoji} Aperçu : ${FETES[s].name}` : "Pas de fête aujourd'hui", '');
     }),
   );
   document.querySelectorAll('[data-music]').forEach((b) =>
@@ -370,7 +392,7 @@ function openParentSpace(selectedId) {
         storageWrite(profileSaveKey(p.id), JSON.stringify(st));
       }
       document.querySelectorAll('[data-music]').forEach((x) => x.classList.toggle('on', x === b));
-      showToast(musicOn ? "🎵 Musique d'ambiance" : 'Pas de musique');
+      showToast(musicOn ? "🎵 Musique d'ambiance" : 'Pas de musique', '');
     }),
   );
   const vol = /** @type {HTMLInputElement} */ (document.getElementById('ps-volume'));
@@ -412,7 +434,7 @@ function openParentSpace(selectedId) {
     }
     playSound('win');
     speak(`Nouvelle aventure pour ${p.name || 'toi'} !`);
-    showToast('🔄 Nouvelle aventure !');
+    showToast('🔄 Nouvelle aventure !', '');
     openParentSpace(p.id);
   });
   const del = document.getElementById('ps-delete');
@@ -428,7 +450,7 @@ function openParentSpace(selectedId) {
       if (!ok) return;
       deleteProfile(p.id);
       playSound('tap');
-      showToast('Joueur supprimé');
+      showToast('Joueur supprimé', '');
       openParentSpace();
     });
 }

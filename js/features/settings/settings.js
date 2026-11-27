@@ -10,7 +10,15 @@
 import { avatarHTML, COMPANIONS, companionOf } from '../../entities/companion/index.js';
 import { save, state } from '../../entities/game-state/index.js';
 import { currentProfile, onProfileRefresh, profiles, switchProfile } from '../../entities/player/index.js';
-import { playSound, registerView, setHandler, showToast, soundModeLabel, speak } from '../../shared/ui/index.js';
+import {
+  playSound,
+  registerView,
+  setHandler,
+  showToast,
+  soundModeLabel,
+  speak,
+  stopSpeech,
+} from '../../shared/ui/index.js';
 import { backupDue, openBackup } from '../backup/index.js';
 import { renderTeamHeads } from '../companion-team/index.js';
 import { openParentGate, openParents } from '../parents/index.js';
@@ -20,13 +28,14 @@ import { renderProfile, renderSoundBtn } from '../profile/index.js';
 /** @typedef {'sound' | 'voice' | 'music'} SoundKey un interrupteur du son (un champ de l'état) */
 
 // un interrupteur lisible au doigt : libellé, état, et désactivé si besoin
+// (inactif : il porte sa raison, `data-say-why`, que son handler dit lui-même)
 /**
  * @param {SoundKey} key
  * @param {string} label
  * @param {{ on: boolean, disabled?: boolean }} st
  */
 function rgSwitch(key, label, { on, disabled }) {
-  return `<button type="button" class="rg-switch" role="switch" data-sound="${key}" aria-checked="${on}"${disabled ? ' aria-disabled="true"' : ''}>
+  return `<button type="button" class="rg-switch" role="switch" data-sound="${key}" aria-checked="${on}"${disabled ? ` aria-disabled="true" data-say-why="Allume d'abord les bruitages."` : ''}>
     <span class="rg-switch-label">${label}</span><span class="rg-switch-track" aria-hidden="true"><span class="rg-switch-knob"></span></span>
   </button>`;
 }
@@ -119,7 +128,7 @@ function setSound(key) {
   }
   save();
   renderSoundBtn();
-  if (!state.voice && window.speechSynthesis) speechSynthesis.cancel();
+  if (!state.voice) stopSpeech();
   if (state.sound) playSound('tap');
   showToast(soundModeLabel());
 }
@@ -130,7 +139,7 @@ function bindSoundCard(el) {
   el.querySelectorAll('[data-sound]').forEach((b) =>
     setHandler(b, 'click', () => {
       if (b.getAttribute('aria-disabled') === 'true') {
-        speak("Allume d'abord les bruitages.");
+        speak("Allume d'abord les bruitages.", { interrupt: true, demand: true });
         return;
       }
       setSound(/** @type {SoundKey} */ (b.dataset.sound));
@@ -189,7 +198,10 @@ function bindSettings(el) {
   });
 }
 
-registerView('reglages', () => renderSettings());
+registerView('reglages', ({ silent }) => {
+  renderSettings();
+  if (!silent) speak('Réglages');
+});
 // changement de joueur pendant qu'on est sur les Réglages : on les redessine
 onProfileRefresh(() => {
   const v = document.getElementById('view-reglages');

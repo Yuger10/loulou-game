@@ -18,7 +18,7 @@ function startParty(ids) {
   // le premier joueur vient d'être choisi dans la liste : il existe
   const p = /** @type {Profile} */ (partyCurrent());
   speak(`Mode chacun son tour ! ${p.name || 'Joueur 1'} commence.`);
-  showToast(`🎲 ${avatarText(p.avatar)} ${p.name || 'Joueur 1'} commence !`);
+  showToast(`🎲 ${avatarText(p.avatar)} ${p.name || 'Joueur 1'} commence !`, '');
   return true;
 }
 function stopParty() {
@@ -29,7 +29,7 @@ function stopParty() {
   party.active = false;
   party.mode = null;
   renderTurnBar();
-  showToast('👤 Mode solo');
+  showToast('👤 Mode solo', '');
   speak('Retour au mode solo.');
 }
 

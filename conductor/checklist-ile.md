@@ -90,6 +90,7 @@ Les tests qui comptent les cases d'un écran (`16` manquants, `3` rangées, `12`
 - [ ] Ses mini-jeux éventuels : voir [checklist-mini-jeu.md](./checklist-mini-jeu.md).
 
 ## 4. Brancher et vérifier
+- [ ] Voix : un nouvel écran (une fonction qui appelle `openModal(`, une vue) ajoute son scénario dans `test/voix-ecrans.js` ; un choix écrit pose `data-voix="choix"` et `data-say` ; jamais `disabled` hors réponse neutralisée en cours de jeu (un bouton inactif porte `aria-disabled="true"` et `data-say-why`). `test/voix-partout.test.js` le vérifie.
 - [ ] `bun run sync` si des fichiers ont été ajoutés ; un nom exposé s'ajoute à l'`index.js` de sa slice.
 - [ ] `bun run check` vert.
 - [ ] Cache `sw.js` incrémenté, PRD et TODO à jour.

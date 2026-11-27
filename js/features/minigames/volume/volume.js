@@ -136,7 +136,7 @@ function renderSolidShape(dd) {
     ${livesBar()}
     <div class="vol-shape-box"><span class="vol-shape-emoji">${item}</span></div>
     <div class="vol-options">
-      ${options.map((o) => `<button type="button" class="vol-opt-btn" data-v="${o.name}">${o.name}</button>`).join('')}
+      ${options.map((o) => `<button type="button" class="vol-opt-btn" data-voix="choix" data-say="${o.name}" data-v="${o.name}">${o.name}</button>`).join('')}
     </div>
   `);
   bindQuit();

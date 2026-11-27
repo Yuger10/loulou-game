@@ -1,9 +1,11 @@
 /* ---------- Navigation par vues ----------
    Chaque feature inscrit le rendu de sa vue avec registerView(nom, rendu) ;
    switchView affiche la section puis appelle ces rendus. */
+import { setHandler } from './handlers.js';
 import { playSound } from './sound.js';
+import { newVoiceScene } from './voice.js';
 
-/** @typedef {{ sacTab: string | null }} ViewOptions */
+/** @typedef {{ sacTab: string | null, silent: boolean }} ViewOptions `silent` : la vue s'ouvre sans dire son titre */
 /** @type {Record<string, Array<(opts: ViewOptions) => void>>} */
 const viewRenderers = {};
 // fonctions appelées à chaque changement de vue (par exemple : la pause revient)
@@ -21,8 +23,11 @@ function registerView(name, fn) {
   (viewRenderers[name] = viewRenderers[name] || []).push(fn);
 }
 
-/** @param {string} nameArg */
-function switchView(nameArg) {
+/**
+ * @param {string} nameArg
+ * @param {{ silent?: boolean }} [opts] silent : sans dire le titre de la vue (lancement du jeu, avant le premier geste)
+ */
+function switchView(nameArg, opts) {
   let name = nameArg;
   // alias pratiques
   if (name === 'lagon') name = 'ile';
@@ -35,6 +40,7 @@ function switchView(nameArg) {
 
   const sec = document.getElementById('view-' + name);
   if (!sec) return;
+  newVoiceScene();
   document.querySelectorAll('.view').forEach((v) => v.classList.remove('active'));
   sec.classList.add('active');
   document.querySelectorAll('.navbtn').forEach((b) => b.classList.toggle('active', b.dataset.view === name));
@@ -46,13 +52,14 @@ function switchView(nameArg) {
     // défilement impossible (vue cachée) : rien de grave
   }
 
-  (viewRenderers[name] || []).forEach((fn) => fn({ sacTab }));
+  const silent = !!(opts && opts.silent);
+  (viewRenderers[name] || []).forEach((fn) => fn({ sacTab, silent }));
   viewChangeHooks.forEach((fn) => fn(name));
 }
 
 /* ---------- Navigation ---------- */
 document.querySelectorAll('.navbtn').forEach((btn) => {
-  btn.addEventListener('click', () => {
+  setHandler(btn, 'click', () => {
     playSound('tap');
     switchView(/** @type {string} */ (btn.dataset.view)); // chaque .navbtn a son data-view
   });
