@@ -247,6 +247,36 @@ async function illimite() {
   ev('closeModal()');
 }
 
+// critère 14 : aux paliers 2 à 5, les essais du barème s'épuisent et la mission est perdue
+const LIVES = { 2: 4, 3: 3, 4: 3, 5: 2 }; // critère 29 : barème `generous`
+async function epuise(p) {
+  t.openCoding(p, t.fallbackGrid(p));
+  const lives = t.lives();
+  t.tapOps(['F']); // une seule instruction : jamais chez l'ami (T2 : au moins 5)
+  for (let k = 1; k < lives; k++) {
+    go().click();
+    await t.idle();
+  }
+  const before = [errors() === lives - 1, t.lives() === 1, !one('.fail-box'), !go().disabled];
+  go().click();
+  await t.waitFor(() => errors() === lives, 2500);
+  // entre la dernière erreur et l'écran « Raté ! » : plus rien ne répond
+  const locked = [errors() === lives, go().disabled, all('.cd-op').every((b) => b.disabled), !one('.fail-box')];
+  t.op('F').click();
+  const same = json(t.steps()) === json(['F']);
+  const failed = await t.waitFor(() => !!one('.fail-box'), 2500);
+  check(`critère 14, palier ${p} : ${LIVES[p]} essais ; au dernier programme faux, la mission est perdue`, () => [
+    lives === LIVES[p],
+    ...before,
+    ...locked,
+    same,
+    failed,
+    ev('lives') === 0, // le compte des erreurs, lui, repart à zéro avec l'écran « Raté ! »
+    !one('.win-box') && !one('#cd-grid'),
+  ]);
+  ev('closeModal()');
+}
+
 (async () => {
   await t.start();
   section('Le chemin de la plume : la grille, la palette, la solution');
@@ -258,5 +288,6 @@ async function illimite() {
   await trajetSuite();
   await victoire();
   await illimite();
+  for (const p of [2, 3, 4, 5]) await epuise(p);
   await t.finish('le Monde des Chatouilles (coding, l’écran)');
 })();

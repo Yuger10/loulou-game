@@ -9,6 +9,7 @@
    miroir). La banque : sentence-bank.js ; les paliers : `sentenceRound`.
    Sans minuteur. */
 import { sentenceRound } from '../../../entities/difficulty/index.js';
+import { party } from '../../../entities/player/index.js';
 import { pickRandom, shuffle } from '../../../shared/lib/index.js';
 import { giggle, openModal, setHandler, speak } from '../../../shared/ui/index.js';
 import { gameDiff } from '../../adaptive/index.js';
@@ -86,7 +87,8 @@ function sentenceJudge(g, last) {
   }
   g.errors++;
   giggle(document.getElementById('st-line'));
-  const second = g.errors >= 2;
+  // à plusieurs, le moteur passe la main sans rien relancer : la phrase reste, comme à la 1ʳᵉ erreur
+  const second = g.errors >= 2 && !party.active;
   const lost = loseLife(last, second ? { onRetry: sentenceNext, disable: false } : { disable: false });
   // « une nouvelle phrase » ne s'annonce que si elle arrive : pas quand les essais sont épuisés
   speak(`${built} ${second && !lost ? SENTENCE_AGAIN : SENTENCE_WRONG}`);
