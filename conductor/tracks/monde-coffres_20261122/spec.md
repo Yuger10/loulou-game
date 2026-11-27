@@ -1,5 +1,5 @@
 ---
-status: brouillon
+status: validée         # brouillon | validée | faite ; posé à la demande d'Amrou le 26/11/2026 (« tu passes tout en validé »)
 issue: 0
 size: M                  # quatre PR livrables seules : 1a, 1b, 2, 3 (L découpé)
 migration: false
