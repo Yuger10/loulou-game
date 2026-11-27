@@ -410,6 +410,38 @@ const INDEPENDENT = {
       JSON.stringify(sol) === JSON.stringify([...want, '#code-open'])
     );
   },
+  // coding : la solution rejouée sur la grille lue dans la page (#cd-grid et ses data-*),
+  // avec les règles G1 à G3 de la spec : la plume arrive chez l'ami, et Go vient en dernier
+  coding(sol) {
+    const grid = d.getElementById('cd-grid');
+    const cell = (cls) => [...grid.querySelectorAll(`.cd-cell.${cls}`)].map((x) => `${x.dataset.r},${x.dataset.c}`);
+    const N = Number(grid.dataset.size);
+    const STEP = { 0: [-1, 0], 1: [0, 1], 2: [1, 0], 3: [0, -1] };
+    const ABS = { U: 0, R: 1, D: 2, L: 3 };
+    let [r, c] = cell('start')[0].split(',').map(Number);
+    let dir = Number(grid.dataset.dir);
+    const ops = sol.slice(0, -1).map((s) => d.querySelector(s).dataset.op);
+    let arrived = -1;
+    ops.forEach((op, i) => {
+      if (arrived >= 0) return;
+      if (op === 'TL' || op === 'TR') dir = (dir + (op === 'TL' ? 3 : 1)) % 4;
+      else {
+        if (op !== 'F') dir = ABS[op];
+        r += STEP[dir][0];
+        c += STEP[dir][1];
+      }
+      const out = r < 0 || c < 0 || r >= N || c >= N || cell('rock').includes(`${r},${c}`);
+      if (out) arrived = -2;
+      else if (cell('goal')[0] === `${r},${c}`) arrived = i;
+    });
+    const want = grid.dataset.mode === 'abs' ? ['U', 'R', 'D', 'L'] : ['F', 'TL', 'TR'];
+    return (
+      sol[sol.length - 1] === '#cd-go' &&
+      ops.every((op) => want.includes(op)) &&
+      arrived === ops.length - 1 &&
+      ops.length <= d.querySelectorAll('#cd-prog .cd-slot').length
+    );
+  },
   // trace : chaque élément porte les points de son trait, et la solution couvre
   // tous les traits de tous les glyphes de la bande, dans l'ordre
   trace(sol) {

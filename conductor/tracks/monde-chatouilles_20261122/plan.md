@@ -10,7 +10,7 @@ Les numéros entre parenthèses renvoient aux lignes de « Comportement attendu 
 ## Tâches
 
 ### Phase 1 : « Le chemin de la plume » (`coding`), le son et l'animation du rire
-- [ ] 1.1 Tests d'abord, dans `test/chatouilles.test.js` (nouveau fichier, harnais copié de `test/musique.test.js`), section « Le chemin de la plume » :
+- [x] 1.1 Tests d'abord, dans `test/chatouilles.test.js` (nouveau fichier, harnais copié de `test/musique.test.js`), section « Le chemin de la plume » :
   - `codingRound(1..5)` égale T1 (1) ;
   - 300 générations par palier : contraintes G4 et G5, aucune grille de secours (2, 3) ;
   - les 5 grilles T2 donnent les `len` et `turns` de T2 avec `codingBest`, et `codingRun(grille, best.prog).end === 'goal'` (jamais de comparaison de `prog` mot pour mot) ; les exemples de G0, G5 et G7 (forme de la grille, retour `{ cfg, grid, best, tries, fallback }`, `codingRun` et ses fins `goal`, `rock`, `edge`, `stop`, `empty`) ;
@@ -19,14 +19,14 @@ Les numéros entre parenthèses renvoient aux lignes de « Comportement attendu 
   - palier 1 : la grille ne change pas après 3 erreurs (14) ; palier 2 : départ vers le haut (15) ;
   - victoire : `giggle-wiggle` sur l'ami, C8 dit (10).
   Ils échouent avant le code.
-- [ ] 1.2 Tests dans les fichiers existants : ajouter `state.gameCounts["coding"]=1` à la ligne du test « variété » de `test/smoke.test.js` (`checklist-mini-jeu.md`, étape 10) ; vérificateur `coding` dans `test/games.test.js` (il rejoue la solution sur la grille lue dans le DOM : `#cd-grid` et ses `data-*`, règles G1 à G3), entrée `coding` dans `test/smoke.test.js` (ouverture, une erreur garde la grille, palier et âge), son `giggle` dans la liste de `test/sounds.test.js` (31). Tout ajout de liste dans un test existant ajoute, n'enlève rien.
-- [ ] 1.3 `js/entities/difficulty/difficulty-s3.js` (s'il n'existe pas encore : le créer sur le modèle de `difficulty-s2.js`, avec `import { tierValue } from './difficulty.js'`, le déclarer dans la slice `difficulty` de `js/slices.cjs` après `difficulty-s2.js`, et ajouter à `js/entities/difficulty/index.js` un bloc `export { … } from './difficulty-s3.js'` ; `checklist-ile.md` section 2 bis, spec D24) : `codingRound` (T1), typé strictement (`@typedef CodingRound`, `@param {number} dd`, `@returns {CodingRound}`, spec D23), exporté et ajouté au bloc de réexport de `index.js` ; dans `difficulty.js`, seulement les lignes `coding` de `NO_TIMER_KINDS` et `GENEROUS_KINDS` (barème `generous`), après `wc -l`.
-- [ ] 1.4 `js/entities/difficulty/game-types.js` : `coding` dans `GAME_TYPES` et `GAME_LIST` (🪶 « Le chemin de la plume »), pas dans les tranches `max: 4` et `max: 5` (28).
-- [ ] 1.5 `js/features/adaptive/adaptive.js` (`PROGRESS_CHEERS.coding`) et `js/features/parents/parents.js` (`coding` dans `formes`) (30).
-- [ ] 1.6 `js/shared/ui/sound.js` : `SOUND_PALETTE.giggle` et `SOUND_FAMILY.giggle` (T5) ; `js/shared/styles/design-system-v21.css` : `.giggle-wiggle` et `@keyframes giggleWiggle`, avec le repli `prefers-reduced-motion`.
-- [ ] 1.7 `js/features/minigames/coding/coding.js`, `coding.css`, `index.js` : génération (G1 à G6), rendu, trajet pas à pas, erreurs, textes C1 à C11, indices H1, `setSolution`, `registerGame('coding', renderCoding)`, `registerHints('coding', codingHints)`.
-- [ ] 1.8 `js/slices.cjs` : slice `minigame-coding` (couche `features`, après le moteur), sa feuille dans `css` et dans `CSS_ORDER` avant `island.css` ; `import '../features/minigames/coding/index.js';` dans `js/app/main.js` (avec les autres mini-jeux, comme `nesting` ligne 55) ; puis `bun run sync`.
-- [ ] 1.9 `bun run typecheck` et `bun run check` verts ; `bun run verify` avant la PR.
+- [x] 1.2 Tests dans les fichiers existants : ajouter `state.gameCounts["coding"]=1` à la ligne du test « variété » de `test/smoke.test.js` (`checklist-mini-jeu.md`, étape 10) ; vérificateur `coding` dans `test/games.test.js` (il rejoue la solution sur la grille lue dans le DOM : `#cd-grid` et ses `data-*`, règles G1 à G3), entrée `coding` dans `test/smoke.test.js` (ouverture, une erreur garde la grille, palier et âge), son `giggle` dans la liste de `test/sounds.test.js` (31). Tout ajout de liste dans un test existant ajoute, n'enlève rien.
+- [x] 1.3 `js/entities/difficulty/difficulty-s3.js` (s'il n'existe pas encore : le créer sur le modèle de `difficulty-s2.js`, avec `import { tierValue } from './difficulty.js'`, le déclarer dans la slice `difficulty` de `js/slices.cjs` après `difficulty-s2.js`, et ajouter à `js/entities/difficulty/index.js` un bloc `export { … } from './difficulty-s3.js'` ; `checklist-ile.md` section 2 bis, spec D24) : `codingRound` (T1), typé strictement (`@typedef CodingRound`, `@param {number} dd`, `@returns {CodingRound}`, spec D23), exporté et ajouté au bloc de réexport de `index.js` ; dans `difficulty.js`, seulement les lignes `coding` de `NO_TIMER_KINDS` et `GENEROUS_KINDS` (barème `generous`), après `wc -l`.
+- [x] 1.4 `js/entities/difficulty/game-types.js` : `coding` dans `GAME_TYPES` et `GAME_LIST` (🪶 « Le chemin de la plume »), pas dans les tranches `max: 4` et `max: 5` (28).
+- [x] 1.5 `js/features/adaptive/adaptive.js` (`PROGRESS_CHEERS.coding`) et `js/features/parents/parents.js` (`coding` dans `formes`) (30).
+- [x] 1.6 `js/shared/ui/sound.js` : `SOUND_PALETTE.giggle` et `SOUND_FAMILY.giggle` (T5) ; `js/shared/styles/design-system-v21.css` : `.giggle-wiggle` et `@keyframes giggleWiggle`, avec le repli `prefers-reduced-motion`.
+- [x] 1.7 `js/features/minigames/coding/coding.js`, `coding.css`, `index.js` : génération (G1 à G6), rendu, trajet pas à pas, erreurs, textes C1 à C11, indices H1, `setSolution`, `registerGame('coding', renderCoding)`, `registerHints('coding', codingHints)`.
+- [x] 1.8 `js/slices.cjs` : slice `minigame-coding` (couche `features`, après le moteur), sa feuille dans `css` et dans `CSS_ORDER` avant `island.css` ; `import '../features/minigames/coding/index.js';` dans `js/app/main.js` (avec les autres mini-jeux, comme `nesting` ligne 55) ; puis `bun run sync`.
+- [x] 1.9 `bun run typecheck` et `bun run check` verts ; `bun run verify` avant la PR.
 - [ ] 1.10 Doc : ligne « 🪶 Le chemin de la plume » dans le PRD (section de la version), `conductor/tracks.md` (phase 1 livrée).
 - [ ] 1.11 Conductor : vérification manuelle (S17) par Amrou sur téléphone.
 

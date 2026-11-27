@@ -676,3 +676,38 @@ nav.bottomnav button.active {
     animation: none;
   }
 }
+
+/* ---------- Le rire (Monde des Chatouilles) : un personnage, un ami ou une phrase qui pouffe ---------- */
+.giggle-wiggle {
+  display: inline-block;
+  transform-origin: 50% 90%;
+  animation: giggleWiggle 0.9s ease-in-out 1;
+}
+@keyframes giggleWiggle {
+  0% {
+    transform: rotate(0) scale(1);
+  }
+  15% {
+    transform: rotate(-10deg) scale(1.08, 0.94);
+  }
+  30% {
+    transform: rotate(9deg);
+  }
+  45% {
+    transform: rotate(-8deg) scale(1.06, 0.96);
+  }
+  60% {
+    transform: rotate(6deg);
+  }
+  75% {
+    transform: rotate(-3deg);
+  }
+  100% {
+    transform: rotate(0) scale(1);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .giggle-wiggle {
+    animation: none;
+  }
+}

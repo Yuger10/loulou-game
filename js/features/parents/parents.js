@@ -51,7 +51,7 @@ const SKILL_GROUPS = [
     id: 'formes',
     emoji: '🔷',
     name: 'Formes et espace',
-    games: ['shapes', 'jigsaw', 'nesting', 'cubes', 'shelf', 'mirror'],
+    games: ['shapes', 'jigsaw', 'nesting', 'cubes', 'shelf', 'mirror', 'coding'],
   },
   { id: 'sciences', emoji: '🪐', name: 'Sciences', games: ['planets', 'lifecycle', 'potions'] },
   {
