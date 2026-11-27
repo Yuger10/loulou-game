@@ -51,6 +51,49 @@
   }
 }
 
+/* L'ouverture de La Grande Expédition (saison 3) : même écran que le Ciel,
+     couleur vieux papier, et un avion en papier qui traverse */
+.expedition-open {
+  background: linear-gradient(180deg, #f7e9c9 0%, #eed7a6 100%);
+  border-radius: var(--radius-lg);
+  padding: 8px 8px 4px;
+}
+.expedition-open-art {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-size: 2.6rem;
+  margin: 4px 0;
+  overflow: hidden;
+}
+.expedition-open-art .eo-plane {
+  font-size: 3.2rem;
+  animation: expeditionPlane 3.2s ease-in-out infinite;
+}
+.expedition-open-art .eo-compass {
+  font-size: 2rem;
+}
+@keyframes expeditionPlane {
+  0% {
+    transform: translate(-90px, 10px) rotate(-6deg);
+    opacity: 0;
+  }
+  20%,
+  80% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate(90px, -10px) rotate(6deg);
+    opacity: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .expedition-open-art .eo-plane {
+    animation: none;
+  }
+}
+
 /* un long nom d'île (« Le Monde des Boîtes ») passe à la ligne plutôt que
      sous les boutons de l'en-tête (v55) */
 #view-ile .view-head h2 {

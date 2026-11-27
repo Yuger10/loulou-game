@@ -115,7 +115,7 @@ Registre des tracks Conductor, **dans l'ordre d'implémentation**. Feuille de ro
 
 ---
 
-- [ ] **Track: Saison 3 « La Grande Expédition » : troisième carte, avion en papier, carte au trésor de Zap, niveau 70**
+- [x] **Track: Saison 3 « La Grande Expédition » : troisième carte, avion en papier, carte au trésor de Zap, niveau 70 (v67, cachée jusqu'à la première île)**
 *Link: [./tracks/saison3-ouverture_20261122/](./tracks/saison3-ouverture_20261122/)*
 
 ---

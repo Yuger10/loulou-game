@@ -12,7 +12,9 @@ export {
   currentWorld,
   lastOpenedLevel,
   nextLockedWorld,
+  refreshArchipelagos,
   setCurrentWorld,
+  shownArchipelagos,
   worldsOf,
   worldUnlocked,
 } from './availability.js';

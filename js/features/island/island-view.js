@@ -9,6 +9,7 @@ import {
   archipelagoUnlocked,
   currentWorld,
   setCurrentWorld,
+  shownArchipelagos,
   WORLD_ORDER,
   WORLDS,
   worldUnlocked,
@@ -116,44 +117,94 @@ function checkNewIsland() {
   };
   // la première île d'un archipel encore jamais montré (le Ciel des Rêves,
   // v55) : son écran d'ouverture, puis le prologue de la saison, puis le chapitre
-  if (archipelagoOf(id) === 2 && !state.skyIntroSeen) openSkyOpening(() => openSeasonPrologue(2, chapter));
+  const s = archipelagoOf(id),
+    op = SEASON_OPENINGS[s];
+  if (op && !state[op.seen]) openSeasonOpening(s, () => openSeasonPrologue(s, chapter));
   else chapter();
   return true;
 }
 
-/* L'ouverture du Ciel des Rêves (saison 2, v55) : un écran spécial, une seule
-   fois, au passage à son niveau d'ouverture (ou au premier lancement d'une
-   partie qui l'a déjà). La carte montre ensuite le Ciel. */
-/** @param {() => void} onDone la suite (le prologue de la saison) */
-function openSkyOpening(onDone) {
-  const a = ARCHIPELAGOS[2];
-  state.skyIntroSeen = true;
+/* L'ouverture d'une saison (le Ciel des Rêves, v55) : un écran spécial, une
+   seule fois par profil, au passage à son niveau d'ouverture (ou au premier
+   lancement d'une partie qui l'a déjà). La carte montre ensuite l'archipel.
+   Une ligne par saison à partir de la 2 : la saison 2 garde ses textes, sa
+   classe et son bouton. */
+/**
+ * L'écran d'ouverture d'une saison : `seen` = le drapeau de la sauvegarde,
+ * `say` = la phrase dite (après le prénom, s'il y en a un), `go` = l'id du bouton.
+ * @typedef {{ seen: 'skyIntroSeen' | 'expeditionIntroSeen', cls: string, go: string, art: string, title: string, text: string, say: string, button: string }} SeasonOpening
+ */
+/** @type {Record<number, SeasonOpening>} */
+const SEASON_OPENINGS = {
+  2: {
+    seen: 'skyIntroSeen',
+    cls: 'sky-open',
+    go: 'sky-go',
+    art: `<div class="sky-open-art" aria-hidden="true">
+        <span class="so-cloud c1">☁️</span><span class="so-balloon">🎈</span><span class="so-cloud c2">☁️</span>
+      </div>`,
+    title: "Un nouveau monde s'ouvre dans le ciel ! ☁️",
+    text: "une deuxième carte, avec ses îles et son histoire. Tu passes d'un monde à l'autre avec les onglets de la carte.",
+    say: "un nouveau monde s'ouvre dans le ciel !",
+    button: 'Découvrir le Ciel ☁️',
+  },
+  3: {
+    seen: 'expeditionIntroSeen',
+    cls: 'expedition-open',
+    go: 'expedition-go',
+    art: `<div class="expedition-open-art" aria-hidden="true"><span class="eo-map">🗺️</span><span class="eo-plane">✈️</span><span class="eo-compass">🧭</span></div>`,
+    title: 'Une nouvelle expédition commence ! ✈️',
+    text: "une troisième carte, avec ses îles et son histoire. Tu passes d'une carte à l'autre avec les onglets.",
+    say: 'une nouvelle expédition commence !',
+    button: 'Partir en expédition ✈️',
+  },
+};
+/** @param {number} s la saison @param {() => void} onDone la suite (le prologue de la saison) */
+function openSeasonOpening(s, onDone) {
+  const a = ARCHIPELAGOS[s],
+    op = SEASON_OPENINGS[s];
+  // les saisons plus basses sont notées vues aussi : une partie qui en saute
+  // deux ne voit qu'une ouverture (leur prologue reste dans le journal)
+  Object.keys(SEASON_OPENINGS).forEach((t) => {
+    if (Number(t) <= s) state[SEASON_OPENINGS[Number(t)].seen] = true;
+  });
   save();
-  emit('map:archipelago', 2);
+  emit('map:archipelago', s);
   const who = hello();
   playSound('win');
   confetti();
   vibrate([60, 40, 60, 40, 160]);
-  speak(`${who ? who + ', u' : 'U'}n nouveau monde s'ouvre dans le ciel ! ${a.name}.`);
+  speak(`${who ? `${who}, ${op.say}` : op.say[0].toUpperCase() + op.say.slice(1)} ${a.name}.`);
   openModal(`
-    <div class="reward-box sky-open">
-      <div class="sky-open-art" aria-hidden="true">
-        <span class="so-cloud c1">☁️</span><span class="so-balloon">🎈</span><span class="so-cloud c2">☁️</span>
-      </div>
-      <h2>Un nouveau monde s'ouvre dans le ciel ! ☁️</h2>
-      <div class="speech"><strong>${a.name}</strong> : une deuxième carte, avec ses îles et son histoire. Tu passes d'un monde à l'autre avec les onglets de la carte.</div>
+    <div class="reward-box ${op.cls}">
+      ${op.art}
+      <h2>${op.title}</h2>
+      <div class="speech"><strong>${a.name}</strong> : ${op.text}</div>
     </div>
-    <button class="btn-primary" id="sky-go">Découvrir le Ciel ☁️</button>
+    <button class="btn-primary" id="${op.go}">${op.button}</button>
   `);
-  setHandler(document.getElementById('sky-go'), 'click', () => {
+  setHandler(document.getElementById(op.go), 'click', () => {
     playSound('tap');
     onDone();
   });
 }
-// Au lancement : une partie qui a déjà le niveau du Ciel le découvre une fois
-function maybeSkyOpening() {
-  if (state.skyIntroSeen || !archipelagoUnlocked(2)) return false;
-  return checkNewIsland();
+/* Au lancement : une partie qui a déjà le niveau d'une saison la découvre une
+   fois. Si plusieurs ouvertures sont dues, seule la plus haute s'affiche. Avec
+   une île nouvelle, checkNewIsland montre tout (ouverture, prologue, chapitre) ;
+   sans île nouvelle, la saison 2 ne montre rien (comme avant), les suivantes
+   montrent leur ouverture et leur prologue seuls. */
+/** @returns {boolean} vrai si une ouverture de saison s'est affichée */
+function maybeSeasonOpening() {
+  const due = shownArchipelagos().filter((s) => {
+    const op = SEASON_OPENINGS[s];
+    return op && !state[op.seen] && archipelagoUnlocked(s);
+  });
+  if (!due.length) return false;
+  if (checkNewIsland()) return true;
+  const s = Math.max(...due);
+  if (s < 3) return false;
+  openSeasonOpening(s, () => openSeasonPrologue(s));
+  return true;
 }
 
 function renderLevelPill() {
@@ -400,7 +451,7 @@ on('nav:deco-shop', openDecoShop);
 
 export {
   checkNewIsland,
-  maybeSkyOpening,
+  maybeSeasonOpening,
   currentChar,
   openDecoShop,
   openDialogue,

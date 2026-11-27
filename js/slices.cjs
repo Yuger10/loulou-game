@@ -66,15 +66,22 @@ const SLICES = [
     ],
   },
   { id: 'words', layer: 'entities', files: ['js/entities/words/words.js'], css: [] },
-  { id: 'squishy', layer: 'entities', files: ['js/entities/squishy/squishies.js'], css: [] },
+  {
+    id: 'squishy',
+    layer: 'entities',
+    files: ['js/entities/squishy/squishies-s3.js', 'js/entities/squishy/squishies.js'],
+    css: [],
+  },
   { id: 'game-state', layer: 'entities', files: ['js/entities/game-state/state.js'], css: [] },
   { id: 'item', layer: 'entities', files: ['js/entities/item/items.js'], css: [] },
   {
     id: 'character',
     layer: 'entities',
     files: [
+      'js/entities/character/characters-s3.js',
       'js/entities/character/characters.js',
       'js/entities/character/characters-art-s2.js',
+      'js/entities/character/characters-art-s3.js',
       'js/entities/character/characters-art.js',
     ],
     css: ['js/entities/character/characters.css'],
@@ -137,6 +144,7 @@ const SLICES = [
     layer: 'features',
     files: [
       'js/features/squishies/squishies.js',
+      'js/features/squishies/squishy-art-s3.js',
       'js/features/squishies/squishy-art.js',
       'js/features/squishies/squishy-room.js',
     ],
@@ -148,6 +156,8 @@ const SLICES = [
     files: [
       'js/features/story/grisou.js',
       'js/features/story/finale.js',
+      'js/features/story/story-s3.js',
+      'js/features/story/zap-map.js',
       'js/features/story/story.js',
       'js/features/story/episodes.js',
     ],
@@ -177,7 +187,7 @@ const SLICES = [
   {
     id: 'island',
     layer: 'features',
-    files: ['js/features/island/island-view.js', 'js/features/island/island.js'],
+    files: ['js/features/island/island-view.js', 'js/features/island/island-s3.js', 'js/features/island/island.js'],
     css: ['js/features/island/island.css', 'js/features/island/island-view.css'],
   },
   {
@@ -186,7 +196,12 @@ const SLICES = [
     files: ['js/features/companion-team/team.js', 'js/features/companion-team/specialties.js'],
     css: ['js/features/companion-team/team.css'],
   },
-  { id: 'map', layer: 'features', files: ['js/features/map/map.js'], css: ['js/features/map/map.css'] },
+  {
+    id: 'map',
+    layer: 'features',
+    files: ['js/features/map/next-step.js', 'js/features/map/map.js'],
+    css: ['js/features/map/map.css'],
+  },
   {
     id: 'minigame-engine',
     layer: 'features',

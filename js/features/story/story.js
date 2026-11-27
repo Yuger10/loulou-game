@@ -19,12 +19,13 @@
    règles. 1. réécouter la devinette, indice par indice ; 2. `tip`, une
    devinette plus simple qui ne nomme jamais la réponse. */
 import { charFace } from '../../entities/character/index.js';
+import { COMPANIONS, companionSVG } from '../../entities/companion/index.js';
 import { save, state } from '../../entities/game-state/index.js';
 import {
-  ARCHIPELAGO_ORDER,
   ARCHIPELAGOS,
   archipelagoOf,
   archipelagoUnlocked,
+  shownArchipelagos,
   worldsOf,
   worldUnlocked,
 } from '../../entities/world/index.js';
@@ -49,6 +50,8 @@ import { addCoins } from '../wallet/index.js';
 import { EPISODES, episodesSeen, openEpisode } from './episodes.js';
 import { openSeasonFinale } from './finale.js';
 import { grisouSVG } from './grisou.js';
+import { STORY_S3 } from './story-s3.js';
+import { zapMapFound, zapMapPieces, zapMapRowHTML, zapMapSay, zapMapSVG } from './zap-map.js';
 
 /** @typedef {{ e: string, ok?: boolean }} RiddleOption un choix (emoji) ; `ok` sur la bonne réponse */
 /** @typedef {{ q: string, tip: string, opts: RiddleOption[] }} Riddle une énigme et son indice */
@@ -56,7 +59,7 @@ import { grisouSVG } from './grisou.js';
  * Le chapitre d'une île : `guide` = le personnage qui raconte, `reward` = les pièces de l'énigme.
  * @typedef {{ guide: string, title: string, intro: string[], riddles: Riddle[], success: string, reward: number }} StoryChapter
  */
-/** @typedef {{ guide: string, title: string, intro: string[] }} StoryPrologue le prologue d'une saison */
+/** @typedef {{ guide?: string, companion?: string, title: string, intro: string[], go: string }} StoryPrologue le prologue d'une saison */
 /** @typedef {{ r: Riddle }} RiddleQuestion la question posée aux indices */
 
 /** @type {Record<string, StoryChapter>} les chapitres, par île */
@@ -417,6 +420,7 @@ const STORY = {
     success: 'Bravo ! Les couleurs reviennent dans tout le royaume… Regarde, Grisou arrive !',
     reward: 20,
   },
+  ...STORY_S3,
 };
 
 /* Les prologues des saisons (v55) : lus à l'ouverture d'un archipel, avant le
@@ -431,6 +435,17 @@ const STORY_PROLOGUES = {
       "Voici Grisou, un petit nuage. Il avait si peur de perdre les rêves colorés du ciel… qu'il les a tous enfermés dans des boîtes !",
       'Depuis, le ciel est tout gris. Aide-nous à libérer les rêves, île après île !',
     ],
+    go: 'En route ! ☁️',
+  },
+  3: {
+    companion: 'zap',
+    title: 'La carte déchirée',
+    intro: [
+      "Zap le super-héros, à ton service ! En rangeant mon grenier, j'ai trouvé une vieille carte d'explorateur 🗺️",
+      'Mais elle est déchirée en cinq morceaux, et le vent les a emportés sur cinq îles !',
+      'Au bout de la carte, il y a un trésor. Aide-moi à retrouver les morceaux, île après île !',
+    ],
+    go: 'En route ! ✈️',
   },
 };
 
@@ -442,6 +457,32 @@ function skyIslandsFreed() {
 /** @param {string} world */
 function storySolved(world) {
   return !!(state.storySolved && state.storySolved[world]);
+}
+
+// Le dessin qui accompagne l'histoire d'une saison (prologue, chapitre, victoire) :
+// Grisou pour la saison 2, la carte de Zap pour la saison 3. `fresh` : l'île dont
+// l'énigme vient d'être résolue ; `say` : ce que la voix ajoute à la victoire.
+/** @type {Record<number, { cls: string, svg: (fresh?: string) => string, say?: () => string }>} */
+const SEASON_STORY_ART = {
+  2: { cls: 'story-grisou', svg: () => grisouSVG(skyIslandsFreed()) },
+  3: {
+    cls: 'story-zapmap',
+    svg: (fresh) => zapMapSVG(zapMapFound(), { fresh }),
+    say: () => zapMapSay(zapMapPieces()),
+  },
+};
+/** @param {number} saison @param {{ happy?: boolean, fresh?: string }} [o] */
+function seasonArtHTML(saison, o = {}) {
+  const art = SEASON_STORY_ART[saison];
+  return art ? `<div class="${art.cls}${o.happy ? ' happy' : ''}">${art.svg(o.fresh)}</div>` : '';
+}
+// qui raconte un prologue : un compagnon (dessiné), sinon un personnage d'île
+/** @param {StoryPrologue} pr */
+function prologueFace(pr) {
+  const c = pr.companion ? COMPANIONS[pr.companion] : null;
+  if (pr.companion && c)
+    return `<span class="char-art" role="img" aria-label="${c.name} ${c.title}">${companionSVG(pr.companion, 'cheer')}</span>`;
+  return pr.guide ? charFace(pr.guide) : '';
 }
 
 // Relance programmée après une mauvaise réponse à une énigme : annulable
@@ -484,13 +525,12 @@ function renderStoryIntro(world, idx, onDone) {
   const last = idx >= ch.intro.length - 1;
   const line = ch.intro[idx];
   const already = storySolved(world);
-  const sky = archipelagoOf(world) === 2;
   openModal(`
     <div class="char-header">
       <span class="emoji">${charFace(ch.guide)}</span>
       <h2>${ch.title}</h2>
     </div>
-    ${sky ? `<div class="story-grisou">${grisouSVG(skyIslandsFreed())}</div>` : ''}
+    ${seasonArtHTML(archipelagoOf(world))}
     ${speechBubble(line)}
     <button class="btn-primary" id="story-next">${last ? (already ? 'Continuer ✨' : "Résoudre l'énigme 🔎") : 'Suite ➡️'}</button>
     ${!last ? `<button class="btn-ghost" id="story-skip">Passer</button>` : ''}
@@ -518,7 +558,7 @@ function renderStoryIntro(world, idx, onDone) {
     });
 }
 
-// Le prologue d'une saison (v55) : récit lu ligne à ligne, avec Grisou.
+// Le prologue d'une saison (v55) : récit lu ligne à ligne, avec le dessin de la saison.
 /** @param {number} saison @param {(() => void) | null} [onDone] @param {number} [idxArg] la ligne du récit */
 function openSeasonPrologue(saison, onDone, idxArg) {
   const pr = STORY_PROLOGUES[saison];
@@ -531,12 +571,12 @@ function openSeasonPrologue(saison, onDone, idxArg) {
   const line = pr.intro[idx];
   openModal(`
     <div class="char-header">
-      <span class="emoji">${charFace(pr.guide)}</span>
+      <span class="emoji">${prologueFace(pr)}</span>
       <h2>${pr.title}</h2>
     </div>
-    <div class="story-grisou">${grisouSVG(skyIslandsFreed())}</div>
+    ${seasonArtHTML(saison)}
     ${speechBubble(line)}
-    <button class="btn-primary" id="story-next">${last ? 'En route ! ☁️' : 'Suite ➡️'}</button>
+    <button class="btn-primary" id="story-next">${last ? pr.go : 'Suite ➡️'}</button>
   `);
   bindSpeakButtons();
   speak(line);
@@ -598,7 +638,10 @@ function storyWin(world, onDone) {
   addCoins(ch.reward);
   // v53 : une boîte surprise de la série de l'île (une seule fois par île)
   const box = addStorySquishyBox(world);
-  speak(`${ch.success} Tu gagnes ${ch.reward} pièces${box ? ' et une boîte surprise de squishies' : ''}.`);
+  // la saison 3 ajoute où en est la carte de Zap, dans la même phrase (un second speak la couperait)
+  const art = SEASON_STORY_ART[archipelagoOf(world)];
+  const more = art && art.say ? ' ' + art.say() : '';
+  speak(`${ch.success} Tu gagnes ${ch.reward} pièces${box ? ' et une boîte surprise de squishies' : ''}.${more}`);
   openModal(`
     <div class="reward-box win-box">
       <span class="win-rays" aria-hidden="true"></span>
@@ -609,7 +652,7 @@ function storyWin(world, onDone) {
         <span data-gain-coins style="font-size:2rem;">🪙</span><span><strong>+${ch.reward} pièces</strong></span>
       </div>
       ${box ? squishyBoxRewardHTML(box.series) : ''}
-      ${archipelagoOf(world) === 2 ? `<div class="story-grisou happy">${grisouSVG(skyIslandsFreed())}</div>` : ''}
+      ${seasonArtHTML(archipelagoOf(world), { happy: true, fresh: world })}
     </div>
     <button class="btn-primary" id="story-continue">Continuer l'aventure ✨</button>
   `);
@@ -672,9 +715,10 @@ function storySeasonHTML(saison) {
           ${
             pr && open
               ? `<button type="button" class="story-chap story-prologue" data-prologue="${saison}">
-            <span class="story-chap-n">☁️</span><span class="story-chap-ico">📜</span><span class="story-chap-title">${pr.title}</span></button>`
+            <span class="story-chap-n">${a.emoji}</span><span class="story-chap-ico">📜</span><span class="story-chap-title">${pr.title}</span></button>`
               : ''
           }
+          ${saison === 3 && open ? zapMapRowHTML() : ''}
           ${worldsOf(saison)
             .map((id, i) => storyChapterRow(id, i))
             .join('')}
@@ -690,7 +734,9 @@ function openStoryJournal() {
   openModal(`
     ${gameHeader('📖 Mon histoire', 'Le grand voyage du Lagon Magique', 'Le grand voyage du Lagon Magique')}
     <div class="story-journal">
-      ${ARCHIPELAGO_ORDER.map((saison) => storySeasonHTML(saison)).join('')}
+      ${shownArchipelagos()
+        .map((saison) => storySeasonHTML(saison))
+        .join('')}
     </div>
   `);
   bindQuit();

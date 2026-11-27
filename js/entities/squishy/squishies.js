@@ -16,6 +16,7 @@
              vert, violet, orange) : la couleur dominante du corps
      shape   la forme du corps : 'rond', 'ovale' ou 'carre' (carré arrondi)
      size    'petit' ou 'grand' */
+import { SQUISHIES_S3 } from './squishies-s3.js';
 
 /**
  * Une série : `world` = elle n'apparaît qu'une fois cette île ouverte (saison 2).
@@ -565,6 +566,7 @@ const SQUISHIES = {
     shape: 'carre',
     size: 'grand',
   },
+  ...SQUISHIES_S3,
 };
 
 // Les trésors : des squishies UNIQUES, jamais dans les boîtes ni à l'échange.
