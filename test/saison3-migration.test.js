@@ -4,10 +4,12 @@
 const t = require('./tools/saison3.js');
 const { d, ev, json, check, section, modalOpen, shown, click, wait } = t;
 
-// une partie de la version précédente, au niveau 75, les îles d'avant visitées
+// une partie de la version d'avant la saison 3 (9 : la version 10 a ajouté `expeditionIntroSeen`),
+// au niveau 75, les îles d'avant visitées. Écrite en dur : depuis la version 11 (Grand Concert),
+// « la version précédente » n'est plus celle-là.
 function oldSave() {
   return {
-    v: ev('SAVE_VERSION') - 1,
+    v: 9,
     name: 'Lou',
     coins: 12,
     missions: 370,

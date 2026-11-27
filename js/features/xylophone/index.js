@@ -2,3 +2,4 @@
    n'importent que ce fichier (vérifié par test/slices.test.js). */
 /** @typedef {import('./xylophone.js').XyloNote} XyloNote */
 export { playXylo, staffSVG, XYLO_NOTES, xyloHTML } from './xylophone.js';
+export { openGoldenXylophone } from './xylo-gold.js';

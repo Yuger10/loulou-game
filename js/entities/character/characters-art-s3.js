@@ -2,6 +2,7 @@
    characters-art-s2.js : les dessins reçoivent les outils de characters-art.js
    en paramètre (`kit`). Une fonction par île, appelée par season3Art. */
 
+import { concertArt } from './characters-art-s3-concert.js';
 /** @typedef {import('./characters-art.js').ArtKit} ArtKit */
 
 /**
@@ -293,6 +294,7 @@ function season3Art(ART, kit) {
   coffresArtFriends(ART, kit);
   chatouillesArt(ART, kit);
   chatouillesArtFriends(ART, kit);
+  concertArt(ART, kit);
 }
 
 export { season3Art };

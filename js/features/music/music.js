@@ -60,6 +60,10 @@ const MUSIC_THEMES = {
   coffres: { root: 64, scale: [0, 2, 4, 7, 9], bpm: 90, lead: 'pluck', prog: [0, 9, 5, 7], tick: true },
   // le Monde des Chatouilles : des bulles qui rebondissent, comme des rires
   chatouilles: { root: 67, scale: [0, 2, 4, 7, 9], bpm: 108, lead: 'bubble', prog: [0, 9, 5, 7], shaker: true },
+  // l'Île du Grand Concert : un marimba en do, comme le xylophone d'or (aucune fausse note avec lui)
+  concert: { root: 60, scale: [0, 2, 4, 7, 9], bpm: 96, lead: 'marimba', prog: [0, 5, 7, 0], shaker: true },
+  // la fête du grand final de la saison 3
+  'concert-fete': { root: 60, scale: [0, 2, 4, 7, 9], bpm: 116, lead: 'bell', prog: [0, 5, 7, 0], shaker: true },
 };
 const MUSIC_VOLUME = 1.0; // crête ≈ 0,11, bien sous les bruitages ; passe ensuite par le volume général du bus
 

@@ -111,6 +111,37 @@ const STORY_S3 = {
     success: "Bravo ! L'arbre à plumes rit si fort qu'il laisse tomber le quatrième morceau de la carte de Zap ! 🗺️",
     reward: 16,
   },
+  // le dernier chapitre : son énigme résolue ouvre le grand final (finale3.js) ;
+  // 20 pièces, comme le final de la saison 2
+  concert: {
+    guide: 'stella',
+    title: 'Le dernier morceau de la carte',
+    intro: [
+      "Bienvenue sur la grande scène ! 🎼 Ce soir, tous les amis de l'expédition viennent jouer au Grand Concert.",
+      "Zap m'a dit que le dernier morceau de sa carte au trésor est caché ici, quelque part dans la musique.",
+      "Résous mes devinettes : à chaque bonne réponse, un instrument s'accorde, et le morceau de carte se rapproche !",
+    ],
+    riddles: [
+      {
+        q: "J'ai six cordes, on me gratte avec les doigts, et je fais gling gling. Qui suis-je ?",
+        tip: 'On la tient contre son ventre, et on chante avec elle.',
+        opts: [{ e: '🎸', ok: true }, { e: '🎷' }, { e: '🥁' }],
+      },
+      {
+        q: 'Je suis tout petit, on me tient devant la bouche, et je rends ta voix très forte. Qui suis-je ?',
+        tip: 'Les chanteurs me tiennent dans la main, sur la scène.',
+        opts: [{ e: '🎤', ok: true }, { e: '🎧' }, { e: '📯' }],
+      },
+      {
+        q: "On me met sur les oreilles, et j'écoute la musique tout bas, rien que pour moi. Qui suis-je ?",
+        tip: "J'ai deux petits coussins tout doux, un pour chaque oreille.",
+        opts: [{ e: '🎧', ok: true }, { e: '🎤' }, { e: '🔔' }],
+      },
+    ],
+    success:
+      'Bravo ! Tous les instruments sont prêts… et regarde : le dernier morceau de la carte de Zap était caché dans le pupitre 🗺️',
+    reward: 20,
+  },
 };
 
 export { STORY_S3 };

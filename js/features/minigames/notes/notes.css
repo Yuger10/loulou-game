@@ -11,7 +11,11 @@
   padding: 10px 0 4px;
   border-radius: var(--radius-lg, 24px);
   background: linear-gradient(180deg, #fff8f0, #ffe7a8);
-  border: 3px solid #fff;
+  /* un liseré sans bordure : les 8 lames du palier 4 ont besoin de toute la largeur */
+  box-shadow: inset 0 0 0 3px #fff;
+}
+#notes-staff {
+  height: 140px;
 }
 .notes-heard {
   font-size: 4rem;

@@ -8,7 +8,7 @@ const MISSIONS_PER_LEVEL = 5;
 const SAVE_KEY = 'lagon-magique-save';
 
 /* ---------- État ---------- */
-const SAVE_VERSION = 10;
+const SAVE_VERSION = 11;
 
 /* Les types de la partie : ils décrivent DEFAULT_STATE, champ par champ.
    Les tables (inventaire, amitiés…) sont indexées par un id d'objet, de
@@ -97,6 +97,7 @@ const SAVE_VERSION = 10;
  *   skyIntroSeen: boolean,
  *   expeditionIntroSeen: boolean,
  *   season2Done: boolean,
+ *   season3Done: boolean,
  *   decoPos: Record<string, { x: number, y: number }>,
  *   helped: { date: string, ids: Record<string, number> } | null,
  *   tipDragDeco: boolean,
@@ -146,6 +147,7 @@ const DEFAULT_STATE = {
   skyIntroSeen: false, // l'ouverture du Ciel des Rêves (saison 2, v55) déjà montrée
   expeditionIntroSeen: false, // l'ouverture de La Grande Expédition (saison 3) déjà montrée
   season2Done: false, // le grand final de la saison 2 (Royaume Arc-en-ciel) déjà joué
+  season3Done: false, // le grand final de la saison 3 (Grand Concert) déjà joué : le xylophone d'or est gagné
   // l'île vivante (js/features/island) : ces champs étaient posés sans être ici, et
   // load() ne garde que les champs de DEFAULT_STATE : ils se perdaient au redémarrage
   decoPos: {}, // place des décorations que l'enfant a fait glisser : { clé: { x, y } }
@@ -283,6 +285,11 @@ function migrate(saved) {
     // la Grande Expédition (saison 3) : comme le Ciel, une partie qui a déjà son
     // niveau d'ouverture la verra s'ouvrir au prochain lancement (une seule fois)
     saved.expeditionIntroSeen = false;
+  }
+  if (v < 11) {
+    // le Grand Concert : le grand final de la saison 3 (une fois) ; le xylophone d'or est
+    // gagné si et seulement si ce drapeau est vrai
+    saved.season3Done = false;
   }
   saved.v = SAVE_VERSION;
   return saved;

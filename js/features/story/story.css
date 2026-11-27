@@ -230,6 +230,24 @@
   width: 100%;
   height: auto;
 }
+/* ---------- le grand final de la saison 3 (finale3.js) : rouge velours, or et crème ---------- */
+.finale3 {
+  background: linear-gradient(180deg, #fff8f0 0%, #ffe7a8 100%);
+}
+.finale3 .finale3-map .zap-map {
+  width: 200px;
+}
+/* le xylophone d'or, montré : on ne le joue pas ici */
+.finale3-xylo,
+.finale3-treasure {
+  max-width: 300px;
+  margin: 0 auto;
+  pointer-events: none;
+}
+.finale3-xylo .xylo-lame,
+.finale3-treasure .xylo-lame {
+  min-width: 0;
+}
 .story-season h3 .done {
   margin-left: 4px;
 }

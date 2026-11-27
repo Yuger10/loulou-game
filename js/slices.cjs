@@ -78,9 +78,11 @@ const SLICES = [
     id: 'character',
     layer: 'entities',
     files: [
+      'js/entities/character/characters-concert.js',
       'js/entities/character/characters-s3.js',
       'js/entities/character/characters.js',
       'js/entities/character/characters-art-s2.js',
+      'js/entities/character/characters-art-s3-concert.js',
       'js/entities/character/characters-art-s3.js',
       'js/entities/character/characters-art.js',
     ],
@@ -125,7 +127,7 @@ const SLICES = [
   {
     id: 'xylophone',
     layer: 'features',
-    files: ['js/features/xylophone/xylophone.js'],
+    files: ['js/features/xylophone/xylophone.js', 'js/features/xylophone/xylo-gold.js'],
     css: ['js/features/xylophone/xylophone.css'],
   },
   {
@@ -166,6 +168,7 @@ const SLICES = [
       'js/features/story/finale.js',
       'js/features/story/story-s3.js',
       'js/features/story/zap-map.js',
+      'js/features/story/finale3.js',
       'js/features/story/story.js',
       'js/features/story/episodes.js',
     ],

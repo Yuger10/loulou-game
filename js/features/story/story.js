@@ -49,6 +49,7 @@ import { addStorySquishyBox, squishyBoxRewardHTML } from '../squishies/index.js'
 import { addCoins } from '../wallet/index.js';
 import { EPISODES, episodesSeen, openEpisode } from './episodes.js';
 import { openSeasonFinale } from './finale.js';
+import { openSeason3Finale, season3Done, season3JournalBind, season3JournalHTML } from './finale3.js';
 import { grisouSVG } from './grisou.js';
 import { STORY_S3 } from './story-s3.js';
 import { zapMapFound, zapMapPieces, zapMapRowHTML, zapMapSay, zapMapSVG } from './zap-map.js';
@@ -663,6 +664,11 @@ function storyWin(world, onDone) {
       openSeasonFinale(onDone);
       return;
     }
+    // le Grand Concert : le grand final de la saison 3, de la même façon
+    if (world === 'concert' && !season3Done()) {
+      openSeason3Finale(onDone);
+      return;
+    }
     closeModal();
     if (onDone) onDone();
   });
@@ -711,7 +717,7 @@ function storySeasonHTML(saison) {
     open = archipelagoUnlocked(saison),
     pr = STORY_PROLOGUES[saison];
   return `<section class="story-season ${a.sky ? 'sky' : ''}" data-saison="${saison}">
-          <h3>${open ? a.emoji : '🔒'} ${saison === 1 ? 'Saison 1 : ' : ''}${a.name}${open ? '' : ` <small>(niveau ${a.level})</small>`}${saison === 2 && state.season2Done ? ' <span class="done">✅</span>' : ''}</h3>
+          <h3>${open ? a.emoji : '🔒'} ${saison === 1 ? 'Saison 1 : ' : ''}${a.name}${open ? '' : ` <small>(niveau ${a.level})</small>`}${(saison === 2 && state.season2Done) || (saison === 3 && season3Done()) ? ' <span class="done">✅</span>' : ''}</h3>
           ${
             pr && open
               ? `<button type="button" class="story-chap story-prologue" data-prologue="${saison}">
@@ -724,10 +730,11 @@ function storySeasonHTML(saison) {
             .join('')}
           ${
             saison === 2 && state.season2Done
-              ? `<button type="button" class="story-chap story-prologue" data-finale>
+              ? `<button type="button" class="story-chap story-prologue" data-finale="2">
             <span class="story-chap-n">🌈</span><span class="story-chap-ico">☁️</span><span class="story-chap-title">Revoir le grand final</span></button>`
               : ''
           }
+          ${saison === 3 ? season3JournalHTML() : ''}
         </section>`;
 }
 function openStoryJournal() {
@@ -748,7 +755,8 @@ function openStoryJournal() {
       setTimeout(() => openStoryChapter(/** @type {string} */ (b.dataset.world)), 200);
     });
   });
-  const fin = document.querySelector('[data-finale]');
+  season3JournalBind(openStoryJournal);
+  const fin = document.querySelector('[data-finale="2"]');
   if (fin)
     setHandler(fin, 'click', () => {
       playSound('tap');

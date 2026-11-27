@@ -99,6 +99,10 @@ const score = () => ns('#melody-score .ml-note');
 const turn = () => (one('#melody-state') ? one('#melody-state').dataset.turn : '');
 const stateText = () => t.text(one('#melody-state'));
 const yourTurn = (ms = 3000) => t.waitFor(() => turn() === 'you', ms);
+// le dernier texte dit (un seul `speak` par phrase)
+const saidLast = (text) => t.spoken[t.spoken.length - 1] === t.toSpoken(text);
+// le grand final : passer à l'écran suivant
+const finaleNext = () => t.click(one('#finale3-next'));
 const hzOf = (notes) => notes.map((n) => XYLO[n].hz);
 // joue une suite de lames, d'un clic chacune
 const tap = (notes) => notes.forEach((n) => lame(n).click());
@@ -130,6 +134,8 @@ module.exports = {
   turn,
   stateText,
   yourTurn,
+  saidLast,
+  finaleNext,
   hzOf,
   tap,
   json,

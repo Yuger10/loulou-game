@@ -73,3 +73,42 @@
   height: 120px;
   margin: 0 auto;
 }
+/* ---------- le xylophone d'or (xylo-gold.js) ---------- */
+.xylo-gold {
+  position: relative;
+}
+.xylo-gold .xylo-lame {
+  background: #f7c948;
+  border-color: #b8860b;
+}
+/* un petit rond de la couleur de la note : la lame dorée garde son repère */
+.xylo-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 2px solid #2b2f6b;
+}
+.xylo-float {
+  position: absolute;
+  top: 0;
+  margin-left: -10px;
+  font-size: 1.8rem;
+  font-weight: 900;
+  pointer-events: none;
+  animation: xyloFloat 0.9s ease-out forwards;
+}
+@keyframes xyloFloat {
+  from {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateY(-60px);
+    opacity: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .xylo-float {
+    animation-duration: 0.01s;
+  }
+}
