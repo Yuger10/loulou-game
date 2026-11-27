@@ -1,6 +1,6 @@
 /* ---------- Mode course de navigation (compétition équitable) ---------- */
 import { avatarHTML } from '../../entities/companion/index.js';
-import { ageLabel, ageToDiff } from '../../entities/difficulty/index.js';
+import { ageLabel, playerCap } from '../../entities/difficulty/index.js';
 import {
   party,
   profiles,
@@ -167,7 +167,7 @@ function renderRaceTrack() {
         const here = cur && cur.id === id;
         return `<div class="race-lane ${here ? 'active' : ''}">
         <span class="lane-av">${avatarHTML(p.avatar, p.look)}</span>
-        <span class="lane-name">${p.name || 'Joueur'}<small>${ageLabel(p.age)} · ${'⭐'.repeat(ageToDiff(p.age) || 1)}</small></span>
+        <span class="lane-name">${p.name || 'Joueur'}<small>${ageLabel(p.age)} · ${'⭐'.repeat(playerCap(p) || 1)}</small></span>
         <span class="lane-track">
           ${Array.from({ length: race.goal }, (_, i) => `<i class="${i < n ? 'on' : ''}"></i>`).join('')}
           <span class="lane-boat" style="left:calc(${(n / race.goal) * 100}% - 10px)">⛵</span>
@@ -176,7 +176,7 @@ function renderRaceTrack() {
       </div>`;
       })
       .join('')}
-    ${cur ? `<div class="race-turn">👉 Au tour de <b>${avatarHTML(cur.avatar, cur.look)} ${cur.name || 'Joueur'}</b> — niveau ${'⭐'.repeat(ageToDiff(cur.age) || gameDiffIsland())}</div>` : ''}
+    ${cur ? `<div class="race-turn">👉 Au tour de <b>${avatarHTML(cur.avatar, cur.look)} ${cur.name || 'Joueur'}</b> — niveau ${'⭐'.repeat(playerCap(cur) || gameDiffIsland())}</div>` : ''}
   `;
   const stop = document.getElementById('race-stop');
   if (stop)

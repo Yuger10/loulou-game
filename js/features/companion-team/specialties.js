@@ -16,8 +16,9 @@
    - Sam, guide : une bulle avec une flèche montre la prochaine chose utile
      (mission du jour, nouvelle île, chapitre d'histoire, ami jamais aidé).
    - Zap, défis : 1 fois par jour et par île, un défi bonus un cran au-dessus
-     du niveau du jeu (plafond de l'âge), récompense doublée, sans effet sur
-     le niveau, toujours refusable.
+     du niveau du jeu (plafond de la classe ou de l'âge), récompense doublée,
+     sans effet sur le niveau, toujours refusable ; jamais sur un jeu dont la
+     porte du défi étoile est ouverte (js/features/adaptive/stars.js).
    - Tom, trésors : 1 fois par jour, après une mission réussie, des pièces ou
      un objet de l'île en plus.
    - Rose, collection : dans le Sac, l'Album et « Mon look », ce qui manque et
@@ -32,7 +33,7 @@ import { ac, currentPlayerAge, onProfileRefresh, party, race } from '../../entit
 import { availableItems, currentWorld, WORLD_ORDER, WORLDS, worldUnlocked } from '../../entities/world/index.js';
 import { emit, on, pickRandom, random } from '../../shared/lib/index.js';
 import { bindSpeakButtons, onModalOpen, playSound, setHandler, speak, switchView } from '../../shared/ui/index.js';
-import { bonusChallenge, needsPractice, todayKey } from '../adaptive/index.js';
+import { bonusChallenge, needsPractice, starOf, todayKey } from '../adaptive/index.js';
 import { markSeen } from '../bag/index.js';
 import { hintLevel, hintShowFirst, setHintPolicy } from '../hints/index.js';
 import { openDialogue, setWorld } from '../island/index.js';
@@ -310,7 +311,10 @@ function renderSamGuide() {
 
 /* ---- Zap : le défi bonus du jour ---- */
 function zapGameFor() {
-  const allowed = gameTypesForAge(currentPlayerAge());
+  const all = gameTypesForAge(currentPlayerAge());
+  // jamais un jeu dont la porte du défi étoile est ouverte : les deux défis ne se cumulent pas
+  const free = all.filter((k) => !starOf(k).open);
+  const allowed = free.length ? free : all;
   const played = allowed.filter((k) => (state.skills || {})[k] && state.skills[k].wins);
   return pickRandom(played.length ? played : allowed);
 }

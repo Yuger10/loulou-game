@@ -52,4 +52,4 @@ export {
   shelfRound,
 } from './difficulty-s2.js';
 export { GAME_LIST, gameTypesForAge } from './game-types.js';
-export { ageLabel, ageToDiff } from './age.js';
+export { ageLabel, ageToDiff, GRADES, gradeToDiff, playerCap } from './age.js';

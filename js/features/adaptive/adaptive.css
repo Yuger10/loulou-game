@@ -10,3 +10,61 @@
   justify-content: center;
   gap: 8px;
 }
+
+/* =====================================================================
+     Le défi étoile (track aller-plus-loin)
+     ===================================================================== */
+/* l'offre, sur l'écran de victoire : la phrase, puis deux gros boutons au doigt */
+.star-offer {
+  flex-direction: column;
+  gap: 10px;
+  background: var(--tint-sun) !important;
+  text-align: center;
+  font-weight: 700;
+}
+.star-offer .so-btns {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+}
+.star-offer .so-btns .btn-small {
+  flex: 1 1 130px;
+  min-height: 64px;
+  padding: 10px 14px;
+  font-size: 1.05rem;
+}
+/* la phrase d'un défi étoile réussi, ou du retour au jeu habituel */
+.star-line {
+  background: var(--tint-sun) !important;
+  font-weight: 800;
+}
+/* le badge d'une mission étoile, à la fin de l'en-tête du jeu */
+.star-badge {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #fff7d6;
+  box-shadow: 0 0 0 2px #ffd54a;
+  font-size: 1.3rem;
+}
+/* dans le choix des jeux : le jeu dont le défi étoile a été réussi */
+.star-mark {
+  position: absolute;
+  top: -8px;
+  left: -8px;
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 0 2px #ffd54a;
+  font-size: 1.1rem;
+}
