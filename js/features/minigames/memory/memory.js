@@ -4,7 +4,7 @@ import { memoryPairs } from '../../../entities/difficulty/index.js';
 import { ALL_ITEMS } from '../../../entities/item/index.js';
 import { pickRandom, random, shuffle } from '../../../shared/lib/index.js';
 import { openModal, playSound, setHandler } from '../../../shared/ui/index.js';
-import { gameDiff } from '../../adaptive/index.js';
+import { gameDiff, noteStarGood } from '../../adaptive/index.js';
 import { registerHints, setHintQuestion } from '../../hints/index.js';
 import {
   flashModal,
@@ -108,6 +108,7 @@ function memoryPairShown(g, second, isMatch) {
   memoryDraw(g);
   if (isMatch) {
     playSound('good');
+    noteStarGood(); // défi étoile : une paire trouvée, les erreurs ne sont plus « d'affilée » (spec, D10)
     document.querySelectorAll('.mcard.matched').forEach((m) => {
       m.classList.add('ok-flash');
       setTimeout(() => m.classList.remove('ok-flash'), 600);
