@@ -88,6 +88,33 @@ async function erreur(p) {
   ev('closeModal()');
 }
 
+// critère 21, sans attendre : après une erreur, la mélodie en cours ne se joue
+// plus (ni victoire, ni essai retiré) jusqu'à la nouvelle mélodie
+async function erreurSansAttendre(p) {
+  t.startGame('melody', p);
+  await t.yourTurn();
+  const m = t.score();
+  const wrong = MELODY_T[p].lames.find((n) => n !== m[0]);
+  const errors = ev('missionErrors');
+  t.lame(wrong).click();
+  const listen = t.turn() === 'listen';
+  t.lame(wrong).click(); // une autre mauvaise lame dans la foulée
+  t.tap(m); // puis toute la mélodie
+  const once = ev('missionErrors') === errors + 1;
+  const other = await t.waitFor(() => t.score().length > 0 && t.score().join('') !== m.join(''), 2000);
+  await t.wait(200); // la victoire (40 ms en test) ou l'écran « Raté ! » (52 ms) auraient eu lieu
+  check(`critère 21, palier ${p} : après une erreur, les touches sont ignorées (une seule erreur comptée)`, () => [
+    listen,
+    once,
+  ]);
+  check(`critère 21, palier ${p} : la mélodie rejouée sans attendre ne gagne pas, une autre arrive`, () => [
+    other,
+    !one('.win-box'),
+    !one('.fail-box'),
+  ]);
+  ev('closeModal()');
+}
+
 // une réécoute (bouton 🔈 ou indice 2) : l'état, la progression remise à 0, le retour de la main
 async function reecoute(p, step, start) {
   const m = t.score();
@@ -154,6 +181,7 @@ async function indices(p) {
   for (const p of TIERS) await rejouer(p);
   section('La mélodie : se tromper (critère 21)');
   for (const p of [1, 4]) await erreur(p);
+  for (const p of [1, 4]) await erreurSansAttendre(p);
   section('La mélodie : réécouter (critère 22)');
   for (const p of [1, 2, 3]) await ecouter(p);
   check('critère 22 : pas de bouton « Écouter » aux paliers 4 et 5', () =>

@@ -11,6 +11,7 @@
    Une question par mission. Anti-devinette : une erreur relance une AUTRE
    note, jamais la même deux fois d'affilée. */
 import { notesRound } from '../../../entities/difficulty/index.js';
+import { party } from '../../../entities/player/index.js';
 import { pickRandom, shuffle } from '../../../shared/lib/index.js';
 import { openModal, setHandler } from '../../../shared/ui/index.js';
 import { gameDiff } from '../../adaptive/index.js';
@@ -120,15 +121,20 @@ function renderNotes() {
     setHandler(document.getElementById('notes-listen'), 'click', replay);
     setTimeout(replay, NOTES_HEAR_DELAY);
   }
-  let won = false;
+  let won = false,
+    retrying = false;
   document.querySelectorAll(answers).forEach((el) =>
     setHandler(el, 'click', () => {
       const n = Number(el.dataset.n);
       if (!find) playXylo(n, el); // une lame chante toujours, même la mauvaise
-      if (won) return;
+      if (won || retrying) return;
       // sur les lames, on demande un nom : l'un ou l'autre do est juste (palier 4)
       const right = find ? n === g.t : XYLO_NOTES[n].name === XYLO_NOTES[g.t].name;
       if (!right) {
+        // Une autre question arrive (ou l'écran « Raté ! ») : celle-ci ne se
+        // juge plus, sinon toucher toutes les lames à la suite gagnerait à
+        // tous les coups. À plusieurs, la question reste pour le joueur suivant.
+        retrying = !party.active;
         loseLife(el, { onRetry: renderNotes, disable: false });
         return;
       }

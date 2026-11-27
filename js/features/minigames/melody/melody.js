@@ -13,6 +13,7 @@
    mélange pas la note de l'enfant et celle du modèle.
    Anti-devinette : une erreur relance une AUTRE mélodie. */
 import { melodyRound } from '../../../entities/difficulty/index.js';
+import { party } from '../../../entities/player/index.js';
 import { pickRandom } from '../../../shared/lib/index.js';
 import { openModal, setHandler } from '../../../shared/ui/index.js';
 import { gameDiff } from '../../adaptive/index.js';
@@ -214,6 +215,13 @@ function melodyPress(g, el) {
   const n = Number(el.dataset.n);
   playXylo(n, el); // la lame chante toujours, même la mauvaise
   if (n !== g.seq[g.pos]) {
+    // Une autre mélodie arrive (ou l'écran « Raté ! ») : celle-ci ne se joue
+    // plus, sinon la rejouer aussitôt gagnerait, et chaque touche de plus
+    // retirerait un essai. À plusieurs, elle reste pour le joueur suivant.
+    if (!party.active) {
+      g.run++; // plus aucune écoute en attente ne rend la main
+      melodySetTurn(g, 'listen');
+    }
     loseLife(el, { onRetry: renderMelody, disable: false });
     return;
   }

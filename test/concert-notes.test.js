@@ -149,6 +149,29 @@ async function erreur() {
   ev('closeModal()');
 }
 
+// critère 8, sans attendre : après une erreur, la question en cours ne se gagne
+// plus (sinon toucher toutes les lames à la suite gagnerait à tous les coups)
+async function erreurSansAttendre() {
+  t.startGame('notes', 1);
+  const first = t.target();
+  const wrong = [0, 2, 4].find((n) => n !== first);
+  const errors = ev('missionErrors');
+  t.spy();
+  t.lame(wrong).click();
+  t.lame(first).click(); // la bonne lame, dans la foulée
+  t.lame(wrong).click();
+  const sings = t.played().length === 3; // une lame chante toujours
+  const once = ev('missionErrors') === errors + 1;
+  await t.wait(300); // la relance (90 ms en test) et la victoire (40 ms) auraient eu lieu
+  check('critère 8 : après une erreur, la bonne lame touchée sans attendre ne gagne pas', () => [
+    !one('.win-box'),
+    !!t.stage() && t.target() !== first,
+  ]);
+  check('critère 8 : en attendant la nouvelle question, les lames chantent sans compter d’erreur', () => [sings, once]);
+  t.unspy();
+  ev('closeModal()');
+}
+
 // critères 9 et 10 : jamais deux fois la même note ; les 5 petites portées
 function tirages() {
   let prev = null;
@@ -217,6 +240,7 @@ function indices() {
   section('Do, ré, mi : gagner, se tromper (critères 7 et 8)');
   await victoire();
   await erreur();
+  await erreurSansAttendre();
   section('Do, ré, mi : tirages (critères 9 et 10)');
   tirages();
   section('Do, ré, mi : indices (critère 11)');
