@@ -4,7 +4,7 @@ issue: 0
 size: M                  # S | M ; L se découpe (ici en deux phases, une PR chacune)
 migration: true
 sensitive: true          # sauvegarde et migration (js/entities/game-state/), import de sauvegarde (entrée non fiable)
-files: [js/entities/review/review.js, js/entities/review/index.js, js/entities/game-state/state.js, js/features/hints/hints.js, js/features/hints/index.js, js/features/minigame-engine/engine.js, js/features/minigame-engine/index.js, js/features/review/review.js, js/features/review/review.css, js/features/review/index.js, js/features/minigames/math/math.js, js/features/minigames/calc/calc.js, js/features/minigames/compare/compare.js, js/features/minigames/clock/clock.js, js/features/minigames/reading/reading.js, js/app/init.js, js/slices.cjs, test/revision.test.js, test/licornes.test.js]
+files: [js/entities/review/review.js, js/entities/review/index.js, js/entities/game-state/state.js, js/features/hints/hints.js, js/features/hints/index.js, js/features/minigame-engine/engine.js, js/features/minigame-engine/index.js, js/features/review/review.js, js/features/review/review.css, js/features/review/index.js, js/features/minigames/math/math.js, js/features/minigames/calc/calc.js, js/features/minigames/compare/compare.js, js/features/minigames/clock/clock.js, js/features/minigames/reading/reading.js, js/app/init.js, js/slices.cjs, test/revision.test.js, test/revision/, test/licornes.test.js]
 taster: { facts: 0, decisions: 0, rounds: 13 }
 ---
 
@@ -291,7 +291,7 @@ Aucune des deux tracks ne teste à l'exécution si l'autre existe (un import ES 
 
 | Id | Qui | Étapes | Attendu | Niveau visé |
 |---|---|---|---|---|
-| S1 | 🤖 | `bun run test revision` (tous les tests de la track sont dans `test/revision.test.js`, seule exception la mise à jour de `test/licornes.test.js:499`) : fonctions pures avec des dates fixes (échéancier, file pleine, 3 erreurs, ligne 19) | conforme aux tables | test-verified |
+| S1 | 🤖 | `bun run test revision` (`test/revision.test.js` lance les scénarios de `test/revision/`, avec le contrôle de version dans `test/licornes.test.js:499`) : fonctions pures avec des dates fixes (échéancier, file pleine, 3 erreurs, ligne 19) | conforme aux tables | test-verified |
 | S2 | 🤖 | même test, JSDOM avec `Date` simulée dans `beforeParse` (une classe qui hérite de `Date` et part d'un instant fixé, avancé par le test) : erreurs en `math`, `calc`, `compare`, `clock`, `reading` | items créés (lignes 1 à 4) ; rien à plusieurs, en défi bonus, au temps écoulé | test-verified |
 | S3 | 🤖 | sauvegardes trafiquées (items à `p` hors bornes, `w` en HTML, 500 items, dates fausses, `review: "x"`) chargées, importées par `applyBackup`, et lues par `profileState` (espace parents), toutes par `readSave` | ligne 6, aucune erreur JS | test-verified |
 | S4 | 🤖 | aller-retour `item` / `render` pour chaque jeu, à chaque palier | lignes 7 et 8 | test-verified |
