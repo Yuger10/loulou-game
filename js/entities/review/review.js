@@ -198,11 +198,10 @@ function sanitizeReview(raw, today) {
  * pleine : l'ajout le plus ancien sort (le premier du tableau à égalité).
  * @param {ReviewState} rv
  * @param {ReviewParams} p
- * @param {number} t le palier joué
- * @param {string} today AAAA-MM-JJ
+ * @param {{t: number, today: string}} attempt Le palier joué et la date AAAA-MM-JJ
  * @returns {ReviewState}
  */
-function addMiss(rv, p, t, today) {
+function addMiss(rv, p, { t, today }) {
   const k = reviewKey(p);
   const due = addDays(today, REVIEW_STEPS[0]);
   if (rv.items.some((x) => x.k === k))
@@ -243,11 +242,10 @@ function answeredItem(it, ok, today) {
  * repart de la première étape. Le palier `t` ne change jamais ici.
  * @param {ReviewState} rv
  * @param {string} k la clé de l'item
- * @param {boolean} ok
- * @param {string} today AAAA-MM-JJ
+ * @param {{ok: boolean, today: string}} answer Le résultat et la date AAAA-MM-JJ
  * @returns {ReviewState}
  */
-function reviewAnswer(rv, k, ok, today) {
+function reviewAnswer(rv, k, { ok, today }) {
   /** @type {ReviewItem[]} */
   const items = [];
   for (const it of rv.items) {

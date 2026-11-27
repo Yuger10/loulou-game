@@ -323,7 +323,7 @@ function boundsTests(ev) {
 
 function addMissTests(eq) {
   section('S1 : une question ratée entre dans la file (addMiss)');
-  eq('ligne 1 : ajout (box 1, dû le lendemain)', `addMiss(${J(EMPTY)}, ${J(P.math)}, 2, '2026-11-20')`, {
+  eq('ligne 1 : ajout (box 1, dû le lendemain)', `addMiss(${J(EMPTY)}, ${J(P.math)}, { t: 2, today: '2026-11-20' })`, {
     items: [item('math')],
     offered: null,
   });
@@ -331,18 +331,18 @@ function addMissTests(eq) {
     items: [item('clock'), item('math', { due: '2026-11-27', box: 3 }), item('compare')],
     offered: '2026-11-23',
   };
-  eq('ligne 2 : raté de nouveau en jeu', `addMiss(${J(before)}, ${J(P.math)}, 3, '2026-11-24')`, {
+  eq('ligne 2 : raté de nouveau en jeu', `addMiss(${J(before)}, ${J(P.math)}, { t: 3, today: '2026-11-24' })`, {
     items: [item('clock'), item('math', { t: 3, due: '2026-11-25', box: 1 }), item('compare')],
     offered: '2026-11-23',
   });
   eq(
     'ligne 2 : `fails` ne change pas',
-    `addMiss(${J({ items: [item('math', { fails: 2, box: 7 })], offered: null })}, ${J(P.math)}, 1, '2026-11-24').items[0]`,
+    `addMiss(${J({ items: [item('math', { fails: 2, box: 7 })], offered: null })}, ${J(P.math)}, { t: 1, today: '2026-11-24' }).items[0]`,
     item('math', { fails: 2, box: 1, t: 1, due: '2026-11-25' }),
   );
   eq(
     "addMiss ne modifie pas la file qu'on lui donne",
-    `(() => { const rv = ${J(before)}; const s = JSON.stringify(rv); addMiss(rv, ${J(P.math)}, 3, '2026-11-24'); addMiss(rv, ${J(P.reading)}, 3, '2026-11-24'); return JSON.stringify(rv) === s; })()`,
+    `(() => { const rv = ${J(before)}; const s = JSON.stringify(rv); addMiss(rv, ${J(P.math)}, { t: 3, today: '2026-11-24' }); addMiss(rv, ${J(P.reading)}, { t: 3, today: '2026-11-24' }); return JSON.stringify(rv) === s; })()`,
     true,
   );
 }
@@ -361,7 +361,7 @@ const fullQueue = (oldest) =>
 function fullQueueTests(eq) {
   // le plus ancien est le 5e, et le 9e a la même date
   const full = fullQueue([4, 8]);
-  const after = `addMiss(${J({ items: full, offered: null })}, ${J(P.math)}, 2, '2026-11-20').items`;
+  const after = `addMiss(${J({ items: full, offered: null })}, ${J(P.math)}, { t: 2, today: '2026-11-20' }).items`;
   eq('ligne 4 : la file garde 30 items', `${after}.length`, 30);
   eq(
     'ligne 4 : le plus ancien sort (le premier du tableau à égalité)',
@@ -373,14 +373,14 @@ function fullQueueTests(eq) {
   );
   eq(
     'ligne 4 : une question déjà dans une file pleine ne fait sortir personne',
-    `addMiss(${J({ items: full, offered: null })}, ${J(full[3].p)}, 2, '2026-11-20').items.map((x) => x.k)`,
+    `addMiss(${J({ items: full, offered: null })}, ${J(full[3].p)}, { t: 2, today: '2026-11-20' }).items.map((x) => x.k)`,
     full.map((x) => x.k),
   );
 }
 
 // une réponse en révision sur une file d'un seul item
 const answerOne = (it, ok, day) =>
-  `reviewAnswer(${J({ items: [it], offered: null })}, ${J(it.k)}, ${ok}, '${day}').items`;
+  `reviewAnswer(${J({ items: [it], offered: null })}, ${J(it.k)}, { ok: ${ok}, today: '${day}' }).items`;
 function scheduleTests(eq) {
   section("S1 : l'échéancier (reviewAnswer)");
   const one = answerOne;
@@ -413,27 +413,27 @@ function scheduleTests(eq) {
 function scheduleQueueTests(eq) {
   eq(
     'les autres items, leur ordre et `offered` ne changent pas',
-    `reviewAnswer(${J({ items: [item('clock'), item('math'), item('compare')], offered: '2026-11-21' })}, 'math:7+5', true, '2026-11-21')`,
+    `reviewAnswer(${J({ items: [item('clock'), item('math'), item('compare')], offered: '2026-11-21' })}, 'math:7+5', { ok: true, today: '2026-11-21' })`,
     { items: [item('clock'), item('math', { due: '2026-11-24', box: 3 }), item('compare')], offered: '2026-11-21' },
   );
   eq(
     'une clé inconnue ne change rien',
-    `reviewAnswer(${J({ items: [item('clock')], offered: null })}, 'math:1+1', true, '2026-11-21')`,
+    `reviewAnswer(${J({ items: [item('clock')], offered: null })}, 'math:1+1', { ok: true, today: '2026-11-21' })`,
     { items: [item('clock')], offered: null },
   );
   eq(
     "reviewAnswer ne modifie pas la file qu'on lui donne",
-    `(() => { const rv = ${J({ items: [item('math')], offered: null })}; const s = JSON.stringify(rv); reviewAnswer(rv, 'math:7+5', true, '2026-11-21'); reviewAnswer(rv, 'math:7+5', false, '2026-11-21'); return JSON.stringify(rv) === s; })()`,
+    `(() => { const rv = ${J({ items: [item('math')], offered: null })}; const s = JSON.stringify(rv); reviewAnswer(rv, 'math:7+5', { ok: true, today: '2026-11-21' }); reviewAnswer(rv, 'math:7+5', { ok: false, today: '2026-11-21' }); return JSON.stringify(rv) === s; })()`,
     true,
   );
   eq(
     'ligne 19 : raté le 1er, réussi le 2, le 5 et le 12',
     `(() => {
       const due = [];
-      let rv = addMiss(${J(EMPTY)}, ${J(P.math)}, 2, '2026-12-01');
+      let rv = addMiss(${J(EMPTY)}, ${J(P.math)}, { t: 2, today: '2026-12-01' });
       due.push(rv.items[0].due);
       for (const day of ['2026-12-02', '2026-12-05', '2026-12-12']) {
-        rv = reviewAnswer(rv, 'math:7+5', true, day);
+        rv = reviewAnswer(rv, 'math:7+5', { ok: true, today: day });
         due.push(rv.items.length ? rv.items[0].due : 'sorti');
       }
       return due;
@@ -442,7 +442,7 @@ function scheduleQueueTests(eq) {
   );
   eq(
     'ligne 19 : raté le 1er, raté en révision le 2 : dû le 3',
-    `reviewAnswer(addMiss(${J(EMPTY)}, ${J(P.math)}, 2, '2026-12-01'), 'math:7+5', false, '2026-12-02').items[0].due`,
+    `reviewAnswer(addMiss(${J(EMPTY)}, ${J(P.math)}, { t: 2, today: '2026-12-01' }), 'math:7+5', { ok: false, today: '2026-12-02' }).items[0].due`,
     '2026-12-03',
   );
 }

@@ -72,7 +72,7 @@ on('answer:wrong', (/** @type {{ kind: string, q: unknown }} */ { kind, q }) => 
   if (!r) return;
   const p = r.item(q);
   if (!p || p.g !== kind || !validParams(p)) return;
-  state.review = addMiss(state.review, p, gameDiff(), reviewToday());
+  state.review = addMiss(state.review, p, { t: gameDiff(), today: reviewToday() });
   save();
 });
 
@@ -176,7 +176,7 @@ function reviewShowQuestion() {
 function reviewAnswered(ok) {
   const m = reviewMission;
   if (!m) return;
-  state.review = reviewAnswer(state.review, m.items[m.i].k, ok, reviewToday());
+  state.review = reviewAnswer(state.review, m.items[m.i].k, { ok, today: reviewToday() });
   save();
   if (ok) m.right++;
   else m.wrong++;
