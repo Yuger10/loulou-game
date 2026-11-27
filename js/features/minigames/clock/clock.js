@@ -4,6 +4,7 @@
    puis demi-heures, puis quarts d'heure. Horloge dessinée en CSS pur
    (pas d'image), les aiguilles sont deux barres tournées en degrés. */
 import { clockGranularity, clockOptions } from '../../../entities/difficulty/index.js';
+import { validParams } from '../../../entities/review/index.js';
 import { pickRandom, random, shuffle } from '../../../shared/lib/index.js';
 import { openModal, setHandler } from '../../../shared/ui/index.js';
 import { gameDiff } from '../../adaptive/index.js';
@@ -21,7 +22,22 @@ import {
   stepOk,
   winSoon,
 } from '../../minigame-engine/index.js';
+import { registerReplay } from '../../review/index.js';
 import { bindQuit, gameHeader } from '../../screen/index.js';
+
+/** @typedef {import('../../../entities/review/index.js').ClockParams} ClockParams */
+
+/**
+ * La question posée, sous forme rejouable (ou null si ce n'en est pas une).
+ * @param {unknown} q
+ * @returns {ClockParams | null}
+ */
+function clockItem(q) {
+  if (!q || typeof q !== 'object') return null;
+  const { hour, minute } = /** @type {Record<string, unknown>} */ (q);
+  const p = { g: 'clock', h: hour, m: minute };
+  return validParams(p) && p.g === 'clock' ? p : null;
+}
 
 /**
  * @param {number} hour
@@ -65,12 +81,15 @@ function timeLabel(hour, minute) {
   return `${h} h 45`;
 }
 
-function renderClock() {
+/** @param {ClockParams} [p] un souvenir à rejouer (js/features/review) ; sinon l'heure est tirée au hasard */
+function renderClock(p) {
   setupLives('clock');
   const dd = gameDiff();
+  // les autres heures proposées suivent toujours le palier du moment
   const minutes = clockGranularity(dd);
-  const hour = 1 + Math.floor(random() * 12);
-  const minute = pickRandom(minutes);
+  const replay = p && p.g === 'clock' ? p : null;
+  const hour = replay ? replay.h : 1 + Math.floor(random() * 12);
+  const minute = replay ? replay.m : pickRandom(minutes);
   const answer = timeLabel(hour, minute);
 
   const nOptions = clockOptions(dd);
@@ -150,3 +169,4 @@ function clockHints(q) {
 // inscription auprès du moteur de mini-jeux (js/features/minigame-engine)
 registerGame('clock', renderClock);
 registerHints('clock', clockHints);
+registerReplay('clock', { item: clockItem, render: renderClock });

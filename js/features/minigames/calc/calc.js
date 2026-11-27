@@ -4,6 +4,7 @@
    soustraction, et à partir du palier 5, multiplication (tables de 2, 5,
    10) et expressions à 3 termes. Bornes dans js/entities/difficulty/difficulty.js (calcBounds). */
 import { CALC_MULT_TABLES, calcBounds } from '../../../entities/difficulty/index.js';
+import { validParams } from '../../../entities/review/index.js';
 import { pickRandom, random, shuffle } from '../../../shared/lib/index.js';
 import { openModal, setHandler } from '../../../shared/ui/index.js';
 import { gameDiff } from '../../adaptive/index.js';
@@ -21,7 +22,10 @@ import {
   stepOk,
   winSoon,
 } from '../../minigame-engine/index.js';
+import { registerReplay } from '../../review/index.js';
 import { bindQuit, gameHeader } from '../../screen/index.js';
+
+/** @typedef {import('../../../entities/review/index.js').CalcParams} CalcParams */
 
 /** @param {number} dd le palier de difficulté */
 function makeCalcProblem(dd) {
@@ -60,10 +64,54 @@ function makeCalcProblem(dd) {
   return { text, result: value, first, ops };
 }
 
-function renderCalc() {
+/**
+ * Un souvenir à rejouer (js/features/review) : le même calcul, écrit comme le jeu.
+ * @param {CalcParams} p
+ * @returns {ReturnType<typeof makeCalcProblem>}
+ */
+function calcProblemOf(p) {
+  if ('mult' in p) {
+    const { a, b } = p.mult;
+    return { text: `${a} × ${b}`, result: a * b, mult: { a, b } };
+  }
+  let value = p.first,
+    text = `${value}`;
+  const ops = [];
+  for (const o of p.ops) {
+    const sign = o.s === '+' ? '+' : '−';
+    value = o.s === '+' ? value + o.n : value - o.n;
+    text += ` ${sign} ${o.n}`;
+    ops.push({ sign, n: o.n });
+  }
+  return { text, result: value, first: p.first, ops };
+}
+/**
+ * La question posée, sous forme rejouable (ou null : hors bornes, autre forme).
+ * @param {unknown} q
+ * @returns {CalcParams | null}
+ */
+function calcItem(q) {
+  if (!q || typeof q !== 'object') return null;
+  const { mult, first, ops } = /** @type {Record<string, unknown>} */ (q);
+  /** @param {unknown} o une opération du jeu : son signe s'écrit « − », celui d'un item « - » */
+  const opOf = (o) => {
+    const { sign, n } = /** @type {Record<string, unknown>} */ (o && typeof o === 'object' ? o : {});
+    return { s: sign === '−' ? '-' : sign, n };
+  };
+  /** @type {unknown} pas encore vérifié : validParams dit si ce sont des paramètres */
+  const p = mult ? { g: 'calc', mult } : { g: 'calc', first, ops: Array.isArray(ops) ? ops.map(opOf) : null };
+  if (!validParams(p) || p.g !== 'calc') return null;
+  // recopié champ par champ : l'item ne garde rien d'autre de la question du jeu
+  return 'mult' in p
+    ? { g: 'calc', mult: { a: p.mult.a, b: p.mult.b } }
+    : { g: 'calc', first: p.first, ops: p.ops.map((o) => ({ s: o.s, n: o.n })) };
+}
+
+/** @param {CalcParams} [p] un souvenir à rejouer ; sinon la question est tirée au hasard */
+function renderCalc(p) {
   setupLives('calc');
   const dd = gameDiff();
-  const problem = makeCalcProblem(dd);
+  const problem = p && p.g === 'calc' ? calcProblemOf(p) : makeCalcProblem(dd);
   const { text, result } = problem;
 
   const choices = new Set([result]);
@@ -181,3 +229,4 @@ function calcHints(q) {
 // inscription auprès du moteur de mini-jeux (js/features/minigame-engine)
 registerGame('calc', renderCalc);
 registerHints('calc', calcHints);
+registerReplay('calc', { item: calcItem, render: renderCalc });

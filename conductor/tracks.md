@@ -105,7 +105,7 @@ Registre des tracks Conductor, **dans l'ordre d'implémentation**. Feuille de ro
 
 ---
 
-- [ ] **Track: La révision espacée : les questions ratées reviennent quelques jours plus tard (idée de Claude, d'après la recherche)**
+- [x] **Track: La révision espacée : les questions ratées reviennent quelques jours plus tard (idée de Claude, d'après la recherche), livrée en v67**
 *Link: [./tracks/revision-espacee_20261122/](./tracks/revision-espacee_20261122/)*
 
 ---

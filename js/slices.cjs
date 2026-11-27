@@ -67,6 +67,8 @@ const SLICES = [
   },
   { id: 'words', layer: 'entities', files: ['js/entities/words/words.js'], css: [] },
   { id: 'squishy', layer: 'entities', files: ['js/entities/squishy/squishies.js'], css: [] },
+  // la file de révision espacée : game-state la remet en forme à chaque lecture (readSave)
+  { id: 'review-queue', layer: 'entities', files: ['js/entities/review/review.js'], css: [] },
   { id: 'game-state', layer: 'entities', files: ['js/entities/game-state/state.js'], css: [] },
   { id: 'item', layer: 'entities', files: ['js/entities/item/items.js'], css: [] },
   {
@@ -198,6 +200,13 @@ const SLICES = [
       'js/features/minigame-engine/board-v21.css',
       'js/features/minigame-engine/timer.css',
     ],
+  },
+  // les souvenirs : après le moteur (elle l'écoute), avant les mini-jeux (ils s'y inscrivent)
+  {
+    id: 'review',
+    layer: 'features',
+    files: ['js/features/review/review.js'],
+    css: ['js/features/review/review.css'],
   },
   { id: 'minigame-memory', layer: 'features', files: ['js/features/minigames/memory/memory.js'], css: [] },
   { id: 'minigame-count', layer: 'features', files: ['js/features/minigames/count/count.js'], css: [] },
@@ -447,6 +456,7 @@ const CSS_ORDER = [
   'js/features/minigames/ladybugs/ladybugs.css',
   'js/features/minigames/potions/potions.css',
   'js/features/minigames/mirror/mirror.css',
+  'js/features/review/review.css',
   'js/features/island/island.css',
   'js/entities/character/characters.css',
   'js/features/settings/settings.css',

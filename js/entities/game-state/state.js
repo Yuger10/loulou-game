@@ -1,6 +1,7 @@
 /* ---------- État de la partie du joueur courant : sauvegarde, migrations, niveau ---------- */
 import { cleanName, reportUnreadable, storageWrite } from '../../shared/lib/index.js';
 import { setAudioPrefsSource } from '../../shared/ui/index.js';
+import { dayKey, sanitizeReview } from '../review/index.js';
 import { SQUISHY_ISLAND_SERIES } from '../squishy/index.js';
 
 const MISSIONS_PER_LEVEL = 5;
@@ -8,7 +9,7 @@ const MISSIONS_PER_LEVEL = 5;
 const SAVE_KEY = 'lagon-magique-save';
 
 /* ---------- État ---------- */
-const SAVE_VERSION = 9;
+const SAVE_VERSION = 10;
 
 /* Les types de la partie : ils décrivent DEFAULT_STATE, champ par champ.
    Les tables (inventaire, amitiés…) sont indexées par un id d'objet, de
@@ -36,6 +37,8 @@ const SAVE_VERSION = 9;
  * }} SkillRecord
  */
 /** @typedef {{ date: string, min: number }} PauseExtra */
+/** La file de révision espacée (js/entities/review) : les questions ratées à reposer.
+ * @typedef {import('../review/index.js').ReviewState} ReviewState */
 /** Ce que porte l'avatar (js/features/wardrobe) : un id d'habit par emplacement, ou null.
  * @typedef {{ tete: string | null, visage: string | null, tenue: string | null, cape: string | null }} Look */
 /** La pause d'un jour (js/features/rest) : `at` est l'heure HH:MM.
@@ -99,6 +102,7 @@ const SAVE_VERSION = 9;
  *   decoPos: Record<string, { x: number, y: number }>,
  *   helped: { date: string, ids: Record<string, number> } | null,
  *   tipDragDeco: boolean,
+ *   review: ReviewState,
  * }} GameState
  */
 /**
@@ -149,6 +153,8 @@ const DEFAULT_STATE = {
   decoPos: {}, // place des décorations que l'enfant a fait glisser : { clé: { x, y } }
   helped: null, // personnages déjà aidés aujourd'hui (bulle ❤️) : { date, ids }
   tipDragDeco: false, // l'astuce « fais glisser tes décorations » déjà vue
+  // les souvenirs (js/features/review) : questions ratées à reposer, et le jour de la dernière proposition
+  review: { items: [], offered: null },
 };
 
 /* La collection de squishies (v53) : état neuf.
@@ -277,6 +283,11 @@ function migrate(saved) {
     saved.season2Done = false;
     if (saved.squishies && !Array.isArray(saved.squishies.treasures)) saved.squishies.treasures = [];
   }
+  if (v < 10) {
+    // les souvenirs : la file de révision espacée, vide au départ (ce qui est
+    // déjà là, d'une sauvegarde trafiquée, est remis en forme par readSave)
+    if (!saved.review || typeof saved.review !== 'object') saved.review = { items: [], offered: null };
+  }
   saved.v = SAVE_VERSION;
   return saved;
 }
@@ -346,8 +357,8 @@ function cleanRestLog(raw) {
 }
 /**
  * Une partie enregistrée (texte JSON) devenue une partie jouable : migrée vers
- * la forme actuelle, réduite aux champs connus, prénom, avatar, suivi des jeux
- * et journal des pauses vérifiés. Lève une erreur si le JSON est illisible.
+ * la forme actuelle, réduite aux champs connus, prénom, avatar, suivi des jeux,
+ * journal des pauses et file de révision vérifiés. Lève une erreur si le JSON est illisible.
  * @param {string} raw
  * @returns {GameState}
  */
@@ -365,6 +376,8 @@ function readSave(raw) {
   st.name = cleanName(st.name); // porte d'entrée : partie enregistrée ou importée
   st.skills = cleanSkills(st.skills);
   st.restLog = cleanRestLog(st.restLog);
+  // la file de révision : items vérifiés un par un (bornes, dates, 30 au plus)
+  st.review = sanitizeReview(st.review, dayKey(new Date()));
   saveSlot.afterLoad(st);
   return st;
 }

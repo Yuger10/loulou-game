@@ -40,7 +40,7 @@ import {
 import { markSeen, renderBadge } from '../bag/index.js';
 import { maybeTeamOpening, teamCheerBy, teamWinExtras } from '../companion-team/index.js';
 import { queueGain } from '../gains/index.js';
-import { hintNudge, hintPolicy, setHintCountable } from '../hints/index.js';
+import { currentHintQuestion, hintNudge, hintPolicy, setHintCountable } from '../hints/index.js';
 import { checkNewIsland, currentChar, markHelped, renderLagon } from '../island/index.js';
 import { partyAfterWin, partyScore, passTurn } from '../party/index.js';
 import { questProgress } from '../quests/index.js';
@@ -64,8 +64,69 @@ function triesFor(kind) {
 
 /** @param {string} kind le type de mini-jeu */
 function setupLives(kind) {
-  maxLives = triesFor(kind);
+  // mode manche (les souvenirs) : pas de cœurs, la question n'est posée qu'une fois
+  maxLives = roundHandlers ? Infinity : triesFor(kind);
   lives = maxLives;
+}
+
+/* Mode « manche » (les souvenirs, js/features/review) : une feature plus haute
+   pose une question d'un jeu et veut seulement savoir si la PREMIÈRE réponse
+   est juste. Tant que des poignées sont posées : pas de cœurs, pas de
+   minuteur, winSoon appelle `onRight`, et une erreur montre la bonne réponse
+   puis appelle `onWrong` (ni relance, ni progrès comptés, ni question gardée).
+   Les jeux, eux, ne changent pas : ils gagnent et perdent comme d'habitude.
+   La réponse attend dans `pendingRoundTimer`, annulé si la fenêtre change ou
+   se ferme : rien n'arrive plus tard par-dessus un autre écran. */
+const REVIEW_SHOW_MS = 1500; // la bonne réponse reste montrée avant la suite
+/** @typedef {{ onRight: () => void, onWrong: () => void }} RoundHandlers */
+/** @type {RoundHandlers | null} */
+let roundHandlers = null;
+/** @type {ReturnType<typeof setTimeout> | null} */
+let pendingRoundTimer = null;
+function clearPendingRound() {
+  if (pendingRoundTimer) {
+    clearTimeout(pendingRoundTimer);
+    pendingRoundTimer = null;
+  }
+}
+/** @param {RoundHandlers | null} h null : retour au jeu normal */
+function setRoundHandlers(h) {
+  clearPendingRound();
+  roundHandlers = h;
+}
+/**
+ * La réponse de la manche est donnée : la suite vient après un délai.
+ * @param {'onRight' | 'onWrong'} which
+ * @param {number} delay
+ */
+function roundAnswerSoon(which, delay) {
+  pendingRoundTimer = setTimeout(() => {
+    pendingRoundTimer = null;
+    // la mission a pu s'arrêter entre-temps (setRoundHandlers(null))
+    if (roundHandlers) roundHandlers[which]();
+  }, delay);
+}
+/**
+ * Une erreur en mode manche : seule cette première réponse compte. Tout se
+ * referme, la bonne réponse brille, une phrase la désigne (retour immédiat),
+ * puis `onWrong`. Sans bouton touché, ou une réponse déjà donnée : rien.
+ * @param {HTMLElement | null} el
+ * @returns {false}
+ */
+function loseLifeRound(el) {
+  if (!el || pendingRoundTimer) return false;
+  buddyReact('oops', 1300);
+  playSound('wrong');
+  vibrate(90);
+  loseLifeShake(el, {});
+  document.querySelectorAll('#modal-body button:not(.btn-speak)').forEach((b) => {
+    /** @type {HTMLButtonElement} */ (b).disabled = true;
+  });
+  const sol = gameSolution && gameSolution[0] ? document.querySelector(gameSolution[0]) : null;
+  if (sol) sol.classList.add('hint-glow');
+  speak("Regarde, c'était celle-ci.");
+  roundAnswerSoon('onWrong', REVIEW_SHOW_MS);
+  return false;
 }
 
 function livesBar() {
@@ -126,6 +187,7 @@ function scheduleRetry(fn) {
  */
 function loseLife(target, opts = {}) {
   const el = /** @type {HTMLElement | null} */ (target);
+  if (roundHandlers) return loseLifeRound(el); // les souvenirs : la bonne réponse est montrée
   buddyReact('oops', 1300);
   hintNudge(true); // le bouton 💡 se propose (js/features/hints/hints.js)
   // multijoueur : la règle reste « une erreur = on passe la main »
@@ -134,6 +196,12 @@ function loseLife(target, opts = {}) {
     return false;
   }
   noteAnswerError(); // pour l'espace parents
+  // une réponse fausse a été touchée (pas un temps écoulé), hors défi bonus : la
+  // révision espacée (js/features/review, plus haut : d'où l'événement) la garde
+  if (el && !inBonusChallenge()) {
+    const { kind, q } = currentHintQuestion();
+    if (kind) emit('answer:wrong', { kind, q });
+  }
 
   playSound('wrong');
   vibrate(90);
@@ -227,6 +295,7 @@ function clearActiveTimer() {
 /** @param {string} kind le type de mini-jeu */
 function startTimerIfNeeded(kind) {
   clearActiveTimer();
+  if (roundHandlers) return; // les souvenirs : jamais de minuteur
   // en multijoueur (chacun son tour / course), on garde l'expérience
   // simple : pas de minuteur qui se superpose au passage de main.
   if (party.active) return;
@@ -359,6 +428,9 @@ function startBonusChallenge(key) {
 // (utilisé pour proposer en priorité les jeux les moins essayés).
 /** @param {string} key le type de mini-jeu */
 function playGame(key) {
+  // un jeu normal lancé par-dessus une mission « souvenirs » sans la fermer
+  // (aucun onModalClose) : il retrouve ses cœurs, son minuteur et sa victoire
+  setRoundHandlers(null);
   // pause douce réglée par les parents : plus de nouveau défi aujourd'hui
   // (l'espace parents répond true et montre l'écran de pause)
   if (emit('game:before', key).some(Boolean)) return;
@@ -443,6 +515,11 @@ function onMissionFail() {
 const WIN_DELAY = 400;
 const WIN_DELAY_LONG = 700;
 function winSoon(delay = WIN_DELAY) {
+  if (roundHandlers) {
+    // mode manche : la première réponse seulement (un second toucher ne compte pas)
+    if (!pendingRoundTimer) roundAnswerSoon('onRight', delay);
+    return;
+  }
   setTimeout(onMissionWin, delay);
 }
 
@@ -602,6 +679,7 @@ function winBindButtons() {
 onModalChange(() => {
   clearActiveTimer();
   clearPendingRetry();
+  clearPendingRound(); // la réponse d'une manche qui attendait (les souvenirs)
 });
 onModalClose(() => {
   forgetSpokenHint();
@@ -616,7 +694,9 @@ export {
   playGame,
   progressDots,
   registerGame,
+  REVIEW_SHOW_MS,
   setMissionFact,
+  setRoundHandlers,
   setSolution,
   setupLives,
   solSel,

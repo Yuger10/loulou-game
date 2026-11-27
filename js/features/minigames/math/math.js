@@ -4,6 +4,7 @@
    Les bornes (mathBounds) sont centralisées et documentées dans
    js/entities/difficulty/difficulty.js — voir aussi ANALYSE-DIFFICULTE.md. */
 import { mathBounds } from '../../../entities/difficulty/index.js';
+import { validParams } from '../../../entities/review/index.js';
 import { pickRandom, random, shuffle } from '../../../shared/lib/index.js';
 import { emojiWord, openModal, setHandler } from '../../../shared/ui/index.js';
 import { gameDiff } from '../../adaptive/index.js';
@@ -21,7 +22,10 @@ import {
   stepOk,
   winSoon,
 } from '../../minigame-engine/index.js';
+import { registerReplay } from '../../review/index.js';
 import { bindQuit, gameHeader } from '../../screen/index.js';
+
+/** @typedef {import('../../../entities/review/index.js').MathParams} MathParams */
 
 const MATH_EMOJIS = ['⭐', '🐚', '🌸', '🦪', '🐠', '🦋', '🍎', '🎈'];
 
@@ -44,10 +48,31 @@ function makeMathProblem() {
   return { a, b, op, result };
 }
 
-function renderMath() {
+/**
+ * Un souvenir à rejouer (js/features/review) : la même opération, écrite comme le jeu.
+ * @param {MathParams} p
+ */
+function mathProblemOf(p) {
+  const plus = p.op === '+';
+  return { a: p.a, b: p.b, op: plus ? '+' : '−', result: plus ? p.a + p.b : p.a - p.b };
+}
+/**
+ * La question posée, sous forme rejouable (ou null si ce n'en est pas une).
+ * @param {unknown} q
+ * @returns {MathParams | null}
+ */
+function mathItem(q) {
+  if (!q || typeof q !== 'object') return null;
+  const { a, b, op } = /** @type {Record<string, unknown>} */ (q);
+  const p = { g: 'math', a, b, op: op === '−' ? '-' : op };
+  return validParams(p) && p.g === 'math' ? p : null;
+}
+
+/** @param {MathParams} [p] un souvenir à rejouer ; sinon la question est tirée au hasard */
+function renderMath(p) {
   setupLives('math');
   const emoji = pickRandom(MATH_EMOJIS);
-  const { a, b, op, result } = makeMathProblem();
+  const { a, b, op, result } = p && p.g === 'math' ? mathProblemOf(p) : makeMathProblem();
 
   const options = mathChoices(result);
 
@@ -154,3 +179,4 @@ function mathHints(q) {
 // inscription auprès du moteur de mini-jeux (js/features/minigame-engine)
 registerGame('math', renderMath);
 registerHints('math', mathHints);
+registerReplay('math', { item: mathItem, render: renderMath });

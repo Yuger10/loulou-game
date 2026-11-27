@@ -7,6 +7,7 @@
    peut rester trivial même au palier maximal (comparer 3 et 97 ne
    demande aucune réflexion sur l'ordre de grandeur réel). */
 import { compareCloseChance, compareEqualChance, compareRange } from '../../../entities/difficulty/index.js';
+import { validParams } from '../../../entities/review/index.js';
 import { random, shuffle } from '../../../shared/lib/index.js';
 import { openModal, setHandler } from '../../../shared/ui/index.js';
 import { gameDiff } from '../../adaptive/index.js';
@@ -24,12 +25,28 @@ import {
   stepOk,
   winSoon,
 } from '../../minigame-engine/index.js';
+import { registerReplay } from '../../review/index.js';
 import { bindQuit, gameHeader } from '../../screen/index.js';
 
-function renderCompare() {
+/** @typedef {import('../../../entities/review/index.js').CompareParams} CompareParams */
+
+/**
+ * La question posée, sous forme rejouable (ou null si ce n'en est pas une).
+ * @param {unknown} q
+ * @returns {CompareParams | null}
+ */
+function compareItem(q) {
+  if (!q || typeof q !== 'object') return null;
+  const { a, b } = /** @type {Record<string, unknown>} */ (q);
+  const p = { g: 'compare', a, b };
+  return validParams(p) && p.g === 'compare' ? p : null;
+}
+
+/** @param {CompareParams} [p] un souvenir à rejouer (js/features/review) ; sinon la question est tirée au hasard */
+function renderCompare(p) {
   setupLives('compare');
   const dd = gameDiff();
-  const { a, b } = comparePair(dd);
+  const { a, b } = p && p.g === 'compare' ? p : comparePair(dd);
   const answer = a < b ? '<' : a > b ? '>' : '=';
   const options = shuffle(['<', '>', '=']);
 
@@ -112,3 +129,4 @@ function compareHints(q) {
 // inscription auprès du moteur de mini-jeux (js/features/minigame-engine)
 registerGame('compare', renderCompare);
 registerHints('compare', compareHints);
+registerReplay('compare', { item: compareItem, render: renderCompare });

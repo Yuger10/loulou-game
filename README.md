@@ -46,9 +46,11 @@ js/features/         ce que l'enfant fait : minigame-engine/ (moteur) et minigam
                      fenêtres), hints/ (indices 💡), island/, map/, story/, bag/ (sac, album), market/, quests/,
                      profile/ (en-tête, accueil), wallet/, adaptive/ (niveau, progrès), party/ (chacun son tour,
                      course), players/, gains/, gifts/, wardrobe/, parents/, seasons/, backup/, music/,
-                     companion-team/ (équipe et spécialités, v52), squishies/ (collection, chambre, rangement, v53)
+                     companion-team/ (équipe et spécialités, v52), squishies/ (collection, chambre, rangement, v53),
+                     review/ (les souvenirs : révision espacée des questions ratées, v67)
 js/entities/         les données du jeu : item/, world/ (îles et archipels), character/, difficulty/, words/, squishy/, season/,
-                     game-state/ (état, sauvegarde, migrations), player/ (profils, partie en cours), companion/
+                     game-state/ (état, sauvegarde, migrations), player/ (profils, partie en cours), companion/,
+                     review/ (file de révision espacée : règles et validation)
 js/shared/           sans rien connaître du jeu : lib/ (hasard, événements), ui/ (modale, vues, son, voix,
                      retours, icônes), styles/ (variables, design system, responsive)
 <slice>/index.js     l'API publique de chaque slice

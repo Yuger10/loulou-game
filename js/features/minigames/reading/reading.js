@@ -4,6 +4,7 @@
    visuels (ça force à vraiment lire, pas juste reconnaître l'image).
    Seuils centralisés dans js/entities/difficulty/difficulty.js (readingWordOnly/Options). */
 import { readingOptions, readingWordOnly } from '../../../entities/difficulty/index.js';
+import { validParams } from '../../../entities/review/index.js';
 import { WORDS_CP } from '../../../entities/words/index.js';
 import { pickRandom, shuffle } from '../../../shared/lib/index.js';
 import { openModal, setHandler } from '../../../shared/ui/index.js';
@@ -22,9 +23,24 @@ import {
   stepOk,
   winSoon,
 } from '../../minigame-engine/index.js';
+import { registerReplay } from '../../review/index.js';
 import { bindQuit, gameHeader } from '../../screen/index.js';
 
 /** @typedef {import('../../../entities/words/index.js').Word} Word */
+/** @typedef {import('../../../entities/review/index.js').ReadingParams} ReadingParams */
+
+/**
+ * La question posée, sous forme rejouable : le mot et le sens de lecture (ou null).
+ * @param {unknown} q
+ * @returns {ReadingParams | null}
+ */
+function readingItem(q) {
+  if (!q || typeof q !== 'object') return null;
+  const { correct, wordToImage } = /** @type {Record<string, unknown>} */ (q);
+  const w = correct && typeof correct === 'object' ? /** @type {Record<string, unknown>} */ (correct).word : null;
+  const p = { g: 'reading', w, img: wordToImage };
+  return validParams(p) && p.g === 'reading' ? p : null;
+}
 
 /**
  * @param {Word[]} pool
@@ -36,15 +52,18 @@ function pickDistractors(pool, correct, count) {
   return shuffle(others).slice(0, count);
 }
 
-function renderReading() {
+/** @param {ReadingParams} [p] un souvenir à rejouer (js/features/review) ; sinon le mot est tiré au hasard */
+function renderReading(p) {
   setupLives('reading');
   const dd = gameDiff();
   const pool = WORDS_CP;
-  const correct = pickRandom(pool);
+  const replay = p && p.g === 'reading' ? p : null;
+  const correct = (replay && pool.find((x) => x.word === replay.w)) || pickRandom(pool);
 
   // paliers 1-2 : on voit l'image, on choisit le mot écrit (association)
   // paliers 3-5 : on ne voit QUE le mot, il faut le lire pour trouver l'image
-  const wordToImage = readingWordOnly(dd);
+  // un souvenir garde son sens de lecture, quel que soit le palier du moment
+  const wordToImage = replay ? replay.img : readingWordOnly(dd);
   const nOptions = readingOptions(dd);
   const distractors = pickDistractors(pool, correct, nOptions - 1);
   const options = shuffle([correct, ...distractors]);
@@ -161,3 +180,4 @@ function readingImageHints(w, dim) {
 // inscription auprès du moteur de mini-jeux (js/features/minigame-engine)
 registerGame('reading', renderReading);
 registerHints('reading', readingHints);
+registerReplay('reading', { item: readingItem, render: renderReading });
