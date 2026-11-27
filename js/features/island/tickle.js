@@ -59,7 +59,12 @@ function tickleHelloThen(el, open) {
   helloLaugh(btn.querySelector('.emoji'));
   setTimeout(() => {
     delete btn.dataset.hello;
-    if (btn.isConnected) open();
+    // la scène reste dans la page quand on change de vue : le dialogue ne s'ouvre
+    // que si l'enfant est encore sur l'île, et sans remplacer une autre fenêtre
+    const view = btn.closest('.view');
+    const overlay = document.getElementById('overlay');
+    const elsewhere = (view && !view.classList.contains('active')) || (overlay && overlay.classList.contains('show'));
+    if (btn.isConnected && !elsewhere) open();
   }, HELLO_LAUGH_DELAY);
 }
 
