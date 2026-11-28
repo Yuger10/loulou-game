@@ -495,9 +495,10 @@ function startGame(key, tier, age) {
         /Grisou/.test(eps.map((e) => e.lines.join(' ')).join(' ')),
     );
     check(
-      'la sauvegarde passe en version 11',
-      ev('SAVE_VERSION') === 11 &&
+      'la sauvegarde passe en version 12 après les migrations saison 3 et boîtes de squishies',
+      ev('SAVE_VERSION') === 12 &&
         ev('freshState().season2Done') === false &&
+        ev('freshState().squishies.crates.length') === 3 &&
         json(ev('squishyFreshState().treasures')) === '[]',
     );
     const old = {
@@ -522,13 +523,14 @@ function startGame(key, tier, age) {
     };
     const m = ev(`migrate(${json(old)})`);
     check(
-      "migration v8 → v9 : rien n'est perdu, le final reste à jouer",
-      m.v === 11 &&
+      "migration v8 → v12 : rien n'est perdu, le final reste à jouer",
+      m.v === 12 &&
         !!m.restLog['2026-11-10'] &&
         m.coins === 30 &&
         m.missions === 300 &&
         m.inventory.cerise === 2 &&
         m.squishies.owned.donut === 1 &&
+        m.squishies.crates.length === 3 &&
         m.soundVolume === 60 &&
         m.season2Done === false &&
         json(m.squishies.treasures) === '[]',

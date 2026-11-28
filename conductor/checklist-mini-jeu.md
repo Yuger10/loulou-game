@@ -37,6 +37,7 @@ Remplacer `<cle>` par la clé du jeu (ex. `nesting`) et `<Jeu>` par son nom de f
 - [ ] `js/entities/difficulty/difficulty.js` : ses paramètres par palier (une fonction `<cle>Round(dd)` ou équivalent), ses essais dans `LIVES_TABLE`, et `NO_TIMER_KINDS` s'il ne doit pas avoir de minuteur.
 - [ ] `js/features/adaptive/adaptive.js` : sa phrase de progrès dans `PROGRESS_CHEERS`, et `GAME_TIER_MAX` s'il va au-delà du palier 5.
 - [ ] `js/features/parents/parents.js` : le jeu dans un groupe de `SKILL_GROUPS` (compétence de l'espace parents).
+- [ ] son conseil sans écran dans `BILAN_TIPS` (`js/features/parents/bilan-tips.js`) : une idée concrète à faire avec l'enfant, loin de l'écran, sans `<`, `>`, `&` ni `"` ; `test/bilan.test.js` échoue tant qu'il manque.
 - [ ] `js/entities/difficulty/game-types.js` : une entrée dans `GAME_LIST` (clé, emoji, nom) pour « choisir un jeu ».
 - [ ] **Ses deux niveaux d'indice** (v52, contrat de `js/features/hints/hints.js`) :
   - à la fin du fichier, `registerHints('<cle>', question => [indice 1, indice 2])` : chaque niveau `{ say, fx }` (`fx.glow`, `fx.marks`, `fx.strike`, `fx.dim`, `fx.html`, `fx.run`) ;

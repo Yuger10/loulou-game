@@ -1,5 +1,5 @@
 ---
-status: faite           # brouillon | validée | faite ; validée à la demande d'Amrou le 26/11/2026, livrée en v72 le 27/11/2026
+status: faite           # brouillon | validée | faite ; validée à la demande d'Amrou le 26/11/2026, livrée en v74 après réconciliation des migrations de #103 et #105
 issue: 0
 size: M                  # chaque phase est une PR de taille M ; la track entière (L) est découpée en 3 phases
 migration: true          # nouveau champ d'état state.season3Done (phase 3)

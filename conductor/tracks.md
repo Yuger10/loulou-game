@@ -110,7 +110,7 @@ Registre des tracks Conductor, **dans l'ordre d'implémentation**. Feuille de ro
 
 ---
 
-- [ ] **Track: Les boîtes de rangement : ranger pour de bon ses squishies dans des boîtes à étiquette (idée de la joueuse)**
+- [x] **Track: Les boîtes de rangement : ranger pour de bon ses squishies dans des boîtes à étiquette (idée de la joueuse) (v67)**
 *Link: [./tracks/squishy-boites_20261122/](./tracks/squishy-boites_20261122/)*
 
 ---
@@ -140,12 +140,12 @@ Registre des tracks Conductor, **dans l'ordre d'implémentation**. Feuille de ro
 
 ---
 
-- [x] **Track: Saison 3, île 5 : 🎼 L'Île du Grand Concert, niveau 102 (grand final de la saison 3) (v72)**
+- [x] **Track: Saison 3, île 5 : 🎼 L'Île du Grand Concert, niveau 102 (grand final de la saison 3) (v74)**
 *Link: [./tracks/monde-concert_20261122/](./tracks/monde-concert_20261122/)*
 
 ---
 
-- [ ] **Track: Le bilan des parents : ce qui bloque, et une question à poser à table (idée de Claude, d'après la recherche)**
+- [x] **Track: Le bilan des parents : ce qui bloque, et une question à poser à table (idée de Claude, d'après la recherche) (v67)**
 *Link: [./tracks/bilan-parents_20261122/](./tracks/bilan-parents_20261122/)*
 
 ---

@@ -41,6 +41,10 @@ Prérequis : `saison3-ouverture` mergée (dont les fichiers frères vides `chara
 - [x] 16 bis. Tests d'abord : sections « L'île » (26 à 30), « Le chapitre et le final » (31 à 36, 40), « Le xylophone d'or » (37 à 39, 43) et « Sauvegarde » (41, 42) de `test/concert.test.js`. Échec attendu.
 - [x] 17. Sauvegarde (zone sensible) : `season3Done: boolean` dans le `@typedef GameState` et `season3Done: false` dans `DEFAULT_STATE` ; mettre `test/licornes.test.js:499` (`ev('SAVE_VERSION') === 9`) au nouveau numéro, même force ; les tests de migration de `test/concert.test.js` lisent `ev('SAVE_VERSION')`, sans numéro en dur. Puis `SAVE_VERSION` à la version suivante au moment de la livraison, étape de `migrate()`.
 - [x] 18. `WORLDS.concert` ; thème CSS ; `ISLE_SCENERY_S3.concert` dans `js/features/island/island-s3.js` (avec le xylophone doré ou le drap selon `state.season3Done`).
+
+### Livraison après intégration des migrations précédentes
+
+La saison 3 a déjà pris la migration 10 (`expeditionIntroSeen`) et les caisses de squishies la migration 11 (`crates`). Le Grand Concert conserve ces deux étapes et ajoute `season3Done` en migration 12. Après #103 (v72) et #105 (v73), la version de l'application est v74.
 - [x] 19. Personnages dans `CHARACTERS_S3` (`js/entities/character/characters-s3.js`) et leurs 4 dessins dans `season3Art(ART, kit)` (`js/entities/character/characters-art-s3.js`, outils lus dans `kit` comme `season2Art`) ; aucun dessin existant, ni `characters.js`, ni `characters-art.js` touché (sauf une ligne au `@typedef ArtKit` et aux deux appels si un outil manque, règle « 2 bis »).
 - [x] 20. Objets, recettes, décorations (`items.js`).
 - [x] 21. Série de squishies « Concert » : la série en une ligne dans `SQUISHY_SERIES`, `SQUISHY_SERIES_ORDER` et `SQUISHY_ISLAND_SERIES` (`js/entities/squishy/squishies.js`), les 6 modèles dans `SQUISHIES_S3` (`js/entities/squishy/squishies-s3.js`), les 6 dessins dans `SQ_ART_S3` (`js/features/squishies/squishy-art-s3.js`, sur le modèle de `'licorne-etoile'`, `squishy-art.js:550-558`), et `SQ_BOX_COLORS.concert` en une ligne dans `js/features/squishies/squishy-art.js`.
@@ -98,7 +102,7 @@ En ajout seul : une décision fausse reçoit une nouvelle ligne qui la remplace,
 
 ## Écarts et non vérifié
 
-Livrée en v72 le 27/11/2026, en une seule PR (journal, ligne 4), empilée sur celle de `monde-chatouilles`.
+Livrée en v74 après intégration des migrations #103 et #105, en une seule PR (journal, ligne 4), empilée sur celle de `monde-chatouilles`.
 
 Écarts à la spec, tous au journal de décisions :
 - fichiers frères imposés par la limite de 300 lignes : `difficulty-s3-concert.js` (ligne 5), `melody-tunes.js` (ligne 10), `characters-concert.js` et `characters-art-s3-concert.js` (ligne 13), `xylo-gold.js` (ligne 19) ; suites de test en plusieurs fichiers (ligne 6) ;

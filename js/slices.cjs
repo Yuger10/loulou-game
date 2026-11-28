@@ -154,8 +154,12 @@ const SLICES = [
     layer: 'features',
     files: [
       'js/features/squishies/squishies.js',
+      'js/features/squishies/squishy-crate-rules.js',
       'js/features/squishies/squishy-art-s3.js',
       'js/features/squishies/squishy-art.js',
+      'js/features/squishies/squishy-crate-view.js',
+      'js/features/squishies/squishy-crate-box.js',
+      'js/features/squishies/squishy-crates.js',
       'js/features/squishies/squishy-room.js',
     ],
     css: ['js/features/squishies/squishies.css'],
@@ -497,7 +501,12 @@ const SLICES = [
   {
     id: 'parents',
     layer: 'features',
-    files: ['js/features/parents/parents.js', 'js/features/parents/storage-alert.js'],
+    files: [
+      'js/features/parents/bilan-tips.js',
+      'js/features/parents/bilan.js',
+      'js/features/parents/parents.js',
+      'js/features/parents/storage-alert.js',
+    ],
     css: ['js/features/parents/parents.css'],
   },
   { id: 'rest', layer: 'features', files: ['js/features/rest/rest.js'], css: ['js/features/rest/rest.css'] },

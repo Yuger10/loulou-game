@@ -20,6 +20,7 @@ function oldSave() {
     skyIntroSeen: true,
     expeditionIntroSeen: true,
     season2Done: true,
+    squishies: { crates: [{ label: 'fav', items: ['donut'], done: false }] },
     skills: { rhythm: { wins: 7, fails: 1, errors: 2, last: null, recent: [], lvl: 2 } },
   };
 }
@@ -31,6 +32,7 @@ function migration() {
   check('critère 41 : une partie de la version précédente reçoit `season3Done: false`, le reste est identique', () => [
     !('season3Done' in old),
     season3Done === false,
+    rest.squishies.crates[0].items[0] === 'donut',
     v === ev('SAVE_VERSION') && v === old.v + 1,
     json(rest) === json({ ...old, v: undefined }),
   ]);

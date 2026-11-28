@@ -1,15 +1,19 @@
 ---
-status: validée         # brouillon | validée | faite ; posé à la demande d'Amrou le 26/11/2026 (« tu passes tout en validé »)
+status: faite           # brouillon | validée | faite ; validée à la demande d'Amrou le 26/11/2026, livrée en v72 (S3 et S4 restent à juger par Amrou)
 issue: 0
 size: S                  # S | M ; L se découpe
 migration: false
 sensitive: true          # espace parents
 files:
   - js/features/parents/bilan.js
+  - js/features/parents/bilan-tips.js
   - js/features/parents/parents.js
   - js/features/parents/parents.css
   - js/slices.cjs
   - test/bilan.test.js
+  - test/bilan-resiste.test.js
+  - test/bilan-import.test.js
+  - test/tools/bilan-kit.js
   - conductor/checklist-mini-jeu.md
 taster: { facts: 0, decisions: 0, rounds: 8 }
 ---
@@ -162,7 +166,7 @@ Le texte est celui qui s'affiche après « Une idée sans écran : ». Clé : ce
 
 | Contrat | Forme (ou lien) | Propriétaire | Consommateurs |
 |---|---|---|---|
-| `BILAN_TIPS` | `{ [clé]: { tip: string, name?: string } }` | `js/features/parents/bilan.js` | tests, futures tracks de mini-jeu |
+| `BILAN_TIPS` | `{ [clé]: { tip: string, name?: string } }` | `js/features/parents/bilan-tips.js` (sortie de `bilan.js` après relecture, voir le journal du plan) | tests, futures tracks de mini-jeu |
 | `bilanHTML(st)` | chaîne HTML de la carte | `js/features/parents/bilan.js` | écouteur `parents:cards`, tests |
 | `bilan:error-kind` | `emit('bilan:error-kind', { key, s })`, `s` = copie validée par `bilanSkill` ; un écouteur renvoie une phrase courte ou rien | `js/features/parents/bilan.js` | `erreurs-expliquees_20261122` (option) |
 | `state.stars[clé].won` | nombre, lu seulement s'il existe | `aller-plus-loin_20261122` | `bilan.js` (option) |

@@ -9,6 +9,8 @@ const { d, ev, json, check, section, modalOpen, shown, click, wait } = t;
 // « la version précédente » n'est plus celle-là.
 function oldSave() {
   return {
+    // v9 précède l'ouverture de la saison 3, indépendamment des migrations
+    // ajoutées ensuite par les autres tracks.
     v: 9,
     name: 'Lou',
     coins: 12,
@@ -42,6 +44,7 @@ function migration() {
     m.missions === 370,
     m.inventory.coquillage === 3,
     m.squishies.owned.donut === 2,
+    m.squishies.crates.length === 3,
     m.squishies.sorted === 3,
     json(m.visited) === json(old.visited),
   ]);
