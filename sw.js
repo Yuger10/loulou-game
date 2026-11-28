@@ -1,4 +1,4 @@
-const CACHE = 'lagon-v71';
+const CACHE = 'lagon-v72';
 const FILES = [
   './','./index.html','./manifest.json','./icon.svg','./icon-192.png','./icon-512.png',
   './icon-180.png','./js/shared/styles/base.css','./js/features/island/island-view.css','./js/entities/world/world-themes.css','./js/features/map/map.css','./js/features/minigames/simon/simon.css',
@@ -50,8 +50,9 @@ const FILES = [
   './js/features/minigames/code/code-make.js','./js/features/minigames/code/code-draw.js','./js/features/minigames/code/code-hints.js','./js/features/minigames/code/code.js','./js/features/minigames/code/index.js','./js/features/minigames/coding/coding-grid.js',
   './js/features/minigames/coding/coding-draw.js','./js/features/minigames/coding/coding-hints.js','./js/features/minigames/coding/coding.js','./js/features/minigames/coding/index.js','./js/features/minigames/sentence/sentence-bank.js','./js/features/minigames/sentence/sentence.js',
   './js/features/minigames/sentence/index.js','./js/features/market/market.js','./js/features/market/index.js','./js/features/backup/backup.js','./js/features/backup/index.js','./js/features/players/profiles-ui.js',
-  './js/features/players/index.js','./js/features/update/update.js','./js/features/update/index.js','./js/features/parents/parents.js','./js/features/parents/storage-alert.js','./js/features/parents/index.js',
-  './js/features/rest/rest.js','./js/features/rest/index.js','./js/features/settings/settings.js','./js/features/settings/index.js','./js/app/init.js','./js/app/main.js'
+  './js/features/players/index.js','./js/features/update/update.js','./js/features/update/index.js','./js/features/parents/bilan-tips.js','./js/features/parents/bilan.js','./js/features/parents/parents.js',
+  './js/features/parents/storage-alert.js','./js/features/parents/index.js','./js/features/rest/rest.js','./js/features/rest/index.js','./js/features/settings/settings.js','./js/features/settings/index.js',
+  './js/app/init.js','./js/app/main.js'
 ];
 self.addEventListener('install', e=>{
   // cache:'reload' : les fichiers viennent du site, jamais du cache HTTP du navigateur

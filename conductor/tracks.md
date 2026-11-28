@@ -145,7 +145,7 @@ Registre des tracks Conductor, **dans l'ordre d'implémentation**. Feuille de ro
 
 ---
 
-- [ ] **Track: Le bilan des parents : ce qui bloque, et une question à poser à table (idée de Claude, d'après la recherche)**
+- [x] **Track: Le bilan des parents : ce qui bloque, et une question à poser à table (idée de Claude, d'après la recherche) (v67)**
 *Link: [./tracks/bilan-parents_20261122/](./tracks/bilan-parents_20261122/)*
 
 ---
