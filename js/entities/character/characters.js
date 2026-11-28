@@ -1,4 +1,5 @@
 /* ---------- Personnages des îles ---------- */
+import { CHARACTERS_S3 } from './characters-s3.js';
 /**
  * Un personnage d'une île : `world` absent = le Lagon (les premiers personnages
  * datent d'avant les autres mondes), `noGames` = guide sans mini-jeu.
@@ -768,6 +769,7 @@ const CHARACTERS = {
       'Viens, on coiffe les crinières devant le miroir ?',
     ],
   },
+  ...CHARACTERS_S3,
 };
 
 /**

@@ -201,9 +201,10 @@ setTimeout(() => {
   );
   check(
     "chaque archipel s'ouvre au niveau de sa première île",
-    ev('ARCHIPELAGO_ORDER.every(s=> ARCHIPELAGOS[s].level === WORLDS[worldsOf(s)[0]].level)') &&
+    ev('shownArchipelagos().every(s=> ARCHIPELAGOS[s].level === WORLDS[worldsOf(s)[0]].level)') &&
       ev('ARCHIPELAGOS[1].level') === 1 &&
-      ev('ARCHIPELAGOS[2].level') === TABLE.boites.level,
+      ev('ARCHIPELAGOS[2].level') === TABLE.boites.level &&
+      ev('ARCHIPELAGOS[3].level') === TABLE.crayons.level,
   );
   check(
     'dernière île ouverte : niveau 31 → le Pays Squishy (26) ; niveau 32 → les Boîtes (32)',

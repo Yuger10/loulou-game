@@ -6,6 +6,7 @@ Remplacer `<cle>` par la clé du jeu (ex. `nesting`) et `<Jeu>` par son nom de f
 ## 1. Tests d'abord
 - [ ] `test/smoke.test.js` : le jeu s'ouvre, une bonne réponse avance, une mauvaise relance une **autre** question (anti-devinette), la difficulté suit le palier et l'âge.
 - [ ] `test/games.test.js` : le jeu est joué jusqu'à la victoire à chaque palier (ajouter son « solveur » s'il en faut un).
+  - Un jeu à geste (tracer au doigt, comme `trace`) ne se clique pas : chaque élément de sa solution porte `data-pts` (les points à suivre, unités du carré) et `data-pad` (l'id du carré). `playStep` et `traceAlong` de `test/tools/gestures.js` le jouent ; `test/games.test.js` et `test/companions.test.js` passent déjà par `playStep`.
 - [ ] `test/companions.test.js` : ses indices sont vérifiés automatiquement (2 niveaux, anti-devinette, jeu gagnable après les indices).
 - [ ] `bun run test explications` : ses explications d'erreur sont vérifiées. Ajouter le jeu à `EXPLAINED` (`test/explications/listes.js`), ses lignes à une table (`test/explications/tables-phase*.js`, ou un nouveau fichier de table lu par `test/explications.test.js`), ce que le test sait de lui à `GAMES` (`test/explications/parcours.js`), sa phrase à `STRATEGIES` (`test/explications/phrases.js`) et son tirage à `FALLBACKS` (`test/explications-strategies.test.js`).
 - [ ] `test/smoke.test.js`, test « variété : les 2 jeux jamais essayés remontent en priorité » : ajouter `state.gameCounts["<cle>"]=1` à la liste. Un jeu absent de cette liste compte 0 partie, comme les deux jeux que le test attend en tête, et le fait échouer au hasard. C'est un ajout, aucune vérification n'est affaiblie.
@@ -32,10 +33,12 @@ Remplacer `<cle>` par la clé du jeu (ex. `nesting`) et `<Jeu>` par son nom de f
 
 
 - [ ] `js/entities/difficulty/game-types.js` : la clé dans `GAME_TYPES`, et dans les tranches d'âge de `AGE_GAME_TYPES` où le jeu est proposé.
+- [ ] Qualité du code ajouté : le job CI « violations ajoutées » compare la PR à sa base avec le preset `.cothon/presets/oxlint/qualite.json` (un nouveau fichier fait 300 lignes au plus, une fonction 50 lignes et 3 paramètres au plus, complexité 20). Un jeu long se découpe en fichiers frères dans sa slice, et ses tests en plusieurs suites. Vérifier avant la PR : `bash .cothon/bin/new-violations.sh --base origin/main -- bash "$PWD/.cothon/bin/quality-check.sh" complexite --project .`
 - [ ] Taille des fichiers (`max-lines` à 800) : voir `conductor/checklist-ile.md`, section 2 bis (les jeux de la saison 3 mettent leur fonction de palier dans `js/entities/difficulty/difficulty-s3.js`, sur le modèle de `difficulty-s2.js`).
 - [ ] `js/entities/difficulty/difficulty.js` : ses paramètres par palier (une fonction `<cle>Round(dd)` ou équivalent), ses essais dans `LIVES_TABLE`, et `NO_TIMER_KINDS` s'il ne doit pas avoir de minuteur.
 - [ ] `js/features/adaptive/adaptive.js` : sa phrase de progrès dans `PROGRESS_CHEERS`, et `GAME_TIER_MAX` s'il va au-delà du palier 5.
 - [ ] `js/features/parents/parents.js` : le jeu dans un groupe de `SKILL_GROUPS` (compétence de l'espace parents).
+- [ ] son conseil sans écran dans `BILAN_TIPS` (`js/features/parents/bilan-tips.js`) : une idée concrète à faire avec l'enfant, loin de l'écran, sans `<`, `>`, `&` ni `"` ; `test/bilan.test.js` échoue tant qu'il manque.
 - [ ] `js/entities/difficulty/game-types.js` : une entrée dans `GAME_LIST` (clé, emoji, nom) pour « choisir un jeu ».
 - [ ] **Ses deux niveaux d'indice** (v52, contrat de `js/features/hints/hints.js`) :
   - à la fin du fichier, `registerHints('<cle>', question => [indice 1, indice 2])` : chaque niveau `{ say, fx }` (`fx.glow`, `fx.marks`, `fx.strike`, `fx.dim`, `fx.html`, `fx.run`) ;

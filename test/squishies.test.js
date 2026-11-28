@@ -83,13 +83,27 @@ const ALL = () => ev('Object.keys(SQUISHIES)');
   {
     const series = ev('SQUISHY_SERIES_ORDER');
     check(
-      '3 séries au lancement, puis les séries des îles du Ciel (Boîtes, Jouets doux, Bonbons, Instruments, Petites bêtes, Licornes)',
+      '3 séries au lancement, puis les séries des îles du Ciel (Boîtes, Jouets doux, Bonbons, Instruments, Petites bêtes, Licornes), puis celles de la Grande Expédition (Papeterie, Dumplings, Coffres, Guilis)',
       json(series) ===
-        json(['capy', 'desserts', 'animaux', 'boites', 'jouets', 'bonbons', 'instruments', 'petitesbetes', 'licornes']),
+        json([
+          'capy',
+          'desserts',
+          'animaux',
+          'boites',
+          'jouets',
+          'bonbons',
+          'instruments',
+          'petitesbetes',
+          'licornes',
+          'papeterie',
+          'dumplings',
+          'coffres',
+          'guilis',
+        ]),
     );
     check(
-      '6 modèles par série (54 squishies)',
-      series.every((s) => ev(`squishiesOf("${s}").length`) === 6) && ALL().length === 54,
+      '6 modèles par série (78 squishies)',
+      series.every((s) => ev(`squishiesOf("${s}").length`) === 6) && ALL().length === 78,
     );
     check(
       'par série : 4 communs, 1 rare, 1 ✨',
@@ -104,7 +118,7 @@ const ALL = () => ev('Object.keys(SQUISHIES)');
     );
     check(
       'noms uniques et faciles à dire',
-      new Set(ev('Object.values(SQUISHIES).map(m=> m.name)')).size === 54 &&
+      new Set(ev('Object.values(SQUISHIES).map(m=> m.name)')).size === 78 &&
         ev('Object.values(SQUISHIES).every(m=> m.say.length > 3)'),
     );
     check(
@@ -387,7 +401,11 @@ const ALL = () => ev('Object.keys(SQUISHIES)');
       shown('#sq-room[data-tab="collection"]') &&
         d.querySelector('[data-sqtab="collection"]').classList.contains('active'),
     );
-    check('3 onglets : Collection, Étagère, Ranger', d.querySelectorAll('[data-sqtab]').length === 3);
+    check(
+      '4 onglets : Collection, Étagère, Mes boîtes, Ranger',
+      json([...d.querySelectorAll('[data-sqtab]')].map((b) => b.dataset.sqtab)) ===
+        json(['collection', 'etagere', 'boites', 'ranger']),
+    );
     check(
       'une rangée par série, avec « n / 6 »',
       d.querySelectorAll('.sq-series').length === 3 &&

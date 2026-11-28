@@ -53,7 +53,7 @@ Jeu éducatif en français pour une enfant de 6 ans (mathématiques, lecture, lo
 - Modifier une **zone protégée** : les tests holdout (`test/holdout/`, écrits ou validés par Amrou) et la CI (`.github/`). La CI échoue sans l'étiquette `human:approved`, posée par Amrou seul. Une telle PR le dit en tête de sa description, avec le geste : étiquette `human:approved` (colonne Labels, ou `gh pr edit N --add-label human:approved`), **pas le bouton Approve**, que GitHub refuse à l'auteur (l'agent ouvre les PR avec le compte d'Amrou).
 - Changer la forme de la sauvegarde sans augmenter `SAVE_VERSION` ni écrire la migration.
 - Ajouter une dépendance (`package.json`, `bun.lock`) sans le demander.
-- Toucher aux dessins des personnages et compagnons (`characters-art.js`, `characters-art-s2.js`, SVG) sans demande explicite.
+- Toucher aux dessins des personnages et compagnons (`characters-art.js`, `characters-art-s2.js`, `characters-art-s3.js`, SVG) sans demande explicite.
 
 ## Ressources protégées (cothon 0.2.0-1)
 Jamais supprimées, vidées ni réécrites par l'agent : la branche `main` (pas de `push --force`, `reset --hard`, `clean -f`, merge `--admin`, ni changement de sa protection), et les dossiers `js/`, `docs/`, `conductor/`, `test/`, `test/holdout/`, `.git/`, `.github/`. Le hook `PreToolUse` `.claude/hooks/guard-resources.js` refuse ces commandes (sortie 2, `--selftest`) ; il lit la ligne comme le shell (commande par commande, hors guillemets et heredocs), donc citer une commande dans un texte ne déclenche rien. L'agent ne supprime que ce qu'il a créé.

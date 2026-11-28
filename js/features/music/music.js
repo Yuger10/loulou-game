@@ -52,6 +52,14 @@ const MUSIC_THEMES = {
   // la harpe et les clochettes du Royaume ; la fête du grand final, plus joyeuse
   licornes: { root: 65, scale: [0, 2, 4, 7, 9], bpm: 84, lead: 'harp', prog: [0, 9, 5, 7], tick: true },
   'licornes-fete': { root: 67, scale: [0, 2, 4, 7, 9], bpm: 112, lead: 'bell', prog: [0, 5, 7, 0], shaker: true },
+  // saison 3, l'Île des Crayons : un pizzicato léger, et un crayon qui tapote
+  crayons: { root: 64, scale: [0, 2, 4, 7, 9], bpm: 96, lead: 'pluck', prog: [0, 5, 9, 7], tick: true },
+  // l'Île des Squishy Dumplings : une flûte qui siffle comme la vapeur, et le shaker des grains de riz
+  dumplings: { root: 62, scale: [0, 2, 4, 7, 9], bpm: 84, lead: 'flute', prog: [0, 5, 9, 7], shaker: true },
+  // l'Île des Coffres : un pincé léger, et les petits « tic » des serrures
+  coffres: { root: 64, scale: [0, 2, 4, 7, 9], bpm: 90, lead: 'pluck', prog: [0, 9, 5, 7], tick: true },
+  // le Monde des Chatouilles : des bulles qui rebondissent, comme des rires
+  chatouilles: { root: 67, scale: [0, 2, 4, 7, 9], bpm: 108, lead: 'bubble', prog: [0, 9, 5, 7], shaker: true },
 };
 const MUSIC_VOLUME = 1.0; // crête ≈ 0,11, bien sous les bruitages ; passe ensuite par le volume général du bus
 

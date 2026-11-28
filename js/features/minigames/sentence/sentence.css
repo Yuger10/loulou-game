@@ -1,0 +1,66 @@
+/* ---------- Mini-jeu : La phrase rigolote (sentence) ----------
+   Les étiquettes ressemblent aux boutons de mots de la lecture ; la ligne de
+   phrase est une rangée de cases pointillées qui passe à la ligne. Une
+   étiquette qui part garde sa place dans la réserve (.st-gap). */
+.st-pic {
+  margin: 0 auto 8px;
+  font-size: 2.6rem;
+  line-height: 1.2;
+  text-align: center;
+  letter-spacing: 6px;
+}
+.st-line,
+.st-reserve {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+  margin: 0 auto 10px;
+}
+.st-line {
+  padding: 8px;
+  border-radius: var(--radius-lg, 24px);
+  background: linear-gradient(180deg, #fff7fb, #fff1b8);
+  border: 3px solid #fff;
+}
+.st-slot,
+.st-home {
+  display: inline-flex;
+  min-width: 56px;
+  min-height: 56px;
+  border-radius: 14px;
+}
+.st-slot {
+  border: 2px dashed #c9a7d8;
+  background: rgba(255, 255, 255, 0.7);
+}
+.st-home.st-gap {
+  border: 2px dashed #e3d9ee;
+}
+.st-tile {
+  flex: 1;
+  min-height: 56px;
+  padding: 8px 12px;
+  border: 3px solid #d9ccf2;
+  border-radius: 14px;
+  background: #fff;
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: var(--ocean-deep);
+  cursor: pointer;
+  white-space: nowrap;
+}
+.st-tile.lit {
+  border-color: #e0a800;
+  background: #fff6c9;
+  box-shadow: 0 0 0 4px rgba(255, 217, 90, 0.6);
+}
+.st-read {
+  min-height: 56px;
+}
+@media (max-width: 380px) {
+  .st-tile {
+    font-size: 1.15rem;
+    padding: 8px;
+  }
+}

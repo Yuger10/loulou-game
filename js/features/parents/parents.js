@@ -37,28 +37,29 @@ import { renderSoundBtn } from '../profile/index.js';
 import { bindQuit, gameHeader } from '../screen/index.js';
 import { setSeasonPreview } from '../seasons/index.js';
 import { bindUpdateCard, updateCardHTML } from '../update/index.js';
+import './bilan.js'; // la carte « Cette semaine », avant les autres cartes de parents:cards
 import './storage-alert.js'; // message et carte quand l'enregistrement échoue
 
 /** @typedef {import('../../entities/game-state/index.js').GameState} GameState */
 /** @typedef {Partial<GameState>} PlayerState la partie d'un joueur : l'état courant, ou une partie lue dans le stockage */
 
 const SKILL_GROUPS = [
-  { id: 'lire', emoji: '📖', name: 'Lecture et langage', games: ['reading', 'determinants'] },
-  { id: 'nombres', emoji: '🔢', name: 'Nombres', games: ['count', 'puzzle', 'compare', 'packs'] },
-  { id: 'calcul', emoji: '➕', name: 'Calcul', games: ['math', 'calc', 'money', 'share', 'ladybugs'] },
-  { id: 'mesures', emoji: '🕐', name: 'Temps et mesures', games: ['clock', 'calendar', 'volume', 'recipe'] },
+  { id: 'lire', emoji: '📖', name: 'Lecture et langage', games: ['reading', 'determinants', 'trace', 'sentence'] },
+  { id: 'nombres', emoji: '🔢', name: 'Nombres', games: ['count', 'puzzle', 'compare', 'packs', 'tens'] },
+  { id: 'calcul', emoji: '➕', name: 'Calcul', games: ['math', 'calc', 'money', 'share', 'ladybugs', 'problems'] },
+  { id: 'mesures', emoji: '🕐', name: 'Temps et mesures', games: ['clock', 'calendar', 'volume', 'recipe', 'length'] },
   {
     id: 'formes',
     emoji: '🔷',
     name: 'Formes et espace',
-    games: ['shapes', 'jigsaw', 'nesting', 'cubes', 'shelf', 'mirror'],
+    games: ['shapes', 'jigsaw', 'nesting', 'cubes', 'shelf', 'mirror', 'coding'],
   },
   { id: 'sciences', emoji: '🪐', name: 'Sciences', games: ['planets', 'lifecycle', 'potions'] },
   {
     id: 'logique',
     emoji: '🧠',
     name: 'Mémoire et logique',
-    games: ['memory', 'simon', 'diff', 'sequence', 'rangement', 'rhythm', 'pitch'],
+    games: ['memory', 'simon', 'diff', 'sequence', 'rangement', 'rhythm', 'pitch', 'order', 'code'],
   },
 ];
 // activités suivies qui ne sont pas des mini-jeux du choix des jeux

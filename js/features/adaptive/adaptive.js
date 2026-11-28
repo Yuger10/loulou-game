@@ -69,6 +69,14 @@ const PROGRESS_CHEERS = {
   ladybugs: 'Tu trouves les doubles et les moitiés de mieux en mieux !',
   potions: 'Tu connais les couleurs et leurs mélanges de mieux en mieux !',
   mirror: 'Tu dessines les reflets du miroir de mieux en mieux !',
+  trace: 'Tes lettres sont de plus en plus belles !',
+  length: 'Tu mesures de mieux en mieux !',
+  tens: 'Tu ranges les nombres en dizaines de mieux en mieux !',
+  order: 'Tu retiens les commandes de mieux en mieux !',
+  problems: 'Tu résous les problèmes de mieux en mieux !',
+  code: 'Tu trouves les codes secrets de mieux en mieux !',
+  coding: 'Tu programmes de mieux en mieux !',
+  sentence: 'Tes phrases veulent dire de plus en plus de choses !',
 };
 
 /** @typedef {import('./skill-status.js').SkillRecord} SkillRecord */

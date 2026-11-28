@@ -127,6 +127,42 @@ const ITEMS = {
   etoilefilante: { emoji: '🌠', name: 'Étoile filante', price: 9, world: 'licornes' },
   paillettes: { emoji: '✨', name: 'Pot de paillettes', price: 6, world: 'licornes' },
   plumearc: { emoji: '🪶', name: 'Plume irisée', price: 8, world: 'licornes' },
+  // Île des Crayons (saison 3)
+  cahier: { emoji: '📒', name: 'Cahier à lignes', price: 6, world: 'crayons' },
+  craie: { emoji: '🖍️', name: 'Craie grasse', price: 6, world: 'crayons' },
+  gomme: { emoji: '🧽', name: 'Gomme rose', price: 5, world: 'crayons' },
+  copeaux: { emoji: '🪵', name: 'Copeaux de crayon', price: 5, world: 'crayons' },
+  palette: { emoji: '🎨', name: 'Palette de couleurs', price: 8, world: 'crayons' },
+  regle: { emoji: '📏', name: 'Règle magique', price: 7, world: 'crayons' },
+  feutre: { emoji: '🖊️', name: 'Feutre pailleté', price: 7, world: 'crayons' },
+  equerre: { emoji: '📐', name: 'Équerre', price: 6, world: 'crayons' },
+  // Île des Squishy Dumplings (saison 3)
+  pate: { emoji: '🫓', name: 'Galette de pâte', price: 6, world: 'dumplings' },
+  feuillechou: { emoji: '🥬', name: 'Feuille de chou', price: 5, world: 'dumplings' },
+  brocoli: { emoji: '🥦', name: 'Petit brocoli', price: 5, world: 'dumplings' },
+  tassethe: { emoji: '🍵', name: 'Tasse de thé', price: 6, world: 'dumplings' },
+  boiteemporter: { emoji: '🥡', name: 'Boîte à emporter', price: 7, world: 'dumplings' },
+  bolriz: { emoji: '🍚', name: 'Bol de riz', price: 6, world: 'dumplings' },
+  potsauce: { emoji: '🥫', name: 'Pot de sauce', price: 7, world: 'dumplings' },
+  eventail: { emoji: '🌬️', name: 'Éventail', price: 8, world: 'dumplings' },
+  // Île des Coffres (saison 3)
+  clecuivre: { emoji: '🔑', name: 'Clé de cuivre', price: 6, world: 'coffres' },
+  piecedor: { emoji: '🪙', name: "Pièce d'or", price: 5, world: 'coffres' },
+  petitcadenas: { emoji: '🔒', name: 'Petit cadenas', price: 6, world: 'coffres' },
+  boulier: { emoji: '🧮', name: 'Boulier', price: 7, world: 'coffres' },
+  tournevis: { emoji: '🪛', name: 'Petit tournevis', price: 6, world: 'coffres' },
+  loupe: { emoji: '🔍', name: 'Loupe de détective', price: 8, world: 'coffres' },
+  lampe: { emoji: '🔦', name: 'Lampe de poche', price: 7, world: 'coffres' },
+  bague: { emoji: '💍', name: 'Bague au rubis', price: 9, world: 'coffres' },
+  // Monde des Chatouilles (saison 3)
+  plumeguili: { emoji: '🪶', name: 'Plume à guilis', price: 6, world: 'chatouilles' },
+  nezclown: { emoji: '🔴', name: 'Nez de clown', price: 5, world: 'chatouilles' },
+  chaussettes: { emoji: '🧦', name: 'Chaussettes à pois', price: 5, world: 'chatouilles' },
+  boiterires: { emoji: '🎁', name: 'Boîte à rires', price: 7, world: 'chatouilles' },
+  yoyofarceur: { emoji: '🪀', name: 'Yo-yo farceur', price: 6, world: 'chatouilles' },
+  lunettesrigolotes: { emoji: '🥸', name: 'Lunettes rigolotes', price: 8, world: 'chatouilles' },
+  bonbonpetillant: { emoji: '🍬', name: 'Bonbon qui pétille', price: 5, world: 'chatouilles' },
+  sifflet: { emoji: '📯', name: 'Trompette à rires', price: 7, world: 'chatouilles' },
 };
 
 /** @type {Record<string, CraftedItem>} */
@@ -406,6 +442,66 @@ const CRAFTED = {
     world: 'licornes',
     recipe: { etoilefilante: 1, cornescintillante: 1 },
   },
+  // Île des Crayons (saison 3)
+  trousse: {
+    emoji: '👝',
+    name: 'Trousse arc-en-ciel',
+    price: 22,
+    world: 'crayons',
+    recipe: { craie: 2, gomme: 1 },
+  },
+  fresque: {
+    emoji: '🌄',
+    name: 'Fresque du matin',
+    price: 20,
+    world: 'crayons',
+    recipe: { palette: 1, feutre: 1, cahier: 1 },
+  },
+  // Île des Squishy Dumplings (saison 3)
+  plateauchef: {
+    emoji: '🍱',
+    name: 'Plateau du chef',
+    price: 22,
+    world: 'dumplings',
+    recipe: { pate: 2, feuillechou: 1 },
+  },
+  soupe: {
+    emoji: '🍜',
+    name: 'Soupe aux dumplings',
+    price: 20,
+    world: 'dumplings',
+    recipe: { bolriz: 1, potsauce: 1 },
+  },
+  // Île des Coffres (saison 3)
+  trousseau: {
+    emoji: '🔐',
+    name: 'Trousseau magique',
+    price: 22,
+    world: 'coffres',
+    recipe: { clecuivre: 2, tournevis: 1 },
+  },
+  medaillon: {
+    emoji: '🏅',
+    name: 'Médaillon secret',
+    price: 20,
+    world: 'coffres',
+    recipe: { piecedor: 2, bague: 1 },
+  },
+  // Monde des Chatouilles (saison 3)
+  chapeauplumes: {
+    emoji: '👒',
+    name: 'Chapeau à plumes',
+    price: 22,
+    world: 'chatouilles',
+    recipe: { plumeguili: 2, lunettesrigolotes: 1 },
+  },
+  mallefarces: {
+    emoji: '🧳',
+    name: 'Malle des farces',
+    price: 20,
+    world: 'chatouilles',
+    recipe: { nezclown: 1, boiterires: 1, sifflet: 1 },
+  },
 };
 
 /** @type {Record<string, Item>} */
@@ -540,6 +636,30 @@ const DECOS = {
   carrouselD: { emoji: '🎠', name: 'Carrousel de licornes', price: 18, world: 'licornes' },
   fontainearcD: { emoji: '⛲', name: 'Fontaine irisée', price: 14, world: 'licornes' },
   ecurieD: { emoji: '🛖', name: 'Écurie étoilée', price: 12, world: 'licornes' },
+  // Île des Crayons (saison 3)
+  potcrayonsD: { emoji: '🏺', name: 'Pot à crayons géant', price: 40, world: 'crayons' },
+  chevaletD: { emoji: '🖼️', name: 'Chevalet de peintre', price: 30, world: 'crayons' },
+  fanionsD: { emoji: '🚩', name: 'Fanions dessinés', price: 18, world: 'crayons' },
+  lampeD: { emoji: '💡', name: 'Lampe de bureau', price: 14, world: 'crayons' },
+  marquepageD: { emoji: '🔖', name: 'Marque-page géant', price: 12, world: 'crayons' },
+  // Île des Squishy Dumplings (saison 3)
+  marmiteD: { emoji: '🫕', name: 'Grande marmite à vapeur', price: 40, world: 'dumplings' },
+  bambouD: { emoji: '🎋', name: 'Bosquet de bambous', price: 30, world: 'dumplings' },
+  vapeurD: { emoji: '♨️', name: 'Source de vapeur', price: 18, world: 'dumplings' },
+  lotusD: { emoji: '💮', name: 'Bassin de lotus', price: 14, world: 'dumplings' },
+  tabouretsD: { emoji: '🪑', name: 'Tabourets du comptoir', price: 12, world: 'dumplings' },
+  // Île des Coffres (saison 3)
+  salleD: { emoji: '🏛️', name: 'Salle des coffres', price: 40, world: 'coffres' },
+  porteD: { emoji: '🚪', name: 'Porte secrète', price: 30, world: 'coffres' },
+  arbreclesD: { emoji: '🌳', name: 'Arbre à clés', price: 18, world: 'coffres' },
+  ancreD: { emoji: '⚓', name: 'Ancre dorée', price: 14, world: 'coffres' },
+  jarreD: { emoji: '🏺', name: 'Jarre aux trésors', price: 12, world: 'coffres' },
+  // Monde des Chatouilles (saison 3)
+  arbreplumesD: { emoji: '🌳', name: 'Arbre à plumes', price: 40, world: 'chatouilles' },
+  trampolineD: { emoji: '🤸', name: 'Trampoline des fous rires', price: 30, world: 'chatouilles' },
+  fanionsrireD: { emoji: '🎏', name: 'Fanions rigolos', price: 18, world: 'chatouilles' },
+  canapeD: { emoji: '🛋️', name: 'Canapé des guilis', price: 14, world: 'chatouilles' },
+  nuagecoussinD: { emoji: '☁️', name: 'Nuage-coussin', price: 12, world: 'chatouilles' },
 };
 
 const ALBUM_REWARD = 100;

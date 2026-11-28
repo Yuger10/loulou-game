@@ -495,8 +495,8 @@ function startGame(key, tier, age) {
         /Grisou/.test(eps.map((e) => e.lines.join(' ')).join(' ')),
     );
     check(
-      'la sauvegarde passe en version 9',
-      ev('SAVE_VERSION') === 9 &&
+      'la sauvegarde passe en version 11 après les migrations saison 3 et boîtes de squishies',
+      ev('SAVE_VERSION') === 11 &&
         ev('freshState().season2Done') === false &&
         json(ev('squishyFreshState().treasures')) === '[]',
     );
@@ -522,8 +522,8 @@ function startGame(key, tier, age) {
     };
     const m = ev(`migrate(${json(old)})`);
     check(
-      "migration v8 → v9 : rien n'est perdu, le final reste à jouer",
-      m.v === 9 &&
+      "migration v8 → v11 : rien n'est perdu, le final reste à jouer",
+      m.v === 11 &&
         !!m.restLog['2026-11-10'] &&
         m.coins === 30 &&
         m.missions === 300 &&

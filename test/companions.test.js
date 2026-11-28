@@ -5,6 +5,7 @@
 // jeu est accéléré ×10, la voix est notée au lieu d'être dite.
 const { JSDOM } = require('jsdom');
 const { inShard } = require('./tools/shard.js');
+const { playStep } = require('./tools/gestures.js');
 const html = require('./tools/page.js').buildHtml();
 
 const SPEED = 0.1;
@@ -281,7 +282,7 @@ const wrongOf = (sel) => {
             await waitFor(() => (d.getElementById('simon-state') || {}).textContent === '👆 À toi !', 3000);
           for (const x of sol) {
             const el = d.querySelector(x);
-            if (el) el.click();
+            if (el) playStep(w, el); // au doigt si l'élément porte data-pts (trace), sinon d'un clic
             await wait(key === 'memory' ? 45 : 5);
           }
           if (!(await waitFor(() => !!d.querySelector('.win-box'), 2000)))

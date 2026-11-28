@@ -544,3 +544,53 @@
     animation: none;
   }
 }
+
+/* La Grande Expédition (saison 3) : une carte d'explorateur en vieux papier,
+   une boussole, une route en tirets bruns ; le bateau y est un avion en papier */
+.map-tab.paper.active {
+  background: #f7e9c9;
+  box-shadow:
+    var(--shadow-candy-sm),
+    var(--card-shine),
+    0 0 0 3px #c9a063;
+}
+.island-map.paper {
+  background: linear-gradient(180deg, #f7e9c9 0%, #eed7a6 100%);
+}
+.island-map.paper .sea .compass {
+  position: absolute;
+  top: 6%;
+  right: 6%;
+  font-size: 2.2rem;
+  opacity: 0.85;
+}
+.island-map.paper .sea .cloud {
+  opacity: 0.7;
+}
+.island-map.paper .route-line {
+  stroke: #9a6b3c;
+  stroke-dasharray: 3 3;
+}
+.boat.plane {
+  animation: planeGlide 3.4s ease-in-out infinite;
+  font-size: 2rem;
+}
+.boat.plane .boat-av {
+  top: -14px;
+}
+@keyframes planeGlide {
+  0%,
+  100% {
+    margin-top: 0;
+    rotate: 0deg;
+  }
+  50% {
+    margin-top: -4px;
+    rotate: 3deg;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .boat.plane {
+    animation: none;
+  }
+}

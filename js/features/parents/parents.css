@@ -264,3 +264,27 @@
   background: #d9483b;
   color: #fff;
 }
+
+/* le bilan de la semaine (js/features/parents/bilan.js) : une liste simple,
+   et chaque idée sans écran dans un encadré légèrement teinté */
+.bilan-good {
+  font-weight: 600;
+}
+.bilan-list {
+  list-style: none;
+  margin: 0 0 10px;
+  padding: 0;
+}
+.bilan-list li {
+  padding: 8px 0;
+  border-top: 1px solid var(--line, #d3e4e8);
+}
+.ps-bilan .bilan-game {
+  margin: 0 0 6px;
+}
+.ps-bilan .bilan-tip {
+  margin: 0;
+  padding: 8px 12px;
+  background: var(--tint-sun);
+  border-radius: 14px;
+}
