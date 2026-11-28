@@ -13,9 +13,10 @@ import { ladybugsRound } from '../../../entities/difficulty/index.js';
 import { random, shuffle } from '../../../shared/lib/index.js';
 import { openModal, setHandler } from '../../../shared/ui/index.js';
 import { gameDiff } from '../../adaptive/index.js';
-import { registerHints, setHintQuestion } from '../../hints/index.js';
+import { registerExplain, registerHints, setHintQuestion } from '../../hints/index.js';
 import {
   clearActiveTimer,
+  drawOther,
   flashModal,
   livesBar,
   loseLife,
@@ -86,13 +87,34 @@ function ladybugsOptions(answer) {
 const lbDots = (/** @type {number} */ n) =>
   n <= 12 ? `<span class="cube-dots" aria-hidden="true">${'<i></i>'.repeat(n)}</span>` : '';
 
+// les points de l'aile droite (en miroir de l'aile gauche)
+const lbRightDots = (/** @type {number} */ k) =>
+  LB_SPOTS.slice(0, k)
+    .map(([x, y]) => `<circle class="lb-dot" data-w="r" cx="${120 - x}" cy="${y}" r="6.5"/>`)
+    .join('');
+
 let ladybugsLast = '';
+const ladybugsKey = (/** @type {LadybugsRound} */ x) => `${x.mode}${x.n}`;
+/**
+ * Une coccinelle, jamais la même que la précédente.
+ * @param {number} dd le palier de difficulté
+ * @returns {LadybugsRound}
+ */
+function ladybugsQuestion(dd) {
+  const r = drawOther(() => ladybugsBuildRound(dd), ladybugsKey, {
+    last: ladybugsLast,
+    fallback: (x) => {
+      // après 8 tirages identiques : un point de plus par aile, ou de moins au maximum du palier
+      const n = x.n + 1 <= x.cfg.max ? x.n + 1 : x.n - 1;
+      return { ...x, n, total: 2 * n };
+    },
+  });
+  ladybugsLast = ladybugsKey(r);
+  return r;
+}
 function renderLadybugs() {
   setupLives('ladybugs');
-  const dd = gameDiff();
-  let r = ladybugsBuildRound(dd);
-  for (let k = 0; k < 8 && `${r.mode}${r.n}` === ladybugsLast; k++) r = ladybugsBuildRound(dd);
-  ladybugsLast = `${r.mode}${r.n}`;
+  const r = ladybugsQuestion(gameDiff());
   const ok = (/** @type {HTMLElement} */ b) => {
     clearActiveTimer();
     stepOk(b);
@@ -134,7 +156,7 @@ function ladybugsAskCount(r, q, ok) {
   document.querySelectorAll('.lb-opt').forEach((b) =>
     setHandler(b, 'click', () => {
       if (Number(b.dataset.v) === answer) ok(b);
-      else loseLife(b, { onRetry: renderLadybugs });
+      else loseLife(b, { onRetry: renderLadybugs, wrong: Number(b.dataset.v) });
     }),
   );
 }
@@ -164,10 +186,7 @@ function ladybugsAskComplete(r, q, ok) {
   setHintQuestion('ladybugs', q, { choices: '#lb-done' });
   const draw = () => {
     const g = document.getElementById('lb-right');
-    if (g)
-      g.innerHTML = LB_SPOTS.slice(0, added)
-        .map(([x, y]) => `<circle class="lb-dot" data-w="r" cx="${120 - x}" cy="${y}" r="6.5"/>`)
-        .join('');
+    if (g) g.innerHTML = lbRightDots(added);
   };
   setHandler(document.getElementById('lb-add'), 'click', () => {
     if (added < max) {
@@ -184,7 +203,7 @@ function ladybugsAskComplete(r, q, ok) {
   setHandler(document.getElementById('lb-done'), 'click', (e) => {
     const done = /** @type {HTMLElement} */ (e.currentTarget);
     if (added === r.n) ok(done);
-    else loseLife(done, { onRetry: renderLadybugs, disable: false });
+    else loseLife(done, { onRetry: renderLadybugs, disable: false, wrong: added });
   });
 }
 
@@ -228,5 +247,51 @@ function ladybugsHints(q) {
   ];
 }
 
+// Explication d'une erreur (track erreurs-expliquees) : une seule aile comptée,
+// un double mal fait, ou trop peu (trop) de points posés ; l'addition des deux
+// ailes s'écrit, ou l'aile vide reçoit les points attendus.
+/**
+ * @param {LadybugsQuestion} q
+ * @param {number} v le nombre touché, ou le nombre de points posés (« complete »)
+ * @returns {import('../../hints/index.js').Explain}
+ */
+function ladybugsExplain(q, v) {
+  const { n, total } = q;
+  if (q.mode === 'complete')
+    return {
+      say: `${v < n ? 'Il manque des points' : 'Trop de points'} : il en faut ${n}, comme à gauche.`,
+      fx: {
+        glow: '#lb-stage',
+        /** @param {HTMLElement} root */
+        run(root) {
+          const g = root.querySelector('#lb-right');
+          if (g) g.innerHTML = lbRightDots(n);
+        },
+      },
+    };
+  const html = `<span class="hint-strip"><i>${n} + ${n} = ${total}</i></span>`;
+  if (q.mode === 'half')
+    return {
+      say: `${v} plus ${v}, ça fait ${2 * v}, pas ${total}. C'est ${n}.`,
+      fx: { glow: `#lb-stage, ${solSel('.lb-opt', 'v', n)}`, html },
+    };
+  return {
+    say:
+      v === n
+        ? `Tu as compté une seule aile. ${n} plus ${n}, ça fait ${total}.`
+        : `${n} point${n > 1 ? 's' : ''} sur chaque aile : ${n} plus ${n}, ${total}.`,
+    fx: { glow: `#lb-stage, ${solSel('.lb-opt', 'v', total)}`, html },
+  };
+}
+
 registerGame('ladybugs', renderLadybugs);
 registerHints('ladybugs', ladybugsHints);
+// la stratégie d'une réussite, dite sur l'écran de victoire
+/** @type {Record<string, string>} */
+const LADYBUGS_STRATEGY = {
+  count: 'Tu as compté les deux ailes.',
+  double: 'Tu as trouvé le double.',
+  complete: 'Tu as rendu les deux ailes pareilles.',
+  half: 'Tu as partagé en deux parts égales.',
+};
+registerExplain('ladybugs', { wrong: ladybugsExplain, right: (q) => LADYBUGS_STRATEGY[q.mode] || null });

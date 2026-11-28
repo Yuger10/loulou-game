@@ -507,7 +507,14 @@ setTimeout(() => {
     check('erreur : la mauvaise réponse est neutralisée', faux[0].disabled === true);
     faux[0].click();
     check('erreur : impossible de recliquer la même', ev('lives') === 2);
-    if (faux[1]) faux[1].click();
+    // la 2e erreur se joue sur « diff », même île et mêmes 3 essais : sur « count », l'explication
+    // de l'erreur ferme toutes les réponses pendant 4 s, puis une autre question repart avec 3 essais
+    // (track erreurs-expliquees)
+    ev('renderDiff()');
+    const fauxDiff = [...d.querySelectorAll('.diff-item')].filter((e) => e.dataset.odd !== 'true');
+    fauxDiff[0].click();
+    check('erreur : un essai perdu (sans explication)', ev('maxLives') === 3 && ev('lives') === 2);
+    fauxDiff[1].click();
     check('2e erreur : il reste 1 essai', ev('lives') === 1);
 
     ev('currentWorld="chateau"; renderDiff()');

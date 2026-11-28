@@ -132,7 +132,7 @@ async function erreursComparer() {
   ]) {
     const found = startUntil(2, (b) => b.ask === ask);
     const wrong = all('button.ln-crayon').find((el) => el.dataset.i !== String(build().answer));
-    const ok = await wrongThenNew(wrong, `Ce n'est pas ${word}. Regarde où chaque crayon commence et où il finit.`);
+    const ok = await wrongThenNew(wrong, 'Compare où chaque crayon commence et finit.');
     check(`ligne 31 : un mauvais crayon (« ${word} ») : la phrase d'erreur, puis une autre question`, () => [
       found,
       ok,
@@ -144,25 +144,19 @@ const wrongOpt = (avoid) =>
   all('button.ln-opt').find((o) => Number(o.dataset.v) !== build().answer && Number(o.dataset.v) !== avoid);
 async function erreursMesurer() {
   startGame('length', 3);
-  const units = await wrongThenNew(wrongOpt(null), "Compte les gommes, de la première jusqu'au bout du crayon.");
+  const units = await wrongThenNew(wrongOpt(null), 'Compte les gommes une par une.');
   check('ligne 32 : palier 3, un mauvais nombre : « Compte les gommes… », puis une autre question', () => [units]);
   startGame('length', 4);
-  const ruler = await wrongThenNew(wrongOpt(null), 'Lis le nombre juste sous la pointe du crayon.');
+  const ruler = await wrongThenNew(wrongOpt(null), 'Lis la graduation sous la pointe.');
   check('ligne 32 : palier 4, un mauvais nombre : « Lis le nombre juste sous la pointe… »', () => [ruler]);
   startGame('length', 5);
-  const trap = await wrongThenNew(
-    one(`button.ln-opt[data-v="${build().trap}"]`),
-    'Attention : le crayon ne commence pas au zéro !',
-  );
+  const trap = await wrongThenNew(one(`button.ln-opt[data-v="${build().trap}"]`), 'Le crayon ne commence pas au zéro.');
   check(
     'ligne 32 : palier 5, la graduation sous la pointe : « Attention : le crayon ne commence pas au zéro ! »',
     () => [trap],
   );
   startGame('length', 5);
-  const other = await wrongThenNew(
-    wrongOpt(build().trap),
-    "Compte les centimètres, du début du crayon jusqu'à sa pointe.",
-  );
+  const other = await wrongThenNew(wrongOpt(build().trap), 'Lis la graduation sous la pointe.');
   check('ligne 32 : palier 5, un autre mauvais nombre : « Compte les centimètres… »', () => [other]);
   ev('closeModal()');
 }

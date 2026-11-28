@@ -4,6 +4,8 @@
 /** @typedef {import('./engine.js').LoseLifeOptions} LoseLifeOptions */
 export {
   clearActiveTimer,
+  drawOther,
+  EXPLAIN_MS,
   flashModal,
   livesBar,
   loseLife,

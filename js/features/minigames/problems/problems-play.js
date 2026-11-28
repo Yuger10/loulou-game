@@ -62,7 +62,7 @@ function pbEnter(run, moment) {
  * @param {HTMLElement} el
  */
 function pbWrong(run, el) {
-  const failed = loseLife(el, { onRetry: run.retry, disable: false });
+  const failed = loseLife(el, { onRetry: run.retry, disable: false, wrong: el.textContent || '' });
   run.dead = failed || !party.active;
 }
 /**

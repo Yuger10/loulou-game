@@ -100,7 +100,7 @@ Registre des tracks Conductor, **dans l'ordre d'implémentation**. Feuille de ro
 
 ---
 
-- [ ] **Track: Les erreurs expliquées : après une erreur, le jeu montre pourquoi (idée de Claude, d'après la recherche)**
+- [x] **Track: Les erreurs expliquées : après une erreur, le jeu montre pourquoi (idée de Claude, d'après la recherche) : 10 jeux historiques livrés initialement en v67, puis les 8 jeux saison 3 en v74 ; 18 jeux expliqués**
 *Link: [./tracks/erreurs-expliquees_20261122/](./tracks/erreurs-expliquees_20261122/)*
 
 ---

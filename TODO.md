@@ -161,9 +161,9 @@ Chaque mini-jeu a maintenant son propre niveau pour chaque enfant (`js/adaptive.
 | v66.14 | en multijoueur, une paire ratée ou le temps écoulé passent la main |
 | v66.15 | au rythme magique, Boumbo joue tout le rythme avant la victoire |
 | v66.16 | dessins et paliers de la saison 2 dans leurs fichiers, max-lines 800 |
-
 | v72 | le bilan de la semaine pour les parents |
 | v73 | Squishies : des boîtes de rangement qui restent (idée de la joueuse) |
+| v74 | erreurs expliquées : ajout des huit mini-jeux de la saison 3 |
 
 | v67 | Ouverture de la saison 3 « La Grande Expédition » (cachée jusqu'à la première île) |
 | v68 | L'Île des Crayons (saison 3, île 1) : mini-jeux « Trace avec ton doigt » et « Mesure les crayons » |

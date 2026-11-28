@@ -7,9 +7,10 @@ import { CALC_MULT_TABLES, calcBounds } from '../../../entities/difficulty/index
 import { pickRandom, random, shuffle } from '../../../shared/lib/index.js';
 import { openModal, setHandler } from '../../../shared/ui/index.js';
 import { gameDiff } from '../../adaptive/index.js';
-import { registerHints, setHintQuestion } from '../../hints/index.js';
+import { registerExplain, registerHints, setHintQuestion } from '../../hints/index.js';
 import {
   clearActiveTimer,
+  drawOther,
   flashModal,
   livesBar,
   loseLife,
@@ -22,8 +23,19 @@ import {
   winSoon,
 } from '../../minigame-engine/index.js';
 import { bindQuit, gameHeader } from '../../screen/index.js';
+import { calcExplain, calcStrategy } from './explain.js';
 
-/** @param {number} dd le palier de difficulté */
+/** @typedef {{ sign: string, n: number }} CalcOp une étape : '+' ou '−', et le nombre */
+/**
+ * Une multiplication (`mult`), ou un nombre de départ et une ou deux étapes (`first`, `ops`).
+ * @typedef {{ text: string, result: number, mult: { a: number, b: number }, first?: undefined, ops?: undefined }
+ *   | { text: string, result: number, first: number, ops: CalcOp[], mult?: undefined }} CalcQuestion
+ */
+
+/**
+ * @param {number} dd le palier de difficulté
+ * @returns {CalcQuestion}
+ */
 function makeCalcProblem(dd) {
   const { max, terms, allowMinus, allowMulti } = calcBounds(dd);
   const useMulti = allowMulti && random() < 0.3;
@@ -60,10 +72,53 @@ function makeCalcProblem(dd) {
   return { text, result: value, first, ops };
 }
 
+// la question précédente : une relance en tire toujours une AUTRE (anti-devinette)
+let calcLast = '';
+/**
+ * Après 8 tirages identiques : le dernier nombre change d'un cran, dans le palier.
+ * @param {CalcQuestion} q
+ * @param {number} max
+ * @returns {CalcQuestion}
+ */
+function calcOther(q, max) {
+  if (q.mult) {
+    const a = q.mult.a,
+      b = (q.mult.b % 10) + 1;
+    return { text: `${a} × ${b}`, result: a * b, mult: { a, b } };
+  }
+  const ops = q.ops.map((o) => ({ ...o }));
+  const last = ops[ops.length - 1];
+  // un de plus, si le résultat reste entre 0 et max ; sinon un de moins
+  const moved = q.result + (last.sign === '+' ? 1 : -1);
+  const up = moved >= 0 && moved <= max;
+  last.n += up ? 1 : -1;
+  return {
+    text: `${q.first}${ops.map((o) => ` ${o.sign} ${o.n}`).join('')}`,
+    result: up ? moved : 2 * q.result - moved,
+    first: q.first,
+    ops,
+  };
+}
+/**
+ * Un calcul, jamais le même que le précédent (clé : son texte).
+ * @param {number} dd le palier de difficulté
+ * @returns {CalcQuestion}
+ */
+function calcQuestion(dd) {
+  const { max } = calcBounds(dd);
+  const q = drawOther(
+    () => makeCalcProblem(dd),
+    (x) => x.text,
+    { last: calcLast, fallback: (x) => calcOther(x, max) },
+  );
+  calcLast = q.text;
+  return q;
+}
+
 function renderCalc() {
   setupLives('calc');
   const dd = gameDiff();
-  const problem = makeCalcProblem(dd);
+  const problem = calcQuestion(dd);
   const { text, result } = problem;
 
   const choices = new Set([result]);
@@ -102,7 +157,7 @@ function renderCalc() {
         flashModal('ok');
         winSoon();
       } else {
-        loseLife(btn, { onRetry: renderCalc });
+        loseLife(btn, { onRetry: renderCalc, wrong: Number(btn.dataset.v) });
       }
     });
   });
@@ -132,7 +187,7 @@ function calcStepHint(a, sign, n) {
   if (n >= 3) return `Pars de ${a} et ${plus ? 'avance' : 'recule'} de ${n} : ${step(1)}, ${step(2)}… Continue !`;
   return `Pars de ${a} et ${plus ? 'avance' : 'recule'} de ${n} pas.`;
 }
-/** @param {ReturnType<typeof makeCalcProblem>} q */
+/** @param {CalcQuestion} q */
 function calcHints(q) {
   if (q.mult) {
     const { a, b } = q.mult;
@@ -181,3 +236,5 @@ function calcHints(q) {
 // inscription auprès du moteur de mini-jeux (js/features/minigame-engine)
 registerGame('calc', renderCalc);
 registerHints('calc', calcHints);
+// l'explication d'une erreur et la stratégie d'une réussite : ./explain.js
+registerExplain('calc', { wrong: calcExplain, right: calcStrategy });

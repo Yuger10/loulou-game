@@ -8,12 +8,12 @@
    1ʳᵉ erreur : les étiquettes restent ; 2ᵉ : une autre phrase (comme le
    miroir). La banque : sentence-bank.js ; les paliers : `sentenceRound`.
    Sans minuteur. */
-import { sentenceRound } from '../../../entities/difficulty/index.js';
+import { livesFor, sentenceRound } from '../../../entities/difficulty/index.js';
 import { party } from '../../../entities/player/index.js';
 import { pickRandom, shuffle } from '../../../shared/lib/index.js';
 import { giggle, openModal, setHandler, speak } from '../../../shared/ui/index.js';
 import { gameDiff } from '../../adaptive/index.js';
-import { registerHints, setHintQuestion } from '../../hints/index.js';
+import { registerExplain, registerHints, setHintQuestion } from '../../hints/index.js';
 import {
   flashModal,
   livesBar,
@@ -31,7 +31,7 @@ import { sentenceAccepts, SENTENCES } from './sentence-bank.js';
 
 /** @typedef {import('./sentence-bank.js').SentenceEntry} SentenceEntry */
 /** @typedef {{ entry: SentenceEntry, errors: number, over: boolean }} SentenceGame la phrase en cours et ses erreurs */
-/** @typedef {{ pic: boolean }} SentenceHintQ la question d'indice : l'image est-elle montrée ? */
+/** @typedef {{ pic: boolean, built?: string, next?: boolean }} SentenceHintQ la question et son retour après erreur */
 /** @typedef {import('../../hints/index.js').HintProvider<SentenceHintQ>} SentenceHintProvider */
 
 const SENTENCE_TITLE = '📝 La phrase rigolote';
@@ -41,7 +41,6 @@ const SENTENCE_SAY = `${SENTENCE_START} Quand la phrase est finie, je la lis.`;
 const SENTENCE_WIN = 'Bravo, ta phrase veut dire quelque chose !';
 const SENTENCE_WRONG =
   'Hi hi hi ! Ta phrase est rigolote, mais elle ne veut rien dire. Touche un mot pour le changer de place.';
-const SENTENCE_AGAIN = 'Hi hi hi ! Allez, une nouvelle phrase !';
 const SENTENCE_EMPTY = 'Ta phrase est encore vide. Touche un mot !';
 
 let sentenceLast = '';
@@ -89,9 +88,13 @@ function sentenceJudge(g, last) {
   giggle(document.getElementById('st-line'));
   // à plusieurs, le moteur passe la main sans rien relancer : la phrase reste, comme à la 1ʳᵉ erreur
   const second = g.errors >= 2 && !party.active;
-  const lost = loseLife(last, second ? { onRetry: sentenceNext, disable: false } : { disable: false });
-  // « une nouvelle phrase » ne s'annonce que si elle arrive : pas quand les essais sont épuisés
-  speak(`${built} ${second && !lost ? SENTENCE_AGAIN : SENTENCE_WRONG}`);
+  const retry = second && g.errors < livesFor('sentence', gameDiff());
+  setHintQuestion('sentence', { pic: !!document.getElementById('st-pic'), built, next: retry });
+  const lost = loseLife(
+    last,
+    second ? { onRetry: sentenceNext, disable: false, wrong: built } : { disable: false, wrong: built },
+  );
+  if (party.active) speak(`${built} ${SENTENCE_WRONG}`);
   g.over = second || lost;
 }
 /**
@@ -178,3 +181,18 @@ const sentenceHints = (q) => [
 
 registerGame('sentence', renderSentence);
 registerHints('sentence', sentenceHints);
+registerExplain('sentence', {
+  /** @param {SentenceHintQ} q @param {string} value */
+  wrong(q, value) {
+    const words = (q.built || String(value || ''))
+      .trim()
+      .replace(/[.!?]+$/, '')
+      .split(/\s+/)
+      .slice(0, 7)
+      .join(' ');
+    return {
+      say: `${words}. ${q.next ? 'Une autre phrase arrive.' : 'Cherche qui fait quoi.'}`,
+      fx: { glow: '#st-line' },
+    };
+  },
+});

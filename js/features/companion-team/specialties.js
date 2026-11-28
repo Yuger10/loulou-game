@@ -169,6 +169,9 @@ setHintPolicy({
   onMission: () => {
     grisouErrors = 0;
   },
+  // une explication d'erreur s'affiche : elle seule parle (la bulle de l'équipe
+  // reprendrait la parole avant la fin des 4 secondes et couperait la phrase)
+  onExplain: () => teamSayClear(),
   // Léo : avant la première question d'un jeu en soutien, il rappelle la méthode
   onShow: (kind) => {
     if (!soloSpecialtyOn('leo') || hintLevel() > 0 || leoSession.primed[kind]) return;

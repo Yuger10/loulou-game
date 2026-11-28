@@ -112,8 +112,10 @@
   pointer-events: none;
 }
 
-/* la bulle de l'indice, dite par le compagnon */
-.hint-bubble {
+/* la bulle de l'indice, dite par le compagnon ; celle d'une explication d'erreur
+   a la même apparence (track erreurs-expliquees), sans le numéro « 💡 n » */
+.hint-bubble,
+.explain-bubble {
   position: relative;
   display: flex;
   align-items: center;
@@ -129,7 +131,8 @@
   text-align: left;
   max-width: 560px;
 }
-.hint-bubble.pop {
+.hint-bubble.pop,
+.explain-bubble.pop {
   animation: hintPop 0.35s cubic-bezier(0.2, 1.4, 0.4, 1);
 }
 @keyframes hintPop {
@@ -142,7 +145,8 @@
     opacity: 1;
   }
 }
-.hint-bubble .hint-bface {
+.hint-bubble .hint-bface,
+.explain-bubble .hint-bface {
   width: 40px;
   height: 40px;
   border-radius: 50%;
@@ -150,7 +154,8 @@
   flex-shrink: 0;
   background: #fff;
 }
-.hint-bubble .hint-bface svg {
+.hint-bubble .hint-bface svg,
+.explain-bubble .hint-bface svg {
   width: 44px;
   height: 48px;
   margin-left: -2px;
@@ -158,6 +163,19 @@
 .hint-bubble .hint-btext {
   flex: 1;
   text-wrap: balance;
+}
+/* l'explication : la phrase à côté de la tête, le petit dessin en dessous */
+.explain-bubble {
+  flex-wrap: wrap;
+}
+.explain-bubble .explain-text {
+  flex: 1;
+  text-wrap: balance;
+}
+.explain-bubble .hint-extra {
+  flex-basis: 100%;
+  margin-top: 0;
+  text-align: center;
 }
 .hint-bubble .hint-n {
   color: #b8780a;
@@ -234,9 +252,14 @@
   z-index: 2;
   font-family: "Baloo 2", system-ui, sans-serif;
 }
+/* une étiquette d'explication peut porter une addition entière (« 5 + 2 + 1 = 8 ») */
+.explain-mark {
+  white-space: nowrap;
+}
 .count-row span,
 .math-group span,
 .money-pile-btn,
+.pack,
 .clock-face,
 .seq-row span,
 .reading-word-box,
@@ -292,7 +315,8 @@
   .hint-btn.nudge::after,
   .hint-glow,
   .hint-sparkle::before,
-  .hint-bubble.pop {
+  .hint-bubble.pop,
+  .explain-bubble.pop {
     animation: none;
   }
   .hint-glow {

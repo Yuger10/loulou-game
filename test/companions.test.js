@@ -157,12 +157,14 @@ const wrongOf = (sel) => {
   section('Proposition douce');
   startGame('count', 1);
   check('nouvelle partie : indices remis à zéro', ev('hint.level') === 0 && !d.querySelector('.hint-bubble'));
+  const qAvant = ev('hint.q');
   wrongOf('.num-btn').click();
   check(
     'après une erreur, le bouton brille et le compagnon réfléchit',
     hintBtn().classList.contains('nudge') && !!hintBtn().querySelector('.buddy--think'),
   );
-  await waitFor(() => ev('hint.q') && !d.querySelector('.num-btn.ko'), 400); // la relance (nouvelle question)
+  // la relance (nouvelle question) arrive après l'explication de l'erreur (track erreurs-expliquees)
+  await waitFor(() => ev('hint.q') !== qAvant && !d.querySelector('.num-btn.ko'), ev('EXPLAIN_MS') * 0.1 + 200);
   check(
     'la relance remet les indices à zéro, le bouton brille encore',
     ev('hint.level') === 0 && hintBtn() && hintBtn().classList.contains('nudge'),
@@ -585,12 +587,16 @@ const wrongOf = (sel) => {
   section('Grisou : les câlins');
   ev('COMPANIONS.grisou = Object.assign({}, COMPANIONS.lili, { name:"Grisou", title:"le petit nuage" })'); // il arrivera avec la track Licornes
   setTeam('perle', ['grisou']);
-  startGame('count', 1);
-  wrongOf('.num-btn').click();
+  // sur Simon, jamais d'explication d'erreur : sur « count », l'explication vide
+  // la file de l'équipe et Grisou ne parlerait plus (track erreurs-expliquees, D9)
+  const simonReady = () => waitFor(() => (d.getElementById('simon-state') || {}).textContent === '👆 À toi !', 3000);
+  startGame('simon', 1);
+  await simonReady();
+  wrongOf('.simon-pad').click();
   await wait(30);
   check('une seule erreur : Grisou ne dit rien', sayShown() === null);
-  await waitFor(() => !d.querySelector('.num-btn.ko'), 400);
-  wrongOf('.num-btn').click();
+  await simonReady();
+  wrongOf('.simon-pad').click();
   check(
     "2 erreurs d'affilée : Grisou console",
     sayShown() === 'grisou' && /pas grave|câlin|ensemble/.test(d.getElementById('team-say').textContent),

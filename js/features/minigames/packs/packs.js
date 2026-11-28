@@ -10,9 +10,10 @@ import { packsRound } from '../../../entities/difficulty/index.js';
 import { random, shuffle } from '../../../shared/lib/index.js';
 import { openModal, setHandler } from '../../../shared/ui/index.js';
 import { gameDiff } from '../../adaptive/index.js';
-import { registerHints, setHintQuestion } from '../../hints/index.js';
+import { registerExplain, registerHints, setHintQuestion } from '../../hints/index.js';
 import {
   clearActiveTimer,
+  drawOther,
   flashModal,
   livesBar,
   loseLife,
@@ -90,13 +91,29 @@ function packsLabel(r) {
 
 // la collection précédente : une relance en tire toujours une AUTRE (anti-devinette)
 let packsLast = '';
+// la clé est ce qui fixe le total : le jouet dessiné n'en fait pas partie (le
+// même total avec un autre jouet serait la même question, réponse déjà montrée)
+const packsKey = (/** @type {PacksRound} */ x) => `${x.size}-${x.n}-${x.extra}`;
+/**
+ * Une collection, jamais la même que la précédente.
+ * @param {number} dd le palier de difficulté
+ * @returns {PacksRound}
+ */
+function packsQuestion(dd) {
+  const r = drawOther(() => packsBuildRound(dd), packsKey, {
+    last: packsLast,
+    fallback: (x) => {
+      // après 8 tirages identiques : un paquet de plus, ou de moins au maximum du palier
+      const n = x.n + 1 <= x.cfg.max ? x.n + 1 : x.n - 1;
+      return { ...x, n, total: x.size * n + x.extra };
+    },
+  });
+  packsLast = packsKey(r);
+  return r;
+}
 function renderPacks() {
   setupLives('packs');
-  const dd = gameDiff();
-  const key = (/** @type {PacksRound} */ x) => `${x.size}-${x.n}-${x.extra}-${x.toy}`;
-  let r = packsBuildRound(dd);
-  for (let k = 0; k < 8 && key(r) === packsLast; k++) r = packsBuildRound(dd);
-  packsLast = key(r);
+  const r = packsQuestion(gameDiff());
   const opts = packsOptions(r);
   /** @type {PacksQuestion} */
   const q = { size: r.size, n: r.n, extra: r.extra, label: r.label, total: r.total };
@@ -126,7 +143,7 @@ function renderPacks() {
         stepOk(btn);
         flashModal('ok');
         winSoon();
-      } else loseLife(btn, { onRetry: renderPacks });
+      } else loseLife(btn, { onRetry: renderPacks, wrong: Number(btn.dataset.v) });
     });
   });
 }
@@ -158,5 +175,31 @@ function packsHints(q) {
   ];
 }
 
+// Explication d'une erreur (track erreurs-expliquees) : l'erreur reconnue
+// (le nombre de paquets ajouté à leur taille, le jouet seul oublié, un paquet
+// de moins ou de trop), puis le compte de paquet en paquet écrit sur chacun.
+/**
+ * @param {PacksQuestion} q
+ * @param {number} v le nombre touché
+ * @returns {import('../../hints/index.js').Explain}
+ */
+function packsExplain(q, v) {
+  const { size, n, extra, total } = q;
+  const whole = `${n} paquets de ${size}${extra ? ' et 1' : ''} : ${total}`;
+  let say = `Je compte de ${size} en ${size} : ${total}.`;
+  if (v === n + size && n + size !== total) say = `On ne fait pas ${n} plus ${size}. On compte par paquets : ${total}.`;
+  else if (extra && v === total - 1) say = `N'oublie pas le jouet seul : ${total}.`;
+  else if (v === total - size) say = `Il manque un paquet. ${whole}.`;
+  else if (v === total + size) say = `Un paquet de trop. ${whole}.`;
+  const marks = Array.from({ length: n }, (_, i) => ({ sel: `.pack[data-pack="${i}"]`, text: String(size * (i + 1)) }));
+  if (extra) marks.push({ sel: '.pack-single', text: String(total) });
+  return { say, fx: { marks, glow: solSel('.pack-opt', 'v', total) } };
+}
+
 registerGame('packs', renderPacks);
 registerHints('packs', packsHints);
+registerExplain('packs', {
+  wrong: packsExplain,
+  // la stratégie d'une réussite, dite sur l'écran de victoire
+  right: (q) => `Tu as compté de ${q.size} en ${q.size}.`,
+});

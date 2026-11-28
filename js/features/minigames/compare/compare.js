@@ -10,9 +10,10 @@ import { compareCloseChance, compareEqualChance, compareRange } from '../../../e
 import { random, shuffle } from '../../../shared/lib/index.js';
 import { openModal, setHandler } from '../../../shared/ui/index.js';
 import { gameDiff } from '../../adaptive/index.js';
-import { registerHints, setHintQuestion } from '../../hints/index.js';
+import { registerExplain, registerHints, setHintQuestion } from '../../hints/index.js';
 import {
   clearActiveTimer,
+  drawOther,
   flashModal,
   livesBar,
   loseLife,
@@ -26,11 +27,30 @@ import {
 } from '../../minigame-engine/index.js';
 import { bindQuit, gameHeader } from '../../screen/index.js';
 
+/** @typedef {{ a: number, b: number, answer: string }} CompareQuestion */
+
+// la question précédente : une relance en tire toujours une AUTRE (anti-devinette)
+let compareLast = '';
+/**
+ * Une question, jamais la même que la précédente (clé : les deux nombres).
+ * @param {number} dd le palier de difficulté
+ * @returns {CompareQuestion}
+ */
+function compareQuestion(dd) {
+  const max = compareRange(dd);
+  const { a, b } = drawOther(
+    () => comparePair(dd),
+    (x) => `${x.a}-${x.b}`,
+    { last: compareLast, fallback: (x) => ({ a: x.a, b: x.b + 1 <= max ? x.b + 1 : x.b - 1 }) },
+  );
+  compareLast = `${a}-${b}`;
+  return { a, b, answer: a < b ? '<' : a > b ? '>' : '=' };
+}
+
 function renderCompare() {
   setupLives('compare');
-  const dd = gameDiff();
-  const { a, b } = comparePair(dd);
-  const answer = a < b ? '<' : a > b ? '>' : '=';
+  const q = compareQuestion(gameDiff());
+  const { a, b, answer } = q;
   const options = shuffle(['<', '>', '=']);
 
   openModal(`
@@ -48,21 +68,21 @@ function renderCompare() {
   bindQuit();
   startTimerIfNeeded('compare');
   setSolution([solSel('.cmp-btn', 'v', answer)]);
-  setHintQuestion('compare', { a, b, answer }, { choices: '.cmp-btn' });
+  setHintQuestion('compare', q, { choices: '.cmp-btn' });
   document.querySelectorAll('.cmp-btn').forEach((btn) => {
     setHandler(btn, 'click', () => {
       if (btn.dataset.v === answer) {
         clearActiveTimer();
-        const q = document.querySelector('.cmp-q');
-        if (q) {
-          q.textContent = answer;
-          q.classList.add('filled');
+        const box = document.querySelector('.cmp-q');
+        if (box) {
+          box.textContent = answer;
+          box.classList.add('filled');
         }
         stepOk(btn);
         flashModal('ok');
         winSoon();
       } else {
-        loseLife(btn, { onRetry: renderCompare });
+        loseLife(btn, { onRetry: renderCompare, wrong: btn.dataset.v });
       }
     });
   });
@@ -89,7 +109,7 @@ function comparePair(dd) {
 
 // Indices (v52) : 1. le sens du signe (la bouche vers le plus grand) ;
 // 2. comparer d'abord les dizaines, puis les unités.
-/** @param {{ a: number, b: number, answer: string }} q */
+/** @param {CompareQuestion} q */
 function compareHints(q) {
   const ta = Math.floor(q.a / 10),
     tb = Math.floor(q.b / 10);
@@ -109,6 +129,43 @@ function compareHints(q) {
   ];
 }
 
+// Explication d'une erreur (track erreurs-expliquees) : le signe touché ne va
+// pas parce que les nombres sont pareils, ou ne le sont pas, ou parce que la
+// bouche s'ouvre vers le plus grand. Le bon signe s'écrit dans la case.
+/**
+ * @param {CompareQuestion} q
+ * @param {string | undefined} v le signe touché
+ * @returns {import('../../hints/index.js').Explain}
+ */
+function compareExplain(q, v) {
+  const big = Math.max(q.a, q.b),
+    small = Math.min(q.a, q.b);
+  const answerSel = solSel('.cmp-btn', 'v', q.answer);
+  const fill = { sel: '.cmp-q', text: q.answer };
+  if (q.answer === '=')
+    return {
+      say: `${q.a} et ${q.b} sont pareils : c'est le signe égal.`,
+      fx: { fill, glow: `.cmp-num, ${answerSel}` },
+    };
+  const bigSel = `.cmp-equation .cmp-num:${q.a > q.b ? 'first-child' : 'last-child'}`;
+  return {
+    say:
+      v === '='
+        ? `${q.a} et ${q.b} ne sont pas pareils : ${big} est plus grand.`
+        : `${big} est plus grand que ${small} : la bouche s'ouvre vers ${big}.`,
+    fx: { fill, glow: `${bigSel}, ${answerSel}` },
+  };
+}
+
 // inscription auprès du moteur de mini-jeux (js/features/minigame-engine)
 registerGame('compare', renderCompare);
 registerHints('compare', compareHints);
+// la stratégie d'une réussite, dite sur l'écran de victoire
+/** @param {CompareQuestion} q */
+function compareStrategy(q) {
+  if (q.a === q.b) return "Tu as vu qu'ils sont pareils.";
+  if (q.a >= 10 && q.b >= 10 && Math.floor(q.a / 10) !== Math.floor(q.b / 10))
+    return 'Tu as bien regardé les dizaines.';
+  return 'Tu as trouvé le plus grand nombre.';
+}
+registerExplain('compare', { wrong: compareExplain, right: compareStrategy });

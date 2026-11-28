@@ -26,7 +26,17 @@
      fx.strike    sélecteur des éléments à barrer (ex. ceux qu'on enlève)
      fx.dim       sélecteur d'UNE mauvaise réponse à écarter (niveau 2)
      fx.html      un petit dessin dans la bulle (ex. le mot en syllabes)
-     fx.run       un effet propre au jeu, fn(racine de la fenêtre) */
+     fx.run       un effet propre au jeu, fn(racine de la fenêtre)
+
+   Les erreurs expliquées (track erreurs-expliquees) : un jeu inscrit aussi
+   registerExplain(clé, { wrong: (question, mauvaise réponse) => { say, fx } }).
+   Après une erreur, le moteur appelle explainShow : une bulle sous la consigne
+   dit pourquoi la réponse ne va pas, avec les mêmes effets que les indices
+   (sauf fx.dim), plus fx.fill { sel, text } qui écrit la bonne réponse dans la
+   case « ? ». Tous les boutons sont fermés pendant l'explication (sauf 🔈).
+   `right: question => phrase` (facultatif) nomme la stratégie d'une réussite,
+   montrée et dite sur l'écran de victoire (strategyLine).
+   Les minuteries appartiennent au moteur : ici, aucune. */
 import { buddyReact, COMPANIONS, companionSVG, currentCompanion } from '../../entities/companion/index.js';
 import { save, state } from '../../entities/game-state/index.js';
 import { party, race } from '../../entities/player/index.js';
@@ -71,6 +81,43 @@ function registerHints(key, fn) {
 /** @param {string} key */
 function hasHints(key) {
   return !!HINT_PROVIDERS[key];
+}
+
+/**
+ * Les effets d'une explication : ceux d'un indice, sans élimination, plus la case remplie.
+ * @typedef {Omit<HintFx, 'dim'> & { fill?: { sel: string, text: string } }} ExplainFx
+ */
+/** @typedef {{ say: string, fx: ExplainFx }} Explain une explication : la phrase dite et le geste */
+/**
+ * Les explications d'un jeu ; chaque jeu a sa forme de question et de mauvaise réponse.
+ * @template Q, V
+ * @typedef {{ wrong: (question: Q, v: V) => Explain | null, right?: (question: Q) => string | null }} ExplainProvider
+ */
+/** @type {Record<string, ExplainProvider<unknown, unknown>>} */
+const EXPLAIN_PROVIDERS = {};
+/**
+ * @template Q, V
+ * @param {string} key
+ * @param {ExplainProvider<Q, V>} p
+ */
+function registerExplain(key, p) {
+  // rangé sans sa forme de question, comme registerHints
+  EXPLAIN_PROVIDERS[key] = /** @type {ExplainProvider<unknown, unknown>} */ (p);
+}
+/** @param {string} kind */
+function hasExplain(kind) {
+  return !!EXPLAIN_PROVIDERS[kind];
+}
+// L'explication d'une question et d'une mauvaise réponse (pur : les tests l'appellent)
+/**
+ * @param {string} kind
+ * @param {unknown} q
+ * @param {unknown} v
+ * @returns {Explain | null}
+ */
+function explainFor(kind, q, v) {
+  const p = EXPLAIN_PROVIDERS[kind];
+  return (p && p.wrong(q, v)) || null;
 }
 
 // Les deux niveaux d'indice d'une question, toujours au même format
@@ -131,6 +178,7 @@ function hintOrderStep(done, say, label) {
  *   onError: ((kind: string | null) => void) | null,
  *   onGood: (() => void) | null,
  *   onMission: ((kind: string) => void) | null,
+ *   onExplain: ((kind: string) => void) | null,
  * }} */
 const hintPolicy = {
   giver: () => currentCompanion(),
@@ -143,6 +191,7 @@ const hintPolicy = {
   onError: null, // (kind) à chaque erreur (Grisou console après 2 d'affilée)
   onGood: null, // une bonne étape
   onMission: null, // (kind) une nouvelle mission commence
+  onExplain: null, // (kind) une explication d'erreur s'affiche : elle seule parle
 };
 /** @param {Partial<typeof hintPolicy>} part */
 function setHintPolicy(part) {
@@ -352,13 +401,16 @@ function hintChoicesLeft() {
 }
 /**
  * @param {HintFx} fx
- * @param {number} level
+ * @param {number} level 0 pour une explication : ni paillettes ni élimination
+ * @param {string} [markClass] les classes d'une étiquette
  */
-function applyHintFx(fx, level) {
-  // appelé par showHint, qui a déjà trouvé la fenêtre
+function applyHintFx(fx, level, markClass = 'hint-mark') {
+  // appelé par showHint et explainShow, qui ont déjà trouvé la fenêtre
   const root = /** @type {HTMLElement} */ (document.getElementById('modal-body'));
+  // une étiquette déjà posée n'est jamais une cible : « span:nth-child(1) »
+  // la désignerait aussi, et elle recevrait une étiquette ou un barré
   /** @param {string | undefined} sel */
-  const all = (sel) => (sel ? [...root.querySelectorAll(sel)] : []);
+  const all = (sel) => (sel ? [...root.querySelectorAll(sel)].filter((el) => !el.classList.contains('hint-mark')) : []);
   const sparkle = level === HINT_LEVELS && hintPolicy.sparkle(hint.kind);
   all(fx.glow).forEach((el) => {
     el.classList.remove('hint-glow');
@@ -368,8 +420,10 @@ function applyHintFx(fx, level) {
   (fx.marks || []).forEach((m) =>
     all(m.sel).forEach((el) => {
       const old = el.querySelector(':scope > .hint-mark');
-      if (old) old.textContent = m.text;
-      else el.insertAdjacentHTML('beforeend', `<span class="hint-mark" aria-hidden="true">${m.text}</span>`);
+      if (old) {
+        old.textContent = m.text;
+        old.className = markClass;
+      } else el.insertAdjacentHTML('beforeend', `<span class="${markClass}" aria-hidden="true">${m.text}</span>`);
     }),
   );
   all(fx.strike).forEach((el) => el.classList.add('hint-strike'));
@@ -400,6 +454,81 @@ function hintEliminate(sel, level) {
   return true;
 }
 
+/* ---- l'explication d'une erreur ---- */
+// les boutons que l'explication a fermés (pour les rouvrir, eux seuls)
+/** @type {HTMLButtonElement[]} */
+let explainLocked = [];
+// Montre l'explication de la question en cours pour la mauvaise réponse `v`.
+// Renvoie true si elle a été montrée (le moteur attend alors EXPLAIN_MS).
+/** @param {unknown} v */
+function explainShow(v) {
+  const body = document.getElementById('modal-body');
+  const kind = hint.kind;
+  if (!body || !kind) return false;
+  explainClear();
+  try {
+    const ex = explainFor(kind, hint.q, v);
+    if (!ex) return false;
+    const old = body.querySelector('.hint-bubble');
+    if (old) old.remove(); // un indice affiché laisse la place : une seule bulle
+    const bub = document.createElement('div');
+    bub.className = 'explain-bubble pop';
+    bub.setAttribute('role', 'status');
+    bub.innerHTML =
+      `<span class="hint-bface" aria-hidden="true">${companionSVG(hintPolicy.giver(kind, 1), 'think')}</span>` +
+      '<span class="explain-text"></span>' +
+      (ex.fx.html ? `<span class="hint-extra">${ex.fx.html}</span>` : '');
+    // le texte tel quel, sans espace insécable : c'est exactement la phrase dite
+    /** @type {HTMLElement} */ (bub.querySelector('.explain-text')).textContent = ex.say;
+    const anchor =
+      body.querySelector('#challenge-timer') || body.querySelector('.puzzle-hint') || body.querySelector('.game-head');
+    if (anchor) anchor.insertAdjacentElement('afterend', bub);
+    else body.prepend(bub);
+    applyHintFx(ex.fx, 0, 'hint-mark explain-mark');
+    const fill = ex.fx.fill;
+    if (fill)
+      body.querySelectorAll(fill.sel).forEach((el) => {
+        el.textContent = fill.text;
+        el.classList.add('filled', 'explain-fill');
+      });
+    // le verrou : la bonne réponse brille, elle ne doit pas se toucher (anti-devinette)
+    body.classList.add('explaining');
+    explainLocked = /** @type {HTMLButtonElement[]} */ ([...body.querySelectorAll('button')]).filter(
+      (b) => !b.disabled && !b.classList.contains('btn-speak'),
+    );
+    explainLocked.forEach((b) => (b.disabled = true));
+    if (hintPolicy.onExplain) hintPolicy.onExplain(kind); // l'équipe se tait : une seule voix
+    speak(ex.say);
+    return true;
+  } catch {
+    // une explication qui échoue ne doit jamais bloquer le jeu : on l'efface,
+    // et le moteur fait comme avant (phrase générique, relance courte)
+    explainClear();
+    return false;
+  }
+}
+// Retire l'explication : bulle, étiquettes, verrou. Un bouton refermé par le
+// moteur entre-temps (classe ko : la mauvaise réponse) reste fermé.
+function explainClear() {
+  const body = document.getElementById('modal-body');
+  if (body) {
+    body.querySelectorAll('.explain-bubble, .explain-mark').forEach((el) => el.remove());
+    body.classList.remove('explaining');
+  }
+  explainLocked.forEach((b) => {
+    if (!b.classList.contains('ko')) b.disabled = false;
+  });
+  explainLocked = [];
+}
+
+// La phrase de stratégie de la question en cours (`right` du jeu), pour
+// l'écran de victoire : ce que l'enfant a fait, ou null si le jeu n'en dit rien.
+/** @returns {string | null} */
+function strategyLine() {
+  const p = hint.kind ? EXPLAIN_PROVIDERS[hint.kind] : null;
+  return (p && p.right && p.right(hint.q)) || null;
+}
+
 // compté pour l'espace parents, jamais comme une erreur (niveau adaptatif inchangé)
 // Quels indices compter : ceux des mini-jeux inscrits au moteur (qui le dit
 // avec setHintCountable, v54 : les indices sont une couche sous le moteur)
@@ -426,9 +555,14 @@ onModalChange(() => {
   hint.nudged = false;
   clearTimeout(hint.idle);
   hint.idle = undefined;
+  explainClear(); // #modal-body reste d'une fenêtre à l'autre : le marqueur doit partir
 });
 
 export {
+  explainClear,
+  explainFor,
+  explainShow,
+  hasExplain,
   hintLevel,
   hintNudge,
   hintOrderStep,
@@ -436,8 +570,10 @@ export {
   hintShowFirst,
   hintSyllablesFirst,
   hintSyllablesHTML,
+  registerExplain,
   registerHints,
   setHintCountable,
   setHintPolicy,
   setHintQuestion,
+  strategyLine,
 };

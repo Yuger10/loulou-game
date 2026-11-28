@@ -4,7 +4,7 @@ import { buddyReact, buddySlot, COMPANIONS, companionSVG } from '../../entities/
 import { gameTypesForAge, livesFor, timerFor } from '../../entities/difficulty/index.js';
 import { hello, level, save, state, trackGamePlayed } from '../../entities/game-state/index.js';
 import { addItem, ITEMS } from '../../entities/item/index.js';
-import { ac, currentPlayerAge, party, race } from '../../entities/player/index.js';
+import { currentPlayerAge, party, race } from '../../entities/player/index.js';
 import { availableItems, currentWorld } from '../../entities/world/index.js';
 import { emit, on, pickRandom, random } from '../../shared/lib/index.js';
 import {
@@ -40,7 +40,7 @@ import {
 import { markSeen, renderBadge } from '../bag/index.js';
 import { maybeTeamOpening, teamCheerBy, teamWinExtras } from '../companion-team/index.js';
 import { queueGain } from '../gains/index.js';
-import { hintNudge, hintPolicy, setHintCountable } from '../hints/index.js';
+import { explainClear, explainShow, hintNudge, hintPolicy, setHintCountable, strategyLine } from '../hints/index.js';
 import { checkNewIsland, currentChar, markHelped, renderLagon } from '../island/index.js';
 import { partyAfterWin, partyScore, passTurn } from '../party/index.js';
 import { questProgress } from '../quests/index.js';
@@ -103,20 +103,50 @@ function clearPendingRetry() {
     pendingRetryTimeout = null;
   }
 }
-/** @param {() => void} fn */
-function scheduleRetry(fn) {
+/**
+ * @param {() => void} fn
+ * @param {number} [delay] EXPLAIN_MS quand une explication est affichée
+ */
+function scheduleRetry(fn, delay = 900) {
   clearPendingRetry();
   pendingRetryTimeout = setTimeout(() => {
     pendingRetryTimeout = null;
     forgetSpokenHint();
     fn();
-  }, 900);
+  }, delay);
+}
+
+/* Les erreurs expliquées (track erreurs-expliquees) : quand un jeu a inscrit
+   ses explications (registerExplain, js/features/hints) et passe la mauvaise
+   réponse (`wrong`), une bulle dit pourquoi pendant EXPLAIN_MS, tous boutons
+   fermés ; la suite (autre question, écran « Raté ! », ou fin du verrou si la
+   question continue) attend ce délai. Le moteur possède ces minuteries et les
+   annule si la fenêtre se ferme ou change : rien ne réapparaît par-dessus un
+   autre écran. */
+const EXPLAIN_MS = 4000;
+/** @type {ReturnType<typeof setTimeout> | null} */
+let pendingExplainEnd = null;
+function clearExplainEnd() {
+  if (pendingExplainEnd) {
+    clearTimeout(pendingExplainEnd);
+    pendingExplainEnd = null;
+  }
+}
+// ce qui suit une explication sans relance : « Raté ! », ou la fin du verrou
+/** @param {() => void} fn */
+function afterExplain(fn) {
+  clearExplainEnd();
+  pendingExplainEnd = setTimeout(() => {
+    pendingExplainEnd = null;
+    fn();
+  }, EXPLAIN_MS);
 }
 
 /**
  * @typedef {object} LoseLifeOptions
  * @property {boolean} [disable] false : le bouton fautif reste cliquable
  * @property {() => void} [onRetry] une nouvelle question plutôt que la même (anti-devinette)
+ * @property {unknown} [wrong] la mauvaise réponse touchée
  */
 /**
  * Une erreur : le bouton fautif (ou rien, temps écoulé) et les options du jeu.
@@ -137,23 +167,27 @@ function loseLife(target, opts = {}) {
 
   playSound('wrong');
   vibrate(90);
-  speakWrongHint();
+  // une seule phrase : l'explication, sinon l'encouragement générique. Pas
+  // d'explication sans bouton touché (temps écoulé : rien de faux n'a été dit).
+  const shown = el !== null && opts.wrong !== undefined && explainShow(opts.wrong);
+  if (shown) clearActiveTimer(); // le minuteur repart avec la question suivante
+  else speakWrongHint();
   if (el) loseLifeShake(el, opts);
-  if (lives === Infinity) return loseLifeUnlimited(el, opts);
+  if (lives === Infinity) return loseLifeUnlimited(el, opts, shown);
   lives--;
   renderLives();
   flashModal('ko');
   if (lives <= 0) {
-    setTimeout(onMissionFail, 520);
+    // l'écran « Raté ! » attend la fin de l'explication, sinon elle serait coupée
+    if (shown) afterExplain(onMissionFail);
+    else setTimeout(onMissionFail, 520);
     return true;
   }
   showToast(lives === 1 ? '⚠️ Dernier essai !' : `${lives} essais restants`);
   // même logique à essais limités : une nouvelle question plutôt que
   // de réduire le choix restant jusqu'à la seule bonne réponse.
-  if (opts.onRetry) {
-    scheduleRetry(opts.onRetry);
-    return false;
-  }
+  if (opts.onRetry) scheduleRetry(opts.onRetry, shown ? EXPLAIN_MS : 900);
+  else if (shown) afterExplain(explainClear); // la question continue : le verrou se lève
   return false;
 }
 
@@ -175,9 +209,10 @@ function loseLifeShake(el, opts) {
  * Une erreur à essais illimités : jamais ratée.
  * @param {HTMLElement | null} el
  * @param {LoseLifeOptions} opts
+ * @param {boolean} shown une explication est affichée
  * @returns {false}
  */
-function loseLifeUnlimited(el, opts) {
+function loseLifeUnlimited(el, opts, shown) {
   // Avec seulement 2-3 choix et des essais illimités, laisser le
   // bouton fautif se réactiver permettrait de deviner la bonne
   // réponse PAR ÉLIMINATION, sans aucune compréhension (observé en
@@ -185,16 +220,24 @@ function loseLifeUnlimited(el, opts) {
   // le jeu le permet (`opts.onRetry`), on propose une NOUVELLE
   // question à la place, jamais la même à éliminer petit à petit.
   if (opts.onRetry) {
-    scheduleRetry(opts.onRetry);
+    scheduleRetry(opts.onRetry, shown ? EXPLAIN_MS : 900);
     return false;
   }
-  if (el && 'disabled' in el && opts.disable !== false) {
-    // île 1 : la mauvaise réponse se referme mais on peut continuer
-    setTimeout(() => {
-      el.disabled = false;
-      el.classList.remove('ko');
-    }, 700);
-  }
+  // île 1 : la mauvaise réponse se referme mais on peut continuer
+  const reopen =
+    el && 'disabled' in el && opts.disable !== false
+      ? () => {
+          el.disabled = false;
+          el.classList.remove('ko');
+        }
+      : null;
+  // avec une explication, le verrou dure EXPLAIN_MS : tout se rouvre à la fin
+  if (shown)
+    afterExplain(() => {
+      explainClear();
+      if (reopen) reopen();
+    });
+  else if (reopen) setTimeout(reopen, 700);
   return false;
 }
 
@@ -298,6 +341,25 @@ function stepOk(target) {
   spark.textContent = pickRandom(['✨', '⭐', '💫', '👍']);
   if (el.appendChild) el.appendChild(spark);
   setTimeout(() => spark.remove(), 800);
+}
+
+/* Jamais deux fois la même question d'affilée : après une erreur expliquée,
+   la bonne réponse vient d'être montrée, la revoir serait une devinette.
+   `draw` tire une question, `keyOf` donne sa clé (ce qui fixe la réponse),
+   `rule.last` est la clé de la question précédente. Après 8 tirages identiques,
+   `rule.fallback` change une valeur de la dernière question tirée. */
+/**
+ * @template Q
+ * @param {() => Q} draw
+ * @param {(q: Q) => string} keyOf
+ * @param {{ last: string, fallback: (q: Q) => Q }} rule
+ * @returns {Q}
+ */
+function drawOther(draw, keyOf, rule) {
+  const { last, fallback } = rule;
+  let q = draw();
+  for (let k = 0; k < 8 && keyOf(q) === last; k++) q = draw();
+  return keyOf(q) === last ? fallback(q) : q;
 }
 
 /* Pour les tests automatiques : chaque mini-jeu note ce qu'il faut toucher
@@ -466,6 +528,8 @@ function onMissionWin() {
   vibrate([60, 40, 120]);
   confetti();
   const praise = winPraise();
+  // ce que l'enfant a fait pour réussir (phrase `right` du jeu), en solo seulement
+  const how = solo ? strategyLine() : null;
   const fact = missionFact;
   missionFact = null;
   // garde-robe : un objet se gagne à certains nombres de missions (js/features/wardrobe/wardrobe.js)
@@ -477,7 +541,7 @@ function onMissionWin() {
   const extras = teamWinExtras();
   endBonusChallenge();
   /** @type {MissionWin} */
-  const w = { c, it: ITEMS[key], bonus, boost, levelUp, praise, fact, lookWon, cheer, cheerBy, extras, solo };
+  const w = { c, it: ITEMS[key], bonus, boost, levelUp, praise, how, fact, lookWon, cheer, cheerBy, extras, solo };
   setTimeout(() => speak(winSpeech(w)), 300);
 
   openModal(winMarkup(w));
@@ -489,7 +553,7 @@ function onMissionWin() {
 /**
  * Ce que l'écran de victoire montre et dit.
  * @typedef {{ c: typeof CHARACTERS[string], it: typeof ITEMS[string], bonus: string | null, boost: number,
- *   levelUp: boolean, praise: string, fact: string | null, lookWon: string[], cheer: string | null,
+ *   levelUp: boolean, praise: string, how: string | null, fact: string | null, lookWon: string[], cheer: string | null,
  *   cheerBy: string | null, extras: ReturnType<typeof teamWinExtras>, solo: boolean }} MissionWin
  */
 
@@ -520,33 +584,45 @@ function winGiveLoot(c) {
   return { key, bonus, boost };
 }
 
+/* Les éloges de l'écran de victoire nomment ce que l'enfant a FAIT (chercher,
+   réfléchir, travailler), jamais ce qu'elle EST (forte, championne, maligne) :
+   après un échec, l'éloge de la personne décourage plus que celui de l'effort
+   (track erreurs-expliquees, D12). test/explications-strategies.test.js garde la liste. */
+/**
+ * @param {string} who « ␣prénom » si le prénom est connu, sinon une chaîne vide
+ * @returns {string[]}
+ */
+function winPraises(who) {
+  return [
+    `Bravo${who}, bien joué !`,
+    `Super${who}, tu as bien cherché !`,
+    `Génial, c'est réussi !`,
+    `Waouh${who}, tu as bien réfléchi !`,
+    `Incroyable, tu as tout trouvé !`,
+    `Tu as bien travaillé ! 💪`,
+  ].map((p) => p.replace(/ ([!?])/g, '\u00a0$1')); // espace insécable : le « ! » ne part pas seul à la ligne
+}
 function winPraise() {
   const who = hello();
-  return pickRandom([
-    `Bravo${who ? ' ' + who : ''}, bien joué !`,
-    `Super${who ? ' ' + who : ''}, tu es trop ${ac('fort')} !`,
-    `Génial, c'est réussi !`,
-    `Waouh${who ? ' ' + who : ''}, quel${ac('', 'le')} ${ac('champion', 'championne')} !`,
-    `Incroyable, tu as tout trouvé !`,
-    `Trop ${ac('malin', 'maligne')} ! 💪`,
-  ]).replace(/ ([!?])/g, ' $1'); // espace insécable : le « ! » ne part pas seul à la ligne
+  return pickRandom(winPraises(who ? ' ' + who : ''));
 }
 
 /** @param {MissionWin} w */
 function winSpeech(w) {
-  const { levelUp, praise, cheer, cheerBy, extras, lookWon, fact, c, it, bonus } = w;
-  return `${levelUp ? `Niveau ${level()} ! ` : ''}${praise} ${cheer ? (cheerBy ? COMPANIONS[cheerBy].name + ' : ' : '') + cheer + ' ' : ''}${extras.map((x) => `${COMPANIONS[x.by].name} : ${x.text} `).join('')}${lookWon.length ? `Tu gagnes ${lookWon.join(' et ')} pour ton avatar ! ` : ''}${fact ? fact + ' ' : ''}${c.name} t'offre ${it.name}${bonus ? `, et une surprise : ${ITEMS[bonus].name}` : ''}.`;
+  const { levelUp, praise, how, cheer, cheerBy, extras, lookWon, fact, c, it, bonus } = w;
+  return `${levelUp ? `Niveau ${level()} ! ` : ''}${praise} ${how ? how + ' ' : ''}${cheer ? (cheerBy ? COMPANIONS[cheerBy].name + ' : ' : '') + cheer + ' ' : ''}${extras.map((x) => `${COMPANIONS[x.by].name} : ${x.text} `).join('')}${lookWon.length ? `Tu gagnes ${lookWon.join(' et ')} pour ton avatar ! ` : ''}${fact ? fact + ' ' : ''}${c.name} t'offre ${it.name}${bonus ? `, et une surprise : ${ITEMS[bonus].name}` : ''}.`;
 }
 
 /** @param {MissionWin} w */
 function winMarkup(w) {
-  const { levelUp, praise, cheer, cheerBy, extras, lookWon, fact, c, it, bonus, boost, solo } = w;
+  const { levelUp, praise, how, cheer, cheerBy, extras, lookWon, fact, c, it, bonus, boost, solo } = w;
   return `
     <div class="reward-box win-box">
       <span class="win-rays" aria-hidden="true"></span>
       ${buddySlot('cheer', 'buddy-big win-emoji')}
       <span class="win-stamp">${levelUp ? '🌟' : '✅'}</span>
       <h2>${levelUp ? `Niveau ${level()} !` : praise}</h2>
+      ${how ? `<div class="speech win-how"><span aria-hidden="true">🧠</span> <span class="win-how-text">${how}</span></div>` : ''}
       ${lookWon.length ? `<div class="speech look-won"><span aria-hidden="true">🎁</span> Nouveau pour ton avatar : <strong>${lookWon.join(', ')}</strong> (sac → Mon look)</div>` : ''}
       ${cheer ? `<div class="speech progress-cheer">${cheerBy ? `<span class="cheer-face" aria-hidden="true">${companionSVG(cheerBy, 'cheer')}</span><b>${COMPANIONS[cheerBy].name}</b>` : '<span aria-hidden="true">📈</span>'} ${cheer}</div>` : ''}
       ${extras.map((x) => `<div class="speech team-extra" data-by="${x.by}"><span class="cheer-face" aria-hidden="true">${companionSVG(x.by, 'cheer')}</span><span><b>${COMPANIONS[x.by].name}</b> ${x.text}</span></div>`).join('')}
@@ -602,6 +678,7 @@ function winBindButtons() {
 onModalChange(() => {
   clearActiveTimer();
   clearPendingRetry();
+  clearExplainEnd();
 });
 onModalClose(() => {
   forgetSpokenHint();
@@ -609,6 +686,8 @@ onModalClose(() => {
 
 export {
   clearActiveTimer,
+  drawOther,
+  EXPLAIN_MS,
   flashModal,
   livesBar,
   loseLife,
