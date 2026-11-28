@@ -444,6 +444,126 @@ const EPISODES = {
       ],
     },
   ],
+  // saison 3, l'Île des Crayons : on recommence sans effacer, et le vent annonce l'île suivante
+  crayons: [
+    {
+      by: 'gommette',
+      title: 'Pas grave si ça dépasse',
+      find: '⭐',
+      lines: [
+        'Ce matin, Gribouille a dessiné une étoile, et le trait a dépassé.',
+        "Je n'ai rien effacé : on a fait une deuxième étoile à côté. Deux étoiles, c'est encore mieux !",
+      ],
+    },
+    {
+      by: 'taillou',
+      title: 'Le crayon tout petit',
+      find: '📏',
+      lines: [
+        "J'ai taillé, taillé… et mon crayon est devenu tout petit !",
+        "Je l'ai mesuré avec la règle : il fait trois centimètres. Il dessine encore très bien !",
+      ],
+    },
+    {
+      by: 'aquarelle',
+      title: 'Le dessin du vent',
+      find: '🥟',
+      lines: [
+        'Le vent a soufflé sur ma peinture, et il a dessiné… des petits paniers qui fument !',
+        "Zap dit que le prochain morceau de la carte est sur une île où l'on cuisine des dumplings tout doux.",
+      ],
+    },
+  ],
+  // saison 3, l'Île des Squishy Dumplings : la tour de cent, la commande de Zap, et la clé de l'île suivante
+  dumplings: [
+    {
+      by: 'bambou',
+      title: 'La tour de paniers',
+      find: '🧺',
+      lines: [
+        "J'ai empilé dix paniers, l'un sur l'autre. Une vraie tour !",
+        "Dix paniers de dix dumplings… ça fait cent ! Le chef Bao n'en revient pas.",
+      ],
+    },
+    {
+      by: 'sesame',
+      title: 'La commande de Zap',
+      find: '🥡',
+      lines: [
+        'Zap est passé au comptoir. Il a commandé trois dumplings roses pour le voyage.',
+        "Je les ai mis dans une boîte à emporter. Il a dit : « C'est pour l'avion en papier ! »",
+      ],
+    },
+    {
+      by: 'theo',
+      title: 'Le cliquetis dans la vapeur',
+      find: '🗝️',
+      lines: [
+        "Fiou ! En sifflant très fort, j'ai entendu un cliquetis dans la vapeur, comme une petite clé.",
+        'Il vient de plus loin sur la carte. Une autre île nous attend !',
+      ],
+    },
+  ],
+  // saison 3, l'Île des Coffres : les traces de Zap, le compte de Grignote, et la plume de l'île suivante
+  coffres: [
+    {
+      by: 'kadi',
+      title: 'Les traces de Zap',
+      find: '👣',
+      lines: [
+        "J'ai vu des traces de pas devant le grand coffre. Des petites bottes de super-héros !",
+        'Zap est passé par ici. Il cherche lui aussi les morceaux de sa carte.',
+      ],
+    },
+    {
+      by: 'grignote',
+      title: 'Le compte est bon',
+      find: '🪙',
+      lines: [
+        "J'ai compté toutes les pièces de l'île : il y en a cent, pas une de moins !",
+        "Mais dans le grand coffre, j'ai entendu un bruit de papier. Un morceau de carte, peut-être ?",
+      ],
+    },
+    {
+      by: 'pincou',
+      title: 'La plume qui chatouille',
+      find: '🪶',
+      lines: [
+        "Avec mes pinces, j'ai attrapé une plume qui volait au-dessus de la mer.",
+        "Elle m'a chatouillé, hi hi ! Elle vient sûrement d'une île plus loin sur la carte. On ira voir !",
+      ],
+    },
+  ],
+  // saison 3, le Monde des Chatouilles : la plume de Guili, la blague de Lulu, et la musique de l'île suivante
+  chatouilles: [
+    {
+      by: 'guili',
+      title: 'La plume qui file',
+      find: '🪶',
+      lines: [
+        "J'ai lancé une plume dans le vent, et elle a fait trois virages avant de se poser !",
+        "Elle s'est posée sur le nez de Pic. Il a fait atchoum, et on a tous ri !",
+      ],
+    },
+    {
+      by: 'lulu',
+      title: 'La blague de Lulu',
+      find: '📜',
+      lines: [
+        "J'ai trouvé une blague : pourquoi les poissons n'aiment pas jouer au tennis ? Parce qu'ils ont peur du filet !",
+        'Hi hi ! Même Pic a ri, et pourtant il est très sérieux !',
+      ],
+    },
+    {
+      by: 'pic',
+      title: 'La musique au loin',
+      find: '🎼',
+      lines: [
+        'Chut… Écoute. Très loin, derrière les nuages, on entend de la musique.',
+        "Elle vient d'une île lointaine, qui prépare un grand concert. Le dernier morceau de la carte y est peut-être !",
+      ],
+    },
+  ],
 };
 
 /** @param {string} world */

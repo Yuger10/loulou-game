@@ -16,6 +16,7 @@
              vert, violet, orange) : la couleur dominante du corps
      shape   la forme du corps : 'rond', 'ovale' ou 'carre' (carré arrondi)
      size    'petit' ou 'grand' */
+import { SQUISHIES_S3 } from './squishies-s3.js';
 
 /**
  * Une série : `world` = elle n'apparaît qu'une fois cette île ouverte (saison 2).
@@ -46,6 +47,10 @@ const SQUISHY_SERIES = {
   instruments: { name: 'Instruments', emoji: '🎺', world: 'musique' }, // l'Île de la Musique
   petitesbetes: { name: 'Petites bêtes', emoji: '🐞', world: 'jardin' }, // le Jardin des Fées
   licornes: { name: 'Licornes', emoji: '🦄', world: 'licornes' }, // le Royaume Arc-en-ciel
+  papeterie: { name: 'Papeterie', emoji: '✏️', world: 'crayons' }, // l'Île des Crayons (saison 3)
+  dumplings: { name: 'Dumplings', emoji: '🥟', world: 'dumplings' }, // l'Île des Squishy Dumplings (saison 3)
+  coffres: { name: 'Coffres', emoji: '🔐', world: 'coffres' }, // l'Île des Coffres (saison 3)
+  guilis: { name: 'Guilis', emoji: '🪶', world: 'chatouilles' }, // le Monde des Chatouilles (saison 3)
 };
 const SQUISHY_SERIES_ORDER = [
   'capy',
@@ -57,6 +62,10 @@ const SQUISHY_SERIES_ORDER = [
   'instruments',
   'petitesbetes',
   'licornes',
+  'papeterie',
+  'dumplings',
+  'coffres',
+  'guilis',
 ];
 
 // les trois raretés, et leur chance au tirage (voir openSquishyBox)
@@ -565,6 +574,7 @@ const SQUISHIES = {
     shape: 'carre',
     size: 'grand',
   },
+  ...SQUISHIES_S3,
 };
 
 // Les trésors : des squishies UNIQUES, jamais dans les boîtes ni à l'échange.
@@ -600,6 +610,10 @@ const SQUISHY_ISLAND_SERIES = {
   musique: 'instruments',
   jardin: 'petitesbetes',
   licornes: 'licornes',
+  crayons: 'papeterie',
+  dumplings: 'dumplings',
+  coffres: 'coffres',
+  chatouilles: 'guilis',
 };
 
 /** @param {string} series */

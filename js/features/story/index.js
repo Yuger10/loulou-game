@@ -3,3 +3,4 @@
 export { openSeasonPrologue, openStoryChapter, openStoryJournal, STORY, storySolved } from './story.js';
 export { maybeStoryEpisode, noteStoryMission, storyProgressHTML } from './episodes.js';
 export { grisouSVG } from './grisou.js';
+export { ZAP_MAP_PIECES, zapMapFound, zapMapPieces, zapMapSay, zapMapSVG } from './zap-map.js';

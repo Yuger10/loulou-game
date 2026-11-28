@@ -25,6 +25,8 @@ import { emit } from '../../shared/lib/index.js';
 import { playSound, setHandler, speak } from '../../shared/ui/index.js';
 import { ensureQuests } from '../quests/index.js';
 import { seasonSceneSVG } from '../seasons/index.js';
+import { ISLE_SCENERY_S3 } from './island-s3.js';
+import { tickleHelloThen } from './tickle.js';
 
 // Places en coordonnées du DESSIN (viewBox 480×360), converties à l'affichage
 // selon la taille réelle de la scène : un personnage reste sur la plage et
@@ -412,6 +414,7 @@ const ISLE_SCENERY = {
     <path d="M416 214 Q426 250 410 290" fill="none" stroke="#FFB8E1" stroke-width="5" stroke-linecap="round" opacity=".9"/>
     <path d="M150 360 C168 322 210 292 236 250" fill="none" stroke="${w.sand}" stroke-width="18" stroke-linecap="round"/>
     <g fill="#fff" opacity=".8"><circle cx="110" cy="306" r="2.4"/><circle cx="340" cy="310" r="2"/><circle cx="60" cy="290" r="1.8"/></g>`,
+  ...ISLE_SCENERY_S3,
 };
 // paysage générique, aux couleurs du monde (toute nouvelle île en profite)
 /** @param {World} w */
@@ -578,7 +581,7 @@ function renderLiveIsland(sc) {
   sc.querySelectorAll('.isle-char').forEach((btn) => {
     btn.addEventListener('click', () => {
       playSound('tap');
-      emit('nav:dialogue', btn.dataset.char); // island-view.js ouvre le dialogue
+      tickleHelloThen(btn, () => emit('nav:dialogue', btn.dataset.char)); // island-view.js ouvre le dialogue
     });
   });
   sc.querySelectorAll('.deco[data-deco-key]').forEach((el) => bindDecoDrag(sc, el));

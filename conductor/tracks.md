@@ -115,27 +115,27 @@ Registre des tracks Conductor, **dans l'ordre d'implémentation**. Feuille de ro
 
 ---
 
-- [ ] **Track: Saison 3 « La Grande Expédition » : troisième carte, avion en papier, carte au trésor de Zap, niveau 70**
+- [x] **Track: Saison 3 « La Grande Expédition » : troisième carte, avion en papier, carte au trésor de Zap, niveau 70 (v67, cachée jusqu'à la première île)**
 *Link: [./tracks/saison3-ouverture_20261122/](./tracks/saison3-ouverture_20261122/)*
 
 ---
 
-- [ ] **Track: Saison 3, île 1 : ✏️ L'Île des Crayons (idée de la joueuse), niveau 70**
+- [x] **Track: Saison 3, île 1 : ✏️ L'Île des Crayons (idée de la joueuse), niveau 70 (v68)**
 *Link: [./tracks/monde-crayons_20261122/](./tracks/monde-crayons_20261122/)*
 
 ---
 
-- [ ] **Track: Saison 3, île 2 : 🥟 L'Île des Squishy Dumplings (idée de la joueuse), niveau 78**
+- [x] **Track: Saison 3, île 2 : 🥟 L'Île des Squishy Dumplings (idée de la joueuse), niveau 78 (v69)**
 *Link: [./tracks/monde-dumplings_20261122/](./tracks/monde-dumplings_20261122/)*
 
 ---
 
-- [ ] **Track: Saison 3, île 3 : 🗝️ L'Île des Coffres (idée de la joueuse), niveau 86**
+- [x] **Track: Saison 3, île 3 : 🗝️ L'Île des Coffres (idée de la joueuse), niveau 86 (v70)**
 *Link: [./tracks/monde-coffres_20261122/](./tracks/monde-coffres_20261122/)*
 
 ---
 
-- [ ] **Track: Saison 3, île 4 : 🪶 Le Monde des Chatouilles (idée de la joueuse), niveau 94**
+- [x] **Track: Saison 3, île 4 : 🪶 Le Monde des Chatouilles (idée de la joueuse), niveau 94 (v71)**
 *Link: [./tracks/monde-chatouilles_20261122/](./tracks/monde-chatouilles_20261122/)*
 
 ---

@@ -3,6 +3,7 @@
    des modèles et des boîtes surprises, déplacés tels quels (test/tools/move.js).
    Aucune image : tout est dessiné. */
 import { SQ_COLORS, SQUISHIES, SQUISHY_SERIES, SQUISHY_TREASURES } from '../../entities/squishy/index.js';
+import { SQ_ART_S3 } from './squishy-art-s3.js';
 
 /** @typedef {{ fill: string, edge: string }} SqColor les couleurs d'un corps : remplissage et contour */
 /** @typedef {{ capy?: boolean, sleep?: boolean, noEyes?: boolean, beak?: boolean, wide?: boolean }} SqFaceOptions */
@@ -566,6 +567,7 @@ const SQ_ART = {
     front: () =>
       `<g class="sq-deco"><ellipse cx="30" cy="74" rx="6" ry="3.6" fill="#FF6F91" opacity=".55"/><ellipse cx="70" cy="74" rx="6" ry="3.6" fill="#FF6F91" opacity=".55"/></g>`,
   },
+  ...SQ_ART_S3,
 };
 
 // les paillettes d'un ✨ (animées en CSS)
@@ -611,6 +613,9 @@ const SQ_BOX_COLORS = {
   instruments: ['#BFE9EC', '#2B2F6B'],
   petitesbetes: ['#CDEBC4', '#4F8A45'],
   licornes: ['#E3D6FB', '#6A4FB3'],
+  papeterie: ['#FFE9A8', '#B8901A'], // jaune crayon
+  dumplings: ['#DDF0D6', '#3F7A4A'], // vert bambou
+  guilis: ['#FFF1B8', '#8A3D6B'], // jaune plume et prune
 };
 
 // String : sans série (boîte mystère), null et undefined restent des clés absentes

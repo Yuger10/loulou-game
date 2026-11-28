@@ -193,9 +193,28 @@ const fundamentals = (list) =>
     const kinds = ev('Object.keys(SOUND_PALETTE)');
     check(
       'les 9 sons existants et les 3 nouveaux',
-      ['tap', 'good', 'wrong', 'win', 'coin', 'pop', 'tick', 'pouic', 'sparkle', 'hint', 'island', 'box'].every((k) =>
-        kinds.includes(k),
-      ),
+      [
+        'tap',
+        'good',
+        'wrong',
+        'win',
+        'coin',
+        'pop',
+        'tick',
+        'pouic',
+        'sparkle',
+        'hint',
+        'island',
+        'box',
+        'giggle',
+      ].every((k) => kinds.includes(k)),
+    );
+    // le rire (Monde des Chatouilles) : trois petits glissés sinus, qui montent et redescendent
+    const giggle = notesOf('playSound("giggle")');
+    later();
+    check(
+      'giggle : trois glissés sinus, famille 0,9',
+      giggle.length === 3 && giggle.every((o) => o.type === 'sine') && ev('SOUND_FAMILY.giggle') === 0.9,
     );
     const all = [];
     kinds.forEach((k) => {

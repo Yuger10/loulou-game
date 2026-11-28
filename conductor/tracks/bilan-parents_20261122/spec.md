@@ -1,5 +1,5 @@
 ---
-status: faite           # brouillon | validée | faite ; validée à la demande d'Amrou le 26/11/2026, livrée en v67 (S3 et S4 restent à juger par Amrou)
+status: faite           # brouillon | validée | faite ; validée à la demande d'Amrou le 26/11/2026, livrée en v72 (S3 et S4 restent à juger par Amrou)
 issue: 0
 size: S                  # S | M ; L se découpe
 migration: false

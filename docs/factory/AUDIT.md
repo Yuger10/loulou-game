@@ -116,7 +116,7 @@ Les agents copient ce qu'ils voient. Chaque point est mesuré sur `js/`.
 | `sw.js`, `manifest.json`, `index.html` | Un cache raté bloque l'appareil sur une vieille version |
 | `js/slices.cjs`, `test/slices.test.js`, `test/tools/boundaries.js` | Garde d'architecture : un agent ne doit pas l'assouplir pour faire passer son code |
 | `package.json`, `package-lock.json` | Supply chain |
-| Dessins des personnages (`js/entities/character/characters-art.js` et `characters-art-s2.js`, SVG des compagnons) | Assets (règle du profil « jeu HTML ») |
+| Dessins des personnages (`js/entities/character/characters-art.js`, `characters-art-s2.js` et `characters-art-s3.js`, SVG des compagnons) | Assets (règle du profil « jeu HTML ») |
 | `.github/workflows/**`, futurs `tests/holdout/**` | Le playbook les interdit aux agents |
 
 Données personnelles : prénoms et statistiques d'apprentissage d'un enfant, aujourd'hui **uniquement sur l'appareil**. Tout outil qui envoie des données hors de l'appareil (Sentry, Langfuse) change cette situation.

@@ -84,6 +84,30 @@ const BILAN_TIPS = {
   mirror: {
     tip: "Posez un ruban sur la table ; placez 3 objets d'un côté et demandez de les placer en miroir de l'autre côté.",
   },
+  trace: {
+    tip: 'Sur une ardoise ou dans la farine, tracez ensemble une lettre en partant du point choisi et en suivant son chemin.',
+  },
+  length: {
+    tip: 'Avec deux crayons, demandez lequel est le plus long, puis vérifiez en alignant leurs pointes.',
+  },
+  tens: {
+    tip: 'Rassemblez des petits objets par paquets de dix, puis comptez les paquets et ceux qui restent.',
+  },
+  order: {
+    tip: 'Alignez quelques jouets du plus petit au plus grand, puis demandez où placer le suivant.',
+  },
+  problems: {
+    tip: 'Racontez une petite histoire avec des objets : « Il y en a 3, puis 2 arrivent. Combien maintenant ? »',
+  },
+  code: {
+    tip: 'Inventez un code avec deux formes ou couleurs et laissez votre enfant retrouver le message caché.',
+  },
+  coding: {
+    tip: 'Choisissez un jouet à rejoindre et donnez ensemble des directions simples : avance, tourne, avance.',
+  },
+  sentence: {
+    tip: 'Piochez trois mots dans un livre et inventez ensemble une phrase drôle avec ces mots.',
+  },
   rangement: {
     name: '📦 Boîtes de rangement',
     tip: "Triez ensemble le linge ou les jouets selon une règle choisie par votre enfant : la couleur, la taille ou l'usage.",

@@ -3,7 +3,7 @@
 export {
   checkNewIsland,
   currentChar,
-  maybeSkyOpening,
+  maybeSeasonOpening,
   openDialogue,
   renderIslandCard,
   renderLagon,

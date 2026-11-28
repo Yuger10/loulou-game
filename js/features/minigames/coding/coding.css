@@ -1,0 +1,155 @@
+/* ---------- Mini-jeu : Le chemin de la plume (coding) ----------
+   La grille reprend celle du miroir. À 360 px de large : cases d'au moins
+   56 px en 4 × 4 et 5 × 5, 48 px en 6 × 6 ; flèches de la palette et « Go »
+   d'au moins 64 px. */
+.cd-wrap {
+  display: flex;
+  justify-content: center;
+  margin: 0 auto 8px;
+}
+.cd-grid {
+  --cell: 56px;
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(var(--n), var(--cell));
+  grid-auto-rows: var(--cell);
+  padding: 6px;
+  border-radius: var(--radius-lg, 24px);
+  background: linear-gradient(180deg, #fff7fb, #fff1b8);
+  border: 3px solid #fff;
+}
+.cd-grid[data-size="6"] {
+  --cell: 48px;
+}
+.cd-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 2px;
+  border-radius: 10px;
+  border: 2px solid #f3cfe0;
+  background: #fff;
+  font-size: 1.7rem;
+  line-height: 1;
+}
+.cd-cell.start {
+  border-style: dashed;
+  border-color: #c2457a;
+}
+.cd-cell.goal {
+  background: #fff6c9;
+  border-color: #e0a800;
+}
+.cd-cell.rock {
+  background: #eaf6e4;
+  border-color: #9bcf8a;
+}
+.cd-cell.cd-stop {
+  border-color: #e8344e;
+  box-shadow: 0 0 0 4px rgba(232, 52, 78, 0.45);
+}
+/* la plume : posée sur sa case par --r et --c, tournée par transform (angle cumulé) */
+.cd-feather {
+  position: absolute;
+  left: calc(6px + var(--c, 0) * var(--cell));
+  top: calc(6px + var(--r, 0) * var(--cell));
+  width: var(--cell);
+  height: var(--cell);
+  padding: 8px;
+  pointer-events: none;
+  transition:
+    left 0.3s ease,
+    top 0.3s ease,
+    transform 0.3s ease;
+}
+.cd-feather svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.cd-feather.cd-instant {
+  transition: none;
+}
+.cd-feather.cd-bump svg {
+  animation: cdBump 0.4s ease-in-out 2;
+}
+@keyframes cdBump {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  30% {
+    transform: translateY(-5px);
+  }
+  70% {
+    transform: translateY(3px);
+  }
+}
+/* le programme : une rangée de cases pointillées qui passe à la ligne */
+.cd-prog {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 4px;
+  margin: 0 auto 8px;
+  max-width: 340px;
+}
+.cd-slot {
+  display: flex;
+  width: 40px;
+  height: 44px;
+  border: 2px dashed #d9ccf2;
+  border-radius: 10px;
+}
+.cd-step {
+  flex: 1;
+  padding: 0;
+  border: 0;
+  border-radius: 8px;
+  background: #f4edff;
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: var(--ink);
+  cursor: pointer;
+}
+.cd-step.on {
+  background: #ffd95a;
+  box-shadow: 0 0 0 3px #e0a800;
+}
+.cd-step.ko {
+  background: #ffd3da;
+  box-shadow: 0 0 0 3px #e8344e;
+}
+.cd-pal {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.cd-op {
+  min-width: 64px;
+  min-height: 64px;
+  border: 3px solid #d9ccf2;
+  border-radius: 16px;
+  background: #fff;
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: var(--ink);
+  cursor: pointer;
+}
+.cd-op:disabled,
+.cd-step:disabled {
+  opacity: 0.6;
+}
+.cd-go {
+  min-height: 64px;
+  min-width: 140px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .cd-feather {
+    transition: none;
+  }
+  .cd-feather.cd-bump svg {
+    animation: none;
+  }
+}

@@ -96,8 +96,8 @@ function startGame(key, tier, age) {
       json(s1.map((id) => ev(`WORLDS.${id}.level`))) === json([1, 3, 6, 10, 14, 18, 22, 26]),
     );
     check(
-      'chaque île a un archipel (saison 1 ou 2)',
-      ev('Object.values(WORLDS).every(w=> w.saison===1 || w.saison===2)'),
+      'chaque île a un archipel (saison 1, 2 ou 3)',
+      ev('Object.values(WORLDS).every(w=> w.saison===1 || w.saison===2 || w.saison===3)'),
     );
     check(
       'le Ciel des Rêves : saison 2, ouvert au niveau 32 (après tout le Lagon), en montgolfière',
@@ -124,8 +124,11 @@ function startGame(key, tier, age) {
     );
     const tabs = d.querySelectorAll('#map-tabs .map-tab');
     check(
-      'deux onglets : le Lagon Magique et le Ciel des Rêves',
-      tabs.length === 2 && /Lagon Magique/.test(tabs[0].textContent) && /Ciel des Rêves/.test(tabs[1].textContent),
+      'les 3 premiers onglets : le Lagon Magique, le Ciel des Rêves, La Grande Expédition',
+      tabs.length >= 3 &&
+        /Lagon Magique/.test(tabs[0].textContent) &&
+        /Ciel des Rêves/.test(tabs[1].textContent) &&
+        /Grande Expédition/.test(tabs[2].textContent),
     );
     check(
       'niveau 31 : le Ciel est verrouillé (cadenas, « Niveau 32 »)',
@@ -272,7 +275,7 @@ function startGame(key, tier, age) {
     check('le chapitre de la saison 2 montre aussi Grisou', shown('.story-grisou .grisou'));
     ev('closeModal()');
     check("l'île des Boîtes est marquée comme découverte", ev('state.visited.includes("boites")'));
-    check('pas de deuxième ouverture', ev('maybeSkyOpening()') === false);
+    check('pas de deuxième ouverture', ev('maybeSeasonOpening()') === false);
   }
 
   section('Partie existante et migration');
@@ -311,7 +314,7 @@ function startGame(key, tier, age) {
     ev(`closeModal(); localStorage.setItem(currentSaveKey(), ${json(json(old))}); load(); refreshAll()`);
     check(
       "une partie déjà au niveau 37 : le Ciel s'ouvre au premier lancement",
-      ev('maybeSkyOpening()') === true && shown('.sky-open'),
+      ev('maybeSeasonOpening()') === true && shown('.sky-open'),
     );
     d.getElementById('sky-go').click();
     check('… suivi du prologue', shown('.story-grisou') && !!d.getElementById('story-next'));
@@ -630,10 +633,11 @@ function startGame(key, tier, age) {
     ev(`closeModal(); state.missions = ${LEVEL(5)}; state.storySolved = { lagon:true }; save(); openStoryJournal()`);
     const secs = d.querySelectorAll('.story-season');
     check(
-      'deux parties : Saison 1 et le Ciel des Rêves',
-      secs.length === 2 &&
+      'les 3 premières parties : Saison 1, le Ciel des Rêves, La Grande Expédition',
+      secs.length >= 3 &&
         /Saison 1/.test(secs[0].querySelector('h3').textContent) &&
-        /Ciel des Rêves/.test(secs[1].querySelector('h3').textContent),
+        /Ciel des Rêves/.test(secs[1].querySelector('h3').textContent) &&
+        /Grande Expédition/.test(secs[2].querySelector('h3').textContent),
     );
     check(
       'le Ciel est verrouillé avant le niveau 32 (chapitre fermé)',
