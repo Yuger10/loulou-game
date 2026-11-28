@@ -61,6 +61,9 @@ export {
   tensRound,
   traceRound,
 } from './difficulty-s3.js';
+export { melodyRound, notesRound } from './difficulty-s3-concert.js';
+/** @typedef {import('./difficulty-s3-concert.js').MelodyRound} MelodyRound */
+/** @typedef {import('./difficulty-s3-concert.js').NotesRound} NotesRound */
 /** @typedef {import('./difficulty-s3.js').CodeRound} CodeRound */
 /** @typedef {import('./difficulty-s3.js').CodingRound} CodingRound */
 /** @typedef {import('./difficulty-s3.js').LengthRules} LengthRules */

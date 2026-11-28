@@ -33,7 +33,7 @@ Remplacer `<cle>` par la clé du jeu (ex. `nesting`) et `<Jeu>` par son nom de f
 
 - [ ] `js/entities/difficulty/game-types.js` : la clé dans `GAME_TYPES`, et dans les tranches d'âge de `AGE_GAME_TYPES` où le jeu est proposé.
 - [ ] Qualité du code ajouté : le job CI « violations ajoutées » compare la PR à sa base avec le preset `.cothon/presets/oxlint/qualite.json` (un nouveau fichier fait 300 lignes au plus, une fonction 50 lignes et 3 paramètres au plus, complexité 20). Un jeu long se découpe en fichiers frères dans sa slice, et ses tests en plusieurs suites. Vérifier avant la PR : `bash .cothon/bin/new-violations.sh --base origin/main -- bash "$PWD/.cothon/bin/quality-check.sh" complexite --project .`
-- [ ] Taille des fichiers (`max-lines` à 800) : voir `conductor/checklist-ile.md`, section 2 bis (les jeux de la saison 3 mettent leur fonction de palier dans `js/entities/difficulty/difficulty-s3.js`, sur le modèle de `difficulty-s2.js`).
+- [ ] Taille des fichiers (`max-lines` à 800) : voir `conductor/checklist-ile.md`, section 2 bis (les jeux de la saison 3 mettent leur fonction de palier dans `js/entities/difficulty/difficulty-s3.js`, sur le modèle de `difficulty-s2.js` ; ce fichier est à la limite de 300 lignes : les jeux suivants prennent un fichier frère, comme `difficulty-s3-concert.js`).
 - [ ] `js/entities/difficulty/difficulty.js` : ses paramètres par palier (une fonction `<cle>Round(dd)` ou équivalent), ses essais dans `LIVES_TABLE`, et `NO_TIMER_KINDS` s'il ne doit pas avoir de minuteur.
 - [ ] `js/features/adaptive/adaptive.js` : sa phrase de progrès dans `PROGRESS_CHEERS`, et `GAME_TIER_MAX` s'il va au-delà du palier 5.
 - [ ] `js/features/parents/parents.js` : le jeu dans un groupe de `SKILL_GROUPS` (compétence de l'espace parents).

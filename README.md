@@ -43,7 +43,7 @@ Le code est rangé en **slices** sur 4 couches. Chaque fichier **importe** ce qu
 js/slices.cjs        manifeste (pour les outils) : couche, fichiers JS et CSS, ordre des slices, CSS_ORDER
 js/app/              main.js (le seul script d'index.html : charge les slices) et init.js (démarrage)
 js/features/         ce que l'enfant fait : minigame-engine/ (moteur) et minigames/<jeu>/, screen/ (en-tête des
-                     fenêtres), hints/ (indices 💡), island/, map/, story/, bag/ (sac, album), market/, quests/,
+                     fenêtres), hints/ (indices 💡), xylophone/ (lames, portée, xylophone d'or, v72), island/, map/, story/, bag/ (sac, album), market/, quests/,
                      profile/ (en-tête, accueil), wallet/, adaptive/ (niveau, progrès), party/ (chacun son tour,
                      course), players/, gains/, gifts/, wardrobe/, parents/, seasons/, backup/, music/,
                      companion-team/ (équipe et spécialités, v52), squishies/ (collection, chambre, rangement, v53)

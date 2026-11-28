@@ -38,6 +38,8 @@ const GAME_TYPES = [
   'code',
   'coding',
   'sentence',
+  'notes',
+  'melody',
 ];
 
 /* Quels types de défis proposer selon l'âge (programme de l'école
@@ -81,6 +83,8 @@ const AGE_GAME_TYPES = [
   // « Mesure les crayons » (length) : en GS, le plus long de 2 crayons alignés.
   // « Les paniers de dix » (tens) : en GS, ranger 11 à 19 dumplings dans un panier de dix.
   // « La commande du chef » (order) : en GS, retenir 1 à 3 dumplings d'une seule couleur.
+  // « Do, ré, mi » (notes) : en GS, retrouver la lame d'une note entendue, parmi 3.
+  // « La mélodie » (melody) : en GS, rejouer 3 notes sur 3 lames, les points sous les yeux.
   {
     max: 5,
     types: [
@@ -111,6 +115,8 @@ const AGE_GAME_TYPES = [
       'length',
       'tens',
       'order',
+      'notes',
+      'melody',
     ],
   },
   // 6 ans et plus (ou âge non précisé) : tous les jeux, dont le calcul
@@ -164,6 +170,8 @@ const GAME_LIST = [
   { key: 'code', emoji: '🔐', name: 'Le code secret' },
   { key: 'coding', emoji: '🪶', name: 'Le chemin de la plume' },
   { key: 'sentence', emoji: '📝', name: 'La phrase rigolote' },
+  { key: 'notes', emoji: '🎹', name: 'Do, ré, mi' },
+  { key: 'melody', emoji: '🎶', name: 'La mélodie' },
 ];
 
 export { GAME_LIST, gameTypesForAge };

@@ -164,6 +164,7 @@ Chaque mini-jeu a maintenant son propre niveau pour chaque enfant (`js/adaptive.
 
 | v72 | le bilan de la semaine pour les parents |
 | v73 | Squishies : des boîtes de rangement qui restent (idée de la joueuse) |
+| v74 | L'Île du Grand Concert (saison 3, île 5, grand final) : mini-jeux « Do, ré, mi » et « La mélodie », le xylophone d'or |
 
 | v67 | Ouverture de la saison 3 « La Grande Expédition » (cachée jusqu'à la première île) |
 | v68 | L'Île des Crayons (saison 3, île 1) : mini-jeux « Trace avec ton doigt » et « Mesure les crayons » |

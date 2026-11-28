@@ -37,8 +37,9 @@ import { favoritesOf, friendHearts, friendPoints, openGiftPicker } from '../gift
 import { renderRaceTrack } from '../party/index.js';
 import { ensureQuests, renderQuests } from '../quests/index.js';
 import { bindQuit, gameHeader } from '../screen/index.js';
-import { openSeasonPrologue, openStoryChapter, STORY, storySolved } from '../story/index.js';
+import { openSeasonPrologue, openStoryChapter, season3Done, STORY, storySolved } from '../story/index.js';
 import { addCoins } from '../wallet/index.js';
+import { openGoldenXylophone } from '../xylophone/index.js';
 import { renderLiveIsland } from './island.js';
 import { tickleBind, tickleButtonHTML } from './tickle.js';
 
@@ -397,6 +398,20 @@ function contextualLine(charId) {
   return lines.length && random() < 0.6 ? pickRandom(lines) : null;
 }
 
+// Le trésor de Zap, gardé par Stella une fois le grand final de la saison 3 joué
+/** @param {string} charId @returns {string} le bouton du xylophone d'or, pour Stella seulement */
+function goldenXyloButtonHTML(charId) {
+  if (charId !== 'stella' || !season3Done()) return '';
+  return '<button class="btn-craft" id="btn-xylo">🎼 Le xylophone d\'or</button>';
+}
+function goldenXyloBind() {
+  setHandler(document.getElementById('btn-xylo'), 'click', () => {
+    playSound('tap');
+    closeModal();
+    openGoldenXylophone();
+  });
+}
+
 /** @param {string} charId */
 function openDialogue(charId) {
   const c = CHARACTERS[charId];
@@ -414,6 +429,7 @@ function openDialogue(charId) {
     ${tickleButtonHTML(charId)}
     ${'<button class="btn-craft gift-open" id="btn-gift">🎁 Offrir un objet</button>'}
     ${c.noGames ? '' : '<button class="btn-ghost" id="btn-random">🎲 Surprise</button>'}
+    ${goldenXyloButtonHTML(charId)}
     <button class="btn-ghost" id="btn-close">Pas maintenant</button>
   `);
   bindSpeakButtons();
@@ -437,6 +453,7 @@ function openDialogue(charId) {
       playSound('tap');
       openGiftPicker(charId);
     });
+  goldenXyloBind();
   setHandler(document.getElementById('btn-close'), 'click', () => {
     if (window.speechSynthesis) speechSynthesis.cancel();
     closeModal();

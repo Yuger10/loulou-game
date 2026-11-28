@@ -1,0 +1,114 @@
+/* =====================================================================
+     Le xylophone — Île du Grand Concert (saison 3)
+     Huit lames au plus sur une ligne, sans défilement : à 360 px d'écran la
+     fenêtre laisse 320 px, soit 8 lames de 36 px et 7 espaces de 4 px.
+     ===================================================================== */
+.xylo {
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+  margin: 0 auto 8px;
+}
+.xylo-lame {
+  position: relative;
+  flex: 0 1 64px;
+  min-width: 36px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px;
+  padding: 0 0 14px;
+  border: 3px solid #2b2f6b;
+  border-radius: 10px;
+  background: #dfe3f2;
+  cursor: pointer;
+  transition:
+    transform 0.12s,
+    filter 0.12s;
+}
+@media (max-width: 355px) {
+  .xylo-lame {
+    min-width: 30px;
+  }
+}
+/* les deux rivets clairs, en haut et en bas */
+.xylo-lame::before,
+.xylo-lame::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  width: 8px;
+  height: 8px;
+  margin-left: -4px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.75);
+}
+.xylo-lame::before {
+  top: 6px;
+}
+.xylo-lame::after {
+  bottom: 3px;
+}
+.xylo-lame.lit,
+.xylo-lame:active {
+  transform: scale(1.06);
+  filter: brightness(1.2);
+}
+.xylo-name {
+  min-width: 26px;
+  padding: 1px 4px;
+  border-radius: 999px;
+  background: #fff;
+  color: #2b2f6b;
+  font-size: 0.8rem;
+  font-weight: 900;
+  line-height: 1.3;
+}
+.staff {
+  display: block;
+  height: 120px;
+  margin: 0 auto;
+}
+/* ---------- le xylophone d'or (xylo-gold.js) ---------- */
+.xylo-gold {
+  position: relative;
+}
+.xylo-gold .xylo-lame {
+  background: #f7c948;
+  border-color: #b8860b;
+}
+/* un petit rond de la couleur de la note : la lame dorée garde son repère */
+.xylo-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 2px solid #2b2f6b;
+}
+.xylo-float {
+  position: absolute;
+  top: 0;
+  margin-left: -10px;
+  font-size: 1.8rem;
+  font-weight: 900;
+  pointer-events: none;
+  animation: xyloFloat 0.9s ease-out forwards;
+}
+@keyframes xyloFloat {
+  from {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateY(-60px);
+    opacity: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .xylo-float {
+    animation-duration: 0.01s;
+  }
+}

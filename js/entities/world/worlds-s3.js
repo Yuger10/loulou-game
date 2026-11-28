@@ -78,6 +78,25 @@ const WORLDS_S3 = {
     intro: 'Bienvenue au Monde des Chatouilles, où tout le monde rit pour un rien 🪶',
     sceneEmpty: 'Ton monde attend ses décorations rigolotes !',
   },
+  // le grand final de la saison : la carte de Zap, complète, mène ici
+  concert: {
+    name: "L'Île du Grand Concert",
+    emoji: '🎼',
+    level: 102,
+    diff: 6,
+    saison: 3,
+    short: 'Concert',
+    subtitle: 'La grande scène en plein air',
+    // son mini-jeu, selon l'âge : les notes avant 7 ans, la mélodie ensuite
+    game: (age) => (age && age < 7 ? 'notes' : 'melody'),
+    map: { x: 50, y: 22 },
+    shape: 'concert',
+    icon: '🎼',
+    sand: '#FFF1D6',
+    land: '#E9A0A8',
+    intro: "Bienvenue sur l'Île du Grand Concert : ce soir, tout le monde joue ! 🎼",
+    sceneEmpty: 'Ta grande scène attend ses décorations de fête !',
+  },
 };
 
 export { WORLDS_S3 };

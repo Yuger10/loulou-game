@@ -83,7 +83,7 @@ const ALL = () => ev('Object.keys(SQUISHIES)');
   {
     const series = ev('SQUISHY_SERIES_ORDER');
     check(
-      '3 séries au lancement, puis les séries des îles du Ciel (Boîtes, Jouets doux, Bonbons, Instruments, Petites bêtes, Licornes), puis celles de la Grande Expédition (Papeterie, Dumplings, Coffres, Guilis)',
+      '3 séries au lancement, puis les séries des îles du Ciel (Boîtes, Jouets doux, Bonbons, Instruments, Petites bêtes, Licornes), puis celles de la Grande Expédition (Papeterie, Dumplings, Coffres, Guilis, Concert)',
       json(series) ===
         json([
           'capy',
@@ -99,11 +99,12 @@ const ALL = () => ev('Object.keys(SQUISHIES)');
           'dumplings',
           'coffres',
           'guilis',
+          'concert',
         ]),
     );
     check(
-      '6 modèles par série (78 squishies)',
-      series.every((s) => ev(`squishiesOf("${s}").length`) === 6) && ALL().length === 78,
+      '6 modèles par série (84 squishies)',
+      series.every((s) => ev(`squishiesOf("${s}").length`) === 6) && ALL().length === 84,
     );
     check(
       'par série : 4 communs, 1 rare, 1 ✨',
@@ -118,7 +119,7 @@ const ALL = () => ev('Object.keys(SQUISHIES)');
     );
     check(
       'noms uniques et faciles à dire',
-      new Set(ev('Object.values(SQUISHIES).map(m=> m.name)')).size === 78 &&
+      new Set(ev('Object.values(SQUISHIES).map(m=> m.name)')).size === 84 &&
         ev('Object.values(SQUISHIES).every(m=> m.say.length > 3)'),
     );
     check(

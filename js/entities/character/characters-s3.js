@@ -2,6 +2,8 @@
    ses personnages ; characters.js (au plafond de 800 lignes) les étale à la
    fin de CHARACTERS. */
 
+import { CHARACTERS_CONCERT } from './characters-concert.js';
+
 /** @type {Record<string, import('./characters.js').Character>} */
 const CHARACTERS_S3 = {
   // ---- L'Île des Crayons (saison 3, île 1) : Gribouille est le guide ;
@@ -219,6 +221,7 @@ const CHARACTERS_S3 = {
       "Mes piquants sont tout doux aujourd'hui. On fait un jeu ?",
     ],
   },
+  ...CHARACTERS_CONCERT, // l'Île du Grand Concert (characters-concert.js)
 };
 
 /* Les chatouilles (Monde des Chatouilles) : on chatouille seulement qui en a

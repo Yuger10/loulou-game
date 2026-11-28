@@ -163,6 +163,15 @@ const ITEMS = {
   lunettesrigolotes: { emoji: '🥸', name: 'Lunettes rigolotes', price: 8, world: 'chatouilles' },
   bonbonpetillant: { emoji: '🍬', name: 'Bonbon qui pétille', price: 5, world: 'chatouilles' },
   sifflet: { emoji: '📯', name: 'Trompette à rires', price: 7, world: 'chatouilles' },
+  // Île du Grand Concert (saison 3) ; personne ne donne le projecteur, le casque ni le saxophone
+  billetconcert: { emoji: '🎟️', name: 'Billet de concert', price: 5, world: 'concert' },
+  programme: { emoji: '📋', name: 'Programme du concert', price: 4, world: 'concert' },
+  etoilescene: { emoji: '🌟', name: 'Étoile de la scène', price: 8, world: 'concert' },
+  lunettesstar: { emoji: '🕶️', name: 'Lunettes de star', price: 6, world: 'concert' },
+  ampoule: { emoji: '💡', name: 'Ampoule de scène', price: 5, world: 'concert' },
+  projecteur: { emoji: '🔦', name: 'Projecteur', price: 7, world: 'concert' },
+  casque: { emoji: '🎧', name: 'Casque de musique', price: 6, world: 'concert' },
+  saxo: { emoji: '🎷', name: 'Saxophone doré', price: 9, world: 'concert' },
 };
 
 /** @type {Record<string, CraftedItem>} */
@@ -502,6 +511,21 @@ const CRAFTED = {
     world: 'chatouilles',
     recipe: { nezclown: 1, boiterires: 1, sifflet: 1 },
   },
+  // Île du Grand Concert (saison 3)
+  etincelles: {
+    emoji: '🎇',
+    name: "Feu d'étincelles",
+    price: 22,
+    world: 'concert',
+    recipe: { ampoule: 2, etoilescene: 1 },
+  },
+  medaille: {
+    emoji: '🥇',
+    name: 'Médaille du concert',
+    price: 20,
+    world: 'concert',
+    recipe: { saxo: 1, programme: 1, billetconcert: 1 },
+  },
 };
 
 /** @type {Record<string, Item>} */
@@ -660,6 +684,12 @@ const DECOS = {
   fanionsrireD: { emoji: '🎏', name: 'Fanions rigolos', price: 18, world: 'chatouilles' },
   canapeD: { emoji: '🛋️', name: 'Canapé des guilis', price: 14, world: 'chatouilles' },
   nuagecoussinD: { emoji: '☁️', name: 'Nuage-coussin', price: 12, world: 'chatouilles' },
+  // Île du Grand Concert (saison 3)
+  sceneD: { emoji: '🏟️', name: 'Grande scène', price: 40, world: 'concert' },
+  roueD: { emoji: '🎡', name: 'Grande roue de la fête', price: 30, world: 'concert' },
+  enceinteD: { emoji: '🔊', name: 'Enceinte géante', price: 18, world: 'concert' },
+  banderolesD: { emoji: '🎏', name: 'Banderoles', price: 14, world: 'concert' },
+  chaisesD: { emoji: '🪑', name: 'Rang de chaises', price: 12, world: 'concert' },
 };
 
 const ALBUM_REWARD = 100;

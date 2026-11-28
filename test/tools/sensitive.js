@@ -26,7 +26,7 @@ const SENSITIVE = [
   /^(package\.json|bun\.lock|bunfig\.toml)$/, // dépendances et chaîne d'approvisionnement
   /^(\.claude\/|\.mcp\.json$|\.vscode\/)/, // config de l'agent et de l'éditeur (cothon 0.4.0-4)
   /^test\/tools\/sensitive\.js$/, // ce garde lui-même
-  /^js\/entities\/character\/characters-art(-s2|-s3)?\.js$/, // dessins des personnages (saisons 2 et 3 : characters-art-s2.js, characters-art-s3.js)
+  /^js\/entities\/character\/characters-art(-s2|-s3|-s3-concert)?\.js$/, // dessins des personnages (saisons 2 et 3 : characters-art-s2.js, characters-art-s3.js, characters-art-s3-concert.js)
 ];
 const PROTECTED = [/^test\/holdout\//, /^\.github\//];
 
@@ -52,20 +52,21 @@ if (process.argv.includes('--selftest')) {
     ],
     ['le garde lui-même est sensible', classify(['test/tools/sensitive.js'], []), { s: 1, p: 0, b: false }],
     [
-      'les dessins des personnages sont sensibles (les trois fichiers)',
+      'les dessins des personnages sont sensibles (les quatre fichiers)',
       classify(
         [
           'js/entities/character/characters-art.js',
           'js/entities/character/characters-art-s2.js',
           'js/entities/character/characters-art-s3.js',
+          'js/entities/character/characters-art-s3-concert.js',
         ],
         [],
       ),
-      { s: 3, p: 0, b: false },
+      { s: 4, p: 0, b: false },
     ],
     [
       'les personnages de la saison 3 (pas leurs dessins) ne sont pas sensibles',
-      classify(['js/entities/character/characters-s3.js'], []),
+      classify(['js/entities/character/characters-s3.js', 'js/entities/character/characters-concert.js'], []),
       { s: 0, p: 0, b: false },
     ],
   ];

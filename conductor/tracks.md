@@ -140,7 +140,7 @@ Registre des tracks Conductor, **dans l'ordre d'implémentation**. Feuille de ro
 
 ---
 
-- [ ] **Track: Saison 3, île 5 : 🎼 L'Île du Grand Concert, niveau 102 (grand final de la saison 3)**
+- [x] **Track: Saison 3, île 5 : 🎼 L'Île du Grand Concert, niveau 102 (grand final de la saison 3) (v74)**
 *Link: [./tracks/monde-concert_20261122/](./tracks/monde-concert_20261122/)*
 
 ---

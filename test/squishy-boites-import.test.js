@@ -26,7 +26,7 @@ const {
 (async () => {
   await start();
 
-  section('État neuf et migration (spec 1, 2)');
+  section('État neuf et migration depuis v10 (spec 1, 2)');
   const V = ev('SAVE_VERSION');
   await (async () => {
     check(
@@ -38,7 +38,7 @@ const {
     const shelf = Array(12).fill(null);
     shelf[3] = 'donut';
     const old = {
-      v: V - 1,
+      v: 10,
       coins: 7,
       name: 'Lou',
       avatar: '👧',
@@ -67,7 +67,7 @@ const {
       'vrai chargement : version courante, rien de perdu',
       ev('state.v') === V && kept(sq) && ev('state.coins') === 7,
     );
-    check('une partie sans squishies ne plante pas la migration', ev(`migrate({ v: ${V - 1}, coins: 1 }).v`) === V);
+    check('une partie sans squishies ne plante pas la migration', ev(`migrate({ v: 10, coins: 1 }).v`) === V);
   })();
 
   section('Nettoyage des boîtes importées (spec 3 à 11, 5b, 11b)');

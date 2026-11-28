@@ -1,3 +1,5 @@
+import { state } from '../../entities/game-state/index.js';
+
 /* Les paysages des îles de la saison 3 « La Grande Expédition ». island.js
    les étale à la fin de ISLE_SCENERY. Même cadre que les autres paysages :
    480 × 360, le sol vers y = 250. */
@@ -103,6 +105,37 @@ function isleFloatingFeather(at, rot, fill) {
     <path d="M${x} ${y - 12} V${y + 22}" stroke="#fff" stroke-width="2" stroke-linecap="round"/></g>`;
 }
 
+/**
+ * Sur l'estrade du Grand Concert : le trésor de Zap. Avant le grand final, un
+ * drap violet et un « ? » ; après, le xylophone d'or (8 lames, de la plus
+ * longue à la plus courte). Jamais les deux.
+ * @returns {string}
+ */
+function isleConcertTreasure() {
+  if (!state.season3Done)
+    return `<g class="ls-drap"><path d="M196 230 Q198 190 220 184 Q240 174 260 184 Q282 190 284 230Z" fill="#7B5CC0" stroke="#4B3690" stroke-width="3" stroke-linejoin="round"/>
+      <text x="240" y="220" text-anchor="middle" font-size="30" font-weight="900" fill="#fff">?</text></g>`;
+  const lames = Array.from({ length: 8 }, (_, i) => {
+    const h = 50 - i * 3;
+    return `<rect class="ls-xylo-lame" x="${197 + i * 11}" y="${204 - h / 2}" width="9" height="${h}" rx="2.5" fill="#F7C948" stroke="#B8860B" stroke-width="2"/>`;
+  }).join('');
+  return `<g class="ls-xylo-or"><path d="M192 196 L288 200 M192 212 L288 208" stroke="#7A4524" stroke-width="4" stroke-linecap="round"/>${lames}</g>`;
+}
+/**
+ * Un rang de trois petites chaises, vues de dos.
+ * @param {number} x le bord gauche du rang
+ * @param {number} y le bas des chaises
+ * @returns {string}
+ */
+function isleChairRow(x, y) {
+  return [0, 24, 48]
+    .map(
+      (dx) =>
+        `<path d="M${x + dx} ${y} v-18 h12 v18 M${x + dx} ${y - 8} h12" fill="none" stroke="#8A2E3B" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>`,
+    )
+    .join('');
+}
+
 /** @type {Record<string, (w: import('./island.js').World) => string>} */
 const ISLE_SCENERY_S3 = {
   // Île des Crayons (saison 3) : une page de cahier ; trois crayons géants
@@ -175,6 +208,26 @@ const ISLE_SCENERY_S3 = {
       <ellipse cx="226" cy="224" rx="56" ry="13" fill="#FFF7FB"/><path d="M186 224 h14 M212 224 h14 M238 224 h14" stroke="#FF8FB8" stroke-width="6" stroke-linecap="round"/></g>
     <path d="M150 360 C168 322 196 290 196 258" fill="none" stroke="${w.sand}" stroke-width="18" stroke-linecap="round"/>
     <g fill="#fff" opacity=".7"><circle cx="110" cy="306" r="2"/><circle cx="340" cy="318" r="2"/></g>`,
+  // Île du Grand Concert (saison 3) : une scène en plein air ; une estrade en
+  // bois, deux rideaux rouges relevés, une guirlande d'ampoules entre deux
+  // mâts, trois rangs de chaises, des notes qui flottent. Sur l'estrade, le
+  // trésor de Zap : sous un drap, puis le xylophone d'or
+  concert: (w) => `
+    <g class="ls-cloud c3" fill="#fff" opacity=".9"><ellipse cx="96" cy="50" rx="44" ry="13"/><ellipse cx="398" cy="44" rx="50" ry="14"/></g>
+    <path d="M0 254 C140 240 340 240 480 254 L480 360 L0 360 Z" fill="${w.land}"/>
+    <path d="M124 252 V66 M356 252 V66" stroke="#7A4524" stroke-width="6" stroke-linecap="round"/>
+    <path d="M124 72 Q240 112 356 72" fill="none" stroke="#5A3A22" stroke-width="2"/>
+    <g stroke="#5A3A22" stroke-width="1.5"><circle cx="153" cy="81" r="6" fill="#F0544F"/><circle cx="182" cy="87" r="6" fill="#FFD93D"/><circle cx="211" cy="91" r="6" fill="#5CC96B"/><circle cx="240" cy="92" r="6" fill="#3FC1C9"/><circle cx="269" cy="91" r="6" fill="#4A7BEA"/><circle cx="298" cy="87" r="6" fill="#A66FE0"/><circle cx="327" cy="81" r="6" fill="#FF9A3C"/></g>
+    <rect x="150" y="122" width="180" height="108" fill="#FFF8F0" opacity=".55"/>
+    <g fill="#C8384B" stroke="#8A2E3B" stroke-width="3" stroke-linejoin="round">
+      <path d="M146 118 Q184 150 164 196 Q154 214 146 230Z"/><path d="M334 118 Q296 150 316 196 Q326 214 334 230Z"/>
+      <path d="M142 108 H338 V124 Q313.5 138 289 124 Q264.5 138 240 124 Q215.5 138 191 124 Q166.5 138 142 124Z"/></g>
+    <g stroke="#7A4524" stroke-width="3" stroke-linejoin="round"><rect x="140" y="226" width="200" height="30" rx="5" fill="#E0A96D"/><path d="M140 240 H340 M190 226 V240 M290 226 V240 M240 240 V256" fill="none" stroke-width="2"/></g>
+    ${isleConcertTreasure()}
+    ${isleChairRow(28, 300)}${isleChairRow(40, 322)}${isleChairRow(28, 344)}
+    <g fill="#fff" opacity=".85"><circle cx="70" cy="150" r="5"/><rect x="73" y="130" width="2.4" height="20"/><circle cx="412" cy="130" r="5"/><rect x="415" y="110" width="2.4" height="20"/><circle cx="400" cy="196" r="4"/><rect x="402.4" y="180" width="2" height="16"/></g>
+    <path d="M240 360 C246 330 244 300 240 262" fill="none" stroke="${w.sand}" stroke-width="18" stroke-linecap="round"/>
+    <g fill="#fff" opacity=".7"><circle cx="130" cy="312" r="2"/><circle cx="350" cy="322" r="2"/></g>`,
 };
 
 export { ISLE_SCENERY_S3 };

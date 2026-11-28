@@ -71,6 +71,12 @@ const BILAN_TIPS = {
     tip: 'Faites une vraie recette ensemble : votre enfant verse et mesure avec le verre doseur, les cuillères ou la balance.',
   },
   rhythm: { tip: 'Tapez dans les mains un rythme court (long, court, court) et demandez de le refaire.' },
+  notes: {
+    tip: 'Chantez do, ré, mi ensemble, puis jouez ces trois notes sur un xylophone sans regarder les lames.',
+  },
+  melody: {
+    tip: 'Jouez une courte suite de notes sur un xylophone, puis demandez à votre enfant de la refaire.',
+  },
   pitch: {
     tip: "Tapez doucement sur des verres plus ou moins remplis d'eau : lequel fait le son le plus aigu ?",
   },

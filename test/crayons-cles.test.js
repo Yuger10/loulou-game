@@ -44,8 +44,9 @@ function cles() {
   unique('objets, recettes et décorations (ITEMS + CRAFTED + DECOS)', items, 150);
   const chars = keysOf(E + 'character/characters.js', 'CHARACTERS').concat(
     keysOf(E + 'character/characters-s3.js', 'CHARACTERS_S3'),
+    keysOf(E + 'character/characters-concert.js', 'CHARACTERS_CONCERT'),
   );
-  unique('personnages (CHARACTERS + CHARACTERS_S3)', chars, 61);
+  unique('personnages (CHARACTERS + CHARACTERS_S3 + CHARACTERS_CONCERT)', chars, 61);
   const squishies = keysOf(E + 'squishy/squishies.js', 'SQUISHIES').concat(
     keysOf(E + 'squishy/squishies-s3.js', 'SQUISHIES_S3'),
   );

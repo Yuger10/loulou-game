@@ -621,6 +621,7 @@ const SQ_BOX_COLORS = {
   papeterie: ['#FFE9A8', '#B8901A'], // jaune crayon
   dumplings: ['#DDF0D6', '#3F7A4A'], // vert bambou
   guilis: ['#FFF1B8', '#8A3D6B'], // jaune plume et prune
+  concert: ['#FFE7A8', '#8A2E3B'], // or et rouge velours
 };
 
 // String : sans série (boîte mystère), null et undefined restent des clés absentes

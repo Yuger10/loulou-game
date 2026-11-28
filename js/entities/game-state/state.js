@@ -13,7 +13,7 @@ const CRATE_COUNT_MAX = 8;
 const CRATE_ITEMS_MAX = 6;
 
 /* ---------- État ---------- */
-const SAVE_VERSION = 11;
+const SAVE_VERSION = 12;
 
 /* Les types de la partie : ils décrivent DEFAULT_STATE, champ par champ.
    Les tables (inventaire, amitiés…) sont indexées par un id d'objet, de
@@ -111,6 +111,7 @@ const SAVE_VERSION = 11;
  *   skyIntroSeen: boolean,
  *   expeditionIntroSeen: boolean,
  *   season2Done: boolean,
+ *   season3Done: boolean,
  *   decoPos: Record<string, { x: number, y: number }>,
  *   helped: { date: string, ids: Record<string, number> } | null,
  *   tipDragDeco: boolean,
@@ -160,6 +161,7 @@ const DEFAULT_STATE = {
   skyIntroSeen: false, // l'ouverture du Ciel des Rêves (saison 2, v55) déjà montrée
   expeditionIntroSeen: false, // l'ouverture de La Grande Expédition (saison 3) déjà montrée
   season2Done: false, // le grand final de la saison 2 (Royaume Arc-en-ciel) déjà joué
+  season3Done: false, // le grand final de la saison 3 (Grand Concert) déjà joué : le xylophone d'or est gagné
   // l'île vivante (js/features/island) : ces champs étaient posés sans être ici, et
   // load() ne garde que les champs de DEFAULT_STATE : ils se perdaient au redémarrage
   decoPos: {}, // place des décorations que l'enfant a fait glisser : { clé: { x, y } }
@@ -307,6 +309,11 @@ function migrate(saved) {
     const sq = saved.squishies;
     if (sq && typeof sq === 'object' && !Array.isArray(sq.crates))
       sq.crates = Array.from({ length: CRATE_COUNT_MIN }, crateBlank);
+  }
+  if (v < 12) {
+    // le Grand Concert : le grand final de la saison 3 (une fois) ; le xylophone d'or est
+    // gagné si et seulement si ce drapeau est vrai
+    saved.season3Done = false;
   }
   saved.v = SAVE_VERSION;
   return saved;

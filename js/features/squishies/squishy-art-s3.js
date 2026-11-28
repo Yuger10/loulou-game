@@ -216,6 +216,54 @@ const SQ_ART_S3 = {
     front: () =>
       `<g class="sq-deco" fill="#fff" stroke="#B98500" stroke-width="1.5"><circle cx="40" cy="30" r="3.4"/><circle cx="50" cy="26" r="3.4"/><circle cx="60" cy="30" r="3.4"/></g>`,
   },
+  // 🎼 Concert (l'Île du Grand Concert)
+  'micro-mochi': {
+    body: 'rond',
+    face: {},
+    faceY: 68,
+    back: () => `<rect x="43" y="88" width="14" height="22" rx="5" fill="#7C8E99" stroke="#4A5963" stroke-width="3"/>`,
+    front: () =>
+      `<path class="sq-deco" d="M18 46 A34 34 0 0 1 82 46Z" fill="#C9D3DA" stroke="#7C8E99" stroke-width="2.5" stroke-linejoin="round"/><path class="sq-deco" d="M30 46 V30 M42 46 V23 M54 46 V22 M66 46 V27 M24 36 H76" fill="none" stroke="#7C8E99" stroke-width="1.8"/>`,
+  },
+  'guitare-guimauve': {
+    body: 'ovale-v',
+    face: {},
+    faceY: 56,
+    back: () =>
+      `<g stroke="#5A3A22" stroke-width="3" stroke-linejoin="round"><path d="M60 30 L86 -2 L94 6 L70 38Z" fill="#8A5A2B"/><path d="M84 -4 L98 -2 L96 12Z" fill="#5A3A22"/></g><g fill="#FFD95A" stroke="#5A3A22" stroke-width="1.5"><circle cx="82" cy="-4" r="3"/><circle cx="92" cy="-6" r="3"/><circle cx="100" cy="2" r="3"/></g>`,
+    front: () => `<circle class="sq-deco" cx="50" cy="82" r="8" fill="#5A3A22" opacity=".85"/>`,
+  },
+  'note-croche': {
+    body: 'ovale-v',
+    face: {},
+    faceY: 62,
+    back: () =>
+      `<path d="M76 54 V4 Q98 8 98 28" fill="none" stroke="#2B2140" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>`,
+  },
+  'billet-dore': {
+    body: 'carre',
+    face: {},
+    faceY: 62,
+    front: () =>
+      `<g class="sq-deco" fill="#fff" stroke="#C99A00" stroke-width="3"><path d="M13 50 a9 9 0 0 1 0 18Z"/><path d="M87 50 a9 9 0 0 0 0 18Z"/></g><path class="sq-deco" d="M72 30 l2.4 5 l5.5 .8 l-4 3.8 l1 5.5 l-4.9 -2.6 l-4.9 2.6 l1 -5.5 l-4 -3.8 l5.5 -.8z" fill="#fff" stroke="#C99A00" stroke-width="1.6"/>`,
+  },
+  'fauvette-doremi': {
+    body: 'rond',
+    face: { beak: true },
+    faceY: 60,
+    back: (c) =>
+      `<g fill="${c.fill}" stroke="${c.edge}" stroke-width="3.5" stroke-linejoin="round"><path d="M16 52 Q-4 62 6 84 Q20 78 22 62Z"/><path d="M84 52 Q104 62 94 84 Q80 78 78 62Z"/></g><g fill="#2B2140"><circle cx="66" cy="10" r="4.6"/><rect x="68.6" y="-8" width="2.6" height="18"/></g>`,
+    front: () => `<ellipse class="sq-deco" cx="50" cy="84" rx="16" ry="8" fill="#fff" opacity=".7"/>`,
+  },
+  'cle-sol-etoilee': {
+    body: 'ovale-v',
+    face: {},
+    faceY: 62,
+    back: () =>
+      `<path d="M50 112 V4 Q50 -8 62 -4 Q74 2 66 16 Q58 28 44 30" fill="none" stroke="#E0A800" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="48" cy="112" r="5" fill="#E0A800"/>`,
+    front: () =>
+      `<path class="sq-deco" d="M26 84 l2.4 5 l5.5 .8 l-4 3.8 l1 5.5 l-4.9 -2.6 l-4.9 2.6 l1 -5.5 l-4 -3.8 l5.5 -.8z M74 34 l2.4 5 l5.5 .8 l-4 3.8 l1 5.5 l-4.9 -2.6 l-4.9 2.6 l1 -5.5 l-4 -3.8 l5.5 -.8z" fill="#FFE45C" stroke="#B8780A" stroke-width="1.6"/>`,
+  },
 };
 
 export { SQ_ART_S3 };

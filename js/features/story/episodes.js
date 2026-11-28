@@ -564,6 +564,36 @@ const EPISODES = {
       ],
     },
   ],
+  // Île du Grand Concert (saison 3) : le xylophone qui dort, les amis qui arrivent
+  concert: [
+    {
+      by: 'doremi',
+      title: 'La gamme du matin',
+      find: '🎵',
+      lines: [
+        "Ce matin, j'ai chanté la gamme en entier : do, ré, mi, fa, sol, la, si, do !",
+        "Tous les oiseaux de l'île ont répondu. Le concert approche !",
+      ],
+    },
+    {
+      by: 'xylo',
+      title: 'Le xylophone qui dort',
+      find: '🗺️',
+      lines: [
+        "Zap dit qu'un vieux xylophone tout brillant dort quelque part sur cette île.",
+        'Sa carte le sait. Il ne lui manque que son dernier morceau !',
+      ],
+    },
+    {
+      by: 'trompi',
+      title: 'Tout le monde arrive',
+      find: '🎟️',
+      lines: [
+        "Pouêêt ! J'ai vu des avions en papier dans le ciel : tous nos amis de l'expédition arrivent pour le concert !",
+        'Il y a Gribouille, Bao, Clémence et Plumette. Il ne manque plus que toi !',
+      ],
+    },
+  ],
 };
 
 /** @param {string} world */
