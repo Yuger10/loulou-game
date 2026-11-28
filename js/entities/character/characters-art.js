@@ -3,6 +3,7 @@
    et charFace sont globaux (le jeu n'a pas de modules, des noms comme
    « face » ou « robot » entreraient vite en collision). */
 import { season2Art } from './characters-art-s2.js';
+import { season3Art } from './characters-art-s3.js';
 import { CHARACTERS } from './characters.js';
 
 /**
@@ -730,6 +731,7 @@ const CHAR_ART = (function () {
   );
   // la saison 2 : dans characters-art-s2.js (fichier trop long), avec les mêmes outils
   season2Art(ART, { AI, AM, O, eyes, cheeks, smile, svg, human, beast, horse });
+  season3Art(ART, { AI, AM, O, eyes, cheeks, smile, svg, human, beast, horse });
   return ART;
 })();
 /** @param {string} id */

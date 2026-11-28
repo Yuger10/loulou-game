@@ -1,5 +1,6 @@
 /* ---------- Les îles (mondes) : leurs données, leur ordre, leur mini-jeu ----------
    Archipels, île courante et îles débloquées : availability.js. */
+import { WORLDS_S3 } from './worlds-s3.js';
 
 // Les îles, dans l'ordre du voyage. `diff` = difficulté des mini-jeux (1 à 6) ;
 // `saison` = son archipel (voir ARCHIPELAGOS).
@@ -21,6 +22,7 @@
  *   intro: string,
  *   sceneEmpty: string,
  *   game?: string | ((age: number) => string),
+ *   giggly?: boolean,
  * }} World
  */
 /** @type {Record<string, World>} */
@@ -267,9 +269,11 @@ const WORLDS = {
     intro: 'Bienvenue au Royaume Arc-en-ciel… où les couleurs ont disparu 🦄',
     sceneEmpty: 'Ton Royaume attend ses décorations irisées !',
   },
+  // la saison 3 « La Grande Expédition » : worlds-s3.js
+  ...WORLDS_S3,
 };
 
-// toutes les îles, dans l'ordre du voyage : la saison 1, puis la saison 2
+// toutes les îles, dans l'ordre du voyage : la saison 1, la saison 2, puis la saison 3
 const WORLD_ORDER = Object.keys(WORLDS);
 
 // « son » mini-jeu, toujours proposé sur l'île : un nom, ou une fonction de

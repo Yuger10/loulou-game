@@ -1,4 +1,4 @@
-/* ---------- La version du jeu : 66.1, 66.2… puis 67 ----------
+/* ---------- La version du jeu : 66.1, 66.2… puis la version courante ----------
    - APP_VERSION augmente quand une track de contenu est livrée (une île, une
      fonctionnalité) ; APP_PATCH revient alors à 0.
    - APP_PATCH augmente pour une livraison sans track : outillage, corrections,
@@ -6,7 +6,7 @@
    `bun run sync` écrit APP_LABEL dans le cache du service worker
    (sw.js : `lagon-v66.1`), et l'espace parents l'affiche.
    test/update.test.js vérifie que sw.js et ce fichier disent la même chose. */
-const APP_VERSION = 67;
+const APP_VERSION = 73;
 const APP_PATCH = 0;
 const APP_LABEL = APP_PATCH ? `${APP_VERSION}.${APP_PATCH}` : String(APP_VERSION);
 

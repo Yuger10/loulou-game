@@ -1,5 +1,5 @@
 ---
-status: validée         # brouillon | validée | faite ; posé à la demande d'Amrou le 26/11/2026 (« tu passes tout en validé »)
+status: faite           # brouillon | validée | faite ; validée à la demande d'Amrou le 26/11/2026, livrée en v71 le 27/11/2026
 issue: 0
 size: M                  # trois phases, une PR chacune
 migration: false         # aucun champ de sauvegarde nouveau (voir D17)

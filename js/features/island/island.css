@@ -277,6 +277,12 @@
   animation: isleCharBob 3.2s ease-in-out infinite;
   animation-delay: var(--d, 0s);
 }
+/* le rire de bonjour (Monde des Chatouilles) : il prend la place du balancement, 0,9 s */
+#scene.live-isle .isle-char .emoji.giggle-wiggle {
+  display: inline-block;
+  transform-origin: 50% 90%;
+  animation: giggleWiggle 0.9s ease-in-out 1;
+}
 @keyframes isleCharBob {
   0%,
   100% {
@@ -511,6 +517,7 @@
   .ls-lava,
   .ls-lolly,
   #scene.live-isle .isle-char .emoji,
+  #scene.live-isle .isle-char .emoji.giggle-wiggle,
   #scene.live-isle .isle-char .ic-bubble,
   #scene.live-isle .deco,
   #scene.live-isle .isle-tip {

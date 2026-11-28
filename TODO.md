@@ -161,7 +161,15 @@ Chaque mini-jeu a maintenant son propre niveau pour chaque enfant (`js/adaptive.
 | v66.14 | en multijoueur, une paire ratée ou le temps écoulé passent la main |
 | v66.15 | au rythme magique, Boumbo joue tout le rythme avant la victoire |
 | v66.16 | dessins et paliers de la saison 2 dans leurs fichiers, max-lines 800 |
-| v67 | Squishies : des boîtes de rangement qui restent (idée de la joueuse) |
+
+| v72 | le bilan de la semaine pour les parents |
+| v73 | Squishies : des boîtes de rangement qui restent (idée de la joueuse) |
+
+| v67 | Ouverture de la saison 3 « La Grande Expédition » (cachée jusqu'à la première île) |
+| v68 | L'Île des Crayons (saison 3, île 1) : mini-jeux « Trace avec ton doigt » et « Mesure les crayons » |
+| v69 | L'Île des Squishy Dumplings (saison 3, île 2) : mini-jeux « Les paniers de dix » et « La commande du chef » |
+| v70 | L'Île des Coffres (saison 3, île 3) : mini-jeux « Le trésor raconté » et « Le code secret » |
+| v71 | Le Monde des Chatouilles (saison 3, île 4) : mini-jeux « Le chemin de la plume » et « La phrase rigolote » |
 
 ---
 
@@ -174,7 +182,7 @@ Chaque mini-jeu a maintenant son propre niveau pour chaque enfant (`js/adaptive.
 - Surligner chaque mot pendant que la voix le lit (peu coûteux, preuve faible)
 - Un « livre des découvertes » qui garde les phrases à retenir des planètes et des autres jeux
 - L'amitié avec les compagnons qui grandit (cœurs, souvenirs), comme avec les personnages des îles (hors périmètre de la v52)
-- Espace parents : lire plus finement les statistiques (indices par jeu et par semaine, jeux réussis grâce à un indice)
+- Espace parents : lire plus finement les statistiques (indices par jeu et par semaine, jeux réussis grâce à un indice) ; le bilan de la semaine (v67) dit déjà ce qui va bien et ce qui résiste, sans les indices
 - Échanger des squishies entre frère et sœur (entre profils), hors périmètre de la v53
 - Une mission du jour « Range une boîte de squishies » ou « Ouvre une boîte surprise »
 - À observer (v57) : le rythme des îles (tous les 4 niveaux dans le Lagon, tous les 6 dans le Ciel) paraît-il équilibré ? Les cubes cachés du palier haut sont-ils compris ?

@@ -5,6 +5,7 @@
 // en quelques secondes ; l'ordre des événements, lui, ne change pas.
 const { JSDOM } = require('jsdom');
 const { inShard } = require('./tools/shard.js');
+const { playStep } = require('./tools/gestures.js');
 
 // CSS et JS inlinés dans l'ordre du manifeste des slices (js/slices.cjs)
 const html = require('./tools/page.js').buildHtml();
@@ -301,6 +302,188 @@ const INDEPENDENT = {
       )
     );
   },
+  // length : la réponse recalculée à partir de l'écran seul. Comparer : le crayon le plus
+  // long (ou le plus court, selon la question) ; mesurer : la longueur portée par la scène.
+  length(sol) {
+    const st = d.getElementById('ln-stage');
+    const el = d.querySelector(sol[0]);
+    if (sol.length !== 1 || !st || !el) return false;
+    if (st.dataset.mode !== 'compare') return el.matches('button.ln-opt') && el.dataset.v === st.dataset.len;
+    const lens = [...d.querySelectorAll('button.ln-crayon')].map((b) => Number(b.dataset.len));
+    const want = st.dataset.ask === 'long' ? Math.max(...lens) : Math.min(...lens);
+    return (
+      lens.filter((x) => x === want).length === 1 &&
+      el.matches('button.ln-crayon') &&
+      Number(el.dataset.i) === lens.indexOf(want)
+    );
+  },
+  // tens : la réponse recalculée à partir de l'écran seul (contrat C1). Ranger et lire :
+  // 100 × les piles + les dumplings de la scène ; écrire : la somme des termes ;
+  // construire : la suite de boutons égale aux chiffres de la cible.
+  tens(sol) {
+    const st = d.getElementById('tens-stage');
+    const count = (sel) => sol.filter((s) => s === sel).length;
+    const shown = 100 * st.querySelectorAll('.tens-pile').length + st.querySelectorAll('.tens-dumpling').length;
+    const answer = Number(d.querySelector(sol[sol.length - 1]).dataset.v);
+    if (st.dataset.mode === 'build')
+      return answer === shown && sol.length === shown + 1 && new Set(sol).size === sol.length;
+    if (st.dataset.mode === 'read') return sol.length === 1 && answer === shown;
+    if (st.dataset.mode === 'write') {
+      const terms = d.getElementById('tens-expr').dataset.terms.split(',').map(Number);
+      return sol.length === 1 && shown === 0 && answer === terms.reduce((a, b) => a + b, 0);
+    }
+    const target = Number(d.getElementById('tens-target').dataset.target);
+    const built = 100 * count('#tens-add100') + 10 * count('#tens-add10') + count('#tens-add1');
+    return (
+      shown === 0 &&
+      built === target &&
+      count('#tens-add10') <= 9 &&
+      count('#tens-add1') <= 9 &&
+      sol[sol.length - 1] === '#tens-ready' &&
+      sol.length === count('#tens-add100') + count('#tens-add10') + count('#tens-add1') + 1
+    );
+  },
+  // order : la solution retient, pose exactement le ticket (mêmes sortes, mêmes nombres), puis sert (contrat C2)
+  order(sol) {
+    const counts = (els) => {
+      const n = {};
+      els.forEach((el) => (n[el.dataset.k] = (n[el.dataset.k] || 0) + 1));
+      return JSON.stringify(Object.entries(n).sort());
+    };
+    const picks = sol.slice(1, -1).map((s) => d.querySelector(s));
+    const ticket = [...d.querySelectorAll('#order-ticket .order-item')];
+    return (
+      sol[0] === '#order-ready' &&
+      sol[sol.length - 1] === '#order-serve' &&
+      ticket.length > 0 &&
+      picks.every((el) => el.matches('#order-palette .order-pick')) &&
+      counts(picks) === counts(ticket)
+    );
+  },
+  // problems : le résultat recalculé depuis les nombres de #pb-root (table A1 de la spec),
+  // comparé au dernier nombre (ou au pouce) de la solution
+  problems(sol) {
+    const ds = d.getElementById('pb-root').dataset;
+    const n = (k) => Number(ds[k]);
+    const R = {
+      reunion: () => n('a') + n('b'),
+      ajout: () => n('a') + n('b'),
+      retrait: () => n('a') - n('b'),
+      partie: () => n('t') - n('a'),
+      ajoutInconnu: () => n('t') - n('a'),
+      compPlus: () => n('a') + n('b'),
+      compEcart: () => n('b') - n('a'),
+      compMoinsPlus: () => n('t') - n('b'),
+      deuxEtapes: () => n('a') + n('b') - n('c'),
+      possible: () => (n('b') <= n('a') ? 'oui' : 'non'),
+    };
+    const want = String(R[ds.type]());
+    const last = sol.filter((s) => /pb-num|pb-yesno/.test(s)).pop();
+    return (
+      ds.r === want &&
+      d.querySelector(last).dataset.v === want &&
+      (ds.type !== 'deuxEtapes' || ds.r1 === String(n('a') + n('b')))
+    );
+  },
+  // code : le cadenas résolu depuis ses indices seuls (table A2 de la spec). Toutes les suites
+  // de symboles distincts de la palette sont essayées : une seule respecte tous les indices,
+  // c'est le code, et la solution pose ce code roue par roue puis ouvre.
+  code(sol) {
+    const ds = d.getElementById('code-root').dataset;
+    const [palette, code, clues] = [ds.palette, ds.code, ds.clues].map((x) => JSON.parse(x));
+    const N = Number(ds.wheels);
+    const lists = (n) =>
+      n === 0 ? [[]] : lists(n - 1).flatMap((c) => palette.filter((s) => !c.includes(s)).map((s) => [...c, s]));
+    const TRUE = {
+      est: (c, k) => c[k.w] === k.s,
+      pas: (c, k) => c.includes(k.s) && c[k.w] !== k.s,
+      absent: (c, k) => !c.includes(k.s),
+      voisins: (c, k) => c.some((s, i) => s === k.s && c[i + 1] === k.s2),
+      bout: (c, k) => c[0] === k.s || c[N - 1] === k.s,
+    };
+    const left = lists(N).filter((c) => clues.every((k) => TRUE[k.t](c, k)));
+    const want = code.flatMap((s, i) => [`.code-wheel[data-w="${i}"]`, `.code-sym[data-s="${s}"]`]);
+    return (
+      left.length === 1 &&
+      JSON.stringify(left[0]) === ds.code &&
+      d.querySelectorAll('.code-clue').length === clues.length &&
+      JSON.stringify(sol) === JSON.stringify([...want, '#code-open'])
+    );
+  },
+  // coding : la solution rejouée sur la grille lue dans la page (#cd-grid et ses data-*),
+  // avec les règles G1 à G3 de la spec : la plume arrive chez l'ami, et Go vient en dernier
+  coding(sol) {
+    const grid = d.getElementById('cd-grid');
+    const cell = (cls) => [...grid.querySelectorAll(`.cd-cell.${cls}`)].map((x) => `${x.dataset.r},${x.dataset.c}`);
+    const N = Number(grid.dataset.size);
+    const STEP = { 0: [-1, 0], 1: [0, 1], 2: [1, 0], 3: [0, -1] };
+    const ABS = { U: 0, R: 1, D: 2, L: 3 };
+    let [r, c] = cell('start')[0].split(',').map(Number);
+    let dir = Number(grid.dataset.dir);
+    const ops = sol.slice(0, -1).map((s) => d.querySelector(s).dataset.op);
+    let arrived = -1;
+    ops.forEach((op, i) => {
+      if (arrived >= 0) return;
+      if (op === 'TL' || op === 'TR') dir = (dir + (op === 'TL' ? 3 : 1)) % 4;
+      else {
+        if (op !== 'F') dir = ABS[op];
+        r += STEP[dir][0];
+        c += STEP[dir][1];
+      }
+      const out = r < 0 || c < 0 || r >= N || c >= N || cell('rock').includes(`${r},${c}`);
+      if (out) arrived = -2;
+      else if (cell('goal')[0] === `${r},${c}`) arrived = i;
+    });
+    const want = grid.dataset.mode === 'abs' ? ['U', 'R', 'D', 'L'] : ['F', 'TL', 'TR'];
+    return (
+      sol[sol.length - 1] === '#cd-go' &&
+      ops.every((op) => want.includes(op)) &&
+      arrived === ops.length - 1 &&
+      ops.length <= d.querySelectorAll('#cd-prog .cd-slot').length
+    );
+  },
+  // sentence : la phrase que construit la solution, relue sur les étiquettes de la page, est un
+  // ordre accepté (règle R1 : une phrase de la banque ou l'un de ses `ok`) ; chaque étiquette sert
+  // une fois, la première porte la majuscule, la dernière le point
+  sentence(sol) {
+    const tiles = sol.map((s) => d.querySelector(s));
+    const built = tiles.map((el) => el.textContent).join(' ');
+    const bank = Object.values(ev('SENTENCES')).flat();
+    return (
+      tiles.every((el) => el && el.matches('.st-tile')) &&
+      new Set(tiles).size === d.querySelectorAll('.st-tile').length &&
+      tiles.length === d.querySelectorAll('#st-line .st-slot').length &&
+      /^[A-Z]/.test(built) &&
+      built.indexOf('.') === built.length - 1 &&
+      bank.some((e) => e.t === built || e.ok.includes(built))
+    );
+  },
+  // trace : chaque élément porte les points de son trait, et la solution couvre
+  // tous les traits de tous les glyphes de la bande, dans l'ordre
+  trace(sol) {
+    const strip = [...d.querySelectorAll('.tr-strip .tr-ms')];
+    const minis = d.querySelectorAll('.tr-strip .tr-mini');
+    const glyphs = ev('traceGame.glyphs').map((id) => ev('TRACE_GLYPHS')[id]);
+    const near = (a, b) => Math.abs(a[0] - b[0]) < 0.06 && Math.abs(a[1] - b[1]) < 0.06;
+    return (
+      strip.length > 0 &&
+      minis.length === glyphs.length &&
+      sol.length === strip.length &&
+      sol.length === glyphs.reduce((n, g) => n + g.strokes.length, 0) &&
+      sol.every((s, i) => {
+        const el = d.querySelector(s);
+        const stroke = glyphs[Number(el.dataset.g)].strokes[Number(el.dataset.s)];
+        const model = ev('traceStrokePoints')(stroke),
+          pts = JSON.parse(el.dataset.pts);
+        return (
+          el === strip[i] &&
+          el.dataset.pad === 'tr-pad' &&
+          pts.length === model.length &&
+          pts.every((p, k) => near(p, model[k]))
+        );
+      })
+    );
+  },
 };
 
 async function playToWin(key, tier) {
@@ -314,7 +497,8 @@ async function playToWin(key, tier) {
   for (const s of sol) {
     const el = d.querySelector(s);
     if (!el) return 'élément disparu : ' + s;
-    el.click();
+    // un élément tracé (data-pts, « Trace avec ton doigt ») se joue au doigt, les autres d'un clic
+    if (!playStep(w, el)) return "le carré n'attend pas ce trait : " + s;
     await wait(key === 'memory' ? 45 : 5);
   }
   if (!(await waitFor(() => !!d.querySelector('.win-box')))) return "pas d'écran de victoire";

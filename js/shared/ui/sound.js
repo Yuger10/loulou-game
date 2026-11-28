@@ -247,6 +247,7 @@ const SOUND_FAMILY = {
   coin: 0.85,
   wrong: 0.8,
   pouic: 0.9,
+  giggle: 0.9,
   sparkle: 0.8,
   hint: 0.8,
   win: 1,
@@ -286,6 +287,27 @@ const SOUND_PALETTE = {
         [0.24, 950],
       ],
       { delay: 0, vol: 0.14 * sfam('pouic') },
+    ),
+  // le rire (Monde des Chatouilles) : trois petits glissés qui montent et redescendent
+  giggle: () =>
+    [0, 0.14, 0.28].forEach((delay, i) =>
+      soundGlide(
+        i < 2
+          ? [
+              [0, 820],
+              [0.06, 1250],
+              [0.11, 900],
+            ]
+          : [
+              [0, 900],
+              [0.06, 1400],
+              [0.12, 1000],
+            ],
+        {
+          delay,
+          vol: 0.11 * sfam('giggle'),
+        },
+      ),
     ),
   sparkle: () =>
     [SN.E6, SN.G6, SN.A6, SN.C7, SN.A6, SN.E7].forEach((f, i) =>

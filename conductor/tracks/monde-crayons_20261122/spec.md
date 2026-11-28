@@ -1,5 +1,5 @@
 ---
-status: validée         # brouillon | validée | faite ; posé à la demande d'Amrou le 26/11/2026 (« tu passes tout en validé »)
+status: faite           # brouillon | validée | faite ; validée à la demande d'Amrou le 26/11/2026 (« tu passes tout en validé »), livrée en v68 le 26/11/2026
 issue: 0
 size: M                  # trois PR : trace, length, l'île
 migration: false         # aucun nouveau champ : skills, storySolved et squishies existent déjà

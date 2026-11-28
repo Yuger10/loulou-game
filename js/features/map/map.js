@@ -1,35 +1,26 @@
 /* ---------- Carte des îles (mer animée, route, bateau) ---------- */
 import { charFace, charsOf } from '../../entities/character/index.js';
 import { avatarHTML } from '../../entities/companion/index.js';
-import { missionsForLevel, missionsUntil, state } from '../../entities/game-state/index.js';
+import { state } from '../../entities/game-state/index.js';
 import {
-  ARCHIPELAGO_ORDER,
   ARCHIPELAGOS,
   archipelagoOf,
   archipelagoUnlocked,
   currentWorld,
-  lastOpenedLevel,
-  nextLockedWorld,
-  WORLD_ORDER,
+  shownArchipelagos,
   WORLDS,
   worldsOf,
   worldUnlocked,
 } from '../../entities/world/index.js';
 import { on } from '../../shared/lib/index.js';
-import {
-  bindSpeakButtons,
-  playSound,
-  registerView,
-  setHandler,
-  showToast,
-  speak,
-  switchView,
-} from '../../shared/ui/index.js';
+import { playSound, registerView, setHandler, showToast, speak, switchView } from '../../shared/ui/index.js';
 import { renderSamGuide, teamHeadsHTML } from '../companion-team/index.js';
 import { renderIslandCard, renderLevelPill, setWorld } from '../island/index.js';
+import { renderMapNext } from './next-step.js';
 
-/* Deux archipels (v55) : le Lagon Magique et le Ciel des Rêves, chacun sa
-   carte, choisie par deux onglets en haut. Le Ciel est verrouillé (cadenas et
+/* Les archipels (v55) : le Lagon Magique, le Ciel des Rêves, puis La Grande
+   Expédition (carte en vieux papier, avion en papier), chacun sa carte,
+   choisie par les onglets en haut. Le Ciel est verrouillé (cadenas et
    son niveau) tant qu'il n'est pas ouvert ; il a son fond pastel et ses
    nuages, et le bateau y devient une montgolfière. On voyage d'île en île à
    l'intérieur d'un archipel ; on passe de l'un à l'autre par l'onglet. */
@@ -61,15 +52,18 @@ function mapRoutePath(ids, from, to) {
 function renderMapTabs(saison) {
   const tabs = document.getElementById('map-tabs');
   if (!tabs) return;
-  tabs.innerHTML = ARCHIPELAGO_ORDER.map((s) => {
-    const a = ARCHIPELAGOS[s],
-      open = archipelagoUnlocked(s);
-    return `<button type="button" class="map-tab ${s === saison ? 'active' : ''} ${open ? '' : 'locked'} ${a.sky ? 'sky' : ''}" data-saison="${s}"
+  // seuls les archipels qui ont une île ont un onglet (un archipel vide reste caché)
+  tabs.innerHTML = shownArchipelagos()
+    .map((s) => {
+      const a = ARCHIPELAGOS[s],
+        open = archipelagoUnlocked(s);
+      return `<button type="button" class="map-tab ${s === saison ? 'active' : ''} ${open ? '' : 'locked'} ${a.sky ? 'sky' : ''} ${a.paper ? 'paper' : ''}" data-saison="${s}"
       aria-label="${a.name}${open ? '' : `, niveau ${a.level}`}">
       <span class="mt-ico" aria-hidden="true">${open ? a.emoji : '🔒'}</span>
       <span class="mt-txt"><b>${a.name}</b>${open ? '' : `<i>Niveau ${a.level}</i>`}</span>
     </button>`;
-  }).join('');
+    })
+    .join('');
   tabs.querySelectorAll('[data-saison]').forEach((b) => {
     setHandler(b, 'click', () => {
       const s = Number(b.dataset.saison),
@@ -89,6 +83,24 @@ function renderMapTabs(saison) {
   });
 }
 
+// le décor derrière les îles : ciel pastel, vieux papier ou mer
+/** @param {{ sky: boolean, paper: boolean }} arch l'archipel affiché */
+function seaHTML(arch) {
+  if (arch.sky)
+    return `
+      <span class="cloud c1">☁️</span><span class="cloud c2">☁️</span><span class="cloud c3">☁️</span>
+      <span class="sparkle s1">✨</span><span class="sparkle s2">⭐</span><span class="sparkle s3">✨</span>`;
+  if (arch.paper)
+    return `
+      <span class="compass">🧭</span><span class="cloud c1">☁️</span><span class="cloud c2">☁️</span>
+      <span class="sparkle s1">✨</span><span class="sparkle s2">✨</span>`;
+  return `
+      <span class="wave w1"></span><span class="wave w2"></span><span class="wave w3"></span>
+      <span class="cloud c1">☁️</span><span class="cloud c2">☁️</span>
+      <span class="sparkle s1">✨</span><span class="sparkle s2">✨</span>
+      <span class="mapfish f1">🐟</span><span class="mapfish f2">🐠</span>`;
+}
+
 function renderMap() {
   const el = document.getElementById('island-map');
   if (!el) return;
@@ -101,20 +113,11 @@ function renderMap() {
   const reached = ids.reduce((m, id, i) => (worldUnlocked(id) ? i : m), 0);
   const hasNext = reached < ids.length - 1;
   el.classList.toggle('sky', !!arch.sky);
+  el.classList.toggle('paper', !!arch.paper);
   el.dataset.saison = String(saison); // dataset ne garde que du texte (même valeur qu'avant)
   el.innerHTML = `
     <div class="sea" aria-hidden="true">
-      ${
-        arch.sky
-          ? `
-      <span class="cloud c1">☁️</span><span class="cloud c2">☁️</span><span class="cloud c3">☁️</span>
-      <span class="sparkle s1">✨</span><span class="sparkle s2">⭐</span><span class="sparkle s3">✨</span>`
-          : `
-      <span class="wave w1"></span><span class="wave w2"></span><span class="wave w3"></span>
-      <span class="cloud c1">☁️</span><span class="cloud c2">☁️</span>
-      <span class="sparkle s1">✨</span><span class="sparkle s2">✨</span>
-      <span class="mapfish f1">🐟</span><span class="mapfish f2">🐠</span>`
-      }
+      ${seaHTML(arch)}
     </div>
     <svg class="route" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
       <path d="${route}" class="route-band"/>
@@ -124,7 +127,7 @@ function renderMap() {
       ${hasNext ? `<path d="${mapRoutePath(ids, reached, reached + 1)}" class="route-next"/>` : ''}
     </svg>
     ${ids.map(mapIslandHTML).join('')}
-    <span class="boat ${arch.sky ? 'balloon' : ''}" id="map-boat"><span class="boat-av">${avatarHTML(state.avatar, state.look)}</span><span class="boat-ride">${arch.vehicle}</span><span class="boat-team" data-team-heads>${teamHeadsHTML()}</span></span>
+    <span class="boat ${arch.sky ? 'balloon' : arch.paper ? 'plane' : ''}" id="map-boat"><span class="boat-av">${avatarHTML(state.avatar, state.look)}</span><span class="boat-ride">${arch.vehicle}</span><span class="boat-team" data-team-heads>${teamHeadsHTML()}</span></span>
   `;
   // le véhicule est à l'île courante ; dans l'autre archipel, il attend à la première île
   const here = ids.includes(currentWorld);
@@ -176,41 +179,6 @@ function bindMapIslands(el, ids) {
       else sailTo(id);
     });
   });
-}
-
-/** @param {number} saison */
-function renderMapNext(saison) {
-  const info = document.getElementById('map-next');
-  if (!info) return;
-  // la prochaine étape : une île de cette carte, sinon la prochaine île du
-  // voyage (un autre monde, verrouillé ou déjà ouvert), sinon rien
-  const nxt = nextLockedWorld(saison) || WORLD_ORDER.find((id) => !worldUnlocked(id));
-  if (!nxt) {
-    info.innerHTML = `🏆 Tu as ouvert toutes les îles ! D'autres arriveront bientôt.`;
-  } else if (!archipelagoUnlocked(archipelagoOf(nxt))) {
-    const a = ARCHIPELAGOS[archipelagoOf(nxt)];
-    info.innerHTML = nextStepHTML(a.emoji, 'Prochain monde', a);
-  } else {
-    info.innerHTML = nextStepHTML('🗺️', 'Prochaine île', WORLDS[nxt]);
-  }
-  info.hidden = false;
-  bindSpeakButtons();
-}
-
-/* La prochaine étape sous la carte : son nom, son niveau, les missions qui
-   restent, et une barre qui part de la dernière île ouverte (elle se remplit
-   à chaque île, au lieu de compter depuis le tout début). */
-/** @param {string} icon @param {string} label @param {{ name: string, level: number }} to son nom, le niveau qui l'ouvre */
-function nextStepHTML(icon, label, { name, level: lvl }) {
-  const from = missionsForLevel(lastOpenedLevel()),
-    to = missionsForLevel(lvl);
-  const pct = Math.max(0, Math.min(100, Math.round(((state.missions - from) / Math.max(1, to - from)) * 100)));
-  const left = missionsUntil(lvl);
-  const rest = `encore ${left} mission${left > 1 ? 's' : ''}`;
-  const say = `${label} : ${name}, au niveau ${lvl}. ${rest[0].toUpperCase() + rest.slice(1)}.`.replace(/"/g, '&quot;');
-  return `${icon} ${label} : <strong>${name}</strong> au niveau ${lvl} · ${rest}
-        <button type="button" class="btn-speak map-next-speak" data-say="${say}" aria-label="Écouter">🔈</button>
-        <div class="quest-bar" role="progressbar" aria-label="Vers ${name.replace(/"/g, '&quot;')}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${pct}"><i style="width:${pct}%"></i></div>`;
 }
 
 /** @param {string} id l'île @param {boolean} animated */

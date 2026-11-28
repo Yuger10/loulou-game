@@ -123,6 +123,58 @@
     animation: none;
   }
 }
+/* ---------- Saison 3 : la carte de Zap (zap-map.js) ---------- */
+/* même place et même taille que Grisou dans le prologue, le chapitre et la victoire */
+.story-zapmap {
+  display: flex;
+  justify-content: center;
+  margin: -4px 0 4px;
+}
+.story-zapmap .zap-map {
+  width: 150px;
+  height: auto;
+}
+.story-zapmap.happy .zap-map {
+  width: 130px;
+}
+/* dans le journal : la carte, son compte et le bouton pour l'écouter */
+.story-zapmap-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 8px;
+  padding: 6px 8px;
+  border-radius: var(--radius-md);
+  background: #fbf1d8;
+  font-weight: 800;
+}
+.story-zapmap-row .zap-map {
+  width: 84px;
+  height: auto;
+  flex: none;
+}
+.story-zapmap-row .story-zapmap-count {
+  flex: 1;
+  text-align: left;
+}
+/* le morceau qui vient d'être gagné brille */
+.zap-map .zm-new {
+  animation: zapPieceNew 1.2s ease-in-out infinite;
+}
+@keyframes zapPieceNew {
+  0%,
+  100% {
+    fill: #f3ddaf;
+  }
+  50% {
+    fill: #ffe98a;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .zap-map .zm-new {
+    animation: none;
+  }
+}
 /* ---------- le grand final de la saison 2 (finale.js) ---------- */
 .finale {
   position: relative;
