@@ -1,11 +1,14 @@
 /* ---------- Ma chambre à squishies (v53) : l'interface ----------
    On y entre par le bouton 🧸 de l'en-tête (avec la pastille des boîtes à
-   ouvrir) ou par le Sac. Trois onglets à icône :
+   ouvrir) ou par le Sac. Quatre onglets à icône :
      📚 Collection   les boîtes à ouvrir en haut (« Ouvrir ! »), puis une
                      rangée par série : les squishies obtenus (×N), une
                      silhouette grise pour les manquants, « 4 / 6 »
      🗄️ Étagère      12 emplacements libres : on touche un squishy, puis
                      une place. Purement décoratif, sauvegardé
+     🗃️ Mes boîtes   les boîtes de rangement durables : l'enfant choisit
+                     l'étiquette de chacune et y range ses squishies pour de
+                     bon (squishy-crates.js)
      📦 Ranger       les boîtes de rangement à consigne (tri par couleur,
                      forme, taille : voir makeSortingTask)
    Presser : toucher un squishy l'écrase puis le fait remonter lentement,
@@ -22,7 +25,7 @@ import {
   SQUISHY_TREASURES,
 } from '../../entities/squishy/index.js';
 import { archipelagoUnlocked } from '../../entities/world/index.js';
-import { squishyArtSVG, squishyBoxSVG } from './squishy-art.js';
+import { sortIconsHTML, squishyArtSVG, squishyBoxSVG, squishyPress } from './squishy-art.js';
 import {
   confetti,
   onModalChange,
@@ -58,12 +61,15 @@ import {
   sqState,
   squishyBoxCount,
   squishyCount,
+  squishyCrateCount,
+  squishyFree,
   squishyOwnedIds,
   squishySeriesAvailable,
   squishySeriesProgress,
-  squishyShelfCount,
   squishyTreasureOwned,
 } from './squishies.js';
+import { CRATE_MAX, squishyCrates } from './squishy-crate-rules.js';
+import { renderSquishyCrates } from './squishy-crates.js';
 import { random } from '../../shared/lib/index.js';
 
 /** @typedef {import('./squishies.js').SortCriterion} SortCriterion */
@@ -101,16 +107,6 @@ function squishySessionHello() {
   return true;
 }
 
-/* ---------- Presser un squishy ---------- */
-function squishyPress(/** @type {HTMLElement | null | undefined} */ el) {
-  if (!el) return;
-  el.classList.remove('sq-press');
-  void el.offsetWidth;
-  el.classList.add('sq-press');
-  playSound('pouic');
-  vibrate(25);
-}
-
 /* ---------- La chambre ---------- */
 let sqRoomTab = 'collection';
 let sqTimers = /** @type {Array<ReturnType<typeof setTimeout>>} */ ([]);
@@ -132,6 +128,7 @@ onModalChange(sqClearTimers);
 const SQ_TABS = [
   { id: 'collection', icon: '📚', name: 'Collection' },
   { id: 'etagere', icon: '🗄️', name: 'Étagère' },
+  { id: 'boites', icon: '🗃️', name: 'Mes boîtes' },
   { id: 'ranger', icon: '📦', name: 'Ranger' },
 ];
 
@@ -165,6 +162,7 @@ function openSquishyRoom(tabArg, opts) {
   bindQuit();
   if (tab === 'collection') renderSquishyCollection();
   else if (tab === 'etagere') renderSquishyShelf();
+  else if (tab === 'boites') renderSquishyCrates();
   else renderSquishySorting(head.task);
 }
 
@@ -182,6 +180,19 @@ function sqRoomHead(tab, opts) {
     const hint = "Touche un squishy, puis une place sur l'étagère";
     return { hint, say: hint + '.' };
   }
+  if (tab === 'boites') {
+    if (!squishyOwnedIds().length)
+      return {
+        hint: 'Mes boîtes de rangement',
+        say: "Tes boîtes t'attendent ! Ouvre une boîte surprise pour trouver ton premier squishy.",
+      };
+    const hint = 'Range tes squishies dans tes boîtes !';
+    // une boîte pleine en fait gagner une autre, tant qu'il en reste à gagner
+    return {
+      hint,
+      say: squishyCrates().length < CRATE_MAX ? `${hint} Une boîte pleine t'en fait gagner une autre.` : hint,
+    };
+  }
   const task = sqSortTask(opts);
   if (!task) return { hint: 'Les boîtes de rangement', say: 'Les boîtes de rangement.', task };
   return { hint: `${sortIconsHTML(task.criteria)}<span>${task.say} !</span>`, say: task.say + ' !', task };
@@ -196,6 +207,7 @@ function sqCellHTML(/** @type {string} */ id) {
   return `<button type="button" class="sq-cell r-${m.rarity}" data-sq="${id}" aria-label="${m.name}${n > 1 ? ', ' + n : ''}">
     ${squishyArtSVG(id)}<span class="sq-name">${m.name}</span>
     ${n > 1 ? `<span class="sq-n">×${n}</span>` : ''}
+    ${squishyCrateCount(id) ? `<span class="sq-in-crate" aria-hidden="true">🗃️</span>` : ''}
     ${m.rarity !== 'commun' ? `<span class="sq-rar" aria-hidden="true">${m.rarity === 'rare' ? '⭐' : '✨'}</span>` : ''}
   </button>`;
 }
@@ -249,7 +261,14 @@ function sqBindPress(/** @type {HTMLElement} */ el) {
       const id = /** @type {string} */ (b.dataset.sq),
         n = squishyCount(id);
       squishyPress(b);
-      speak(`${(SQUISHIES[id] || SQUISHY_TREASURES[id]).name}${n > 1 ? `. Tu en as ${n}.` : ' !'}`);
+      const name = (SQUISHIES[id] || SQUISHY_TREASURES[id]).name,
+        stored = squishyCrateCount(id);
+      // rangé dans une boîte : on le dit (il reste dans la collection)
+      if (stored)
+        speak(
+          n > 1 ? `${name}. Tu en as ${n}, dont ${stored} dans tes boîtes.` : `${name} ! Il est rangé dans une boîte.`,
+        );
+      else speak(`${name}${n > 1 ? `. Tu en as ${n}.` : ' !'}`);
     });
   });
   el.querySelectorAll('.sq-cell[data-treasure]').forEach((b) => {
@@ -393,7 +412,7 @@ function renderSquishyShelf() {
     <div class="sq-grid sq-pick">
       ${owned
         .map((id) => {
-          const free = squishyCount(id) - squishyShelfCount(id);
+          const free = squishyFree(id);
           return `<button type="button" class="sq-cell ${free ? '' : 'used'} ${sel && sel.slot == null && sel.id === id ? 'selected' : ''}" data-pick="${id}" aria-label="${SQUISHIES[id].name}">
           ${squishyArtSVG(id)}<span class="sq-name">${SQUISHIES[id].name}</span>${free > 1 ? `<span class="sq-n">×${free}</span>` : ''}</button>`;
         })
@@ -420,8 +439,8 @@ function bindSquishyPicks(el) {
       // le sélecteur [data-pick] garantit l'attribut
       const id = /** @type {string} */ (b.dataset.pick);
       squishyPress(b);
-      if (squishyCount(id) - squishyShelfCount(id) <= 0) {
-        speak("Il est déjà sur l'étagère !");
+      if (squishyFree(id) <= 0) {
+        speak(squishyCrateCount(id) ? 'Il est déjà rangé dans une boîte !' : "Il est déjà sur l'étagère !");
         return;
       }
       sqShelfSel = sqShelfSel && sqShelfSel.slot == null && sqShelfSel.id === id ? null : { id };
@@ -466,23 +485,6 @@ let sqSort = /** @type {SortRun | null} */ (null); // { task, filled, errors, ag
 function sqSortTask(/** @type {{ avoid?: string }} */ opts = {}) {
   const age = currentPlayerAge();
   return makeSortingTask(sqState().owned, age, { avoid: opts.avoid });
-}
-// La consigne en image, pour qui ne lit pas encore : la forme (remplie de la
-// couleur s'il y en a une), sinon une pastille de couleur ; la taille par une
-// paire « petit / grand » dont la bonne est foncée.
-function sortIconsHTML(/** @type {SortCriterion[]} */ criteria) {
-  /** @param {SortCriterion['type']} t */
-  const get = (t) => (criteria.find((c) => c.type === t) || /** @type {Partial<SortCriterion>} */ ({})).value;
-  const color = get('color'),
-    shape = get('shape'),
-    size = get('size');
-  const col = color && SQ_COLORS[color];
-  const style = col ? ` style="background:${col.fill};border-color:${col.edge}"` : '';
-  const pair = size ? `<span class="sr-ico sr-size sr-size-${size}"><i></i><i></i></span>` : '';
-  let main = '';
-  if (shape) main = `<span class="sr-ico sr-shape-${shape}"${style}></span>`;
-  else if (color) main = `<span class="sq-dot"${style}></span>`;
-  return `<span class="sr-icons" aria-hidden="true">${pair}${main}</span>`;
 }
 // le haut de l'onglet : la pile des boîtes rangées, et ce que rapporte la suivante
 function sortTopHTML() {

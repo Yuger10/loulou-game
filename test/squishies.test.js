@@ -401,7 +401,11 @@ const ALL = () => ev('Object.keys(SQUISHIES)');
       shown('#sq-room[data-tab="collection"]') &&
         d.querySelector('[data-sqtab="collection"]').classList.contains('active'),
     );
-    check('3 onglets : Collection, Étagère, Ranger', d.querySelectorAll('[data-sqtab]').length === 3);
+    check(
+      '4 onglets : Collection, Étagère, Mes boîtes, Ranger',
+      json([...d.querySelectorAll('[data-sqtab]')].map((b) => b.dataset.sqtab)) ===
+        json(['collection', 'etagere', 'boites', 'ranger']),
+    );
     check(
       'une rangée par série, avec « n / 6 »',
       d.querySelectorAll('.sq-series').length === 3 &&

@@ -1,8 +1,13 @@
 /* ---------- Les dessins des squishies (v53) ----------
    Sortis de squishy-room.js (qui dépassait la limite max-lines) : les SVG
    des modèles et des boîtes surprises, déplacés tels quels (test/tools/move.js).
+   Avec eux, ce que la chambre et les boîtes de rangement dessinent toutes les
+   deux : la consigne en image (sortIconsHTML) et le squishy qu'on presse.
    Aucune image : tout est dessiné. */
 import { SQ_COLORS, SQUISHIES, SQUISHY_SERIES, SQUISHY_TREASURES } from '../../entities/squishy/index.js';
+import { playSound, vibrate } from '../../shared/ui/index.js';
+
+/** @typedef {import('./squishies.js').SortCriterion} SortCriterion */
 import { SQ_ART_S3 } from './squishy-art-s3.js';
 
 /** @typedef {{ fill: string, edge: string }} SqColor les couleurs d'un corps : remplissage et contour */
@@ -642,4 +647,32 @@ function squishyBoxRewardHTML(series) {
   </div>`;
 }
 
-export { squishyArtSVG, squishyBoxRewardHTML, squishyBoxSVG };
+/* ---------- Presser un squishy ---------- */
+function squishyPress(/** @type {HTMLElement | null | undefined} */ el) {
+  if (!el) return;
+  el.classList.remove('sq-press');
+  void el.offsetWidth;
+  el.classList.add('sq-press');
+  playSound('pouic');
+  vibrate(25);
+}
+
+// La consigne en image, pour qui ne lit pas encore : la forme (remplie de la
+// couleur s'il y en a une), sinon une pastille de couleur ; la taille par une
+// paire « petit / grand » dont la bonne est foncée.
+function sortIconsHTML(/** @type {SortCriterion[]} */ criteria) {
+  /** @param {SortCriterion['type']} t */
+  const get = (t) => (criteria.find((c) => c.type === t) || /** @type {Partial<SortCriterion>} */ ({})).value;
+  const color = get('color'),
+    shape = get('shape'),
+    size = get('size');
+  const col = color && SQ_COLORS[color];
+  const style = col ? ` style="background:${col.fill};border-color:${col.edge}"` : '';
+  const pair = size ? `<span class="sr-ico sr-size sr-size-${size}"><i></i><i></i></span>` : '';
+  let main = '';
+  if (shape) main = `<span class="sr-ico sr-shape-${shape}"${style}></span>`;
+  else if (color) main = `<span class="sq-dot"${style}></span>`;
+  return `<span class="sr-icons" aria-hidden="true">${pair}${main}</span>`;
+}
+
+export { sortIconsHTML, squishyArtSVG, squishyBoxRewardHTML, squishyBoxSVG, squishyPress };

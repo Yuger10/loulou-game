@@ -12,6 +12,7 @@ export {
   squishyDuplicates,
   squishyMissing,
   squishyShopState,
+  squishyStoredDuplicates,
   tradeDuplicatesFor,
 } from './squishies.js';
 export { openSquishyRoom, renderSquishyBadge, squishySessionHello } from './squishy-room.js';

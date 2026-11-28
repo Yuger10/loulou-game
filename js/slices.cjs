@@ -145,8 +145,12 @@ const SLICES = [
     layer: 'features',
     files: [
       'js/features/squishies/squishies.js',
+      'js/features/squishies/squishy-crate-rules.js',
       'js/features/squishies/squishy-art-s3.js',
       'js/features/squishies/squishy-art.js',
+      'js/features/squishies/squishy-crate-view.js',
+      'js/features/squishies/squishy-crate-box.js',
+      'js/features/squishies/squishy-crates.js',
       'js/features/squishies/squishy-room.js',
     ],
     css: ['js/features/squishies/squishies.css'],

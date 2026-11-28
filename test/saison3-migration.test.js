@@ -7,7 +7,9 @@ const { d, ev, json, check, section, modalOpen, shown, click, wait } = t;
 // une partie de la version précédente, au niveau 75, les îles d'avant visitées
 function oldSave() {
   return {
-    v: ev('SAVE_VERSION') - 1,
+    // v9 précède l'ouverture de la saison 3, indépendamment des migrations
+    // ajoutées ensuite par les autres tracks.
+    v: 9,
     name: 'Lou',
     coins: 12,
     missions: 370,

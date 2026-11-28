@@ -28,6 +28,7 @@ import {
   squishyDuplicates,
   squishyMissing,
   squishyShopState,
+  squishyStoredDuplicates,
   tradeDuplicatesFor,
 } from '../squishies/index.js';
 import { addCoins } from '../wallet/index.js';
@@ -91,6 +92,11 @@ function renderVendre(el) {
    « mystère » : 15 pièces, 3 par jour au plus. */
 /** @type {string | null} le squishy manquant choisi */
 let sqWanted = null;
+// un double rangé (étagère, boîte de rangement) ne s'échange pas : on le dit, pour
+// que l'enfant comprenne pourquoi ses doubles ne comptent pas tous
+function squishyStoredNote() {
+  return squishyStoredDuplicates() ? ' Tes squishies rangés restent à leur place.' : '';
+}
 function squishyTradeHTML() {
   const dupes = squishyDuplicates(),
     missing = squishyMissing();
@@ -105,7 +111,7 @@ function squishyTradeHTML() {
       ? 'Échanger 3 doubles 🔄'
       : 'Choisis un squishy';
   return `<section class="sq-market">${head}
-    <p class="sqm-msg">${SQ_TRADE_COST} doubles = 1 squishy de ton choix.${need ? '' : ' Lequel veux-tu ?'}</p>
+    <p class="sqm-msg">${SQ_TRADE_COST} doubles = 1 squishy de ton choix.${need ? '' : ' Lequel veux-tu ?'}${squishyStoredNote()}</p>
     <div class="sqm-grid">${missing.map((id) => `<button type="button" class="sq-cell missing ${sqWanted === id ? 'selected' : ''}" data-want="${id}" aria-label="Un squishy ${SQUISHY_SERIES[SQUISHIES[id].series].name}">${squishyArtSVG(id, { silhouette: true })}<span class="sq-name">${SQUISHY_SERIES[SQUISHIES[id].series].emoji}</span></button>`).join('')}</div>
     <button type="button" class="btn-craft" id="sqm-trade" ${!need && sqWanted ? '' : 'disabled'}>${label}</button>
   </section>`;
@@ -122,7 +128,7 @@ function bindSquishyTrade(el, rerender) {
       const need = Math.max(0, SQ_TRADE_COST - squishyDuplicates());
       speak(
         need
-          ? `Il te faut encore ${need} double${need > 1 ? 's' : ''} pour l'échanger.`
+          ? `Il te faut encore ${need} double${need > 1 ? 's' : ''} pour l'échanger.${squishyStoredNote()}`
           : 'Celui-là ? Touche Échanger !',
       );
       rerender();
