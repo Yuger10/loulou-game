@@ -12,7 +12,7 @@ async function parties() {
     const p = k % 2 ? 3 : 2;
     t.startGame('coding', p);
     dirs[p].add(one('#cd-grid').dataset.dir);
-    if (p === 2) keys.push(json(t.gridOnScreen()));
+    keys.push(json(t.gridOnScreen()));
   }
   check('critère 15 : départ vers le haut au palier 2, au hasard au palier 3', () => [
     json([...dirs[2]]) === json(['0']),
