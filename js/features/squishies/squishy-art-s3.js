@@ -167,6 +167,55 @@ const SQ_ART_S3 = {
     front: () =>
       `<path class="sq-deco" d="M15 46 Q15 26 37 24 H63 Q85 26 85 46Z" fill="#FFD95A" stroke="#B98500" stroke-width="3" stroke-linejoin="round"/><rect class="sq-deco" x="44" y="40" width="12" height="12" rx="3.5" fill="#fff" stroke="#B98500" stroke-width="2"/>`,
   },
+  // 🪶 Guilis (le Monde des Chatouilles)
+  'plume-rose': {
+    body: 'ovale-v',
+    face: {},
+    faceY: 66,
+    front: () =>
+      `<path class="sq-deco" d="M50 20 V94" stroke="#fff" stroke-width="3.5" stroke-linecap="round" opacity=".85"/><path class="sq-deco" d="M50 34 q-9 -3 -14 -11 M50 34 q9 -3 14 -11 M50 48 q-11 -2 -19 -10 M50 48 q11 -2 19 -10 M50 84 q-9 0 -16 -7 M50 84 q9 0 16 -7" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" opacity=".7"/>`,
+  },
+  'nuage-rieur': {
+    body: 'rond',
+    face: { wide: true },
+    faceY: 60,
+    back: (c) =>
+      `<g fill="${c.fill}" stroke="${c.edge}" stroke-width="3.5"><circle cx="20" cy="50" r="18"/><circle cx="50" cy="24" r="22"/><circle cx="80" cy="50" r="18"/></g>`,
+    front: () => `<path class="sq-deco" d="M40 68 Q50 82 60 68Z" fill="#8C2F3F"/>`,
+  },
+  'chaussette-pois': {
+    body: 'ovale-v',
+    face: {},
+    faceY: 62,
+    front: (c) =>
+      `<path class="sq-deco" d="M22 34 Q50 14 78 34 Q50 26 22 34Z" fill="#fff" stroke="${c.edge}" stroke-width="2.5" stroke-linejoin="round"/><g class="sq-deco" fill="#fff" opacity=".9"><circle cx="30" cy="48" r="3.4"/><circle cx="70" cy="48" r="3.4"/><circle cx="36" cy="80" r="3.4"/><circle cx="64" cy="80" r="3.4"/><circle cx="50" cy="88" r="3.4"/></g>`,
+  },
+  'bonbon-rigolo': {
+    body: 'rond',
+    face: {},
+    faceY: 60,
+    back: (c) =>
+      `<path d="M14 58 L0 44 L0 72Z M86 58 L100 44 L100 72Z" fill="${c.fill}" stroke="${c.edge}" stroke-width="3.5" stroke-linejoin="round"/>`,
+    front: () =>
+      `<path class="sq-deco" d="M30 30 Q50 22 70 30" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" opacity=".7"/>`,
+  },
+  guili: {
+    body: 'ovale-h',
+    face: { beak: true },
+    faceY: 62,
+    back: () =>
+      `<path d="M50 42 Q42 22 52 8 Q62 22 54 42Z" fill="#FF8FB8" stroke="#C2457A" stroke-width="2.5" stroke-linejoin="round"/>`,
+    front: () => `<ellipse class="sq-deco" cx="50" cy="85" rx="22" ry="8" fill="#fff" opacity=".9"/>`,
+  },
+  'plumette-doree': {
+    body: 'rond',
+    face: { beak: true },
+    faceY: 60,
+    back: () =>
+      `<g fill="#FFD95A" stroke="#B98500" stroke-width="2.5" stroke-linejoin="round"><ellipse cx="14" cy="40" rx="10" ry="20" transform="rotate(-40 14 40)"/><ellipse cx="30" cy="20" rx="10" ry="20" transform="rotate(-20 30 20)"/><ellipse cx="50" cy="12" rx="10" ry="20"/><ellipse cx="70" cy="20" rx="10" ry="20" transform="rotate(20 70 20)"/><ellipse cx="86" cy="40" rx="10" ry="20" transform="rotate(40 86 40)"/></g>`,
+    front: () =>
+      `<g class="sq-deco" fill="#fff" stroke="#B98500" stroke-width="1.5"><circle cx="40" cy="30" r="3.4"/><circle cx="50" cy="26" r="3.4"/><circle cx="60" cy="30" r="3.4"/></g>`,
+  },
 };
 
 export { SQ_ART_S3 };

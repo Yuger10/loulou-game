@@ -188,7 +188,12 @@ const SLICES = [
   {
     id: 'island',
     layer: 'features',
-    files: ['js/features/island/island-view.js', 'js/features/island/island-s3.js', 'js/features/island/island.js'],
+    files: [
+      'js/features/island/tickle.js',
+      'js/features/island/island-view.js',
+      'js/features/island/island-s3.js',
+      'js/features/island/island.js',
+    ],
     css: ['js/features/island/island.css', 'js/features/island/island-view.css'],
   },
   {
@@ -446,6 +451,23 @@ const SLICES = [
     ],
     css: ['js/features/minigames/code/code.css'],
   },
+  {
+    id: 'minigame-coding',
+    layer: 'features',
+    files: [
+      'js/features/minigames/coding/coding-grid.js',
+      'js/features/minigames/coding/coding-draw.js',
+      'js/features/minigames/coding/coding-hints.js',
+      'js/features/minigames/coding/coding.js',
+    ],
+    css: ['js/features/minigames/coding/coding.css'],
+  },
+  {
+    id: 'minigame-sentence',
+    layer: 'features',
+    files: ['js/features/minigames/sentence/sentence-bank.js', 'js/features/minigames/sentence/sentence.js'],
+    css: ['js/features/minigames/sentence/sentence.css'],
+  },
   { id: 'market', layer: 'features', files: ['js/features/market/market.js'], css: ['js/features/market/market.css'] },
   { id: 'backup', layer: 'features', files: ['js/features/backup/backup.js'], css: ['js/features/backup/backup.css'] },
   { id: 'players', layer: 'features', files: ['js/features/players/profiles-ui.js'], css: [] },
@@ -540,6 +562,8 @@ const CSS_ORDER = [
   'js/features/minigames/order/order.css',
   'js/features/minigames/problems/problems.css',
   'js/features/minigames/code/code.css',
+  'js/features/minigames/coding/coding.css',
+  'js/features/minigames/sentence/sentence.css',
   'js/features/island/island.css',
   'js/entities/character/characters.css',
   'js/features/settings/settings.css',

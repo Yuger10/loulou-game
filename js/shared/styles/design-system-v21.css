@@ -134,6 +134,13 @@ body[data-world="coffres"] {
   --world-scene-top: #fffaf0;
   --world-scene-floor: #f2d29b;
 }
+body[data-world="chatouilles"] {
+  --world-sky: #fff0f6;
+  --world-sea: #ffb3d1;
+  --world-deep: #8a3d6b;
+  --world-scene-top: #fff7fb;
+  --world-scene-floor: #fff1b8;
+}
 body[data-world="jardin"] {
   --world-sky: #f1eafb;
   --world-sea: #a8dda0;
@@ -673,6 +680,41 @@ nav.bottomnav button.active {
 @media (prefers-reduced-motion: reduce) {
   #splash::before,
   .empty-state .es-art {
+    animation: none;
+  }
+}
+
+/* ---------- Le rire (Monde des Chatouilles) : un personnage, un ami ou une phrase qui pouffe ---------- */
+.giggle-wiggle {
+  display: inline-block;
+  transform-origin: 50% 90%;
+  animation: giggleWiggle 0.9s ease-in-out 1;
+}
+@keyframes giggleWiggle {
+  0% {
+    transform: rotate(0) scale(1);
+  }
+  15% {
+    transform: rotate(-10deg) scale(1.08, 0.94);
+  }
+  30% {
+    transform: rotate(9deg);
+  }
+  45% {
+    transform: rotate(-8deg) scale(1.06, 0.96);
+  }
+  60% {
+    transform: rotate(6deg);
+  }
+  75% {
+    transform: rotate(-3deg);
+  }
+  100% {
+    transform: rotate(0) scale(1);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .giggle-wiggle {
     animation: none;
   }
 }

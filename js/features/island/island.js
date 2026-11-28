@@ -26,6 +26,7 @@ import { playSound, setHandler, speak } from '../../shared/ui/index.js';
 import { ensureQuests } from '../quests/index.js';
 import { seasonSceneSVG } from '../seasons/index.js';
 import { ISLE_SCENERY_S3 } from './island-s3.js';
+import { tickleHelloThen } from './tickle.js';
 
 // Places en coordonnées du DESSIN (viewBox 480×360), converties à l'affichage
 // selon la taille réelle de la scène : un personnage reste sur la plage et
@@ -580,7 +581,7 @@ function renderLiveIsland(sc) {
   sc.querySelectorAll('.isle-char').forEach((btn) => {
     btn.addEventListener('click', () => {
       playSound('tap');
-      emit('nav:dialogue', btn.dataset.char); // island-view.js ouvre le dialogue
+      tickleHelloThen(btn, () => emit('nav:dialogue', btn.dataset.char)); // island-view.js ouvre le dialogue
     });
   });
   sc.querySelectorAll('.deco[data-deco-key]').forEach((el) => bindDecoDrag(sc, el));

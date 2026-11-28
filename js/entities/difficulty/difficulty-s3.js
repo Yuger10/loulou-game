@@ -267,4 +267,33 @@ function codeRound(dd) {
   return tierValue(CODE_TIERS, dd);
 }
 
-export { codeRound, lengthRound, orderRound, problemsRound, tensRound, traceRound };
+/* ---------------------------------------------------------------------
+   LE CHEMIN DE LA PLUME (Monde des Chatouilles, saison 3) : coder un
+   déplacement (CP : 10 instructions dont 2 virages ; CE1 : 15 dont 4).
+   Palier 1 : flèches absolues ; ensuite « avance » et quarts de tour.
+   `len`, `turns` : bornes du plus court programme ; `rocks` : cactus ;
+   `slots` : cases du programme ; `startUp` : départ vers le haut.
+   --------------------------------------------------------------------- */
+/** @typedef {{ size: number, mode: 'abs' | 'rel', len: [number, number], turns: [number, number], rocks: number, slots: number, startUp: boolean }} CodingRound */
+/** @type {Record<number, CodingRound>} */
+const CODING_TIERS = {
+  1: { size: 4, mode: 'abs', len: [2, 3], turns: [0, 0], rocks: 0, slots: 6, startUp: false },
+  2: { size: 4, mode: 'rel', len: [3, 6], turns: [1, 1], rocks: 1, slots: 10, startUp: true },
+  3: { size: 5, mode: 'rel', len: [5, 10], turns: [2, 2], rocks: 2, slots: 10, startUp: false },
+  4: { size: 5, mode: 'rel', len: [6, 12], turns: [2, 3], rocks: 3, slots: 12, startUp: false },
+  5: { size: 6, mode: 'rel', len: [9, 15], turns: [3, 4], rocks: 5, slots: 15, startUp: false },
+};
+/** @param {number} dd le palier de difficulté @returns {CodingRound} */
+function codingRound(dd) {
+  return tierValue(CODING_TIERS, dd);
+}
+
+/** LA PHRASE RIGOLOTE (Monde des Chatouilles) : `n` étiquettes à remettre en ordre ; `pic` : l'image, aux paliers 1 et 2.
+ * @typedef {{ n: number, pic: boolean }} SentenceRound */
+/** @param {number} dd le palier de difficulté @returns {SentenceRound} */
+function sentenceRound(dd) {
+  const p = Math.max(1, Math.min(5, Math.round(Number(dd)) || 1));
+  return { n: p + 2, pic: p <= 2 };
+}
+
+export { codeRound, codingRound, lengthRound, orderRound, problemsRound, sentenceRound, tensRound, traceRound };

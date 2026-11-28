@@ -154,6 +154,15 @@ const ITEMS = {
   loupe: { emoji: '🔍', name: 'Loupe de détective', price: 8, world: 'coffres' },
   lampe: { emoji: '🔦', name: 'Lampe de poche', price: 7, world: 'coffres' },
   bague: { emoji: '💍', name: 'Bague au rubis', price: 9, world: 'coffres' },
+  // Monde des Chatouilles (saison 3)
+  plumeguili: { emoji: '🪶', name: 'Plume à guilis', price: 6, world: 'chatouilles' },
+  nezclown: { emoji: '🔴', name: 'Nez de clown', price: 5, world: 'chatouilles' },
+  chaussettes: { emoji: '🧦', name: 'Chaussettes à pois', price: 5, world: 'chatouilles' },
+  boiterires: { emoji: '🎁', name: 'Boîte à rires', price: 7, world: 'chatouilles' },
+  yoyofarceur: { emoji: '🪀', name: 'Yo-yo farceur', price: 6, world: 'chatouilles' },
+  lunettesrigolotes: { emoji: '🥸', name: 'Lunettes rigolotes', price: 8, world: 'chatouilles' },
+  bonbonpetillant: { emoji: '🍬', name: 'Bonbon qui pétille', price: 5, world: 'chatouilles' },
+  sifflet: { emoji: '📯', name: 'Trompette à rires', price: 7, world: 'chatouilles' },
 };
 
 /** @type {Record<string, CraftedItem>} */
@@ -478,6 +487,21 @@ const CRAFTED = {
     world: 'coffres',
     recipe: { piecedor: 2, bague: 1 },
   },
+  // Monde des Chatouilles (saison 3)
+  chapeauplumes: {
+    emoji: '👒',
+    name: 'Chapeau à plumes',
+    price: 22,
+    world: 'chatouilles',
+    recipe: { plumeguili: 2, lunettesrigolotes: 1 },
+  },
+  mallefarces: {
+    emoji: '🧳',
+    name: 'Malle des farces',
+    price: 20,
+    world: 'chatouilles',
+    recipe: { nezclown: 1, boiterires: 1, sifflet: 1 },
+  },
 };
 
 /** @type {Record<string, Item>} */
@@ -630,6 +654,12 @@ const DECOS = {
   arbreclesD: { emoji: '🌳', name: 'Arbre à clés', price: 18, world: 'coffres' },
   ancreD: { emoji: '⚓', name: 'Ancre dorée', price: 14, world: 'coffres' },
   jarreD: { emoji: '🏺', name: 'Jarre aux trésors', price: 12, world: 'coffres' },
+  // Monde des Chatouilles (saison 3)
+  arbreplumesD: { emoji: '🌳', name: 'Arbre à plumes', price: 40, world: 'chatouilles' },
+  trampolineD: { emoji: '🤸', name: 'Trampoline des fous rires', price: 30, world: 'chatouilles' },
+  fanionsrireD: { emoji: '🎏', name: 'Fanions rigolos', price: 18, world: 'chatouilles' },
+  canapeD: { emoji: '🛋️', name: 'Canapé des guilis', price: 14, world: 'chatouilles' },
+  nuagecoussinD: { emoji: '☁️', name: 'Nuage-coussin', price: 12, world: 'chatouilles' },
 };
 
 const ALBUM_REWARD = 100;

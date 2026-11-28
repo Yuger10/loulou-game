@@ -135,7 +135,7 @@ Registre des tracks Conductor, **dans l'ordre d'implémentation**. Feuille de ro
 
 ---
 
-- [ ] **Track: Saison 3, île 4 : 🪶 Le Monde des Chatouilles (idée de la joueuse), niveau 94**
+- [x] **Track: Saison 3, île 4 : 🪶 Le Monde des Chatouilles (idée de la joueuse), niveau 94 (v71)**
 *Link: [./tracks/monde-chatouilles_20261122/](./tracks/monde-chatouilles_20261122/)*
 
 ---

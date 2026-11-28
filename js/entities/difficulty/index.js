@@ -51,12 +51,23 @@ export {
   shareRound,
   shelfRound,
 } from './difficulty-s2.js';
-export { codeRound, lengthRound, orderRound, problemsRound, tensRound, traceRound } from './difficulty-s3.js';
+export {
+  codeRound,
+  codingRound,
+  lengthRound,
+  orderRound,
+  problemsRound,
+  sentenceRound,
+  tensRound,
+  traceRound,
+} from './difficulty-s3.js';
 /** @typedef {import('./difficulty-s3.js').CodeRound} CodeRound */
+/** @typedef {import('./difficulty-s3.js').CodingRound} CodingRound */
 /** @typedef {import('./difficulty-s3.js').LengthRules} LengthRules */
 /** @typedef {import('./difficulty-s3.js').OrderRound} OrderRound */
 /** @typedef {import('./difficulty-s3.js').ProblemsRep} ProblemsRep */
 /** @typedef {import('./difficulty-s3.js').ProblemsRound} ProblemsRound */
+/** @typedef {import('./difficulty-s3.js').SentenceRound} SentenceRound */
 /** @typedef {import('./difficulty-s3.js').TensRound} TensRound */
 /** @typedef {import('./difficulty-s3.js').TraceRules} TraceRules */
 export { GAME_LIST, gameTypesForAge } from './game-types.js';

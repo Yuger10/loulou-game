@@ -24,6 +24,17 @@ function shakeEl(el) {
   el.classList.add('shake');
 }
 
+// Le rire (Monde des Chatouilles) : l'élément pouffe (classe `giggle-wiggle`,
+// relancée même s'il riait déjà) et le son `giggle` joue.
+/** @param {Element | null | undefined} el */
+function giggle(el) {
+  playSound('giggle');
+  if (!(el instanceof HTMLElement)) return;
+  el.classList.remove('giggle-wiggle');
+  void el.offsetWidth;
+  el.classList.add('giggle-wiggle');
+}
+
 // fonctions appelées après chaque retour d'erreur (voir onWrongFeedback)
 /** @type {Array<(el: HTMLElement | null) => void>} */
 const wrongFeedbackHooks = [];
@@ -62,4 +73,4 @@ function confetti() {
   }
 }
 
-export { confetti, onWrongFeedback, shakeEl, showToast, vibrate, wrongFeedback };
+export { confetti, giggle, onWrongFeedback, shakeEl, showToast, vibrate, wrongFeedback };

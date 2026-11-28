@@ -22,6 +22,7 @@ import { WORLDS_S3 } from './worlds-s3.js';
  *   intro: string,
  *   sceneEmpty: string,
  *   game?: string | ((age: number) => string),
+ *   giggly?: boolean,
  * }} World
  */
 /** @type {Record<string, World>} */

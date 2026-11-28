@@ -70,6 +70,8 @@ import '../features/minigames/tens/index.js';
 import '../features/minigames/order/index.js';
 import '../features/minigames/problems/index.js';
 import '../features/minigames/code/index.js';
+import '../features/minigames/coding/index.js';
+import '../features/minigames/sentence/index.js';
 import '../features/market/index.js';
 import '../features/backup/index.js';
 import '../features/players/index.js';

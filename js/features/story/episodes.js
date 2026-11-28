@@ -534,6 +534,36 @@ const EPISODES = {
       ],
     },
   ],
+  // saison 3, le Monde des Chatouilles : la plume de Guili, la blague de Lulu, et la musique de l'île suivante
+  chatouilles: [
+    {
+      by: 'guili',
+      title: 'La plume qui file',
+      find: '🪶',
+      lines: [
+        "J'ai lancé une plume dans le vent, et elle a fait trois virages avant de se poser !",
+        "Elle s'est posée sur le nez de Pic. Il a fait atchoum, et on a tous ri !",
+      ],
+    },
+    {
+      by: 'lulu',
+      title: 'La blague de Lulu',
+      find: '📜',
+      lines: [
+        "J'ai trouvé une blague : pourquoi les poissons n'aiment pas jouer au tennis ? Parce qu'ils ont peur du filet !",
+        'Hi hi ! Même Pic a ri, et pourtant il est très sérieux !',
+      ],
+    },
+    {
+      by: 'pic',
+      title: 'La musique au loin',
+      find: '🎼',
+      lines: [
+        'Chut… Écoute. Très loin, derrière les nuages, on entend de la musique.',
+        "Elle vient d'une île lointaine, qui prépare un grand concert. Le dernier morceau de la carte y est peut-être !",
+      ],
+    },
+  ],
 };
 
 /** @param {string} world */

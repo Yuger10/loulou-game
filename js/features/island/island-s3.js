@@ -79,6 +79,30 @@ function isleBigChest(x, y) {
     <circle cx="${x + 64}" cy="${y + 48}" r="3" fill="#8A5A2B"/>`;
 }
 
+/**
+ * Un arbre à plumes : tronc lilas, houppe de plumes roses et jaunes qui se balance.
+ * @param {number} x le milieu du tronc
+ * @param {number} top le haut de la houppe
+ * @param {string} sway `l1` ou `l2` : le rythme du balancement
+ */
+function isleFeatherTree(x, top, sway) {
+  const plume = (/** @type {number} */ rot, /** @type {string} */ fill) =>
+    `<ellipse cx="${x}" cy="${top + 34}" rx="13" ry="34" fill="${fill}" transform="rotate(${rot} ${x} ${top + 70})"/>`;
+  return `<rect x="${x - 8}" y="${top + 62}" width="16" height="${192 - top}" rx="7" fill="#BFA3EC" stroke="#8A3D6B" stroke-width="3"/>
+    <g class="ls-lolly ${sway}" stroke="#C2457A" stroke-width="2.5">${plume(-44, '#FF8FB8')}${plume(-22, '#FFD95A')}${plume(0, '#FF8FB8')}${plume(22, '#FFD95A')}${plume(44, '#FF8FB8')}</g>`;
+}
+/**
+ * Une plume qui flotte dans le ciel.
+ * @param {number[]} at son milieu : x, y
+ * @param {number} rot son inclinaison, en degrés
+ * @param {string} fill
+ */
+function isleFloatingFeather(at, rot, fill) {
+  const [x, y] = at;
+  return `<g transform="rotate(${rot} ${x} ${y})"><path d="M${x} ${y - 18} Q${x + 12} ${y - 4} ${x} ${y + 14} Q${x - 12} ${y - 4} ${x} ${y - 18}Z" fill="${fill}" stroke="#C2457A" stroke-width="2"/>
+    <path d="M${x} ${y - 12} V${y + 22}" stroke="#fff" stroke-width="2" stroke-linecap="round"/></g>`;
+}
+
 /** @type {Record<string, (w: import('./island.js').World) => string>} */
 const ISLE_SCENERY_S3 = {
   // Île des Crayons (saison 3) : une page de cahier ; trois crayons géants
@@ -138,6 +162,19 @@ const ISLE_SCENERY_S3 = {
     <g fill="#FFD95A" stroke="#E0A800" stroke-width="2"><circle cx="150" cy="290" r="6"/><circle cx="322" cy="302" r="6"/><circle cx="336" cy="284" r="5"/><circle cx="118" cy="320" r="5"/></g>
     <path d="M240 360 C252 322 246 290 240 262" fill="none" stroke="#FFF4DC" stroke-width="18" stroke-linecap="round"/>
     <g fill="#fff" opacity=".7"><circle cx="130" cy="304" r="2"/><circle cx="330" cy="326" r="2"/></g>`,
+  // Monde des Chatouilles (saison 3) : deux arbres à plumes qui se balancent
+  // (tronc lilas, houppe de plumes roses et jaunes), trois plumes dans le
+  // ciel, un petit trampoline à rayures, un nuage qui sourit
+  chatouilles: (w) => `
+    <g fill="#fff" stroke="#F3C4DA" stroke-width="2.5"><ellipse cx="372" cy="70" rx="54" ry="20"/><circle cx="346" cy="58" r="20"/><circle cx="386" cy="50" r="24"/></g>
+    <path d="M356 70 Q372 84 388 70" fill="none" stroke="#C2457A" stroke-width="3" stroke-linecap="round"/><circle cx="360" cy="60" r="2.6" fill="#8A3D6B"/><circle cx="384" cy="60" r="2.6" fill="#8A3D6B"/>
+    <path d="M0 254 C140 240 340 240 480 254 L480 360 L0 360 Z" fill="${w.land}"/>
+    ${isleFeatherTree(70, 128, 'l1')}${isleFeatherTree(430, 150, 'l2')}
+    ${isleFloatingFeather([150, 60], -24, '#FF8FB8')}${isleFloatingFeather([236, 96], 18, '#FFD95A')}${isleFloatingFeather([292, 44], -10, '#BFA3EC')}
+    <g stroke="#8A3D6B" stroke-width="3" stroke-linejoin="round"><path d="M176 250 V226 M276 250 V226" fill="none" stroke-linecap="round"/>
+      <ellipse cx="226" cy="224" rx="56" ry="13" fill="#FFF7FB"/><path d="M186 224 h14 M212 224 h14 M238 224 h14" stroke="#FF8FB8" stroke-width="6" stroke-linecap="round"/></g>
+    <path d="M150 360 C168 322 196 290 196 258" fill="none" stroke="${w.sand}" stroke-width="18" stroke-linecap="round"/>
+    <g fill="#fff" opacity=".7"><circle cx="110" cy="306" r="2"/><circle cx="340" cy="318" r="2"/></g>`,
 };
 
 export { ISLE_SCENERY_S3 };

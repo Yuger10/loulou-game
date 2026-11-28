@@ -211,6 +211,75 @@ function coffresArtFriends(ART, kit) {
 }
 
 /**
+ * Le Monde des Chatouilles (saison 3, île 4) : Plumette la paonne et Guili le manchot, yeux souriants.
+ * @param {Record<string, string>} ART
+ * @param {ArtKit} kit
+ */
+function chatouillesArt(ART, kit) {
+  const { AI, O, eyes, cheeks, smile, svg } = kit;
+  // Plumette la paonne : bleue et verte, une roue de plumes roses et jaunes, une aigrette de trois points
+  ART.plumette = svg(
+    [-40, -20, 0, 20, 40]
+      .map(
+        (a, i) =>
+          `<g transform="rotate(${a} 60 96)"><ellipse cx="60" cy="46" rx="13" ry="30" fill="${i % 2 ? '#FFD95A' : '#FF8FB8'}" ${O()}/><circle cx="60" cy="30" r="6" fill="#2F7CC0"/><circle cx="60" cy="30" r="2.8" fill="#6ED38C"/></g>`,
+      )
+      .join('') +
+      `<ellipse cx="60" cy="96" rx="30" ry="30" fill="#2F9E8F" ${O()}/><ellipse cx="60" cy="108" rx="17" ry="15" fill="#8FE0C8"/>` +
+      `<circle cx="60" cy="62" r="25" fill="#2F7CC0" ${O()}/>` +
+      `<path d="M52 38 V28 M60 37 V25 M68 38 V28" stroke="${AI}" stroke-width="2.2" stroke-linecap="round"/><g fill="#FFD95A" ${O(1.6)}><circle cx="52" cy="26" r="3.4"/><circle cx="60" cy="23" r="3.4"/><circle cx="68" cy="26" r="3.4"/></g>` +
+      eyes(51, 69, 59, 4.4, 5.6) +
+      `<path d="M55 68 L65 68 L60 76Z" fill="#FFA43A" ${O(2)}/>` +
+      cheeks(43, 77, 68) +
+      smile(54, 66, 79, 4),
+  );
+
+  // Guili le petit manchot : noir et blanc, une plume rose sur la tête, bec et pattes orange
+  ART.guili = svg(
+    `<path d="M60 26 Q46 10 58 -2 Q72 10 60 26Z" fill="#FF8FB8" stroke="#C2457A" stroke-width="2.5" stroke-linejoin="round" transform="rotate(14 60 20)"/>` +
+      `<path d="M24 74 Q8 86 14 104 M96 74 Q112 86 106 104" fill="none" stroke="#3B3550" stroke-width="12" stroke-linecap="round"/>` +
+      `<ellipse cx="46" cy="124" rx="12" ry="5.5" fill="#FFA43A" ${O(2)}/><ellipse cx="74" cy="124" rx="12" ry="5.5" fill="#FFA43A" ${O(2)}/>` +
+      `<ellipse cx="60" cy="74" rx="38" ry="50" fill="#3B3550" ${O()}/><ellipse cx="60" cy="84" rx="26" ry="36" fill="#fff"/>` +
+      `<path d="M34 62 Q34 40 50 40 Q60 40 60 50 Q60 40 70 40 Q86 40 86 62 Q76 74 60 62 Q44 74 34 62Z" fill="#fff"/>` +
+      eyes(49, 71, 56, 4.6, 5.8) +
+      `<path d="M53 65 L67 65 L60 75Z" fill="#FFA43A" ${O(2)}/>` +
+      cheeks(40, 80, 67) +
+      smile(54, 66, 79, 4),
+  );
+}
+
+/**
+ * Le Monde des Chatouilles, la suite : Lulu la loutre et Pic le hérisson.
+ * @param {Record<string, string>} ART
+ * @param {ArtKit} kit
+ */
+function chatouillesArtFriends(ART, kit) {
+  const { AI, O, eyes, cheeks, smile, svg } = kit;
+  // Lulu la loutre : marron clair, moustaches, un nez rouge de clown posé sur le front
+  ART.lulu = svg(
+    `<circle cx="30" cy="38" r="12" fill="#C99A6B" ${O()}/><circle cx="90" cy="38" r="12" fill="#C99A6B" ${O()}/><circle cx="30" cy="38" r="5.5" fill="#8A5A2B"/><circle cx="90" cy="38" r="5.5" fill="#8A5A2B"/>` +
+      `<ellipse cx="60" cy="78" rx="40" ry="44" fill="#C99A6B" ${O()}/><ellipse cx="60" cy="100" rx="24" ry="20" fill="#F3DDBE"/>` +
+      `<ellipse cx="60" cy="82" rx="19" ry="13" fill="#F3DDBE"/><ellipse cx="60" cy="76" rx="5" ry="3.6" fill="${AI}"/>` +
+      `<path d="M40 80 H22 M40 85 L24 90 M80 80 H98 M80 85 L96 90" stroke="${AI}" stroke-width="1.8" stroke-linecap="round"/>` +
+      `<circle cx="60" cy="44" r="9" fill="#E8344E" ${O(2)}/><circle cx="57" cy="41" r="2.6" fill="#fff" opacity=".8"/>` +
+      eyes(45, 75, 64, 4.6, 5.8) +
+      cheeks(33, 87, 76) +
+      smile(53, 67, 85, 6),
+  );
+
+  // Pic le petit hérisson timide : des piquants arrondis couleur noisette, des joues roses, un petit sourire
+  ART.pic = svg(
+    `<path d="M14 96 Q4 80 14 68 Q8 52 22 44 Q22 28 38 26 Q46 12 60 18 Q74 12 82 26 Q98 28 98 44 Q112 52 106 68 Q116 80 106 96 Q104 120 60 122 Q16 120 14 96Z" fill="#B07A4A" ${O()}/>` +
+      `<path d="M30 46 q5 -10 10 0 M52 34 q5 -10 10 0 M76 42 q5 -10 10 0 M22 70 q5 -10 10 0 M88 68 q5 -10 10 0 M40 56 q5 -10 10 0 M68 54 q5 -10 10 0" fill="none" stroke="#7A4E28" stroke-width="2.4" stroke-linecap="round"/>` +
+      `<ellipse cx="60" cy="92" rx="30" ry="28" fill="#F3DDBE" ${O()}/>` +
+      `<ellipse cx="60" cy="94" rx="4.4" ry="3.2" fill="${AI}"/>` +
+      eyes(48, 72, 84, 4.2, 5.4) +
+      `<ellipse cx="40" cy="96" rx="7" ry="4.4" fill="#FF8FA3" opacity=".7"/><ellipse cx="80" cy="96" rx="7" ry="4.4" fill="#FF8FA3" opacity=".7"/>` +
+      smile(55, 65, 102, 4),
+  );
+}
+
+/**
  * Ajoute les dessins de la saison 3 à `ART`.
  * @param {Record<string, string>} ART
  * @param {ArtKit} kit
@@ -222,6 +291,8 @@ function season3Art(ART, kit) {
   dumplingsArtService(ART, kit);
   coffresArt(ART, kit);
   coffresArtFriends(ART, kit);
+  chatouillesArt(ART, kit);
+  chatouillesArtFriends(ART, kit);
 }
 
 export { season3Art };

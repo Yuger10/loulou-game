@@ -88,6 +88,29 @@ const STORY_S3 = {
       "Bravo ! La serrure fait clic, le grand coffre s'ouvre… et voici le troisième morceau de la carte de Zap 🗺️",
     reward: 16,
   },
+  chatouilles: {
+    guide: 'plumette',
+    title: 'Le quatrième morceau de la carte',
+    intro: [
+      'Hi hi ! Bienvenue au Monde des Chatouilles 🪶 Ici, tout le monde rit pour un rien.',
+      "Le quatrième morceau de la carte de Zap s'est envolé dans mon arbre à plumes. Il est caché tout en haut, sous les plumes qui chatouillent !",
+      "Ici, on chatouille seulement ceux qui en ont envie, et quand quelqu'un dit stop, on s'arrête. Résous mes devinettes, et l'arbre te donnera le morceau !",
+    ],
+    riddles: [
+      {
+        q: 'Je suis toute légère, je vole au vent, et je chatouille le bout du nez. Qui suis-je ?',
+        tip: 'Les oiseaux en ont plein sur le dos.',
+        opts: [{ e: '🪶', ok: true }, { e: '🪨' }, { e: '🔨' }],
+      },
+      {
+        q: "On me met aux pieds, une à droite, une à gauche, et parfois j'ai des pois. Qui suis-je ?",
+        tip: 'On me met avant les chaussures.',
+        opts: [{ e: '🧦', ok: true }, { e: '🧤' }, { e: '🎩' }],
+      },
+    ],
+    success: "Bravo ! L'arbre à plumes rit si fort qu'il laisse tomber le quatrième morceau de la carte de Zap ! 🗺️",
+    reward: 16,
+  },
 };
 
 export { STORY_S3 };
