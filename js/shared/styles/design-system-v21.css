@@ -127,6 +127,13 @@ body[data-world="dumplings"] {
   --world-scene-top: #f7fbf2;
   --world-scene-floor: #f3e3c3;
 }
+body[data-world="coffres"] {
+  --world-sky: #fff4dc;
+  --world-sea: #3fa7a3;
+  --world-deep: #6b3f1d;
+  --world-scene-top: #fffaf0;
+  --world-scene-floor: #f2d29b;
+}
 body[data-world="jardin"] {
   --world-sky: #f1eafb;
   --world-sea: #a8dda0;

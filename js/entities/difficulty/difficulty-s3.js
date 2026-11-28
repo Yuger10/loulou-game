@@ -188,4 +188,83 @@ function orderRound(dd) {
   return tierValue(ORDER_TIERS, dd);
 }
 
-export { lengthRound, orderRound, tensRound, traceRound };
+/* ---------------------------------------------------------------------
+   LE TRÉSOR RACONTÉ (Île des Coffres, saison 3) : la résolution de problèmes
+   additifs (cycle 2 : comprendre, modéliser, calculer, répondre).
+     palier 1   GS, début CP   réunion, ajout, retrait jusqu'à 6, objets à toucher
+     palier 2   CP             jusqu'à 10, les objets deviennent des barres
+     palier 3   fin CP, CE1    jusqu'à 20, schéma en barres, comparaisons
+     palier 4   CE1            jusqu'à 50, deux étapes, « est-ce possible ? »
+     palier 5   fin CE1, CE2   jusqu'à 100, l'égalité seule
+   `min`/`max` : bornes du tout ; `ecart` : écart maximal d'une comparaison ;
+   `rep` : représentation ; `eqUnder` : l'égalité s'écrit sous le schéma ;
+   `choices` : réponses au calcul ; `gap` : écart maximal d'un leurre ;
+   `tens` : leurres à plus ou moins dix. Pas de minuteur.
+   --------------------------------------------------------------------- */
+/** @typedef {'concret' | 'concret-barre' | 'barres' | 'egalite'} ProblemsRep */
+/**
+ * Une ligne de « Le trésor raconté » (tables T1 et R1 de la spec).
+ * @typedef {{ types: string[], min: number, max: number, ecart: number, rep: ProblemsRep,
+ *   eqUnder: boolean, choices: number, gap: number, tens: boolean }} ProblemsRound
+ */
+const PB_EARLY = ['reunion', 'ajout', 'retrait', 'partie', 'ajoutInconnu', 'compPlus', 'compEcart'];
+const PB_LATE = ['partie', 'ajoutInconnu', 'compEcart', 'compMoinsPlus', 'deuxEtapes', 'possible'];
+const PB_SMALL = { ecart: 0, eqUnder: false, choices: 3, gap: 3, tens: false };
+const PB_BIG = { choices: 4, gap: 10, tens: true };
+/** @type {Record<number, ProblemsRound>} */
+const PROBLEMS_TIERS = {
+  1: { types: PB_EARLY.slice(0, 3), min: 2, max: 6, rep: 'concret', ...PB_SMALL },
+  2: { types: PB_EARLY.slice(0, 4), min: 4, max: 10, rep: 'concret-barre', ...PB_SMALL },
+  3: { types: PB_EARLY, min: 5, max: 20, rep: 'barres', ...PB_SMALL, ecart: 9, choices: 4 },
+  4: {
+    types: ['retrait', 'partie', 'ajoutInconnu', 'compPlus', 'compEcart', 'compMoinsPlus', 'deuxEtapes', 'possible'],
+    min: 10,
+    max: 50,
+    ecart: 20,
+    rep: 'barres',
+    eqUnder: true,
+    ...PB_BIG,
+  },
+  5: { types: PB_LATE, min: 20, max: 100, ecart: 40, rep: 'egalite', eqUnder: false, ...PB_BIG },
+};
+/**
+ * @param {number} dd le palier de difficulté
+ * @returns {ProblemsRound}
+ */
+function problemsRound(dd) {
+  return tierValue(PROBLEMS_TIERS, dd);
+}
+
+/* ---------------------------------------------------------------------
+   LE CODE SECRET (Île des Coffres, saison 3) : la déduction. Un cadenas, des
+   indices tous vrais, un seul code possible : tout se déduit avant d'ouvrir.
+     palier 1   2 roues, 4 symboles : un symbole chassé, un symbole placé
+     palier 2   3 roues : « n'est pas sur la roue… »
+     palier 3   5 symboles : deux symboles voisins
+     palier 4   4 roues
+     palier 5   6 symboles, plus aucun symbole placé : « une roue du bout »
+   `wheels` : roues ; `palette` : symboles proposés ; `types` : indices
+   permis ; `maxEst` : indices « est sur la roue » au plus ; `maxClues` :
+   indices au plus. Pas de minuteur.
+   --------------------------------------------------------------------- */
+/**
+ * Une ligne du « Code secret » (table T2 de la spec).
+ * @typedef {{ wheels: number, palette: number, types: string[], maxEst: number, maxClues: number }} CodeRound
+ */
+/** @type {Record<number, CodeRound>} */
+const CODE_TIERS = {
+  1: { wheels: 2, palette: 4, types: ['est', 'absent'], maxEst: 1, maxClues: 3 },
+  2: { wheels: 3, palette: 4, types: ['est', 'pas', 'absent'], maxEst: 1, maxClues: 4 },
+  3: { wheels: 3, palette: 5, types: ['est', 'pas', 'absent', 'voisins'], maxEst: 1, maxClues: 4 },
+  4: { wheels: 4, palette: 5, types: ['est', 'pas', 'absent', 'voisins'], maxEst: 1, maxClues: 5 },
+  5: { wheels: 4, palette: 6, types: ['pas', 'absent', 'voisins', 'bout'], maxEst: 0, maxClues: 6 },
+};
+/**
+ * @param {number} dd le palier de difficulté
+ * @returns {CodeRound}
+ */
+function codeRound(dd) {
+  return tierValue(CODE_TIERS, dd);
+}
+
+export { codeRound, lengthRound, orderRound, problemsRound, tensRound, traceRound };

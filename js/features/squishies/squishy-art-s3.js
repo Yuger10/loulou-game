@@ -116,6 +116,57 @@ const SQ_ART_S3 = {
     front: () =>
       `${sqDumplingFolds('#fff')}<path class="sq-deco" d="M18 36 l2 5 l5 2 l-5 2 l-2 5 l-2 -5 l-5 -2 l5 -2z M82 30 l1.6 4 l4 1.6 l-4 1.6 l-1.6 4 l-1.6 -4 l-4 -1.6 l4 -1.6z" fill="#FFF3A6"/>`,
   },
+  // 🔐 Coffres (l'Île des Coffres)
+  'coffre-mochi': {
+    body: 'carre',
+    face: {},
+    faceY: 68,
+    front: (c) =>
+      `<path class="sq-deco" d="M14 46 Q50 34 86 46" fill="none" stroke="${c.edge}" stroke-width="3.5" stroke-linecap="round"/><rect class="sq-deco" x="43" y="38" width="14" height="14" rx="4" fill="#FFD95A" stroke="#B98500" stroke-width="2"/><circle class="sq-deco" cx="50" cy="45" r="2" fill="#B98500"/>`,
+  },
+  'cadenas-coeur': {
+    body: 'ovale-v',
+    face: {},
+    faceY: 56,
+    back: () =>
+      `<path d="M36 28 V16 Q36 2 50 2 Q64 2 64 16 V28" fill="none" stroke="#9AA3AD" stroke-width="6" stroke-linecap="round"/>`,
+    front: () =>
+      `<path class="sq-deco" d="M50 88 q-9 -7 -9 -12 q0 -5 5 -5 q3 0 4 3 q1 -3 4 -3 q5 0 5 5 q0 5 -9 12z" fill="#fff" opacity=".9"/>`,
+  },
+  'cle-lune': {
+    body: 'ovale-h',
+    face: {},
+    faceY: 70,
+    back: () =>
+      `<path d="M50 44 V6 M50 8 H64 M50 16 H60" fill="none" stroke="#B98500" stroke-width="6" stroke-linecap="round"/>`,
+    front: () =>
+      `<path class="sq-deco" d="M26 52 a9 9 0 1 0 9 11 a7 7 0 1 1 -9 -11z" fill="#FFF3A6" stroke="#B98500" stroke-width="1.5"/>`,
+  },
+  'piece-souriante': {
+    body: 'rond',
+    face: {},
+    faceY: 64,
+    front: () =>
+      `<circle class="sq-deco" cx="50" cy="58" r="30" fill="none" stroke="#fff" stroke-width="3.5" opacity=".55"/><path class="sq-deco" d="M50 28 l2.4 6 l6 2.4 l-6 2.4 l-2.4 6 l-2.4 -6 l-6 -2.4 l6 -2.4z" fill="#fff" opacity=".85"/>`,
+  },
+  kadi: {
+    body: 'carre',
+    face: {},
+    faceY: 56,
+    back: () =>
+      `<path d="M32 30 V18 Q32 2 50 2 Q68 2 68 18 V30" fill="none" stroke="#9AA3AD" stroke-width="7" stroke-linecap="round"/>`,
+    front: () =>
+      `<rect class="sq-deco" x="32" y="72" width="36" height="14" rx="5" fill="#fff" stroke="#2B2140" stroke-width="2"/><path class="sq-deco" d="M44 72 V86 M56 72 V86" stroke="#2B2140" stroke-width="1.5"/><path class="sq-deco" d="M38 75.5 v7 M47.5 76 h5 v3 h-5 v3 h5 M59.5 76 h5 v6 h-5 M60.5 79 h4" fill="none" stroke="#2B2140" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>`,
+  },
+  'coffre-etoiles': {
+    body: 'carre',
+    face: {},
+    faceY: 70,
+    back: () =>
+      `<g fill="#FFF3A6" stroke="#E0A800" stroke-width="1.2"><path d="M26 14 l2 5 l5 2 l-5 2 l-2 5 l-2 -5 l-5 -2 l5 -2z"/><path d="M52 2 l2.4 6 l6 2.4 l-6 2.4 l-2.4 6 l-2.4 -6 l-6 -2.4 l6 -2.4z"/><path d="M78 14 l2 5 l5 2 l-5 2 l-2 5 l-2 -5 l-5 -2 l5 -2z"/></g>`,
+    front: () =>
+      `<path class="sq-deco" d="M15 46 Q15 26 37 24 H63 Q85 26 85 46Z" fill="#FFD95A" stroke="#B98500" stroke-width="3" stroke-linejoin="round"/><rect class="sq-deco" x="44" y="40" width="12" height="12" rx="3.5" fill="#fff" stroke="#B98500" stroke-width="2"/>`,
+  },
 };
 
 export { SQ_ART_S3 };

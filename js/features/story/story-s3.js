@@ -59,6 +59,35 @@ const STORY_S3 = {
     success: 'Bravo ! Sous le dernier couvercle, le deuxième morceau de la carte est là, tout chaud et tout sec 🗺️',
     reward: 16,
   },
+  coffres: {
+    guide: 'clemence',
+    title: 'Le troisième morceau de la carte',
+    intro: [
+      "Bienvenue sur l'Île des Coffres 🗝️ Ici, chaque coffre garde un secret, et chaque secret a sa clé.",
+      'Zap a vu le troisième morceau de sa carte au fond du grand coffre. Mais le coffre est fermé, et sa serrure pose une devinette !',
+      'Trouve la bonne réponse, et la serrure fera clic !',
+    ],
+    riddles: [
+      {
+        q: "Je suis petite, je suis en métal, et je tourne dans la serrure pour l'ouvrir. Qui suis-je ?",
+        tip: 'Sans moi, la porte reste fermée. On me range sur un trousseau.',
+        opts: [{ e: '🔑', ok: true }, { e: '🔨' }, { e: '🥄' }],
+      },
+      {
+        q: "Je ferme les coffres et les vélos. Pour m'ouvrir, il faut une clé ou un code. Qui suis-je ?",
+        tip: "On m'accroche, et clic ! je reste fermé.",
+        opts: [{ e: '🔒', ok: true }, { e: '🔔' }, { e: '🎈' }],
+      },
+      {
+        q: "Je montre le chemin d'un trésor. Une croix dit où creuser. Qui suis-je ?",
+        tip: 'Les pirates me déplient pour trouver leur trésor.',
+        opts: [{ e: '🗺️', ok: true }, { e: '📖' }, { e: '🖼️' }],
+      },
+    ],
+    success:
+      "Bravo ! La serrure fait clic, le grand coffre s'ouvre… et voici le troisième morceau de la carte de Zap 🗺️",
+    reward: 16,
+  },
 };
 
 export { STORY_S3 };

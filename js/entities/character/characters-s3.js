@@ -112,6 +112,60 @@ const CHARACTERS_S3 = {
       'Une petite tasse de thé, et on joue ?',
     ],
   },
+  // ---- L'Île des Coffres (saison 3, île 3) : Clémence est la guide ;
+  // Kadi parle des codes, Grignote des histoires à compter (leurs répliques seulement).
+  clemence: {
+    emoji: '🗝️',
+    name: 'Clémence',
+    title: 'la gardienne des clés',
+    world: 'coffres',
+    gender: 'f',
+    loot: ['clecuivre', 'piecedor'],
+    texts: [
+      "Bienvenue sur l'Île des Coffres ! J'ai une clé pour chaque serrure… sauf pour le grand coffre.",
+      "Un coffre ne s'ouvre pas en forçant. Il s'ouvre en réfléchissant !",
+      "Chaque mission réussie, c'est une serrure qui fait clic. On continue ?",
+    ],
+  },
+  kadi: {
+    emoji: '🔒',
+    name: 'Kadi',
+    title: 'le petit cadenas à code',
+    world: 'coffres',
+    gender: 'm',
+    loot: ['petitcadenas', 'clecuivre'],
+    texts: [
+      'Clic, clac ! Je suis un cadenas à code. Tu trouves mon code ?',
+      'Mes indices ne mentent jamais. Écoute-les bien, un par un !',
+      "Dans mon code, chaque symbole ne sert qu'une fois. Ça aide, non ?",
+    ],
+  },
+  grignote: {
+    emoji: '🐭',
+    name: 'Grignote',
+    title: 'la souris qui compte tout',
+    world: 'coffres',
+    gender: 'f',
+    loot: ['boulier', 'piecedor'],
+    texts: [
+      "Je compte tout : les pièces, les clés, les coffres ! Tu m'aides ?",
+      'Une histoire, un dessin, un calcul… et hop, le trésor est trouvé !',
+      'Écoute bien mon histoire. La réponse se cache dedans !',
+    ],
+  },
+  pincou: {
+    emoji: '🦀',
+    name: 'Pinçou',
+    title: 'le crabe serrurier',
+    world: 'coffres',
+    gender: 'm',
+    loot: ['tournevis', 'petitcadenas'],
+    texts: [
+      "Avec mes pinces, j'ouvre les serrures… enfin, j'essaie !",
+      'Clic-clic ! On joue avant que je referme mes pinces ?',
+      'Le sable est plein de trésors. On cherche ensemble ?',
+    ],
+  },
 };
 
 export { CHARACTERS_S3 };

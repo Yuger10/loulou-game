@@ -140,6 +140,77 @@ function dumplingsArtService(ART, kit) {
 }
 
 /**
+ * L'Île des Coffres (saison 3, île 3) : Clémence la gardienne des clés et
+ * Kadi le cadenas (rond et doux, comme Boumbo).
+ * @param {Record<string, string>} ART
+ * @param {ArtKit} kit
+ */
+function coffresArt(ART, kit) {
+  const { AI, O, eyes, cheeks, smile, svg, human } = kit;
+  // Clémence : cheveux bruns en tresse, robe bleu canard, un gros trousseau de clés dorées à la ceinture
+  ART.clemence = human(
+    '#F2C6A0',
+    '#6B3F1D',
+    '#1F7A8C',
+    `<path d="M90 50 Q104 62 98 80 Q94 92 100 104" fill="none" stroke="#6B3F1D" stroke-width="9" stroke-linecap="round"/>` +
+      `<path d="M93 62 l8 4 M94 76 l8 2 M95 90 l8 4" stroke="#4A2A12" stroke-width="2" stroke-linecap="round"/>` +
+      `<circle cx="100" cy="106" r="4.5" fill="#E8344E" ${O(2)}/>`,
+    `<path d="M30 112 Q60 120 90 112" fill="none" stroke="#6B3F1D" stroke-width="4" stroke-linecap="round"/>` +
+      `<circle cx="44" cy="118" r="7" fill="none" stroke="#E0A800" stroke-width="3"/>` +
+      `<g fill="#FFD95A" stroke="#B98500" stroke-width="1.5" stroke-linejoin="round"><path d="M36 122 l-6 6 l3 1 l1 3 l6 -6z"/><path d="M44 125 v8 h3 v-2 h2 v-2 h-2 v-4z"/><path d="M52 122 l6 6 l-3 1 l-1 3 l-6 -6z"/></g>`,
+  );
+
+  // Kadi le petit cadenas à code : un cadenas doré tout rond, l'anse en haut, une molette à chiffres sur le ventre
+  ART.kadi = svg(
+    `<path d="M38 56 V34 Q38 12 60 12 Q82 12 82 34 V56" fill="none" stroke="#9AA3AD" stroke-width="9" stroke-linecap="round"/>` +
+      `<rect x="18" y="48" width="84" height="76" rx="30" fill="#F7C948" ${O()}/>` +
+      `<path d="M30 66 Q38 56 52 56" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" opacity=".6"/>` +
+      `<rect x="40" y="96" width="40" height="16" rx="6" fill="#fff" ${O(2)}/><path d="M53 96 V112 M67 96 V112" stroke="${AI}" stroke-width="1.6"/>` +
+      `<path d="M46.5 100 v8 M57 100.5 h6 v3.5 h-6 v3.5 h6 M70.5 100.5 h6 v7 h-6 M71.5 104 h5" fill="none" stroke="${AI}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>` +
+      eyes(46, 74, 72, 4.8, 6) +
+      cheeks(33, 87, 84) +
+      smile(52, 68, 84, 7),
+  );
+}
+
+/**
+ * L'Île des Coffres, la suite : Grignote la souris et Pinçou le crabe.
+ * @param {Record<string, string>} ART
+ * @param {ArtKit} kit
+ */
+function coffresArtFriends(ART, kit) {
+  const { AI, O, eyes, cheeks, smile, svg } = kit;
+  // Grignote la souris qui compte tout : grise, grandes oreilles roses, lunettes rondes, une pièce d'or dans les pattes
+  ART.grignote = svg(
+    `<circle cx="28" cy="38" r="20" fill="#B9BEC9" ${O()}/><circle cx="28" cy="38" r="11" fill="#FFB3C7"/>` +
+      `<circle cx="92" cy="38" r="20" fill="#B9BEC9" ${O()}/><circle cx="92" cy="38" r="11" fill="#FFB3C7"/>` +
+      `<ellipse cx="60" cy="80" rx="40" ry="42" fill="#B9BEC9" ${O()}/><ellipse cx="60" cy="98" rx="22" ry="20" fill="#E9ECF2"/>` +
+      eyes(46, 74, 70, 4.4, 5.6) +
+      `<g fill="none" stroke="${AI}" stroke-width="2.5"><circle cx="46" cy="70" r="10"/><circle cx="74" cy="70" r="10"/><path d="M56 70 H64"/></g>` +
+      `<ellipse cx="60" cy="82" rx="3.5" ry="2.6" fill="#FF8FA3"/>` +
+      cheeks(34, 86, 84) +
+      smile(54, 66, 87, 5) +
+      `<circle cx="60" cy="108" r="11" fill="#FFD95A" stroke="#B98500" stroke-width="2.5"/><circle cx="60" cy="108" r="6.5" fill="none" stroke="#B98500" stroke-width="1.6"/>` +
+      `<ellipse cx="46" cy="108" rx="6" ry="4.5" fill="#B9BEC9" ${O(2)}/><ellipse cx="74" cy="108" rx="6" ry="4.5" fill="#B9BEC9" ${O(2)}/>`,
+  );
+
+  // Pinçou le crabe serrurier : orange, deux grosses pinces, une petite clé tenue dans une pince
+  ART.pincou = svg(
+    `<path d="M26 84 Q8 70 12 48 M94 84 Q112 70 108 48" fill="none" stroke="#E86A2E" stroke-width="7" stroke-linecap="round"/>` +
+      `<path d="M2 44 Q2 24 20 24 Q30 26 28 38 L18 36 L24 48 Q10 54 2 44Z" fill="#FF8A4C" ${O()}/>` +
+      `<path d="M118 44 Q118 24 100 24 Q90 26 92 38 L102 36 L96 48 Q110 54 118 44Z" fill="#FF8A4C" ${O()}/>` +
+      `<path d="M100 22 v-14 M100 8 h6 M100 13 h5" stroke="#B98500" stroke-width="3" stroke-linecap="round"/><circle cx="100" cy="26" r="4.5" fill="#FFD95A" stroke="#B98500" stroke-width="2"/>` +
+      `<path d="M30 112 l-10 10 M44 118 l-6 10 M76 118 l6 10 M90 112 l10 10" stroke="#E86A2E" stroke-width="5" stroke-linecap="round"/>` +
+      `<ellipse cx="60" cy="88" rx="40" ry="32" fill="#FF8A4C" ${O()}/>` +
+      `<path d="M34 76 Q42 66 54 66" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" opacity=".5"/>` +
+      `<path d="M48 60 V50 M72 60 V50" stroke="#E86A2E" stroke-width="4" stroke-linecap="round"/>` +
+      eyes(48, 72, 84, 4.8, 6) +
+      cheeks(35, 85, 95) +
+      smile(52, 68, 95, 7),
+  );
+}
+
+/**
  * Ajoute les dessins de la saison 3 à `ART`.
  * @param {Record<string, string>} ART
  * @param {ArtKit} kit
@@ -149,6 +220,8 @@ function season3Art(ART, kit) {
   crayonsArtTools(ART, kit);
   dumplingsArt(ART, kit);
   dumplingsArtService(ART, kit);
+  coffresArt(ART, kit);
+  coffresArtFriends(ART, kit);
 }
 
 export { season3Art };

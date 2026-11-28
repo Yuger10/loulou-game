@@ -53,6 +53,32 @@ function isleBambooStalk(x, top) {
     <path d="M${x + 12} ${top + 20} q20 -14 30 -4 q-14 12 -30 4z" fill="#8FD694" stroke="#3F7A4A" stroke-width="2"/>`;
 }
 
+/**
+ * Une clé dorée pendue à une branche, l'anneau en haut : elle se balance.
+ * @param {number} x son centre
+ * @param {number} y le haut de son fil
+ * @param {string} swing `l1` ou `l2` : les deux balancements de l'île
+ */
+function isleHangingKey(x, y, swing) {
+  return `<g class="ls-lolly ${swing}"><path d="M${x} ${y} v10" stroke="#8A5A2B" stroke-width="2"/>
+      <circle cx="${x}" cy="${y + 16}" r="6" fill="none" stroke="#E0A800" stroke-width="3.5"/>
+      <path d="M${x} ${y + 22} v20 M${x} ${y + 34} h7 M${x} ${y + 41} h6" fill="none" stroke="#E0A800" stroke-width="3.5" stroke-linecap="round"/></g>`;
+}
+/**
+ * Le grand coffre de bois, cerclé d'or, fermé par un cadenas doré.
+ * @param {number} x son bord gauche
+ * @param {number} y le haut de son couvercle
+ */
+function isleBigChest(x, y) {
+  return `<g stroke="#8A5A2B" stroke-width="3" stroke-linejoin="round">
+      <path d="M${x} ${y + 46} Q${x} ${y} ${x + 64} ${y} Q${x + 128} ${y} ${x + 128} ${y + 46}Z" fill="#C8955A"/>
+      <rect x="${x}" y="${y + 46}" width="128" height="62" rx="6" fill="#B07A45"/></g>
+    <path d="M${x} ${y + 46} H${x + 128} M${x + 28} ${y + 6} V${y + 108} M${x + 100} ${y + 6} V${y + 108}" stroke="#E0A800" stroke-width="6"/>
+    <path d="M${x + 56} ${y + 36} v-6 q8 -10 16 0 v6" fill="none" stroke="#9AA3AD" stroke-width="4"/>
+    <rect x="${x + 50}" y="${y + 36}" width="28" height="26" rx="6" fill="#F7C948" stroke="#8A5A2B" stroke-width="2.5"/>
+    <circle cx="${x + 64}" cy="${y + 48}" r="3" fill="#8A5A2B"/>`;
+}
+
 /** @type {Record<string, (w: import('./island.js').World) => string>} */
 const ISLE_SCENERY_S3 = {
   // Île des Crayons (saison 3) : une page de cahier ; trois crayons géants
@@ -94,6 +120,23 @@ const ISLE_SCENERY_S3 = {
       <rect x="350" y="214" width="112" height="12" rx="5" fill="#D9B27A"/></g>
     ${isleTinyDumpling(378, 202)}${isleTinyDumpling(408, 200)}${isleTinyDumpling(438, 202)}
     <path d="M250 360 C262 322 250 290 226 252" fill="none" stroke="${w.sand}" stroke-width="18" stroke-linecap="round"/>
+    <g fill="#fff" opacity=".7"><circle cx="130" cy="304" r="2"/><circle cx="330" cy="326" r="2"/></g>`,
+  // Île des Coffres (saison 3) : une île de sable sur la mer turquoise ; au
+  // centre le grand coffre, à gauche l'arbre à clés (elles se balancent), à
+  // droite un rocher à petite porte ronde, des pièces d'or dans le sable
+  coffres: (w) => `
+    <g fill="#fff" opacity=".9"><ellipse cx="120" cy="60" rx="46" ry="13"/><ellipse cx="380" cy="74" rx="50" ry="14"/></g>
+    <path d="M0 226 C120 216 360 216 480 226 L480 262 L0 262 Z" fill="#3FA7A3" opacity=".85"/>
+    <path d="M0 250 C140 236 340 236 480 250 L480 360 L0 360 Z" fill="${w.sand}"/>
+    <rect x="66" y="150" width="16" height="104" rx="6" fill="#8A5A2B"/>
+    <path d="M74 186 Q40 176 30 150 M74 176 Q108 166 120 144" fill="none" stroke="#8A5A2B" stroke-width="7" stroke-linecap="round"/>
+    <g fill="#6FBF73" stroke="#3F7A4A" stroke-width="3"><circle cx="46" cy="128" r="30"/><circle cx="102" cy="124" r="30"/><circle cx="74" cy="100" r="34"/></g>
+    ${isleHangingKey(38, 152, 'l1')}${isleHangingKey(74, 136, 'l2')}${isleHangingKey(112, 148, 'l1')}
+    ${isleBigChest(176, 150)}
+    <path d="M352 256 Q346 196 396 184 Q452 190 458 256Z" fill="#B7B0A6" stroke="#7A736A" stroke-width="3" stroke-linejoin="round"/>
+    <circle cx="404" cy="232" r="20" fill="#8A5A2B" stroke="#5A3A22" stroke-width="3"/><circle cx="414" cy="234" r="3" fill="#E0A800"/>
+    <g fill="#FFD95A" stroke="#E0A800" stroke-width="2"><circle cx="150" cy="290" r="6"/><circle cx="322" cy="302" r="6"/><circle cx="336" cy="284" r="5"/><circle cx="118" cy="320" r="5"/></g>
+    <path d="M240 360 C252 322 246 290 240 262" fill="none" stroke="#FFF4DC" stroke-width="18" stroke-linecap="round"/>
     <g fill="#fff" opacity=".7"><circle cx="130" cy="304" r="2"/><circle cx="330" cy="326" r="2"/></g>`,
 };
 

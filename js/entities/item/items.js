@@ -145,6 +145,15 @@ const ITEMS = {
   bolriz: { emoji: '🍚', name: 'Bol de riz', price: 6, world: 'dumplings' },
   potsauce: { emoji: '🥫', name: 'Pot de sauce', price: 7, world: 'dumplings' },
   eventail: { emoji: '🌬️', name: 'Éventail', price: 8, world: 'dumplings' },
+  // Île des Coffres (saison 3)
+  clecuivre: { emoji: '🔑', name: 'Clé de cuivre', price: 6, world: 'coffres' },
+  piecedor: { emoji: '🪙', name: "Pièce d'or", price: 5, world: 'coffres' },
+  petitcadenas: { emoji: '🔒', name: 'Petit cadenas', price: 6, world: 'coffres' },
+  boulier: { emoji: '🧮', name: 'Boulier', price: 7, world: 'coffres' },
+  tournevis: { emoji: '🪛', name: 'Petit tournevis', price: 6, world: 'coffres' },
+  loupe: { emoji: '🔍', name: 'Loupe de détective', price: 8, world: 'coffres' },
+  lampe: { emoji: '🔦', name: 'Lampe de poche', price: 7, world: 'coffres' },
+  bague: { emoji: '💍', name: 'Bague au rubis', price: 9, world: 'coffres' },
 };
 
 /** @type {Record<string, CraftedItem>} */
@@ -454,6 +463,21 @@ const CRAFTED = {
     world: 'dumplings',
     recipe: { bolriz: 1, potsauce: 1 },
   },
+  // Île des Coffres (saison 3)
+  trousseau: {
+    emoji: '🔐',
+    name: 'Trousseau magique',
+    price: 22,
+    world: 'coffres',
+    recipe: { clecuivre: 2, tournevis: 1 },
+  },
+  medaillon: {
+    emoji: '🏅',
+    name: 'Médaillon secret',
+    price: 20,
+    world: 'coffres',
+    recipe: { piecedor: 2, bague: 1 },
+  },
 };
 
 /** @type {Record<string, Item>} */
@@ -600,6 +624,12 @@ const DECOS = {
   vapeurD: { emoji: '♨️', name: 'Source de vapeur', price: 18, world: 'dumplings' },
   lotusD: { emoji: '💮', name: 'Bassin de lotus', price: 14, world: 'dumplings' },
   tabouretsD: { emoji: '🪑', name: 'Tabourets du comptoir', price: 12, world: 'dumplings' },
+  // Île des Coffres (saison 3)
+  salleD: { emoji: '🏛️', name: 'Salle des coffres', price: 40, world: 'coffres' },
+  porteD: { emoji: '🚪', name: 'Porte secrète', price: 30, world: 'coffres' },
+  arbreclesD: { emoji: '🌳', name: 'Arbre à clés', price: 18, world: 'coffres' },
+  ancreD: { emoji: '⚓', name: 'Ancre dorée', price: 14, world: 'coffres' },
+  jarreD: { emoji: '🏺', name: 'Jarre aux trésors', price: 12, world: 'coffres' },
 };
 
 const ALBUM_REWARD = 100;
