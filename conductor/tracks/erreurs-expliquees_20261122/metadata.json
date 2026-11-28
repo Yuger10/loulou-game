@@ -3,7 +3,7 @@
   "type": "feature",
   "status": "completed",
   "created_at": "2026-11-22T00:00:00Z",
-  "updated_at": "2026-11-26T00:00:00Z",
-  "description": "Après une erreur, une explication courte (une phrase dite, un geste sur l'écran, 4 secondes) dit pourquoi, puis une autre question ; phrases de réussite qui nomment la stratégie. Contrat registerExplain, garde des jeux exemptés, 10 jeux de nombres d'abord.",
+  "updated_at": "2026-11-28T00:00:00Z",
+  "description": "Après une erreur, une explication courte (une phrase dite, un geste sur l'écran, 4 secondes) dit pourquoi, puis une autre question ; phrases de réussite qui nomment la stratégie. Contrat registerExplain, garde des jeux exemptés, 18 jeux dont les 8 de saison 3.",
   "epic": "Mieux apprendre"
 }

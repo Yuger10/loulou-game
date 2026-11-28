@@ -91,6 +91,12 @@ const SAY = {
   wander: 'Doucement ! Reste sur le chemin gris.',
   dot: 'Touche juste le petit point.',
 };
+const EXPLAIN = {
+  start: 'Pose ton doigt près du point vert.',
+  cover: 'Suis le chemin gris jusqu’au bout.',
+  wander: 'Reste sur le chemin gris.',
+  dot: 'Touche juste le petit point.',
+};
 const DEMO = 'Regarde le crayon, puis refais ce trait !';
 const misses = () => t.game().misses;
 // l'état que les ratés ne doivent pas toucher
@@ -132,11 +138,11 @@ function ratesSansPerte(st1, reason1) {
 function troisiemeRate(st1, reason1) {
   const was = snap();
   trace(0, 1, t.badPts(st1));
-  check('ligne 18 : au 3ᵉ raté de suite, un essai est perdu (une seule fois) et la voix annonce le crayon', () => [
+  check('ligne 18 : au 3ᵉ raté de suite, un essai est perdu (une seule fois) et la voix explique la raison', () => [
     was.lives === 4,
     ev('lives') === 3,
     ev('missionErrors') === was.errors + 1,
-    said(DEMO, was.from),
+    said(EXPLAIN[reason1], was.from),
   ]);
   check('ligne 18 : la démonstration montre ce trait seulement, et on reste sur ce trait', () => [
     !!one('#tr-pad text.tr-demo[data-s="1"]'),

@@ -9,7 +9,7 @@
    glisser. Anti-devinette : une mauvaise réponse relance une AUTRE question. */
 import { openModal, setHandler, speak } from '../../../shared/ui/index.js';
 import { gameDiff } from '../../adaptive/index.js';
-import { registerHints, setHintQuestion } from '../../hints/index.js';
+import { registerExplain, registerHints, setHintQuestion } from '../../hints/index.js';
 import {
   flashModal,
   livesBar,
@@ -175,7 +175,7 @@ function tensReady(q, btn) {
     return;
   }
   if (tensMade(q) !== q.n) {
-    loseLife(btn, { disable: false, onRetry: renderTens });
+    loseLife(btn, { disable: false, onRetry: renderTens, wrong: tensMade(q) });
     return;
   }
   stepOk(btn);
@@ -190,7 +190,7 @@ function tensReady(q, btn) {
 function tensAnswer(q, btn) {
   if (q.phase !== 'answer') return;
   if (Number(btn.dataset.v) !== q.n) {
-    loseLife(btn, { onRetry: renderTens });
+    loseLife(btn, { onRetry: renderTens, wrong: Number(btn.dataset.v) });
     return;
   }
   stepOk(btn);
@@ -229,3 +229,19 @@ function renderTens() {
 
 registerGame('tens', renderTens);
 registerHints('tens', tensHints);
+registerExplain('tens', {
+  /** @param {TensQuestion} q */
+  wrong(q) {
+    const say =
+      q.tier === 5
+        ? 'Dix paniers forment une pile de cent.'
+        : q.mode === 'build'
+          ? 'Un panier plein contient dix places.'
+          : q.mode === 'read'
+            ? 'Compte les paniers puis les dumplings seuls.'
+            : q.mode === 'make'
+              ? 'Regroupe les unités avant de préparer.'
+              : 'Chaque terme indique un groupe de quantité.';
+    return { say, fx: { glow: '#tens-stage' } };
+  },
+});

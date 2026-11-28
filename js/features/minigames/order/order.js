@@ -10,7 +10,7 @@
    plateau faux relance une AUTRE commande. */
 import { openModal, setHandler, speak } from '../../../shared/ui/index.js';
 import { gameDiff } from '../../adaptive/index.js';
-import { registerHints, setHintQuestion } from '../../hints/index.js';
+import { registerExplain, registerHints, setHintQuestion } from '../../hints/index.js';
 import {
   flashModal,
   livesBar,
@@ -104,7 +104,7 @@ function orderServe(q, btn) {
     return;
   }
   if (!orderExact(q)) {
-    loseLife(btn, { disable: false, onRetry: renderOrder });
+    loseLife(btn, { disable: false, onRetry: renderOrder, wrong: q.plate.length });
     return;
   }
   q.phase = 'won';
@@ -184,3 +184,9 @@ const orderHints = (q) => {
 
 registerGame('order', renderOrder);
 registerHints('order', orderHints);
+registerExplain('order', {
+  /** @param {OrderQuestion} _q @param {number} _wrong */
+  wrong(_q, _wrong) {
+    return { say: 'Compare les sortes et les quantités du ticket.', fx: { glow: '.order-placed' } };
+  },
+});

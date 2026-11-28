@@ -1,5 +1,5 @@
 ---
-status: faite           # brouillon | validée | faite ; validée à la demande d'Amrou le 26/11/2026, livrée en v67 (une seule PR, consigne d'Amrou)
+status: faite           # brouillon | validée | faite ; validée à la demande d'Amrou le 26/11/2026, complétée en v74 pour les 8 mini-jeux saison 3
 issue: 0
 size: M                  # S | M ; L se découpe (ici en phases, une PR chacune)
 migration: false

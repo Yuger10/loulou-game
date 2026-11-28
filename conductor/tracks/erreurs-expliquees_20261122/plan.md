@@ -32,6 +32,13 @@ Trois phases, trois PR livrables seules (défaut de Claude, à juger à la revue
 - [x] 14. `hints.js` : `strategyLine()`. `engine.js` : `winPraises(who)`, ligne `.win-how` (🧠 et la phrase) sous le titre, phrase dite après l'éloge, en solo seulement. `right` dans les 10 jeux.
 - [x] 15. (une seule livraison, journal ligne 3 : `bun run release track`, v67) `bun run check` vert ; `bun run release track "erreurs expliquées : 10 jeux de nombres, phrases de stratégie"`, puis compléter la section ajoutée à la fin de `PRD-lagon-magique.md` avant la PR.
 
+### Complément des huit jeux saison 3 (v74)
+
+- [x] Ajouter un provider `registerExplain` à `trace`, `length`, `tens`, `order`, `problems`, `code`, `coding` et `sentence`, sans les exempter.
+- [x] Tester les raisons de tracé, les modes de mesure et de numération, les étapes de problèmes, et les conseils des jeux de déduction sans révéler la réponse.
+- [x] Conserver la démonstration du tracé après le troisième raté, les réponses justes réessayables après l'explication, et le feedback multijoueur de la phrase rigolote.
+- [x] `bun run check` et `bun run verify` passent après synchronisation avec main : 95 suites et holdout sauvegarde.
+
 ## Preuves
 
 | Ligne du smoke test | Résultat | Niveau | Preuve |
@@ -44,7 +51,8 @@ Trois phases, trois PR livrables seules (défaut de Claude, à juger à la revue
 | S6 | fait | test-verified | même test : « reading : relance à 900 ms », « diff : « Raté ! » à 520 ms » |
 | S7 | fait | test-verified | même test : section « Garde des jeux exemptés » (4 cas refusés par leur nom, les vraies listes passent) |
 | S8 | fait | test-verified | même test : « chaque cas de la table : la phrase exacte (31 cas) », « victoire : la ligne 🧠 sous le titre, dite une fois, juste après l'éloge » (51 victoires) |
-| S9 | fait | test-verified | `bun run check` (exit 0), `bun run verify` (exit 0) |
+| S9 | fait | test-verified | `bun run check` et `bun run verify` : 95 suites ; holdout sauvegarde vert |
+| Complément S3 | fait | test-verified | `test/explications.test.js` couvre les huit providers et les modes/raisons ; tests d'écran ciblés gardent les parcours et la voix multijoueur |
 | S10 à S12 | à faire | runtime-verified | Amrou, téléphone (vérification manuelle proposée dans la PR) |
 
 ## Journal de décisions

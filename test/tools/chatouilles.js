@@ -191,7 +191,7 @@ const op = (o) => one(`#cd-pal .cd-op[data-op="${o}"]`);
 const steps = () => all('#cd-prog .cd-step').map((x) => x.dataset.op);
 const tapOps = (ops) => ops.forEach((o) => op(o).click());
 // le trajet est fini quand la palette redevient active, ou que la mission est gagnée
-const idle = () => t.waitFor(() => !!one('.win-box') || (!!one('#cd-go') && !one('#cd-go').disabled), 2500);
+const idle = () => t.waitFor(() => !!one('.win-box') || (!!one('#cd-go') && !one('#cd-go').disabled), 5000);
 const solutionOf = (prog) => prog.map((o) => `#cd-pal .cd-op[data-op="${o}"]`).concat('#cd-go');
 
 /* ================= « La phrase rigolote » ================= */

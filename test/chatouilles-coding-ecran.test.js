@@ -12,9 +12,9 @@ const C = {
   empty: 'Ajoute d’abord des flèches, puis appuie sur Go !',
   full: 'Ton programme est plein. Touche une flèche du programme pour l’enlever.',
   win: 'Hi hi hi ! Ça chatouille ! Bravo, ta plume a trouvé le chemin !',
-  rock: 'Oups, un cactus ! La plume s’arrête là. Change la flèche rouge.',
-  edge: 'Oups, le bord ! La plume s’arrête là. Change la flèche rouge.',
-  stop: 'La plume s’est arrêtée ici, mais Guili est plus loin. Ajoute ou change des flèches !',
+  rock: 'La plume ne traverse pas les cactus.',
+  edge: 'La plume doit rester dans la grille.',
+  stop: 'Programme-la jusqu’à l’ami, pas avant.',
 };
 Object.keys(C).forEach((k) => (C[k] = C[k].replace(/’/g, "'")));
 const WORDS = {
@@ -177,6 +177,7 @@ async function trajetSuite() {
   go().click();
   const cleared = marks() === 0 && json(t.feather()) === json({ r: 3, c: 0, dir: 0 });
   await t.idle();
+  check('C11 : la phrase explique l’arrêt du programme', t.saidLast(C.stop));
   check('critère 12 : arrêt ailleurs : la case d’arrêt est entourée, un essai perdu, puis C11', () => [
     cleared,
     json(t.feather()) === json({ r: 2, c: 1, dir: 1 }),

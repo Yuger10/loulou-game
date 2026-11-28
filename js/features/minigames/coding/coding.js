@@ -9,7 +9,7 @@
    dont la phrase générique serait sinon coupée (spec D8). Sans minuteur. */
 import { giggle, openModal, setHandler, speak } from '../../../shared/ui/index.js';
 import { gameDiff } from '../../adaptive/index.js';
-import { registerHints, setHintQuestion } from '../../hints/index.js';
+import { registerExplain, registerHints, setHintQuestion } from '../../hints/index.js';
 import {
   flashModal,
   livesBar,
@@ -42,8 +42,6 @@ const CODING_TITLE = '🪶 Le chemin de la plume';
 const CODING_EMPTY = "Ajoute d'abord des flèches, puis appuie sur Go !";
 const CODING_FULL = "Ton programme est plein. Touche une flèche du programme pour l'enlever.";
 const CODING_WIN = 'Hi hi hi ! Ça chatouille ! Bravo, ta plume a trouvé le chemin !';
-const CODING_ROCK = "Oups, un cactus ! La plume s'arrête là. Change la flèche rouge.";
-const CODING_EDGE = "Oups, le bord ! La plume s'arrête là. Change la flèche rouge.";
 
 /** @type {CodingGame | null} la partie affichée : un trajet en retard d'une autre partie s'arrête tout seul */
 let codingGame = null;
@@ -129,11 +127,10 @@ function codingAdd(g, op) {
  * Une erreur de programme : un essai perdu, puis le message précis. La grille
  * et le programme restent ; tout redevient actif, sauf si la mission est perdue.
  * @param {CodingGame} g
- * @param {string} say
+ * @param {'rock' | 'edge' | 'stop'} reason
  */
-function codingFail(g, say) {
-  const lost = loseLife(document.getElementById('cd-go'), { disable: false });
-  speak(say);
+function codingFail(g, reason) {
+  const lost = loseLife(document.getElementById('cd-go'), { disable: false, wrong: reason });
   g.over = lost;
   if (!lost) codingLock(g, false);
   else g.busy = false;
@@ -161,7 +158,7 @@ function codingTick(g, res, i) {
     // un cactus ou le bord : la plume reste sur sa case et tremble, la flèche fautive rougit
     stepEls[i].classList.replace('on', 'ko');
     codingAll('#cd-feather').forEach((el) => el.classList.add('cd-bump'));
-    codingFail(g, res.end === 'rock' ? CODING_ROCK : CODING_EDGE);
+    codingFail(g, res.end === 'rock' ? 'rock' : 'edge');
     return;
   }
   codingFeather(g, res.path[i + 1]);
@@ -177,10 +174,7 @@ function codingTick(g, res, i) {
   const last = res.path[res.path.length - 1];
   stepEls[i].classList.remove('on');
   codingAll(`.cd-cell[data-r="${last.r}"][data-c="${last.c}"]`).forEach((el) => el.classList.add('cd-stop'));
-  codingFail(
-    g,
-    `La plume s'est arrêtée ici, mais ${g.round.grid.friend.name} est plus loin. Ajoute ou change des flèches !`,
-  );
+  codingFail(g, 'stop');
 }
 /** @param {CodingGame} g « Go » : la plume repart de sa case de départ et joue le programme */
 function codingGo(g) {
@@ -239,3 +233,15 @@ function renderCoding() {
 
 registerGame('coding', renderCoding);
 registerHints('coding', codingHints);
+registerExplain('coding', {
+  /** @param {unknown} _q @param {string} reason */
+  wrong(_q, reason) {
+    const say =
+      reason === 'rock'
+        ? 'La plume ne traverse pas les cactus.'
+        : reason === 'edge'
+          ? 'La plume doit rester dans la grille.'
+          : "Programme-la jusqu'à l'ami, pas avant.";
+    return { say, fx: { glow: reason === 'stop' ? '.cd-stop' : '.cd-cell' } };
+  },
+});

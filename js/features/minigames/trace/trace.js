@@ -9,7 +9,7 @@
    de suite sur le même trait, un essai part et le crayon montre le chemin.
    On reste toujours sur le même trait (il n'y a aucun choix à deviner). */
 import { gameDiff } from '../../adaptive/index.js';
-import { registerHints, setHintQuestion } from '../../hints/index.js';
+import { registerExplain, registerHints, setHintQuestion } from '../../hints/index.js';
 import {
   flashModal,
   livesBar,
@@ -147,11 +147,10 @@ function traceAddStroke(points) {
   }
   // 3ᵉ raté de suite : un essai part, et le crayon montre ce trait (on y reste)
   game.misses = 0;
-  if (loseLife(pad, { disable: false })) {
+  if (loseLife(pad, { disable: false, wrong: reason })) {
     game.done = true; // mission perdue : le carré ne répond plus
     return;
   }
-  speak('Regarde le crayon, puis refais ce trait !');
   traceDemo();
 }
 
@@ -246,3 +245,16 @@ function traceHints(q) {
 
 registerGame('trace', renderTrace);
 registerHints('trace', traceHints);
+registerExplain('trace', {
+  wrong(_q, reason) {
+    const say =
+      reason === 'start'
+        ? 'Pose ton doigt près du point vert.'
+        : reason === 'cover'
+          ? 'Suis le chemin gris jusqu’au bout.'
+          : reason === 'wander'
+            ? 'Reste sur le chemin gris.'
+            : 'Touche juste le petit point.';
+    return { say, fx: { glow: reason === 'start' ? '#tr-pad .tr-start' : '#tr-pad .tr-model' } };
+  },
+});

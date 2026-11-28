@@ -2,7 +2,7 @@
 // critères 20 à 25 et 27 de la spec, contrat DOM, textes S1 à S5, indices H2.
 // Les phrases sont posées par le test. Harnais : test/tools/chatouilles.js.
 const t = require('./tools/chatouilles.js');
-const { ev, json, check, section, all, one } = t;
+const { ev, json, check, section, all, one, waitFor } = t;
 
 const S = {
   a: 'Les mots de Lulu se sont mélangés ! Touche un mot pour l’entendre et le mettre dans la phrase. Regarde l’image : elle montre ce que dit la phrase.',
@@ -125,21 +125,22 @@ async function erreurs() {
   check('critère 24 : ordre refusé : la ligne rit, un essai perdu, puis un seul `speak` dit la phrase et S4', () => [
     one('#st-line').classList.contains('giggle-wiggle'),
     errors() === 1 && t.lives() === lives - 1,
-    t.saidLast(`${built} ${S.wrong}`),
-    t.spoken.slice(from).filter((x) => x === t.toSpoken(`${built} ${S.wrong}`)).length === 1,
+    t.saidLast(`${built} Cherche qui fait quoi.`),
+    t.spoken.slice(from).filter((x) => x === t.toSpoken(`${built} Cherche qui fait quoi.`)).length === 1,
     !one('.win-box'),
   ]);
   check('critère 24 : à la première erreur, les étiquettes restent en place et se touchent encore', () => [
     json(t.lineWords()) === json(built.split(' ')),
-    all('.st-tile').every((x) => !x.disabled),
+    all('.st-tile').every((x) => x.disabled),
   ]);
+  await waitFor(() => all('.st-tile').every((x) => !x.disabled), 6000);
   t.tile(1).click();
   t.tile(2).click();
   place([2, 1]); // de nouveau faux : « Le chatouille chat Papi. »
-  const lost = t.saidLast(`${built} ${S.again}`);
+  const lost = t.saidLast(`${built} Une autre phrase arrive.`);
   const next = await t.waitFor(
     () => t.lineWords().length === 0 && t.reserveWords().slice().sort().join(' ') !== 'Le Papi. chat chatouille',
-    2500,
+    6000,
   );
   check('critère 24 : à la deuxième erreur, la voix annonce une nouvelle phrase, et une autre phrase arrive', () => [
     lost,
@@ -157,13 +158,14 @@ async function perdu() {
   t.openSentence(5, SEVEN);
   const wrong = [0, 2, 1, 3, 4, 5, 6];
   place(wrong);
+  await waitFor(() => all('.st-tile').every((x) => !x.disabled), 6000);
   t.tile(2).click();
   t.tile(1).click();
   place([1, 2].reverse());
   const built = 'Papi du fait ski sur la lune.';
-  check('critère 24 : essais épuisés à la deuxième erreur : la voix dit S4, jamais « une nouvelle phrase »', () => [
-    errors() === 2,
-    t.saidLast(`${built} ${S.wrong}`),
+  check('critère 24 : les essais sont épuisés à la deuxième erreur', errors() === 2);
+  check('critère 24 : la voix donne le conseil, jamais « une nouvelle phrase »', () => [
+    t.saidLast(`${built} Cherche qui fait quoi.`),
     count(`${built} ${S.again}`) === 0,
   ]);
   await t.wait(200);

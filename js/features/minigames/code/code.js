@@ -9,7 +9,7 @@
    relance un AUTRE cadenas. */
 import { openModal, setHandler, speak } from '../../../shared/ui/index.js';
 import { gameDiff } from '../../adaptive/index.js';
-import { registerHints, setHintQuestion } from '../../hints/index.js';
+import { registerExplain, registerHints, setHintQuestion } from '../../hints/index.js';
 import {
   flashModal,
   livesBar,
@@ -78,7 +78,7 @@ function codeOpen(g, btn) {
   if (g.over || g.wheels.includes('')) return;
   g.over = true;
   if (g.wheels.join() !== g.lock.code.join()) {
-    loseLife(btn, { disable: false, onRetry: () => codeShow(codeOther(g.lock)) });
+    loseLife(btn, { disable: false, onRetry: () => codeShow(codeOther(g.lock)), wrong: g.wheels.join() });
     return;
   }
   codeAll('.code-lock').forEach((el) => el.classList.add('open'));
@@ -148,3 +148,8 @@ function renderCode() {
 
 registerGame('code', renderCode);
 registerHints('code', codeHints);
+registerExplain('code', {
+  wrong() {
+    return { say: 'Compare les indices, chacun donne une règle.', fx: { glow: '.code-clue' } };
+  },
+});

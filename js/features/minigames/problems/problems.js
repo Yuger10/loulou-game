@@ -15,7 +15,7 @@ import { state } from '../../../entities/game-state/index.js';
 import { party } from '../../../entities/player/index.js';
 import { openModal, speak } from '../../../shared/ui/index.js';
 import { gameDiff } from '../../adaptive/index.js';
-import { registerHints } from '../../hints/index.js';
+import { registerExplain, registerHints } from '../../hints/index.js';
 import { livesBar, registerGame, setSolution, setupLives } from '../../minigame-engine/index.js';
 import { bindQuit, gameHeader } from '../../screen/index.js';
 import { pbEl } from './problems-auto.js';
@@ -184,3 +184,18 @@ function renderProblems() {
 
 registerGame('problems', renderProblems);
 registerHints('problems', pbHints);
+registerExplain('problems', {
+  /** @param {{ moment: string, block: string }} q */
+  wrong(q) {
+    /** @type {Record<string, [string, string]>} */
+    const hints = {
+      dessiner: ['Fais parler les objets de l’histoire.', `${q.block} .pb-bars`],
+      operation: ['Regarde si les objets arrivent ou repartent.', `${q.block} .pb-bars`],
+      calculer: ['Compte les nombres de cette étape.', `${q.block} .pb-nums`],
+      repondre: ['Relis l’histoire et les étapes déjà faites.', `${q.block} .pb-reply`],
+      possible: ['Vérifie si chaque groupe peut être partagé.', `${q.block} .pb-yesnos`],
+    };
+    const [say, glow] = hints[q.moment] || hints.dessiner;
+    return { say, fx: { glow } };
+  },
+});

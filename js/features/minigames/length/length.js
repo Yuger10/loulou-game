@@ -7,7 +7,7 @@
    Une mission = une question. Anti-devinette : chaque mauvaise réponse donne
    une phrase d'aide, puis une AUTRE question (relance du moteur). */
 import { gameDiff } from '../../adaptive/index.js';
-import { registerHints, setHintQuestion } from '../../hints/index.js';
+import { registerExplain, registerHints, setHintQuestion } from '../../hints/index.js';
 import {
   flashModal,
   livesBar,
@@ -20,7 +20,7 @@ import {
   winSoon,
 } from '../../minigame-engine/index.js';
 import { bindQuit, gameHeader } from '../../screen/index.js';
-import { openModal, setHandler, speak } from '../../../shared/ui/index.js';
+import { openModal, setHandler } from '../../../shared/ui/index.js';
 import { lengthBuildRound, lengthWrongChoice } from './length-build.js';
 import { lengthGuidesSVG, lengthStageHTML, lengthUnitNumSVG } from './length-draw.js';
 
@@ -60,19 +60,6 @@ function lengthText(b) {
 }
 
 /**
- * La phrase d'une mauvaise réponse. Sur la règle décalée, le nombre lu sous la
- * pointe a sa propre phrase : c'est l'erreur attendue.
- * @param {LengthBuild} b
- * @param {number} value la réponse touchée
- */
-function lengthErrorSay(b, value) {
-  if (b.trap === null) return lengthText(b).err;
-  return value === b.trap
-    ? 'Attention : le crayon ne commence pas au zéro !'
-    : "Compte les centimètres, du début du crayon jusqu'à sa pointe.";
-}
-
-/**
  * Une réponse touchée : la bonne gagne la mission ; sinon la phrase d'aide,
  * dite après `loseLife` (et seulement si la mission n'est pas perdue), puis
  * une autre question.
@@ -89,7 +76,7 @@ function lengthPick(q, btn, value) {
     winSoon();
     return;
   }
-  if (!loseLife(btn, { disable: false, onRetry: renderLength })) speak(lengthErrorSay(q.b, value));
+  loseLife(btn, { disable: false, onRetry: renderLength, wrong: value });
 }
 
 // la question précédente : une relance en tire toujours une AUTRE (anti-devinette)
@@ -195,3 +182,22 @@ function lengthHints(q) {
 
 registerGame('length', renderLength);
 registerHints('length', lengthHints);
+registerExplain('length', {
+  /** @param {LengthQuestion} q @param {number} value */
+  wrong(q, value) {
+    const b = q.b;
+    if (b.mode === 'compare')
+      return {
+        say: 'Compare où chaque crayon commence et finit.',
+        fx: { glow: '.ln-crayon' },
+      };
+    if (b.mode === 'units') return { say: 'Compte les gommes une par une.', fx: { glow: '.ln-units' } };
+    return {
+      say:
+        b.trap !== null && value === b.trap
+          ? 'Le crayon ne commence pas au zéro.'
+          : 'Lis la graduation sous la pointe.',
+      fx: { glow: '.ln-crayon.solo' },
+    };
+  },
+});
